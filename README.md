@@ -8,10 +8,6 @@ Secondary goals include:
 2. Improve code readability to improve parallelization capabilities.
 3. Enhance performance while preserving the original functionality of AERMOD.
 
-## Steps Taken
-1. Converted fortran 77 fixed-format code to fortran 90 free-format. (Converted using findent tool).
-2. Autofixed code with fortitude check --fix
-
 # TODO
 - [ ] Create automatic tests comparing results between Aermod versions.
 - [ ] Convert from fixed format to free format.

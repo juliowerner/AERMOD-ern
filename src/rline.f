@@ -65,6 +65,7 @@ C     Added import of QTK from MAIN1 above, and new local QEMIS below
       DOUBLE PRECISION  :: CONCENTRATION
       DOUBLE PRECISION  :: QEMIS
       DOUBLE PRECISION  :: SFCZ0_sav, ZI_SAV
+      DOUBLE PRECISION  :: ZI_ORIG !D178
 
 C     ERROR         = error in numerical integration
 C     CONCD         = dummy concentration at receptor
@@ -77,13 +78,14 @@ C     YTEMP          = temporary y-coordinate of receptor for line orientation
 C     ZTEMP          = temporary z-coordinate of receptor for line orientation
 
 C     Variable Initializations:
-      CONCD = 0.0D0
-      CONCENTRATION = 0.0D0     
+CMGS      CONCD = 0.0D0 !D178_RLINE_RecpOrder_WSP: Moved to REC loop
+CMGS     CONCENTRATION = 0.0D0  !D178_RLINE_RecpOrder_WSP: moved to REC loop    
 CCRT/ORD 5/17/2022 - Reset DISTR if used from previous sources
       DISTR = 0.0D0
 
 C     Initialize __VAL arrays
-      HRVAL = 0.0D0
+CMGS      HRVAL = 0.0D0 !D178_RLINE_RecpOrder_WSP
+      HRVAL(:) = 0.0D0 
 
 C     rline_emisfact_d42_Wood
 C     Local QEMIS will hold the hourly source specific emission to be
@@ -132,7 +134,7 @@ C        Perform MOVES to RLINE unit conversion                              ---
 
 C        Save the original SFCZ0 & ZI
          SFCZ0_sav = SFCZ0
-         ZI_SAV    = ZI ! D096
+         ZI_ORIG    = ZI ! D096; D178 switch ZI_SAV to ZI_ORIG
 C        Set Mixing Height and Adjust L & USTAR for Urban Option if Needed
          IF (URBSRC(ISRC) .EQ. 'Y') THEN
 C           Find Urban Area Index for This Source
@@ -170,6 +172,7 @@ C ---       Rural
             URBSTAB = .FALSE.
             RLWSTAR = WSTAR
          END IF
+         ZI_SAV = ZI !D178
 
       IF(.NOT. RLPROCESSED) THEN
 C        Translate and rotate the line source to align with wind direction   --- CALL TRANSLATE_ROTATE
@@ -232,6 +235,14 @@ C Set elevation of source, global variable in main1 - Wood 7/5/2022
 
 C     Begin loop over receptors
       RECEPTOR_LOOP: DO IREC = 1, NUMREC
+CRLM D178 Reset ZI
+CRLM Not necessarily needed here. Safe guard for possible other instances where ZI is 
+CRLM changed within the receptor loop. ZI changed within PLUME_CONC; this has been corrected with D178.
+        ZI = ZI_SAV
+CMGS     D178_RLINE_RecpOrder_WSP Moved these initalizations from top of RLCALC
+         CONCD = 0.0D0 !D178_RLINE_RecpOrder_WSP
+         CONCENTRATION = 0.0D0  !D178_RLINE_RecpOrder_WSP  
+      
 C ----Write date and source values to RLINE.DBG
       IF (RLINEDBG) THEN
          WRITE(RLINEDBUNT,'(A, (A, I8),2(" , ", A, I8))')
@@ -288,14 +299,14 @@ C        Initialize __VAL arrays (1:NUMTYP)
          HRVAL(:) = 0.0D0
 
 C        Reset concentration value
-         CONCENTRATION = 0.0D0
+CMGS      CONCENTRATION = 0.0D0 !D178_RLINE_RecpOrder_WSP: Moved to top of REC loop
 
       END DO RECEPTOR_LOOP
       
 C     Reset SFCZ0 to the saved SFCZ0
-C     Reset ZI to ZI_SAV
+C     Reset ZI to ZI_SAV; D178 switch ZI_SAV to ZI_ORIG
       SFCZ0  = SFCZ0_sav
-      ZI     = ZI_SAV ! D096
+      ZI     = ZI_ORIG ! D096; D178 switch ZI_SAV to ZI_ORIG
       
       END SUBROUTINE RLCALC
 
@@ -798,7 +809,8 @@ C     These heights are log-spaced for better resolution near the ground.
 
 C     Create wind speed table - UTBL
       IF (STABLE) THEN
-        LMO_A(:)     = ABS(LMO_A(:))
+CMGS        LMO_A(:)     = ABS(LMO_A(:)) !D178_RLINE_RecpOrder_WSP
+        LMO_A(:)     = DABS(LMO_A(:))
         DO IA = 1, 3
           PSI1(:,IA) = -17.0D0 * (1.0D0 - DEXP(-0.29D0 *
      &                 (ZWIND(:,IA) - DH_A(IA)) / LMO_A(IA)))
@@ -807,12 +819,15 @@ C     Create wind speed table - UTBL
         END DO
 
       ELSE
-        LMO_A(:)   = -1.0D0 * ABS(LMO_A(:))
+CMGS        LMO_A(:)   = -1.0D0 * ABS(LMO_A(:)) !D178_RLINE_RecpOrder_WSP
+        LMO_A(:)   = -1.0D0 * DABS(LMO_A(:))
         DO IA = 1, 3
-          X1(:,IA) = SQRT(SQRT(1.0D0 - 16.0D0 *
+CMGS          X1(:,IA) = SQRT(SQRT(1.0D0 - 16.0D0 * !D178_RLINE_RecpOrder_WSP
+            X1(:,IA) = DSQRT(DSQRT(1.0D0 - 16.0D0 *
      &               (ZWIND(:,IA) - DH_A(IA)) /
      &               LMO_A(IA)))
-          X2(IA)   = SQRT(SQRT(1.0D0 - 16.0D0 *
+CMGS          X2(IA)   = SQRT(SQRT(1.0D0 - 16.0D0 * !D178_RLINE_RecpOrder_WSP
+            X2(IA)   = DSQRT(DSQRT(1.0D0 - 16.0D0 *
      &               Z0_A(IA) / LMO_A(IA)))
           PSI1(:,IA) = 2.0D0 * DLOG((1.0D0 + X1(:,IA)) / 2.0D0) +
      &                DLOG((1.0 + X1(:,IA) * X1(:,IA)) / 2.0D0) -
@@ -1013,7 +1028,8 @@ C      UEFF = MOST_WIND(HEFF,I_ALPHA) * WSPD_ADJ ! D096
 C      UEFF = DSQRT(2.0D0 * SIGMAV**2  + UEFF**2)  ! D096
       SZ   = SIGMAZ(XD)
 C                                                                            --- CALL EXPX
-      DO WHILE ((ERR > 1.0E-02) .AND. (ITER < 20))
+CMGS      DO WHILE ((ERR > 1.0E-02) .AND. (ITER < 20)) !D178_RLINE_RecpOrder_WSP
+      DO WHILE ((ERR > 1.0D-02) .AND. (ITER < 20))
          ZBAR   = RT2BYPI * SZ * EXPX(-0.5D0 * (HEFF / SZ)**2) +
      &            HEFF * ERF(HEFF / (RTOF2 * SZ)) + HSHIFT                   ! Venkatram et al. (2013)
 C                                                                            --- CALL MOST_WIND
@@ -1178,7 +1194,7 @@ C     Calculate interpolation coeffs for Ueff
 
 C     Calculate interpolation coeffs for SIGMAY
       PSY2    = (LNSY2 - LNSY1) / (LNX2 - LNX1)
-      PSY1    = EXP(0.5D0 * (LNSY1 + LNSY2 - PSY2 * (LNX1 + LNX2)))
+      PSY1    = EXP(0.5D0 * (LNSY1 + LNSY2 - PSY2 * (LNX1 + LNX2))) 
       PSY4    = (LNSY3 - LNSY2) / (LNX3 - LNX2)
       PSY3    = EXP(0.5D0 * (LNSY2 + LNSY3 - PSY4 * (LNX2 + LNX3)))
 
@@ -1428,6 +1444,7 @@ C     Computation Parameters
 
 C     Variable Initializations
       CONC_NUM = 0.0D0
+      ERR = 2.0D0*ERROR_LIMIT !D178_RLINE_RecpOrder_WSP
 
       XDIF  = XSEND - XSBEGIN
       YDIF  = YSEND - YSBEGIN
@@ -1669,6 +1686,7 @@ C     Local Variables:
       DOUBLE PRECISION  :: CQ, FQ, UEFF_BU
       DOUBLE PRECISION  :: F_UEFF, F_UH, HMAX, A
       DOUBLE PRECISION  :: VERT, HORZ
+      DOUBLE PRECISION  :: ZIEFF !D178, used to not overwrite ZI
       INTEGER           :: IA_MAX
 
 C     Declare flags:
@@ -1710,7 +1728,8 @@ C     Initialize local variables
       I_ALPHA = 1 
       IA_MAX  = 2
       SIGMAZ0_ORIG = SIGMAZ0  ! store intial sigmaz value from input file
-      F_UEFF  = 1.0D0  ! factor for lowering ueff and then slowly increasing back to original ueff      
+      F_UEFF  = 1.0D0  ! factor for lowering ueff and then slowly increasing back to original ueff
+      ZIEFF   = 0.0D0  !D178
 
 C     Set flags for direct/meander and gaussian/mixed-wake
       IF (XD .LT. 0.0001D0) THEN
@@ -1777,8 +1796,11 @@ C        VERT   = RT2BYPI * (EXPX(-0.5D0 * ((HEFF - ZRECEP) / SZ)**2)   ! D096
 C     &           + EXPX(-0.5D0 * ((HEFF + ZRECEP) / SZ)**2)) /         ! D096
 C     &           (2.0D0 * SZ * UEFF_BU)                                ! D096
         ZR = ZRECEP                      ! D096
-        ZI = MAX(ZI, HEFF + 2.15 * SZ)   ! D096
-        CALL VRTSBL(SZ, HEFF, ZI)        ! D096
+CRLM D178 Creating local ZIEFF to not change ZI global
+CRLM        ZI = MAX(ZI, HEFF + 2.15 * SZ)   ! D096
+CRLM        CALL VRTSBL(SZ, HEFF, ZI)        ! D096
+        ZIEFF = MAX(ZI, HEFF + 2.15 * SZ)   !D178 ZI changes to ZIEFF
+        CALL VRTSBL(SZ, HEFF, ZIEFF)        !D178 ZI changes to ZIEFF
         VERT = FSUBZ / UEFF_BU           ! D096
 C      Calculate horizontal plume                                            --- CALL EXPX
         HORZ   = 1.0D0 / (SRT2PI * SY) * EXPX(-0.5D0 * (YD / SY)**2)
@@ -1834,7 +1856,20 @@ C        CALL EFFECTIVE_WIND(XD, HEFF, HSHIFT)                               !D1
       END IF  
 
 C     Calculate total direct plume
-      CONC_PLUME = VERT * HORZ   
+      CONC_PLUME = VERT * HORZ
+      
+
+CRLM --- FROM POINT_CONC D178
+C ----Write components and values to RLINE.DBG
+      IF (RLINEDBG) THEN
+         WRITE(RLINEDBUNT,
+     & '(A,(A, E9.3),2(" , ", A, E9.3))')
+     &           'rline.f/PLUME_CONC: ',
+     &           'VERT = ', VERT,
+     &           'HORZ = ', HORZ,
+     &           'CONC_PLUME = ', CONC_PLUME
+      END IF
+CRLM ---      
       
       END SUBROUTINE PLUME_CONC
   
@@ -2272,13 +2307,14 @@ C     Combine direct plume and meander contributions with the terrain included
 C ----Write components and values to RLINE.DBG
       IF (RLINEDBG) THEN
          WRITE(RLINEDBUNT,
-     & '(A,(A, F5.3),2(" , ", A, F7.3),5(" , ", A, E9.3))')
+CRLM     & '(A,(A, F5.3),2(" , ", A, F7.3),5(" , ", A, E9.3))') !D178
+     & '(A,(A, F5.3),2(" , ", A, F7.3),3(" , ", A, E9.3))')
      &           'rline.f/POINT_CONC: ',
      &           'FRAN = ', FRAN,
      &           'SIGMAV = ', SIGMAV,
      &           'UEFF = ', UEFF,
-     &           'VERT = ', VERT,
-     &           'HORZ = ', HORZ,
+CRLM     &           'VERT = ', VERT, !D178
+CRLM     &           'HORZ = ', HORZ, !D178
      &           'CONC_P = ', CONC_P,
      &           'CONC_M = ', CONC_M,
      &           'POINT_CONC = ', POINT_CONC
@@ -2368,7 +2404,8 @@ C     DELTAY      = polynomial interpolation error
 
 
 C     Computation Parameters:
-      DOUBLE PRECISION  :: EPS = 1.0E-10
+CMGS      DOUBLE PRECISION  :: EPS = 1.0E-10  !D178_RLINE_RecpOrder_WSP
+      DOUBLE PRECISION  :: EPS = 1.0D-10
 
 C     Variable Initializations:
       DELTAY = 0.0D0
@@ -2619,7 +2656,8 @@ C     &          (EXP(TWOTHIRDS * LOG(XBAR))))   ! D096
 C        D096 updated coefficies a, bs, and bu based on optimization 4/5/23 WSP
          SIGZ = 0.70D0 * (URATIO * XDABS) /      ! D096
      &          (1.0D0 + 1.5D0 * URATIO *        ! D096
-     &          (EXP(TWOTHIRDS * LOG(XBAR))))
+CMGS     &          (EXP(TWOTHIRDS * LOG(XBAR)))) !D178_RLINE_RecpOrder_WSP
+     &          (DEXP(TWOTHIRDS * DLOG(XBAR))))
       ELSE
 C         SIGZ = 0.57D0 * (URATIO * XDABS) *          ! D096
 C     &          (1.0D0 + 1.5D0 * (URATIO  * XBAR))   ! D096

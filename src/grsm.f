@@ -781,6 +781,12 @@ C        PROGRAMMER: CERC
 C
 C        DATE: November 2020
 C
+C MKP    Modified:  4/23/2024 D193 fix from CERC. Prevents denormal or 
+C                   very small concentration values from being passed to
+C                   chemistry solver resulting in NaNs for certain ground
+C                   level releases from area, volume, and openpit source types
+C                   See modules.f/GRSMMOD MinimumConc=1.0D-21
+C
 C        INPUTS:  
 C
 C        OUTPUTS:
@@ -805,10 +811,9 @@ C --- Initialisations
       MODNAM='DoGRSMChem'
       tLocal=0.D0
       
-C --- Check for negative concentrations (should never start off
-C     negative but check for safety)
+C --- Check for concentrations less than the minimum value 
       DO  I=1,nPolsGRSM
-        IF (CONCTEMP(I).LT.0.) CONCTEMP(I) = 0.
+        IF (CONCTEMP(I).LT.MinimumConc) CONCTEMP(I) = 0.D0
       END DO
       
 C --- Estimate initial time step
@@ -819,6 +824,14 @@ C --- Increment in timesteps until end time reached or we hit max No. of steps
 
 C       Calculate the derivatives
         CALL DConcsDt(CONCTEMP,dCdt)
+        
+        !Check for concentrations less than the minimum value and negative gradients
+        DO i=1,nPolsGRSM
+          IF (CONCTEMP(i).LT.MinimumConc .AND. dCdt(I).LT.0.D0)THEN
+            CONCTEMP(I) = 0.D0
+            dCdt(I) = 0.D0
+          ENDIF
+        ENDDO
 
         DO i=1,nPolsGRSM
           Cscal(i)=CONCTEMP(i)+abs(dt*dCdt(i))
@@ -904,7 +917,7 @@ C --- Initialisations
       errmax=0.
 
       DO i=1,nPolsGRSM
-        IF (Cscal(i).gt.0.)THEN
+        IF (Cscal(i).gt.MinimumConc)THEN
           errmax=max(errmax,abs(CErr(i)/Cscal(i)))
         END IF
       END DO 
@@ -1518,13 +1531,27 @@ C     Call PDF & HEFF again for final CBL plume heights
       SIGZ_NoTurb = MAX(SIGZ_NoTurb,0.01D0)
       
       !Calculate the epsilon term
+C MKP IF(ZI/OBULEN<=0.0D0)THEN
+C MKP    !Convective turbulent dissipation
+C MKP    EPS=(2.5D0/CENTER+2.0D0/ZI)*USTAR**3+0.4D0*(WSTAR**3)/ZI
+C MKP ELSE
+C MKP    !Stable turbulent dissipation
+C MKP    EPS=(2.5D0/CENTER+4.0D0/ZI)*USTAR**3
+C MKP END IF 
+C
+C MKP Bug fix proposed by CERC 3/26/2024 where CENTROID returns zero for CENTER
+C     for ground sources with no plume rise and stable hours, this causes divide 
+C     by zero NaN values in subsequent calcs that use SIGR2 below
+      !Calculate the epsilon term
       IF(ZI/OBULEN<=0.0D0)THEN
          !Convective turbulent dissipation
-         EPS=(2.5D0/CENTER+2.0D0/ZI)*USTAR**3+0.4D0*(WSTAR**3)/ZI
+         EPS=(2.5D0/MAX(CENTER,SFCZ0,0.0001D0)+2.0D0/ZI)*USTAR**3+
+     +                                           0.4D0*(WSTAR**3)/ZI
       ELSE
          !Stable turbulent dissipation
-         EPS=(2.5D0/CENTER+4.0D0/ZI)*USTAR**3
-      END IF 
+         EPS=(2.5D0/MAX(CENTER,SFCZ0,0.0001D0)+4.0D0/ZI)*USTAR**3
+      END IF
+
          
       !Calculate dispersion time for Gaussian part of plume
       IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN

@@ -405,8 +405,9 @@ C                hourly emission rate)
 C              Apply the emission factor to the input argument QS
 C               (result is stored in QTK)
                CALL EMFACT(QS)
-
-               CUQ   = QTK * 1.0D06 / (DBLE(NSEGA(1)-1)*WSST)
+CMGS               D183_BUOYLINE_EMISUNIT_WSP 3/1/2024: replaced 1.0E6 w/EMIFAC(1) below
+CMGS               CUQ   = QTK * 1.0D06 / (DBLE(NSEGA(1)-1)*WSST)
+               CUQ   = QTK * EMIFAC(1) / (DBLE(NSEGA(1)-1)*WSST) !EMIFAC(1) is for concentration
                SZ0   = R0 * SRT2DP
                ZV    = 1000.0D0 * BL_XVZ(SZ0,KST)
                SY0   = SZ0/2.0D0
@@ -628,7 +629,10 @@ C                  part of the line)
                   IF (IDW .EQ. 1 .AND. IWOSIG .NE. 1) GO TO 758
 
                   DIFF = DABS(SUM2-SUMM)
-                  IF (DIFF*CUQ .LT. 0.1D0) THEN
+CMGS               D183_BUOYLINE_EMISUNIT_WSP 3/4/2024: Added the 1.0E6/EMIFAC(1) to leave this 
+CMGS                            comparison equivalent to before EMIFAC(1) was added to CUQ above.
+CMGS                  IF (DIFF*CUQ .LT. 0.1D0) THEN
+                  IF (DIFF*CUQ*1.0D6/EMIFAC(1) .LT. 0.1D0) THEN    !EMIFAC(1) is for concentration
                      GO TO 720
                   END IF
 
@@ -713,7 +717,10 @@ C                 Compare the new estimate with the previous estimate
                   SUM2 = SUMM/2.0D0 + SUM2/(2.0D0**ITER)
 
                   DIFF = ABS(SUM2-SUMM)
-                  IF (DIFF*CUQ .LT. 0.1D0) THEN
+CMGS               D183_BUOYLINE_EMISUNIT_WSP 3/4/2024: Added the 1.0E6/EMIFAC(1) to leave this 
+CMGS                            comparison equivalent to before EMIFAC(1) was added to CUQ above.
+CMGS                  IF (DIFF*CUQ .LT. 0.1D0) THEN
+                  IF (DIFF*CUQ*1.0D6/EMIFAC(1) .LT. 0.1D0) THEN    !EMIFAC(1) is for concentration
                      GO TO 720
                   ENDIF
 

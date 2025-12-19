@@ -1,11 +1,11 @@
       PROGRAM AERMOD
 C=======================================================================
 C            MAIN Module of the AMS/EPA Regulatory Model - AERMOD
-C                         Version Dated v23132
+C                         Version Dated v14142
 C
-C                              May 12, 2023
+C                              May 21, 2024
 C
-C               *** SEE AERMOD MODEL CHANGE BULLETIN MCB #16 ***
+C               *** SEE AERMOD MODEL CHANGE BULLETIN MCB #18 ***
 C
 C       ON THE SUPPORT CENTER FOR REGULATORY AIR MODELS (SCRAM) WEBSITE
 C
@@ -13,9 +13,9 @@ C                      https://www.epa.gov/scram
 C
 C=======================================================================
 C
-C       This revised version of AERMOD (dated 22xxx) includes numerous
-C       updates relative to the previous version (dated 19191);
-C       see AERMOD Model Change Bullentin (MCB) #15 and the AERMOD User's
+C       This revised version of AERMOD (dated 24142) includes
+C       updates relative to the previous version (dated 23132);
+C       see AERMOD Model Change Bullentin (MCB) #18 and the AERMOD User's
 C       Guide.
 C
 C https://www.epa.gov/scram/air-quality-dispersion-modeling-preferred-and-recommended-models#aermod
@@ -23,9 +23,9 @@ C
 C-----  MODIFIED BY:    U.S. EPA, OAQPS/AQAD
 C                       Air Quality Modeling Group
 C
-C                       May 12, 2023
+C                       May 21, 2024
 C
-C-----  MODIFIED FROM:  AERMOD (Version Dated 22112)
+C-----  MODIFIED FROM:  AERMOD (Version Dated 23132)
 C
 C=======================================================================
 C
@@ -6960,12 +6960,15 @@ C ---            NO2 method is specified that is not implemented for a source, 4
 CD150         ELSE IF ((FIELD(4) .EQ. 'RLINE') .OR.
 CD150     &              (FIELD(4) .EQ. 'RLINEXT')) THEN
 C           Check that the required BETA flag is present for RLINE sources
-CMGS        or if processing INCLUDED keyword (MODELOPTs not set yet!)
-            IF(BETA .OR. L_PREINC) THEN
+C        or if processing INCLUDED keyword (MODELOPTs not set yet!)
+
+CMGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (begin)
+CMGS            IF(BETA .OR. L_PREINC) THEN  !D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP
                NRLINES = NRLINES + 1
-            ELSE
-               CALL ERRHDL(PATH,MODNAM,'E','199',' RLINE BETA Required')
-            END IF
+CMGS            ELSE
+CMGS               CALL ERRHDL(PATH,MODNAM,'E','199',' RLINE BETA Required')
+CMGS            END IF
+CMGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (end)
 
 C ---       D161 Add NO2 processing restriction for PVMRM, TTRM, TTRM2, GRSM and OLM 2/20/23 WSP
 C ---       D161 Change errors to warnings so multiple sources can be run together if an
@@ -8402,7 +8405,7 @@ C ---                   Set other global date variables for this hour
                         KURDAT = ICYR2*1000000 + IMONTH*10000 +
      &                           IDAY*100 + IHOUR
                         KURPFL = KURDAT
-					 
+
 C ---                   Call MAXDCALC subroutine to calculate
 C                       max daily contributions for this hour
                         CALL MAXDCALC

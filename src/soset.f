@@ -237,13 +237,15 @@ C        Check for SRCGROUP Card Out Of Order
          ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
             CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
          END IF
-C        Check that "BETA" is used on MODELOPT of CO pathway
+C        Check that RLEMCONV is NOT repeated
          IF (ISSTAT(12) .NE. 1) THEN
 C           WRITE Error Message: Repeat Non-repeatable Keyword
             CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-         ELSE IF(.NOT. BETA) THEN
+CMGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (begin)
+CMGS         ELSE IF(.NOT. BETA) THEN
 C           WRITE Error Message: "Non-DFAULT BETA option required" for RLINE source type
-            CALL ERRHDL(PATH,MODNAM,'E','199','RLEMCONV')
+CMGS            CALL ERRHDL(PATH,MODNAM,'E','199','RLEMCONV')
+CMGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (end)
 C        Check The Number Of The Fields
          ELSE IF (IFC .GT. 2) THEN
 C           WRITE Error Message: Too Many Parameters
@@ -6593,16 +6595,16 @@ C     Check for 'HBPSRCID ALL' option identified in PRESET
       IF (L_HBP_ALL) THEN
          IF (IFC .EQ. 3 .AND. FIELD(3) .EQ. 'ALL') THEN
             DO K = 1, NUMSRC
-			    IF (SRCTYP(K)(1:5) .EQ. 'POINT') THEN
+                IF (SRCTYP(K)(1:5) .EQ. 'POINT') THEN
                      HBPSRC(K) = 'Y'
-					 NHBP = NHBP + 1
-			    ELSE
-				     HBPSRC(K) = 'N'
-!				     WRITE Informational Message:  
+                     NHBP = NHBP + 1
+                ELSE
+                     HBPSRC(K) = 'N'
+!                    WRITE Informational Message:  
 !                    HBP is only relevant to POINT-type sources
                      CALL ERRHDL(PATH,MODNAM,'I','740',SRCID(K))
-				ENDIF
-			ENDDO
+                ENDIF
+            ENDDO
             GO TO 999
          END IF
       ELSE
@@ -6616,17 +6618,17 @@ C     Loop Through Fields
             FOUND = .FALSE.
             DO K = 1, NUMSRC
                 IF (SRCID(K) .EQ. FIELD(I)) THEN
-				     IF (SRCTYP(K)(1:5) .EQ. 'POINT') THEN
+                     IF (SRCTYP(K)(1:5) .EQ. 'POINT') THEN
                          FOUND = .TRUE.
                          HBPSRC(K) = 'Y'
-						 NHBP = NHBP + 1
-					 ELSE
-					     FOUND = .TRUE.
-				         HBPSRC(K) = 'N'
-!				         WRITE Informational Message:  
+                         NHBP = NHBP + 1
+                     ELSE
+                         FOUND = .TRUE.
+                         HBPSRC(K) = 'N'
+!                        WRITE Informational Message:  
 !                        HBP is only relevant to POINT-type sources
                          CALL ERRHDL(PATH,MODNAM,'I','740',SRCID(K))
-                     ENDIF						 
+                     ENDIF
                 END IF
             END DO
             IF (.NOT.FOUND) THEN

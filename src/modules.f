@@ -925,7 +925,7 @@ C  ** variables for next hour convective and mechanical mixing heights
       DOUBLE PRECISION ::  ZICONVN, ZIMECHN
 C  *******************************  added code end  --kja
 ! Added for HBP MAXDCONT and EVENT processing; Jan. 2023
-	  DOUBLE PRECISION, ALLOCATABLE :: AZICONVN(:,:), AZIMECHN(:,:)
+      DOUBLE PRECISION, ALLOCATABLE :: AZICONVN(:,:), AZIMECHN(:,:)
 ! End HBP addition
 
       DOUBLE PRECISION, ALLOCATABLE :: URBPOP(:), URBZ0(:), ZIURB(:),
@@ -1469,7 +1469,7 @@ C***********************************************************************
 
 C---- VERSN is now a 6-character variable to accommodate leading qualifier
 C     character, such 'D' for Draft version.
-      DATA VERSN /'23132'/   ! May 12, 2023
+      DATA VERSN /'24142'/   ! May 21, 2024
 
 C     Initialize C_METVER to blanks in case there is an error opening
 C     the surface met file or with reading the version date, otherwise
@@ -3303,6 +3303,21 @@ C     D164 2/21/23 WSP Message when SCREEN option is used with incompatible sour
       ERRCOD(ECD)='731'
       ERRMSG(ECD)='SCREEN processing not currently configured for '
 
+C     D081 - Added for 24-hr average when less than 18 hours of data are present Wood 9/28/22
+      ECD = ECD+1
+      ERRCOD(ECD)='732'
+      ERRMSG(ECD)='24-hr avg, < 18 hours of data, calms policy used.'
+
+C     D081 - Added for 8-hr average when less than 6 hours of data are present CRT 4/28/2023
+      ECD = ECD+1
+      ERRCOD(ECD)='733'
+      ERRMSG(ECD)='8-hr avg, < 6 hours of data, calms policy used.'
+
+C     D081 - Added for 3-hr average when less than 3 hours of data are present CRT 4/28/2023
+      ECD = ECD+1
+      ERRCOD(ECD)='734'
+      ERRMSG(ECD)='3-hr avg, < 3 hours of data, calms policy used.'
+
 C     D157 WSP 3/28/2023 - Added for ARMRATIO limits when cahnged from DFAULT 0.5 and 0.9
 C     D157 CRT 5/31/2023 - Modify message when ARMRATIO is within default range.
       ECD = ECD+1
@@ -3471,7 +3486,8 @@ C     UST_A       = array of values for USTAR; 1 = no barrier, 2 = downwind barr
 C     LMO_A       = array of values for OBULEN; 1 = no barrier, 2 = downwind barrier, 3 = upwind barrier
 
 C     Run option parameters
-      DOUBLE PRECISION, PARAMETER  :: ERROR_LIMIT = 5.0E-4
+C      DOUBLE PRECISION, PARAMETER  :: ERROR_LIMIT = 5.0E-4 !D178_RLINE_RecpOrder_WSP
+      DOUBLE PRECISION, PARAMETER  :: ERROR_LIMIT = 5.0D-4
       DOUBLE PRECISION  :: FAC_DISPHT !removed = 5.0D0  and PARAMETER definition (wood 6/22/21)
 C     ERROR_LIMIT = RLINE error limit
 C     FAC_DISPHT  = ratio of displacement height to roughness length (DISPHT=FAC_DISPTH*SFCZ0)
@@ -3493,7 +3509,8 @@ C     YSEND       = y-coordinate of end point of line source
 C     ZSEND       = z-coordinate of end point of line source
 
 C     Computation parameters
-      DOUBLE PRECISION, PARAMETER  :: SM_NUM = 1.0E-8
+CMGS      DOUBLE PRECISION, PARAMETER  :: SM_NUM = 1.0E-8 !D178_RLINE_RecpOrder_WSP
+      DOUBLE PRECISION, PARAMETER  :: SM_NUM = 1.0D-8
       DOUBLE PRECISION, PARAMETER  :: XD_MIN = 1.0D0  
       INTEGER, PARAMETER           :: NP = 100
 C     SM_NUM      = number for numerical calculations to avoid a zero
@@ -4056,6 +4073,7 @@ c     nO3:                   Ozone enumeration constant
 c     CONCTEMP(1:nPolsGRSM): Holds temporary concentrations during chemistry calculations
 c     L_NightHour:           Logical indicating whether night-time hour or not
 c     CFrac:                 Maximum fractional change in concentration over one time step
+c     MinimumConc:           Minimum concentration value to prevent chemistry solver NaNs
 c-----------------------------------------------------------------------------------------
       
          DOUBLE PRECISION :: R1, R2
@@ -4064,6 +4082,12 @@ c-------------------------------------------------------------------------------
          DOUBLE PRECISION :: CONCTEMP(nPolsGRSM) 
          LOGICAL :: L_NightHour
          DOUBLE PRECISION, PARAMETER :: CFrac = 1.0D-2
+C MKP    4/23/2024 D193 fix provided by CERC
+C        Prevents denormal or very small concentration values from being
+C        passed to chemistry solver resulting in NaNs for certain ground
+C        level releases from area, volume, and openpit source types
+C        See grsm.f/DoGRSMChem
+         DOUBLE PRECISION, PARAMETER::MinimumConc=1.0D-21
          
       END MODULE GRSMMOD
       

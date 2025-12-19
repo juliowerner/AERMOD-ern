@@ -2431,12 +2431,29 @@ C     Variable Declarations
 
 C     Variable Initializations
       MODNAM = 'AVER'
+      PATH = 'CN'  !D081 CRT 5/13/2024
 
       IF (KAVE(IAVE) .NE. 1) THEN
 C        Calculate Denominator Considering Calms and Missing,
 C        Skipping Averaging if Averaging Period is 1-Hour
          SNUM = MAX(DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)),
      &                     DNINT(DBLE(NUMHRS(IAVE))*0.75D0+0.4D0))
+C        D081 - Add warning message - less than 18 hours used for 24-hr avg (WSP, 4/2023))
+         IF(DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) .LT. 18
+     &                     .AND. KAVE(IAVE) .EQ. 24) THEN
+             WRITE(DUMMY,'(I10)') FULLDATE
+             CALL ERRHDL(PATH,MODNAM,'W','732',DUMMY)
+C        D081 - Add warning message - less than 6 hours used for 8-hr avg (CRT, 5/1/2023)
+         ELSEIF (DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) .LT. 6
+     &                     .AND. KAVE(IAVE) .EQ. 8) THEN
+             WRITE(DUMMY,'(I10)') FULLDATE
+             CALL ERRHDL(PATH,MODNAM,'W','733',DUMMY)
+C        D081 - Add warning message - less than 3 hours used for 3-hr avg (CRT, 5/1/2023)
+         ELSEIF (DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) .LT. 3
+     &                     .AND. KAVE(IAVE) .EQ. 3) THEN
+             WRITE(DUMMY,'(I10)') FULLDATE
+             CALL ERRHDL(PATH,MODNAM,'W','734',DUMMY)
+         END IF
          AVEVAL(1:NUMREC,1:NUMGRP,IAVE,1) =
      &   AVEVAL(1:NUMREC,1:NUMGRP,IAVE,1) / SNUM
       END IF

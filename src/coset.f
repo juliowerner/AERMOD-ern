@@ -1836,14 +1836,18 @@ C              WRITE Error Message     ! Non-DEFAULT Option Conflict
 C          CERC 11/30/20
 CCRT 4/1/2022 GRSM in version 21112 updated from ALPHA to BETA
             GRSM = .TRUE.
-            IF (.NOT. BETA) THEN
+            
+CMGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (begin)
+CMGS            IF (.NOT. BETA) THEN
 C              WRITE Error Message     ! BETA Option Required for GRSM
-               CALL ERRHDL(PATH,MODNAM,'E','199',KOPT)
-            END IF
-            IF (DFAULT) THEN
+CMGS               CALL ERRHDL(PATH,MODNAM,'E','199',KOPT)
+CMGS            END IF
+CMGS            IF (DFAULT) THEN
 C              WRITE Error Message     ! Non-DEFAULT Option Conflict
-               CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
-            END IF
+CMGS               CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
+CMGS            END IF
+CMGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (end)
+
 CCRT 1/29/2018 Move PSDCREDIT from BETA to ALPHA option
          ELSE IF (KOPT .EQ. 'PSDCREDIT') THEN                           ! jop 093006
             IF (L_ALPHA .AND. .NOT. DFAULT) THEN

@@ -172,27 +172,30 @@ C     Variable Declarations
 CCRT  CRT, 3/18/2022 D063 Platform Downwash, number of platform sources
       INTEGER :: NumPFSrcs
       CHARACTER (LEN=80) :: BFLAG_String,  BFLAG_TempString,
-     &                      BGSECT_String
+     &                      BGSECT_String, BGSECT_TempString
       CHARACTER (LEN=80) :: O3FLAG_String, O3FLAG_TempString,
-     &                      O3SECT_String
+     &                      O3SECT_String, O3SECT_TempString
 C Unused:      CHARACTER (LEN=80) :: AWMADW_String, ORDDW_String
       CHARACTER (LEN=10):: DEBUG_OPTS(12)      ! Updated 12 from 11 for Aircraft; UNC-IE
       CHARACTER (LEN=80):: DEBUG_OPTS_String
       CHARACTER (LEN=30):: CHRAVES
       CHARACTER (LEN=80) :: NOXFLAG_String, NOXFLAG_TempString,
-     &                      NOXSECT_String
+     &                      NOXSECT_String, NOXSECT_TempString
 
 C     Variable Initializations
       MODNAM = 'PRTOPT'
       BFLAG_String = ' '
       BFLAG_TempString = ' '
       BGSECT_String = ' '
+      BGSECT_TempString = ' '
       O3FLAG_String = ' '
       O3FLAG_TempString = ' '
       O3SECT_String = ' '
+      O3SECT_TempString = ' '
       NOXFLAG_String = ' '
       NOXFLAG_TempString = ' '
       NOXSECT_String = ' '
+      NOXSECT_TempString = ' '
       DEBUG_OPTS = ''
       CHRAVES    = ''
       ILEN  = 0
@@ -816,12 +819,14 @@ C ---       BGSECTOR Option; First summarize how many SRCGRPs and how many Secto
      &      ' Downwind Sector(s): ',A:)
 
 C ---       Determine number of sectors with HOURLY BACKGRND
-            BGSECT_String = ''
+            BGSECT_String = '' ! MKP re-initialize
+            BGSECT_TempString = '' ! MKP re-initialize
             DO I = 1, NUMBGsects
                IF (L_BGFile(I)) THEN
-                  WRITE(BGSECT_String,'(A,I4)')
+                  WRITE(BGSECT_TempString,'(A,I4)') ! MKP D196, write to temp string, avoid write-to-self warning
      &             BGSECT_String(1:LEN_TRIM(BGSECT_String)),
      &                                      NINT(BGSECT(I))
+                  BGSECT_String = BGSECT_TempString ! MKP D196, save each new sector value to summary string
                   NumHrlySect = NumHrlySect + 1
                END IF
             END DO
@@ -836,12 +841,14 @@ C ---       Summarize how many sectors have HOURLY BACKGRND
             END IF
 
 C ---       Determine number of sectors with Non-HOURLY BACKGRND
-            BGSECT_String = ''
+            BGSECT_String = ''     ! re-initialize
+            BGSECT_TempString = '' ! re-initialize
             DO I = 1, NUMBGsects
                IF (L_BGValues(I)) THEN
-                  WRITE(BGSECT_String,'(A,I4)')
+                  WRITE(BGSECT_TempString,'(A,I4)') ! MKP D196, write to temp string, avoid write-to-self warning
      &             BGSECT_String(1:LEN_TRIM(BGSECT_String)),
      &                                      NINT(BGSECT(I))
+                  BGSECT_String = BGSECT_TempString ! MKP D196, save each new sector value to summary string
                   NumNonHrlySect = NumNonHrlySect + 1
                END IF
             END DO
@@ -878,6 +885,7 @@ C ---       Summarize Non-HOURLY BACKGRND options for missing HOURLY
 
 C ---       Summarize all Non-HOURLY BACKGRND options available
             BFLAG_String = ''
+            BFLAG_TempString = ''
             DO I = 1, NUMBGsects
                IF (L_BGValues(I)) THEN
                   ILEN1 = LEN_TRIM(BFLAG_String)
@@ -930,11 +938,13 @@ C ---    First summarize how many Sectors
      &      ' that Vary Across  ',I3,' Downwind Sector(s): ',A:)
 C ---       Determine number of sectors with HOURLY OZONE
             O3SECT_String = ''
+            O3SECT_TempString = ''
             DO I = 1, NUMO3sects
                IF (L_O3File(I)) THEN
-                  WRITE(O3SECT_String,'(A,I4)')
+                  WRITE(O3SECT_TempString,'(A,I4)') ! MKP D196, write to temp string, avoid write-to-self warning
      &             O3SECT_String(1:LEN_TRIM(O3SECT_String)),
      &                                      NINT(O3SECT(I))
+                  O3SECT_String = O3SECT_TempString ! MKP D196, save each new sector value to summary string
                   NumHrlyO3Sect = NumHrlyO3Sect + 1
                END IF
             END DO
@@ -950,11 +960,13 @@ C ---       Summarize how many sectors have HOURLY OZONE
 
 C ---       Determine number of sectors with Non-HOURLY OZONE
             O3SECT_String = ''
+            O3SECT_TempString = ''
             DO I = 1, NUMO3sects
                IF (IO3SET(I) .GT. 0 .OR. L_O3VAL(I)) THEN
-                  WRITE(O3SECT_String,'(A,I4)')
+                  WRITE(O3SECT_TempString,'(A,I4)') ! MKP D196, write to temp string, avoid write-to-self warning
      &             O3SECT_String(1:LEN_TRIM(O3SECT_String)),
      &                                      NINT(O3SECT(I))
+                  O3SECT_String = O3SECT_TempString ! MKP D196, save each new sector value to summary string
                   NumNonHrlyO3Sect = NumNonHrlyO3Sect + 1
                END IF
             END DO
@@ -998,6 +1010,7 @@ C ---       Summarize Non-HOURLY OZONE options for missing HOURLY O3
 
 C ---       O3FLAG_String all Non-HOURLY OZONE options available
             O3FLAG_String = ''
+            O3FLAG_TempString = ''
             DO I = 1, NUMO3sects
                IF (IO3SET(I) .GT. 0 .OR. L_O3VAL(I)) THEN
                   IF (IO3SET(I) .GT. 0) THEN
@@ -1061,11 +1074,13 @@ C ---    First summarize how many Sectors
 
 C ---       Determine number of sectors with HOURLY NOX
             NOXSECT_String= ' '
+            NOXSECT_TempString= ' '
             DO I =1,NUMNOxSects
                 IF(L_NOxFile(I))THEN
-                    WRITE(NOXSECT_String,'(A,I4)')
-     &                NOXSECT_STring(1:LEN_TRIM(NOXSECT_String)),
+                    WRITE(NOXSECT_TempString,'(A,I4)') ! MKP D196, write to temp string, avoid write-to-self warning
+     &                NOXSECT_String(1:LEN_TRIM(NOXSECT_String)),
      &                                          NINT(NOXSECT(I))
+                    NOXSECT_String = NOXSECT_TempString ! MKP D196, save each new sector value to summary string
                       NumHrlyNOXSect = NumHrlyNOxSect + 1
                 END IF
             END DO
@@ -1081,11 +1096,13 @@ C ---      Summarize how many sectors have HOURLY NOX
 
 C ---       Determine number of sectors with Non-HOURLY NOx
             NOXSECT_String = ''
+            NOXSECT_TempString = ''
             DO I = 1, NUMNOxSects
                IF (INOXSET(I) .GT. 0 .OR. L_NOXVALUE(I)) THEN
-                  WRITE(NOXSECT_String,'(A,I4)')
+                  WRITE(NOXSECT_TempString,'(A,I4)') ! MKP D196, write to temp string, avoid write-to-self warning
      &             NOXSECT_String(1:LEN_TRIM(NOXSECT_String)),
      &                                      NINT(NOXSECT(I))
+                  NOXSECT_String = NOXSECT_TempString ! MKP D196, save each new sector value to summary string
                   NumNonHrlyNOXSect = NumNonHrlyNOXSect + 1
                END IF
             END DO
@@ -1128,6 +1145,7 @@ C ---       Summarize Non-Hourly NOX options for missing HOURLY NOx
 
 C ---       NOxFLAG_String all Non-HOURLY NOx options available
             NOxFLAG_String = ''
+            NOxFLAG_TempString = ''
             DO I = 1, NUMNOxSects
                IF (INOxSET(I) .GT. 0 .OR. L_NOXVALUE(I)) THEN
                   IF (INOxSET(I) .GT. 0) THEN

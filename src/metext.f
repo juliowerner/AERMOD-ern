@@ -694,7 +694,7 @@ C ---    Check for start year based on met data file matching start year based o
 C        ME SURFDATA keyword; note that IYR based on met data and ISYEAR based on 
 C        ME SURFDATA should both be 4-digits (a warning message will be issued if
 C        ME SURFDATA input is not 4-digits)
-		  
+  
          IF (IYR .NE. ISYEAR .AND. IMSTAT(7).EQ.0) THEN
 C ---       Issue warning message that year specified on SURFDATA does not match first year
 C           of data file; if DAYRANGE keyword not used (IMSTAT(7)=0), adjust ISYEAR to match 

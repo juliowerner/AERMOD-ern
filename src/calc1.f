@@ -4105,7 +4105,7 @@ C                  Calculate maximum sigma-y based on XMAXR and compare minimum
 C                  lateral distance of receptor from source to 5*sigma-y;
 C                  Note that Y represents the lateral distance to the receptor
 C                  from the center of the source.
-		     
+     
 C ---              Calculate SY at XMAXR to determine if receptor is beyond
 C                  the plume laterally.
                    CALL ADISY(XMAXR)

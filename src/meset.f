@@ -1333,7 +1333,7 @@ C              the IPROCL array used to identify which Julian day(s) to be
 C              processed for leap years will be assigned based on the MN/DY 
 C              input by the user.
                CALL JULIAN(ISYEAR,IMN,IDY,JDAY)
-			   
+  
                IF ( (MOD(ISYEAR,4) .NE. 0) .OR.
      &              (MOD(ISYEAR,100) .EQ. 0 .AND. 
      &               MOD(ISYEAR,400) .NE. 0) ) THEN
@@ -1482,7 +1482,7 @@ C ---                      Adjust non-leapyear Jday array for March 1 - Dec 31
 C                    WRITE Error Message    ! Invalid Julian Day
                      CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
                   END IF
-				  
+
                   IF (JDAYB.LT.ISJDAY .OR. JDAYE.GT.IEJDAY) THEN
 C                    WRITE Warning Message  ! Julian Day Out-of-Range
                      WRITE(DUMMY,'(I3,"-",I3)') JDAYB, JDAYE
@@ -1851,11 +1851,12 @@ C        Set COARE logical to true and MODOPS
          L_COARE = .TRUE.
          MODOPS(27) = 'COARE'
          CALL ERRHDL(PATH,MODNAM,'W','422','  ')        
-
+CMGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (begin)
 C        COARE met requires beta flag         
-         IF( .NOT. BETA )THEN  
-            CALL ERRHDL(PATH,MODNAM,'E','199','COARE Met')
-         ENDIF
+CMGS         IF( .NOT. BETA )THEN  
+CMGS            CALL ERRHDL(PATH,MODNAM,'E','199','COARE Met')
+CMGS         ENDIF
+CMGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (begin)
       ENDIF
 
       IF( INDEX(BUFFER,'BULKRN') .NE. 0 )THEN
@@ -2418,17 +2419,22 @@ C      user input a two digit year in the INP file
 C     Check that FourDigitYear is four digits not two digits
 C     IF FourDigitYear is two digits, save it as the two digit year
       IF(FourDigitYear .LE. 99 .AND. FourDigitYear .NE. 0) THEN
-	     TwoDigitYear = FourDigitYear
+         TwoDigitYear = FourDigitYear
       END IF
     
-      IF (TwoDigitYear .NE. ISTRT_WIND .AND. TwoDigitYear .LE. 99) THEN
+CMGS   D181_Y2K_WSP: Corrected when the met years cross from 19xx over to 20xx (4/10/2024)
+CMGS      IF (TwoDigitYear .NE. ISTRT_WIND .AND. TwoDigitYear .LE. 99) THEN 
+      IF (TwoDigitYear > ISTRT_WIND .AND. TwoDigitYear .LE. 99) THEN
           FourDigitYear = ISTRT_CENT*100 + TwoDigitYear
+          
+      ELSE IF (TwoDigitYear < ISTRT_WIND) THEN !CMGS Add 1 to the century (4/10/2024)
+          FourDigitYear = (ISTRT_CENT+1)*100 + TwoDigitYear  !CMGS Add 1 to the century (4/10/2024)
       ELSE IF (TwoDigitYear .GT. 99) THEN
 C         Input TwoDigitYear is a 4-digit:  Save to FourDigitYear and convert to 2-digit
           FourDigitYear   = TwoDigitYear
           TwoDigitYear = FourDigitYear - 100 * (FourDigitYear/100)
       END IF
-		 
+
       RETURN
       END
 
@@ -2464,10 +2470,10 @@ C      a two digit value derived from the user input four digit year (or set to 
 C      user input a two digit year in the INP file    
 
           IF (TwoDigit .NE. ISTRT_WIND .AND. TwoDigit .LE. 99) THEN
-	          OutputTwoDigit = ISTRT_CENT*100 + TwoDigit
+              OutputTwoDigit = ISTRT_CENT*100 + TwoDigit
               TenDigit = ISTRT_CENT*100000000 + EightDigit
           END IF
-		 
+
       RETURN
       END
 
@@ -2501,9 +2507,9 @@ C      Assuming that TwoDigitYear is a two digit value for the year from the SFC
 C      a two digit value derived from the user input four digit year (or set to 00 is the
 C      user input a two digit year in the INP file    
 
-	      IF (TwoDigit .NE. ISTRT_WIND .AND. TwoDigit .LE. 99) THEN
-          TenDigit = ISTRT_CENT*100000000 + EightDigit
+          IF (TwoDigit .NE. ISTRT_WIND .AND. TwoDigit .LE. 99) THEN
+             TenDigit = ISTRT_CENT*100000000 + EightDigit
           END IF
-		 
+ 
       RETURN
       END

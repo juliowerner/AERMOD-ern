@@ -13,7 +13,7 @@ Secondary goals include:
 2. Autofixed code with fortitude check --fix
 
 # TODO
--[] Create automatic tests comparing results between Aermod versions.
--[] Convert from fixed format to free format.
--[] Uniformize variables and keyword to lowercase for consistency.
--[] Remove all GOTO statements and replace them with structured programming constructs.
+- [ ] Create automatic tests comparing results between Aermod versions.
+- [ ] Convert from fixed format to free format.
+- [ ] Uniformize variables and keyword to lowercase for consistency.
+- [ ] Remove all GOTO statements and replace them with structured programming constructs.

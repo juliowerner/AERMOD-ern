@@ -1,0 +1,56 @@
+CO STARTING
+   TITLEONE 3-line Buoyant Line, 45-degree orientation - SCRAM Test Suite
+   TITLETWO Grid Cart. receptor network; LOVETT met used for 19191 Testing
+   MODELOPT  CONC   FLAT
+   AVERTIME  1 3 8 24 Period
+   POLLUTID  OTHER
+   RUNORNOT  RUN
+   ERRORFIL  ../outputs/aermod-baldwin45_ERRORS.OUT
+CO FINISHED
+
+SO STARTING
+   ELEVUNIT  METERS
+   LOCATION  BLINE1  BUOYLINE  502300.0  4000800.0  502900.0  4000200.0  0.0
+   LOCATION  BLINE2  BUOYLINE  502300.0  4001100.0  502900.0  4000400.0  0.0
+   LOCATION  BLINE3  BUOYLINE  502300.0  4001200.0  502900.0  4000600.0  0.0
+
+** Buoyant Line Source     QS     HS
+** Parameters:            ----   ----
+   SRCPARAM  BLINE1      100.0   20.0
+   SRCPARAM  BLINE2      100.0   20.0
+   SRCPARAM  BLINE3      100.0   20.0
+
+** Average values for buoyant line plume rise calculations
+
+**           BldLen BldHt BldWid LineWid BldSep BuoyParm
+**           ------ ----- ------ ------- ------ --------
+   BLPINPUT   848.0  20.0  100.0     2.0   37.5    300.0
+
+** HOUREMIS  BLINEHEMIS_3.DAT BLINE1 BLINE2 BLINE3
+
+   SRCGROUP  ALL
+SO FINISHED
+
+RE STARTING
+RE GRIDCART GRID1 STA
+                  XYINC  500000.0 5 50.0 4000000.0 5 50.0
+RE GRIDCART GRID1 END
+RE FINISHED
+
+ME STARTING
+   SURFFILE  LOVETT.SFC
+   PROFFILE  LOVETT.PFL
+   SURFDATA  13802  1982  ScottAFB
+   UAIRDATA   3879  1982  ScottAFB
+   STARTEND  1988 01 01  1988 12 31
+   PROFBASE  0.0  METERS
+ME FINISHED
+
+OU STARTING
+** FILEFORM EXP
+   RECTABLE  ALLAVE  FIRST-TENTH
+   MAXTABLE  ALLAVE  50
+**          Aveper GrpID  HiVal    Filnam
+   SUMMFILE  ../outputs/baldwin45.SUM
+   POSTFILE  1  ALL  PLOT   ../outputs/AERMOD-BALDWIN45_01H.PST
+OU FINISHED

@@ -1,0 +1,8 @@
+*** AERMOD - VERSION 24142  ***   *** Two lines angled ~10 degrees:                                        ***        12/21/25
+*** AERMET - VERSION        ***   ***  BLP Debug File: NonEVENT Processing                                 ***        21:12:38
+
+ OPTIONS:   NonDFAULT  CONC  FLAT  ALPHA  URBAN  BUOYLINE
+
+ PLUME RISE HEIGHTS AND DISTANCES OUTPUT
+
+ SRCID         YR  MO  DY  HR     DH1    DH2     DH3    DH4     DH5     DH6     DH7       XF1   XF2     XF3     XF4     XF5     XF6     XF7       XFB     XFS    STAB URBOBLEN  OBULEN     Hs   FINAL_HT

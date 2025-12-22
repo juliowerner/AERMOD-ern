@@ -1,0 +1,47 @@
+CO STARTING
+   TITLEONE  Test20_Urban_cart_full test for comparison to R-LINE: 3 met conditions
+   TITLETWO  Single 200-m base source running north-south, centered at origin in URBAN area
+   MODELOPT  CONC  FLAT WARNCHKD BETA ALPHA
+   FLAGPOLE
+   AVERTIME  1
+   URBANOPT 1000000 Las_Vegas
+   POLLUTID  OTHER
+   RUNORNOT  RUN
+   ERRORFIL  ../outputs/Test20_Urban_cart_3cond_SNC_ERRORS.OUT
+CO FINISHED
+
+SO STARTING
+   ELEVUNIT  METERS
+** RLINE Source               XSB     YSB     ZSB     XSE     YSE     ZSE     Zs
+** Location Parameters:      ------  ------  ------  ------  ------  ------  ------
+   LOCATION  BASE  RLINEXT    0.0   -100.0    1.0     0.0   100.0     1.0     0.0
+
+** RLINE Source            QEMIS    DCL      WIDTH  INIT_SIGMAZ
+**                        (g/m/s)   (m)        (m)        (m)
+** Release Parameters:    ------   ------  -----------  ------
+   SRCPARAM  BASE           1.0      0.0       3.6       2.0
+   URBANSRC  BASE
+   SRCGROUP  ALL
+SO FINISHED
+
+RE STARTING
+   ELEVUNIT  METERS
+   GRIDCART CAR1 STA
+                 XYINC  -660.  13  120  -660.  13  120
+   GRIDCART CAR1 END
+RE FINISHED
+
+ME STARTING
+   SURFFILE  AERMET2.SFC
+   PROFFILE  AERMET2.PFL
+   SURFDATA  14735  1988  ALBANY,NY
+   UAIRDATA  14735  1988  ALBANY,NY
+   SITEDATA  99999  1988  HUDSON
+   PROFBASE  0.0  METERS
+ME FINISHED
+
+OU STARTING
+   RECTABLE  ALLAVE  FIRST-THIRD
+   MAXTABLE  ALLAVE  10
+   POSTFILE  1  ALL  PLOT  ../outputs/Test20_Urban_cart_3cond_SNC.PST
+OU FINISHED

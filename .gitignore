@@ -42,3 +42,6 @@
 
 # Binary folder
 bin/
+
+# Test case output
+test/outputs

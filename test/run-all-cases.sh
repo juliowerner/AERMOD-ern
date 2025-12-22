@@ -22,6 +22,7 @@ rm -f *.OUT
 rm -f ../outputs/*.err
 rm -f ../outputs/*.OUT
 rm -f ../outputs/*.out
+rm -f ../outputs/*.DBG
 rm -f ../outputs/*.DBG*
 rm -f ../outputs/*.SUM
 rm -f ../outputs/*.sum

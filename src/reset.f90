@@ -1,4 +1,4 @@
-RECURSIVE SUBROUTINE RECARD
+recursive subroutine recard
 !***********************************************************************
 !                 RECARD Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -26,143 +26,143 @@ RECURSIVE SUBROUTINE RECARD
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE BUOYANT_LINE
+   use main1
+   use buoyant_line
 
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ILSAVE, KK
+   integer :: ilsave, kk
 
 !     Variable Initializations
-   MODNAM = 'RECARD'
+   modnam = 'RECARD'
 
-   IF (KEYWRD == 'STARTING') THEN
+   if (keywrd == 'STARTING') then
 !        Initialize Counters and Set Status Switch
-      IREC = 0
-      INNET = 0
-      NUMREC = 0
-      NUMARC = 0
-      IRXR = 0
-      IRYR = 0
-      IRZE = 0
-      IRZH = 0
-      IRZF = 0
-      PXSOID = ' '
-      PESOID = ' '
-      ISTA = .FALSE.
-      IRSTAT(1) = IRSTAT(1) + 1
-      IF (IRSTAT(1) /= 1) THEN
+      irec = 0
+      innet = 0
+      numrec = 0
+      numarc = 0
+      irxr = 0
+      iryr = 0
+      irze = 0
+      irzh = 0
+      irzf = 0
+      pxsoid = ' '
+      pesoid = ' '
+      ista = .false.
+      irstat(1) = irstat(1) + 1
+      if (irstat(1) /= 1) then
 !           Error Message: Repeat Starting In Same Pathway
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','135',keywrd)
+      end if
 !        Flush the Working Arrays
-      ZETMP1(:) = 0.0D0
-      ZETMP2(:) = 0.0D0
-      ZFTMP1(:) = 0.0D0
-      ZFTMP2(:) = 0.0D0
-   ELSE IF (KEYWRD == 'GRIDCART') THEN
+      zetmp1(:) = 0.0d0
+      zetmp2(:) = 0.0d0
+      zftmp1(:) = 0.0d0
+      zftmp2(:) = 0.0d0
+   else if (keywrd == 'GRIDCART') then
 !        Set Status Switch
-      IRSTAT(2) = IRSTAT(2) + 1
+      irstat(2) = irstat(2) + 1
 !        Process Cartesian Grid Receptor Network            ---   CALL RECART
-      CALL RECART
-   ELSE IF (KEYWRD == 'GRIDPOLR') THEN
+      call recart
+   else if (keywrd == 'GRIDPOLR') then
 !        Set Status Switch
-      IRSTAT(3) = IRSTAT(3) + 1
+      irstat(3) = irstat(3) + 1
 !        Process Polar Receptor Network                     ---   CALL REPOLR
-      CALL REPOLR
-   ELSE IF (KEYWRD == 'DISCCART') THEN
+      call repolr
+   else if (keywrd == 'DISCCART') then
 !        Set Status Switch
-      IRSTAT(4) = IRSTAT(4) + 1
+      irstat(4) = irstat(4) + 1
 !        Process Discrete Cartesian Receptor Locations      ---   CALL DISCAR
-      CALL DISCAR
-   ELSE IF (KEYWRD == 'DISCPOLR') THEN
+      call discar
+   else if (keywrd == 'DISCPOLR') then
 !        Set Status Switch
-      IRSTAT(5) = IRSTAT(5) + 1
+      irstat(5) = irstat(5) + 1
 !        Process Discrete Polar Receptor Locations          ---   CALL DISPOL
-      CALL DISPOL
-   ELSE IF (KEYWRD == 'EVALCART') THEN
+      call dispol
+   else if (keywrd == 'EVALCART') then
 !        Set Status Switch
-      IRSTAT(8) = IRSTAT(8) + 1
-      IF (PSDCREDIT) THEN
+      irstat(8) = irstat(8) + 1
+      if (psdcredit) then
 !           Write Error Message: EVALCART not valid with PSDCREDIT option
-         CALL ERRHDL(PATH,MODNAM,'E','147',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','147',keywrd)
+      else
 !           Process Discrete Cartesian Receptor Locations   ---   CALL EVCART
-         CALL EVCART
-      END IF
-   ELSE IF (KEYWRD == 'ELEVUNIT') THEN
+         call evcart
+      end if
+   else if (keywrd == 'ELEVUNIT') then
 !        Set Status Switch
-      IRSTAT(9) = IRSTAT(9) + 1
-      IF (IRSTAT(9) /= 1) THEN
+      irstat(9) = irstat(9) + 1
+      if (irstat(9) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE IF (IRSTAT(2) > 0 .or. IRSTAT(3) > 0 .or.&
-      &IRSTAT(4) > 0 .or. IRSTAT(5) > 0 .or.&
-      &IRSTAT(8) > 0) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      else if (irstat(2) > 0 .or. irstat(3) > 0 .or.&
+      &irstat(4) > 0 .or. irstat(5) > 0 .or.&
+      &irstat(8) > 0) then
 !           Write Error Message: ELEVUNIT must be first card after STARTING
-         CALL ERRHDL(PATH,MODNAM,'E','152','  RE')
-      ELSE
+         call errhdl(path,modnam,'E','152','  RE')
+      else
 !           Process Elevation Units for Source Elevations   ---   CALL REELUN
-         CALL REELUN
-      END IF
-   ELSE IF (KEYWRD == 'INCLUDED') THEN
+         call reelun
+      end if
+   else if (keywrd == 'INCLUDED') then
 !        Set Status Switch
-      IRSTAT(11) = IRSTAT(11) + 1
+      irstat(11) = irstat(11) + 1
 !        Save ILINE as ISAVE
-      ILSAVE = ILINE
+      ilsave = iline
 !        Process the Included Receptor File                 ---   CALL INCLUD
-      CALL INCLUD
+      call includ
 !        Retrieve ILINE From ISAVE
-      ILINE = ILSAVE
-   ELSE IF (KEYWRD == 'FINISHED') THEN
+      iline = ilsave
+   else if (keywrd == 'FINISHED') then
 !        Set Status Switch
-      IRSTAT(50) = IRSTAT(50) + 1
-      IF (IRSTAT(50) /= 1) THEN
+      irstat(50) = irstat(50) + 1
+      if (irstat(50) /= 1) then
 !           Error Message: Repeat Finished In Same Pathway
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','135',keywrd)
+         go to 999
+      end if
 !        Write Out The Error Message: Mandatory Keyword Missing
-      IF (IRSTAT(1) == 0)THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','STARTING')
-      END IF
+      if (irstat(1) == 0)then
+         call errhdl(path,modnam,'E','130','STARTING')
+      end if
 
-      IF (ISTA) THEN
+      if (ista) then
 !           WRITE Error Message:  Missing END Keyword for a Grid Network
-         CALL ERRHDL(PATH,MODNAM,'E','175',PNETID)
-      END IF
+         call errhdl(path,modnam,'E','175',pnetid)
+      end if
 
 !        Set Total Number of Receptors for This Run, NUMREC
-      NUMREC = IRXR
-      IF (NUMREC == 0) THEN
+      numrec = irxr
+      if (numrec == 0) then
 !           WRITE Error Message:  No Receptors Defined
-         CALL ERRHDL(PATH,MODNAM,'E','185','NUMREC=0')
-      END IF
+         call errhdl(path,modnam,'E','185','NUMREC=0')
+      end if
 
 !        Reinitialize ZFLAG array if needed
-      IF (.NOT. FLGPOL) THEN
-         DO IREC = 1, NUMREC
-            AZFLAG(IREC) = 0.0D0
-         END DO
-      END IF
+      if (.not. flgpol) then
+         do irec = 1, numrec
+            azflag(irec) = 0.0d0
+         end do
+      end if
 
 ! ---    Check for missing receptor elevations, coded as -9999.0,
 !        and convert from FEET to METERS if needed
-      DO IREC = 1, NUMREC
-         IF (AZELEV(IREC) < -9998.99D0) THEN
+      do irec = 1, numrec
+         if (azelev(irec) < -9998.99d0) then
 !              WRITE Error Message:  Receptor elevation is missing
-            WRITE(DUMMY,'(I8)') IREC
-            CALL ERRHDL(PATH,MODNAM,'E','259',DUMMY)
-         ELSE IF (AZHILL(IREC) < -9998.99D0) THEN
+            write(dummy,'(I8)') irec
+            call errhdl(path,modnam,'E','259',dummy)
+         else if (azhill(irec) < -9998.99d0) then
 !              WRITE Error Message:  Receptor hill height scale is missing
-            WRITE(DUMMY,'(I8)') IREC
-            CALL ERRHDL(PATH,MODNAM,'E','259',DUMMY)
-         ELSE IF (REELEV == 'FEET') THEN
-            AZELEV(IREC) = 0.3048D0*AZELEV(IREC)
-            AZHILL(IREC) = 0.3048D0*AZHILL(IREC)
-         END IF
-      END DO
+            write(dummy,'(I8)') irec
+            call errhdl(path,modnam,'E','259',dummy)
+         else if (reelev == 'FEET') then
+            azelev(irec) = 0.3048d0*azelev(irec)
+            azhill(irec) = 0.3048d0*azhill(irec)
+         end if
+      end do
 
 ! ---    If there is a buoyant line source, the receptors need to be
 !          translated and rotated so they are oriented the same as the
@@ -180,22 +180,22 @@ RECURSIVE SUBROUTINE RECARD
 ! Multiple_BuoyLines_D41_Wood
 !        Process receptors based on BL sources/groups
 
-      IF (NBLTOTAL>= 1) THEN
-         BL_RFLAG = .false.
-         DO KK = 1, NUMBLGRPS
-            CALL BLRECP(KK)                      !  ---   CALL BLRECP
-         END DO
-      END IF
+      if (nbltotal>= 1) then
+         bl_rflag = .false.
+         do kk = 1, numblgrps
+            call blrecp(kk)                      !  ---   CALL BLRECP
+         end do
+      end if
 
-   ELSE
+   else
 !        Write Error Message:  Invalid Keyword for This Pathway
-      CALL ERRHDL(PATH,MODNAM,'E','110',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','110',keywrd)
+   end if
 
-999 RETURN
-END SUBROUTINE RECARD
+999 return
+end subroutine recard
 
-SUBROUTINE REELUN
+subroutine reelun
 !***********************************************************************
 !                 REELUN Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -218,34 +218,34 @@ SUBROUTINE REELUN
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'REELUN'
+   modnam = 'REELUN'
 
-   IF (IFC == 3) THEN
-      IF (FIELD(3) == 'METERS') THEN
-         REELEV = 'METERS'
-      ELSE IF (FIELD(3) == 'FEET') THEN
-         REELEV = 'FEET'
-      ELSE
+   if (ifc == 3) then
+      if (field(3) == 'METERS') then
+         reelev = 'METERS'
+      else if (field(3) == 'FEET') then
+         reelev = 'FEET'
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203','RE_ELEV')
-      END IF
-   ELSE IF (IFC > 3) THEN
+         call errhdl(path,modnam,'E','203','RE_ELEV')
+      end if
+   else if (ifc > 3) then
 !        WRITE Error Message     ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Error Message     ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200','ElevUnit')
-   END IF
+      call errhdl(path,modnam,'E','200','ElevUnit')
+   end if
 
-   RETURN
-END SUBROUTINE REELUN
+   return
+end subroutine reelun
 
-SUBROUTINE RECART
+subroutine recart
 !***********************************************************************
 !                 RECART Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -266,199 +266,199 @@ SUBROUTINE RECART
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I
+   integer :: i
 
 !     Variable Initializations
-   MODNAM = 'RECART'
+   modnam = 'RECART'
 
 !     READ in the Netid and Nettype
-   IF (IFC < 3) THEN
+   if (ifc < 3) then
 !        Write Error Message: Missing Data Field
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   end if
 
-   NETIDT = FIELD(3)
-   IF (.NOT.NEWID .and. (NETIDT=='    ' .or.&
-   &NETIDT=='XYINC' .or. NETIDT=='XPNTS' .or.&
-   &NETIDT=='YPNTS' .or. NETIDT=='ELEV' .or.&
-   &NETIDT=='HILL'  .or.&
-   &NETIDT=='FLAG'  .or. NETIDT=='END')) THEN
-      NETIDT = PNETID
-      KTYPE = FIELD(3)
-   ELSE IF (.NOT.NEWID .and. NETIDT==PNETID) THEN
-      KTYPE = FIELD(4)
-   ELSE IF (NEWID .and. NETIDT/=' ') THEN
-      NEWID = .FALSE.
-      KTYPE = FIELD(4)
+   netidt = field(3)
+   if (.not.newid .and. (netidt=='    ' .or.&
+   &netidt=='XYINC' .or. netidt=='XPNTS' .or.&
+   &netidt=='YPNTS' .or. netidt=='ELEV' .or.&
+   &netidt=='HILL'  .or.&
+   &netidt=='FLAG'  .or. netidt=='END')) then
+      netidt = pnetid
+      ktype = field(3)
+   else if (.not.newid .and. netidt==pnetid) then
+      ktype = field(4)
+   else if (newid .and. netidt/=' ') then
+      newid = .false.
+      ktype = field(4)
 !        The Keyword Counter
-      INNET = INNET + 1
-      IF (INNET > NNET) THEN
+      innet = innet + 1
+      if (innet > nnet) then
 !           WRITE Error Message:  Too Many Networks
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''NNET='',I7)') NNET
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-         RECERR = .TRUE.
-         GO TO 999
-      END IF
-      INCSET = 0
-      IXYSET = 0
-      IEVSET = 0
-      IFGSET = 0
-   ELSE
+         write(dummy,'(''NNET='',I7)') nnet
+         call errhdl(path,modnam,'E','290',dummy)
+         recerr = .true.
+         go to 999
+      end if
+      incset = 0
+      ixyset = 0
+      ievset = 0
+      ifgset = 0
+   else
 !        Error Message: Invalid Secondary Keyword
-      CALL ERRHDL(PATH,MODNAM,'E','170',PNETID)
-      RECERR = .TRUE.
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','170',pnetid)
+      recerr = .true.
+      go to 999
+   end if
 
 !     Start to Set Up the Network
-   IF (KTYPE == 'STA') THEN
+   if (ktype == 'STA') then
 !        Initialize Logical Control Variables
-      ISTA = .TRUE.
-      IEND = .FALSE.
-      NEWID = .FALSE.
-      RECERR = .FALSE.
+      ista = .true.
+      iend = .false.
+      newid = .false.
+      recerr = .false.
 !        Set Counters of Calculation Field
-      ICOUNT = 0
-      JCOUNT = 0
-      IZE = 0
-      IZH = 0
-      IZF = 0
-      IDC1 = IRXR
+      icount = 0
+      jcount = 0
+      ize = 0
+      izh = 0
+      izf = 0
+      idc1 = irxr
 !        Check for Previous Grid Network With Same ID
-      DO I = 1, INNET-1
-         IF (FIELD(3) == NTID(I)) THEN
+      do i = 1, innet-1
+         if (field(3) == ntid(i)) then
 !              WRITE Warning Message:  Duplicate Network ID
-            CALL ERRHDL(PATH,MODNAM,'W','252',NTID(I))
-         END IF
-      END DO
-   ELSE IF (KTYPE == 'XYINC') THEN
-      IF (.NOT. ISTA) THEN
+            call errhdl(path,modnam,'W','252',ntid(i))
+         end if
+      end do
+   else if (ktype == 'XYINC') then
+      if (.not. ista) then
 !*          Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      END IF
+         call errhdl(path,modnam,'E','200','  STA   ')
+      end if
 !        Error Message:Conflict Secondary Keyword
-      IF (IXYSET /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','180',NETIDT)
-      END IF
+      if (ixyset /= 0) then
+         call errhdl(path,modnam,'E','180',netidt)
+      end if
 !        Set the Uniform Spacing Receptor Network           ---   CALL GENCAR
-      CALL GENCAR
-      INCSET = INCSET + 1
-   ELSE IF (KTYPE=='XPNTS' .or. KTYPE=='YPNTS') THEN
-      IF (.NOT. ISTA) THEN
+      call gencar
+      incset = incset + 1
+   else if (ktype=='XPNTS' .or. ktype=='YPNTS') then
+      if (.not. ista) then
 !*          Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      END IF
+         call errhdl(path,modnam,'E','200','  STA   ')
+      end if
 !        Error Message:Conflict Secondary Keyword
-      IF (INCSET /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','180',NETIDT)
-      END IF
+      if (incset /= 0) then
+         call errhdl(path,modnam,'E','180',netidt)
+      end if
 !        Set the Non-uniform Spacing Receptor Network       ---   CALL XYPNTS
-      CALL XYPNTS
-      IXYSET = IXYSET + 1
-   ELSE IF (KTYPE == 'ELEV') THEN
-      IF (.NOT. ISTA) THEN
+      call xypnts
+      ixyset = ixyset + 1
+   else if (ktype == 'ELEV') then
+      if (.not. ista) then
 !*          Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      END IF
+         call errhdl(path,modnam,'E','200','  STA   ')
+      end if
 !        Read in and set the Terrain Elevation              ---   CALL TERHGT
-      CALL TERHGT
-      IEVSET = IEVSET + 1
-   ELSE IF (KTYPE == 'HILL') THEN
-      IF (.NOT. ISTA) THEN
+      call terhgt
+      ievset = ievset + 1
+   else if (ktype == 'HILL') then
+      if (.not. ista) then
 !*          Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      END IF
+         call errhdl(path,modnam,'E','200','  STA   ')
+      end if
 !        Read in and set the Terrain Elevation              ---   CALL HILHGT
-      CALL HILHGT
-      IHLSET = IHLSET + 1
-   ELSE IF (KTYPE == 'FLAG') THEN
-      IF (.NOT. ISTA) THEN
+      call hilhgt
+      ihlset = ihlset + 1
+   else if (ktype == 'FLAG') then
+      if (.not. ista) then
 !*          Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      END IF
+         call errhdl(path,modnam,'E','200','  STA   ')
+      end if
 !        Read in and set the Flagpole Receptor              ---   CALL FLGHGT
-      CALL FLGHGT
-      IFGSET = IFGSET + 1
-   ELSE IF (KTYPE == 'END') THEN
-      IEND = .TRUE.
+      call flghgt
+      ifgset = ifgset + 1
+   else if (ktype == 'END') then
+      iend = .true.
 !        Get The Final Results
-      IF (.NOT. ISTA) THEN
+      if (.not. ista) then
 !           Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      ELSE IF (.NOT. RECERR) THEN
-         CALL SETCAR
-      END IF
-      ISTA = .FALSE.
-      NEWID = .TRUE.
+         call errhdl(path,modnam,'E','200','  STA   ')
+      else if (.not. recerr) then
+         call setcar
+      end if
+      ista = .false.
+      newid = .true.
 !        Check If The Secondary Parameter Has Been Specified
-      IF (IXYSET==0 .and. INCSET==0) THEN
+      if (ixyset==0 .and. incset==0) then
 !           WRITE Error Message: Missing (X,Y) Point Setting
-         CALL ERRHDL(PATH,MODNAM,'E','212',NETIDT)
-      END IF
+         call errhdl(path,modnam,'E','212',netidt)
+      end if
 
 !        Warning: Elevated Terrain Inputs Inconsistent With Options
-      IF (ELEV .and. (IEVSET==0 .or. IHLSET==0)) THEN
-         CALL ERRHDL(PATH,MODNAM,'W','214',NETIDT)
-         IRZE = IRXR
-         IRZH = IRZE
-      ELSE IF (FLAT .and. IEVSET/=0) THEN
-         CALL ERRHDL(PATH,MODNAM,'W','213',NETIDT)
-         IRZE = IRXR
-         IRZH = IRZE
-      ELSE IF (FLAT .and. IEVSET==0) THEN
-         IRZE = IRXR
-         IRZH = IRZE
-      END IF
+      if (elev .and. (ievset==0 .or. ihlset==0)) then
+         call errhdl(path,modnam,'W','214',netidt)
+         irze = irxr
+         irzh = irze
+      else if (flat .and. ievset/=0) then
+         call errhdl(path,modnam,'W','213',netidt)
+         irze = irxr
+         irzh = irze
+      else if (flat .and. ievset==0) then
+         irze = irxr
+         irzh = irze
+      end if
 
 !        Warning: Flagpole Receptor Inputs Inconsistent With Options
-      IF (FLGPOL .and. IFGSET==0) THEN
-         CALL ERRHDL(PATH,MODNAM,'W','216',NETIDT)
-         IRZF = IRXR
-      ELSE IF (.NOT.FLGPOL .and. IFGSET/=0) THEN
-         CALL ERRHDL(PATH,MODNAM,'W','215',NETIDT)
-         IRZF = IRXR
-      ELSE IF (.NOT.FLGPOL .and. IFGSET==0) THEN
-         IRZF = IRXR
-      END IF
+      if (flgpol .and. ifgset==0) then
+         call errhdl(path,modnam,'W','216',netidt)
+         irzf = irxr
+      else if (.not.flgpol .and. ifgset/=0) then
+         call errhdl(path,modnam,'W','215',netidt)
+         irzf = irxr
+      else if (.not.flgpol .and. ifgset==0) then
+         irzf = irxr
+      end if
 
 !        Check If The Number of Elev & Flag Is Match
-      IF (ELEV .and. IEVSET/=0) THEN
-         IF (ICOUNT*JCOUNT /= IZE) THEN
+      if (elev .and. ievset/=0) then
+         if (icount*jcount /= ize) then
 !              Write Out The Error Message: No. Of ELEV not match
-            CALL ERRHDL(PATH,MODNAM,'E','218','ELEV')
-         END IF
-         IF (ICOUNT*JCOUNT /= IZH) THEN
+            call errhdl(path,modnam,'E','218','ELEV')
+         end if
+         if (icount*jcount /= izh) then
 !              Write Out The Error Message: No. Of ZHILL not match
-            CALL ERRHDL(PATH,MODNAM,'E','218','ZHILL')
-         END IF
-      END IF
-      IF (FLGPOL .and. IFGSET/=0) THEN
-         IF (ICOUNT*JCOUNT /= IZF) THEN
+            call errhdl(path,modnam,'E','218','ZHILL')
+         end if
+      end if
+      if (flgpol .and. ifgset/=0) then
+         if (icount*jcount /= izf) then
 !              Write Out The Error Message: No. Of FLAG not match
-            CALL ERRHDL(PATH,MODNAM,'E','218','FLAG')
-         END IF
-      END IF
+            call errhdl(path,modnam,'E','218','FLAG')
+         end if
+      end if
 
-   ELSE
+   else
 !        Error Message: Invalid Secondary Keyword
-      CALL ERRHDL(PATH,MODNAM,'E','170',NETIDT)
-      RECERR = .TRUE.
-      GO TO 999
+      call errhdl(path,modnam,'E','170',netidt)
+      recerr = .true.
+      go to 999
 
-   END IF
+   end if
 
-   PNETID = NETIDT
+   pnetid = netidt
 
-999 RETURN
-END SUBROUTINE RECART
+999 return
+end subroutine recart
 
-SUBROUTINE GENCAR
+subroutine gencar
 !***********************************************************************
 !                 GENCAR Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -478,93 +478,93 @@ SUBROUTINE GENCAR
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, K
-   DOUBLE PRECISION :: XDELTA, YDELTA, TEMPP(6)
-   LOGICAL :: ERROR
+   integer :: i, j, k
+   double precision :: xdelta, ydelta, tempp(6)
+   logical :: error
 
 !     Variable Initializations
-   MODNAM = 'GENCAR'
-   ERROR = .FALSE.
+   modnam = 'GENCAR'
+   error = .false.
 
 !     Check for Location of Secondary Keyword, XYINC
-   DO I = 1, IFC
-      IF (FIELD(I) == 'XYINC') THEN
-         ISC = I + 1
-      END IF
-   END DO
+   do i = 1, ifc
+      if (field(i) == 'XYINC') then
+         isc = i + 1
+      end if
+   end do
 
 !     Determine Whether There Are Enough Parameter Fields
-   IF (IFC == ISC-1) THEN
+   if (ifc == isc-1) then
 !        Error Message: Missing Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      RECERR = .TRUE.
-      GO TO 999
-   ELSE IF (IFC > ISC+5) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      recerr = .true.
+      go to 999
+   else if (ifc > isc+5) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KTYPE)
-      RECERR = .TRUE.
-      GO TO 999
-   ELSE IF (IFC < ISC+5) THEN
+      call errhdl(path,modnam,'E','202',ktype)
+      recerr = .true.
+      go to 999
+   else if (ifc < isc+5) then
 !        Error Message: Too Few Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KTYPE)
-      RECERR = .TRUE.
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','201',ktype)
+      recerr = .true.
+      go to 999
+   end if
 
 !     Input The Numerical Values
-   DO K = 1,6
-      CALL STODBL(FIELD(ISC + K-1),ILEN_FLD,TEMPP(K),IMIT)
+   do k = 1,6
+      call stodbl(field(isc + k-1),ilen_fld,tempp(k),imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ERROR = .TRUE.
-         RECERR = .TRUE.
-      END IF
-   END DO
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         error = .true.
+         recerr = .true.
+      end if
+   end do
 
-   IF (ERROR) THEN
-      ERROR = .FALSE.
-      GO TO 999
-   END IF
+   if (error) then
+      error = .false.
+      go to 999
+   end if
 
 !     Assign Values to Appropriate Variables for Generated Network
-   XINT   = TEMPP(1)
-   ICOUNT = IDNINT(TEMPP(2))
-   XDELTA = TEMPP(3)
-   YINT   = TEMPP(4)
-   JCOUNT = IDNINT(TEMPP(5))
-   YDELTA = TEMPP(6)
+   xint   = tempp(1)
+   icount = idnint(tempp(2))
+   xdelta = tempp(3)
+   yint   = tempp(4)
+   jcount = idnint(tempp(5))
+   ydelta = tempp(6)
 
 !     Assign Them to the Coordinate Arrays
-   IF (ICOUNT <= IXM) THEN
-      DO I = 1, ICOUNT
-         XCOORD(I,INNET) = XINT + XDELTA*DBLE(I-1)
-      END DO
-   ELSE
+   if (icount <= ixm) then
+      do i = 1, icount
+         xcoord(i,innet) = xint + xdelta*dble(i-1)
+      end do
+   else
 !        Error Msg: Maximum Number Of X-coordinates Exceeded
 !        This shouldn't occur since limits are dynamically allocated
-      WRITE(DUMMY,'(''IXM ='',I7)') IXM
-      CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-   END IF
-   IF (JCOUNT <= IYM) THEN
-      DO J = 1, JCOUNT
-         YCOORD(J,INNET) = YINT + YDELTA*DBLE(J-1)
-      END DO
-   ELSE
+      write(dummy,'(''IXM ='',I7)') ixm
+      call errhdl(path,modnam,'E','290',dummy)
+   end if
+   if (jcount <= iym) then
+      do j = 1, jcount
+         ycoord(j,innet) = yint + ydelta*dble(j-1)
+      end do
+   else
 !        Error Msg: Maximum Number Of Y-coordinates Exceeded
 !        This shouldn't occur since limits are dynamically allocated
-      WRITE(DUMMY,'(''IYM ='',I7)') IYM
-      CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-   END IF
+      write(dummy,'(''IYM ='',I7)') iym
+      call errhdl(path,modnam,'E','290',dummy)
+   end if
 
-999 RETURN
-END SUBROUTINE GENCAR
+999 return
+end subroutine gencar
 
-SUBROUTINE XYPNTS
+subroutine xypnts
 !***********************************************************************
 !                 XYPNTS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -585,107 +585,107 @@ SUBROUTINE XYPNTS
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, JSET
+   integer :: i, j, jset
 
 !     Variable Initializations
-   MODNAM = 'XYPNTS'
+   modnam = 'XYPNTS'
 
-   IF (KTYPE == 'XPNTS') THEN
+   if (ktype == 'XPNTS') then
 !        Check for Location of Secondary Keyword, XPNTS
-      DO I = 1, IFC
-         IF (FIELD(I) == 'XPNTS') THEN
-            ISC = I + 1
-         END IF
-      END DO
+      do i = 1, ifc
+         if (field(i) == 'XPNTS') then
+            isc = i + 1
+         end if
+      end do
 
 !        Determine Whether There Are Enough Parameter Fields
-      IF (IFC == ISC-1) THEN
+      if (ifc == isc-1) then
 !           Error Message: Missing Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         RECERR = .TRUE.
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','200',keywrd)
+         recerr = .true.
+         go to 999
+      end if
 
-      ISET = ICOUNT
-      DO I = ISC, IFC
-         CALL STODBL(FIELD(I),ILEN_FLD,DNUM,IMIT)
+      iset = icount
+      do i = isc, ifc
+         call stodbl(field(i),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            RECERR = .TRUE.
-         END IF
-         ISET = ISET + 1
-         IF (ISET <= IXM) THEN
-            XCOORD(ISET,INNET) = DNUM
-            DO J = 1, ISET-1
-               IF (DNUM == XCOORD(J,INNET)) THEN
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            recerr = .true.
+         end if
+         iset = iset + 1
+         if (iset <= ixm) then
+            xcoord(iset,innet) = dnum
+            do j = 1, iset-1
+               if (dnum == xcoord(j,innet)) then
 !                    WRITE Warning Message:  X-Coord Specified More Than Once
-                  CALL ERRHDL(PATH,MODNAM,'W','250',NETIDT)
-               END IF
-            END DO
-         ELSE
+                  call errhdl(path,modnam,'W','250',netidt)
+               end if
+            end do
+         else
 !              Error Msg: Maximum Number Of X-coordinates Exceeded
 !              This shouldn't occur since limits are dynamically allocated
-            WRITE(DUMMY,'(''IXM ='',I7)') IXM
-            CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-            RECERR = .TRUE.
-         END IF
-      END DO
-      ICOUNT = ISET
+            write(dummy,'(''IXM ='',I7)') ixm
+            call errhdl(path,modnam,'E','290',dummy)
+            recerr = .true.
+         end if
+      end do
+      icount = iset
 
-   ELSE IF (KTYPE == 'YPNTS') THEN
+   else if (ktype == 'YPNTS') then
 !        Check for Location of Secondary Keyword, YPNTS
-      DO I = 1, IFC
-         IF (FIELD(I) == 'YPNTS') THEN
-            ISC = I + 1
-         END IF
-      END DO
+      do i = 1, ifc
+         if (field(i) == 'YPNTS') then
+            isc = i + 1
+         end if
+      end do
 
 !        Determine Whether There Are Enough Parameter Fields
-      IF (IFC == ISC-1) THEN
+      if (ifc == isc-1) then
 !           Error Message: Missing Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         RECERR = .TRUE.
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','200',keywrd)
+         recerr = .true.
+         go to 999
+      end if
 
-      JSET = JCOUNT
+      jset = jcount
 
-      DO I = ISC, IFC
-         CALL STODBL(FIELD(I),ILEN_FLD,DNUM,IMIT)
+      do i = isc, ifc
+         call stodbl(field(i),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            RECERR = .TRUE.
-         END IF
-         JSET = JSET + 1
-         IF (JSET <= IYM) THEN
-            YCOORD(JSET,INNET) = DNUM
-            DO J = 1, JSET-1
-               IF (DNUM == YCOORD(J,INNET)) THEN
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            recerr = .true.
+         end if
+         jset = jset + 1
+         if (jset <= iym) then
+            ycoord(jset,innet) = dnum
+            do j = 1, jset-1
+               if (dnum == ycoord(j,innet)) then
 !                    WRITE Warning Message:  Y-Coord Specified More Than Once
-                  CALL ERRHDL(PATH,MODNAM,'W','250',NETIDT)
-               END IF
-            END DO
-         ELSE
+                  call errhdl(path,modnam,'W','250',netidt)
+               end if
+            end do
+         else
 !              Error Msg: Maximum Number Of Y-coordinates Exceeded
 !              This shouldn't occur since limits are dynamically allocated
-            WRITE(DUMMY,'(''IYM ='',I7)') IYM
-            CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-            RECERR = .TRUE.
-         END IF
-      END DO
-      JCOUNT = JSET
-   END IF
+            write(dummy,'(''IYM ='',I7)') iym
+            call errhdl(path,modnam,'E','290',dummy)
+            recerr = .true.
+         end if
+      end do
+      jcount = jset
+   end if
 
-999 RETURN
-END SUBROUTINE XYPNTS
+999 return
+end subroutine xypnts
 
-SUBROUTINE SETCAR
+subroutine setcar
 !***********************************************************************
 !                 SETCAR Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -705,125 +705,125 @@ SUBROUTINE SETCAR
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, JSET
+   integer :: i, j, jset
 
 !     Variable Initializations
-   MODNAM = 'SETCAR'
+   modnam = 'SETCAR'
 
-   IF (ICOUNT/=0 .and. JCOUNT/=0) THEN
+   if (icount/=0 .and. jcount/=0) then
 !        Setup The Coordinate Of The Receptors
-      NETSTA(INNET) = IRXR + 1
-      ISET = IRXR
-      JSET = IRYR
-      DO J = 1, JCOUNT
-         DO I = 1, ICOUNT
-            ISET = ISET + 1
-            JSET = JSET + 1
-            IF (ISET > NREC) THEN
+      netsta(innet) = irxr + 1
+      iset = irxr
+      jset = iryr
+      do j = 1, jcount
+         do i = 1, icount
+            iset = iset + 1
+            jset = jset + 1
+            if (iset > nrec) then
 !                 Error Msg: Maximum Number Of Receptor Exceeded
 !                 This shouldn't occur since limits are dynamically allocated
-               WRITE(DUMMY,'(''NREC='',I7)') NREC
-               CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-               GO TO 999
-            END IF
-            IF (ICOUNT > IXM) THEN
+               write(dummy,'(''NREC='',I7)') nrec
+               call errhdl(path,modnam,'E','290',dummy)
+               go to 999
+            end if
+            if (icount > ixm) then
 !                 Error Msg: Maximum Number Of X-coordinates Exceeded
 !                 This shouldn't occur since limits are dynamically allocated
-               WRITE(DUMMY,'(''IXM ='',I7)') IXM
-               CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-               GO TO 999
-            END IF
-            IF (JCOUNT > IYM) THEN
+               write(dummy,'(''IXM ='',I7)') ixm
+               call errhdl(path,modnam,'E','290',dummy)
+               go to 999
+            end if
+            if (jcount > iym) then
 !                 Error Msg: Maximum Number Of Y-coordinates Exceeded
 !                 This shouldn't occur since limits are dynamically allocated
-               WRITE(DUMMY,'(''IYM ='',I7)') IYM
-               CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-               GO TO 999
-            END IF
-            AXR(ISET) = XCOORD(I,INNET)
-            AYR(JSET) = YCOORD(J,INNET)
-         END DO
-      END DO
-      IRXR = ISET
-      IRYR = JSET
-      NETEND(INNET) = IRXR
-      NUMXPT(INNET) = ICOUNT
-      NUMYPT(INNET) = JCOUNT
-      NTID(INNET)   = NETIDT
-      NTTYP(INNET)  = 'GRIDCART'
+               write(dummy,'(''IYM ='',I7)') iym
+               call errhdl(path,modnam,'E','290',dummy)
+               go to 999
+            end if
+            axr(iset) = xcoord(i,innet)
+            ayr(jset) = ycoord(j,innet)
+         end do
+      end do
+      irxr = iset
+      iryr = jset
+      netend(innet) = irxr
+      numxpt(innet) = icount
+      numypt(innet) = jcount
+      ntid(innet)   = netidt
+      nttyp(innet)  = 'GRIDCART'
 !        Define ITAB, NXTOX, NYTOX Variables for TOXXFILE Option, 9/29/92
-      IF (ITAB < 0) THEN
+      if (itab < 0) then
 !           First Receptor Network Defined - Set Variables
-         ITAB  = 2
-         NXTOX = ICOUNT
-         NYTOX = JCOUNT
-      ELSE
+         itab  = 2
+         nxtox = icount
+         nytox = jcount
+      else
 !           Previous Receptors Have Been Defined - Reset ITAB = 0
-         ITAB = 0
-      END IF
-   END IF
+         itab = 0
+      end if
+   end if
 
 !     Setup The AZELEV Array
-   CALL SBYVAL(ZETMP1,ZETMP2,IZE)
-   ISET = IRZE
-   DO I = 1, IZE
-      ISET = ISET + 1
-      IF (ISET > NREC) THEN
+   call sbyval(zetmp1,zetmp2,ize)
+   iset = irze
+   do i = 1, ize
+      iset = iset + 1
+      if (iset > nrec) then
 !           Error Msg: Maximum Number Of Receptor Exceeded
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''NREC='',I7)') NREC
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-         GO TO 999
-      END IF
-      AZELEV(ISET) = ZETMP2(I)
-   END DO
-   IRZE = ISET
+         write(dummy,'(''NREC='',I7)') nrec
+         call errhdl(path,modnam,'E','290',dummy)
+         go to 999
+      end if
+      azelev(iset) = zetmp2(i)
+   end do
+   irze = iset
 
 !     Setup The AZHILL Array
-   CALL SBYVAL(ZHTMP1,ZHTMP2,IZH)
-   ISET = IRZH
-   DO I = 1, IZH
-      ISET = ISET + 1
-      IF (ISET > NREC) THEN
+   call sbyval(zhtmp1,zhtmp2,izh)
+   iset = irzh
+   do i = 1, izh
+      iset = iset + 1
+      if (iset > nrec) then
 !           Error Msg: Maximum Number Of Receptor Exceeded
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''NREC='',I7)') NREC
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-         GO TO 999
-      END IF
-      AZHILL(ISET) = ZHTMP2(I)
-   END DO
-   IRZH = ISET
+         write(dummy,'(''NREC='',I7)') nrec
+         call errhdl(path,modnam,'E','290',dummy)
+         go to 999
+      end if
+      azhill(iset) = zhtmp2(i)
+   end do
+   irzh = iset
 
 !     Setup The AZFLAG Aarry
-   CALL SBYVAL(ZFTMP1,ZFTMP2,IZF)
-   ISET = IRZF
-   DO I = 1, IZF
-      ISET = ISET + 1
-      IF (ISET > NREC) THEN
+   call sbyval(zftmp1,zftmp2,izf)
+   iset = irzf
+   do i = 1, izf
+      iset = iset + 1
+      if (iset > nrec) then
 !           Error Msg: Maximum Number Of Receptor Exceeded
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''NREC='',I7)') NREC
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-         GO TO 999
-      END IF
-      AZFLAG(ISET) = ZFTMP2(I)
-   END DO
-   IRZF = ISET
+         write(dummy,'(''NREC='',I7)') nrec
+         call errhdl(path,modnam,'E','290',dummy)
+         go to 999
+      end if
+      azflag(iset) = zftmp2(i)
+   end do
+   irzf = iset
 
-   DO I = IDC1+1, IRXR
-      NETID(I) = NETIDT
-      RECTYP(I) = 'GC'
-   END DO
+   do i = idc1+1, irxr
+      netid(i) = netidt
+      rectyp(i) = 'GC'
+   end do
 
-999 RETURN
-END SUBROUTINE SETCAR
+999 return
+end subroutine setcar
 
-SUBROUTINE REPOLR
+subroutine repolr
 !***********************************************************************
 !                 REPOLR Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -841,231 +841,231 @@ SUBROUTINE REPOLR
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER       :: I
-   INTEGER, SAVE :: IORSET, IXRSET, IDRSET, IGRSET
+   integer       :: i
+   integer, save :: iorset, ixrset, idrset, igrset
 
 !     Variable Initializations
-   MODNAM = 'REPOLR'
+   modnam = 'REPOLR'
 
-   IF (IFC < 3) THEN
+   if (ifc < 3) then
 !        Write Error Message: Missing Data Field
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   end if
 
 !     READ in the Netid and Nettype
-   NETIDT = FIELD(3)
-   IF (.NOT.NEWID .and. (NETIDT=='    ' .or.&
-   &NETIDT=='ORIG' .or. NETIDT=='DIST' .or.&
-   &NETIDT=='DDIR' .or. NETIDT=='ELEV' .or.&
-   &NETIDT=='HILL' .or.&
-   &NETIDT=='FLAG' .or. NETIDT=='GDIR' .or.&
-   &NETIDT=='END')) THEN
-      NETIDT = PNETID
-      KTYPE = FIELD(3)
-   ELSE IF (.NOT.NEWID .and. NETIDT==PNETID) THEN
-      KTYPE = FIELD(4)
-   ELSE IF (NEWID .and. NETIDT/='    ') THEN
-      NEWID = .FALSE.
-      KTYPE = FIELD(4)
+   netidt = field(3)
+   if (.not.newid .and. (netidt=='    ' .or.&
+   &netidt=='ORIG' .or. netidt=='DIST' .or.&
+   &netidt=='DDIR' .or. netidt=='ELEV' .or.&
+   &netidt=='HILL' .or.&
+   &netidt=='FLAG' .or. netidt=='GDIR' .or.&
+   &netidt=='END')) then
+      netidt = pnetid
+      ktype = field(3)
+   else if (.not.newid .and. netidt==pnetid) then
+      ktype = field(4)
+   else if (newid .and. netidt/='    ') then
+      newid = .false.
+      ktype = field(4)
 !        The Keyword Counter
-      INNET = INNET + 1
-      IF (INNET > NNET) THEN
+      innet = innet + 1
+      if (innet > nnet) then
 !           WRITE Error Message:  Too Many Networks
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''NNET='',I7)') NNET
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-         RECERR = .TRUE.
-         GO TO 999
-      END IF
-      IORSET = 0
-      IXRSET = 0
-      IDRSET = 0
-      IGRSET = 0
-      IEVSET = 0
-      IFGSET = 0
-   ELSE
+         write(dummy,'(''NNET='',I7)') nnet
+         call errhdl(path,modnam,'E','290',dummy)
+         recerr = .true.
+         go to 999
+      end if
+      iorset = 0
+      ixrset = 0
+      idrset = 0
+      igrset = 0
+      ievset = 0
+      ifgset = 0
+   else
 !        Error Message: Invalid Secondary Keyword
-      CALL ERRHDL(PATH,MODNAM,'E','170',PNETID)
-      RECERR = .TRUE.
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','170',pnetid)
+      recerr = .true.
+      go to 999
+   end if
 
 !     Start to Set Up the Network
-   IF (KTYPE == 'STA') THEN
-      ISTA = .TRUE.
-      IEND = .FALSE.
-      NEWID = .FALSE.
-      RECERR = .FALSE.
-      ICOUNT = 0
-      JCOUNT = 0
-      IZE = 0
-      IZH = 0
-      IZF = 0
-      IDC1 = IRXR
+   if (ktype == 'STA') then
+      ista = .true.
+      iend = .false.
+      newid = .false.
+      recerr = .false.
+      icount = 0
+      jcount = 0
+      ize = 0
+      izh = 0
+      izf = 0
+      idc1 = irxr
 !        Check for Previous Grid Network With Same ID
-      DO I = 1, INNET-1
-         IF (FIELD(3) == NTID(I)) THEN
+      do i = 1, innet-1
+         if (field(3) == ntid(i)) then
 !              WRITE Warning Message:  Duplicate Network ID
-            CALL ERRHDL(PATH,MODNAM,'W','252',NTID(I))
-         END IF
-      END DO
-   ELSE IF (KTYPE == 'ORIG') THEN
-      IF (.NOT. ISTA) THEN
+            call errhdl(path,modnam,'W','252',ntid(i))
+         end if
+      end do
+   else if (ktype == 'ORIG') then
+      if (.not. ista) then
 !*          Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      END IF
+         call errhdl(path,modnam,'E','200','  STA   ')
+      end if
 !        Error Message: Conflict Secondary Keyword
-      IF (IORSET /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','160',NETIDT)
-      END IF
+      if (iorset /= 0) then
+         call errhdl(path,modnam,'E','160',netidt)
+      end if
 !        Read In XINT, YINT                                 ---   CALL POLORG
-      CALL POLORG
-      IORSET = IORSET + 1
-   ELSE IF (KTYPE == 'DIST') THEN
-      IF (.NOT. ISTA) THEN
+      call polorg
+      iorset = iorset + 1
+   else if (ktype == 'DIST') then
+      if (.not. ista) then
 !*          Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      END IF
+         call errhdl(path,modnam,'E','200','  STA   ')
+      end if
 !        Read in the Distance Set                           ---   CALL POLDST
-      CALL POLDST
-      IXRSET = IXRSET + 1
-   ELSE IF (KTYPE == 'GDIR') THEN
-      IF (.NOT. ISTA) THEN
+      call poldst
+      ixrset = ixrset + 1
+   else if (ktype == 'GDIR') then
+      if (.not. ista) then
 !*          Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      END IF
+         call errhdl(path,modnam,'E','200','  STA   ')
+      end if
 !        Error Message: Conflict Secondary Keyword
-      IF (IDRSET /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','180',NETIDT)
-      END IF
+      if (idrset /= 0) then
+         call errhdl(path,modnam,'E','180',netidt)
+      end if
 !        Set the Uniform Spacing Receptor Network           ---   CALL GENPOL
-      CALL GENPOL
-      IGRSET = IGRSET + 1
-   ELSE IF (KTYPE == 'DDIR') THEN
-      IF (.NOT. ISTA) THEN
+      call genpol
+      igrset = igrset + 1
+   else if (ktype == 'DDIR') then
+      if (.not. ista) then
 !*          Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      END IF
+         call errhdl(path,modnam,'E','200','  STA   ')
+      end if
 !        Error Message: Conflict Secondary Keyword
-      IF (IGRSET /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','180',NETIDT)
-      END IF
+      if (igrset /= 0) then
+         call errhdl(path,modnam,'E','180',netidt)
+      end if
 !        Set the Non-uniform Spacing Receptor Network       ---   CALL RADRNG
-      CALL RADRNG
-      IDRSET = IDRSET + 1
-   ELSE IF (KTYPE == 'ELEV') THEN
-      IF (.NOT. ISTA) THEN
+      call radrng
+      idrset = idrset + 1
+   else if (ktype == 'ELEV') then
+      if (.not. ista) then
 !*          Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      END IF
+         call errhdl(path,modnam,'E','200','  STA   ')
+      end if
 !        Read in and set the Terrain Elevation              ---   CALL TERHGT
-      CALL TERHGT
-      IEVSET = IEVSET + 1
-   ELSE IF (KTYPE == 'HILL') THEN
-      IF (.NOT. ISTA) THEN
+      call terhgt
+      ievset = ievset + 1
+   else if (ktype == 'HILL') then
+      if (.not. ista) then
 !*          Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      END IF
+         call errhdl(path,modnam,'E','200','  STA   ')
+      end if
 !        Read in and set the Terrain Elevation              ---   CALL HILHGT
-      CALL HILHGT
-      IHLSET = IHLSET + 1
-   ELSE IF (KTYPE == 'FLAG') THEN
-      IF (.NOT. ISTA) THEN
+      call hilhgt
+      ihlset = ihlset + 1
+   else if (ktype == 'FLAG') then
+      if (.not. ista) then
 !*          Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      END IF
+         call errhdl(path,modnam,'E','200','  STA   ')
+      end if
 !        Read in and set the Flagpole Receptor              ---   CALL FLGHGT
-      CALL FLGHGT
-      IFGSET = IFGSET + 1
-   ELSE IF (KTYPE == 'END') THEN
-      IEND = .TRUE.
+      call flghgt
+      ifgset = ifgset + 1
+   else if (ktype == 'END') then
+      iend = .true.
 !        Get the Final Result
-      IF (.NOT. ISTA) THEN
+      if (.not. ista) then
 !           Write Error: MISSING STA OF THE BLOCK DATA
-         CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
-      ELSE IF (.NOT. RECERR) THEN
-         CALL SETPOL
-      END IF
-      ISTA = .FALSE.
-      NEWID = .TRUE.
+         call errhdl(path,modnam,'E','200','  STA   ')
+      else if (.not. recerr) then
+         call setpol
+      end if
+      ista = .false.
+      newid = .true.
 !        Check If The Secondary Parameter Has Been Specified
 !        Warning Message: Missing (Xin,Yin) Point Setting
-      IF (IORSET == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'W','220',NETIDT)
-         XINT = 0.0D0
-         YINT = 0.0D0
-      END IF
+      if (iorset == 0) then
+         call errhdl(path,modnam,'W','220',netidt)
+         xint = 0.0d0
+         yint = 0.0d0
+      end if
 !        Error Message: Missing Distance Point Setting
-      IF (IXRSET == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','221',NETIDT)
-      END IF
+      if (ixrset == 0) then
+         call errhdl(path,modnam,'E','221',netidt)
+      end if
 !        Error Message: Missing Degree Or Rad Setting
-      IF (IGRSET==0 .and. IDRSET==0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','221',NETIDT)
-      END IF
+      if (igrset==0 .and. idrset==0) then
+         call errhdl(path,modnam,'E','221',netidt)
+      end if
 
 !        Warning: Elevated Terrain Inputs Inconsistent With Options
-      IF (ELEV .and. (IEVSET==0 .or. IHLSET==0)) THEN
-         CALL ERRHDL(PATH,MODNAM,'W','214',NETIDT)
-         IRZE = IRXR
-         IRZH = IRZE
-      ELSE IF (FLAT .and. IEVSET/=0) THEN
-         CALL ERRHDL(PATH,MODNAM,'W','213',NETIDT)
-         IRZE = IRXR
-         IRZH = IRZE
-      ELSE IF (FLAT .and. IEVSET==0) THEN
-         IRZE = IRXR
-         IRZH = IRZE
-      END IF
+      if (elev .and. (ievset==0 .or. ihlset==0)) then
+         call errhdl(path,modnam,'W','214',netidt)
+         irze = irxr
+         irzh = irze
+      else if (flat .and. ievset/=0) then
+         call errhdl(path,modnam,'W','213',netidt)
+         irze = irxr
+         irzh = irze
+      else if (flat .and. ievset==0) then
+         irze = irxr
+         irzh = irze
+      end if
 
 !        Warning: Flagpole Receptor Inputs Inconsistent With Options
-      IF (FLGPOL .and. IFGSET==0) THEN
-         CALL ERRHDL(PATH,MODNAM,'W','216',NETIDT)
-         IRZF = IRXR
-      ELSE IF (.NOT.FLGPOL .and. IFGSET/=0) THEN
-         CALL ERRHDL(PATH,MODNAM,'W','215',NETIDT)
-         IRZF = IRXR
-      ELSE IF (.NOT.FLGPOL .and. IFGSET==0) THEN
-         IRZF = IRXR
-      END IF
+      if (flgpol .and. ifgset==0) then
+         call errhdl(path,modnam,'W','216',netidt)
+         irzf = irxr
+      else if (.not.flgpol .and. ifgset/=0) then
+         call errhdl(path,modnam,'W','215',netidt)
+         irzf = irxr
+      else if (.not.flgpol .and. ifgset==0) then
+         irzf = irxr
+      end if
 
 !        Check If The Number of Elev & Flag Is Match
-      IF (ELEV .and. IEVSET/=0) THEN
-         IF (ICOUNT*JCOUNT /= IZE) THEN
+      if (elev .and. ievset/=0) then
+         if (icount*jcount /= ize) then
 !              Write Out The Error Message: No. Of ELEV not match
-            CALL ERRHDL(PATH,MODNAM,'E','218','ELEV')
-         END IF
-         IF (ICOUNT*JCOUNT /= IZH) THEN
+            call errhdl(path,modnam,'E','218','ELEV')
+         end if
+         if (icount*jcount /= izh) then
 !              Write Out The Error Message: No. Of ZHILL not match
-            CALL ERRHDL(PATH,MODNAM,'E','218','ZHILL')
-         END IF
-      END IF
-      IF (FLGPOL .and. IFGSET/=0) THEN
-         IF (ICOUNT*JCOUNT /= IZF) THEN
+            call errhdl(path,modnam,'E','218','ZHILL')
+         end if
+      end if
+      if (flgpol .and. ifgset/=0) then
+         if (icount*jcount /= izf) then
 !              Write Out The Error Message: No. Of FLAG not match
-            CALL ERRHDL(PATH,MODNAM,'E','218','FLAG')
-         END IF
-      END IF
+            call errhdl(path,modnam,'E','218','FLAG')
+         end if
+      end if
 
-   ELSE
+   else
 !        Error Message: Invalid Secondary Keyword
-      CALL ERRHDL(PATH,MODNAM,'E','170',NETIDT)
-      RECERR = .TRUE.
-      GO TO 999
+      call errhdl(path,modnam,'E','170',netidt)
+      recerr = .true.
+      go to 999
 
-   END IF
+   end if
 
-   PNETID = NETIDT
+   pnetid = netidt
 
-999 RETURN
-END SUBROUTINE REPOLR
+999 return
+end subroutine repolr
 
-SUBROUTINE POLORG
+subroutine polorg
 !***********************************************************************
 !                 POLORG Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1083,82 +1083,82 @@ SUBROUTINE POLORG
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, ISDX
-   CHARACTER (LEN=12) :: SOID
-   LOGICAL :: FOUND
+   integer :: i, isdx
+   character (len=12) :: soid
+   logical :: found
 
 !     Variable Initializations
-   MODNAM = 'POLORG'
-   FOUND = .FALSE.
+   modnam = 'POLORG'
+   found = .false.
 
 !     Check for the Location of the Secondary Keyword, ORIG
-   DO I = 1, IFC
-      IF (FIELD(I) == 'ORIG') THEN
-         ISC = I + 1
-      END IF
-   END DO
+   do i = 1, ifc
+      if (field(i) == 'ORIG') then
+         isc = i + 1
+      end if
+   end do
 
 !     Determine Whether There Are Enough Parameter Fields
-   IF (IFC == ISC-1) THEN
+   if (ifc == isc-1) then
 !        Error Message: Missing Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      RECERR = .TRUE.
-      GO TO 999
-   ELSE IF (IFC > ISC+1) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      recerr = .true.
+      go to 999
+   else if (ifc > isc+1) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KTYPE)
-      RECERR = .TRUE.
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',ktype)
+      recerr = .true.
+      go to 999
+   end if
 
-   IF (IFC == ISC) THEN
+   if (ifc == isc) then
 !*       Identify Origin Associated With a Source ID
 !*       First check for length of SRCID field <=12
-      IF ((LOCE(ISC)-LOCB(ISC)) <= 11) THEN
+      if ((loce(isc)-locb(isc)) <= 11) then
 !*          Retrieve Source ID Character Substring
-         SOID = FIELD(ISC)
-      ELSE
+         soid = field(isc)
+      else
 !*          WRITE Error Message:  Source ID Field is Too Long
-         CALL ERRHDL(PATH,MODNAM,'E','230',FIELD(ISC)(1:12))
-         RECERR = .TRUE.
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','230',field(isc)(1:12))
+         recerr = .true.
+         go to 999
+      end if
 !*       Check for valid SRCID
-      CALL SINDEX(SRCID,NSRC,SOID,ISDX,FOUND)
-      IF (.NOT. FOUND) THEN
+      call sindex(srcid,nsrc,soid,isdx,found)
+      if (.not. found) then
 !           Error Message: Source ID Does Not Match Existing Sources
-         CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-         RECERR = .TRUE.
-      ELSE
-         XINT = AXS(ISDX)
-         YINT = AYS(ISDX)
-      END IF
+         call errhdl(path,modnam,'E','300',keywrd)
+         recerr = .true.
+      else
+         xint = axs(isdx)
+         yint = ays(isdx)
+      end if
 
-   ELSE
+   else
 !        Input Numerical Values, XINT and YINT
-      CALL STODBL(FIELD(ISC),ILEN_FLD,XINT,IMIT)
+      call stodbl(field(isc),ilen_fld,xint,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         RECERR = .TRUE.
-      END IF
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         recerr = .true.
+      end if
 
-      CALL STODBL(FIELD(ISC + 1),ILEN_FLD,YINT,IMIT)
+      call stodbl(field(isc + 1),ilen_fld,yint,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         RECERR = .TRUE.
-      END IF
-   END IF
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         recerr = .true.
+      end if
+   end if
 
-999 RETURN
-END SUBROUTINE POLORG
+999 return
+end subroutine polorg
 
-SUBROUTINE POLDST
+subroutine poldst
 !***********************************************************************
 !                 POLDST Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1176,64 +1176,64 @@ SUBROUTINE POLDST
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J
+   integer :: i, j
 
 !     Variable Initializations
-   MODNAM = 'POLDST'
+   modnam = 'POLDST'
 
 !     Skip the Unrelated Fields
-   DO I = 1, IFC
-      IF (FIELD(I) == 'DIST') THEN
-         ISC = I + 1
-      END IF
-   END DO
+   do i = 1, ifc
+      if (field(i) == 'DIST') then
+         isc = i + 1
+      end if
+   end do
 
 !     Determine Whether There Are Enough Parameter Fields
-   IF (IFC == ISC-1) THEN
+   if (ifc == isc-1) then
 !        Error Message: Missing Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      RECERR = .TRUE.
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+      recerr = .true.
+      go to 999
+   end if
 
-   ISET = ICOUNT
+   iset = icount
 
-   DO I = ISC, IFC
-      CALL STODBL(FIELD(I),ILEN_FLD,DNUM,IMIT)
+   do i = isc, ifc
+      call stodbl(field(i),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         RECERR = .TRUE.
-      END IF
-      ISET = ISET + 1
-      IF (ISET <= IXM) THEN
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         recerr = .true.
+      end if
+      iset = iset + 1
+      if (iset <= ixm) then
 !           Store Distance to XCOORD Array and Check for Previous Occurrence
-         XCOORD(ISET,INNET) = DNUM
-         DO J = 1, ISET-1
-            IF (DNUM == XCOORD(J,INNET)) THEN
+         xcoord(iset,innet) = dnum
+         do j = 1, iset-1
+            if (dnum == xcoord(j,innet)) then
 !                 WRITE Warning Message:  Distance Specified More Than Once
-               CALL ERRHDL(PATH,MODNAM,'W','250',NETIDT)
-            END IF
-         END DO
-      ELSE
+               call errhdl(path,modnam,'W','250',netidt)
+            end if
+         end do
+      else
 !           Error Msg: Maximum Number Of X-coordinates Exceeded
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''IXM ='',I7)') IXM
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-         RECERR = .TRUE.
-      END IF
-   END DO
+         write(dummy,'(''IXM ='',I7)') ixm
+         call errhdl(path,modnam,'E','290',dummy)
+         recerr = .true.
+      end if
+   end do
 
-   ICOUNT = ISET
+   icount = iset
 
-999 RETURN
-END SUBROUTINE POLDST
+999 return
+end subroutine poldst
 
-SUBROUTINE GENPOL
+subroutine genpol
 !***********************************************************************
 !                 GENPOL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1252,85 +1252,85 @@ SUBROUTINE GENPOL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, K
-   DOUBLE PRECISION :: DIRINI, DIRINC, TEMPP(3)
-   LOGICAL :: ERROR
+   integer :: i, j, k
+   double precision :: dirini, dirinc, tempp(3)
+   logical :: error
 
 !     Variable Initializations
-   MODNAM = 'GENPOL'
-   ERROR = .FALSE.
+   modnam = 'GENPOL'
+   error = .false.
 
 !     Check for the Location of the Secondary Keyword, GDIR
-   DO I = 1, IFC
-      IF (FIELD(I) == 'GDIR') THEN
-         ISC = I + 1
-      END IF
-   END DO
+   do i = 1, ifc
+      if (field(i) == 'GDIR') then
+         isc = i + 1
+      end if
+   end do
 
 !     Determine Whether There Are Enough Parameter Fields
-   IF (IFC == ISC-1) THEN
+   if (ifc == isc-1) then
 !        Error Message: Missing Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      RECERR = .TRUE.
-      GO TO 999
-   ELSE IF (IFC < ISC+2) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      recerr = .true.
+      go to 999
+   else if (ifc < isc+2) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KTYPE)
-      RECERR = .TRUE.
-      GO TO 999
-   ELSE IF (IFC > ISC+2) THEN
+      call errhdl(path,modnam,'E','201',ktype)
+      recerr = .true.
+      go to 999
+   else if (ifc > isc+2) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KTYPE)
-      RECERR = .TRUE.
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',ktype)
+      recerr = .true.
+      go to 999
+   end if
 
 !     Input Numerical Values
-   DO K = 1, 3
-      CALL STODBL(FIELD(ISC + K-1),ILEN_FLD,TEMPP(K),IMIT)
+   do k = 1, 3
+      call stodbl(field(isc + k-1),ilen_fld,tempp(k),imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         RECERR = .TRUE.
-         ERROR = .TRUE.
-      END IF
-   END DO
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         recerr = .true.
+         error = .true.
+      end if
+   end do
 
-   IF (ERROR) THEN
-      ERROR = .FALSE.
-      GO TO 999
-   END IF
+   if (error) then
+      error = .false.
+      go to 999
+   end if
 
-   JCOUNT = IDNINT(TEMPP(1))
-   DIRINI = TEMPP(2)
-   DIRINC = TEMPP(3)
+   jcount = idnint(tempp(1))
+   dirini = tempp(2)
+   dirinc = tempp(3)
 
 !     Assign Them to the Coordinate Arrays
-   IF (JCOUNT <= IYM) THEN
-      DO J = 1, JCOUNT
-         YCOORD(J,INNET) = (DIRINI + DIRINC*DBLE(J-1))
-         IF (YCOORD(J,INNET) > 360.0D0) THEN
-            YCOORD(J,INNET) = YCOORD(J,INNET) - 360.0D0
-         ELSE IF (YCOORD(J,INNET) <= 0.0D0) THEN
-            YCOORD(J,INNET) = YCOORD(J,INNET) + 360.0D0
-         END IF
-      END DO
-   ELSE
+   if (jcount <= iym) then
+      do j = 1, jcount
+         ycoord(j,innet) = (dirini + dirinc*dble(j-1))
+         if (ycoord(j,innet) > 360.0d0) then
+            ycoord(j,innet) = ycoord(j,innet) - 360.0d0
+         else if (ycoord(j,innet) <= 0.0d0) then
+            ycoord(j,innet) = ycoord(j,innet) + 360.0d0
+         end if
+      end do
+   else
 !        Error Msg: Maximum Number Of Y-coordinates Exceeded
 !        This shouldn't occur since limits are dynamically allocated
-      WRITE(DUMMY,'(''IYM ='',I7)') IYM
-      CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-      RECERR = .TRUE.
-   END IF
+      write(dummy,'(''IYM ='',I7)') iym
+      call errhdl(path,modnam,'E','290',dummy)
+      recerr = .true.
+   end if
 
-999 RETURN
-END SUBROUTINE GENPOL
+999 return
+end subroutine genpol
 
-SUBROUTINE RADRNG
+subroutine radrng
 !***********************************************************************
 !                 RADRNG Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1348,70 +1348,70 @@ SUBROUTINE RADRNG
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J
+   integer :: i, j
 
 !     Variable Initializations
-   MODNAM = 'RADRNG'
+   modnam = 'RADRNG'
 
 !     Skip the non-useful Fields
-   DO I = 1, IFC
-      IF (FIELD(I) == 'DDIR') THEN
-         ISC = I + 1
-      END IF
-   END DO
+   do i = 1, ifc
+      if (field(i) == 'DDIR') then
+         isc = i + 1
+      end if
+   end do
 
 !     Determine Whether There Are Enough Parameter Fields
-   IF (IFC == ISC-1) THEN
+   if (ifc == isc-1) then
 !        Error Message: Missing Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      RECERR = .TRUE.
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+      recerr = .true.
+      go to 999
+   end if
 
-   ISET = JCOUNT
+   iset = jcount
 
-   DO I = ISC, IFC
-      CALL STODBL(FIELD(I),ILEN_FLD,DNUM,IMIT)
+   do i = isc, ifc
+      call stodbl(field(i),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         RECERR = .TRUE.
-      END IF
-      ISET = ISET + 1
-      IF (ISET <= IYM) THEN
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         recerr = .true.
+      end if
+      iset = iset + 1
+      if (iset <= iym) then
 !           Store Direction to YCOORD Array, Adjust to 0-360 Range if Needed,
 !           and Check for Previous Occurrence
-         YCOORD(ISET,INNET) = DNUM
-         IF (YCOORD(ISET,INNET) > 360.0D0) THEN
-            YCOORD(ISET,INNET) = YCOORD(ISET,INNET) - 360.0D0
-         ELSE IF (YCOORD(ISET,INNET) <= 0.0D0) THEN
-            YCOORD(ISET,INNET) = YCOORD(ISET,INNET) + 360.0D0
-         END IF
-         DO J = 1, ISET-1
-            IF (DNUM == YCOORD(J,INNET)) THEN
+         ycoord(iset,innet) = dnum
+         if (ycoord(iset,innet) > 360.0d0) then
+            ycoord(iset,innet) = ycoord(iset,innet) - 360.0d0
+         else if (ycoord(iset,innet) <= 0.0d0) then
+            ycoord(iset,innet) = ycoord(iset,innet) + 360.0d0
+         end if
+         do j = 1, iset-1
+            if (dnum == ycoord(j,innet)) then
 !                 WRITE Warning Message:  Direction Specified More Than Once
-               CALL ERRHDL(PATH,MODNAM,'W','250',NETIDT)
-            END IF
-         END DO
-      ELSE
+               call errhdl(path,modnam,'W','250',netidt)
+            end if
+         end do
+      else
 !           Error Msg: Maximum Number Of Y-coordinates Exceeded
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''IYM ='',I7)') IYM
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-         RECERR = .TRUE.
-      END IF
-   END DO
+         write(dummy,'(''IYM ='',I7)') iym
+         call errhdl(path,modnam,'E','290',dummy)
+         recerr = .true.
+      end if
+   end do
 
-   JCOUNT = ISET
+   jcount = iset
 
-999 RETURN
-END SUBROUTINE RADRNG
+999 return
+end subroutine radrng
 
-SUBROUTINE SETPOL
+subroutine setpol
 !***********************************************************************
 !                 SETPOL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1431,129 +1431,129 @@ SUBROUTINE SETPOL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, JSET
-   DOUBLE PRECISION :: YTEMP
+   integer :: i, j, jset
+   double precision :: ytemp
 
 !     Variable Initializations
-   MODNAM = 'SETPOL'
+   modnam = 'SETPOL'
 
-   IF (ICOUNT/=0 .and. JCOUNT/=0) THEN
+   if (icount/=0 .and. jcount/=0) then
 !        Setup The Coordinate Of The Receptors
-      NETSTA(INNET) = IRXR + 1
-      ISET = IRXR
-      JSET = IRYR
-      DO J = 1, JCOUNT
-         DO I = 1, ICOUNT
-            ISET = ISET + 1
-            JSET = JSET + 1
-            IF (ISET > NREC) THEN
+      netsta(innet) = irxr + 1
+      iset = irxr
+      jset = iryr
+      do j = 1, jcount
+         do i = 1, icount
+            iset = iset + 1
+            jset = jset + 1
+            if (iset > nrec) then
 !                 Error Msg: Maximum Number Of Receptor Exceeded
 !                 This shouldn't occur since limits are dynamically allocated
-               WRITE(DUMMY,'(''NREC='',I7)') NREC
-               CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-               GO TO 999
-            END IF
-            IF (ICOUNT > IXM) THEN
+               write(dummy,'(''NREC='',I7)') nrec
+               call errhdl(path,modnam,'E','290',dummy)
+               go to 999
+            end if
+            if (icount > ixm) then
 !                 Error Msg: Maximum Number Of X-coordinates Exceeded
 !                 This shouldn't occur since limits are dynamically allocated
-               WRITE(DUMMY,'(''IXM ='',I7)') IXM
-               CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-               RECERR = .TRUE.
-            END IF
-            IF (JCOUNT > IYM) THEN
+               write(dummy,'(''IXM ='',I7)') ixm
+               call errhdl(path,modnam,'E','290',dummy)
+               recerr = .true.
+            end if
+            if (jcount > iym) then
 !                 Error Msg: Maximum Number Of Y-coordinates Exceeded
 !                 This shouldn't occur since limits are dynamically allocated
-               WRITE(DUMMY,'(''IYM ='',I7)') IYM
-               CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-               RECERR = .TRUE.
-            END IF
-            YTEMP = YCOORD(J,INNET) * DTORAD
-            AXR(ISET) = XINT + XCOORD(I,INNET)*DSIN(YTEMP)
-            AYR(JSET) = YINT + XCOORD(I,INNET)*DCOS(YTEMP)
-         END DO
-      END DO
-      IRXR = ISET
-      IRYR = JSET
-      XORIG(INNET)  = XINT
-      YORIG(INNET)  = YINT
-      NETEND(INNET) = IRXR
-      NUMXPT(INNET) = ICOUNT
-      NUMYPT(INNET) = JCOUNT
-      NTID(INNET)   = NETIDT
-      NTTYP(INNET)  = 'GRIDPOLR'
+               write(dummy,'(''IYM ='',I7)') iym
+               call errhdl(path,modnam,'E','290',dummy)
+               recerr = .true.
+            end if
+            ytemp = ycoord(j,innet) * dtorad
+            axr(iset) = xint + xcoord(i,innet)*dsin(ytemp)
+            ayr(jset) = yint + xcoord(i,innet)*dcos(ytemp)
+         end do
+      end do
+      irxr = iset
+      iryr = jset
+      xorig(innet)  = xint
+      yorig(innet)  = yint
+      netend(innet) = irxr
+      numxpt(innet) = icount
+      numypt(innet) = jcount
+      ntid(innet)   = netidt
+      nttyp(innet)  = 'GRIDPOLR'
 !        Define ITAB, NXTOX, NYTOX Variables for TOXXFILE Option, 9/29/92
-      IF (ITAB < 0) THEN
+      if (itab < 0) then
 !           First Receptor Network Defined - Set Variables
-         ITAB  = 1
-         NXTOX = ICOUNT
-         NYTOX = JCOUNT
-      ELSE
+         itab  = 1
+         nxtox = icount
+         nytox = jcount
+      else
 !           Previous Receptors Have Been Defined - Reset ITAB = 0
-         ITAB = 0
-      END IF
-   END IF
+         itab = 0
+      end if
+   end if
 
 !     Setup The AZELEV Array
-   CALL SBYVAL(ZETMP1,ZETMP2,IZE)
-   ISET = IRZE
-   DO I = 1, IZE
-      ISET = ISET + 1
-      IF (ISET > NREC) THEN
+   call sbyval(zetmp1,zetmp2,ize)
+   iset = irze
+   do i = 1, ize
+      iset = iset + 1
+      if (iset > nrec) then
 !           Error Msg: Maximum Number Of Receptor Exceeded
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''NREC='',I7)') NREC
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-         GO TO 999
-      END IF
-      AZELEV(ISET) = ZETMP2(I)
-   END DO
-   IRZE = ISET
+         write(dummy,'(''NREC='',I7)') nrec
+         call errhdl(path,modnam,'E','290',dummy)
+         go to 999
+      end if
+      azelev(iset) = zetmp2(i)
+   end do
+   irze = iset
 
 !     Setup The AZHILL Array
-   CALL SBYVAL(ZHTMP1,ZHTMP2,IZH)
-   ISET = IRZH
-   DO I = 1, IZH
-      ISET = ISET + 1
-      IF (ISET > NREC) THEN
+   call sbyval(zhtmp1,zhtmp2,izh)
+   iset = irzh
+   do i = 1, izh
+      iset = iset + 1
+      if (iset > nrec) then
 !           Error Msg: Maximum Number Of Receptor Exceeded
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''NREC='',I7)') NREC
-         CALL ERRHDL(PATH,MODNAM,'E','210',DUMMY)
-         GO TO 999
-      END IF
-      AZHILL(ISET) = ZHTMP2(I)
-   END DO
-   IRZH = ISET
+         write(dummy,'(''NREC='',I7)') nrec
+         call errhdl(path,modnam,'E','210',dummy)
+         go to 999
+      end if
+      azhill(iset) = zhtmp2(i)
+   end do
+   irzh = iset
 
 !     Setup The AZFLAG Array
-   CALL SBYVAL(ZFTMP1,ZFTMP2,IZF)
-   ISET = IRZF
-   DO I = 1, IZF
-      ISET = ISET + 1
-      IF (ISET > NREC) THEN
+   call sbyval(zftmp1,zftmp2,izf)
+   iset = irzf
+   do i = 1, izf
+      iset = iset + 1
+      if (iset > nrec) then
 !           Error Msg: Maximum Number Of Receptor Exceeded
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''NREC='',I7)') NREC
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-         GO TO 999
-      END IF
-      AZFLAG(ISET) = ZFTMP2(I)
-   END DO
-   IRZF = ISET
+         write(dummy,'(''NREC='',I7)') nrec
+         call errhdl(path,modnam,'E','290',dummy)
+         go to 999
+      end if
+      azflag(iset) = zftmp2(i)
+   end do
+   irzf = iset
 
-   DO I = IDC1+1, IRXR
-      NETID(I) = NETIDT
-      RECTYP(I) = 'GP'
-   END DO
+   do i = idc1+1, irxr
+      netid(i) = netidt
+      rectyp(i) = 'GP'
+   end do
 
-999 RETURN
-END SUBROUTINE SETPOL
+999 return
+end subroutine setpol
 
-SUBROUTINE TERHGT
+subroutine terhgt
 !***********************************************************************
 !                 TERHGT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1578,68 +1578,68 @@ SUBROUTINE TERHGT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J
-   DOUBLE PRECISION :: ROW
+   integer :: i, j
+   double precision :: row
 
 !     Variable Initializations
-   MODNAM = 'TERHGT'
+   modnam = 'TERHGT'
 
 !     Check for the Location of the Secondary Keyword, ELEV
-   DO I = 1, IFC
-      IF (FIELD(I) == 'ELEV') THEN
-         ISC = I + 1
-      END IF
-   END DO
+   do i = 1, ifc
+      if (field(i) == 'ELEV') then
+         isc = i + 1
+      end if
+   end do
 
 !     Determine Whether There Are Enough Parameter Fields
-   IF (IFC == ISC-1) THEN
+   if (ifc == isc-1) then
 !        Error Message: Missing Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','223',KTYPE)
-      RECERR = .TRUE.
-      GO TO 999
-   ELSE IF (IFC == ISC) THEN
+      call errhdl(path,modnam,'E','223',ktype)
+      recerr = .true.
+      go to 999
+   else if (ifc == isc) then
 !        Error Message: Missing Numerical Field
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      RECERR = .TRUE.
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+      recerr = .true.
+      go to 999
+   end if
 
-   CALL STODBL(FIELD(ISC),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(isc),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      RECERR = .TRUE.
-   END IF
-   ROW = DNUM
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      recerr = .true.
+   end if
+   row = dnum
 
-   ISET = IZE
+   iset = ize
 
-   DO I = ISC+1, IFC
-      CALL STODBL(FIELD(I),ILEN_FLD,DNUM,IMIT)
+   do i = isc+1, ifc
+      call stodbl(field(i),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT == -1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         RECERR = .TRUE.
-      END IF
-      DO J = 1, IMIT
-         ISET = ISET + 1
-         IF (ISET <= NREC) THEN
-            ZETMP1(ISET) = ROW
-            ZETMP2(ISET) = DNUM
-         END IF
-      END DO
-   END DO
+      if (imit == -1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         recerr = .true.
+      end if
+      do j = 1, imit
+         iset = iset + 1
+         if (iset <= nrec) then
+            zetmp1(iset) = row
+            zetmp2(iset) = dnum
+         end if
+      end do
+   end do
 
-   IZE = ISET
+   ize = iset
 
-999 RETURN
-END SUBROUTINE TERHGT
+999 return
+end subroutine terhgt
 
-SUBROUTINE HILHGT
+subroutine hilhgt
 !***********************************************************************
 !                 HILHGT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1658,68 +1658,68 @@ SUBROUTINE HILHGT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J
-   DOUBLE PRECISION :: ROW
+   integer :: i, j
+   double precision :: row
 
 !     Variable Initializations
-   MODNAM = 'HILHGT'
+   modnam = 'HILHGT'
 
 !     Check for the Location of the Secondary Keyword, ELEV
-   DO I = 1, IFC
-      IF (FIELD(I) == 'HILL') THEN
-         ISC = I + 1
-      END IF
-   END DO
+   do i = 1, ifc
+      if (field(i) == 'HILL') then
+         isc = i + 1
+      end if
+   end do
 
 !     Determine Whether There Are Enough Parameter Fields
-   IF (IFC == ISC-1) THEN
+   if (ifc == isc-1) then
 !        Error Message: Missing Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','223',KTYPE)
-      RECERR = .TRUE.
-      GO TO 999
-   ELSE IF (IFC == ISC) THEN
+      call errhdl(path,modnam,'E','223',ktype)
+      recerr = .true.
+      go to 999
+   else if (ifc == isc) then
 !        Error Message: Missing Numerical Field
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      RECERR = .TRUE.
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+      recerr = .true.
+      go to 999
+   end if
 
-   CALL STODBL(FIELD(ISC),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(isc),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      RECERR = .TRUE.
-   END IF
-   ROW = DNUM
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      recerr = .true.
+   end if
+   row = dnum
 
-   ISET = IZH
+   iset = izh
 
-   DO I = ISC+1, IFC
-      CALL STODBL(FIELD(I),ILEN_FLD,DNUM,IMIT)
+   do i = isc+1, ifc
+      call stodbl(field(i),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT == -1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         RECERR = .TRUE.
-      END IF
-      DO J = 1, IMIT
-         ISET = ISET + 1
-         IF (ISET <= NREC) THEN
-            ZHTMP1(ISET) = ROW
-            ZHTMP2(ISET) = DNUM
-         END IF
-      END DO
-   END DO
+      if (imit == -1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         recerr = .true.
+      end if
+      do j = 1, imit
+         iset = iset + 1
+         if (iset <= nrec) then
+            zhtmp1(iset) = row
+            zhtmp2(iset) = dnum
+         end if
+      end do
+   end do
 
-   IZH = ISET
+   izh = iset
 
-999 RETURN
-END SUBROUTINE HILHGT
+999 return
+end subroutine hilhgt
 
-SUBROUTINE FLGHGT
+subroutine flghgt
 !***********************************************************************
 !                 FLGHGT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1744,68 +1744,68 @@ SUBROUTINE FLGHGT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J
-   DOUBLE PRECISION :: ROW
+   integer :: i, j
+   double precision :: row
 
 !     Variable Initializations
-   MODNAM = 'FLGHGT'
+   modnam = 'FLGHGT'
 
 !     Check for the Location of the Secondary Keyword, FLAG
-   DO I = 1, IFC
-      IF (FIELD(I) == 'FLAG') THEN
-         ISC = I + 1
-      END IF
-   END DO
+   do i = 1, ifc
+      if (field(i) == 'FLAG') then
+         isc = i + 1
+      end if
+   end do
 
 !     Determine Whether There Are Enough Parameter Fields
-   IF (IFC == ISC-1) THEN
+   if (ifc == isc-1) then
 !        Error Message: Missing Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','223',KTYPE)
-      RECERR = .TRUE.
-      GO TO 999
-   ELSE IF (IFC == ISC) THEN
+      call errhdl(path,modnam,'E','223',ktype)
+      recerr = .true.
+      go to 999
+   else if (ifc == isc) then
 !        Error Message: Missing Numerical Field
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      RECERR = .TRUE.
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+      recerr = .true.
+      go to 999
+   end if
 
-   CALL STODBL(FIELD(ISC),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(isc),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      RECERR = .TRUE.
-   END IF
-   ROW = DNUM
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      recerr = .true.
+   end if
+   row = dnum
 
-   ISET = IZF
+   iset = izf
 
-   DO I = ISC+1, IFC
-      CALL STODBL(FIELD(I),ILEN_FLD,DNUM,IMIT)
+   do i = isc+1, ifc
+      call stodbl(field(i),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT == -1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         RECERR = .TRUE.
-      END IF
-      DO J = 1, IMIT
-         ISET = ISET + 1
-         IF (ISET <= NREC) THEN
-            ZFTMP1(ISET) = ROW
-            ZFTMP2(ISET) = DNUM
-         END IF
-      END DO
-   END DO
+      if (imit == -1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         recerr = .true.
+      end if
+      do j = 1, imit
+         iset = iset + 1
+         if (iset <= nrec) then
+            zftmp1(iset) = row
+            zftmp2(iset) = dnum
+         end if
+      end do
+   end do
 
-   IZF = ISET
+   izf = iset
 
-999 RETURN
-END SUBROUTINE FLGHGT
+999 return
+end subroutine flghgt
 
-SUBROUTINE DISCAR
+subroutine discar
 !***********************************************************************
 !                 DISCAR Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1828,155 +1828,155 @@ SUBROUTINE DISCAR
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I1, I2, I3, I4, I5
+   integer :: i1, i2, i3, i4, i5
 
 !     Variable Initializations
-   MODNAM = 'DISCAR'
-   I1 = IRXR
-   I2 = IRYR
-   I3 = IRZE
-   I4 = IRZF
-   I5 = IRZH
+   modnam = 'DISCAR'
+   i1 = irxr
+   i2 = iryr
+   i3 = irze
+   i4 = irzf
+   i5 = irzh
 !     Determine Whether There Are Too Few Or Too Many Parameter Fields
-   IF (IFC < 4) THEN
+   if (ifc < 4) then
 !        WRITE Error Message: Missing Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 7) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc > 7) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   ELSE IF (ELEV .and. FLGPOL .and. IFC<7) THEN
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   else if (elev .and. flgpol .and. ifc<7) then
 !        WRITE Warning Message: Default(s) Used for Missing Parameter(s)
-      CALL ERRHDL(PATH,MODNAM,'W','228',KEYWRD)
-   ELSE IF (ELEV .and. .NOT.FLGPOL .and. IFC < 6) THEN
+      call errhdl(path,modnam,'W','228',keywrd)
+   else if (elev .and. .not.flgpol .and. ifc < 6) then
 !        WRITE Warning Message: Default(s) Used for Missing Parameter(s)
-      CALL ERRHDL(PATH,MODNAM,'W','228',KEYWRD)
-   ELSE IF (ELEV .and. .NOT.FLGPOL .and. IFC > 6) THEN
+      call errhdl(path,modnam,'W','228',keywrd)
+   else if (elev .and. .not.flgpol .and. ifc > 6) then
 !        WRITE Warning Message: Parameter Ignored, ZFLAG
-      CALL ERRHDL(PATH,MODNAM,'W','229',KEYWRD)
-   ELSE IF (FLGPOL .and. .NOT.ELEV .and. IFC > 5) THEN
+      call errhdl(path,modnam,'W','229',keywrd)
+   else if (flgpol .and. .not.elev .and. ifc > 5) then
 !        WRITE Warning Message: Parameter Ignored, ZELEV & ZHILL
-      CALL ERRHDL(PATH,MODNAM,'W','229',KEYWRD)
-   ELSE IF (.NOT.ELEV .and. .NOT.FLGPOL .and. IFC > 4) THEN
+      call errhdl(path,modnam,'W','229',keywrd)
+   else if (.not.elev .and. .not.flgpol .and. ifc > 4) then
 !        WRITE Warning Message: Parameters Ignored, ZELEV ZHILL & ZFLAG
-      CALL ERRHDL(PATH,MODNAM,'W','229',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'W','229',keywrd)
+   end if
 
 !     Check Whether The Maximum Number of Receptors is Exceeded
-   IF (I1==NREC .or. I2==NREC .or. I3==NREC .or.&
-   &I4==NREC .or. I5==NREC) THEN
+   if (i1==nrec .or. i2==nrec .or. i3==nrec .or.&
+   &i4==nrec .or. i5==nrec) then
 !        Error Msg: Maximum Number Of Receptors Exceeded
 !        This shouldn't occur since limits are dynamically allocated
-      WRITE(DUMMY,'(''NREC='',I7)') NREC
-      CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-      GO TO 999
-   END IF
+      write(dummy,'(''NREC='',I7)') nrec
+      call errhdl(path,modnam,'E','290',dummy)
+      go to 999
+   end if
 
 !     READ XCOORD,YCOORD,ELEV,ZHILL,FLAG And Assign Them to Different
 !     Arrays
 
-   CALL STODBL(FIELD(3),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(3),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-   ELSE
-      AXR(I1 + 1) = DNUM
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+   else
+      axr(i1 + 1) = dnum
+   end if
 
-   CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(4),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-   ELSE
-      AYR(I2 + 1) = DNUM
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+   else
+      ayr(i2 + 1) = dnum
+   end if
 
-   IF (ELEV .and. FLGPOL) THEN
-      IF (IFC >= 5) THEN
-         CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
+   if (elev .and. flgpol) then
+      if (ifc >= 5) then
+         call stodbl(field(5),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZELEV(I3 + 1) = DNUM
-         END IF
-      END IF
-      IF (IFC >= 6) THEN
-         CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azelev(i3 + 1) = dnum
+         end if
+      end if
+      if (ifc >= 6) then
+         call stodbl(field(6),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZHILL(I5 + 1) = DNUM
-         END IF
-      END IF
-      IF (IFC == 7) THEN
-         CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azhill(i5 + 1) = dnum
+         end if
+      end if
+      if (ifc == 7) then
+         call stodbl(field(7),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZFLAG(I4 + 1) = DNUM
-         END IF
-      END IF
-   ELSE IF (ELEV .and. .NOT.FLGPOL) THEN
-      IF (IFC >= 5) THEN
-         CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azflag(i4 + 1) = dnum
+         end if
+      end if
+   else if (elev .and. .not.flgpol) then
+      if (ifc >= 5) then
+         call stodbl(field(5),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZELEV(I3 + 1) = DNUM
-         END IF
-      END IF
-      IF (IFC >= 6) THEN
-         CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azelev(i3 + 1) = dnum
+         end if
+      end if
+      if (ifc >= 6) then
+         call stodbl(field(6),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZHILL(I5 + 1) = DNUM
-         END IF
-      ENDIF
-   ELSE IF (FLGPOL .and. .NOT.ELEV) THEN
-      IF (IFC == 5) THEN
-         CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azhill(i5 + 1) = dnum
+         end if
+      endif
+   else if (flgpol .and. .not.elev) then
+      if (ifc == 5) then
+         call stodbl(field(5),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZFLAG(I4 + 1) = DNUM
-         END IF
-      ELSE IF (IFC == 7) THEN
-         CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azflag(i4 + 1) = dnum
+         end if
+      else if (ifc == 7) then
+         call stodbl(field(7),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZFLAG(I4 + 1) = DNUM
-         END IF
-      END IF
-   END IF
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azflag(i4 + 1) = dnum
+         end if
+      end if
+   end if
 
-   IRXR = I1 + 1
-   IRYR = I2 + 1
-   IRZE = I3 + 1
-   IRZF = I4 + 1
-   IRZH = I5 + 1
-   NETID(IRXR) = ' '
-   RECTYP(IRXR) = 'DC'
+   irxr = i1 + 1
+   iryr = i2 + 1
+   irze = i3 + 1
+   irzf = i4 + 1
+   irzh = i5 + 1
+   netid(irxr) = ' '
+   rectyp(irxr) = 'DC'
 !     Reset ITAB Variable for TOXXFILE Option, 9/29/92
-   ITAB = 0
+   itab = 0
 
-999 RETURN
-END SUBROUTINE DISCAR
+999 return
+end subroutine discar
 
-SUBROUTINE DISPOL
+subroutine dispol
 !***********************************************************************
 !                 DISPOL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1999,182 +1999,182 @@ SUBROUTINE DISPOL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I1, I2, I3, I4, I5, ISDX
-   DOUBLE PRECISION :: RANGE, DIRECT
-   CHARACTER (LEN=12) :: SOID
-   LOGICAL :: FOUND
+   integer :: i1, i2, i3, i4, i5, isdx
+   double precision :: range, direct
+   character (len=12) :: soid
+   logical :: found
 
 !     Variable Initializations
-   MODNAM = 'DISPOL'
-   I1 = IRXR
-   I2 = IRYR
-   I3 = IRZE
-   I4 = IRZF
-   I5 = IRZH
+   modnam = 'DISPOL'
+   i1 = irxr
+   i2 = iryr
+   i3 = irze
+   i4 = irzf
+   i5 = irzh
 
 !     Determine Whether There Are Too Few Or Too Many Parameter Fields
-   IF (IFC < 5) THEN
+   if (ifc < 5) then
 !        WRITE Error Message: Missing Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 8) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc > 8) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   ELSE IF (ELEV .and. FLGPOL .and. IFC<8) THEN
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   else if (elev .and. flgpol .and. ifc<8) then
 !        WRITE Warning Message: Default(s) Used for Missing Parameter(s)
-      CALL ERRHDL(PATH,MODNAM,'W','228',KEYWRD)
-   ELSE IF (ELEV .and. .NOT.FLGPOL .and. IFC < 7) THEN
+      call errhdl(path,modnam,'W','228',keywrd)
+   else if (elev .and. .not.flgpol .and. ifc < 7) then
 !        WRITE Warning Message: Default(s) Used for Missing Parameter(s)
-      CALL ERRHDL(PATH,MODNAM,'W','228',KEYWRD)
-   ELSE IF (ELEV .and. .NOT.FLGPOL .and. IFC > 7) THEN
+      call errhdl(path,modnam,'W','228',keywrd)
+   else if (elev .and. .not.flgpol .and. ifc > 7) then
 !        WRITE Warning Message: Parameter Ignored, ZFLAG
-      CALL ERRHDL(PATH,MODNAM,'W','229',' ZFLAG ')
-   ELSE IF (FLGPOL .and. .NOT.ELEV .and. IFC > 6) THEN
+      call errhdl(path,modnam,'W','229',' ZFLAG ')
+   else if (flgpol .and. .not.elev .and. ifc > 6) then
 !        WRITE Warning Message: Parameter Ignored, ZELEV & ZHILL
-      CALL ERRHDL(PATH,MODNAM,'W','229',KEYWRD)
-   ELSE IF (.NOT.ELEV .and. .NOT.FLGPOL .and. IFC > 5) THEN
+      call errhdl(path,modnam,'W','229',keywrd)
+   else if (.not.elev .and. .not.flgpol .and. ifc > 5) then
 !        WRITE Warning Message: Parameters Ignored, ZELEV ZHILL & ZFLAG
-      CALL ERRHDL(PATH,MODNAM,'W','229',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'W','229',keywrd)
+   end if
 
 !     Check Whether The Maximum Number of Receptors is Exceeded
-   IF (I1==NREC .or. I2==NREC .or. I3==NREC .or.&
-   &I4==NREC .or. I5==NREC) THEN
+   if (i1==nrec .or. i2==nrec .or. i3==nrec .or.&
+   &i4==nrec .or. i5==nrec) then
 !        Error Msg: Maximum Number Of Receptors Exceeded
 !        This shouldn't occur since limits are dynamically allocated
-      WRITE(DUMMY,'(''NREC='',I7)') NREC
-      CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-      GO TO 999
-   END IF
+      write(dummy,'(''NREC='',I7)') nrec
+      call errhdl(path,modnam,'E','290',dummy)
+      go to 999
+   end if
 
 !     READ SRCID,RANGE,DIRECT,ELEV,FLAG
 
 !*    First check for length of SRCID field <=12
-   IF ((LOCE(3)-LOCB(3)) <= 11) THEN
+   if ((loce(3)-locb(3)) <= 11) then
 !*       Retrieve Source ID Character Substring
-      SOID = FIELD(3)
-   ELSE
+      soid = field(3)
+   else
 !*       WRITE Error Message:  Source ID Field is Too Long
-      CALL ERRHDL(PATH,MODNAM,'E','230',FIELD(3)(1:12))
-      RECERR = .TRUE.
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','230',field(3)(1:12))
+      recerr = .true.
+      go to 999
+   end if
 
-   CALL STODBL(FIELD(4),ILEN_FLD,RANGE,IMIT)
+   call stodbl(field(4),ilen_fld,range,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+   end if
 
-   CALL STODBL(FIELD(5),ILEN_FLD,DIRECT,IMIT)
+   call stodbl(field(5),ilen_fld,direct,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-   ELSE IF (DIRECT > 360.0D0) THEN
-      DIRECT = DIRECT - 360.0D0
-   ELSE IF (DIRECT <= 0.0D0) THEN
-      DIRECT = DIRECT + 360.0D0
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+   else if (direct > 360.0d0) then
+      direct = direct - 360.0d0
+   else if (direct <= 0.0d0) then
+      direct = direct + 360.0d0
+   end if
 
-   IF (ELEV .and. FLGPOL) THEN
-      IF (IFC >= 6) THEN
-         CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
+   if (elev .and. flgpol) then
+      if (ifc >= 6) then
+         call stodbl(field(6),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZELEV(I3 + 1) = DNUM
-         END IF
-      END IF
-      IF (IFC >= 7) THEN
-         CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azelev(i3 + 1) = dnum
+         end if
+      end if
+      if (ifc >= 7) then
+         call stodbl(field(7),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZHILL(I5 + 1) = DNUM
-         END IF
-      END IF
-      IF (IFC == 8) THEN
-         CALL STODBL(FIELD(8),ILEN_FLD,DNUM,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azhill(i5 + 1) = dnum
+         end if
+      end if
+      if (ifc == 8) then
+         call stodbl(field(8),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZFLAG(I4 + 1) = DNUM
-         END IF
-      END IF
-   ELSE IF (ELEV .and. .NOT.FLGPOL) THEN
-      IF (IFC >= 6) THEN
-         CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azflag(i4 + 1) = dnum
+         end if
+      end if
+   else if (elev .and. .not.flgpol) then
+      if (ifc >= 6) then
+         call stodbl(field(6),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZELEV(I3 + 1) = DNUM
-         END IF
-      END IF
-      IF (IFC >= 7) THEN
-         CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azelev(i3 + 1) = dnum
+         end if
+      end if
+      if (ifc >= 7) then
+         call stodbl(field(7),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZHILL(I5 + 1) = DNUM
-         END IF
-      ENDIF
-   ELSE IF (FLGPOL .and. .NOT.ELEV) THEN
-      IF (IFC == 6) THEN
-         CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azhill(i5 + 1) = dnum
+         end if
+      endif
+   else if (flgpol .and. .not.elev) then
+      if (ifc == 6) then
+         call stodbl(field(6),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZFLAG(I4 + 1) = DNUM
-         END IF
-      ELSE IF (IFC == 8) THEN
-         CALL STODBL(FIELD(8),ILEN_FLD,DNUM,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azflag(i4 + 1) = dnum
+         end if
+      else if (ifc == 8) then
+         call stodbl(field(8),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE
-            AZFLAG(I4 + 1) = DNUM
-         END IF
-      END IF
-   END IF
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else
+            azflag(i4 + 1) = dnum
+         end if
+      end if
+   end if
 
 !     Assign Them to Different Arrays,
 !     Retrieve The Origin From Source Coordinates
 
-   CALL SINDEX(SRCID,NSRC,SOID,ISDX,FOUND)
-   IF (.NOT. FOUND) THEN
+   call sindex(srcid,nsrc,soid,isdx,found)
+   if (.not. found) then
 !        Error Message: Source ID Not Match
-      CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-   ELSE
-      AXR(I1 + 1) = AXS(ISDX) + RANGE*DSIN(DIRECT*DTORAD)
-      AYR(I2 + 1) = AYS(ISDX) + RANGE*DCOS(DIRECT*DTORAD)
-      IRXR = I1 + 1
-      IRYR = I2 + 1
-      IRZE = I3 + 1
-      IRZF = I4 + 1
-      IRZH = I5 + 1
+      call errhdl(path,modnam,'E','300',keywrd)
+   else
+      axr(i1 + 1) = axs(isdx) + range*dsin(direct*dtorad)
+      ayr(i2 + 1) = ays(isdx) + range*dcos(direct*dtorad)
+      irxr = i1 + 1
+      iryr = i2 + 1
+      irze = i3 + 1
+      irzf = i4 + 1
+      irzh = i5 + 1
 !        Reset ITAB Variable for TOXXFILE Option, 9/29/92
-      ITAB = 0
-   END IF
+      itab = 0
+   end if
 
-   NETID(IRXR)  = ' '
-   RECTYP(IRXR) = 'DP'
-   IREF(IRXR)   = ISDX
+   netid(irxr)  = ' '
+   rectyp(irxr) = 'DP'
+   iref(irxr)   = isdx
 
-999 RETURN
-END SUBROUTINE DISPOL
+999 return
+end subroutine dispol
 
-SUBROUTINE SBYVAL(ARRIN1,ARRIN2,INX)
+subroutine sbyval(arrin1,arrin2,inx)
 !***********************************************************************
 !                 SBYVAL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2193,45 +2193,45 @@ SUBROUTINE SBYVAL(ARRIN1,ARRIN2,INX)
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, INX, JC, IMIN
+   integer :: i, inx, jc, imin
 !     Declare Input Arrays as Assumed-Size Arrays (Currently Dimensioned NREC
 !     in Calling Routines)
-   DOUBLE PRECISION :: ARRIN1(*), ARRIN2(*), RMIN, TEMP1, TEMP2
+   double precision :: arrin1(*), arrin2(*), rmin, temp1, temp2
 
 !     Variable Initialization
-   MODNAM = 'SBYVAL'
-   JC = 1
+   modnam = 'SBYVAL'
+   jc = 1
 
-   DO WHILE (JC <= INX)
+   do while (jc <= inx)
 !        Find out The First Minimum In the Array
-      RMIN = ARRIN1(JC)
-      IMIN = JC
-      DO I = JC, INX
-         IF (ARRIN1(I) < RMIN) THEN
-            IMIN = I
-            RMIN = ARRIN1(I)
-         END IF
-      END DO
+      rmin = arrin1(jc)
+      imin = jc
+      do i = jc, inx
+         if (arrin1(i) < rmin) then
+            imin = i
+            rmin = arrin1(i)
+         end if
+      end do
 !        Swap The Selected Array Elements
-      TEMP1 = ARRIN1(JC)
-      TEMP2 = ARRIN2(JC)
-      ARRIN1(JC) = ARRIN1(IMIN)
-      ARRIN2(JC) = ARRIN2(IMIN)
-      ARRIN1(IMIN) = TEMP1
-      ARRIN2(IMIN) = TEMP2
+      temp1 = arrin1(jc)
+      temp2 = arrin2(jc)
+      arrin1(jc) = arrin1(imin)
+      arrin2(jc) = arrin2(imin)
+      arrin1(imin) = temp1
+      arrin2(imin) = temp2
 !        Increment The Counter
-      JC = JC + 1
-   END DO
+      jc = jc + 1
+   end do
 
-   RETURN
-END SUBROUTINE SBYVAL
+   return
+end subroutine sbyval
 
 
-SUBROUTINE EVCART
+subroutine evcart
 !***********************************************************************
 !                 EVCART Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2251,123 +2251,123 @@ SUBROUTINE EVCART
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   INTEGER :: I1, I2, I3, I4, I5, J
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   integer :: i1, i2, i3, i4, i5, j
+   character :: modnam*12
 
-   LOGICAL :: FOUND
+   logical :: found
 
 !     Variable Initializations
-   MODNAM = 'EVCART'
-   I1 = IRXR
-   I2 = IRYR
-   I3 = IRZE
-   I4 = IRZF
-   I5 = IRZH
+   modnam = 'EVCART'
+   i1 = irxr
+   i2 = iryr
+   i3 = irze
+   i4 = irzf
+   i5 = irzh
 
 !     Determine Whether There Are Too Few Or Too Many Parameter Fields
-   IF (IFC < 8) THEN
+   if (ifc < 8) then
 !        WRITE Error Message: Missing Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 9) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 9) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Check Whether The Maximum Number of Receptors is Exceeded
-   IF (I1==NREC .or. I2==NREC .or. I3==NREC .or.&
-   &I4==NREC .or. I5==NREC) THEN
+   if (i1==nrec .or. i2==nrec .or. i3==nrec .or.&
+   &i4==nrec .or. i5==nrec) then
 !        Error Msg: Maximum Number Of Receptors Exceeded
 !        This shouldn't occur since limits are dynamically allocated
-      WRITE(DUMMY,'(''NREC='',I7)') NREC
-      CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-      GO TO 999
-   END IF
+      write(dummy,'(''NREC='',I7)') nrec
+      call errhdl(path,modnam,'E','290',dummy)
+      go to 999
+   end if
 
 !     READ XCOORD,YCOORD,ELEV,HILLZ,FLAG And Assign Them to Different
 !     Arrays
 
-   CALL STODBL(FIELD(3),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(3),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-   ELSE
-      AXR(I1 + 1) = DNUM
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+   else
+      axr(i1 + 1) = dnum
+   end if
 
-   CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(4),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-   ELSE
-      AYR(I2 + 1) = DNUM
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+   else
+      ayr(i2 + 1) = dnum
+   end if
 
-   CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(5),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-   ELSE
-      AZELEV(I3 + 1) = DNUM
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+   else
+      azelev(i3 + 1) = dnum
+   end if
 
-   CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(6),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-   ELSE
-      AZHILL(I5 + 1) = DNUM
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+   else
+      azhill(i5 + 1) = dnum
+   end if
 
-   CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(7),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-   ELSE
-      AZFLAG(I4 + 1) = DNUM
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+   else
+      azflag(i4 + 1) = dnum
+   end if
 
 !     Read ARCID Field, First Check for Previous Occurrence of This ARCID
-   FOUND = .FALSE.
-   J = 1
-   DO WHILE (.NOT.FOUND .and. J<=NUMARC)
-      IF (FIELD(8) == ARCID(J)) THEN
-         FOUND = .TRUE.
-         NDXARC(I1 + 1) = J
-      END IF
-      J = J + 1
-   END DO
-   IF (.NOT. FOUND) THEN
-      NUMARC = NUMARC + 1
-      IF (NUMARC > NARC) THEN
+   found = .false.
+   j = 1
+   do while (.not.found .and. j<=numarc)
+      if (field(8) == arcid(j)) then
+         found = .true.
+         ndxarc(i1 + 1) = j
+      end if
+      j = j + 1
+   end do
+   if (.not. found) then
+      numarc = numarc + 1
+      if (numarc > narc) then
 !           Write Error Message:  Too Many ARCs
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''NARC ='',I6)') NARC
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-         GO TO 999
-      ELSE
-         ARCID(NUMARC)  = FIELD(8)
-         NDXARC(I1 + 1) = NUMARC
-      END IF
-   END IF
+         write(dummy,'(''NARC ='',I6)') narc
+         call errhdl(path,modnam,'E','290',dummy)
+         go to 999
+      else
+         arcid(numarc)  = field(8)
+         ndxarc(i1 + 1) = numarc
+      end if
+   end if
 
-   IRXR = I1 + 1
-   IRYR = I2 + 1
-   IRZE = I3 + 1
-   IRZF = I4 + 1
-   IRZH = I5 + 1
-   NETID(IRXR) = ' '
-   RECTYP(IRXR) = 'DC'
+   irxr = i1 + 1
+   iryr = i2 + 1
+   irze = i3 + 1
+   irzf = i4 + 1
+   irzh = i5 + 1
+   netid(irxr) = ' '
+   rectyp(irxr) = 'DC'
 !     Reset ITAB Variable for TOXXFILE Option, 9/29/92
-   ITAB = 0
+   itab = 0
 
-999 RETURN
-END SUBROUTINE EVCART
+999 return
+end subroutine evcart
 
-SUBROUTINE BLRECP(KK)
+subroutine blrecp(kk)
 !***********************************************************************
 !                 BLRECP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2416,37 +2416,37 @@ SUBROUTINE BLRECP(KK)
 !         extents of the translation/first rotation of the buoyant line
 !
 !     Variable Declarations
-   USE MAIN1
-   USE BUOYANT_LINE
-   IMPLICIT NONE
+   use main1
+   use buoyant_line
+   implicit none
 
 ! JAT 06/22/21 D065
 ! REMOVE NVRECT AS UNUSED VARIABLE
-   INTEGER :: I, KK, NRECIN, LNUM, NR !, NVRECT                         ! Multiple_BuoyLines_D41_Wood
-   DOUBLE PRECISION :: EX,EY, XLMIN, XLMAX, YLMIN, YLMAX
+   integer :: i, kk, nrecin, lnum, nr !, NVRECT                         ! Multiple_BuoyLines_D41_Wood
+   double precision :: ex,ey, xlmin, xlmax, ylmin, ylmax
 !      DOUBLE PRECISION :: BLREC_X(4), BLREC_Y(4)                        ! Multiple_BuoyLines_D41_Wood
-   CHARACTER :: MODNAM*12
+   character :: modnam*12
 ! Unused: INTEGER :: ILSAVE
 
 !     Variable Initializations
-   MODNAM = 'BLRECEP'
-   NRECIN = 0
+   modnam = 'BLRECEP'
+   nrecin = 0
 ! D41_Wood      BL_RFLAG = .false.
 
 ! --- Translate and rotate receptors for buoyant line source
-   DO I = 1,NUMREC
+   do i = 1,numrec
 !        Translate
-      XR_SCS(I,KK) = AXR(I) - XOR(KK)
-      YR_SCS(I,KK) = AYR(I) - YOR(KK)
-      EX = XR_SCS(I,KK)
-      EY = YR_SCS(I,KK)
+      xr_scs(i,kk) = axr(i) - xor(kk)
+      yr_scs(i,kk) = ayr(i) - yor(kk)
+      ex = xr_scs(i,kk)
+      ey = yr_scs(i,kk)
 
 !        Initial rotation
-      EY = -EX*SINTCOR(KK) + EY*COSTCOR(KK)
-      YR_SCS(I,KK) = EY
-      EX = (EX + EY*SINTCOR(KK))/COSTCOR(KK)
-      XR_SCS(I,KK) = EX
-   END DO
+      ey = -ex*sintcor(kk) + ey*costcor(kk)
+      yr_scs(i,kk) = ey
+      ex = (ex + ey*sintcor(kk))/costcor(kk)
+      xr_scs(i,kk) = ex
+   end do
 
 !     Determine the min, max extents of the bouyant line source
 !      after translation and first rotation by BL group.
@@ -2461,30 +2461,30 @@ SUBROUTINE BLRECP(KK)
 
 ! Multiple_BuoyLines_D41_Wood
 !     Determine the exclusion zone by BL group
-   DO LNUM = 1,NBLTOTAL
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
-         YLMAX = YS_SCS(LNUM)
-         XLMAX = BLINEPARMS(LNUM)%XEND_TR1
-         XLMIN = BLINEPARMS(LNUM)%XBEG_TR1
-         EXIT
-      END IF
-   END DO
+   do lnum = 1,nbltotal
+      if (blineparms(lnum)%iblpgrpnum == kk) then
+         ylmax = ys_scs(lnum)
+         xlmax = blineparms(lnum)%xend_tr1
+         xlmin = blineparms(lnum)%xbeg_tr1
+         exit
+      end if
+   end do
 
-   DO LNUM = NBLTOTAL,1,-1
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
-         YLMIN = YS_SCS(LNUM)
-         EXIT
-      END IF
-   END DO
+   do lnum = nbltotal,1,-1
+      if (blineparms(lnum)%iblpgrpnum == kk) then
+         ylmin = ys_scs(lnum)
+         exit
+      end if
+   end do
 
-   DO LNUM = 1,NBLTOTAL
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
-         XLMIN = MIN(XLMIN,BLINEPARMS(LNUM)%XBEG_TR1)
-         XLMAX = MAX(XLMAX,BLINEPARMS(LNUM)%XEND_TR1)
-         YLMIN = MIN(YLMIN,YS_SCS(LNUM))
-         YLMAX = MAX(YLMAX,YS_SCS(LNUM))
-      END IF
-   END DO
+   do lnum = 1,nbltotal
+      if (blineparms(lnum)%iblpgrpnum == kk) then
+         xlmin = min(xlmin,blineparms(lnum)%xbeg_tr1)
+         xlmax = max(xlmax,blineparms(lnum)%xend_tr1)
+         ylmin = min(ylmin,ys_scs(lnum))
+         ylmax = max(ylmax,ys_scs(lnum))
+      end if
+   end do
 
 !     Define the vertices of the rectangular footprint defined by a
 !     buoyant line source that defines the exclusion zone -
@@ -2508,18 +2508,18 @@ SUBROUTINE BLRECP(KK)
 !
 ! Multiple_BuoyLines_D41_Wood
 !     Set the receptor flag by BL group
-   DO NR = 1,NUMREC
-      IF( YR_SCS(NR,KK) <= (YLMAX + 0.1D0) .and.&
-      &YR_SCS(NR,KK) >= (YLMIN - 0.1D0) .and.&
-      &XR_SCS(NR,KK) <= (XLMAX + 0.1D0) .and.&
-      &XR_SCS(NR,KK) >= (XLMIN - 0.1D0)) THEN
-         NRECIN = NRECIN + 1
-         BL_RFLAG(NR,KK) = .true.
-      END IF
-   END DO
+   do nr = 1,numrec
+      if( yr_scs(nr,kk) <= (ylmax + 0.1d0) .and.&
+      &yr_scs(nr,kk) >= (ylmin - 0.1d0) .and.&
+      &xr_scs(nr,kk) <= (xlmax + 0.1d0) .and.&
+      &xr_scs(nr,kk) >= (xlmin - 0.1d0)) then
+         nrecin = nrecin + 1
+         bl_rflag(nr,kk) = .true.
+      end if
+   end do
 
-   WRITE(DUMMY,'(I3," (",A6,")")') NRECIN, BL_GRPID(KK)
-   CALL ERRHDL(PATH,MODNAM,'W','476',DUMMY)
+   write(dummy,'(I3," (",A6,")")') nrecin, bl_grpid(kk)
+   call errhdl(path,modnam,'W','476',dummy)
 
-   RETURN
-END SUBROUTINE BLRECP
+   return
+end subroutine blrecp

@@ -1,4 +1,4 @@
-SUBROUTINE EMFACT (QARG)
+subroutine emfact (qarg)
 !***********************************************************************
 !                 EMFACT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -36,72 +36,72 @@ SUBROUTINE EMFACT (QARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION :: QARG
+   double precision :: qarg
 
 !     Variable Initializations
-   MODNAM = 'EMFACT'
+   modnam = 'EMFACT'
 
 ! --- Apply Variable Emission Rate Factor, Based on Value of QFLAG
 !     Emission unit factor is applied later since it varies by
 !     output type
-   IF (QFLAG(ISRC) == ' ') THEN
-      QTK = QARG
+   if (qflag(isrc) == ' ') then
+      qtk = qarg
 
 !*----   ISCSTM Modification: To handle hourly emissions - jah 11/4/94
-   ELSE IF (QFLAG(ISRC) == 'HOURLY') THEN
-      QTK = QARG
+   else if (qflag(isrc) == 'HOURLY') then
+      qtk = qarg
 !*----
 !*#
 
-   ELSE IF (QFLAG(ISRC) == 'MONTH') THEN
-      QTK = QARG * QFACT(IMONTH,ISRC)
+   else if (qflag(isrc) == 'MONTH') then
+      qtk = qarg * qfact(imonth,isrc)
 
-   ELSE IF (QFLAG(ISRC) == 'HROFDY') THEN
-      QTK = QARG * QFACT(IHOUR,ISRC)
+   else if (qflag(isrc) == 'HROFDY') then
+      qtk = qarg * qfact(ihour,isrc)
 
-   ELSE IF (QFLAG(ISRC) == 'WSPEED') THEN
-      QTK = QARG * QFACT(IUCAT,ISRC)
+   else if (qflag(isrc) == 'WSPEED') then
+      qtk = qarg * qfact(iucat,isrc)
 
-   ELSE IF (QFLAG(ISRC) == 'SEASON') THEN
-      QTK = QARG * QFACT(ISEAS,ISRC)
+   else if (qflag(isrc) == 'SEASON') then
+      qtk = qarg * qfact(iseas,isrc)
 
-   ELSE IF (QFLAG(ISRC) == 'SEASHR') THEN
-      QTK = QARG * QFACT((IHOUR+(ISEAS-1)*24),ISRC)
+   else if (qflag(isrc) == 'SEASHR') then
+      qtk = qarg * qfact((ihour+(iseas-1)*24),isrc)
 
-   ELSE IF (QFLAG(ISRC) == 'HRDOW') THEN
-      QTK = QARG * QFACT((IHOUR +&
-      &(IDAY_OF_WEEK-1)*24),ISRC)
+   else if (qflag(isrc) == 'HRDOW') then
+      qtk = qarg * qfact((ihour +&
+      &(iday_of_week-1)*24),isrc)
 
-   ELSE IF (QFLAG(ISRC) == 'HRDOW7') THEN
-      QTK = QARG * QFACT((IHOUR +&
-      &(IDAY_OF_WEEK7-1)*24),ISRC)
+   else if (qflag(isrc) == 'HRDOW7') then
+      qtk = qarg * qfact((ihour +&
+      &(iday_of_week7-1)*24),isrc)
 
-   ELSE IF (QFLAG(ISRC) == 'SHRDOW') THEN
-      QTK = QARG * QFACT((IHOUR+(ISEAS-1)*24+&
-      &(IDAY_OF_WEEK-1)*96),ISRC)
+   else if (qflag(isrc) == 'SHRDOW') then
+      qtk = qarg * qfact((ihour+(iseas-1)*24+&
+      &(iday_of_week-1)*96),isrc)
 
-   ELSE IF (QFLAG(ISRC) == 'SHRDOW7') THEN
-      QTK = QARG * QFACT((IHOUR+(ISEAS-1)*24+&
-      &(IDAY_OF_WEEK7-1)*96),ISRC)
+   else if (qflag(isrc) == 'SHRDOW7') then
+      qtk = qarg * qfact((ihour+(iseas-1)*24+&
+      &(iday_of_week7-1)*96),isrc)
 
-   ELSE IF (QFLAG(ISRC) == 'MHRDOW') THEN
-      QTK = QARG * QFACT((IHOUR+(IMONTH-1)*24+&
-      &(IDAY_OF_WEEK-1)*288),ISRC)
+   else if (qflag(isrc) == 'MHRDOW') then
+      qtk = qarg * qfact((ihour+(imonth-1)*24+&
+      &(iday_of_week-1)*288),isrc)
 
-   ELSE IF (QFLAG(ISRC) == 'MHRDOW7') THEN
-      QTK = QARG * QFACT((IHOUR+(IMONTH-1)*24+&
-      &(IDAY_OF_WEEK7-1)*288),ISRC)
+   else if (qflag(isrc) == 'MHRDOW7') then
+      qtk = qarg * qfact((ihour+(imonth-1)*24+&
+      &(iday_of_week7-1)*288),isrc)
 
-   END IF
+   end if
 
-   RETURN
-END SUBROUTINE EMFACT
+   return
+end subroutine emfact
 
-SUBROUTINE BGVAL (ISECT,BARG)
+subroutine bgval (isect,barg)
 !***********************************************************************
 !                 BGVAL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -125,90 +125,90 @@ SUBROUTINE BGVAL (ISECT,BARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER          :: ISECT
+   integer          :: isect
 
-   DOUBLE PRECISION :: BARG
+   double precision :: barg
 
 !     Variable Initializations
-   MODNAM = 'BGVAL'
+   modnam = 'BGVAL'
 
 ! --- Apply temporally-varying background concentration value
 !     to BARG variable
-   IF (BFLAG(ISECT) == 'ANNUAL') THEN
-      BARG = BACKGRND(1,ISECT)
+   if (bflag(isect) == 'ANNUAL') then
+      barg = backgrnd(1,isect)
 
-   ELSE IF (BFLAG(ISECT) == 'MONTH') THEN
-      BARG = BACKGRND(IMONTH,ISECT)
+   else if (bflag(isect) == 'MONTH') then
+      barg = backgrnd(imonth,isect)
 
-   ELSE IF (BFLAG(ISECT) == 'HROFDY') THEN
-      BARG = BACKGRND(IHOUR,ISECT)
+   else if (bflag(isect) == 'HROFDY') then
+      barg = backgrnd(ihour,isect)
 
-   ELSE IF (BFLAG(ISECT) == 'WSPEED') THEN
-      BARG = BACKGRND(IUCAT,ISECT)
+   else if (bflag(isect) == 'WSPEED') then
+      barg = backgrnd(iucat,isect)
 
-   ELSE IF (BFLAG(ISECT) == 'SEASON') THEN
-      BARG = BACKGRND(ISEAS,ISECT)
+   else if (bflag(isect) == 'SEASON') then
+      barg = backgrnd(iseas,isect)
 
-   ELSE IF (BFLAG(ISECT) == 'SEASHR') THEN
-      BARG = BACKGRND(IHOUR+(ISEAS-1)*24,ISECT)
+   else if (bflag(isect) == 'SEASHR') then
+      barg = backgrnd(ihour+(iseas-1)*24,isect)
 
-   ELSE IF (BFLAG(ISECT) == 'HRDOW') THEN
-      BARG = BACKGRND(IHOUR +&
-      &(IDAY_OF_WEEK-1)*24,ISECT)
+   else if (bflag(isect) == 'HRDOW') then
+      barg = backgrnd(ihour +&
+      &(iday_of_week-1)*24,isect)
 
-   ELSE IF (BFLAG(ISECT) == 'HRDOW7') THEN
-      BARG = BACKGRND(IHOUR +&
-      &(IDAY_OF_WEEK7-1)*24,ISECT)
+   else if (bflag(isect) == 'HRDOW7') then
+      barg = backgrnd(ihour +&
+      &(iday_of_week7-1)*24,isect)
 
-   ELSE IF (BFLAG(ISECT) == 'SHRDOW') THEN
-      BARG = BACKGRND(IHOUR+(ISEAS-1)*24+&
-      &(IDAY_OF_WEEK-1)*96,ISECT)
+   else if (bflag(isect) == 'SHRDOW') then
+      barg = backgrnd(ihour+(iseas-1)*24+&
+      &(iday_of_week-1)*96,isect)
 
-   ELSE IF (BFLAG(ISECT) == 'SHRDOW7') THEN
-      BARG = BACKGRND(IHOUR+(ISEAS-1)*24+&
-      &(IDAY_OF_WEEK7-1)*96,ISECT)
+   else if (bflag(isect) == 'SHRDOW7') then
+      barg = backgrnd(ihour+(iseas-1)*24+&
+      &(iday_of_week7-1)*96,isect)
 
-   ELSE IF (BFLAG(ISECT) == 'MHRDOW') THEN
-      BARG = BACKGRND(IHOUR+(IMONTH-1)*24+&
-      &(IDAY_OF_WEEK-1)*288,ISECT)
+   else if (bflag(isect) == 'MHRDOW') then
+      barg = backgrnd(ihour+(imonth-1)*24+&
+      &(iday_of_week-1)*288,isect)
 
-   ELSE IF (BFLAG(ISECT) == 'MHRDOW7') THEN
-      BARG = BACKGRND(IHOUR+(IMONTH-1)*24+&
-      &(IDAY_OF_WEEK7-1)*288,ISECT)
+   else if (bflag(isect) == 'MHRDOW7') then
+      barg = backgrnd(ihour+(imonth-1)*24+&
+      &(iday_of_week7-1)*288,isect)
 
-   END IF
+   end if
 
 ! --- Adjust background concentration units to UG/M3 if needed;
 !     conversion is based on reference temperature (25C) and
 !     pressure (1013.25 mb)
-   IF (POLLUT == 'NO2') THEN
-      IF (BackUnits == 'PPB') THEN
-         BARG = BARG / NO2_PPB
-      ELSE IF (BackUnits == 'PPM') THEN
-         BARG = BARG / NO2_PPM
-      END IF
-   ELSE IF (POLLUT == 'SO2') THEN
-      IF (BackUnits == 'PPB') THEN
-         BARG = BARG / SO2_PPB
-      ELSE IF (BackUnits == 'PPM') THEN
-         BARG = BARG / SO2_PPM
-      END IF
-   ELSE IF (POLLUT == 'CO') THEN
-      IF (BackUnits == 'PPB') THEN
-         BARG = BARG * CO_PPB
-      ELSE IF (BackUnits == 'PPM') THEN
-         BARG = BARG * CO_PPM
-      END IF
-   END IF
+   if (pollut == 'NO2') then
+      if (BackUnits == 'PPB') then
+         barg = barg / no2_ppb
+      else if (BackUnits == 'PPM') then
+         barg = barg / no2_ppm
+      end if
+   else if (pollut == 'SO2') then
+      if (BackUnits == 'PPB') then
+         barg = barg / so2_ppb
+      else if (BackUnits == 'PPM') then
+         barg = barg / so2_ppm
+      end if
+   else if (pollut == 'CO') then
+      if (BackUnits == 'PPB') then
+         barg = barg * co_ppb
+      else if (BackUnits == 'PPM') then
+         barg = barg * co_ppm
+      end if
+   end if
 
-   RETURN
-END SUBROUTINE BGVAL
+   return
+end subroutine bgval
 
-SUBROUTINE OZONVALS (ISECT,O3ARG)
+subroutine ozonvals (isect,o3arg)
 !***********************************************************************
 !                 OZONVALS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -238,79 +238,79 @@ SUBROUTINE OZONVALS (ISECT,O3ARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER          :: ISECT
+   integer          :: isect
 
-   DOUBLE PRECISION :: O3ARG
+   double precision :: o3arg
 
 !     Variable Initializations
-   MODNAM = 'OZONVALS'
+   modnam = 'OZONVALS'
 
 ! --- Apply Variable Background O3 values Based on Value of O3FLAG
-   IF (O3FLAG(ISECT) == 'ANNUAL') THEN
-      O3ARG = O3VARY(1,ISECT)
+   if (o3flag(isect) == 'ANNUAL') then
+      o3arg = o3vary(1,isect)
 
-   ELSE IF (O3FLAG(ISECT) == 'MONTH') THEN
-      O3ARG = O3VARY(IMONTH,ISECT)
+   else if (o3flag(isect) == 'MONTH') then
+      o3arg = o3vary(imonth,isect)
 
-   ELSE IF (O3FLAG(ISECT) == 'HROFDY') THEN
-      O3ARG = O3VARY(IHOUR,ISECT)
+   else if (o3flag(isect) == 'HROFDY') then
+      o3arg = o3vary(ihour,isect)
 
-   ELSE IF (O3FLAG(ISECT) == 'WSPEED') THEN
-      O3ARG = O3VARY(IUCAT,ISECT)
+   else if (o3flag(isect) == 'WSPEED') then
+      o3arg = o3vary(iucat,isect)
 
-   ELSE IF (O3FLAG(ISECT) == 'SEASON') THEN
-      O3ARG = O3VARY(ISEAS,ISECT)
+   else if (o3flag(isect) == 'SEASON') then
+      o3arg = o3vary(iseas,isect)
 
-   ELSE IF (O3FLAG(ISECT) == 'SEASHR') THEN
-      O3ARG = O3VARY(IHOUR+(ISEAS-1)*24,ISECT)
+   else if (o3flag(isect) == 'SEASHR') then
+      o3arg = o3vary(ihour+(iseas-1)*24,isect)
 
-   ELSE IF (O3FLAG(ISECT) == 'HRDOW') THEN
-      O3ARG = O3VARY(IHOUR +&
-      &(IDAY_OF_WEEK-1)*24,ISECT)
+   else if (o3flag(isect) == 'HRDOW') then
+      o3arg = o3vary(ihour +&
+      &(iday_of_week-1)*24,isect)
 
-   ELSE IF (O3FLAG(ISECT) == 'HRDOW7') THEN
-      O3ARG = O3VARY(IHOUR +&
-      &(IDAY_OF_WEEK7-1)*24,ISECT)
+   else if (o3flag(isect) == 'HRDOW7') then
+      o3arg = o3vary(ihour +&
+      &(iday_of_week7-1)*24,isect)
 
-   ELSE IF (O3FLAG(ISECT) == 'SHRDOW') THEN
-      O3ARG = O3VARY(IHOUR+(ISEAS-1)*24+&
-      &(IDAY_OF_WEEK-1)*96,ISECT)
+   else if (o3flag(isect) == 'SHRDOW') then
+      o3arg = o3vary(ihour+(iseas-1)*24+&
+      &(iday_of_week-1)*96,isect)
 
-   ELSE IF (O3FLAG(ISECT) == 'SHRDOW7') THEN
-      O3ARG = O3VARY(IHOUR+(ISEAS-1)*24+&
-      &(IDAY_OF_WEEK7-1)*96,ISECT)
+   else if (o3flag(isect) == 'SHRDOW7') then
+      o3arg = o3vary(ihour+(iseas-1)*24+&
+      &(iday_of_week7-1)*96,isect)
 
-   ELSE IF (O3FLAG(ISECT) == 'MHRDOW') THEN
-      O3ARG = O3VARY(IHOUR+(IMONTH-1)*24+&
-      &(IDAY_OF_WEEK-1)*288,ISECT)
+   else if (o3flag(isect) == 'MHRDOW') then
+      o3arg = o3vary(ihour+(imonth-1)*24+&
+      &(iday_of_week-1)*288,isect)
 
-   ELSE IF (O3FLAG(ISECT) == 'MHRDOW7') THEN
-      O3ARG = O3VARY(IHOUR+(IMONTH-1)*24+&
-      &(IDAY_OF_WEEK7-1)*288,ISECT)
+   else if (o3flag(isect) == 'MHRDOW7') then
+      o3arg = o3vary(ihour+(imonth-1)*24+&
+      &(iday_of_week7-1)*288,isect)
 
-   END IF
+   end if
 
 ! --- Convert O3ARG from PPB or PPM to UG/M3, based on reference
 !     temperature (25C) and pressure (1013.25 mb)
-   IF (OzoneUnits == 'PPB') THEN
-      O3ARG = O3ARG * O3_PPB
-   ELSE IF (OzoneUnits == 'PPM') THEN
-      O3ARG = O3ARG * O3_PPM
-   ELSE IF (OzoneUnits == 'UG/M3') THEN
-      O3ARG = O3ARG
-   ELSE
+   if (OzoneUnits == 'PPB') then
+      o3arg = o3arg * o3_ppb
+   else if (OzoneUnits == 'PPM') then
+      o3arg = o3arg * o3_ppm
+   else if (OzoneUnits == 'UG/M3') then
+      o3arg = o3arg
+   else
 ! ---    Default units are PPB
-      O3ARG = O3ARG * O3_PPB
-   END IF
+      o3arg = o3arg * o3_ppb
+   end if
 
-   RETURN
-END SUBROUTINE OZONVALS
+   return
+end subroutine ozonvals
 
-SUBROUTINE VARYNOXVALS (ISECT,NOXARG)
+subroutine varynoxvals (isect,noxarg)
 !***********************************************************************
 !                 VARYNOXVALS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -334,80 +334,80 @@ SUBROUTINE VARYNOXVALS (ISECT,NOXARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER          :: ISECT
+   integer          :: isect
 
-   DOUBLE PRECISION :: NOXARG
+   double precision :: noxarg
 
 !     Variable Initializations
-   MODNAM = 'VARYNOXVALS'
+   modnam = 'VARYNOXVALS'
 
 ! --- Apply Variable Background NOX values Based on Value of NOXFLAG
-   IF (NOXFLAG(ISECT) == 'ANNUAL') THEN
-      NOXARG = NOXVARY(1,ISECT)
+   if (noxflag(isect) == 'ANNUAL') then
+      noxarg = noxvary(1,isect)
 
-   ELSE IF (NOXFLAG(ISECT) == 'MONTH') THEN
-      NOXARG = NOXVARY(IMONTH,ISECT)
+   else if (noxflag(isect) == 'MONTH') then
+      noxarg = noxvary(imonth,isect)
 
-   ELSE IF (NOXFLAG(ISECT) == 'HROFDY') THEN
-      NOXARG = NOXVARY(IHOUR,ISECT)
+   else if (noxflag(isect) == 'HROFDY') then
+      noxarg = noxvary(ihour,isect)
 
-   ELSE IF (NOXFLAG(ISECT) == 'WSPEED') THEN
-      NOXARG = NOXVARY(IUCAT,ISECT)
+   else if (noxflag(isect) == 'WSPEED') then
+      noxarg = noxvary(iucat,isect)
 
-   ELSE IF (NOXFLAG(ISECT) == 'SEASON') THEN
-      NOXARG = NOXVARY(ISEAS,ISECT)
+   else if (noxflag(isect) == 'SEASON') then
+      noxarg = noxvary(iseas,isect)
 
-   ELSE IF (NOXFLAG(ISECT) == 'SEASHR') THEN
-      NOXARG = NOXVARY(IHOUR+(ISEAS-1)*24,ISECT)
+   else if (noxflag(isect) == 'SEASHR') then
+      noxarg = noxvary(ihour+(iseas-1)*24,isect)
 
-   ELSE IF (NOXFLAG(ISECT) == 'HRDOW') THEN
-      NOXARG = NOXVARY(IHOUR +&
-      &(IDAY_OF_WEEK-1)*24,ISECT)
+   else if (noxflag(isect) == 'HRDOW') then
+      noxarg = noxvary(ihour +&
+      &(iday_of_week-1)*24,isect)
 
-   ELSE IF (NOXFLAG(ISECT) == 'HRDOW7') THEN
-      NOXARG = NOXVARY(IHOUR +&
-      &(IDAY_OF_WEEK7-1)*24,ISECT)
+   else if (noxflag(isect) == 'HRDOW7') then
+      noxarg = noxvary(ihour +&
+      &(iday_of_week7-1)*24,isect)
 
-   ELSE IF (NOXFLAG(ISECT) == 'SHRDOW') THEN
-      NOXARG = NOXVARY(IHOUR+(ISEAS-1)*24+&
-      &(IDAY_OF_WEEK-1)*96,ISECT)
+   else if (noxflag(isect) == 'SHRDOW') then
+      noxarg = noxvary(ihour+(iseas-1)*24+&
+      &(iday_of_week-1)*96,isect)
 
-   ELSE IF (NOXFLAG(ISECT) == 'SHRDOW7') THEN
-      NOXARG = NOXVARY(IHOUR+(ISEAS-1)*24+&
-      &(IDAY_OF_WEEK7-1)*96,ISECT)
+   else if (noxflag(isect) == 'SHRDOW7') then
+      noxarg = noxvary(ihour+(iseas-1)*24+&
+      &(iday_of_week7-1)*96,isect)
 
-   ELSE IF (NOXFLAG(ISECT) == 'MHRDOW') THEN
-      NOXARG = NOXVARY(IHOUR+(IMONTH-1)*24+&
-      &(IDAY_OF_WEEK-1)*288,ISECT)
+   else if (noxflag(isect) == 'MHRDOW') then
+      noxarg = noxvary(ihour+(imonth-1)*24+&
+      &(iday_of_week-1)*288,isect)
 
-   ELSE IF (NOXFLAG(ISECT) == 'MHRDOW7') THEN
-      NOXARG = NOXVARY(IHOUR+(IMONTH-1)*24+&
-      &(IDAY_OF_WEEK7-1)*288,ISECT)
+   else if (noxflag(isect) == 'MHRDOW7') then
+      noxarg = noxvary(ihour+(imonth-1)*24+&
+      &(iday_of_week7-1)*288,isect)
 
-   END IF
+   end if
 
 ! --- Convert NOXARG from PPB or PPM to UG/M3, based on reference
 !     temperature (25C) and pressure (1013.25 mb)
 ! --- using NO2 factors (NOx expressed as 'NOx as NO2')
-   IF (NOxUnits == 'PPB') THEN
-      NOXARG = NOXARG / NO2_PPB
-   ELSE IF (NOxUnits == 'PPM') THEN
-      NOXARG = NOXARG / NO2_PPM
-   ELSE IF (NOxUnits == 'UG/M3') THEN
-      NOXARG = NOXARG
-   ELSE
+   if (NOxUnits == 'PPB') then
+      noxarg = noxarg / no2_ppb
+   else if (NOxUnits == 'PPM') then
+      noxarg = noxarg / no2_ppm
+   else if (NOxUnits == 'UG/M3') then
+      noxarg = noxarg
+   else
 ! ---    Default units are PPB
-      NOXARG = NOXARG / NO2_PPB
-   END IF
+      noxarg = noxarg / no2_ppb
+   end if
 
-   RETURN
-END SUBROUTINE VARYNOXVALS
+   return
+end subroutine varynoxvals
 
-SUBROUTINE DISTF
+subroutine distf
 !***********************************************************************
 !                 DISTF Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -429,51 +429,51 @@ SUBROUTINE DISTF
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: XLN, DELHNN, XMAXN
-   DOUBLE PRECISION :: DHFSAV       ! save original DHFAER for URBSTAB cases
-   DOUBLE PRECISION :: BVZI2
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: xln, delhnn, xmaxn
+   double precision :: dhfsav       ! save original DHFAER for URBSTAB cases
+   double precision :: bvzi2
 
 !     Variable Initializations
-   MODNAM = 'DISTF'
+   modnam = 'DISTF'
 
-   IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
+   if( stable  .or.  (unstab .and. (hs >= zi) ) )then
 
 !        Compute the distance to final rise, XMAX;
 !        The negative sign appears on the FB term to insure that the
 !           resulting angle is between 0 and PI (i.e., positive)
-      XMAX   = UP * DATAN2( FM*BVPRIM, -FB ) / BVPRIM
+      xmax   = up * datan2( fm*bvprim, -fb ) / bvprim
 
 !        Compute the final stable plume rise, DHF, from Eqn. 3-113 of MFD
-      DHFAER = 2.66D0 * (FB/(BVF*BVF*UP))**THIRD
-      XLN = FB/(UP*USTAR*USTAR)
-      DELHNN = 1.2D0*XLN**0.6D0 * (HSP + 1.2D0*XLN)**0.4D0
-      DHFAER = MIN( DHFAER, DELHNN )
+      dhfaer = 2.66d0 * (fb/(bvf*bvf*up))**third
+      xln = fb/(up*ustar*ustar)
+      delhnn = 1.2d0*xln**0.6d0 * (hsp + 1.2d0*xln)**0.4d0
+      dhfaer = min( dhfaer, delhnn )
 
 !        Compute Neutral/Unstable Final Rise
-      IF(FB <= 0.0D0) THEN
-         XMAXN = 4.D0*DS*(VS+3.D0*UP)*(VS+3.D0*UP)/(VS*UP)
-         DHFAER   = MIN( DHFAER, 3.0D0 * DS * VS / UP )
-      ELSE
-         IF(FB >= 55.0D0) THEN
-            XMAXN = 119.0D0 * FB**0.4D0
-         ELSE
-            XMAXN = 49.0D0 * FB**0.625D0
-         END IF
-         CALL CBLPRD(XMAXN)
-         DHFAER = MIN( DHFAER, DHP1 )
-      END IF
+      if(fb <= 0.0d0) then
+         xmaxn = 4.d0*ds*(vs+3.d0*up)*(vs+3.d0*up)/(vs*up)
+         dhfaer   = min( dhfaer, 3.0d0 * ds * vs / up )
+      else
+         if(fb >= 55.0d0) then
+            xmaxn = 119.0d0 * fb**0.4d0
+         else
+            xmaxn = 49.0d0 * fb**0.625d0
+         end if
+         call cblprd(xmaxn)
+         dhfaer = min( dhfaer, dhp1 )
+      end if
 
 !        Apply calm, stable rise limit
-      DHFAER = MIN( DHFAER, 4.0D0 * FB**0.25D0 / (BVF*BVF)**0.375D0 )
+      dhfaer = min( dhfaer, 4.0d0 * fb**0.25d0 / (bvf*bvf)**0.375d0 )
 
 ! ---    Save "original" DHFAER for URBSTAB cases
-      DHFSAV = DHFAER
+      dhfsav = dhfaer
 
 !        For urban stable boundary layers, limit plume rise to 1.25*ZI - HSP
-      IF (URBSTAB) THEN
+      if (urbstab) then
 ! ---       "New fomulation" for v15181 to account for "partial penetration" of plume
 !           above the urban "stable" mixing height, similar to approach used for
 !           convective conditions
@@ -486,76 +486,76 @@ SUBROUTINE DISTF
 ! height.  HEDHH is not calculated in the subroutine PENFCT and not used in DELTAH
 ! for stacks at or above mixing height
 !            IF( HSP+DHFAER .GE. ZI )THEN
-         IF( HSP+DHFAER >= ZI .and. HSP < ZI )THEN
+         if( hsp+dhfaer >= zi .and. hsp < zi )then
 ! ---          Stack height + plume rise is .GE. ZI; use pseudo-penetrated plume
 !              approach for URBAN SBL cases
 
 !              Compute the square of the Brunt-Vaisala frequency at ZI, BVZI2
 
-            BVZI2 = (G / PTATZI) * 0.005D0
+            bvzi2 = (g / ptatzi) * 0.005d0
 
 !              Compute the value of PsubS, Eq. 26b in the 2nd reference
-            PSUBS = FB / ( UP * BVZI2 * (ZI-HSP)*(ZI-HSP)*(ZI-HSP) )
+            psubs = fb / ( up * bvzi2 * (zi-hsp)*(zi-hsp)*(zi-hsp) )
 
 !              Compute the ratio of delta(Hsub_e)/delta(Hsub_h), HEDHH
 !              (Eq. 25 in the 2nd ref.
 !              NOTE: 17.576 = (2.6)**3 and 0.296296 is (2/3)**3
-            HEDHH = (17.576D0 * PSUBS + 0.296296D0) ** THIRD
+            hedhh = (17.576d0 * psubs + 0.296296d0) ** third
 
 !              Check the value of HEDHH and compute the plume penetration, P
-            IF( HEDHH < (2.0D0*THIRD) )THEN
-               PPF = 0.0D0
+            if( hedhh < (2.0d0*third) )then
+               ppf = 0.0d0
 
-            ELSE IF( HEDHH > 2.0D0 )THEN
-               PPF = 1.0D0
+            else if( hedhh > 2.0d0 )then
+               ppf = 1.0d0
 
-            ELSE
-               PPF = 1.5D0 - (1.0D0 / HEDHH)
+            else
+               ppf = 1.5d0 - (1.0d0 / hedhh)
 
-            END IF
+            end if
 
 ! ---          Include calculation of penetrated plume rise and height
-            IF( PPF > 0.0D0 )THEN
+            if( ppf > 0.0d0 )then
 
 !                 Compute the plume height for the penetrated source
 !                 (See Eq. 8 in the reference for Source 3)
-               IF (PPF == 1.0D0) THEN
-                  DHFAER = HEDHH * (ZI-HSP)
-               ELSE
-                  DHFAER = 0.75D0 * (ZI-HSP) * HEDHH + 0.5D0*(ZI-HSP)
-               END IF
+               if (ppf == 1.0d0) then
+                  dhfaer = hedhh * (zi-hsp)
+               else
+                  dhfaer = 0.75d0 * (zi-hsp) * hedhh + 0.5d0*(zi-hsp)
+               end if
 
-            ELSE
+            else
 ! ---             Use "original" DHFAER value
-               DHFAER = DHFSAV
+               dhfaer = dhfsav
 
-            END IF
+            end if
 
-         END IF
-      END IF
+         end if
+      end if
 
-   ELSE
+   else
 !        Unstable plume
 
-      IF( FB <= 0.0D0 )THEN
-         XMAX = 4.D0*DS*(VS+3.0D0*UP)*(VS+3.0D0*UP)/(VS*UP)
-         DHFAER = 3.0D0 * DS * VS / UP
-      ELSE
-         IF (FB >= 55.0D0) THEN
-            XMAX = 119.D0 * FB**0.4D0
-         ELSE
-            XMAX = 49.D0 * FB**0.625D0
-         END IF
-         CALL CBLPRD(XMAX)
-         DHFAER = DHP1
-      END IF
+      if( fb <= 0.0d0 )then
+         xmax = 4.d0*ds*(vs+3.0d0*up)*(vs+3.0d0*up)/(vs*up)
+         dhfaer = 3.0d0 * ds * vs / up
+      else
+         if (fb >= 55.0d0) then
+            xmax = 119.d0 * fb**0.4d0
+         else
+            xmax = 49.d0 * fb**0.625d0
+         end if
+         call cblprd(xmax)
+         dhfaer = dhp1
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END SUBROUTINE DISTF
+   return
+end subroutine distf
 
-SUBROUTINE WAKFLG
+subroutine wakflg
 !***********************************************************************
 !                 WAKFLG Module of the AMS/EPA Regulatory Model - AERMOD
 ! ----------------------------------------------------------------------
@@ -588,40 +588,40 @@ SUBROUTINE WAKFLG
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'WAKFLG'
+   modnam = 'WAKFLG'
 
 !     Select Building Dimensions for This Sector
-   IF (IFVSEC <= NSEC) THEN
-      DSBH = ADSBH(IFVSEC,ISRC)
-      DSBW = ADSBW(IFVSEC,ISRC)
+   if (ifvsec <= nsec) then
+      dsbh = adsbh(ifvsec,isrc)
+      dsbw = adsbw(ifvsec,isrc)
 
 ! --- PRIME ---------------------------------
-      DSBL = ADSBL(IFVSEC,ISRC)
-      XADJ = ADSXADJ(IFVSEC,ISRC)
-      YADJ = ADSYADJ(IFVSEC,ISRC)
-      B_SUBS = MIN( DSBH, DSBW )
-      B_SUBL = MAX( DSBH, DSBW )
-      B_SUBL = MIN( B_SUBL, 8.0D0*B_SUBS )
-      RSCALE = B_SUBS**(2.0D0*THIRD) * B_SUBL**THIRD
+      dsbl = adsbl(ifvsec,isrc)
+      xadj = adsxadj(ifvsec,isrc)
+      yadj = adsyadj(ifvsec,isrc)
+      b_subs = min( dsbh, dsbw )
+      b_subl = max( dsbh, dsbw )
+      b_subl = min( b_subl, 8.0d0*b_subs )
+      rscale = b_subs**(2.0d0*third) * b_subl**third
 ! -------------------------------------------
 
-   END IF
+   end if
 
 !     Set Initial Wake Switches Based on Building Dimensions
-   IF (DSBH <= 1.0D-5 .or. DSBW <= 1.0D-5) THEN
+   if (dsbh <= 1.0d-5 .or. dsbw <= 1.0d-5) then
 ! ---    No building inputs defined for this source, set WAKE = .F.
-      WAKE   = .FALSE.
-   ELSE
+      wake   = .false.
+   else
 ! ---    Building inputs defined for this source, set WAKE = .T.;
 !        PRIME downwash algorithm will determine whether plume is
 !        subject to downwash influences based on source/building
 !        characteristics and meteorology
-      WAKE   = .TRUE.
+      wake   = .true.
 ! ---    Check for stack height greater the EPA formula height;
 !        issue warning message once for each source that meets
 !        this criterion
@@ -641,14 +641,14 @@ SUBROUTINE WAKFLG
 !               L_WakeMessage(ISRC) = .TRUE.
 !            END IF
 !         END IF
-   END IF
+   end if
 
 ! --- PRIME ----------------------------------------------------
 
-   RETURN
-END SUBROUTINE WAKFLG
+   return
+end subroutine wakflg
 
-SUBROUTINE XYDIST(INDX)
+subroutine xydist(indx)
 !***********************************************************************
 !                 XYDIST Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -677,46 +677,46 @@ SUBROUTINE XYDIST(INDX)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: INDX
+   integer :: indx
 
 !     Variable Initializations
-   MODNAM = 'XYDIST'
+   modnam = 'XYDIST'
 
 !     Set Receptor Coordinates, Terrain Elevation and Flagpole Heights
-   XR = AXR(INDX)
-   YR = AYR(INDX)
-   ZELEV = AZELEV(INDX)
-   ZHILL = AZHILL(INDX)
-   ZFLAG = AZFLAG(INDX)
+   xr = axr(indx)
+   yr = ayr(indx)
+   zelev = azelev(indx)
+   zhill = azhill(indx)
+   zflag = azflag(indx)
 
 !     Calculate Downwind (X) and Crosswind (Y) Distances
-   X = -((XR-XS)*WDSIN + (YR-YS)*WDCOS)
-   Y =   (XR-XS)*WDCOS - (YR-YS)*WDSIN
+   x = -((xr-xs)*wdsin + (yr-ys)*wdcos)
+   y =   (xr-xs)*wdcos - (yr-ys)*wdsin
 
 !     Calculate Source-Receptor (Radial) Distance, DISTR
-   DISTR = DSQRT(X*X + Y*Y)
+   distr = dsqrt(x*x + y*y)
 
 !     Calculate height of receptor above stack base, ZRT
-   IF (L_FLATSRC(ISRC)) THEN
-      ZRT = ZFLAG
-   ELSE
-      ZRT = ZELEV - ZS + ZFLAG
-   END IF
+   if (l_flatsrc(isrc)) then
+      zrt = zflag
+   else
+      zrt = zelev - zs + zflag
+   end if
 
 !     Check for SCREENing Mode and Set X,Y to Force Centerline Calc.
-   IF (SCREEN) THEN
-      X = DISTR
-      Y = 0.0D0
-   END IF
+   if (screen) then
+      x = distr
+      y = 0.0d0
+   end if
 
-   RETURN
-END SUBROUTINE XYDIST
+   return
+end subroutine xydist
 
-SUBROUTINE FTERM
+subroutine fterm
 !***********************************************************************
 !             FTERM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -735,20 +735,20 @@ SUBROUTINE FTERM
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'FTERM'
+   modnam = 'FTERM'
 
-   FOPT = 0.5D0 * (1.0D0 + PHEE)
+   fopt = 0.5d0 * (1.0d0 + phee)
 
-   RETURN
-END SUBROUTINE FTERM
+   return
+end subroutine fterm
 
 
-SUBROUTINE FYPLM(SYARG,FYOUT)
+subroutine fyplm(syarg,fyout)
 !***********************************************************************
 !             FYPLM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -770,30 +770,30 @@ SUBROUTINE FYPLM(SYARG,FYOUT)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: SYARG, EXPARG, FYOUT
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: syarg, exparg, fyout
 
 !     Variable Initializations
-   MODNAM = 'FYPLM'
+   modnam = 'FYPLM'
 
-   EXPARG = -(Y*Y / (2.0D0*SYARG*SYARG))
+   exparg = -(y*y / (2.0d0*syarg*syarg))
 !
 !     Add meander component
 !
-   IF (EXPARG > EXPLIM) THEN
+   if (exparg > explim) then
 !        Calculate lateral term for Gaussian plume
-      FYOUT  = DEXP(EXPARG)/(SRT2PI*SYARG)
-   ELSE
-      FYOUT  = 0.0D0
-   END IF
+      fyout  = dexp(exparg)/(srt2pi*syarg)
+   else
+      fyout  = 0.0d0
+   end if
 
-   RETURN
-END SUBROUTINE FYPLM
+   return
+end subroutine fyplm
 
 
-SUBROUTINE FYPAN(FYOUT)
+subroutine fypan(fyout)
 !***********************************************************************
 !             FYPAN Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -815,21 +815,21 @@ SUBROUTINE FYPAN(FYOUT)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: FYOUT
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: fyout
 
 !     Variable Initializations
-   MODNAM = 'FYPAN'
+   modnam = 'FYPAN'
 
-   FYOUT = 1.0D0/(TWOPI * DISTR)
+   fyout = 1.0d0/(twopi * distr)
 
-   RETURN
-END SUBROUTINE FYPAN
+   return
+end subroutine fypan
 
 
-SUBROUTINE MEANDR( UEF, SVEF, FRAN )
+subroutine meandr( uef, svef, fran )
 !***********************************************************************
 !             MEANDR Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -863,86 +863,86 @@ SUBROUTINE MEANDR( UEF, SVEF, FRAN )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 !RCO 9/28/2020 D061 User BIGT
 !RCO BIGT is now defined as user input for LOW_WIND
 !RCO default is set in coset. (CRT: Now declared in modules.f)
 !      DOUBLE PRECISION, PARAMETER :: BIGT = 24.0D0
-   DOUBLE PRECISION :: UEF, SVEF, FRAN, UMEAN, TOTKIN, TRAN, TTRAV,&
-   &SIGRAN
-   DOUBLE PRECISION :: SQRTARG
+   double precision :: uef, svef, fran, umean, totkin, tran, ttrav,&
+   &sigran
+   double precision :: sqrtarg
 
 !     Variable Initializations
-   MODNAM = 'MEANDR'
+   modnam = 'MEANDR'
 
 !     Compute meander fraction of horizontal distribution function
 !     from Venky's memo of 6/24/98.
 
 ! --- Calculate time scale (s) for random dispersion,
 !     based value of BIGT (default = 24.0 hrs)
-   TRAN = BIGT * 3600.0D0
+   tran = bigt * 3600.0d0
 
 !     Remove the SVeff component from UEF
 !
-   SQRTARG = UEF*UEF - 2.0D0*SVEF*SVEF
-   IF (SQRTARG >= 0.01D0) THEN
-      UMEAN = DSQRT( SQRTARG )
-   ELSE
-      UMEAN = 0.1D0
-   END IF
-   TOTKIN = UEF * UEF
-   TTRAV  = DISTR/UEF
-   SIGRAN = 2.0D0*SVEF*SVEF + UMEAN*UMEAN*(1.0D0-DEXP(-TTRAV/TRAN))
-   FRAN   = SIGRAN/TOTKIN
+   sqrtarg = uef*uef - 2.0d0*svef*svef
+   if (sqrtarg >= 0.01d0) then
+      umean = dsqrt( sqrtarg )
+   else
+      umean = 0.1d0
+   end if
+   totkin = uef * uef
+   ttrav  = distr/uef
+   sigran = 2.0d0*svef*svef + umean*umean*(1.0d0-dexp(-ttrav/tran))
+   fran   = sigran/totkin
 
 !CRT  4/12/2022 D131 FRAN Alpha PBAL
-   IF (L_PBal) FRAN = DSQRT(FRAN)
+   if (L_PBal) fran = dsqrt(fran)
 
 ! --- Issue informational messages for FRAN > FRANMAX
 !CRT  5/1/2018: Add logical variable to condition so message is written
 !CRT  only if FRANMAX is specified by user under LOW_WIND option
-   IF( L_UserFRANmax .and. (FRAN > FRANMAX) )THEN
-      WRITE( DUMMY,'(I2.2,1X,I2.2,1X,I2.2,1X,I3)') IMONTH, IDAY,&
-      &IHOUR,&
-      &MIN(ISRC,999)
-      CALL ERRHDL(PATH,MODNAM,'I','494',DUMMY)
-   ENDIF
+   if( L_UserFRANmax .and. (fran > franmax) )then
+      write( dummy,'(I2.2,1X,I2.2,1X,I2.2,1X,I3)') imonth, iday,&
+      &ihour,&
+      &min(isrc,999)
+      call errhdl(path,modnam,'I','494',dummy)
+   endif
 
 ! --- Wood 3/18/2022 D127 Issue informational messages for FRAN < FRANMIN
-   IF( L_UserFRANmin .and. (FRAN < FRANMIN) )THEN
-      WRITE( DUMMY,'(I2.2,1X,I2.2,1X,I2.2,1X,I3)') IMONTH, IDAY,&
-      &IHOUR,&
-      &MIN(ISRC,999)
-      CALL ERRHDL(PATH,MODNAM,'I','424',DUMMY)
-   ENDIF
+   if( L_UserFRANmin .and. (fran < franmin) )then
+      write( dummy,'(I2.2,1X,I2.2,1X,I2.2,1X,I3)') imonth, iday,&
+      &ihour,&
+      &min(isrc,999)
+      call errhdl(path,modnam,'I','424',dummy)
+   endif
 
 !     Reset FRAN to min. of computed FRAN and FRANMAX (could be default
 !     value or user-defined value)
 !CRT  5/1/2018: moved outside of conditional statement above
-   FRAN = MIN( FRAN, FRANMAX )
+   fran = min( fran, franmax )
 
 !     3/18/22 Wood D127 - added FRANMIN keyword to LOW_WIND option
-   FRAN = MAX( FRAN, FRANMIN )
+   fran = max( fran, franmin )
 
-   IF (DEBUG) THEN
-      WRITE(DBGUNT,*)
-      WRITE(DBGUNT,*) 'SVEF, UEF, UMEAN:'
-      WRITE(DBGUNT,*)  SVEF, UEF, UMEAN
-      WRITE(DBGUNT,*)
-      WRITE(DBGUNT,*) 'DISTR, TTRAV, TRAN:'
-      WRITE(DBGUNT,*)  DISTR, TTRAV, TRAN
-      WRITE(DBGUNT,*)
-      WRITE(DBGUNT,*) 'TOTKIN, SIGRAN, FRAN:'
-      WRITE(DBGUNT,*)  TOTKIN, SIGRAN, FRAN
-      WRITE(DBGUNT,*) ' '
-   END IF
+   if (debug) then
+      write(dbgunt,*)
+      write(dbgunt,*) 'SVEF, UEF, UMEAN:'
+      write(dbgunt,*)  svef, uef, umean
+      write(dbgunt,*)
+      write(dbgunt,*) 'DISTR, TTRAV, TRAN:'
+      write(dbgunt,*)  distr, ttrav, tran
+      write(dbgunt,*)
+      write(dbgunt,*) 'TOTKIN, SIGRAN, FRAN:'
+      write(dbgunt,*)  totkin, sigran, fran
+      write(dbgunt,*) ' '
+   end if
 
-   RETURN
-END SUBROUTINE MEANDR
+   return
+end subroutine meandr
 
-SUBROUTINE CRITDS (HEARG)
+subroutine critds (hearg)
 !***********************************************************************
 !             CRITDS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -984,55 +984,55 @@ SUBROUTINE CRITDS (HEARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE RLINE_DATA
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: NDX4HC
-   DOUBLE PRECISION :: HHILL, UATHH, PTATHH, TGATHH, PTHC, TGHC,&
-   &TOPHT, WSTOP
-   DOUBLE PRECISION :: HEARG
+   use main1
+   use rline_data
+   implicit none
+   character :: modnam*12
+   integer :: ndx4hc
+   double precision :: hhill, uathh, ptathh, tgathh, pthc, tghc,&
+   &topht, wstop
+   double precision :: hearg
 
 !     DEFINE LOCAL VARIABLES
-   DOUBLE PRECISION :: A, AC4, B, B2, C, DETER, HBOT, HTOP,&
-   &LS(MXGLVL), RS(MXGLVL), XN2(MXGLVL), N2, DWS,&
-   &DWS2, ZMID
-   INTEGER :: IB, IT, NL, NLEV
+   double precision :: a, ac4, b, b2, c, deter, hbot, htop,&
+   &ls(mxglvl), rs(mxglvl), xn2(mxglvl), n2, dws,&
+   &dws2, zmid
+   integer :: ib, it, nl, nlev
 
 !     Variable Initializations
-   MODNAM = 'CRITDS'
+   modnam = 'CRITDS'
 
 !CRT  Initialize ZMID, 12/27/2017
-   ZMID =  0.0D0
-   TOPHT = 0.0D0
-   TGHC =  0.0D0
-   PTHC =  0.0D0
+   zmid =  0.0d0
+   topht = 0.0d0
+   tghc =  0.0d0
+   pthc =  0.0d0
 
 
 !     Compute the upper limit on the integration for HCRIT, called HHILL.
 !     Set as minimum of plume height above receptor height, and height
 !     scale above the receptor height (ZHILL) input from AERMAP.
 
-   IF (L_FLATSRC(ISRC)) THEN
+   if (l_flatsrc(isrc)) then
 ! ---    This source is being modeled with FLAT terrain
 !        Set HHILL and HCRIT to 0.0 and return
-      HHILL = 0.0D0
-      HCRIT = 0.0D0
-      RETURN
-   ELSE
+      hhill = 0.0d0
+      hcrit = 0.0d0
+      return
+   else
 ! ---    Calculate 'effective' hill height for HCRIT calculation
-      HHILL = MIN( ZHILL - ZS, ZELEV - ZS + HEARG )
-   END IF
+      hhill = min( zhill - zs, zelev - zs + hearg )
+   end if
 
-   IF ( STABLE .and. ELEV .and. HHILL > 0.0D0 ) THEN
+   if ( stable .and. elev .and. hhill > 0.0d0 ) then
 !        The hill elevation is above the source elevation and we are
 !        using elevated terrain;
 
 !        Determine the index of the gridded height immediately below
 !        the hill height and determine the number of levels to use
 
-      CALL LOCATE ( GRIDHT, 1, MXGLVL, HHILL, NDX4HC )
-      NLEV = NDX4HC + 1
+      call locate ( gridht, 1, mxglvl, hhill, ndx4hc )
+      nlev = ndx4hc + 1
 
 !        Compute values at hill height
 
@@ -1041,82 +1041,82 @@ SUBROUTINE CRITDS (HEARG)
 !     &                  GRIDHT(NDX4HC+1), GRIDWS(NDX4HC+1),
 !     &                  HHILL, UATHH )
 
-      IF ((SRCTYP(ISRC) == 'RLINE') .or.&
-      &(SRCTYP(ISRC) == 'RLINEXT')) THEN
-         CALL GINTRP ( GRIDHT(NDX4HC), RL_GRIDWS(NDX4HC,I_ALPHA),&
-         &GRIDHT(NDX4HC+1), RL_GRIDWS(NDX4HC+1,I_ALPHA),&
-         &HHILL, UATHH )
-      ELSE
-         CALL GINTRP ( GRIDHT(NDX4HC), GRIDWS(NDX4HC),&
-         &GRIDHT(NDX4HC+1), GRIDWS(NDX4HC+1),&
-         &HHILL, UATHH )
-      END IF !End IF for RL_GRIDWS windspeed - Wood 7/5/2022
+      if ((srctyp(isrc) == 'RLINE') .or.&
+      &(srctyp(isrc) == 'RLINEXT')) then
+         call gintrp ( gridht(ndx4hc), rl_gridws(ndx4hc,i_alpha),&
+         &gridht(ndx4hc+1), rl_gridws(ndx4hc+1,i_alpha),&
+         &hhill, uathh )
+      else
+         call gintrp ( gridht(ndx4hc), gridws(ndx4hc),&
+         &gridht(ndx4hc+1), gridws(ndx4hc+1),&
+         &hhill, uathh )
+      end if !End IF for RL_GRIDWS windspeed - Wood 7/5/2022
 
-      CALL GINTRP ( GRIDHT(NDX4HC), GRIDPT(NDX4HC),&
-      &GRIDHT(NDX4HC+1), GRIDPT(NDX4HC+1),&
-      &HHILL, PTATHH )
-      CALL GINTRP ( GRIDHT(NDX4HC), GRIDTG(NDX4HC),&
-      &GRIDHT(NDX4HC+1), GRIDTG(NDX4HC+1),&
-      &HHILL, TGATHH )
+      call gintrp ( gridht(ndx4hc), gridpt(ndx4hc),&
+      &gridht(ndx4hc+1), gridpt(ndx4hc+1),&
+      &hhill, ptathh )
+      call gintrp ( gridht(ndx4hc), gridtg(ndx4hc),&
+      &gridht(ndx4hc+1), gridtg(ndx4hc+1),&
+      &hhill, tgathh )
 
 !        Compute the left side of Eq. 32 in the CTDMPLUS User's Guide
 !        for all gridded levels; the actual number of levels to use is
 !        determined later in the routine
 
-      DO NL = 1, NLEV - 1
+      do nl = 1, nlev - 1
 ! - Wood 7/5/2022       LS(NL) = 0.5D0 * GRIDWS(NL) * GRIDWS(NL)
 
 ! begin - Use RLINE windspeeds if RLINE sourcetype - Wood 7/5/2022
-         IF ((SRCTYP(ISRC) == 'RLINE') .or.&
-         &(SRCTYP(ISRC) == 'RLINEXT')) THEN
-            LS(NL) = 0.5D0 * RL_GRIDWS(NL,I_ALPHA) *&
-            &RL_GRIDWS(NL,I_ALPHA)
-         ELSE
-            LS(NL) = 0.5D0 * GRIDWS(NL) * GRIDWS(NL)
-         END IF
+         if ((srctyp(isrc) == 'RLINE') .or.&
+         &(srctyp(isrc) == 'RLINEXT')) then
+            ls(nl) = 0.5d0 * rl_gridws(nl,i_alpha) *&
+            &rl_gridws(nl,i_alpha)
+         else
+            ls(nl) = 0.5d0 * gridws(nl) * gridws(nl)
+         end if
 ! end -  Use RLINE windspeeds if RLINE sourcetype  - Wood 7/5/2022
-      END DO
+      end do
 
 !        Define LS at the hill top
-      LS(NLEV) = 0.5D0 * UATHH * UATHH
+      ls(nlev) = 0.5d0 * uathh * uathh
 
 !        Compute the right-hand side (RHS) of Eq. 32 in the CTDMPLUS
 !        User's Guide using the midpoint of each layer
 
-      RS(NLEV) = 0.0D0
-      DO NL = NLEV-1, 1, -1
+      rs(nlev) = 0.0d0
+      do nl = nlev-1, 1, -1
 
-         IF( NL < NLEV-1 )THEN
-            ZMID = 0.5D0 * ( GRIDHT(NL+1) + GRIDHT(NL) )
-            PTHC = 0.5D0 * ( GRIDPT(NL+1) + GRIDPT(NL) )
-            TGHC = 0.5D0 * ( GRIDTG(NL+1) + GRIDTG(NL) )
-            TOPHT = GRIDHT(NL+1)
+         if( nl < nlev-1 )then
+            zmid = 0.5d0 * ( gridht(nl+1) + gridht(nl) )
+            pthc = 0.5d0 * ( gridpt(nl+1) + gridpt(nl) )
+            tghc = 0.5d0 * ( gridtg(nl+1) + gridtg(nl) )
+            topht = gridht(nl+1)
 
-         ELSE IF( NL == NLEV-1 )THEN
-            ZMID = 0.5D0 * ( HHILL + GRIDHT(NL) )
-            PTHC = 0.5D0 * ( PTATHH + GRIDPT(NL) )
-            TGHC = 0.5D0 * ( TGATHH + GRIDTG(NL) )
-            TOPHT = HHILL
+         else if( nl == nlev-1 )then
+            zmid = 0.5d0 * ( hhill + gridht(nl) )
+            pthc = 0.5d0 * ( ptathh + gridpt(nl) )
+            tghc = 0.5d0 * ( tgathh + gridtg(nl) )
+            topht = hhill
 
-         END IF
+         end if
 
 !           Compute the Brunt-Vaisala frequency and then the RHS of Eq. 32
 
-         XN2(NL) = (G / PTHC) * TGHC
-         RS(NL)  = RS(NL+1) + XN2(NL) * ( (HHILL - ZMID) *&
-         &( TOPHT - GRIDHT(NL) ) )
+         xn2(nl) = (g / pthc) * tghc
+         rs(nl)  = rs(nl+1) + xn2(nl) * ( (hhill - zmid) *&
+         &( topht - gridht(nl) ) )
 
-      END DO
+      end do
 
 !        Find the layer(s) where Eq. 32 is satisfied; the lowest layer
 !        is saved for the computation
 
-      IT = 1
-      DO NL = NLEV, 1, -1
-         IF( LS(NL) >= RS(NL) )THEN
-            IT = NL
-         END IF
-      END DO
+      it = 1
+      do nl = nlev, 1, -1
+         if( ls(nl) >= rs(nl) )then
+            it = nl
+         end if
+      end do
 
 !        Interpolate to get the critical dividing streamline, HC,
 !        assuming a linear change of variables within a layer;
@@ -1124,74 +1124,74 @@ SUBROUTINE CRITDS (HEARG)
 !
 !        DWS is wind speed shear; N2 is the Brunt-Vaisala frequency.
 !
-      IF( IT > 1 )THEN
+      if( it > 1 )then
 
-         IF( IT == NLEV )THEN
-            WSTOP = UATHH
-            HTOP  = HHILL
-         ELSE
+         if( it == nlev )then
+            wstop = uathh
+            htop  = hhill
+         else
 ! Wood 7/5/2022 WSTOP = GRIDWS(IT)
 ! Wood 7/5/2022 HTOP  = GRIDHT(IT)
 
 ! begin - Use RLINE wind speed if RLINE or RLINEXT source
-            IF ((SRCTYP(ISRC) == 'RLINE') .or.&
-            &(SRCTYP(ISRC) == 'RLINEXT')) THEN
-               WSTOP = RL_GRIDWS(IT,I_ALPHA)
-               HTOP  = GRIDHT(IT)
-            ELSE
-               WSTOP = GRIDWS(IT)
-               HTOP  = GRIDHT(IT)
-            END IF
+            if ((srctyp(isrc) == 'RLINE') .or.&
+            &(srctyp(isrc) == 'RLINEXT')) then
+               wstop = rl_gridws(it,i_alpha)
+               htop  = gridht(it)
+            else
+               wstop = gridws(it)
+               htop  = gridht(it)
+            end if
 ! end - Use RLINE wind speed if RLINE or RLINEXT source
-         END IF
+         end if
 
-         IB = IT - 1
-         HBOT = GRIDHT(IB)
+         ib = it - 1
+         hbot = gridht(ib)
 ! Wood 7/5/2022 DWS = (WSTOP - GRIDWS(IB)) / (HTOP - HBOT)
 
 ! begin - Use RLINE wind speed if RLINE or RLINEXT source
-         IF ((SRCTYP(ISRC) == 'RLINE') .or.&
-         &(SRCTYP(ISRC) == 'RLINEXT')) THEN
-            DWS = (WSTOP - RL_GRIDWS(IB, I_ALPHA)) / (HTOP - HBOT)
-         ELSE
-            DWS = (WSTOP - GRIDWS(IB)) / (HTOP - HBOT)
-         END IF
+         if ((srctyp(isrc) == 'RLINE') .or.&
+         &(srctyp(isrc) == 'RLINEXT')) then
+            dws = (wstop - rl_gridws(ib, i_alpha)) / (htop - hbot)
+         else
+            dws = (wstop - gridws(ib)) / (htop - hbot)
+         end if
 ! end - Use RLINE wind speed if RLINE or RLINEXT source
 
-         DWS2 = DWS * DWS
-         N2 = XN2(IB)
+         dws2 = dws * dws
+         n2 = xn2(ib)
 !
 !           Solve the quadratic eqn
 !
-         A = 0.5D0 * (N2 - DWS2)
-         B = (HTOP * DWS2 - WSTOP * DWS - N2 * HHILL)
-         C = (N2 * HHILL * HTOP) - 0.5D0 * (N2 * HTOP * HTOP) -&
-         &0.5D0 * (DWS2 * HTOP * HTOP) + WSTOP * DWS * HTOP -&
-         &(LS(IT) - RS(IT))
-         B2 = B * B
-         AC4 = 4.0D0 * A * C
+         a = 0.5d0 * (n2 - dws2)
+         b = (htop * dws2 - wstop * dws - n2 * hhill)
+         c = (n2 * hhill * htop) - 0.5d0 * (n2 * htop * htop) -&
+         &0.5d0 * (dws2 * htop * htop) + wstop * dws * htop -&
+         &(ls(it) - rs(it))
+         b2 = b * b
+         ac4 = 4.0d0 * a * c
 !crfl 6/19/96 Avoid sqrt (neg #) when near zero.
-         IF ((B2-AC4)/B2<0.0D0 .and. (B2-AC4)/B2>-0.001D0) THEN
-            AC4 = B2
-         END IF
+         if ((b2-ac4)/b2<0.0d0 .and. (b2-ac4)/b2>-0.001d0) then
+            ac4 = b2
+         end if
 !crflendtest
-         DETER = DSQRT( B2 - AC4 )
-         HCRIT = (-B - DETER) / (2.0D0 * A)
-      ELSE
-         HCRIT = 0.0D0
-      END IF
+         deter = dsqrt( b2 - ac4 )
+         hcrit = (-b - deter) / (2.0d0 * a)
+      else
+         hcrit = 0.0d0
+      end if
 
-   ELSE
+   else
 !        The hill height is less than zero (i.e., the hill elevation is
 !        less than stack base); set HCRIT = 0.0 for this receptor
-      HCRIT = 0.0D0
+      hcrit = 0.0d0
 
-   END IF
+   end if
 
-   RETURN
-END SUBROUTINE CRITDS
+   return
+end subroutine critds
 
-SUBROUTINE PDF
+subroutine pdf
 !=======================================================================
 !             PDF Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1218,44 +1218,44 @@ SUBROUTINE PDF
 !-----------------------------------------------------------------------
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !---- Data initializations
 
-   MODNAM = 'PDF'
+   modnam = 'PDF'
 
 !---- Calculate the skewness, SKEW                         --- CALL SKCALC
-   CALL SKCALC
+   call skcalc
 
 !---- Calculate the Lagrangian correlation function, R     --- CALL CRCALC
-   CALL CRCALC
+   call crcalc
 
 !---- Calculate the parameter ALPHPD                       --- CALL ALCALC
-   CALL ALCALC
+   call alcalc
 
 !---- Calculate the parameter BETAPD                       --- CALL BECALC
-   CALL BECALC
+   call becalc
 
 !---- Calculate the ratio of the mean updraft and downdraft velocities
 !     to the standard deviation of the vertical velocity, ASUB1 and ASUB2,
 !     respectively                                         --- CALL AACALC
-   CALL AACALC
+   call aacalc
 
 !---- Calculate the ratio of the turbulent energy in the updrafts
 !     and downdrafts to the standard deviation of the total vertical
 !     velocity, BSUB1 and BSUB2, respectively              --- CALL BBCALC
-   CALL BBCALC
+   call bbcalc
 
 !---- Calculate the relative frequencies of updrafts and
 !     downdrafts, LAMDA1 and LAMDA2, respectively          --- CALL LLCALC
-   CALL LLCALC
+   call llcalc
 
-   RETURN
-END SUBROUTINE PDF
+   return
+end subroutine pdf
 
-SUBROUTINE SKCALC
+subroutine skcalc
 !=======================================================================
 !             SKCALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1287,34 +1287,34 @@ SUBROUTINE SKCALC
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION  :: WBAR3
+   double precision  :: wbar3
 
 !---- Data initializations
 !
-   MODNAM = 'SKCALC'
+   modnam = 'SKCALC'
 
 !---- Define the mean of the third moment of vertical velocity
-   IF( SURFAC )THEN
+   if( surfac )then
 !        This is a surface layer release
-      WBAR3 = 1.25D0 * (WSTAR**3) * (CENTER/ZI)
+      wbar3 = 1.25d0 * (wstar**3) * (center/zi)
 
-   ELSE
+   else
 !        The release is above the surface layer
-      WBAR3 = 0.125D0 * (WSTAR**3)
+      wbar3 = 0.125d0 * (wstar**3)
 
-   END IF
+   end if
 
 !---- Calculate the skewness
-   SKEW = WBAR3 / (SWEFFD*SWEFFD*SWEFFD)
+   skew = wbar3 / (sweffd*sweffd*sweffd)
 
-   RETURN
-END SUBROUTINE SKCALC
+   return
+end subroutine skcalc
 
-SUBROUTINE CRCALC ( )
+subroutine crcalc ( )
 !=======================================================================
 !             CRCALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1341,22 +1341,22 @@ SUBROUTINE CRCALC ( )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !---- Data initializations
 !
-   MODNAM = 'CRCALC'
+   modnam = 'CRCALC'
 
 !---- Set value of R to 2.0
 
-   R = 2.0D0
+   r = 2.0d0
 
-   RETURN
-END SUBROUTINE CRCALC
+   return
+end subroutine crcalc
 
-SUBROUTINE ALCALC ( )
+subroutine alcalc ( )
 !=======================================================================
 !             ALCALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1382,22 +1382,22 @@ SUBROUTINE ALCALC ( )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !---- Data initializations
 !
-   MODNAM = 'ALCALC'
+   modnam = 'ALCALC'
 
 !---- Calculate the coefficient ALPHPD
 
-   ALPHPD = ( 1.0D0 + R*R ) / (1.0D0 + 3.0D0*R*R)
+   alphpd = ( 1.0d0 + r*r ) / (1.0d0 + 3.0d0*r*r)
 
-   RETURN
-END SUBROUTINE ALCALC
+   return
+end subroutine alcalc
 
-SUBROUTINE BECALC ( )
+subroutine becalc ( )
 !=======================================================================
 !             BECALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1423,22 +1423,22 @@ SUBROUTINE BECALC ( )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !---- Data initializations
 !
-   MODNAM = 'BECALC'
+   modnam = 'BECALC'
 
 !---- Calculate the coefficient BETAPD
 
-   BETAPD = 1.0D0 + R*R
+   betapd = 1.0d0 + r*r
 
-   RETURN
-END SUBROUTINE BECALC
+   return
+end subroutine becalc
 
-SUBROUTINE AACALC ( )
+subroutine aacalc ( )
 !=======================================================================
 !             AACALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1467,32 +1467,32 @@ SUBROUTINE AACALC ( )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: DETERM, SWRATIO
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: determ, swratio
 
 !---- Data initializations
 !
-   MODNAM = 'AACALC'
+   modnam = 'AACALC'
 
 !---- These two coefficients appear to be the solutions to a quadratic
 !     equation.  Therefore, first compute the value of the determinant.
 
-   DETERM = (ALPHPD*ALPHPD) * (SKEW*SKEW) + (4.0D0 / BETAPD)
+   determ = (alphpd*alphpd) * (skew*skew) + (4.0d0 / betapd)
 
 !---- Compute square root of sigma-wc^2/wstar^2
-   SWRATIO = SWEFFD/WSTAR
+   swratio = sweffd/wstar
 
 !---- Calculate the coefficients ASUB1 and ASUB2
 
-   ASUB1 = SWRATIO * (0.5D0 * ALPHPD * SKEW + 0.5D0 * DSQRT(DETERM))
-   ASUB2 = SWRATIO * (0.5D0 * ALPHPD * SKEW - 0.5D0 * DSQRT(DETERM))
+   asub1 = swratio * (0.5d0 * alphpd * skew + 0.5d0 * dsqrt(determ))
+   asub2 = swratio * (0.5d0 * alphpd * skew - 0.5d0 * dsqrt(determ))
 
-   RETURN
-END SUBROUTINE AACALC
+   return
+end subroutine aacalc
 
-SUBROUTINE BBCALC ( )
+subroutine bbcalc ( )
 !=======================================================================
 !             BBCALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1521,23 +1521,23 @@ SUBROUTINE BBCALC ( )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !---- Data initializations
 !
-   MODNAM = 'BBCALC'
+   modnam = 'BBCALC'
 
 !---- Calculate the coefficients BSUB1 and BSUB2
 
-   BSUB1 =  R * ASUB1
-   BSUB2 = -R * ASUB2
+   bsub1 =  r * asub1
+   bsub2 = -r * asub2
 
-   RETURN
-END SUBROUTINE BBCALC
+   return
+end subroutine bbcalc
 
-SUBROUTINE LLCALC ( )
+subroutine llcalc ( )
 !=======================================================================
 !             LLCALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1564,23 +1564,23 @@ SUBROUTINE LLCALC ( )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !---- Data initializations
 !
-   MODNAM = 'LLCALC'
+   modnam = 'LLCALC'
 
 !---- Calculate the coefficients LAMDA1 and LAMDA2
 
-   LAMDA1 = ASUB2 / (ASUB2 - ASUB1)
-   LAMDA2 = 1.0D0 - LAMDA1
+   lamda1 = asub2 / (asub2 - asub1)
+   lamda2 = 1.0d0 - lamda1
 
-   RETURN
-END SUBROUTINE LLCALC
+   return
+end subroutine llcalc
 
-SUBROUTINE DECAY (XARG)
+subroutine decay (xarg)
 !***********************************************************************
 !                 DECAY Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1601,46 +1601,46 @@ SUBROUTINE DECAY (XARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     JAT DC1 is a temporary DCOEF variable
-   DOUBLE PRECISION :: XARG,DC1
+   double precision :: xarg,dc1
 
 !     Variable Initializations
-   MODNAM = 'DECAY'
+   modnam = 'DECAY'
 
-   D = 1.0D0
-   DC1=DECOEF !SET TEMPORARY DECAY HOLDER JAT
+   d = 1.0d0
+   dc1=decoef !SET TEMPORARY DECAY HOLDER JAT
 
 !      IF (DFAULT .and. URBAN .and. POLLUT.EQ.'SO2' .and.
 !     &    URBSRC(ISRC).EQ.'Y') THEN !commented out 9/12/17 JAT
 !     modified 9/29/17 JAT, use half-life for SO2 URBAN even without DFAULT
 !     if HALFLIFE or DCAYCOEF used, use that value, not 4-hours
-   IF (URBAN .and. POLLUT=='SO2' .and. URBSRC(ISRC)=='Y' .and.&
-   &((ICSTAT(7) == 0 .and. ICSTAT(8) == 0) .or. DFAULT)) THEN !urban SO2 source
-      DECOEF = 4.81D-5
-   ELSE IF ((POLLUT=='SO2' .and. URBSRC(ISRC)=='N') .or.&
-   &DFAULT) THEN  !rural source for SO2 or default modified 10/12/17
-      DECOEF = 0.0D0
+   if (urban .and. pollut=='SO2' .and. urbsrc(isrc)=='Y' .and.&
+   &((icstat(7) == 0 .and. icstat(8) == 0) .or. dfault)) then !urban SO2 source
+      decoef = 4.81d-5
+   else if ((pollut=='SO2' .and. urbsrc(isrc)=='N') .or.&
+   &dfault) then  !rural source for SO2 or default modified 10/12/17
+      decoef = 0.0d0
 !      ELSE IF (DFAULT) THEN !removed and moved to else if above JAT 10/12/17
 !         DECOEF = 0.0D0
-   END IF
+   end if
 
-   IF (DECOEF > 0.0D0) THEN
-      IF (STABLE .or. (UNSTAB .and. HS>=ZI)) THEN
-         D = DEXP (MAX (EXPLIM, -DECOEF*XARG/UEFF))
-      ELSE
-         D = DEXP (MAX (EXPLIM, -DECOEF*XARG/UEFFD))
-      END IF
-   END IF
-   DECOEF=DC1 !RESET DECOEF TO ORIGINAL VALUE JAT
+   if (decoef > 0.0d0) then
+      if (stable .or. (unstab .and. hs>=zi)) then
+         d = dexp (max (explim, -decoef*xarg/ueff))
+      else
+         d = dexp (max (explim, -decoef*xarg/ueffd))
+      end if
+   end if
+   decoef=dc1 !RESET DECOEF TO ORIGINAL VALUE JAT
 
-   RETURN
-END SUBROUTINE DECAY
+   return
+end subroutine decay
 
-SUBROUTINE VRTSBL (SZARG, HEARG, ZIARG)
+subroutine vrtsbl (szarg, hearg, ziarg)
 !***********************************************************************
 !        VRTSBL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1671,95 +1671,95 @@ SUBROUTINE VRTSBL (SZARG, HEARG, ZIARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: I
-   DOUBLE PRECISION :: SZARG, HEARG, ZIARG, A1, A2, A3, A4, A5, A6,&
-   &TWOIZI, SUM, T, V
-   DOUBLE PRECISION :: HETMP, ZITMP
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: i
+   double precision :: szarg, hearg, ziarg, a1, a2, a3, a4, a5, a6,&
+   &twoizi, sum, t, v
+   double precision :: hetmp, zitmp
 
 !     Variable Initializations
-   MODNAM = 'VRTSBL'
-   V = 0.0D0
+   modnam = 'VRTSBL'
+   v = 0.0d0
 
-   IF (ZR == 0.0D0) THEN
+   if (zr == 0.0d0) then
 !        Vertical Term for Case With FLAT Terrain and No Flagpole
 !        Receptor (ZR = 0.0D0)
-      A1 = (-0.5D0/(SZARG*SZARG)) * HEARG * HEARG
-      IF (A1 > EXPLIM)  V = DEXP(A1)
-      SUM = 0.0D0
-      DO I = 1, 100
-         T  = 0.0D0
+      a1 = (-0.5d0/(szarg*szarg)) * hearg * hearg
+      if (a1 > explim)  v = dexp(a1)
+      sum = 0.0d0
+      do i = 1, 100
+         t  = 0.0d0
 !           Use ZIARG (set in PCALC = max(HE,ZI)) instead of ZI.
-         TWOIZI = 2.0D0*DBLE(I)*ZIARG
-         A2 = (-0.5D0/(SZARG*SZARG)) * (TWOIZI-HEARG) *&
-         &(TWOIZI-HEARG)
-         A3 = (-0.5D0/(SZARG*SZARG)) * (TWOIZI+HEARG) *&
-         &(TWOIZI+HEARG)
-         IF (A2 > EXPLIM)  T = DEXP(A2)
-         IF (A3 > EXPLIM)  T = T + DEXP(A3)
-         SUM = SUM + T
+         twoizi = 2.0d0*dble(i)*ziarg
+         a2 = (-0.5d0/(szarg*szarg)) * (twoizi-hearg) *&
+         &(twoizi-hearg)
+         a3 = (-0.5d0/(szarg*szarg)) * (twoizi+hearg) *&
+         &(twoizi+hearg)
+         if (a2 > explim)  t = dexp(a2)
+         if (a3 > explim)  t = t + dexp(a3)
+         sum = sum + t
 
 !RWB        Modify convergence criterion to use relative value of T
-         IF (DABS(T) <= 5.0D-7*DABS(SUM)) THEN
+         if (dabs(t) <= 5.0d-7*dabs(sum)) then
 !              Exit Loop
-            EXIT
-         END IF
-      END DO
+            exit
+         end if
+      end do
 !        Calculate Total Vert. Term - (2.*) was Removed for Optimization
-      V  = 2.0D0*(V + SUM)
+      v  = 2.0d0*(v + sum)
 
-   ELSE IF (ZR <= ZIARG) THEN
+   else if (zr <= ziarg) then
 !        Vertical Term for Case of ZR .NE. 0.0
 !        First adjust for terrain below stack base with ZR < 0,
 !        by keeping HE and ZI horizontal.
-      HETMP = MAX( HEARG, HEARG - ZR )
-      ZITMP = MAX( ZIARG, ZIARG - ZR )
+      hetmp = max( hearg, hearg - zr )
+      zitmp = max( ziarg, ziarg - zr )
 
-      A1 = (-0.5D0/(SZARG*SZARG)) * (ZR-HETMP) * (ZR-HETMP)
-      A2 = (-0.5D0/(SZARG*SZARG)) * (ZR+HETMP) * (ZR+HETMP)
-      IF (A1 > EXPLIM)  V = DEXP(A1)
-      IF (A2 > EXPLIM)  V = V + DEXP(A2)
-      SUM = 0.0D0
-      DO I = 1, 100
-         T  = 0.0D0
-         TWOIZI = 2.0D0*DBLE(I)*ZITMP
-         A3 = (-0.5D0/(SZARG*SZARG)) * (ZR-(TWOIZI-HETMP)) *&
-         &(ZR-(TWOIZI-HETMP))
-         A4 = (-0.5D0/(SZARG*SZARG)) * (ZR+(TWOIZI-HETMP)) *&
-         &(ZR+(TWOIZI-HETMP))
-         A5 = (-0.5D0/(SZARG*SZARG)) * (ZR-(TWOIZI+HETMP)) *&
-         &(ZR-(TWOIZI+HETMP))
-         A6 = (-0.5D0/(SZARG*SZARG)) * (ZR+(TWOIZI+HETMP)) *&
-         &(ZR+(TWOIZI+HETMP))
-         IF (A3 > EXPLIM)  T = T + DEXP(A3)
-         IF (A4 > EXPLIM)  T = T + DEXP(A4)
-         IF (A5 > EXPLIM)  T = T + DEXP(A5)
-         IF (A6 > EXPLIM)  T = T + DEXP(A6)
-         SUM = SUM + T
+      a1 = (-0.5d0/(szarg*szarg)) * (zr-hetmp) * (zr-hetmp)
+      a2 = (-0.5d0/(szarg*szarg)) * (zr+hetmp) * (zr+hetmp)
+      if (a1 > explim)  v = dexp(a1)
+      if (a2 > explim)  v = v + dexp(a2)
+      sum = 0.0d0
+      do i = 1, 100
+         t  = 0.0d0
+         twoizi = 2.0d0*dble(i)*zitmp
+         a3 = (-0.5d0/(szarg*szarg)) * (zr-(twoizi-hetmp)) *&
+         &(zr-(twoizi-hetmp))
+         a4 = (-0.5d0/(szarg*szarg)) * (zr+(twoizi-hetmp)) *&
+         &(zr+(twoizi-hetmp))
+         a5 = (-0.5d0/(szarg*szarg)) * (zr-(twoizi+hetmp)) *&
+         &(zr-(twoizi+hetmp))
+         a6 = (-0.5d0/(szarg*szarg)) * (zr+(twoizi+hetmp)) *&
+         &(zr+(twoizi+hetmp))
+         if (a3 > explim)  t = t + dexp(a3)
+         if (a4 > explim)  t = t + dexp(a4)
+         if (a5 > explim)  t = t + dexp(a5)
+         if (a6 > explim)  t = t + dexp(a6)
+         sum = sum + t
 
 !RWB        Modify convergence criterion to use relative value of T
-         IF (DABS(T) <= 1.0D-6*DABS(SUM)) THEN
+         if (dabs(t) <= 1.0d-6*dabs(sum)) then
 !              Exit Loop
-            EXIT
-         END IF
-      END DO
-      V  = V + SUM
+            exit
+         end if
+      end do
+      v  = v + sum
 !CRFL
 !CRFL  Add 'ELSE' to cover case where receptor is above HSBL, and
 !CRFL  set V = 0 for that case.
-   ELSE
-      V = 0.0D0
-   END IF
+   else
+      v = 0.0d0
+   end if
 
 !     Calculate FSUBZ from V;  FSUBZ = V / (SQRT(2*PI) * SZARG)
-   FSUBZ = V / (SRT2PI*SZARG)
+   fsubz = v / (srt2pi*szarg)
 
-   RETURN
-END SUBROUTINE VRTSBL
+   return
+end subroutine vrtsbl
 
-SUBROUTINE VRTSBN (SZARG, HEARG)
+subroutine vrtsbn (szarg, hearg)
 !***********************************************************************
 !        VRTSBN Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1789,42 +1789,42 @@ SUBROUTINE VRTSBN (SZARG, HEARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: SZARG, HEARG, A1, A2, V
-   DOUBLE PRECISION :: HETMP
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: szarg, hearg, a1, a2, v
+   double precision :: hetmp
 
 !     Variable Initializations
-   MODNAM = 'VRTSBN'
-   V = 0.0D0
+   modnam = 'VRTSBN'
+   v = 0.0d0
 
-   IF (ZR == 0.0D0) THEN
+   if (zr == 0.0d0) then
 !        Vertical Term for Case With FLAT Terrain and No Flagpole
 !        Receptor (ZR = 0.0)
-      A1 = (-0.5D0/(SZARG*SZARG)) * HEARG * HEARG
-      IF (A1 > EXPLIM)  V = DEXP(A1)
-      V  = 2.D0 * V
-   ELSE
+      a1 = (-0.5d0/(szarg*szarg)) * hearg * hearg
+      if (a1 > explim)  v = dexp(a1)
+      v  = 2.d0 * v
+   else
 !        Vertical Term for Case of ZR .NE. 0.0
 !        First adjust for terrain below stack base with ZR < 0,
 !        by keeping HE and ZI horizontal.
-      HETMP = MAX( HEARG, HEARG - ZR )
+      hetmp = max( hearg, hearg - zr )
 
-      A1 = (-0.5D0/(SZARG*SZARG)) * (ZR-HETMP) * (ZR-HETMP)
-      A2 = (-0.5D0/(SZARG*SZARG)) * (ZR+HETMP) * (ZR+HETMP)
-      IF (A1 > EXPLIM)  V = DEXP(A1)
-      IF (A2 > EXPLIM)  V = V + DEXP(A2)
-   END IF
+      a1 = (-0.5d0/(szarg*szarg)) * (zr-hetmp) * (zr-hetmp)
+      a2 = (-0.5d0/(szarg*szarg)) * (zr+hetmp) * (zr+hetmp)
+      if (a1 > explim)  v = dexp(a1)
+      if (a2 > explim)  v = v + dexp(a2)
+   end if
 
 !     Calculate FSUBZ from V;  FSUBZ = V / (SQRT(2*PI) * SZ)
-   FSUBZ = V / (SRT2PI*SZARG)
+   fsubz = v / (srt2pi*szarg)
 
-   RETURN
-END SUBROUTINE VRTSBN
+   return
+end subroutine vrtsbn
 
 
-SUBROUTINE VRTCBL (HE1, HE2, SZ1, SZ2, FACT)
+subroutine vrtcbl (he1, he2, sz1, sz2, fact)
 !***********************************************************************
 !        VRTCBL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1865,118 +1865,118 @@ SUBROUTINE VRTCBL (HE1, HE2, SZ1, SZ2, FACT)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: I
-   DOUBLE PRECISION :: HE1, HE2, SZ1, SZ2, FACT, HEARG1,&
-   &HEARG2, A1, A2, A3, A4, TWOIZI, SUM, T1, T2, TERM, V
-   DOUBLE PRECISION :: HE1TMP, HE2TMP, ZITMP
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: i
+   double precision :: he1, he2, sz1, sz2, fact, hearg1,&
+   &hearg2, a1, a2, a3, a4, twoizi, sum, t1, t2, term, v
+   double precision :: he1tmp, he2tmp, zitmp
 
 !     Variable Initializations
-   MODNAM = 'VRTCBL'
-   V = 0.0D0
+   modnam = 'VRTCBL'
+   v = 0.0d0
 
-   IF (DABS(ZR-0.0D0) < 1.0D-10) THEN
+   if (dabs(zr-0.0d0) < 1.0d-10) then
 !        Vertical Term for Case With FLAT Terrain and No Flagpole
 !        Receptor (ZR = 0.0)
-      SUM = 0.0D0
+      sum = 0.0d0
 
-      DO I = 0, 1000
-         T1 = 0.0D0
-         T2 = 0.0D0
-         TWOIZI = 2.0D0*DBLE(I)*ZI * FACT
+      do i = 0, 1000
+         t1 = 0.0d0
+         t2 = 0.0d0
+         twoizi = 2.0d0*dble(i)*zi * fact
 !           Check for FACT < 0 and skip first term.
-         IF (FACT < 0.0D0 .and. I == 0) CYCLE
+         if (fact < 0.0d0 .and. i == 0) cycle
 
-         HEARG1 = TWOIZI+HE1
-         HEARG2 = TWOIZI+HE2
-         A1 = (-0.5D0/(SZ1*SZ1)) * (HEARG1) * (HEARG1)
-         IF (A1 > EXPLIM)  T1 = DEXP(A1)
-         A2 = (-0.5D0/(SZ2*SZ2)) * (HEARG2) * (HEARG2)
-         IF (A2 > EXPLIM)  T2 = DEXP(A2)
+         hearg1 = twoizi+he1
+         hearg2 = twoizi+he2
+         a1 = (-0.5d0/(sz1*sz1)) * (hearg1) * (hearg1)
+         if (a1 > explim)  t1 = dexp(a1)
+         a2 = (-0.5d0/(sz2*sz2)) * (hearg2) * (hearg2)
+         if (a2 > explim)  t2 = dexp(a2)
 
 !           Sum the Plume 1 and Plume 2 Portions
-         TERM = (LAMDA1/SZ1)*T1 + (LAMDA2/SZ2)*T2
-         SUM = SUM + TERM
+         term = (lamda1/sz1)*t1 + (lamda2/sz2)*t2
+         sum = sum + term
 
 !           Check for Convergence of Summation Term
-         IF (DABS(TERM) <= 5.0D-7*DABS(SUM)) THEN
+         if (dabs(term) <= 5.0d-7*dabs(sum)) then
 !              Exit Loop
-            EXIT
-         END IF
+            exit
+         end if
 
-      END DO
+      end do
 
 !        Calculate Total Vert. Term - (2.*) was Removed for Optimization
-      V  = 2.0D0* SUM
+      v  = 2.0d0* sum
 
-   ELSE IF (ZR <= ZI) THEN
+   else if (zr <= zi) then
 !        Vertical Term for Case of ZR .NE. 0.0
 !        First adjust for terrain below stack base with ZR < 0,
 !        by keeping HE and ZI horizontal.
-      HE1TMP = MAX( HE1, HE1 - ZR )
-      HE2TMP = MAX( HE2, HE2 - ZR )
-      ZITMP  = MAX( ZI, ZI - ZR )
+      he1tmp = max( he1, he1 - zr )
+      he2tmp = max( he2, he2 - zr )
+      zitmp  = max( zi, zi - zr )
 
-      SUM = 0.0D0
+      sum = 0.0d0
 
-      DO I = 0, 1000
-         T1 = 0.0D0
-         T2 = 0.0D0
-         TWOIZI = 2.0D0*DBLE(I)*ZITMP * FACT
+      do i = 0, 1000
+         t1 = 0.0d0
+         t2 = 0.0d0
+         twoizi = 2.0d0*dble(i)*zitmp * fact
 !           Check for FACT < 0 and skip first term.
-         IF (FACT < 0.0D0 .and. I == 0) CYCLE
+         if (fact < 0.0d0 .and. i == 0) cycle
 !
 !      Note:  The following code can be used for the indirect plume
 !      as well as the direct plume, since HEn, for the indirect plume,
 !      already contains ZI, and thus represents the first "reflection"
 !      off the top of the mixed layer.
 !
-         HEARG1 = TWOIZI+HE1TMP
-         HEARG2 = TWOIZI+HE2TMP
-         A1 = (-0.5D0/(SZ1*SZ1)) * (ZR-(HEARG1)) *&
-         &(ZR-(HEARG1))
-         A2 = (-0.5D0/(SZ1*SZ1)) * (ZR+(HEARG1)) *&
-         &(ZR+(HEARG1))
-         IF (A1 > EXPLIM)  T1 = DEXP(A1)
-         IF (A2 > EXPLIM)  T1 = T1 + DEXP(A2)
-         A3 = (-0.5D0/(SZ2*SZ2)) * (ZR-(HEARG2)) *&
-         &(ZR-(HEARG2))
-         A4 = (-0.5D0/(SZ2*SZ2)) * (ZR+(HEARG2)) *&
-         &(ZR+(HEARG2))
-         IF (A3 > EXPLIM)  T2 = DEXP(A3)
-         IF (A4 > EXPLIM)  T2 = T2 + DEXP(A4)
+         hearg1 = twoizi+he1tmp
+         hearg2 = twoizi+he2tmp
+         a1 = (-0.5d0/(sz1*sz1)) * (zr-(hearg1)) *&
+         &(zr-(hearg1))
+         a2 = (-0.5d0/(sz1*sz1)) * (zr+(hearg1)) *&
+         &(zr+(hearg1))
+         if (a1 > explim)  t1 = dexp(a1)
+         if (a2 > explim)  t1 = t1 + dexp(a2)
+         a3 = (-0.5d0/(sz2*sz2)) * (zr-(hearg2)) *&
+         &(zr-(hearg2))
+         a4 = (-0.5d0/(sz2*sz2)) * (zr+(hearg2)) *&
+         &(zr+(hearg2))
+         if (a3 > explim)  t2 = dexp(a3)
+         if (a4 > explim)  t2 = t2 + dexp(a4)
 
 !           Sum the Plume 1 and Plume 2 Portions
-         TERM = (LAMDA1/SZ1)*T1 + (LAMDA2/SZ2)*T2
-         SUM = SUM + TERM
+         term = (lamda1/sz1)*t1 + (lamda2/sz2)*t2
+         sum = sum + term
 
 !           Check for Convergence of Summation Term
-         IF (DABS(TERM) <= 1.0D-6*DABS(SUM)) THEN
+         if (dabs(term) <= 1.0d-6*dabs(sum)) then
 !              Exit Loop
-            EXIT
-         END IF
+            exit
+         end if
 
-      END DO
+      end do
 
-      V  = SUM
+      v  = sum
 
-   ELSE
+   else
 !        Receptor is above mixing height, set V=0.
-      V = 0.0D0
+      v = 0.0d0
 
-   END IF
+   end if
 
 !     Calculate FSUBZ from V;  FSUBZ = V / SQRT(2*PI)
 !     (Note that 1/SZ term is included in V)
-   FSUBZ = V / SRT2PI
+   fsubz = v / srt2pi
 
-   RETURN
-END SUBROUTINE VRTCBL
+   return
+end subroutine vrtcbl
 
 
-SUBROUTINE PFRACT (HEARG)
+subroutine pfract (hearg)
 !***********************************************************************
 !        PFRACT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1997,76 +1997,76 @@ SUBROUTINE PFRACT (HEARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: I
-   DOUBLE PRECISION :: TWOIZI, HCINT, HEARG
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: i
+   double precision :: twoizi, hcint, hearg
 
-   DOUBLE PRECISION :: A1, A2, A3, A4, A5, A6, B1, B2, B3, B4, B5, B6,&
-   &T, SUM, ERFX
+   double precision :: a1, a2, a3, a4, a5, a6, b1, b2, b3, b4, b5, b6,&
+   &t, sum, erfx
 
 !     Variable Initializations
-   MODNAM = 'PFRACT'
-   PHEE = 0.0D0
+   modnam = 'PFRACT'
+   phee = 0.0d0
 
-   IF (STABLE .and. (HCRIT > 0.0D0)) THEN
+   if (stable .and. (hcrit > 0.0d0)) then
 
 !        Define HCINT = MIN( HSBL, HCRIT) as the limit of the integral,
 !        where HSBL = MAX( HE, ZI).
-      HCINT = MIN( HSBL, HCRIT)
+      hcint = min( hsbl, hcrit)
 
 !        Calculate Terms Corresponding to n=0.
-      A1 = (HCINT-HEARG)/(RTOF2 * SZ)
-      A2 = (HCINT+HEARG)/(RTOF2 * SZ)
-      B1 = ERFX (A1)
-      B2 = ERFX (A2)
+      a1 = (hcint-hearg)/(rtof2 * sz)
+      a2 = (hcint+hearg)/(rtof2 * sz)
+      b1 = erfx (a1)
+      b2 = erfx (a2)
 
 !        Calculate Summation Term.
-      SUM = 0.0D0
-      DO I = 1, 100
-         T  = 0.0D0
+      sum = 0.0d0
+      do i = 1, 100
+         t  = 0.0d0
 !           Use HSBL (set in PCALC = max(HE,ZI)) instead of ZI.
-         TWOIZI = 2.0D0*DBLE(I)*HSBL
-         A3 = (HCINT-HEARG+TWOIZI)/(RTOF2 * SZ)
-         A4 = (HCINT+HEARG+TWOIZI)/(RTOF2 * SZ)
-         A5 = (HCINT-HEARG-TWOIZI)/(RTOF2 * SZ)
-         A6 = (HCINT+HEARG-TWOIZI)/(RTOF2 * SZ)
-         B3 = ERFX (A3)
-         B4 = ERFX (A4)
-         B5 = ERFX (A5)
-         B6 = ERFX (A6)
+         twoizi = 2.0d0*dble(i)*hsbl
+         a3 = (hcint-hearg+twoizi)/(rtof2 * sz)
+         a4 = (hcint+hearg+twoizi)/(rtof2 * sz)
+         a5 = (hcint-hearg-twoizi)/(rtof2 * sz)
+         a6 = (hcint+hearg-twoizi)/(rtof2 * sz)
+         b3 = erfx (a3)
+         b4 = erfx (a4)
+         b5 = erfx (a5)
+         b6 = erfx (a6)
 
-         T = B3 + B4 + B5 + B6
-         SUM = SUM + T
+         t = b3 + b4 + b5 + b6
+         sum = sum + t
 
 !           Check for convergence of summation term
-         IF (DABS(T) <= 1.0D-6*DABS(SUM)) THEN
+         if (dabs(t) <= 1.0d-6*dabs(sum)) then
 ! ---          Set lower limit of 5 on number of iterations
-            IF( I >= 5 )THEN
+            if( i >= 5 )then
 !                 Exit Loop
-               EXIT
-            ENDIF
-         END IF
+               exit
+            endif
+         end if
 
-      END DO
+      end do
 
-      PHEE = 0.5D0 * (B1 + B2 + SUM)
+      phee = 0.5d0 * (b1 + b2 + sum)
 
 !        Check for PHEE > 1.01 and Set = 1.0
 !        (this patch may need to be changed).
-      IF (PHEE > 1.01D0 .and. .NOT. L_SkipMessages)  THEN
-         WRITE(DUMMY,'(I8.8)') KURDAT
-         CALL ERRHDL(PATH,MODNAM,'I','405',DUMMY)
-         PHEE = 1.0D0
-      END IF
+      if (phee > 1.01d0 .and. .not. L_SkipMessages)  then
+         write(dummy,'(I8.8)') kurdat
+         call errhdl(path,modnam,'I','405',dummy)
+         phee = 1.0d0
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END SUBROUTINE PFRACT
+   return
+end subroutine pfract
 
-FUNCTION ERFX(ARG)
+function erfx(arg)
 !***********************************************************************
 !        ERFX Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2086,32 +2086,32 @@ FUNCTION ERFX(ARG)
 !***********************************************************************
 
 !     Variable Declarations
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION :: ARG, X, ERFX
+   double precision :: arg, x, erfx
 
 !     Variable Initializations
-   MODNAM = 'ERFX'
+   modnam = 'ERFX'
 
-   IF (ARG > 4.0D0) THEN
-      ERFX = 1.0D0
-   ELSE IF (ARG < -4.0D0) THEN
-      ERFX = -1.0D0
-   ELSE IF (DABS(ARG) < 1.0D-10) THEN
-      ERFX = 0.0D0
-   ELSE
-      X = DABS(ARG)
-      ERFX = 1.D0 - 1.D0/(1.D0+X*(0.705230784D-1+X*(0.422820123D-1+X*&
-      &(0.92705272D-2+X*(0.1520143D-3+X*(0.2765672D-3+X*&
-      &0.430638D-4))))))**16.0D0
-      IF (ARG < 0.0D0)  ERFX = -ERFX
-   END IF
+   if (arg > 4.0d0) then
+      erfx = 1.0d0
+   else if (arg < -4.0d0) then
+      erfx = -1.0d0
+   else if (dabs(arg) < 1.0d-10) then
+      erfx = 0.0d0
+   else
+      x = dabs(arg)
+      erfx = 1.d0 - 1.d0/(1.d0+x*(0.705230784d-1+x*(0.422820123d-1+x*&
+      &(0.92705272d-2+x*(0.1520143d-3+x*(0.2765672d-3+x*&
+      &0.430638d-4))))))**16.0d0
+      if (arg < 0.0d0)  erfx = -erfx
+   end if
 
-   RETURN
-END FUNCTION ERFX
+   return
+end function erfx
 
-SUBROUTINE SUMVAL
+subroutine sumval
 !***********************************************************************
 !                 SUMVAL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2136,41 +2136,41 @@ SUBROUTINE SUMVAL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'SUMVAL'
+   modnam = 'SUMVAL'
 
 !     Begin LOOP Over Output Types
-   DO ITYP = 1, NUMTYP
-      IF (HRVAL(ITYP) /= 0.0D0) THEN
+   do ityp = 1, numtyp
+      if (hrval(ityp) /= 0.0d0) then
 !           Check for Source Belonging to Group
-         IF (IGROUP(ISRC,IGRP) == 1) THEN
+         if (igroup(isrc,igrp) == 1) then
 !              Begin Averaging Period LOOP
-            DO IAVE = 1, NUMAVE
-               AVEVAL(IREC,IGRP,IAVE,ITYP) = HRVAL(ITYP) +&
-               &AVEVAL(IREC,IGRP,IAVE,ITYP)
-            END DO
+            do iave = 1, numave
+               aveval(irec,igrp,iave,ityp) = hrval(ityp) +&
+               &aveval(irec,igrp,iave,ityp)
+            end do
 !              End Averaging Period LOOP
-            IF (PERIOD .or. ANNUAL) THEN
-               ANNVAL(IREC,IGRP,ITYP) = HRVAL(ITYP) +&
-               &ANNVAL(IREC,IGRP,ITYP)
-            END IF
-            IF (ISEAHR(IGRP) == 1) THEN
-               SHVALS(IREC,IGRP,ISEAS,IHOUR,ITYP) = HRVAL(ITYP) +&
-               &SHVALS(IREC,IGRP,ISEAS,IHOUR,ITYP)
-            END IF
-         END IF
-      END IF
-   END DO
+            if (period .or. annual) then
+               annval(irec,igrp,ityp) = hrval(ityp) +&
+               &annval(irec,igrp,ityp)
+            end if
+            if (iseahr(igrp) == 1) then
+               shvals(irec,igrp,iseas,ihour,ityp) = hrval(ityp) +&
+               &shvals(irec,igrp,iseas,ihour,ityp)
+            end if
+         end if
+      end if
+   end do
 !     End LOOP Over Output Types
 
-   RETURN
-END SUBROUTINE SUMVAL
+   return
+end subroutine sumval
 
-SUBROUTINE SUMBACK
+subroutine sumback
 !***********************************************************************
 !                 SUMBACK Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2190,14 +2190,14 @@ SUBROUTINE SUMBACK
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   DOUBLE PRECISION :: BCKGRD
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   double precision :: bckgrd
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'SUMBACK'
-   BCKGRD = 0.0D0
+   modnam = 'SUMBACK'
+   bckgrd = 0.0d0
 
 !     Begin LOOP Over Output Types
 !     JAT 6/25/19 ADDED FROM 18081
@@ -2212,44 +2212,44 @@ SUBROUTINE SUMBACK
 !     2.  Only add background to the concentration output
 !         type, i.e. ityp=1.  Background concentration (ug/^3)
 !         should not be added to deposition (g/m^2)
-   ITYP=1
+   ityp=1
 !      DO ITYP = 1, NUMTYP  !JAT comment out do loop since ITYP only = 1
-   IF (GRP_BACK(IGRP)) THEN
+   if (grp_back(igrp)) then
 ! ---       Include background for this source group
-      BCKGRD = BGCONC*EMIFAC(ITYP)/1.0D6
-      BACKAVE(IGRP) = BACKAVE(IGRP) + BGCONC*EMIFAC(ITYP)/1.0D6
-      IF (PERIOD .or. ANNUAL) THEN
-         BACKANN(IGRP) = BACKANN(IGRP) + BGCONC*EMIFAC(ITYP)/1.0D6
-      END IF
-      IF (ISEAHR(IGRP) == 1) THEN
-         BACKSEASHR(IGRP,ISEAS,IHOUR) =&
-         &BACKSEASHR(IGRP,ISEAS,IHOUR) + BGCONC*EMIFAC(ITYP)/1.0D6
-      END IF
-   ELSE
+      bckgrd = bgconc*emifac(ityp)/1.0d6
+      backave(igrp) = backave(igrp) + bgconc*emifac(ityp)/1.0d6
+      if (period .or. annual) then
+         backann(igrp) = backann(igrp) + bgconc*emifac(ityp)/1.0d6
+      end if
+      if (iseahr(igrp) == 1) then
+         backseashr(igrp,iseas,ihour) =&
+         &backseashr(igrp,iseas,ihour) + bgconc*emifac(ityp)/1.0d6
+      end if
+   else
 ! ---       Do not include background for this source group
-      BCKGRD = 0.0D0
-   END IF
+      bckgrd = 0.0d0
+   end if
 !        Begin Averaging Period LOOP
-   DO IAVE = 1, NUMAVE
-      AVEVAL(1:NUMREC,IGRP,IAVE,ITYP) = BCKGRD +&
-      &AVEVAL(1:NUMREC,IGRP,IAVE,ITYP)
-   END DO
+   do iave = 1, numave
+      aveval(1:numrec,igrp,iave,ityp) = bckgrd +&
+      &aveval(1:numrec,igrp,iave,ityp)
+   end do
 !        End Averaging Period LOOP
-   IF (PERIOD .or. ANNUAL) THEN
-      ANNVAL(1:NUMREC,IGRP,ITYP) = BCKGRD +&
-      &ANNVAL(1:NUMREC,IGRP,ITYP)
-   END IF
-   IF (ISEAHR(IGRP) == 1) THEN
-      SHVALS(1:NUMREC,IGRP,ISEAS,IHOUR,ITYP) = BCKGRD +&
-      &SHVALS(1:NUMREC,IGRP,ISEAS,IHOUR,ITYP)
-   END IF
+   if (period .or. annual) then
+      annval(1:numrec,igrp,ityp) = bckgrd +&
+      &annval(1:numrec,igrp,ityp)
+   end if
+   if (iseahr(igrp) == 1) then
+      shvals(1:numrec,igrp,iseas,ihour,ityp) = bckgrd +&
+      &shvals(1:numrec,igrp,iseas,ihour,ityp)
+   end if
 !      END DO !JAT comment out do loop since ITYP only = 1
 !     End LOOP Over Output Types
 
-   RETURN
-END SUBROUTINE SUMBACK
+   return
+end subroutine sumback
 
-SUBROUTINE SUMBACK_NO2
+subroutine sumback_no2
 !***********************************************************************
 !                 SUMBACK Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2272,12 +2272,12 @@ SUBROUTINE SUMBACK_NO2
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'SUMBACK_NO2'
+   modnam = 'SUMBACK_NO2'
 
 !     Begin LOOP Over Output Types
 !     RCO 7/27/20 ADDED FROM 19191
@@ -2292,45 +2292,45 @@ SUBROUTINE SUMBACK_NO2
 !     2.  Only add background to the concentration output
 !         type, i.e. ityp=1.  Background concentration (ug/^3)
 !         should not be added to deposition (g/m^2)
-   ITYP=1
+   ityp=1
 !      DO ITYP = 1, NUMTYP  !RCO comment out do loop since ITYP only = 1
-   IF (GRP_BACK(IGRP) .and. BGCONC > 0.0D0) THEN
+   if (grp_back(igrp) .and. bgconc > 0.0d0) then
 ! ---       Include background for this source group
-      BACKAVE(IGRP) = BACKAVE(IGRP) + BGCONC*EMIFAC(ITYP)/1.0D6
-      IF (PERIOD .or. ANNUAL) THEN
-         BACKANN(IGRP) = BACKANN(IGRP) +&
-         &BGCONC*EMIFAC(ITYP)/1.0D6
-      END IF
-      IF (ISEAHR(IGRP) == 1) THEN
-         BACKSEASHR(IGRP,ISEAS,IHOUR) =&
-         &BACKSEASHR(IGRP,ISEAS,IHOUR) +&
-         &BGCONC*EMIFAC(ITYP)/1.0D6
-      END IF
+      backave(igrp) = backave(igrp) + bgconc*emifac(ityp)/1.0d6
+      if (period .or. annual) then
+         backann(igrp) = backann(igrp) +&
+         &bgconc*emifac(ityp)/1.0d6
+      end if
+      if (iseahr(igrp) == 1) then
+         backseashr(igrp,iseas,ihour) =&
+         &backseashr(igrp,iseas,ihour) +&
+         &bgconc*emifac(ityp)/1.0d6
+      end if
 
 !           Begin Averaging Period LOOP
-      DO IAVE = 1, NUMAVE
-         AVEVAL(IREC,IGRP,IAVE,ITYP) =&
-         &BGCONC*EMIFAC(ITYP)/1.0D6 +&
-         &AVEVAL(IREC,IGRP,IAVE,ITYP)
-      END DO
+      do iave = 1, numave
+         aveval(irec,igrp,iave,ityp) =&
+         &bgconc*emifac(ityp)/1.0d6 +&
+         &aveval(irec,igrp,iave,ityp)
+      end do
 !           End Averaging Period LOOP
-      IF (PERIOD .or. ANNUAL) THEN
-         ANNVAL(IREC,IGRP,ITYP) = BGCONC*EMIFAC(ITYP)/1.0D6 +&
-         &ANNVAL(IREC,IGRP,ITYP)
-      END IF
-      IF (ISEAHR(IGRP) == 1) THEN
-         SHVALS(IREC,IGRP,ISEAS,IHOUR,ITYP) =&
-         &BGCONC*EMIFAC(ITYP)/1.0D6 +&
-         &SHVALS(IREC,IGRP,ISEAS,IHOUR,ITYP)
-      END IF
-   END IF
+      if (period .or. annual) then
+         annval(irec,igrp,ityp) = bgconc*emifac(ityp)/1.0d6 +&
+         &annval(irec,igrp,ityp)
+      end if
+      if (iseahr(igrp) == 1) then
+         shvals(irec,igrp,iseas,ihour,ityp) =&
+         &bgconc*emifac(ityp)/1.0d6 +&
+         &shvals(irec,igrp,iseas,ihour,ityp)
+      end if
+   end if
 !      END DO !JAT comment out do loop since ITYP only = 1
 !     End LOOP Over Output Types
 
-   RETURN
-END SUBROUTINE SUMBACK_NO2
+   return
+end subroutine sumback_no2
 
-SUBROUTINE SUMVALPSD(SRCS2USE)
+subroutine sumvalpsd(srcs2use)
 !***********************************************************************
 !                 SUMVAL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2354,57 +2354,57 @@ SUBROUTINE SUMVALPSD(SRCS2USE)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12, SRCS2USE*7
+   use main1
+   implicit none
+   character :: modnam*12, srcs2use*7
 
 !     Variable Initializations
-   MODNAM = 'SUMVALPSD'
+   modnam = 'SUMVALPSD'
 
 !     Begin LOOP Over Output Types
-   DO ITYP = 1, NUMTYP
+   do ityp = 1, numtyp
 
 !        Begin Averaging Period LOOP
-      DO IAVE = 1, NUMAVE
+      do iave = 1, numave
 
-         IF( TRIM(SRCS2USE) == 'NAAQSRC' )THEN
+         if( trim(srcs2use) == 'NAAQSRC' )then
 !              NAAQS group: assign to (A+B) group 1
-            AVEVAL(IREC,1,IAVE,ITYP) = ABVAL(IREC,ITYP) +&
-            &AVEVAL(IREC,1,IAVE,ITYP)
+            aveval(irec,1,iave,ityp) = abval(irec,ityp) +&
+            &aveval(irec,1,iave,ityp)
 
-         ELSE IF( TRIM(SRCS2USE) == 'ALLBASE' )THEN
+         else if( trim(srcs2use) == 'ALLBASE' )then
 !              PSDINC group: assign (A+B)-(B+C) to group 2
-            AVEVAL(IREC,2,IAVE,ITYP) = (ABVAL(IREC,ITYP) -&
-            &BCVAL(IREC,ITYP)) +&
-            &AVEVAL(IREC,2,IAVE,ITYP)
-         END IF
+            aveval(irec,2,iave,ityp) = (abval(irec,ityp) -&
+            &bcval(irec,ityp)) +&
+            &aveval(irec,2,iave,ityp)
+         end if
 
-      END DO
+      end do
 
 !        Check for ANNUAL or PERIOD Averaging
-      IF (PERIOD .or. ANNUAL) THEN
+      if (period .or. annual) then
 
-         IF( TRIM(SRCS2USE) == 'NAAQSRC' )THEN
+         if( trim(srcs2use) == 'NAAQSRC' )then
 !              NAAQS group: assign to (A+B) group 1
-            ANNVAL(IREC,1,ITYP) = ABVAL(IREC,ITYP) +&
-            &ANNVAL(IREC,1,ITYP)
+            annval(irec,1,ityp) = abval(irec,ityp) +&
+            &annval(irec,1,ityp)
 
-         ELSE IF( TRIM(SRCS2USE) == 'ALLBASE' )THEN
+         else if( trim(srcs2use) == 'ALLBASE' )then
 !              PSDINC group: assign (A+B)-(B+C) to group 2
-            ANNVAL(IREC,2,ITYP) = (ABVAL(IREC,ITYP) -&
-            &BCVAL(IREC,ITYP)) +&
-            &ANNVAL(IREC,2,ITYP)
-         END IF
+            annval(irec,2,ityp) = (abval(irec,ityp) -&
+            &bcval(irec,ityp)) +&
+            &annval(irec,2,ityp)
+         end if
 
-      END IF
+      end if
 
-   END DO
+   end do
 !     End LOOP Over Output Types
 
-   RETURN
-END SUBROUTINE SUMVALPSD
+   return
+end subroutine sumvalpsd
 
-SUBROUTINE AVER
+subroutine aver
 !***********************************************************************
 !                 AVER Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2423,45 +2423,45 @@ SUBROUTINE AVER
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION :: SNUM
+   double precision :: snum
 
 !     Variable Initializations
-   MODNAM = 'AVER'
-   PATH = 'CN'  !D081 CRT 5/13/2024
+   modnam = 'AVER'
+   path = 'CN'  !D081 CRT 5/13/2024
 
-   IF (KAVE(IAVE) /= 1) THEN
+   if (kave(iave) /= 1) then
 !        Calculate Denominator Considering Calms and Missing,
 !        Skipping Averaging if Averaging Period is 1-Hour
-      SNUM = MAX(DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)),&
-      &DNINT(DBLE(NUMHRS(IAVE))*0.75D0+0.4D0))
+      snum = max(dble(numhrs(iave)-numclm(iave)-nummsg(iave)),&
+      &dnint(dble(numhrs(iave))*0.75d0+0.4d0))
 !        D081 - Add warning message - less than 18 hours used for 24-hr avg (WSP, 4/2023))
-      IF(DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) < 18&
-      &.and. KAVE(IAVE) == 24) THEN
-         WRITE(DUMMY,'(I10)') FULLDATE
-         CALL ERRHDL(PATH,MODNAM,'W','732',DUMMY)
+      if(dble(numhrs(iave)-numclm(iave)-nummsg(iave)) < 18&
+      &.and. kave(iave) == 24) then
+         write(dummy,'(I10)') fulldate
+         call errhdl(path,modnam,'W','732',dummy)
 !        D081 - Add warning message - less than 6 hours used for 8-hr avg (CRT, 5/1/2023)
-      ELSEIF (DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) < 6&
-      &.and. KAVE(IAVE) == 8) THEN
-         WRITE(DUMMY,'(I10)') FULLDATE
-         CALL ERRHDL(PATH,MODNAM,'W','733',DUMMY)
+      elseif (dble(numhrs(iave)-numclm(iave)-nummsg(iave)) < 6&
+      &.and. kave(iave) == 8) then
+         write(dummy,'(I10)') fulldate
+         call errhdl(path,modnam,'W','733',dummy)
 !        D081 - Add warning message - less than 3 hours used for 3-hr avg (CRT, 5/1/2023)
-      ELSEIF (DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) < 3&
-      &.and. KAVE(IAVE) == 3) THEN
-         WRITE(DUMMY,'(I10)') FULLDATE
-         CALL ERRHDL(PATH,MODNAM,'W','734',DUMMY)
-      END IF
-      AVEVAL(1:NUMREC,1:NUMGRP,IAVE,1) =&
-      &AVEVAL(1:NUMREC,1:NUMGRP,IAVE,1) / SNUM
-   END IF
+      elseif (dble(numhrs(iave)-numclm(iave)-nummsg(iave)) < 3&
+      &.and. kave(iave) == 3) then
+         write(dummy,'(I10)') fulldate
+         call errhdl(path,modnam,'W','734',dummy)
+      end if
+      aveval(1:numrec,1:numgrp,iave,1) =&
+      &aveval(1:numrec,1:numgrp,iave,1) / snum
+   end if
 
-   RETURN
-END SUBROUTINE AVER
+   return
+end subroutine aver
 
-SUBROUTINE HIVALS
+subroutine hivals
 !***********************************************************************
 !                 HIVALS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2484,38 +2484,38 @@ SUBROUTINE HIVALS
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'HIVALS'
+   modnam = 'HIVALS'
 
 !     Check for High/Max Value Options - Skip Update If KAVE=1,
 !     And No CALCS Were Made for the Current Hour
-   IF (CALCS .or. KAVE(IAVE)/=1) THEN
-      IF (INHI(IAVE) == 1) THEN
-         DO ITYP = 1, NUMTYP
+   if (calcs .or. kave(iave)/=1) then
+      if (inhi(iave) == 1) then
+         do ityp = 1, numtyp
 !              Update High Values for Each Receptor            ---   CALL NHIGH
-            CALL NHIGH
-         END DO
-      END IF
-      IF (MAXAVE(IAVE) == 1) THEN
-         DO ITYP = 1, NUMTYP
+            call nhigh
+         end do
+      end if
+      if (maxave(iave) == 1) then
+         do ityp = 1, numtyp
 !              Update Maximum Value Table for KAVE             ---   CALL MAXVALUE
-            CALL MAXVALUE
-         END DO
-      END IF
-   END IF
+            call maxvalue
+         end do
+      end if
+   end if
 !     Reset Counters for This Averaging Period
-   NUMHRS(IAVE) = 0
-   NUMCLM(IAVE) = 0
-   NUMMSG(IAVE) = 0
+   numhrs(iave) = 0
+   numclm(iave) = 0
+   nummsg(iave) = 0
 
-   RETURN
-END SUBROUTINE HIVALS
+   return
+end subroutine hivals
 
-SUBROUTINE NHIGH
+subroutine nhigh
 !***********************************************************************
 !                 NHIGH Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2538,82 +2538,82 @@ SUBROUTINE NHIGH
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: J
+   integer :: j
 
 !     Variable Initializations
-   MODNAM = 'NHIGH'
+   modnam = 'NHIGH'
 
 !     Begin Source Group LOOP
-   DO IGRP = 1, NUMGRP
+   do igrp = 1, numgrp
 !        Begin Receptor LOOP
-      RECEPTOR_LOOP: DO IREC = 1, NUMREC
-         IF (NHIVAL > 1) THEN
-            IF (AVEVAL(IREC,IGRP,IAVE,ITYP) >&
-            &HIVALU(IREC,NHIVAL,IGRP,IAVE,ITYP)) THEN
-               DO J = NHIVAL-1, 1, -1
-                  IF (AVEVAL(IREC,IGRP,IAVE,ITYP) <=&
-                  &HIVALU(IREC,J,IGRP,IAVE,ITYP)) THEN
-                     HIVALU(IREC,J+1,IGRP,IAVE,ITYP) =&
-                     &AVEVAL(IREC,IGRP,IAVE,ITYP)
-                     IF (NUMCLM(IAVE)==0 .and.&
-                     &NUMMSG(IAVE)==0) THEN
-                        HCLMSG(IREC,J+1,IGRP,IAVE,ITYP) = ' '
-                     ELSE
+      receptor_loop: do irec = 1, numrec
+         if (nhival > 1) then
+            if (aveval(irec,igrp,iave,ityp) >&
+            &hivalu(irec,nhival,igrp,iave,ityp)) then
+               do j = nhival-1, 1, -1
+                  if (aveval(irec,igrp,iave,ityp) <=&
+                  &hivalu(irec,j,igrp,iave,ityp)) then
+                     hivalu(irec,j+1,igrp,iave,ityp) =&
+                     &aveval(irec,igrp,iave,ityp)
+                     if (numclm(iave)==0 .and.&
+                     &nummsg(iave)==0) then
+                        hclmsg(irec,j+1,igrp,iave,ityp) = ' '
+                     else
 !                          Set Indicator Of Calm and Msg    ---   CALL HSETFG
-                        CALL HSETFG(0,J)
-                     END IF
-                     NHIDAT(IREC,J+1,IGRP,IAVE,ITYP) = KURDAT
+                        call hsetfg(0,j)
+                     end if
+                     nhidat(irec,j+1,igrp,iave,ityp) = kurdat
 !                       Exit Block
-                     CYCLE RECEPTOR_LOOP
-                  ELSE
-                     HIVALU(IREC,J+1,IGRP,IAVE,ITYP) =&
-                     &HIVALU(IREC,J,IGRP,IAVE,ITYP)
-                     HCLMSG(IREC,J+1,IGRP,IAVE,ITYP) =&
-                     &HCLMSG(IREC,J,IGRP,IAVE,ITYP)
-                     NHIDAT(IREC,J+1,IGRP,IAVE,ITYP) =&
-                     &NHIDAT(IREC,J,IGRP,IAVE,ITYP)
-                     IF (J == 1) THEN
-                        HIVALU(IREC,1,IGRP,IAVE,ITYP) =&
-                        &AVEVAL(IREC,IGRP,IAVE,ITYP)
-                        IF (NUMCLM(IAVE)==0 .and.&
-                        &NUMMSG(IAVE)==0) THEN
-                           HCLMSG(IREC,1,IGRP,IAVE,ITYP) = ' '
-                        ELSE
+                     cycle receptor_loop
+                  else
+                     hivalu(irec,j+1,igrp,iave,ityp) =&
+                     &hivalu(irec,j,igrp,iave,ityp)
+                     hclmsg(irec,j+1,igrp,iave,ityp) =&
+                     &hclmsg(irec,j,igrp,iave,ityp)
+                     nhidat(irec,j+1,igrp,iave,ityp) =&
+                     &nhidat(irec,j,igrp,iave,ityp)
+                     if (j == 1) then
+                        hivalu(irec,1,igrp,iave,ityp) =&
+                        &aveval(irec,igrp,iave,ityp)
+                        if (numclm(iave)==0 .and.&
+                        &nummsg(iave)==0) then
+                           hclmsg(irec,1,igrp,iave,ityp) = ' '
+                        else
 !                             Set Indicator Of Calm and Msg ---   CALL HSETFG
-                           CALL HSETFG(1,1)
-                        END IF
-                        NHIDAT(IREC,1,IGRP,IAVE,ITYP) = KURDAT
-                     END IF
-                  END IF
-               END DO
-            END IF
-         ELSE IF (NHIVAL == 1) THEN
-            IF (AVEVAL(IREC,IGRP,IAVE,ITYP) >&
-            &HIVALU(IREC,1,IGRP,IAVE,ITYP)) THEN
-               HIVALU(IREC,1,IGRP,IAVE,ITYP) = AVEVAL(IREC,IGRP,IAVE,ITYP)
-               IF (NUMCLM(IAVE)==0 .and.&
-               &NUMMSG(IAVE)==0) THEN
-                  HCLMSG(IREC,1,IGRP,IAVE,ITYP) = ' '
-               ELSE
+                           call hsetfg(1,1)
+                        end if
+                        nhidat(irec,1,igrp,iave,ityp) = kurdat
+                     end if
+                  end if
+               end do
+            end if
+         else if (nhival == 1) then
+            if (aveval(irec,igrp,iave,ityp) >&
+            &hivalu(irec,1,igrp,iave,ityp)) then
+               hivalu(irec,1,igrp,iave,ityp) = aveval(irec,igrp,iave,ityp)
+               if (numclm(iave)==0 .and.&
+               &nummsg(iave)==0) then
+                  hclmsg(irec,1,igrp,iave,ityp) = ' '
+               else
 !                    Set Indicator Of Calm and Missing      ---   CALL HSETFG
-                  CALL HSETFG(1,1)
-               END IF
-               NHIDAT(IREC,1,IGRP,IAVE,ITYP) = KURDAT
-            END IF
-         END IF
-      END DO RECEPTOR_LOOP
+                  call hsetfg(1,1)
+               end if
+               nhidat(irec,1,igrp,iave,ityp) = kurdat
+            end if
+         end if
+      end do receptor_loop
 !        End Receptor LOOP
-   END DO
+   end do
 !     End Source Group LOOP
 
-   RETURN
-END SUBROUTINE NHIGH
+   return
+end subroutine nhigh
 
-SUBROUTINE HSETFG(INDT,J)
+subroutine hsetfg(indt,j)
 !***********************************************************************
 !                 HSETFG Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2636,45 +2636,45 @@ SUBROUTINE HSETFG(INDT,J)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: J, INDT
+   integer :: j, indt
 
 !     Variable Initializations
-   MODNAM = 'HSETFG'
+   modnam = 'HSETFG'
 
-   IF (INDT == 0) THEN
+   if (indt == 0) then
 !        Set Indicator Of Calm and Missing
-      IF (NUMCLM(IAVE)/=0 .and.&
-      &NUMMSG(IAVE)==0) THEN
-         HCLMSG(IREC,J+1,IGRP,IAVE,ITYP) = 'c'
-      ELSE IF (NUMCLM(IAVE)==0 .and.&
-      &NUMMSG(IAVE)/=0) THEN
-         HCLMSG(IREC,J+1,IGRP,IAVE,ITYP) = 'm'
-      ELSE IF (NUMCLM(IAVE)/=0 .and.&
-      &NUMMSG(IAVE)/=0) THEN
-         HCLMSG(IREC,J+1,IGRP,IAVE,ITYP) = 'b'
-      END IF
-   ELSE IF (INDT == 1) THEN
+      if (numclm(iave)/=0 .and.&
+      &nummsg(iave)==0) then
+         hclmsg(irec,j+1,igrp,iave,ityp) = 'c'
+      else if (numclm(iave)==0 .and.&
+      &nummsg(iave)/=0) then
+         hclmsg(irec,j+1,igrp,iave,ityp) = 'm'
+      else if (numclm(iave)/=0 .and.&
+      &nummsg(iave)/=0) then
+         hclmsg(irec,j+1,igrp,iave,ityp) = 'b'
+      end if
+   else if (indt == 1) then
 !        Set Indicator Of Calm and Missing
-      IF (NUMCLM(IAVE)/=0 .and.&
-      &NUMMSG(IAVE)==0) THEN
-         HCLMSG(IREC,1,IGRP,IAVE,ITYP) = 'c'
-      ELSE IF (NUMCLM(IAVE)==0 .and.&
-      &NUMMSG(IAVE)/=0) THEN
-         HCLMSG(IREC,1,IGRP,IAVE,ITYP) = 'm'
-      ELSE IF (NUMCLM(IAVE)/=0 .and.&
-      &NUMMSG(IAVE)/=0) THEN
-         HCLMSG(IREC,1,IGRP,IAVE,ITYP) = 'b'
-      END IF
-   END IF
+      if (numclm(iave)/=0 .and.&
+      &nummsg(iave)==0) then
+         hclmsg(irec,1,igrp,iave,ityp) = 'c'
+      else if (numclm(iave)==0 .and.&
+      &nummsg(iave)/=0) then
+         hclmsg(irec,1,igrp,iave,ityp) = 'm'
+      else if (numclm(iave)/=0 .and.&
+      &nummsg(iave)/=0) then
+         hclmsg(irec,1,igrp,iave,ityp) = 'b'
+      end if
+   end if
 
-   RETURN
-END SUBROUTINE HSETFG
+   return
+end subroutine hsetfg
 
-SUBROUTINE MAXVALUE
+subroutine maxvalue
 !***********************************************************************
 !                 MAXVALUE Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2699,81 +2699,81 @@ SUBROUTINE MAXVALUE
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: J
+   integer :: j
 
 !     Variable Initializations
-   MODNAM = 'MAXVALUE'
+   modnam = 'MAXVALUE'
 
 !     Begin Source Group LOOP
-   DO IGRP = 1, NUMGRP
+   do igrp = 1, numgrp
 !        Begin Receptor LOOP
-      RECEPTOR_LOOP: DO IREC = 1, NUMREC
-         IF (NMXVAL > 1) THEN
-            IF (AVEVAL(IREC,IGRP,IAVE,ITYP) >&
-            &RMXVAL(NMXVAL,IGRP,IAVE,ITYP)) THEN
-               DO J = NMXVAL-1, 1, -1
-                  IF(AVEVAL(IREC,IGRP,IAVE,ITYP) <=&
-                  &RMXVAL(J,IGRP,IAVE,ITYP)) THEN
-                     RMXVAL(J+1,IGRP,IAVE,ITYP) = AVEVAL(IREC,IGRP,IAVE,ITYP)
-                     IF (NUMCLM(IAVE)==0 .and.&
-                     &NUMMSG(IAVE)==0) THEN
-                        MCLMSG(J+1,IGRP,IAVE,ITYP) = ' '
-                     ELSE
+      receptor_loop: do irec = 1, numrec
+         if (nmxval > 1) then
+            if (aveval(irec,igrp,iave,ityp) >&
+            &rmxval(nmxval,igrp,iave,ityp)) then
+               do j = nmxval-1, 1, -1
+                  if(aveval(irec,igrp,iave,ityp) <=&
+                  &rmxval(j,igrp,iave,ityp)) then
+                     rmxval(j+1,igrp,iave,ityp) = aveval(irec,igrp,iave,ityp)
+                     if (numclm(iave)==0 .and.&
+                     &nummsg(iave)==0) then
+                        mclmsg(j+1,igrp,iave,ityp) = ' '
+                     else
 !                          Set Indicator Of Calm and Msg    ---   CALL MSETFG
-                        CALL MSETFG(0,J)
-                     END IF
-                     MXDATE(J+1,IGRP,IAVE,ITYP) = KURDAT
-                     MXLOCA(J+1,IGRP,IAVE,ITYP) = IREC
+                        call msetfg(0,j)
+                     end if
+                     mxdate(j+1,igrp,iave,ityp) = kurdat
+                     mxloca(j+1,igrp,iave,ityp) = irec
 !                       Exit Block
-                     CYCLE RECEPTOR_LOOP
-                  ELSE
-                     RMXVAL(J+1,IGRP,IAVE,ITYP) = RMXVAL(J,IGRP,IAVE,ITYP)
-                     MXDATE(J+1,IGRP,IAVE,ITYP) = MXDATE(J,IGRP,IAVE,ITYP)
-                     MCLMSG(J+1,IGRP,IAVE,ITYP) = MCLMSG(J,IGRP,IAVE,ITYP)
-                     MXLOCA(J+1,IGRP,IAVE,ITYP) = MXLOCA(J,IGRP,IAVE,ITYP)
-                     IF (J == 1) THEN
-                        RMXVAL(1,IGRP,IAVE,ITYP) = AVEVAL(IREC,IGRP,IAVE,ITYP)
-                        IF (NUMCLM(IAVE)==0 .and.&
-                        &NUMMSG(IAVE)==0) THEN
-                           MCLMSG(1,IGRP,IAVE,ITYP) = ' '
-                        ELSE
+                     cycle receptor_loop
+                  else
+                     rmxval(j+1,igrp,iave,ityp) = rmxval(j,igrp,iave,ityp)
+                     mxdate(j+1,igrp,iave,ityp) = mxdate(j,igrp,iave,ityp)
+                     mclmsg(j+1,igrp,iave,ityp) = mclmsg(j,igrp,iave,ityp)
+                     mxloca(j+1,igrp,iave,ityp) = mxloca(j,igrp,iave,ityp)
+                     if (j == 1) then
+                        rmxval(1,igrp,iave,ityp) = aveval(irec,igrp,iave,ityp)
+                        if (numclm(iave)==0 .and.&
+                        &nummsg(iave)==0) then
+                           mclmsg(1,igrp,iave,ityp) = ' '
+                        else
 !                             Set Indicator Of Calm and Msg ---   CALL MSETFG
-                           CALL MSETFG(1,1)
-                        END IF
-                        MXDATE(1,IGRP,IAVE,ITYP) = KURDAT
-                        MXLOCA(1,IGRP,IAVE,ITYP) = IREC
-                     END IF
-                  END IF
-               END DO
-            END IF
-         ELSE IF (NMXVAL == 1) THEN
-            IF (AVEVAL(IREC,IGRP,IAVE,ITYP) >&
-            &RMXVAL(1,IGRP,IAVE,ITYP)) THEN
-               RMXVAL(1,IGRP,IAVE,ITYP) = AVEVAL(IREC,IGRP,IAVE,ITYP)
-               IF (NUMCLM(IAVE)==0 .and.&
-               &NUMMSG(IAVE)==0) THEN
-                  MCLMSG(1,IGRP,IAVE,ITYP) = ' '
-               ELSE
+                           call msetfg(1,1)
+                        end if
+                        mxdate(1,igrp,iave,ityp) = kurdat
+                        mxloca(1,igrp,iave,ityp) = irec
+                     end if
+                  end if
+               end do
+            end if
+         else if (nmxval == 1) then
+            if (aveval(irec,igrp,iave,ityp) >&
+            &rmxval(1,igrp,iave,ityp)) then
+               rmxval(1,igrp,iave,ityp) = aveval(irec,igrp,iave,ityp)
+               if (numclm(iave)==0 .and.&
+               &nummsg(iave)==0) then
+                  mclmsg(1,igrp,iave,ityp) = ' '
+               else
 !                    Set Indicator Of Calm and Missing      ---   CALL MSETFG
-                  CALL MSETFG(1,1)
-               END IF
-               MXDATE(1,IGRP,IAVE,ITYP) = KURDAT
-               MXLOCA(1,IGRP,IAVE,ITYP) = IREC
-            END IF
-         END IF
-      END DO RECEPTOR_LOOP
+                  call msetfg(1,1)
+               end if
+               mxdate(1,igrp,iave,ityp) = kurdat
+               mxloca(1,igrp,iave,ityp) = irec
+            end if
+         end if
+      end do receptor_loop
 !        End Receptor LOOP
-   END DO
+   end do
 !     End Source Group LOOP
 
-   RETURN
-END SUBROUTINE MAXVALUE
+   return
+end subroutine maxvalue
 
-SUBROUTINE MSETFG(INDT,J)
+subroutine msetfg(indt,j)
 !***********************************************************************
 !                 MSETFG Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2793,45 +2793,45 @@ SUBROUTINE MSETFG(INDT,J)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: J, INDT
+   integer :: j, indt
 
 !     Variable Initializations
-   MODNAM = 'MSETFG'
+   modnam = 'MSETFG'
 
-   IF (INDT == 0) THEN
+   if (indt == 0) then
 !        Set Indicator Of Calm and Missing
-      IF (NUMCLM(IAVE)/=0 .and.&
-      &NUMMSG(IAVE)==0) THEN
-         MCLMSG(J+1,IGRP,IAVE,ITYP) = 'c'
-      ELSE IF (NUMCLM(IAVE)==0 .and.&
-      &NUMMSG(IAVE)/=0) THEN
-         MCLMSG(J+1,IGRP,IAVE,ITYP) = 'm'
-      ELSE IF (NUMCLM(IAVE)/=0 .and.&
-      &NUMMSG(IAVE)/=0) THEN
-         MCLMSG(J+1,IGRP,IAVE,ITYP) = 'b'
-      END IF
-   ELSE IF (INDT == 1) THEN
+      if (numclm(iave)/=0 .and.&
+      &nummsg(iave)==0) then
+         mclmsg(j+1,igrp,iave,ityp) = 'c'
+      else if (numclm(iave)==0 .and.&
+      &nummsg(iave)/=0) then
+         mclmsg(j+1,igrp,iave,ityp) = 'm'
+      else if (numclm(iave)/=0 .and.&
+      &nummsg(iave)/=0) then
+         mclmsg(j+1,igrp,iave,ityp) = 'b'
+      end if
+   else if (indt == 1) then
 !        Set Indicator Of Calm and Missing
-      IF (NUMCLM(IAVE)/=0 .and.&
-      &NUMMSG(IAVE)==0) THEN
-         MCLMSG(1,IGRP,IAVE,ITYP) = 'c'
-      ELSE IF (NUMCLM(IAVE)==0 .and.&
-      &NUMMSG(IAVE)/=0) THEN
-         MCLMSG(1,IGRP,IAVE,ITYP) = 'm'
-      ELSE IF (NUMCLM(IAVE)/=0 .and.&
-      &NUMMSG(IAVE)/=0) THEN
-         MCLMSG(1,IGRP,IAVE,ITYP) = 'b'
-      END IF
-   END IF
+      if (numclm(iave)/=0 .and.&
+      &nummsg(iave)==0) then
+         mclmsg(1,igrp,iave,ityp) = 'c'
+      else if (numclm(iave)==0 .and.&
+      &nummsg(iave)/=0) then
+         mclmsg(1,igrp,iave,ityp) = 'm'
+      else if (numclm(iave)/=0 .and.&
+      &nummsg(iave)/=0) then
+         mclmsg(1,igrp,iave,ityp) = 'b'
+      end if
+   end if
 
-   RETURN
-END SUBROUTINE MSETFG
+   return
+end subroutine msetfg
 
-SUBROUTINE MAXFIL
+subroutine maxfil
 !***********************************************************************
 !                 MAXFIL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2857,55 +2857,55 @@ SUBROUTINE MAXFIL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'MAXFIL'
+   modnam = 'MAXFIL'
 
 !     Check for High/Max Value Options - Skip Update If KAVE=1,
 !     And No CALCS Were Made for the Current Hour
-   IF (CALCS .or. KAVE(IAVE)/=1) THEN
+   if (calcs .or. kave(iave)/=1) then
 !        Begin Source Group LOOP
-      DO IGRP = 1, NUMGRP
+      do igrp = 1, numgrp
 !           Check for MAXIFILE Option for This IGRP,IAVE Combination
-         IF (MAXFLE(IGRP,IAVE) == 1) THEN
+         if (maxfle(igrp,iave) == 1) then
 !              Begin Receptor LOOP
-            DO IREC = 1, NUMREC
+            do irec = 1, numrec
 !                 For the Values Over Threshold
-               IF (AVEVAL(IREC,IGRP,IAVE,1) >=&
-               &THRESH(IGRP,IAVE)) THEN
-                  WRITE(IMXUNT(IGRP,IAVE),THRFRM,ERR=99) KAVE(IAVE),&
-                  &GRPID(IGRP), KURDAT, AXR(IREC), AYR(IREC),&
-                  &AZELEV(IREC), AZHILL(IREC), AZFLAG(IREC),&
-                  &AVEVAL(IREC,IGRP,IAVE,1)
-               END IF
-            END DO
+               if (aveval(irec,igrp,iave,1) >=&
+               &thresh(igrp,iave)) then
+                  write(imxunt(igrp,iave),thrfrm,err=99) kave(iave),&
+                  &grpid(igrp), kurdat, axr(irec), ayr(irec),&
+                  &azelev(irec), azhill(irec), azflag(irec),&
+                  &aveval(irec,igrp,iave,1)
+               end if
+            end do
 !              End Receptor LOOP
-            IF (RSTSAV) THEN
+            if (rstsav) then
 !                 Saving Intermediate Results to File for Later Re-start
 !                 Close MAXIFILE and Reposition to End
-               CLOSE (IMXUNT(IGRP,IAVE))
-               OPEN(IMXUNT(IGRP,IAVE),FILE=THRFIL(IGRP,IAVE),&
-               &POSITION='APPEND')
-            END IF
-         END IF
-      END DO
+               close (imxunt(igrp,iave))
+               open(imxunt(igrp,iave),file=thrfil(igrp,iave),&
+               &position='APPEND')
+            end if
+         end if
+      end do
 !        End Source Group LOOP
-   END IF
+   end if
 
-   GO TO 999
+   go to 999
 
 !     WRITE Error Message for Problem Writing to Maximum Value File
-99 WRITE(DUMMY,'("MAXFL",I3.3)') IMXUNT(IGRP,IAVE)
-   CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-   RUNERR = .TRUE.
+99 write(dummy,'("MAXFL",I3.3)') imxunt(igrp,iave)
+   call errhdl(path,modnam,'E','520',dummy)
+   runerr = .true.
 
-999 RETURN
-END SUBROUTINE MAXFIL
+999 return
+end subroutine maxfil
 
-SUBROUTINE POSTFL
+subroutine postfl
 !***********************************************************************
 !                 POSTFL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2929,63 +2929,63 @@ SUBROUTINE POSTFL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'POSTFL'
+   modnam = 'POSTFL'
 
 !     Begin Source Group LOOP
-   DO IGRP = 1, NUMGRP
+   do igrp = 1, numgrp
 !        Check for POSTFILE Option for This IGRP,IAVE Combination
-      IF (IPSTFL(IGRP,IAVE) == 1) THEN
-         IF (IPSFRM(IGRP,IAVE) == 0) THEN
+      if (ipstfl(igrp,iave) == 1) then
+         if (ipsfrm(igrp,iave) == 0) then
 !              WRITE Results to Unformatted POSTFILE
-            WRITE(IPSUNT(IGRP,IAVE),ERR=99) KURDAT, KAVE(IAVE),&
-            &GRPID(IGRP), ((AVEVAL(IREC,IGRP,IAVE,ITYP),&
-            &IREC=1,NUMREC),ITYP=1,NUMTYP)
-            IF (RSTSAV) THEN
+            write(ipsunt(igrp,iave),err=99) kurdat, kave(iave),&
+            &grpid(igrp), ((aveval(irec,igrp,iave,ityp),&
+            &irec=1,numrec),ityp=1,numtyp)
+            if (rstsav) then
 !                 Saving Intermediate Results to File for Later Re-start
 !                 Close POSTFILE and Reposition to End
-               CLOSE (IPSUNT(IGRP,IAVE))
-               OPEN(IPSUNT(IGRP,IAVE),FILE=PSTFIL(IGRP,IAVE),&
-               &FORM='UNFORMATTED',POSITION='APPEND')
-            END IF
-         ELSE
+               close (ipsunt(igrp,iave))
+               open(ipsunt(igrp,iave),file=pstfil(igrp,iave),&
+               &form='UNFORMATTED',position='APPEND')
+            end if
+         else
 !              WRITE Results to Formatted Plot File
 !              Begin Receptor LOOP
-            DO IREC = 1, NUMREC
-               WRITE(IPSUNT(IGRP,IAVE),PSTFRM,ERR=99)&
-               &AXR(IREC), AYR(IREC), (AVEVAL(IREC,IGRP,IAVE,ITYP),&
-               &ITYP=1,NUMTYP),&
-               &AZELEV(IREC), AZHILL(IREC), AZFLAG(IREC),&
-               &CHRAVE(IAVE), GRPID(IGRP), KURDAT, NETID(IREC)
-            END DO
+            do irec = 1, numrec
+               write(ipsunt(igrp,iave),pstfrm,err=99)&
+               &axr(irec), ayr(irec), (aveval(irec,igrp,iave,ityp),&
+               &ityp=1,numtyp),&
+               &azelev(irec), azhill(irec), azflag(irec),&
+               &chrave(iave), grpid(igrp), kurdat, netid(irec)
+            end do
 !              End Receptor LOOP
-            IF (RSTSAV) THEN
+            if (rstsav) then
 !                 Saving Intermediate Results to File for Later Re-start
 !                 Close POSTFILE and Reposition to End
-               CLOSE (IPSUNT(IGRP,IAVE))
-               OPEN(IPSUNT(IGRP,IAVE),FILE=PSTFIL(IGRP,IAVE),&
-               &FORM='FORMATTED',POSITION='APPEND')
-            END IF
-         END IF
-      END IF
-   END DO
+               close (ipsunt(igrp,iave))
+               open(ipsunt(igrp,iave),file=pstfil(igrp,iave),&
+               &form='FORMATTED',position='APPEND')
+            end if
+         end if
+      end if
+   end do
 !     End Source Group LOOP
 
-   GO TO 999
+   go to 999
 
 !     WRITE Error Message for Problem Writing to Postprocessor File
-99 WRITE(DUMMY,'("PSTFL",I3.3)') IPSUNT(IGRP,IAVE)
-   CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-   RUNERR = .TRUE.
+99 write(dummy,'("PSTFL",I3.3)') ipsunt(igrp,iave)
+   call errhdl(path,modnam,'E','520',dummy)
+   runerr = .true.
 
-999 RETURN
-END SUBROUTINE POSTFL
+999 return
+end subroutine postfl
 
-SUBROUTINE MXDLYFL
+subroutine mxdlyfl
 !***********************************************************************
 !                 MXDLYFL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3014,91 +3014,91 @@ SUBROUTINE MXDLYFL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 
-   INTEGER :: J
-   CHARACTER :: MODNAM*12
+   integer :: j
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'MXDLYFL'
+   modnam = 'MXDLYFL'
 
 !     Begin Source Group LOOP
-   DO IGRP = 1, NUMGRP
-      RECEPTOR_LOOP: DO IREC = 1, NUMREC
-         ITYP = 1
+   do igrp = 1, numgrp
+      receptor_loop: do irec = 1, numrec
+         ityp = 1
 !           Check for MAXDAILY Option for This IGRP
-         IF (IMXDLY(IGRP) == 1) THEN
+         if (imxdly(igrp) == 1) then
 !              WRITE Results to MAXDAILY file for this day
-            WRITE(IMDUNT(IGRP),MXDFRM,ERR=99) AXR(IREC),&
-            &AYR(IREC), MXDVAL(IREC,IGRP), AZELEV(IREC),&
-            &AZHILL(IREC), AZFLAG(IREC),'  1-HR',&
-            &GRPID(IGRP), JDAY, IMXDHR(IREC,IGRP),&
-            &(KURDAT/100) * 100 + IMXDHR(IREC,IGRP),&
-            &NETID(IREC)
-         END IF
+            write(imdunt(igrp),mxdfrm,err=99) axr(irec),&
+            &ayr(irec), mxdval(irec,igrp), azelev(irec),&
+            &azhill(irec), azflag(irec),'  1-HR',&
+            &grpid(igrp), jday, imxdhr(irec,igrp),&
+            &(kurdat/100) * 100 + imxdhr(irec,igrp),&
+            &netid(irec)
+         end if
 ! ---       Update arrays of highest MAXDAILY values
-         IF (NHIMXDLY > 1) THEN
-            IF (MXDVAL(IREC,IGRP) >&
-            &HIMXDLY(IREC,IGRP,NHIMXDLY)) THEN
-               DO J = NHIMXDLY-1, 1, -1
-                  IF (MXDVAL(IREC,IGRP) <=&
-                  &HIMXDLY(IREC,IGRP,J)) THEN
-                     HIMXDLY(IREC,IGRP,J+1) =&
-                     &MXDVAL(IREC,IGRP)
-                     NHIDATMXD(IREC,IGRP,J+1) =&
-                     &(KURDAT/100) * 100 + IMXDHR(IREC,IGRP)
+         if (nhimxdly > 1) then
+            if (mxdval(irec,igrp) >&
+            &himxdly(irec,igrp,nhimxdly)) then
+               do j = nhimxdly-1, 1, -1
+                  if (mxdval(irec,igrp) <=&
+                  &himxdly(irec,igrp,j)) then
+                     himxdly(irec,igrp,j+1) =&
+                     &mxdval(irec,igrp)
+                     nhidatmxd(irec,igrp,j+1) =&
+                     &(kurdat/100) * 100 + imxdhr(irec,igrp)
 !                       Exit Block
-                     CYCLE RECEPTOR_LOOP
-                  ELSE
-                     HIMXDLY(IREC,IGRP,J+1) =&
-                     &HIMXDLY(IREC,IGRP,J)
-                     NHIDATMXD(IREC,IGRP,J+1) =&
-                     &NHIDATMXD(IREC,IGRP,J)
-                     IF (J == 1) THEN
-                        HIMXDLY(IREC,IGRP,1) =&
-                        &MXDVAL(IREC,IGRP)
-                        NHIDATMXD(IREC,IGRP,1) =&
-                        &(KURDAT/100) * 100 + IMXDHR(IREC,IGRP)
-                     END IF
-                  END IF
-               END DO
-            END IF
-         ELSE IF (NHIMXDLY == 1) THEN
-            IF (MXDVAL(IREC,IGRP) >&
-            &HIMXDLY(IREC,IGRP,1)) THEN
-               HIMXDLY(IREC,IGRP,1) = MXDVAL(IREC,IGRP)
-               NHIDATMXD(IREC,IGRP,1) = (KURDAT/100) * 100 +&
-               &IMXDHR(IREC,IGRP)
-            END IF
-         END IF
-      END DO RECEPTOR_LOOP
+                     cycle receptor_loop
+                  else
+                     himxdly(irec,igrp,j+1) =&
+                     &himxdly(irec,igrp,j)
+                     nhidatmxd(irec,igrp,j+1) =&
+                     &nhidatmxd(irec,igrp,j)
+                     if (j == 1) then
+                        himxdly(irec,igrp,1) =&
+                        &mxdval(irec,igrp)
+                        nhidatmxd(irec,igrp,1) =&
+                        &(kurdat/100) * 100 + imxdhr(irec,igrp)
+                     end if
+                  end if
+               end do
+            end if
+         else if (nhimxdly == 1) then
+            if (mxdval(irec,igrp) >&
+            &himxdly(irec,igrp,1)) then
+               himxdly(irec,igrp,1) = mxdval(irec,igrp)
+               nhidatmxd(irec,igrp,1) = (kurdat/100) * 100 +&
+               &imxdhr(irec,igrp)
+            end if
+         end if
+      end do receptor_loop
 !        End Receptor LOOP
-      IF (RSTSAV .and. IMXDLY(IGRP) == 1) THEN
+      if (rstsav .and. imxdly(igrp) == 1) then
 !           Saving Intermediate Results to File for Later Re-start
 !           Close MAXDAILY file and Reposition to End
-         CLOSE (IMDUNT(IGRP))
-         OPEN(IMDUNT(IGRP),FILE=MAXDLY(IGRP),&
-         &FORM='FORMATTED',POSITION='APPEND')
-      END IF
-   END DO
+         close (imdunt(igrp))
+         open(imdunt(igrp),file=maxdly(igrp),&
+         &form='FORMATTED',position='APPEND')
+      end if
+   end do
 !     End Source Group LOOP
 
 ! --- Reinitialize MXDVAL array
-   MXDVAL = 0.0D0
-   IMXDHR = 0
+   mxdval = 0.0d0
+   imxdhr = 0
 
-   GO TO 999
+   go to 999
 
 !     WRITE Error Message for Problem Writing to Postprocessor File
-99 WRITE(DUMMY,'("MXDLY",I3.3)') IMDUNT(IGRP)
-   CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-   RUNERR = .TRUE.
+99 write(dummy,'("MXDLY",I3.3)') imdunt(igrp)
+   call errhdl(path,modnam,'E','520',dummy)
+   runerr = .true.
 
-999 RETURN
-END SUBROUTINE MXDLYFL
+999 return
+end subroutine mxdlyfl
 
-SUBROUTINE TOXXFL
+subroutine toxxfl
 !***********************************************************************
 !                 TOXXFL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3118,68 +3118,68 @@ SUBROUTINE TOXXFL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, IG, ICODE
-   DOUBLE PRECISION :: CUTOFF
+   integer :: i, ig, icode
+   double precision :: cutoff
 
 !     Variable Initializations
-   MODNAM = 'TOXXFL'
+   modnam = 'TOXXFL'
 
 !     Check for TOXXFILE Option - Skip Update If KAVE=1,
 !     And No CALCS Were Made for the Current Hour
-   IF (ITOXFL(IAVE)==1 .and. (CALCS .or. KAVE(IAVE)/=1)) THEN
+   if (itoxfl(iave)==1 .and. (calcs .or. kave(iave)/=1)) then
 !        Convert TOXXFILE Threshold to User Units
-      CUTOFF = TOXTHR(IAVE) * EMIFAC(1)
+      cutoff = toxthr(iave) * emifac(1)
 
 !        Begin Receptor LOOP
-      DO IREC = 1, NUMREC
+      do irec = 1, numrec
 
 !           Begin Source Group LOOP
-         DO IGRP = 1, NUMGRP
+         do igrp = 1, numgrp
 
 !              For the Values Over Threshold (in user units), Fill Buffers
-            IF (AVEVAL(IREC,IGRP,IAVE,1) >= CUTOFF) THEN
-               DO IG = 1, NUMGRP
+            if (aveval(irec,igrp,iave,1) >= cutoff) then
+               do ig = 1, numgrp
 !                    Loop Through Groups and Write Values to Buffer
-                  IPAIR = IPAIR + 1
-                  ICODE = 100000*ILINE + 1000*IG + IREC
-                  IDCONC(IAVE,IPAIR) = ICODE
+                  ipair = ipair + 1
+                  icode = 100000*iline + 1000*ig + irec
+                  idconc(iave,ipair) = icode
 !                    Convert CONC Values Back to Units of g/s
-                  TXCONC(IAVE,IPAIR)=AVEVAL(IREC,IG,IAVE,1)/EMIFAC(1)
-                  IF (IPAIR == NPAIR) THEN
+                  txconc(iave,ipair)=aveval(irec,ig,iave,1)/emifac(1)
+                  if (ipair == npair) then
 !                       Write Out Full Buffers and Reset Counter
-                     WRITE(ITXUNT(IAVE),ERR=99) (IDCONC(IAVE,I),&
-                     &I=1,NPAIR)
-                     WRITE(ITXUNT(IAVE),ERR=99) (TXCONC(IAVE,I),&
-                     &I=1,NPAIR)
-                     IPAIR = 0
-                  END IF
-               END DO
+                     write(itxunt(iave),err=99) (idconc(iave,i),&
+                     &i=1,npair)
+                     write(itxunt(iave),err=99) (txconc(iave,i),&
+                     &i=1,npair)
+                     ipair = 0
+                  end if
+               end do
 !                 Exit Source Group LOOP
-               EXIT
-            END IF
+               exit
+            end if
 
-         END DO
+         end do
 !           End Source Group LOOP
 
-      END DO
+      end do
 !        End Receptor LOOP
-   END IF
+   end if
 
-   GO TO 999
+   go to 999
 
 !     WRITE Error Message for Problem Writing to TOXXFILE
-99 WRITE(DUMMY,'("TOXFL",I3.3)') ITXUNT(IAVE)
-   CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-   RUNERR = .TRUE.
+99 write(dummy,'("TOXFL",I3.3)') itxunt(iave)
+   call errhdl(path,modnam,'E','520',dummy)
+   runerr = .true.
 
-999 RETURN
-END SUBROUTINE TOXXFL
+999 return
+end subroutine toxxfl
 
-SUBROUTINE PRTDAY
+subroutine prtday
 !***********************************************************************
 !                 PRTDAY Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3204,243 +3204,243 @@ SUBROUTINE PRTDAY
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, K, II, NX, NY, INDZ, INDC, INDEXW
-   DOUBLE PRECISION :: YCOVAL, XRMS, YRMS, DIST, DIR
-   CHARACTER :: BUF132*132
+   integer :: i, j, k, ii, nx, ny, indz, indc, indexw
+   double precision :: ycoval, xrms, yrms, dist, dir
+   character :: buf132*132
 
 !     Variable Initializations
-   MODNAM = 'PRTDAY'
-   BUF132 = ' '
-   INDZ   = 0
+   modnam = 'PRTDAY'
+   buf132 = ' '
+   indz   = 0
 
 !     Begin Source Group LOOP
-   DO IGRP = 1, NUMGRP
+   do igrp = 1, numgrp
 
 !        Fill Work Array With SRCIDs For This Group
-      IF (.NOT. PSDCREDIT) THEN
+      if (.not. psdcredit) then
 !           Fill Work Array With SRCIDs For This Group
-         INDGRP = 0
-         DO ISRC = 1, NUMSRC
-            IF (IGROUP(ISRC,IGRP) == 1) THEN
-               INDGRP = INDGRP + 1
-               WORKID(INDGRP) = SRCID(ISRC)
-            END IF
-         END DO
-      ELSE
+         indgrp = 0
+         do isrc = 1, numsrc
+            if (igroup(isrc,igrp) == 1) then
+               indgrp = indgrp + 1
+               workid(indgrp) = srcid(isrc)
+            end if
+         end do
+      else
 !           Assign 'N/A' for source IDs for PSDCREDIT option
-         INDGRP = 1
-         WORKID(INDGRP) = 'N/A'
-      END IF
+         indgrp = 1
+         workid(indgrp) = 'N/A'
+      end if
 
 ! ---    Check for BACKGRND "source" being included
 !        in source group
-      IF (GRP_BACK(IGRP)) THEN
-         INDGRP = INDGRP + 1
-         WORKID(INDGRP) = 'BACKGROUND'
+      if (grp_back(igrp)) then
+         indgrp = indgrp + 1
+         workid(indgrp) = 'BACKGROUND'
 !           Check for More Than 29 Sources Per Group
-         INDEXW = MIN(29,NSRC+1)
-      ELSE
-         INDEXW = MIN(29,NSRC)
-      END IF
+         indexw = min(29,nsrc+1)
+      else
+         indexw = min(29,nsrc)
+      end if
 !        Check for More Than 29 Sources Per Group
-      IF (INDGRP > INDEXW) THEN
-         WORKID(INDEXW) = ' . . . '
-         INDGRP = INDEXW
-      END IF
+      if (indgrp > indexw) then
+         workid(indexw) = ' . . . '
+         indgrp = indexw
+      end if
 
 !        Print Results for Receptor Networks
 !        Set Number of Columns Per Page, NCPP
-      NCPP = 9
+      ncpp = 9
 !        Set Number of Rows Per Page, NRPP
-      NRPP = 40
+      nrpp = 40
 !        Begin LOOP Through Networks
-      DO I = 1, INNET
+      do i = 1, innet
 !           Calculate Number of Pages Per X-Group, NPPX, & Per Y-Group, NPPY
-         NPPX = 1 + INT((NUMXPT(I)-1)/NCPP)
-         NPPY = 1 + INT((NUMYPT(I)-1)/NRPP)
-         DO NX = 1, NPPX
-            DO NY = 1, NPPY
-               CALL HEADER(IOUNIT)
-               WRITE(IOUNIT,9032) CHRAVE(IAVE), (CHIDEP(II,ITYP),&
-               &II=1,6),&
-               &IHOUR,JDAY,IYR,GRPID(IGRP),(WORKID(K),K = 1,INDGRP)
-               WRITE(IOUNIT,9037) NTID(I), NTTYP(I)
+         nppx = 1 + int((numxpt(i)-1)/ncpp)
+         nppy = 1 + int((numypt(i)-1)/nrpp)
+         do nx = 1, nppx
+            do ny = 1, nppy
+               call header(iounit)
+               write(iounit,9032) chrave(iave), (chidep(ii,ityp),&
+               &ii=1,6),&
+               &ihour,jday,iyr,grpid(igrp),(workid(k),k = 1,indgrp)
+               write(iounit,9037) ntid(i), nttyp(i)
 !                 Print The Value By Groups
-               WRITE(IOUNIT,9011) CHIDEP(3,ITYP), POLLUT,OUTLBL(ITYP)
-               IF (NX == NPPX) THEN
-                  IF (NTTYP(I) == 'GRIDCART') THEN
-                     WRITE(IOUNIT,9016)
-                     WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
-                     &NUMXPT(I))
-                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
-                     WRITE(IOUNIT,9018)
-                     WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
-                     &NUMXPT(I))
-                  END IF
-               ELSE
-                  IF (NTTYP(I) == 'GRIDCART') THEN
-                     WRITE(IOUNIT,9016)
-                     WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
-                     &NCPP*NX)
-                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
-                     WRITE(IOUNIT,9018)
-                     WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
-                     &NCPP*NX)
-                  END IF
-               END IF
-               WRITE(IOUNIT,9010)
-               IF (NY == NPPY) THEN
-                  DO K = 1+NRPP*(NY-1), NUMYPT(I)
-                     IF (NTTYP(I) == 'GRIDCART') THEN
-                        INDZ = NETEND(I) - K*NUMXPT(I) + 1
-                        YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
-                        INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
-                        YCOVAL = YCOORD(K,I)
-                     END IF
-                     IF (NX == NPPX) THEN
-                        WRITE(IOUNIT,9013) YCOVAL,&
-                        &(AVEVAL(INDZ+J-1,IGRP,IAVE,ITYP),J=1+NCPP*(NX-1),&
-                        &NUMXPT(I))
-                     ELSE
-                        WRITE(IOUNIT,9013) YCOVAL,&
-                        &(AVEVAL(INDZ+J-1,IGRP,IAVE,ITYP),J=1+NCPP*(NX-1),&
-                        &NCPP*NX)
-                     END IF
-                  END DO
-               ELSE
-                  DO K = 1+NRPP*(NY-1), NRPP*NY
-                     IF (NTTYP(I) == 'GRIDCART') THEN
-                        INDZ = NETEND(I) - K*NUMXPT(I) + 1
-                        YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
-                        INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
-                        YCOVAL = YCOORD(K,I)
-                     END IF
-                     IF (NX == NPPX) THEN
-                        WRITE(IOUNIT,9013) YCOVAL,&
-                        &(AVEVAL(INDZ+J-1,IGRP,IAVE,ITYP),J=1+NCPP*(NX-1),&
-                        &NUMXPT(I))
-                     ELSE
-                        WRITE(IOUNIT,9013) YCOVAL,&
-                        &(AVEVAL(INDZ+J-1,IGRP,IAVE,ITYP),J=1+NCPP*(NX-1),&
-                        &NCPP*NX)
-                     END IF
-                  END DO
-               END IF
-            END DO
-         END DO
-      END DO
+               write(iounit,9011) chidep(3,ityp), pollut,outlbl(ityp)
+               if (nx == nppx) then
+                  if (nttyp(i) == 'GRIDCART') then
+                     write(iounit,9016)
+                     write(iounit,9017) (xcoord(j,i),j=1+ncpp*(nx-1),&
+                     &numxpt(i))
+                  else if (nttyp(i) == 'GRIDPOLR') then
+                     write(iounit,9018)
+                     write(iounit,9019) (xcoord(j,i),j=1+ncpp*(nx-1),&
+                     &numxpt(i))
+                  end if
+               else
+                  if (nttyp(i) == 'GRIDCART') then
+                     write(iounit,9016)
+                     write(iounit,9017) (xcoord(j,i),j=1+ncpp*(nx-1),&
+                     &ncpp*nx)
+                  else if (nttyp(i) == 'GRIDPOLR') then
+                     write(iounit,9018)
+                     write(iounit,9019) (xcoord(j,i),j=1+ncpp*(nx-1),&
+                     &ncpp*nx)
+                  end if
+               end if
+               write(iounit,9010)
+               if (ny == nppy) then
+                  do k = 1+nrpp*(ny-1), numypt(i)
+                     if (nttyp(i) == 'GRIDCART') then
+                        indz = netend(i) - k*numxpt(i) + 1
+                        ycoval = ycoord(numypt(i)-k+1,i)
+                     else if (nttyp(i) == 'GRIDPOLR') then
+                        indz = netsta(i) + (k-1)*numxpt(i)
+                        ycoval = ycoord(k,i)
+                     end if
+                     if (nx == nppx) then
+                        write(iounit,9013) ycoval,&
+                        &(aveval(indz+j-1,igrp,iave,ityp),j=1+ncpp*(nx-1),&
+                        &numxpt(i))
+                     else
+                        write(iounit,9013) ycoval,&
+                        &(aveval(indz+j-1,igrp,iave,ityp),j=1+ncpp*(nx-1),&
+                        &ncpp*nx)
+                     end if
+                  end do
+               else
+                  do k = 1+nrpp*(ny-1), nrpp*ny
+                     if (nttyp(i) == 'GRIDCART') then
+                        indz = netend(i) - k*numxpt(i) + 1
+                        ycoval = ycoord(numypt(i)-k+1,i)
+                     else if (nttyp(i) == 'GRIDPOLR') then
+                        indz = netsta(i) + (k-1)*numxpt(i)
+                        ycoval = ycoord(k,i)
+                     end if
+                     if (nx == nppx) then
+                        write(iounit,9013) ycoval,&
+                        &(aveval(indz+j-1,igrp,iave,ityp),j=1+ncpp*(nx-1),&
+                        &numxpt(i))
+                     else
+                        write(iounit,9013) ycoval,&
+                        &(aveval(indz+j-1,igrp,iave,ityp),j=1+ncpp*(nx-1),&
+                        &ncpp*nx)
+                     end if
+                  end do
+               end if
+            end do
+         end do
+      end do
 !        End LOOP Through Networks
 
-      IF (IRSTAT(4)/=0 .or. IRSTAT(8)/=0) THEN
+      if (irstat(4)/=0 .or. irstat(8)/=0) then
 !RWB        Include EVALCART receptors with DISCCART receptors.  2/14/95
 !           Print Out The Coord. & Concentrations For Discrete Cart Receptors
-         INDC = 0
-         DO IREC = 1, NUMREC
-            IF (RECTYP(IREC) == 'DC') THEN
-               INDC = INDC + 1
-               IF (MOD(INDC-1,80) == 0) THEN
-                  CALL HEADER(IOUNIT)
-                  WRITE(IOUNIT,9032) CHRAVE(IAVE),(CHIDEP(II,ITYP),&
-                  &II=1,6),IHOUR,JDAY,IYR,GRPID(IGRP),(WORKID(K),K=1,INDGRP)
-                  WRITE(IOUNIT,9043)
-                  WRITE(IOUNIT,9011) CHIDEP(3,ITYP), POLLUT,&
-                  &OUTLBL(ITYP)
-                  WRITE(IOUNIT,9048) CHIDEP(3,ITYP), CHIDEP(3,ITYP)
-               END IF
-               IF (MOD(INDC,2) /= 0) THEN
-                  WRITE(BUF132(1:60),9045) AXR(IREC),AYR(IREC),&
-                  &AVEVAL(IREC,IGRP,IAVE,ITYP)
-               ELSE
-                  WRITE(BUF132(61:120),9045) AXR(IREC),&
-                  &AYR(IREC), AVEVAL(IREC,IGRP,IAVE,ITYP)
-                  WRITE(IOUNIT,9090) BUF132
-                  WRITE(BUF132,9095)
-               END IF
-            END IF
-         END DO
-         IF (MOD(INDC,2) /= 0) THEN
-            WRITE(IOUNIT,9090) BUF132
-            WRITE(BUF132,9095)
-         END IF
-      END IF
+         indc = 0
+         do irec = 1, numrec
+            if (rectyp(irec) == 'DC') then
+               indc = indc + 1
+               if (mod(indc-1,80) == 0) then
+                  call header(iounit)
+                  write(iounit,9032) chrave(iave),(chidep(ii,ityp),&
+                  &ii=1,6),ihour,jday,iyr,grpid(igrp),(workid(k),k=1,indgrp)
+                  write(iounit,9043)
+                  write(iounit,9011) chidep(3,ityp), pollut,&
+                  &outlbl(ityp)
+                  write(iounit,9048) chidep(3,ityp), chidep(3,ityp)
+               end if
+               if (mod(indc,2) /= 0) then
+                  write(buf132(1:60),9045) axr(irec),ayr(irec),&
+                  &aveval(irec,igrp,iave,ityp)
+               else
+                  write(buf132(61:120),9045) axr(irec),&
+                  &ayr(irec), aveval(irec,igrp,iave,ityp)
+                  write(iounit,9090) buf132
+                  write(buf132,9095)
+               end if
+            end if
+         end do
+         if (mod(indc,2) /= 0) then
+            write(iounit,9090) buf132
+            write(buf132,9095)
+         end if
+      end if
 
-      IF (IRSTAT(5) /= 0) THEN
+      if (irstat(5) /= 0) then
 !           Print Out The Coord. & Concentrations For Discrete Polar Receptors
-         INDC = 0
-         DO IREC = 1, NUMREC
-            IF (RECTYP(IREC) == 'DP') THEN
-               INDC = INDC + 1
-               XRMS = AXR(IREC) - AXS(IREF(IREC))
-               YRMS = AYR(IREC) - AYS(IREF(IREC))
-               DIST = DSQRT(XRMS*XRMS + YRMS*YRMS)
-               DIR  = DATAN2(XRMS, YRMS) * RTODEG
-               IF (DIR <= 0.0D0) DIR = DIR + 360.0D0
-               IF (MOD(INDC-1,80) == 0) THEN
-                  CALL HEADER(IOUNIT)
-                  WRITE(IOUNIT,9032) CHRAVE(IAVE), (CHIDEP(II,ITYP),&
-                  &II=1,6),IHOUR,JDAY,IYR,GRPID(IGRP),(WORKID(K),K=1,INDGRP)
-                  WRITE(IOUNIT,9044)
-                  WRITE(IOUNIT,9011) CHIDEP(3,ITYP), POLLUT,&
-                  &OUTLBL(ITYP)
-                  WRITE(IOUNIT,9049) CHIDEP(3,ITYP), CHIDEP(3,ITYP)
-               END IF
-               IF (MOD(INDC,2) /= 0) THEN
-                  WRITE(BUF132(1:65),9047) SRCID(IREF(IREC)),&
-                  &DIST, DIR, AVEVAL(IREC,IGRP,IAVE,ITYP)
-               ELSE
-                  WRITE(BUF132(66:130),9047) SRCID(IREF(IREC)),&
-                  &DIST, DIR, AVEVAL(IREC,IGRP,IAVE,ITYP)
-                  WRITE(IOUNIT,9090) BUF132
-                  WRITE(BUF132,9095)
-               END IF
-            END IF
-         END DO
-         IF (MOD(INDC,2) /= 0) THEN
-            WRITE(IOUNIT,9090) BUF132
-            WRITE(BUF132,9095)
-         END IF
-      END IF
+         indc = 0
+         do irec = 1, numrec
+            if (rectyp(irec) == 'DP') then
+               indc = indc + 1
+               xrms = axr(irec) - axs(iref(irec))
+               yrms = ayr(irec) - ays(iref(irec))
+               dist = dsqrt(xrms*xrms + yrms*yrms)
+               dir  = datan2(xrms, yrms) * rtodeg
+               if (dir <= 0.0d0) dir = dir + 360.0d0
+               if (mod(indc-1,80) == 0) then
+                  call header(iounit)
+                  write(iounit,9032) chrave(iave), (chidep(ii,ityp),&
+                  &ii=1,6),ihour,jday,iyr,grpid(igrp),(workid(k),k=1,indgrp)
+                  write(iounit,9044)
+                  write(iounit,9011) chidep(3,ityp), pollut,&
+                  &outlbl(ityp)
+                  write(iounit,9049) chidep(3,ityp), chidep(3,ityp)
+               end if
+               if (mod(indc,2) /= 0) then
+                  write(buf132(1:65),9047) srcid(iref(irec)),&
+                  &dist, dir, aveval(irec,igrp,iave,ityp)
+               else
+                  write(buf132(66:130),9047) srcid(iref(irec)),&
+                  &dist, dir, aveval(irec,igrp,iave,ityp)
+                  write(iounit,9090) buf132
+                  write(buf132,9095)
+               end if
+            end if
+         end do
+         if (mod(indc,2) /= 0) then
+            write(iounit,9090) buf132
+            write(buf132,9095)
+         end if
+      end if
 
-   END DO
+   end do
 !     End Source Group LOOP
 
-9011 FORMAT(/40X,'** ',A4,' OF ',A8,' IN ',A40,' **'/)
-9010 FORMAT(66(' -')/)
-9013 FORMAT(2X,F10.2,1X,'|',1X,9(F13.5))
-9016 FORMAT(3X,' Y-COORD  |',48X,'X-COORD (METERS)')
-9017 FORMAT(3X,' (METERS) |',1X,9(1X,F12.2,:))
-9018 FORMAT(3X,'DIRECTION |',48X,'DISTANCE (METERS)')
-9019 FORMAT(3X,'(DEGREES) |',1X,9(1X,F12.2,:))
-9032 FORMAT(20X,'*** CONCURRENT ',A5,1X,6A4,'VALUES',&
-   &' ENDING WITH HOUR ',I2,' FOR DAY ',I3,' OF ',I4,' ***'&
-   &/24X,'FOR SOURCE GROUP:',1X,A8,&
-   &/24X,'INCLUDING SOURCE(S):     ',5(A12,', ',:),&
-   &/17X,8(A12,', ',:)/17X,8(A12,', ',:)/17X,8(A12,', ',:))
-9037 FORMAT(/35X,'*** NETWORK ID: ',A8,' ;  NETWORK TYPE: ',&
-   &A8,' ***')
-9043 FORMAT(/45X,'*** DISCRETE CARTESIAN RECEPTOR POINTS ***')
-9044 FORMAT(/47X,'*** DISCRETE POLAR RECEPTOR POINTS ***')
-9045 FORMAT(6X,2(F12.2,2X),F13.5)
-9047 FORMAT(2X,A12,': ',F12.2,2X,F10.2,2X,F13.5)
-9048 FORMAT(6X,' X-COORD (M)   Y-COORD (M)        ',A4,&
-   &22X,' X-COORD (M)   Y-COORD (M)        ',A4,/65(' -'))
-9049 FORMAT(5X,'ORIGIN',59X,'ORIGIN',&
-   &/5X,' SRCID         DIST (M)   DIR (DEG)        ',A4,&
-   &18X,' SRCID         DIST (M)   DIR (DEG)        ',A4,&
+9011 format(/40x,'** ',a4,' OF ',a8,' IN ',a40,' **'/)
+9010 format(66(' -')/)
+9013 format(2x,f10.2,1x,'|',1x,9(f13.5))
+9016 format(3x,' Y-COORD  |',48x,'X-COORD (METERS)')
+9017 format(3x,' (METERS) |',1x,9(1x,f12.2,:))
+9018 format(3x,'DIRECTION |',48x,'DISTANCE (METERS)')
+9019 format(3x,'(DEGREES) |',1x,9(1x,f12.2,:))
+9032 format(20x,'*** CONCURRENT ',a5,1x,6a4,'VALUES',&
+   &' ENDING WITH HOUR ',i2,' FOR DAY ',i3,' OF ',i4,' ***'&
+   &/24x,'FOR SOURCE GROUP:',1x,a8,&
+   &/24x,'INCLUDING SOURCE(S):     ',5(a12,', ',:),&
+   &/17x,8(a12,', ',:)/17x,8(a12,', ',:)/17x,8(a12,', ',:))
+9037 format(/35x,'*** NETWORK ID: ',a8,' ;  NETWORK TYPE: ',&
+   &a8,' ***')
+9043 format(/45x,'*** DISCRETE CARTESIAN RECEPTOR POINTS ***')
+9044 format(/47x,'*** DISCRETE POLAR RECEPTOR POINTS ***')
+9045 format(6x,2(f12.2,2x),f13.5)
+9047 format(2x,a12,': ',f12.2,2x,f10.2,2x,f13.5)
+9048 format(6x,' X-COORD (M)   Y-COORD (M)        ',a4,&
+   &22x,' X-COORD (M)   Y-COORD (M)        ',a4,/65(' -'))
+9049 format(5x,'ORIGIN',59x,'ORIGIN',&
+   &/5x,' SRCID         DIST (M)   DIR (DEG)        ',a4,&
+   &18x,' SRCID         DIST (M)   DIR (DEG)        ',a4,&
    &/65(' -'))
-9090 FORMAT(A132)
-9095 FORMAT(132(' '))
+9090 format(a132)
+9095 format(132(' '))
 
-   RETURN
-END SUBROUTINE PRTDAY
+   return
+end subroutine prtday
 
-SUBROUTINE RSDUMP
+subroutine rsdump
 !***********************************************************************
 !                 RSDUMP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3476,171 +3476,171 @@ SUBROUTINE RSDUMP
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, K, L, M
+   integer :: i, j, k, l, m
 
 !     Variable Initializations
-   MODNAM = 'RSDUMP'
-   NDUMP = NDUMP + 1
+   modnam = 'RSDUMP'
+   ndump = ndump + 1
 
 !     Check for Monthly Averages and Only Dump at End of Month
-   IF (MONTH .and. .NOT.ENDMON)  GO TO 1000
+   if (month .and. .not.endmon)  go to 1000
 
-   IF (SAVFIL == SAVFL2 .or. MOD(NDUMP,2) /= 0) THEN
-      OPEN(UNIT=IDPUNT,ERR=99,FILE=SAVFIL,FORM='UNFORMATTED',&
-      &IOSTAT=IOERRN,STATUS='REPLACE')
-      WRITE(IDPUNT) FULLDATE, NTOTHRS
-      WRITE(IDPUNT) NHIVAL, NMXVAL, NUMREC, NUMGRP, NUMAVE, NUMTYP
+   if (savfil == savfl2 .or. mod(ndump,2) /= 0) then
+      open(unit=idpunt,err=99,file=savfil,form='UNFORMATTED',&
+      &iostat=ioerrn,status='REPLACE')
+      write(idpunt) fulldate, ntothrs
+      write(idpunt) nhival, nmxval, numrec, numgrp, numave, numtyp
 
-      IF (NHIVAL > 0) THEN
-         WRITE(IDPUNT) (((((HIVALU(I,J,K,L,M),I=1,NUMREC),J=1,NHIVAL),&
-         &K=1,NUMGRP),L=1,NUMAVE),M=1,NUMTYP)
-         WRITE(IDPUNT) (((((NHIDAT(I,J,K,L,M),I=1,NUMREC),J=1,NHIVAL),&
-         &K=1,NUMGRP),L=1,NUMAVE),M=1,NUMTYP)
-         WRITE(IDPUNT) (((((HCLMSG(I,J,K,L,M),I=1,NUMREC),J=1,NHIVAL),&
-         &K=1,NUMGRP),L=1,NUMAVE),M=1,NUMTYP)
-
-! ---       Include arrays associated with multi-year processing of high
-!           ranked values for 24-hr PM2.5, 1-hr NO2, and 1-hr SO2 NAAQS
-         IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
-            WRITE(IDPUNT) NUMYRS
-            WRITE(IDPUNT) (((SUMHNH(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
-            &K=1,NHIVAL)
-            WRITE(IDPUNT) (((HIMXDLY(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
-            &K=1,NHIVAL)
-            WRITE(IDPUNT)(((NHIDATMXD(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
-            &K=1,NHIVAL)
-            WRITE(IDPUNT) ((((HIMXDLY_BYYR(I,J,K,L),I=1,NUMREC),&
-            &J=1,NUMGRP),K=1,NHIVAL),L=1,NUMYRS)
-            WRITE(IDPUNT) ((((NHIDATMXD_BYYR(I,J,K,L),I=1,NUMREC),&
-            &J=1,NUMGRP),K=1,NHIVAL),L=1,NUMYRS)
-         END IF
-
-      END IF
-
-      IF (NMXVAL > 0) THEN
-         WRITE(IDPUNT) ((((RMXVAL(I,J,K,L),I=1,NMXVAL),J=1,NUMGRP),&
-         &K=1,NUMAVE),L=1,NUMTYP)
-         WRITE(IDPUNT) ((((MXDATE(I,J,K,L),I=1,NMXVAL),J=1,NUMGRP),&
-         &K=1,NUMAVE),L=1,NUMTYP)
-         WRITE(IDPUNT) ((((MXLOCA(I,J,K,L),I=1,NMXVAL),J=1,NUMGRP),&
-         &K=1,NUMAVE),L=1,NUMTYP)
-         WRITE(IDPUNT) ((((MCLMSG(I,J,K,L),I=1,NMXVAL),J=1,NUMGRP),&
-         &K=1,NUMAVE),L=1,NUMTYP)
-      END IF
-
-      IF (SEASONHR) THEN
-         WRITE(IDPUNT) (((((SHVALS(I,J,K,L,M),I=1,NUMREC),&
-         &J=1,NUMGRP),K=1,4),L=1,24),M=1,NUMTYP)
-         WRITE(IDPUNT) ((NSEAHR(I,J),I=1,4),J=1,24)
-         WRITE(IDPUNT) ((NSEACM(I,J),I=1,4),J=1,24)
-      END IF
-
-      IF (PERIOD) THEN
-         WRITE(IDPUNT) IANHRS, IANCLM, IANMSG, NUMYRS
-         WRITE(IDPUNT) (((ANNVAL(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
-         &K=1,NUMTYP)
-         IF (MULTYR) THEN
-            WRITE(IDPUNT) (((AMXVAL(I,J,K),I=1,NHIANN),J=1,NUMGRP),&
-            &K=1,NUMTYP)
-            WRITE(IDPUNT) (((IMXLOC(I,J,K),I=1,NHIANN),J=1,NUMGRP),&
-            &K=1,NUMTYP)
-         END IF
-      ELSE IF (ANNUAL) THEN
-         WRITE(IDPUNT) IANHRS, IANCLM, IANMSG, NUMYRS
-         WRITE(IDPUNT) (((ANNVAL(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
-         &K=1,NUMTYP)
-         WRITE(IDPUNT) (((SUMANN(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
-         &K=1,NUMTYP)
-      END IF
-
-      CLOSE (IDPUNT)
-
-   ELSE
-      OPEN(UNIT=IDPUN2,ERR=99,FILE=SAVFL2,FORM='UNFORMATTED',&
-      &IOSTAT=IOERRN,STATUS='REPLACE')
-      WRITE(IDPUN2) FULLDATE, NTOTHRS
-      WRITE(IDPUN2) NHIVAL, NMXVAL, NUMREC, NUMGRP, NUMAVE, NUMTYP
-
-      IF (NHIVAL > 0) THEN
-         WRITE(IDPUN2) (((((HIVALU(I,J,K,L,M),I=1,NUMREC),J=1,NHIVAL),&
-         &K=1,NUMGRP),L=1,NUMAVE),M=1,NUMTYP)
-         WRITE(IDPUN2) (((((NHIDAT(I,J,K,L,M),I=1,NUMREC),J=1,NHIVAL),&
-         &K=1,NUMGRP),L=1,NUMAVE),M=1,NUMTYP)
-         WRITE(IDPUN2) (((((HCLMSG(I,J,K,L,M),I=1,NUMREC),J=1,NHIVAL),&
-         &K=1,NUMGRP),L=1,NUMAVE),M=1,NUMTYP)
+      if (nhival > 0) then
+         write(idpunt) (((((hivalu(i,j,k,l,m),i=1,numrec),j=1,nhival),&
+         &k=1,numgrp),l=1,numave),m=1,numtyp)
+         write(idpunt) (((((nhidat(i,j,k,l,m),i=1,numrec),j=1,nhival),&
+         &k=1,numgrp),l=1,numave),m=1,numtyp)
+         write(idpunt) (((((hclmsg(i,j,k,l,m),i=1,numrec),j=1,nhival),&
+         &k=1,numgrp),l=1,numave),m=1,numtyp)
 
 ! ---       Include arrays associated with multi-year processing of high
 !           ranked values for 24-hr PM2.5, 1-hr NO2, and 1-hr SO2 NAAQS
-         IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
-            WRITE(IDPUN2) NUMYRS
-            WRITE(IDPUN2) (((SUMHNH(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
-            &K=1,NHIVAL)
-            WRITE(IDPUN2) (((HIMXDLY(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
-            &K=1,NHIVAL)
-            WRITE(IDPUN2)(((NHIDATMXD(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
-            &K=1,NHIVAL)
-            WRITE(IDPUN2) ((((HIMXDLY_BYYR(I,J,K,L),I=1,NUMREC),&
-            &J=1,NUMGRP),K=1,NHIVAL),L=1,NUMYRS)
-            WRITE(IDPUN2) ((((NHIDATMXD_BYYR(I,J,K,L),I=1,NUMREC),&
-            &J=1,NUMGRP),K=1,NHIVAL),L=1,NUMYRS)
-         END IF
+         if (pm25ave .or. no2ave .or. so2ave) then
+            write(idpunt) numyrs
+            write(idpunt) (((sumhnh(i,j,k),i=1,numrec),j=1,numgrp),&
+            &k=1,nhival)
+            write(idpunt) (((himxdly(i,j,k),i=1,numrec),j=1,numgrp),&
+            &k=1,nhival)
+            write(idpunt)(((nhidatmxd(i,j,k),i=1,numrec),j=1,numgrp),&
+            &k=1,nhival)
+            write(idpunt) ((((himxdly_byyr(i,j,k,l),i=1,numrec),&
+            &j=1,numgrp),k=1,nhival),l=1,numyrs)
+            write(idpunt) ((((nhidatmxd_byyr(i,j,k,l),i=1,numrec),&
+            &j=1,numgrp),k=1,nhival),l=1,numyrs)
+         end if
 
-      END IF
+      end if
 
-      IF (NMXVAL > 0) THEN
-         WRITE(IDPUN2) ((((RMXVAL(I,J,K,L),I=1,NMXVAL),J=1,NUMGRP),&
-         &K=1,NUMAVE),L=1,NUMTYP)
-         WRITE(IDPUN2) ((((MXDATE(I,J,K,L),I=1,NMXVAL),J=1,NUMGRP),&
-         &K=1,NUMAVE),L=1,NUMTYP)
-         WRITE(IDPUN2) ((((MXLOCA(I,J,K,L),I=1,NMXVAL),J=1,NUMGRP),&
-         &K=1,NUMAVE),L=1,NUMTYP)
-         WRITE(IDPUN2) ((((MCLMSG(I,J,K,L),I=1,NMXVAL),J=1,NUMGRP),&
-         &K=1,NUMAVE),L=1,NUMTYP)
-      END IF
+      if (nmxval > 0) then
+         write(idpunt) ((((rmxval(i,j,k,l),i=1,nmxval),j=1,numgrp),&
+         &k=1,numave),l=1,numtyp)
+         write(idpunt) ((((mxdate(i,j,k,l),i=1,nmxval),j=1,numgrp),&
+         &k=1,numave),l=1,numtyp)
+         write(idpunt) ((((mxloca(i,j,k,l),i=1,nmxval),j=1,numgrp),&
+         &k=1,numave),l=1,numtyp)
+         write(idpunt) ((((mclmsg(i,j,k,l),i=1,nmxval),j=1,numgrp),&
+         &k=1,numave),l=1,numtyp)
+      end if
 
-      IF (SEASONHR) THEN
-         WRITE(IDPUN2) (((((SHVALS(I,J,K,L,M),I=1,NUMREC),&
-         &J=1,NUMGRP),K=1,4),L=1,24),M=1,NUMTYP)
-         WRITE(IDPUN2) ((NSEAHR(I,J),I=1,4),J=1,24)
-         WRITE(IDPUN2) ((NSEACM(I,J),I=1,4),J=1,24)
-      END IF
+      if (seasonhr) then
+         write(idpunt) (((((shvals(i,j,k,l,m),i=1,numrec),&
+         &j=1,numgrp),k=1,4),l=1,24),m=1,numtyp)
+         write(idpunt) ((nseahr(i,j),i=1,4),j=1,24)
+         write(idpunt) ((nseacm(i,j),i=1,4),j=1,24)
+      end if
 
-      IF (PERIOD) THEN
-         WRITE(IDPUN2) IANHRS, IANCLM, IANMSG, NUMYRS
-         WRITE(IDPUN2) (((ANNVAL(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
-         &K=1,NUMTYP)
-         IF (MULTYR) THEN
-            WRITE(IDPUN2) (((AMXVAL(I,J,K),I=1,NHIANN),J=1,NUMGRP),&
-            &K=1,NUMTYP)
-            WRITE(IDPUN2) (((IMXLOC(I,J,K),I=1,NHIANN),J=1,NUMGRP),&
-            &K=1,NUMTYP)
-         END IF
-      ELSE IF (ANNUAL) THEN
-         WRITE(IDPUN2) IANHRS, IANCLM, IANMSG, NUMYRS
-         WRITE(IDPUN2) (((ANNVAL(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
-         &K=1,NUMTYP)
-         WRITE(IDPUN2) (((SUMANN(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
-         &K=1,NUMTYP)
-      END IF
+      if (period) then
+         write(idpunt) ianhrs, ianclm, ianmsg, numyrs
+         write(idpunt) (((annval(i,j,k),i=1,numrec),j=1,numgrp),&
+         &k=1,numtyp)
+         if (multyr) then
+            write(idpunt) (((amxval(i,j,k),i=1,nhiann),j=1,numgrp),&
+            &k=1,numtyp)
+            write(idpunt) (((imxloc(i,j,k),i=1,nhiann),j=1,numgrp),&
+            &k=1,numtyp)
+         end if
+      else if (annual) then
+         write(idpunt) ianhrs, ianclm, ianmsg, numyrs
+         write(idpunt) (((annval(i,j,k),i=1,numrec),j=1,numgrp),&
+         &k=1,numtyp)
+         write(idpunt) (((sumann(i,j,k),i=1,numrec),j=1,numgrp),&
+         &k=1,numtyp)
+      end if
 
-      CLOSE (IDPUN2)
+      close (idpunt)
 
-   END IF
+   else
+      open(unit=idpun2,err=99,file=savfl2,form='UNFORMATTED',&
+      &iostat=ioerrn,status='REPLACE')
+      write(idpun2) fulldate, ntothrs
+      write(idpun2) nhival, nmxval, numrec, numgrp, numave, numtyp
 
-   GO TO 1000
+      if (nhival > 0) then
+         write(idpun2) (((((hivalu(i,j,k,l,m),i=1,numrec),j=1,nhival),&
+         &k=1,numgrp),l=1,numave),m=1,numtyp)
+         write(idpun2) (((((nhidat(i,j,k,l,m),i=1,numrec),j=1,nhival),&
+         &k=1,numgrp),l=1,numave),m=1,numtyp)
+         write(idpun2) (((((hclmsg(i,j,k,l,m),i=1,numrec),j=1,nhival),&
+         &k=1,numgrp),l=1,numave),m=1,numtyp)
 
-99 CALL ERRHDL(PATH,MODNAM,'E','500','SAVEFILE')
-   RUNERR = .TRUE.
+! ---       Include arrays associated with multi-year processing of high
+!           ranked values for 24-hr PM2.5, 1-hr NO2, and 1-hr SO2 NAAQS
+         if (pm25ave .or. no2ave .or. so2ave) then
+            write(idpun2) numyrs
+            write(idpun2) (((sumhnh(i,j,k),i=1,numrec),j=1,numgrp),&
+            &k=1,nhival)
+            write(idpun2) (((himxdly(i,j,k),i=1,numrec),j=1,numgrp),&
+            &k=1,nhival)
+            write(idpun2)(((nhidatmxd(i,j,k),i=1,numrec),j=1,numgrp),&
+            &k=1,nhival)
+            write(idpun2) ((((himxdly_byyr(i,j,k,l),i=1,numrec),&
+            &j=1,numgrp),k=1,nhival),l=1,numyrs)
+            write(idpun2) ((((nhidatmxd_byyr(i,j,k,l),i=1,numrec),&
+            &j=1,numgrp),k=1,nhival),l=1,numyrs)
+         end if
 
-1000 RETURN
-END SUBROUTINE RSDUMP
+      end if
+
+      if (nmxval > 0) then
+         write(idpun2) ((((rmxval(i,j,k,l),i=1,nmxval),j=1,numgrp),&
+         &k=1,numave),l=1,numtyp)
+         write(idpun2) ((((mxdate(i,j,k,l),i=1,nmxval),j=1,numgrp),&
+         &k=1,numave),l=1,numtyp)
+         write(idpun2) ((((mxloca(i,j,k,l),i=1,nmxval),j=1,numgrp),&
+         &k=1,numave),l=1,numtyp)
+         write(idpun2) ((((mclmsg(i,j,k,l),i=1,nmxval),j=1,numgrp),&
+         &k=1,numave),l=1,numtyp)
+      end if
+
+      if (seasonhr) then
+         write(idpun2) (((((shvals(i,j,k,l,m),i=1,numrec),&
+         &j=1,numgrp),k=1,4),l=1,24),m=1,numtyp)
+         write(idpun2) ((nseahr(i,j),i=1,4),j=1,24)
+         write(idpun2) ((nseacm(i,j),i=1,4),j=1,24)
+      end if
+
+      if (period) then
+         write(idpun2) ianhrs, ianclm, ianmsg, numyrs
+         write(idpun2) (((annval(i,j,k),i=1,numrec),j=1,numgrp),&
+         &k=1,numtyp)
+         if (multyr) then
+            write(idpun2) (((amxval(i,j,k),i=1,nhiann),j=1,numgrp),&
+            &k=1,numtyp)
+            write(idpun2) (((imxloc(i,j,k),i=1,nhiann),j=1,numgrp),&
+            &k=1,numtyp)
+         end if
+      else if (annual) then
+         write(idpun2) ianhrs, ianclm, ianmsg, numyrs
+         write(idpun2) (((annval(i,j,k),i=1,numrec),j=1,numgrp),&
+         &k=1,numtyp)
+         write(idpun2) (((sumann(i,j,k),i=1,numrec),j=1,numgrp),&
+         &k=1,numtyp)
+      end if
+
+      close (idpun2)
+
+   end if
+
+   go to 1000
+
+99 call errhdl(path,modnam,'E','500','SAVEFILE')
+   runerr = .true.
+
+1000 return
+end subroutine rsdump
 
 
-SUBROUTINE EVLINI
+subroutine evlini
 !***********************************************************************
 !                 EVLINI Module of AERMOD
 !
@@ -3665,41 +3665,41 @@ SUBROUTINE EVLINI
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'EVLINI'
+   modnam = 'EVLINI'
 
-   ARCMAX(:) = 0.0D0
+   arcmax(:) = 0.0d0
 !CRFL
 !CRFL  Add true centerline calculations:  add ARCCL(I)
 !CRFL  Changed 7/25/94, R.F. Lee
 !CRFL
-   ARCCL(:)  = 0.0D0
-   QMAX(:)   = 0.0D0
-   DXMAX(:)  = 0.0D0
-   UMAX(:)   = 0.0D0
-   U3MAX(:)  = 0.0D0
-   SVMAX(:)  = 0.0D0
-   SWMAX(:)  = 0.0D0
-   SYMAX(:)  = 0.0D0
-   SY3MX(:)  = 0.0D0
-   SZMAX(:)  = 0.0D0
-   HEMAX(:)  = 0.0D0
-   CHIDMW(:) = 0.0D0
-   CHINMW(:) = 0.0D0
-   CHI3MW(:) = 0.0D0
-   CHIDML(:) = 0.0D0
-   CHINML(:) = 0.0D0
-   CHI3ML(:) = 0.0D0
-   HSBLMX(:) = 0.0D0
+   arccl(:)  = 0.0d0
+   qmax(:)   = 0.0d0
+   dxmax(:)  = 0.0d0
+   umax(:)   = 0.0d0
+   u3max(:)  = 0.0d0
+   svmax(:)  = 0.0d0
+   swmax(:)  = 0.0d0
+   symax(:)  = 0.0d0
+   sy3mx(:)  = 0.0d0
+   szmax(:)  = 0.0d0
+   hemax(:)  = 0.0d0
+   chidmw(:) = 0.0d0
+   chinmw(:) = 0.0d0
+   chi3mw(:) = 0.0d0
+   chidml(:) = 0.0d0
+   chinml(:) = 0.0d0
+   chi3ml(:) = 0.0d0
+   hsblmx(:) = 0.0d0
 
-   RETURN
-END SUBROUTINE EVLINI
+   return
+end subroutine evlini
 
-SUBROUTINE EVALCK
+subroutine evalck
 !***********************************************************************
 !                 EVALCK Module of AERMOD
 !
@@ -3720,32 +3720,32 @@ SUBROUTINE EVALCK
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: INDEX
-   DOUBLE PRECISION :: CHIOQ
+   integer :: index
+   double precision :: chioq
 
 !     Variable Initializations
-   MODNAM = 'EVALCK'
+   modnam = 'EVALCK'
 
 !     Set ARC Index
-   INDEX = NDXARC(IREC)
+   index = ndxarc(irec)
 
 !     Check for INDEX = 0, i.e., this receptor is not an EVALCART receptor.
 !     Skip to RETURN for INDEX = 0
-   IF (INDEX == 0) GO TO 99
+   if (index == 0) go to 99
 
 !CRFL
 !CRFL  Add true centerline calculations:  add CHIOQC
 !CRFL  Change made 7/25/94, R.F. Lee.
 !CRFL
 !     Calculate Normalized Concentration, CHI/Q
-   CHIOQ = HRVAL(1)/(QTK*EMIFAC(1))
+   chioq = hrval(1)/(qtk*emifac(1))
 !     Check ARCMAX Array
-   IF (CHIOQ > ARCMAX(INDEX)) THEN
-      ARCMAX(INDEX) = CHIOQ
+   if (chioq > arcmax(index)) then
+      arcmax(index) = chioq
 !CRFL
 !CRFL  Add true centerline calculations:  add arc centerline
 !CRFL  calculation ARCCL(INDEX).  Note that, although ARCCL is
@@ -3755,64 +3755,64 @@ SUBROUTINE EVALCK
 !CRFL  distance will be used in the calculation.
 !CRFL  Changed 7/25/94, R.F. Lee.
 !CRFL
-      ARCCL(INDEX) = CHIOQ
-      QMAX(INDEX)  = QTK * EMIFAC(1)
-      DXMAX(INDEX) = DISTR
+      arccl(index) = chioq
+      qmax(index)  = qtk * emifac(1)
+      dxmax(index) = distr
 !RJP
 !RJP     Use appropriate effective parameters
 !RJP
-      IF( STABLE .or. (UNSTAB .and. (HS >= ZI) ) )  THEN
-         UMAX(INDEX)   = UEFF
-         SVMAX(INDEX)  = SVEFF
-         SWMAX(INDEX)  = SWEFF
-         SYMAX(INDEX)  = SY
-         HEMAX(INDEX)  = HE
+      if( stable .or. (unstab .and. (hs >= zi) ) )  then
+         umax(index)   = ueff
+         svmax(index)  = sveff
+         swmax(index)  = sweff
+         symax(index)  = sy
+         hemax(index)  = he
 !crfl 5/19/95 Grab SZ at maximum receptor in arc
-         SZMAX(INDEX)  = SZ
-         CHIDMW(INDEX) = 0.0D0
-         CHINMW(INDEX) = 0.0D0
-         CHI3MW(INDEX) = 0.0D0
-         CHIDML(INDEX) = 0.0D0
-         CHINML(INDEX) = 0.0D0
-         CHI3ML(INDEX) = 0.0D0
-         HSBLMX(INDEX) = HSBL
-      ELSE IF (PPF > 0.999D0) THEN
-         UMAX(INDEX)   = UEFFD
-         U3MAX(INDEX)  = UEFF3
-         SVMAX(INDEX)  = SVEFF3
-         SWMAX(INDEX)  = SWEFF3
-         SYMAX(INDEX)  = SY
-         SY3MX(INDEX)  = SY3
-         HEMAX(INDEX)  = HSP + DHP3
-         CHIDMW(INDEX) = CHIDW/QMAX(INDEX)
-         CHINMW(INDEX) = CHINW/QMAX(INDEX)
-         CHI3MW(INDEX) = CHI3W/QMAX(INDEX)
-         CHIDML(INDEX) = CHIDL/QMAX(INDEX)
-         CHINML(INDEX) = CHINL/QMAX(INDEX)
-         CHI3ML(INDEX) = CHI3L/QMAX(INDEX)
-         HSBLMX(INDEX) = HPEN
-      ELSE
-         UMAX(INDEX)   = UEFFD
-         U3MAX(INDEX)  = UEFF3
-         SVMAX(INDEX)  = SVEFFD
-         SWMAX(INDEX)  = SWEFFD
-         SYMAX(INDEX)  = SY
-         SY3MX(INDEX)  = SY3
-         HEMAX(INDEX)  = HSP + DHP1
-         CHIDMW(INDEX) = CHIDW/QMAX(INDEX)
-         CHINMW(INDEX) = CHINW/QMAX(INDEX)
-         CHI3MW(INDEX) = CHI3W/QMAX(INDEX)
-         CHIDML(INDEX) = CHIDL/QMAX(INDEX)
-         CHINML(INDEX) = CHINL/QMAX(INDEX)
-         CHI3ML(INDEX) = CHI3L/QMAX(INDEX)
-         HSBLMX(INDEX) = HPEN
-      END IF
-   END IF
+         szmax(index)  = sz
+         chidmw(index) = 0.0d0
+         chinmw(index) = 0.0d0
+         chi3mw(index) = 0.0d0
+         chidml(index) = 0.0d0
+         chinml(index) = 0.0d0
+         chi3ml(index) = 0.0d0
+         hsblmx(index) = hsbl
+      else if (ppf > 0.999d0) then
+         umax(index)   = ueffd
+         u3max(index)  = ueff3
+         svmax(index)  = sveff3
+         swmax(index)  = sweff3
+         symax(index)  = sy
+         sy3mx(index)  = sy3
+         hemax(index)  = hsp + dhp3
+         chidmw(index) = chidw/qmax(index)
+         chinmw(index) = chinw/qmax(index)
+         chi3mw(index) = chi3w/qmax(index)
+         chidml(index) = chidl/qmax(index)
+         chinml(index) = chinl/qmax(index)
+         chi3ml(index) = chi3l/qmax(index)
+         hsblmx(index) = hpen
+      else
+         umax(index)   = ueffd
+         u3max(index)  = ueff3
+         svmax(index)  = sveffd
+         swmax(index)  = sweffd
+         symax(index)  = sy
+         sy3mx(index)  = sy3
+         hemax(index)  = hsp + dhp1
+         chidmw(index) = chidw/qmax(index)
+         chinmw(index) = chinw/qmax(index)
+         chi3mw(index) = chi3w/qmax(index)
+         chidml(index) = chidl/qmax(index)
+         chinml(index) = chinl/qmax(index)
+         chi3ml(index) = chi3l/qmax(index)
+         hsblmx(index) = hpen
+      end if
+   end if
 
-99 RETURN
-END SUBROUTINE EVALCK
+99 return
+end subroutine evalck
 
-SUBROUTINE EVALFL
+subroutine evalfl
 !***********************************************************************
 !                 EVALFL Module of AERMOD
 !
@@ -3833,22 +3833,22 @@ SUBROUTINE EVALFL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 !     JAT 7/22/21 D065 UOUST AND SVOU NOT USED
 !      DOUBLE PRECISION :: CWIC, CWICN, CWICW, CWICL, UOUST, SVOU, HEOZI,
-   DOUBLE PRECISION :: CWIC, CWICN, CWICW, CWICL, HEOZI,&
+   double precision :: cwic, cwicn, cwicw, cwicl, heozi,&
 !     JAT 7/22/21 D065 ZIOL AND UOWST NOT USED
 !     &        ZIOL, FSTAR, UOWST, XNDIM, PWSTAR, UOUT, SYOUT, OBUOUT
-   &FSTAR, XNDIM, PWSTAR, UOUT, SYOUT, OBUOUT
-   INTEGER :: I
+   &fstar, xndim, pwstar, uout, syout, obuout
+   integer :: i
 
 !     Variable Initializations
-   MODNAM = 'EVALFL'
+   modnam = 'EVALFL'
 
 !     LOOP Through ARCs
-   DO I = 1, NUMARC
+   do i = 1, numarc
 !C
 !C   Changes dated 2/25/94, 3/2/94, 3/4/94, 3/8/94, 3/9/94, 3/14/94,
 !C     and 4/20/94
@@ -3862,37 +3862,37 @@ SUBROUTINE EVALFL
 !RWB         CWIC = SRT2PI * SYMAX(I) * ARCCL(I)
 !RWB     Modify CWIC to be sum of CWIC's of individual "plumes".  2/13/95
 !RWB     Note that WRAP and LIFT components are included in ARCCL.
-      IF( STABLE .or. (UNSTAB .and. HS>=ZI) )THEN
-         CWIC  = SRT2PI * SYMAX(I) * ARCCL(I)
+      if( stable .or. (unstab .and. hs>=zi) )then
+         cwic  = srt2pi * symax(i) * arccl(i)
 !           Now calculate CWIC with U*ZI normalization,
 !           using maximum of HE & ZI, instead of ZI.
-         CWICN = CWIC * UMAX(I) * MAX( HEMAX(I), ZI)
+         cwicn = cwic * umax(i) * max( hemax(i), zi)
 
-      ELSE
+      else
 !           Calculate WRAP and LIFT components of CWIC
 !           First calculate CWIC without U*ZI normalization.
 !           Note that the CHIDM_, CHINM_ and CHI3M_ terms have already been
 !           normalized by QTK.
-         CWICW = SRT2PI * SYMAX(I) * (CHIDMW(I)+CHINMW(I)) +&
-         &SRT2PI * SY3MX(I) *  CHI3MW(I)
+         cwicw = srt2pi * symax(i) * (chidmw(i)+chinmw(i)) +&
+         &srt2pi * sy3mx(i) *  chi3mw(i)
 
-         CWICL = SRT2PI * SYMAX(I) * (CHIDML(I)+CHINML(I)) +&
-         &SRT2PI * SY3MX(I) *  CHI3ML(I)
+         cwicl = srt2pi * symax(i) * (chidml(i)+chinml(i)) +&
+         &srt2pi * sy3mx(i) *  chi3ml(i)
 !           Combine WRAP and LIFT components. Include decay and normalization.
-         CWIC  = (FOPT * CWICW + (1.0D0-FOPT) * CWICL) * D
+         cwic  = (fopt * cwicw + (1.0d0-fopt) * cwicl) * d
 
 !           Calculate WRAP and LIFT components of CWIC
 !           Now calculate CWIC with U*ZI normalization.
 !           Use HPEN (=MAX(HE3,ZI)) for penetrated source instead of ZI.
-         CWICW = SRT2PI * SYMAX(I)*UMAX(I)*ZI*(CHIDMW(I)+CHINMW(I)) +&
-         &SRT2PI * SY3MX(I)*U3MAX(I)*HPEN*CHI3MW(I)
+         cwicw = srt2pi * symax(i)*umax(i)*zi*(chidmw(i)+chinmw(i)) +&
+         &srt2pi * sy3mx(i)*u3max(i)*hpen*chi3mw(i)
 
-         CWICL = SRT2PI * SYMAX(I)*UMAX(I)*ZI*(CHIDML(I)+CHINML(I)) +&
-         &SRT2PI * SY3MX(I)*U3MAX(I)*HPEN*CHI3ML(I)
+         cwicl = srt2pi * symax(i)*umax(i)*zi*(chidml(i)+chinml(i)) +&
+         &srt2pi * sy3mx(i)*u3max(i)*hpen*chi3ml(i)
 !           Combine WRAP and LIFT components. Include decay and normalization.
-         CWICN = (FOPT * CWICW + (1.0D0-FOPT) * CWICL) * D
+         cwicn = (fopt * cwicw + (1.0d0-fopt) * cwicl) * d
 
-      END IF
+      end if
 
 !        Calculate U/Ustar
 !     JAT 7/22/21 D065 UOUST AND SVOU NOT USED
@@ -3910,11 +3910,11 @@ SUBROUTINE EVALFL
 !         END IF
 
 !        Calculate He / Zi
-      IF (ZI >= 1.0D-10) THEN
-         HEOZI = HEMAX(I) / ZI
-      ELSE
-         HEOZI = -999.0D0
-      END IF
+      if (zi >= 1.0d-10) then
+         heozi = hemax(i) / zi
+      else
+         heozi = -999.0d0
+      end if
 
 !        Calculate Zi / L
 !     JAT 7/22/21 D065 ZIOL NOT USED
@@ -3929,13 +3929,13 @@ SUBROUTINE EVALFL
 !RWB     Replace FTOT with FSTAR (non-dimensional buoyancy flux).  2/13/95
 !RWB     Note that UP is the latest value for plume rise wind speed
 !RWB     from the iterative stable plume rise.
-      IF (WSTAR >= 1.0D-10) THEN
-         FSTAR = FB / (UP * WSTAR * WSTAR * ZI)
-      ELSE
-         FSTAR = -999.0D0
-      END IF
+      if (wstar >= 1.0d-10) then
+         fstar = fb / (up * wstar * wstar * zi)
+      else
+         fstar = -999.0d0
+      end if
 
-      IF (OBULEN < 0.0D0) THEN
+      if (obulen < 0.0d0) then
 
 !           Calculate U / WSTAR when L < 0
 !         JAT 7/22/21 D065 UOWST NOT USED
@@ -3946,23 +3946,23 @@ SUBROUTINE EVALFL
 !            END IF
 
 !           Calculate nondimensional distance when L < 0
-         IF (UMAX(I) >= 1.0D-10 .and. ZI >= 1.0D-10) THEN
-            XNDIM = DXMAX(I) * WSTAR / (UMAX(I) * ZI)
-         ELSE
-            XNDIM = -999.0D0
-         END IF
+         if (umax(i) >= 1.0d-10 .and. zi >= 1.0d-10) then
+            xndim = dxmax(i) * wstar / (umax(i) * zi)
+         else
+            xndim = -999.0d0
+         end if
 !crfl 5/18/95 When unstable, put WSTAR into PWSTAR variable to be printed.
-         PWSTAR = WSTAR
+         pwstar = wstar
 
-      ELSE
+      else
 
 !           Set UOWST and XNDIM to -999 when L >= 0
 !         JAT 7/22/21 D065 UOWST NOT USED
 !            UOWST = -999.0D0
-         XNDIM = -999.0D0
+         xndim = -999.0d0
 !crfl 5/18/95 When stable, put Sigma-Z into PWSTAR variable to be printed.
-         PWSTAR = SZMAX(I)
-      END IF
+         pwstar = szmax(i)
+      end if
 
 !CRFL
 !CRFL  Added ARCCL(I), arc true centerline concentration for the arc.
@@ -3980,48 +3980,48 @@ SUBROUTINE EVALFL
 !RWB     Modified to output CHI's for individual "plumes".  2/13/95
 !RWB     First select appropriate sigma-y to print out. Use SY3 for mostly
 !RWB     penetrated plumes.
-      IF (UNSTAB .and. HS<ZI .and. PPF>0.999D0) THEN
-         UOUT  = U3MAX(I)
-         SYOUT = SY3MX(I)
-      ELSE
-         UOUT  = UMAX(I)
-         SYOUT = SYMAX(I)
-      END IF
+      if (unstab .and. hs<zi .and. ppf>0.999d0) then
+         uout  = u3max(i)
+         syout = sy3mx(i)
+      else
+         uout  = umax(i)
+         syout = symax(i)
+      end if
 
-      IF (URBSTAB) THEN
-         OBUOUT = URBOBULEN(IURB)
-      ELSE
-         OBUOUT = OBULEN
-      END IF
+      if (urbstab) then
+         obuout = urbobulen(iurb)
+      else
+         obuout = obulen
+      end if
 
 
 !crfl 5/18/95 Changed WSTAR to PWSTAR so I could output another variable
 !crfl         (Sigma-Z) in stable conditions without upsetting WSTAR.
-      WRITE(IELUNT(ISRC),9000) SRCID(ISRC), KURDAT, ARCID(I),&
-      &ARCMAX(I), QMAX(I), CWIC, CWICN,&
-      &DXMAX(I), UOUT, SVMAX(I),&
-      &SWMAX(I), SYOUT, HEMAX(I),&
-      &OBUOUT, ZI, USTAR, PWSTAR, FB, FM,&
-      &BOWEN, PPF, CHIDML(I), CHINML(I), CHI3ML(I),&
-      &XNDIM, HEOZI, FSTAR, AHS(ISRC), ARCCL(I),&
-      &AFV, HSBLMX(I)
+      write(ielunt(isrc),9000) srcid(isrc), kurdat, arcid(i),&
+      &arcmax(i), qmax(i), cwic, cwicn,&
+      &dxmax(i), uout, svmax(i),&
+      &swmax(i), syout, hemax(i),&
+      &obuout, zi, ustar, pwstar, fb, fm,&
+      &bowen, ppf, chidml(i), chinml(i), chi3ml(i),&
+      &xndim, heozi, fstar, ahs(isrc), arccl(i),&
+      &afv, hsblmx(i)
 !RWB                      Added Flow Vector, AFV
 !RWB                      Added height of effective reflecting surface, HSBLMX
 
 
-   END DO
+   end do
 !RCO remove line breaks 9/2/21
-9000 FORMAT(1X,A12,1X,I8.8,1X,A8,4(1X,G12.6),&
-   &9X,6(1X,G12.4),9X,6(1X,G12.4),&
-   &9X,6(1X,G12.4),9X,4(1X,G12.4),1X,'0000000000',&
-   &1X,G12.4,1X,G12.4)
+9000 format(1x,a12,1x,i8.8,1x,a8,4(1x,g12.6),&
+   &9x,6(1x,g12.4),9x,6(1x,g12.4),&
+   &9x,6(1x,g12.4),9x,4(1x,g12.4),1x,'0000000000',&
+   &1x,g12.4,1x,g12.4)
 !C   End of changes dated 2/25/94 through 3/14/94 by Russ Lee
 !C
 
-   RETURN
-END SUBROUTINE EVALFL
+   return
+end subroutine evalfl
 
-SUBROUTINE MXDYBYYR(N)
+subroutine mxdybyyr(n)
 !***********************************************************************
 !                 MXDYBYYR Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4041,56 +4041,56 @@ SUBROUTINE MXDYBYYR(N)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 
-   INTEGER :: I, N
-   INTEGER :: IDEC, IMOD
+   integer :: i, n
+   integer :: idec, imod
 !     JAT 7/22/21 D065 ICHR NOT USED
 !      INTEGER :: ICYR, ICMN, ICDY, ICHR, ICDAT, ICDAT8, ICJDY
-   INTEGER :: ICYR, ICMN, ICDY, ICDAT, ICDAT8, ICJDY
-   CHARACTER :: RANK(10)*5, CHRVAL*5
-   CHARACTER :: MODNAM*12
+   integer :: icyr, icmn, icdy, icdat, icdat8, icjdy
+   character :: rank(10)*5, chrval*5
+   character :: modnam*12
 ! Unused:       INTEGER :: J
 ! Unused:       CHARACTER PERCHR*6
 
 !     Variable Initializations
-   DATA (RANK(I),I=1,10) /'  1ST','  2ND','  3RD','  4TH','  5TH',&
+   data (rank(i),i=1,10) /'  1ST','  2ND','  3RD','  4TH','  5TH',&
    &'  6TH','  7TH','  8TH','  9TH',' 10TH'/
-   MODNAM = 'MXDYBYYR'
-   ICDAT  = 0
+   modnam = 'MXDYBYYR'
+   icdat  = 0
 
 ! --- Assign character label for rank
-   IF (N <= 10) THEN
-      CHRVAL = RANK(N)
-   ELSE IF (MOD(N,100) > 10 .and.&
-   &MOD(N,100) < 20) THEN
-      IDEC = INT(N/10)
-      IMOD = MOD(N,10)
-      WRITE(CHRVAL,'(I2,I1,"TH")') IDEC, IMOD
-   ELSE IF (N <= 999) THEN
-      IDEC = INT(N/10)
-      IMOD = MOD(N,10)
-      IF (IMOD == 0) IMOD = 10
-      WRITE(CHRVAL,'(I2,A3)') IDEC, RANK(IMOD)(3:5)
-   END IF
+   if (n <= 10) then
+      chrval = rank(n)
+   else if (mod(n,100) > 10 .and.&
+   &mod(n,100) < 20) then
+      idec = int(n/10)
+      imod = mod(n,10)
+      write(chrval,'(I2,I1,"TH")') idec, imod
+   else if (n <= 999) then
+      idec = int(n/10)
+      imod = mod(n,10)
+      if (imod == 0) imod = 10
+      write(chrval,'(I2,A3)') idec, rank(imod)(3:5)
+   end if
 
 !     Begin Source Group LOOP
-   DO IGRP = 1, NUMGRP
+   do igrp = 1, numgrp
 !        Check for MXDYBYYR Option for This IGRP
-      IF (IMXDLY_BYYR(IGRP) == 1) THEN
+      if (imxdly_byyr(igrp) == 1) then
 
-         RECEPTOR_LOOP: DO IREC = 1, NUMREC
-            ITYP = 1
+         receptor_loop: do irec = 1, numrec
+            ityp = 1
 !              WRITE Results to Formatted Plot File
 !              Begin Receptor LOOP
 
 ! ---          Extract date information
-            ICDAT8 = NHIDATMXD(IREC,IGRP,N)
-            ICYR   = ICDAT8/1000000
+            icdat8 = nhidatmxd(irec,igrp,n)
+            icyr   = icdat8/1000000
 
 !            D001 Call LONG_DATE and determine the longform date Wood 9/15/22
-            CALL LONG_DATE(ICDAT8,ICDAT,ICYR,ICYR)
+            call long_date(icdat8,icdat,icyr,icyr)
 ! ---  D001 remove original calculation of year Wood 9/15/22
 !               IF (ICYR .GE. ISTRT_WIND .and. ICYR .LE. 99) THEN
 !                  ICYR  = ISTRT_CENT*100 + ICYR
@@ -4100,38 +4100,38 @@ SUBROUTINE MXDYBYYR(N)
 !                  ICDAT = (ISTRT_CENT+1)*100000000 + ICDAT8
 !               END IF
 
-            ICMN = (ICDAT/10000) - (ICDAT/1000000)*100
-            ICDY = (ICDAT/100) - (ICDAT/10000)*100
+            icmn = (icdat/10000) - (icdat/1000000)*100
+            icdy = (icdat/100) - (icdat/10000)*100
 !             JAT 7/22/21 D065 ICHR NOT USED
 !               ICHR =  ICDAT - (ICDAT/100)*100
 !              Calculate JULIAN Day for Start and End Dates
 !              but first make sure date variables are not 0
-            IF (ICMN>0 .and. ICDY>0) THEN
-               CALL JULIAN (ICYR,ICMN,ICDY,ICJDY)
-            ELSE
-               ICJDY = 0
-            END IF
+            if (icmn>0 .and. icdy>0) then
+               call julian (icyr,icmn,icdy,icjdy)
+            else
+               icjdy = 0
+            end if
 
 ! ---          Write MXDYBYYR values to file
-            WRITE(IMDUNT_BYYR(IGRP),MXDFRM,ERR=99)&
-            &AXR(IREC), AYR(IREC), HIMXDLY(IREC,IGRP,N),&
-            &AZELEV(IREC), AZHILL(IREC), AZFLAG(IREC),CHRVAL,&
-            &GRPID(IGRP), ICJDY,&
-            &NHIDATMXD(IREC,IGRP,N)-(NHIDATMXD(IREC,IGRP,N)/100)*100,&
-            &NHIDATMXD(IREC,IGRP,N), NETID(IREC)
+            write(imdunt_byyr(igrp),mxdfrm,err=99)&
+            &axr(irec), ayr(irec), himxdly(irec,igrp,n),&
+            &azelev(irec), azhill(irec), azflag(irec),chrval,&
+            &grpid(igrp), icjdy,&
+            &nhidatmxd(irec,igrp,n)-(nhidatmxd(irec,igrp,n)/100)*100,&
+            &nhidatmxd(irec,igrp,n), netid(irec)
 
-         END DO RECEPTOR_LOOP
-      END IF
-   END DO
+         end do receptor_loop
+      end if
+   end do
 !     End Source Group LOOP
 
-   GO TO 999
+   go to 999
 
 !     WRITE Error Message for Problem Writing to MXDYBYYR File
-99 WRITE(DUMMY,'("MXDLY",I3.3)') IMDUNT_BYYR(IGRP)
-   CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-   RUNERR = .TRUE.
+99 write(dummy,'("MXDLY",I3.3)') imdunt_byyr(igrp)
+   call errhdl(path,modnam,'E','520',dummy)
+   runerr = .true.
 
-999 RETURN
-END SUBROUTINE MXDYBYYR
+999 return
+end subroutine mxdybyyr
 

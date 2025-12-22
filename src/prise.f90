@@ -1,4 +1,4 @@
-SUBROUTINE DELTAH ( XARG )
+subroutine deltah ( xarg )
 !***********************************************************************
 !             DELTAH Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -41,26 +41,26 @@ SUBROUTINE DELTAH ( XARG )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 
-   CHARACTER :: MODNAM*12
-   INTEGER :: KITER, NDXZPL
-   DOUBLE PRECISION :: XARG, XMAXTMP, XRISE, ZPLM, DHPOLD,&
-   &SVPM, UPM, TGPM, PTPM, PTP
+   character :: modnam*12
+   integer :: kiter, ndxzpl
+   double precision :: xarg, xmaxtmp, xrise, zplm, dhpold,&
+   &svpm, upm, tgpm, ptpm, ptp
 
 !     Variable Initializations
-   MODNAM = 'DELTAH'
+   modnam = 'DELTAH'
 
-   IF( (STABLE  .or.  (UNSTAB  .and.  (HS >= ZI)))  .and.&
-   &(XARG >= XMAX) )THEN
+   if( (stable  .or.  (unstab  .and.  (hs >= zi)))  .and.&
+   &(xarg >= xmax) )then
 !        Use final stable plume rise (DHF) calculated in DISTF (DHP)
 !        at XMAX
-      DHP = DHFAER
+      dhp = dhfaer
 
 
-   ELSE IF( (STABLE  .or. (UNSTAB  .and.  (HS >= ZI))) .and.&
-   &(XARG < XMAX) ) THEN
+   else if( (stable  .or. (unstab  .and.  (hs >= zi))) .and.&
+   &(xarg < xmax) ) then
 !----    Compute stable plume rise for the distance XARG   --- CALL SBLRIS
 !        Use iterative approach to plume rise calculations.
 !        First compute temporary distance to "final rise" based on current
@@ -68,125 +68,125 @@ SUBROUTINE DELTAH ( XARG )
 !        XMAXTMP to SBLRIS.  This avoids potential for math error in
 !        SUB. SBLRIS for distances beyond the value of XMAX computed
 !----    iteratively outside the receptor loop in SUB. DISTF.
-      XMAXTMP = UP * DATAN2( FM*BVPRIM, -FB ) / BVPRIM
-      XRISE   = MIN( XARG, XMAXTMP )
-      CALL SBLRIS ( XRISE )
-      KITER = 0
+      xmaxtmp = up * datan2( fm*bvprim, -fb ) / bvprim
+      xrise   = min( xarg, xmaxtmp )
+      call sblris ( xrise )
+      kiter = 0
 
-50    ZPLM = HSP + 0.5D0 * DHP
-      DHPOLD = DHP
+50    zplm = hsp + 0.5d0 * dhp
+      dhpold = dhp
 
 !----    Locate index below ZPLM
 
-      CALL LOCATE(GRIDHT, 1, MXGLVL, ZPLM, NDXZPL)
+      call locate(gridht, 1, mxglvl, zplm, ndxzpl)
 
 !----    Get Wind speed at ZPLM; replace UP.  Also, replace TGP,
 !        vertical potential temperature gradient, if stable.
 
-      CALL GINTRP( GRIDHT(NDXZPL), GRIDSV(NDXZPL),&
-      &GRIDHT(NDXZPL+1), GRIDSV(NDXZPL+1), ZPLM, SVPM )
-      CALL GINTRP( GRIDHT(NDXZPL), GRIDWS(NDXZPL),&
-      &GRIDHT(NDXZPL+1), GRIDWS(NDXZPL+1), ZPLM, UPM )
+      call gintrp( gridht(ndxzpl), gridsv(ndxzpl),&
+      &gridht(ndxzpl+1), gridsv(ndxzpl+1), zplm, svpm )
+      call gintrp( gridht(ndxzpl), gridws(ndxzpl),&
+      &gridht(ndxzpl+1), gridws(ndxzpl+1), zplm, upm )
 
-      SVPM = MAX( SVPM, SVMIN, SVUMIN*UPM )
-      IF( L_VECTORWS )THEN
-         UPM = DSQRT( UPM*UPM + 2.0D0*SVPM*SVPM )
-      ENDIF
-      UPM  = MAX( UPM, WSMIN )
+      svpm = max( svpm, svmin, svumin*upm )
+      if( l_vectorws )then
+         upm = dsqrt( upm*upm + 2.0d0*svpm*svpm )
+      endif
+      upm  = max( upm, wsmin )
 
 !RWB     Use average of stack top and midpoint wind speeds.
-      UP = 0.5D0 * (US + UPM)
+      up = 0.5d0 * (us + upm)
 
-      CALL GINTRP( GRIDHT(NDXZPL), GRIDTG(NDXZPL),&
-      &GRIDHT(NDXZPL+1), GRIDTG(NDXZPL+1), ZPLM, TGPM )
-      CALL GINTRP( GRIDHT(NDXZPL), GRIDPT(NDXZPL),&
-      &GRIDHT(NDXZPL+1), GRIDPT(NDXZPL+1), ZPLM, PTPM )
+      call gintrp( gridht(ndxzpl), gridtg(ndxzpl),&
+      &gridht(ndxzpl+1), gridtg(ndxzpl+1), zplm, tgpm )
+      call gintrp( gridht(ndxzpl), gridpt(ndxzpl),&
+      &gridht(ndxzpl+1), gridpt(ndxzpl+1), zplm, ptpm )
 !RWB     Use average of stack top and midpoint temperature gradients.
-      TGP = 0.5D0 * (TGS + TGPM)
-      PTP = 0.5D0 * (PTS + PTPM)
-      BVF = DSQRT( G * TGP / PTP)
-      IF(BVF < 1.0D-10) BVF = 1.0D-10
-      BVPRIM  = 0.7D0 * BVF
+      tgp = 0.5d0 * (tgs + tgpm)
+      ptp = 0.5d0 * (pts + ptpm)
+      bvf = dsqrt( g * tgp / ptp)
+      if(bvf < 1.0d-10) bvf = 1.0d-10
+      bvprim  = 0.7d0 * bvf
 
 !        Repeat calculation of temporary distance to "final rise" using
 !        current values of UP and BVPRIM.
-      XMAXTMP = UP * DATAN2( FM*BVPRIM, -FB ) / BVPRIM
-      XRISE   = MIN( XARG, XMAXTMP )
-      CALL SBLRIS ( XRISE )
+      xmaxtmp = up * datan2( fm*bvprim, -fb ) / bvprim
+      xrise   = min( xarg, xmaxtmp )
+      call sblris ( xrise )
 
-      KITER = KITER + 1
+      kiter = kiter + 1
 
 !RJP     Add temporary debugging statements
 
-      IF(DEBUG) THEN
-         WRITE(DBGUNT,6001) KITER,DHPOLD, DHP, ZPLM, UP,TGP
-6001     FORMAT(/,5X,'OPTH2 ITER. #',I1,': OLD DELH = ',&
-         &F6.1,' M; NEW DELH = ',F6.1,' M; MET LEVEL = ',&
-         &F6.1,' M; NEW Upl = ',F5.2,' M/S; NEW DTHDZ = ',&
-         &F7.4,' K/M')
-      ENDIF
+      if(debug) then
+         write(dbgunt,6001) kiter,dhpold, dhp, zplm, up,tgp
+6001     format(/,5x,'OPTH2 ITER. #',i1,': OLD DELH = ',&
+         &f6.1,' M; NEW DELH = ',f6.1,' M; MET LEVEL = ',&
+         &f6.1,' M; NEW Upl = ',f5.2,' M/S; NEW DTHDZ = ',&
+         &f7.4,' K/M')
+      endif
 
 !        Check for convergence
-      IF(DHP>0.0D0 .and. DABS((DHPOLD-DHP)/DHP)<0.001D0 .and.&
-      &KITER >= 5)THEN
-         IF( DHP <= 1.0D-5 )THEN
-            DHP = 1.0D-5
-         ENDIF
-         GO TO 60
-      ELSEIF(KITER < 10)THEN
-         GO TO 50
-      ENDIF
+      if(dhp>0.0d0 .and. dabs((dhpold-dhp)/dhp)<0.001d0 .and.&
+      &kiter >= 5)then
+         if( dhp <= 1.0d-5 )then
+            dhp = 1.0d-5
+         endif
+         go to 60
+      elseif(kiter < 10)then
+         go to 50
+      endif
 
-      IF(KITER >= 5) THEN
-         DHP = 0.5D0 * (DHP + DHPOLD)
-         IF(DEBUG) WRITE(DBGUNT,6002) DHP
-6002     FORMAT(/,5X,'OPTH2 ITERATION FAILED TO CONVERGE; PLUME',&
-         &' RISE SET AT ',F6.1,' METERS.',/)
-         GO TO 60
-      ELSE
-         GO TO 50
-      ENDIF
+      if(kiter >= 5) then
+         dhp = 0.5d0 * (dhp + dhpold)
+         if(debug) write(dbgunt,6002) dhp
+6002     format(/,5x,'OPTH2 ITERATION FAILED TO CONVERGE; PLUME',&
+         &' RISE SET AT ',f6.1,' METERS.',/)
+         go to 60
+      else
+         go to 50
+      endif
 
-60    CONTINUE
+60    continue
 
 !RWB     After completing iteration, reset UP and TGP to stack top
 !RWB     values for subsequent distance-dependent plume rise calcs.
-      UP  = US
-      TGP = TGS
-      PTP = PTS
-      BVF = DSQRT( G * TGP / PTP )
-      IF(BVF < 1.0D-10) BVF = 1.0D-10
-      BVPRIM  = 0.7D0 * BVF
+      up  = us
+      tgp = tgs
+      ptp = pts
+      bvf = dsqrt( g * tgp / ptp )
+      if(bvf < 1.0d-10) bvf = 1.0d-10
+      bvprim  = 0.7d0 * bvf
 !crfl-3/6/95 Make sure SBL rise is not greater than CBL rise.
-      CALL CBLPRD(XARG)
-      DHP = MIN(DHP,DHP1)
-      DHP = MIN(DHP,DHFAER)
+      call cblprd(xarg)
+      dhp = min(dhp,dhp1)
+      dhp = min(dhp,dhfaer)
 
-   ELSEIF( UNSTAB )THEN
+   elseif( unstab )then
 !        (i.e., for UNSTABle cases, with HS < ZI)
 
 !        Compute  plume rise for the direct plume       --- CALL CBLPRD
-      CALL CBLPRD ( XARG )
+      call cblprd ( xarg )
 
 !        Compute  plume rise for the indirect plume        --- CALL CBLPRN
-      CALL CBLPRN ( XARG )
+      call cblprn ( xarg )
 
-      IF( PPF > 0.0D0 )THEN
+      if( ppf > 0.0d0 )then
 !           Compute plume rise for the penetrated plume    --- CALL CBLPR3
-         CALL CBLPR3
+         call cblpr3
 
-      ELSE
+      else
 !           No plume penetration - plume rise is zero for this source
-         DHP3 = 0.0D0
+         dhp3 = 0.0d0
 
-      ENDIF
+      endif
 
-   ENDIF
+   endif
 
-   RETURN
-END SUBROUTINE DELTAH
+   return
+end subroutine deltah
 
-SUBROUTINE PRMDELH ( XARG, L_INWAKE )
+subroutine prmdelh ( xarg, l_inwake )
 !***********************************************************************
 !             PRMDELH Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -211,89 +211,89 @@ SUBROUTINE PRMDELH ( XARG, L_INWAKE )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
+   use main1
 ! --- Include PRIME plume rise parameters
-   USE PRIME_wakedat
-   USE PRM2_WAKEDAT, ONLY: DFSN2CALL
-   IMPLICIT NONE
+   use PRIME_wakedat
+   use prm2_wakedat, only: dfsn2call
+   implicit none
 
-   CHARACTER :: MODNAM*12
-   INTEGER :: NUMWAKE, ierr
-   DOUBLE PRECISION :: XARG
-   DOUBLE PRECISION, SAVE :: hseff, reff
+   character :: modnam*12
+   integer :: numwake, ierr
+   double precision :: xarg
+   double precision, save :: hseff, reff
 ! --- Dimension work arrays for PRIME numerical plume rise
-   DOUBLE PRECISION, SAVE :: xtr(mxntr), ytr(mxntr),&
+   double precision, save :: xtr(mxntr), ytr(mxntr),&
    &ztr(mxntr), rtr(mxntr)
 
-   LOGICAL       :: L_INWAKE
-   LOGICAL, SAVE :: L_INWAKE_SAVE, CAPPED, HORIZ
+   logical       :: l_inwake
+   logical, save :: l_inwake_save, capped, horiz
 
 !     Variable Initializations
-   MODNAM = 'PRMDELH'
-   CAPPED = .FALSE.
-   HORIZ  = .FALSE.
+   modnam = 'PRMDELH'
+   capped = .false.
+   horiz  = .false.
 
 !
 ! --- PRIME ---------------------------------------------------
-   IF (WAKE) THEN
+   if (wake) then
 ! ---    Calculate final rise & array of transitional rise values
 ! ---    for first receptor only
-      if (PRM_FSTREC) then
-         PRM_FSTREC = .FALSE.
-         L_INWAKE = .FALSE.
-         DFSN2CALL = .FALSE.
+      if (prm_fstrec) then
+         prm_fstrec = .false.
+         l_inwake = .false.
+         dfsn2call = .false.
          hseff=hs
 ! ---       Compute stack radius from diameter
-         reff=0.5D0*ds
+         reff=0.5d0*ds
          if (srctyp(isrc) == 'POINTCAP') then
-            capped = .TRUE.
+            capped = .true.
          else
-            capped = .FALSE.
+            capped = .false.
          end if
          if (srctyp(isrc) == 'POINTHOR') then
-            horiz = .TRUE.
+            horiz = .true.
          else
-            horiz = .FALSE.
+            horiz = .false.
          end if
 ! ---       Calculate transitional & final plume rise       ---   CALL NUMRISE
-         call NUMRISE(PRIMEDBG,hseff,reff,ts,vs,mxntr,capped,horiz,&
-         &dsfact,xtr,ytr,ztr,rtr,L_INWAKE,numwake,ierr,&
-         &PRMDBUNT)
-         IF (ierr == 1) then
+         call numrise(primedbg,hseff,reff,ts,vs,mxntr,capped,horiz,&
+         &dsfact,xtr,ytr,ztr,rtr,l_inwake,numwake,ierr,&
+         &prmdbunt)
+         if (ierr == 1) then
 ! ---          Error occurred during PRIME numerical plume rise.
 !              Write fatal error message - source parameters may be suspect.
-            CALL ERRHDL(PATH,MODNAM,'E','499',SRCID(ISRC))
-            RUNERR = .TRUE.
-            RETURN
-         END IF
-         IF (NUMWAKE <= 1) THEN
-            L_INWAKE = .FALSE.
-         END IF
+            call errhdl(path,modnam,'E','499',srcid(isrc))
+            runerr = .true.
+            return
+         end if
+         if (numwake <= 1) then
+            l_inwake = .false.
+         end if
 ! ---       ZTR is effective plume ht. - compute final rise
-         DHF = ztr(mxntr) - hseff
+         dhf = ztr(mxntr) - hseff
 ! ---       Report selected data to file for debug          ---   CALL WAKE_DBG
-         if(PRIMEDBG) call WAKE_DBG(PRMDBUNT,mxntr,xtr,ytr,ztr,rtr,&
+         if(primedbg) call wake_dbg(prmdbunt,mxntr,xtr,ytr,ztr,rtr,&
          &nobid,hseff)
-         L_INWAKE_SAVE = L_INWAKE
+         l_inwake_save = l_inwake
       else
-         L_INWAKE = L_INWAKE_SAVE
+         l_inwake = l_inwake_save
       endif
 !
 ! ---    Determine the plume rise for current receptor
-      IF (XARG < xtr(mxntr)) THEN
+      if (xarg < xtr(mxntr)) then
 ! ---       Interpolate in rise table to get gradual rise   ---   CALL NUMGRAD
-         call NUMGRAD(xarg,xtr,ztr,mxntr,zeff)
+         call numgrad(xarg,xtr,ztr,mxntr,zeff)
          dhp = zeff - hseff
-      ELSE
-         DHP = ztr(mxntr) - hseff
-      END IF
+      else
+         dhp = ztr(mxntr) - hseff
+      end if
 
-   ENDIF
+   endif
 
-   RETURN
-END SUBROUTINE PRMDELH
+   return
+end subroutine prmdelh
 
-FUNCTION HSPRIM(US,VS,HS,DS)
+function hsprim(us,vs,hs,ds)
 !***********************************************************************
 !                 HSPRIM Module of the ISC Model - Version 2
 !
@@ -313,26 +313,26 @@ FUNCTION HSPRIM(US,VS,HS,DS)
 !***********************************************************************
 
 !     Variable Declarations
-   IMPLICIT NONE
-   DOUBLE PRECISION :: US, VS, HS, DS, HSPRIM
-   CHARACTER :: MODNAM*6
+   implicit none
+   double precision :: us, vs, hs, ds, hsprim
+   character :: modnam*6
 !     Variable Initializations
-   MODNAM = 'HSPRIM'
+   modnam = 'HSPRIM'
 
 !     Calculate Adjusted Stack Height (Eqn. 1-7)
 
-   IF (VS < 1.5D0*US) THEN
-      HSPRIM = HS - 2.0D0*DS*(1.5D0-VS/US)
-   ELSE
-      HSPRIM = HS
-   END IF
+   if (vs < 1.5d0*us) then
+      hsprim = hs - 2.0d0*ds*(1.5d0-vs/us)
+   else
+      hsprim = hs
+   end if
 
-   IF (HSPRIM < 0.0D0)  HSPRIM = 0.0D0
+   if (hsprim < 0.0d0)  hsprim = 0.0d0
 
-   RETURN
-END FUNCTION HSPRIM
+   return
+end function hsprim
 
-SUBROUTINE SBLRIS ( XARG )
+subroutine sblris ( xarg )
 !***********************************************************************
 !             SBLRIS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -361,32 +361,32 @@ SUBROUTINE SBLRIS ( XARG )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: XARG, TERMA, TERMB, TERMC, TERMD, TERME
-   DOUBLE PRECISION :: XLN, DELHNN
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: xarg, terma, termb, termc, termd, terme
+   double precision :: xln, delhnn
 
 
 !     Variable Initializations
-   MODNAM = 'SBLRIS'
+   modnam = 'SBLRIS'
 
 !---- Compute the stable plume rise; FB and BVF and UP have all been
 !     checked previously to insure all are greater than 0.0
 
-   TERMA =  FB / (BVF * BVF * UP)
-   TERMB =  BVPRIM * FM / FB
-   TERMC =  DSIN(BVPRIM * XARG / UP)
-   TERMD =  DCOS(BVPRIM * XARG / UP)
+   terma =  fb / (bvf * bvf * up)
+   termb =  bvprim * fm / fb
+   termc =  dsin(bvprim * xarg / up)
+   termd =  dcos(bvprim * xarg / up)
 
 ! --- Calculate TERME to check for possible negative argument for DHP
-   TERME = (TERMB*TERMC+1.0D0-TERMD)
+   terme = (termb*termc+1.0d0-termd)
 
-   IF( TERME > 0.0D0 )THEN
-      DHP = 2.66D0 * (TERMA *(TERMB*TERMC+1.0D0-TERMD))**THIRD
-   ELSE
-      DHP = 2.66D0 * (TERMA*TERMB*TERMC)**THIRD
-   ENDIF
+   if( terme > 0.0d0 )then
+      dhp = 2.66d0 * (terma *(termb*termc+1.0d0-termd))**third
+   else
+      dhp = 2.66d0 * (terma*termb*termc)**third
+   endif
 
 
 ! --- Equation 95 of MFD for distant-dependent stable plume rise
@@ -398,15 +398,15 @@ SUBROUTINE SBLRIS ( XARG )
 
 ! --- Apply lower limit on stable plume rise based on Equation 98
 !     of the MFD
-   XLN = FB/(UP*USTAR*USTAR)
-   DELHNN = 1.2D0*XLN**0.6D0 * (HSP + 1.2D0*XLN)**0.4D0
+   xln = fb/(up*ustar*ustar)
+   delhnn = 1.2d0*xln**0.6d0 * (hsp + 1.2d0*xln)**0.4d0
 
-   DHP = MIN( DHP, DHFAER, DELHNN )
+   dhp = min( dhp, dhfaer, delhnn )
 
-   RETURN
-END SUBROUTINE SBLRIS
+   return
+end subroutine sblris
 
-SUBROUTINE CBLPRD ( XARG )
+subroutine cblprd ( xarg )
 !***********************************************************************
 !             CBLPRD Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -432,23 +432,23 @@ SUBROUTINE CBLPRD ( XARG )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: XARG
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: xarg
 
 !     Variable Initializations
-   MODNAM = 'CBLPRD'
+   modnam = 'CBLPRD'
 
 ! --- Original code based on Eq. 91 of MFD.
-   DHP1 = (3.0D0 * FM * XARG / (BETA1*BETA1 * UP*UP) +&
-   &3.0D0 * FB * XARG*XARG /&
-   &(2.0D0 * BETA1*BETA1 * UP*UP*UP) )**THIRD
+   dhp1 = (3.0d0 * fm * xarg / (beta1*beta1 * up*up) +&
+   &3.0d0 * fb * xarg*xarg /&
+   &(2.0d0 * beta1*beta1 * up*up*up) )**third
 
-   RETURN
-END SUBROUTINE CBLPRD
+   return
+end subroutine cblprd
 
-SUBROUTINE CBLPRN ( XARG )
+subroutine cblprn ( xarg )
 !***********************************************************************
 !             CBLPRN Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -479,24 +479,24 @@ SUBROUTINE CBLPRN ( XARG )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: XARG, RSUBH, RYRZ, DELHI
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: xarg, rsubh, ryrz, delhi
 
 !     Variable Initializations
-   MODNAM = 'CBLPRN'
+   modnam = 'CBLPRN'
 
-   RSUBH = BETA2 * (ZI - HSP)
-   RYRZ  = RSUBH * RSUBH + 0.25D0*ASUBE*(LAMDAY**1.5D0) *&
-   &WSTAR*WSTAR*XARG*XARG/(UP*UP)
-   DELHI = DSQRT( (2.D0*FB*ZI)/(ALPHAR*UP*RYRZ) ) * (XARG/UP)
-   DHP2  = DELHI
+   rsubh = beta2 * (zi - hsp)
+   ryrz  = rsubh * rsubh + 0.25d0*asube*(lamday**1.5d0) *&
+   &wstar*wstar*xarg*xarg/(up*up)
+   delhi = dsqrt( (2.d0*fb*zi)/(alphar*up*ryrz) ) * (xarg/up)
+   dhp2  = delhi
 
-   RETURN
-END SUBROUTINE CBLPRN
+   return
+end subroutine cblprn
 
-SUBROUTINE CBLPR3
+subroutine cblpr3
 !***********************************************************************
 !             CBLPR3 Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -525,23 +525,23 @@ SUBROUTINE CBLPR3
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'CBLPR3'
+   modnam = 'CBLPR3'
 
 !     The plume rise for the penetrated source is delta(Hsub_3), given
 !     by Eq. 9 in Jeff Weil's 9/1/93 document.  The variable HEDHH is
 !     delta(Hsub_e)/delta(Hsub_h), calculated from Eq. 26a of Jeff Weil's
 !     8/17/93 document, where delta(Hsub_h) is ZI-HS.
 
-   IF (PPF == 1.0D0) THEN
-      DHP3 = HEDHH * (ZI-HSP)
-   ELSE
-      DHP3 = 0.75D0 * (ZI-HSP) * HEDHH + 0.5D0 * (ZI-HSP)
-   END IF
+   if (ppf == 1.0d0) then
+      dhp3 = hedhh * (zi-hsp)
+   else
+      dhp3 = 0.75d0 * (zi-hsp) * hedhh + 0.5d0 * (zi-hsp)
+   end if
 
-   RETURN
-END SUBROUTINE CBLPR3
+   return
+end subroutine cblpr3

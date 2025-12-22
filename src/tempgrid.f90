@@ -1,4 +1,4 @@
-SUBROUTINE COMPTG ()
+subroutine comptg ()
 !=======================================================================
 !                COMPTG module of the AERMOD Dispersion Model
 !
@@ -33,14 +33,14 @@ SUBROUTINE COMPTG ()
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER   :: NDXBLW, NDXABV, NLVL
+   integer   :: ndxblw, ndxabv, nlvl
 
-   MODNAM = 'COMPTG'
-   PATH   = 'MX'
+   modnam = 'COMPTG'
+   path   = 'MX'
 
 !---- Definitions
 !
@@ -49,61 +49,61 @@ SUBROUTINE COMPTG ()
 
 !---- Variable initializations
 
-   NDXBLW = 1
-   NDXABV = 2
-   NTGLVL = 0
+   ndxblw = 1
+   ndxabv = 2
+   ntglvl = 0
 
 !     Loop through the levels, searching for two levels of nonmissing
 !     temperature data.  The constant GOVRCP is the conversion from
 !     temperature gradient to potential temperature gradient.
 
-   DO WHILE( NDXABV <= NPLVLS )
+   do while( ndxabv <= nplvls )
 
-      IF( PFLTA(NDXBLW) > 0.0D0 )THEN
+      if( pflta(ndxblw) > 0.0d0 )then
 
-         IF( PFLTA(NDXABV) > 0.0D0 )THEN
+         if( pflta(ndxabv) > 0.0d0 )then
 
-            NTGLVL = NTGLVL + 1
-            PFLTG(NTGLVL) = (PFLTA(NDXABV) - PFLTA(NDXBLW)) /&
-            &(PFLHT(NDXABV) - PFLHT(NDXBLW)) + GOVRCP
-            PFLTGZ(NTGLVL) = (PFLHT(NDXABV) + PFLHT(NDXBLW)) / 2.0D0
-            NDXBLW = NDXABV
-            NDXABV = NDXABV + 1
+            ntglvl = ntglvl + 1
+            pfltg(ntglvl) = (pflta(ndxabv) - pflta(ndxblw)) /&
+            &(pflht(ndxabv) - pflht(ndxblw)) + govrcp
+            pfltgz(ntglvl) = (pflht(ndxabv) + pflht(ndxblw)) / 2.0d0
+            ndxblw = ndxabv
+            ndxabv = ndxabv + 1
 
-         ELSE
-            NDXABV = NDXABV + 1
+         else
+            ndxabv = ndxabv + 1
 
-         ENDIF
+         endif
 
-      ELSE
-         NDXABV = NDXABV + 1
-         NDXBLW = NDXBLW + 1
+      else
+         ndxabv = ndxabv + 1
+         ndxblw = ndxblw + 1
 
-      ENDIF
+      endif
 
-   ENDDO
+   enddo
 
 !     For a stable atmosphere, check the observation and do not let it
 !     be less than a minimum value, defined by SPTGMN = 0.002 in MAIN1.INC
-   IF( STABLE )THEN
-      DO NLVL = 1, NTGLVL
-         PFLTG(NLVL) = MAX( SPTGMN, PFLTG(NLVL) )
-      END DO
-   ENDIF
+   if( stable )then
+      do nlvl = 1, ntglvl
+         pfltg(nlvl) = max( sptgmn, pfltg(nlvl) )
+      end do
+   endif
 
 !     For the structure in GRDPTG to be the same as in the other
 !     profiling modules, the number of levels of data must be
 !     at least one level of data, whether it is missing or not
 
-   IF( NTGLVL == 0 )THEN
-      NTGLVL = 1
-   ENDIF
+   if( ntglvl == 0 )then
+      ntglvl = 1
+   endif
 
-   RETURN
-END SUBROUTINE COMPTG
+   return
+end subroutine comptg
 
 
-SUBROUTINE TGINIT ()
+subroutine tginit ()
 !=======================================================================
 !                TGINIT module of the AERMOD Dispersion Model
 !
@@ -133,126 +133,126 @@ SUBROUTINE TGINIT ()
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION, PARAMETER :: TGMINHT = 2.0D0, TGMAXHT = 100.0D0
-   DOUBLE PRECISION :: THSTAR0, THSTARN, NCLOUD8, USTARMax
-   INTEGER :: LVL
-   DOUBLE PRECISION :: REFLVL
+   double precision, parameter :: tgminht = 2.0d0, tgmaxht = 100.0d0
+   double precision :: thstar0, thstarn, ncloud8, USTARMax
+   integer :: lvl
+   double precision :: reflvl
 ! Unused:      DOUBLE PRECISION :: USTAR0, THSTR1, USTAR1
 
-   MODNAM = 'TGINIT'
-   PATH   = 'MX'
+   modnam = 'TGINIT'
+   path   = 'MX'
 
 !---- Variable initializations
 
 
 ! --- The temperature gradient computations are made only for a stable atmosphere
 
-   IF( STABLE )THEN
+   if( stable )then
 
 ! ---    First check for observed temperature profile to use in
 !        calculating THSTAR, and determine the reference level
 !        for computing a temperature gradient for profiling
 
-      REFLVL = -99.0D0
-      LVL    =  1
-      DO WHILE( REFLVL < 0.0D0 .and.  LVL <= NTGLVL )
+      reflvl = -99.0d0
+      lvl    =  1
+      do while( reflvl < 0.0d0 .and.  lvl <= ntglvl )
 
-         IF( PFLTGZ(LVL) > SFCZ0 )THEN
-            REFLVL = PFLTGZ(LVL)
+         if( pfltgz(lvl) > sfcz0 )then
+            reflvl = pfltgz(lvl)
 
-         ELSE
-            LVL = LVL + 1
+         else
+            lvl = lvl + 1
 
-         ENDIF
+         endif
 
-      ENDDO
+      enddo
 
 ! ---    Make initial calculation of THSTAR based on observed
 !        temperature profile, if available, or with "standard"
 !        approach
-      IF( REFLVL > 0.0D0 .and. REFLVL <= 100.0D0 )THEN
-         THSTAR = PFLTG(LVL) * VONKAR * PFLTGZ(LVL) /&
-         &( 1.0D0 + 5.0D0 * PFLTGZ(LVL) / OBULEN )
+      if( reflvl > 0.0d0 .and. reflvl <= 100.0d0 )then
+         thstar = pfltg(lvl) * vonkar * pfltgz(lvl) /&
+         &( 1.0d0 + 5.0d0 * pfltgz(lvl) / obulen )
 
-      ELSE
+      else
 ! ---       Calculate THSTAR based on USTAR, OBULEN, and TA since
 !           observed temperature profile is not available
-         THSTAR = USTAR**2 / ( G * VONKAR * OBULEN / TA )
+         thstar = ustar**2 / ( g * vonkar * obulen / ta )
 
-      ENDIF
+      endif
 
 ! ---    Make adjustments to THSTAR calculations if ADJ_U* option is used or
 !        if no observed temperature profile is available (i.e., REFLVL < 0.0)
 !
-      IF( L_AdjUstar .and. L_BULKRN .and. REFLVL < 0.0D0 )THEN
+      if( L_AdjUstar .and. l_bulkrn .and. reflvl < 0.0d0 )then
 ! ---       Use Luhar/Raynor approach (2009, BLM v132) for ADJ_U* w/ BULKRN,
 !           unless observed temperature profile is available
 
-         USTARMax = 0.6D0 * ( UREFHT/&
-         &DLOG((UREFHT-5.*SFCZ0)/SFCZ0) )**0.333333D0
+         USTARMax = 0.6d0 * ( urefht/&
+         &dlog((urefht-5.*sfcz0)/sfcz0) )**0.333333d0
 
-         NCLOUD8 = DBLE(NINT(DBLE(NCLOUD)*0.8D0))
+         ncloud8 = dble(nint(dble(ncloud)*0.8d0))
 
-         THSTAR0 = 1.4D0* (0.005D0/(TAN(0.17D0*(2.0D0*NCLOUD8 +&
-         &1.0D0))) + 0.05D0)
+         thstar0 = 1.4d0* (0.005d0/(tan(0.17d0*(2.0d0*ncloud8 +&
+         &1.0d0))) + 0.05d0)
 
-         THSTARN = THSTAR0*(1.0D0 -&
-         &( (2.0D0*USTAR/USTARMAX)-1.0D0 )**2.)
+         thstarn = thstar0*(1.0d0 -&
+         &( (2.0d0*ustar/ustarmax)-1.0d0 )**2.)
 
-         THSTAR = THSTARN
+         thstar = thstarn
 
-      ELSEIF( L_AdjUstar .and. .NOT. L_BULKRN&
-      &.and. REFLVL < 0.0D0 )THEN
+      elseif( L_AdjUstar .and. .not. l_bulkrn&
+      &.and. reflvl < 0.0d0 )then
 ! ---       Use constant THSTAR = 0.08 per Venkatram paper (2011, BLM v138),
 !           unless observed temperature profile is available
-         THSTAR = 0.08D0
+         thstar = 0.08d0
 
-      ELSEIF( REFLVL < 0.0D0 )THEN
+      elseif( reflvl < 0.0d0 )then
 ! ---       No ADJ_U* option and no observed temperature profile;
 ! ---       Apply "standard" approach for THSTAR
-         THSTAR = USTAR**2 / ( G * VONKAR * OBULEN / TA )
+         thstar = ustar**2 / ( g * vonkar * obulen / ta )
 
-      ENDIF
+      endif
 
-      CONTINUE
+      continue
 
 !        Compute DTHETA/dZ at TREFHT
 
-      IF( L_AdjUstar )THEN
-         TG4PFL = ( THSTAR / ( VONKAR * TGMINHT ) ) *&
-         &( 0.74D0 + 4.7D0 * TGMINHT / OBULEN )
-         TG4XTR = ( THSTAR / ( VONKAR * TGMAXHT ) ) *&
-         &( 0.74D0 + 4.7D0 * TGMAXHT / OBULEN )
+      if( L_AdjUstar )then
+         tg4pfl = ( thstar / ( vonkar * tgminht ) ) *&
+         &( 0.74d0 + 4.7d0 * tgminht / obulen )
+         tg4xtr = ( thstar / ( vonkar * tgmaxht ) ) *&
+         &( 0.74d0 + 4.7d0 * tgmaxht / obulen )
 
-      ELSE
-         TG4PFL = ( THSTAR / ( VONKAR * TGMINHT ) ) *&
-         &( 1.0D0 + 5.0D0 * TGMINHT / OBULEN )
-         TG4XTR = ( THSTAR / ( VONKAR * TGMAXHT ) ) *&
-         &( 1.0D0 + 5.0D0 * TGMAXHT / OBULEN )
-      ENDIF
+      else
+         tg4pfl = ( thstar / ( vonkar * tgminht ) ) *&
+         &( 1.0d0 + 5.0d0 * tgminht / obulen )
+         tg4xtr = ( thstar / ( vonkar * tgmaxht ) ) *&
+         &( 1.0d0 + 5.0d0 * tgmaxht / obulen )
+      endif
 
 ! ---    Check for TG4PFL out-of-range; issue warning if lapse rate > 0.5 K/m
-      IF( TG4PFL > 0.5D0 )THEN
-         WRITE(DUMMY,'("TG4PFL=",F5.3)') TG4PFL
-         CALL ERRHDL(PATH,MODNAM,'W','479',DUMMY)
-      ENDIF
+      if( tg4pfl > 0.5d0 )then
+         write(dummy,'("TG4PFL=",F5.3)') tg4pfl
+         call errhdl(path,modnam,'W','479',dummy)
+      endif
 
-   ELSE
+   else
 
 !        For the unstable case
-      THSTAR = -9.0D0
-      TG4PFL = XVAL
+      thstar = -9.0d0
+      tg4pfl = xval
 
-   ENDIF
+   endif
 
-   RETURN
-END SUBROUTINE TGINIT
+   return
+end subroutine tginit
 
-SUBROUTINE GRDPTG ()
+subroutine grdptg ()
 !=======================================================================
 !                GRDPTG module of the AERMOD Dispersion Model
 !
@@ -286,12 +286,12 @@ SUBROUTINE GRDPTG ()
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER     :: PINDEX, GINDEX, NDX
-   DOUBLE PRECISION        :: VBELOW, HTBELO
+   integer     :: pindex, gindex, ndx
+   double precision        :: vbelow, htbelo
 !
 !---- Data definitions
 !        PINDEX    Array index for the profile of observed values
@@ -303,10 +303,10 @@ SUBROUTINE GRDPTG ()
 !---- Data initializations
 !
 !
-   MODNAM = 'GRDPTG'
-   GINDEX = 1
-   PINDEX = 1
-   VBELOW = -999.0D0
+   modnam = 'GRDPTG'
+   gindex = 1
+   pindex = 1
+   vbelow = -999.0d0
 !
 !     ------------------------------------------------------------------
 !     Loop over each grid level until a value is computed for each level
@@ -314,7 +314,7 @@ SUBROUTINE GRDPTG ()
 !     profile exceeds the maximum number
 !     ------------------------------------------------------------------
 !
-   DO WHILE( GINDEX <= MXGLVL )
+   do while( gindex <= mxglvl )
 !
 !       -------------------------------------------
 !       Now begin looping over the observed profile
@@ -323,57 +323,57 @@ SUBROUTINE GRDPTG ()
 !       The 'blending' of the reference profile with observations now
 !       applies only to the stable atmosphere
 
-      IF( STABLE )THEN
+      if( stable )then
 !
-         DO WHILE( GRIDTG(GINDEX)<-90.0D0 .and. PINDEX<=NTGLVL )
+         do while( gridtg(gindex)<-90.0d0 .and. pindex<=ntglvl )
 !
-            IF( PFLTG(PINDEX) >= -50.0D0 )THEN
+            if( pfltg(pindex) >= -50.0d0 )then
 !
 !              -------------------------------------------------
 !              Data at this level are not missing; determine its
 !              location relative to the height at which data are
 !              required and act accordingly.
 !              -------------------------------------------------
-               IF( DABS(PFLTGZ(PINDEX)-GRIDHT(GINDEX)) <= 0.1D0 )THEN
+               if( dabs(pfltgz(pindex)-gridht(gindex)) <= 0.1d0 )then
 !                 USE the parameter at this level
-                  GRIDTG(GINDEX) = PFLTG(PINDEX)
+                  gridtg(gindex) = pfltg(pindex)
 !
-               ELSEIF( GRIDHT(GINDEX)  >  PFLTGZ(PINDEX) )THEN
-                  IF( PINDEX < NTGLVL )THEN
+               elseif( gridht(gindex)  >  pfltgz(pindex) )then
+                  if( pindex < ntglvl )then
 !                    SAVE value for possible interpolation
-                     VBELOW = PFLTG(PINDEX)
-                     HTBELO = PFLTGZ(PINDEX)
+                     vbelow = pfltg(pindex)
+                     htbelo = pfltgz(pindex)
 
-                  ELSE   ! this is the top level
+                  else   ! this is the top level
 !                    PROFILE upward from this level        --- CALL XTRPTG
-                     CALL XTRPTG ( PFLTGZ(PINDEX), PFLTG(PINDEX),&
-                     &GRIDHT(GINDEX), GRIDTG(GINDEX) )
-                  ENDIF
+                     call xtrptg ( pfltgz(pindex), pfltg(pindex),&
+                     &gridht(gindex), gridtg(gindex) )
+                  endif
 !
-               ELSEIF( GRIDHT(GINDEX)  <  PFLTGZ(PINDEX) )THEN
-                  IF( VBELOW >= -50.0D0 )THEN
+               elseif( gridht(gindex)  <  pfltgz(pindex) )then
+                  if( vbelow >= -50.0d0 )then
 !                    INTERPOLATE between the two values    --- CALL NTRPTG
-                     CALL NTRPTG ( HTBELO, VBELOW, PFLTGZ(PINDEX),&
-                     &PFLTG(PINDEX), GRIDHT(GINDEX),&
-                     &GRIDTG(GINDEX) )
+                     call ntrptg ( htbelo, vbelow, pfltgz(pindex),&
+                     &pfltg(pindex), gridht(gindex),&
+                     &gridtg(gindex) )
 
-                  ELSE   ! BELOW is missing
+                  else   ! BELOW is missing
 !                    PROFILE down from this level          --- CALL XTRPDN
 
-                     CALL XTRPDN ( GRIDHT(GINDEX), GRIDTG(GINDEX) )
+                     call xtrpdn ( gridht(gindex), gridtg(gindex) )
 
-                  ENDIF
+                  endif
 !
-               ELSE
+               else
 !                 This section is for DEBUGging - the program should never
 !                 reach this point
-                  PRINT *, ' ---> ERROR: The search for data to'
-                  PRINT *, '             construct the gridded profile'
-                  PRINT *, '             failed on ', KURDAT
+                  print *, ' ---> ERROR: The search for data to'
+                  print *, '             construct the gridded profile'
+                  print *, '             failed on ', kurdat
 !
-               ENDIF
+               endif
 !
-            ELSE
+            else
 !
 !              -------------------------------------------------------
 !              The parameter at this level is missing - if this is not
@@ -381,23 +381,23 @@ SUBROUTINE GRDPTG ()
 !              level, then make a computation.
 !              -------------------------------------------------------
 !
-               IF( PINDEX == NTGLVL )THEN
-                  IF( VBELOW  >=  -50.0D0 )THEN
+               if( pindex == ntglvl )then
+                  if( vbelow  >=  -50.0d0 )then
 !                    PROFILE up from BELOW                 --- CALL XTRPTG
-                     CALL XTRPTG ( PFLTGZ(PINDEX), PFLTG(PINDEX),&
-                     &GRIDHT(GINDEX), GRIDTG(GINDEX) )
+                     call xtrptg ( pfltgz(pindex), pfltg(pindex),&
+                     &gridht(gindex), gridtg(gindex) )
 
-                  ELSE   ! there are no data
+                  else   ! there are no data
 !                    COMPUTE value: full parameterization  --- CALL REFPTG
-                     CALL REFPTG ( GRIDHT(GINDEX), GRIDTG(GINDEX) )
-                  ENDIF
+                     call refptg ( gridht(gindex), gridtg(gindex) )
+                  endif
 !
-               ELSE   ! this is not the top level, repeat loop
-                  CONTINUE
+               else   ! this is not the top level, repeat loop
+                  continue
 !
-               ENDIF
+               endif
 !
-            ENDIF   ! parameter (not) missing at this level
+            endif   ! parameter (not) missing at this level
 !
 !           ---------------------------------------------------------
 !           Increment the observed profile counter if a value at this
@@ -405,27 +405,27 @@ SUBROUTINE GRDPTG ()
 !           processing
 !           ---------------------------------------------------------
 !
-            IF( (GRIDTG(GINDEX) < -50.0D0)  .and.&
-            &(PINDEX < NTGLVL) )THEN
-               PINDEX = PINDEX + 1
-            ENDIF
+            if( (gridtg(gindex) < -50.0d0)  .and.&
+            &(pindex < ntglvl) )then
+               pindex = pindex + 1
+            endif
 !
-         END DO   ! Loop over observed data profile
+         end do   ! Loop over observed data profile
 
-      ELSEIF( UNSTAB )THEN
+      elseif( unstab )then
 
-         CALL REFPTG( GRIDHT(GINDEX), GRIDTG(GINDEX) )
+         call refptg( gridht(gindex), gridtg(gindex) )
 
-      ENDIF
+      endif
 !        ------------------------------------------------------------
 !        Increment the gridded profile counter and repeat the process
 !        starting with the observed value from the profile height as
 !        defined by PINDEX
 !        ------------------------------------------------------------
 !
-      GINDEX = GINDEX + 1
+      gindex = gindex + 1
 !
-   END DO   ! Loop over gridded data profile
+   end do   ! Loop over gridded data profile
 !
 !
 !        ------------------------------------------------------------
@@ -433,17 +433,17 @@ SUBROUTINE GRDPTG ()
 !        lapse rate for stable layers.
 !        ------------------------------------------------------------
 !
-   DO NDX = 1,MXGLVL
-      IF( STABLE .or. (UNSTAB .and. GRIDHT(NDX)>ZI) )THEN
-         GRIDTG(NDX) = MAX( SPTGMN, GRIDTG(NDX) )
-      ENDIF
-   END DO
+   do ndx = 1,mxglvl
+      if( stable .or. (unstab .and. gridht(ndx)>zi) )then
+         gridtg(ndx) = max( sptgmn, gridtg(ndx) )
+      endif
+   end do
 
-   RETURN
-END SUBROUTINE GRDPTG
+   return
+end subroutine grdptg
 
 
-SUBROUTINE REFPTG ( HTINP, VALUE )
+subroutine refptg ( htinp, value )
 !=======================================================================
 !                REFPTG Module of the AERMOD Dispersion Model
 !
@@ -491,14 +491,14 @@ SUBROUTINE REFPTG ( HTINP, VALUE )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION, PARAMETER :: HDELTH = 100.0D0
-   DOUBLE PRECISION               :: HTINP, HEIGHT, VALUE, EXPARG
+   double precision, parameter :: hdelth = 100.0d0
+   double precision               :: htinp, height, value, exparg
 
-   MODNAM = 'REFPTG'
+   modnam = 'REFPTG'
 
 !
 !---- Data dictionary
@@ -511,61 +511,61 @@ SUBROUTINE REFPTG ( HTINP, VALUE )
 !---- Check the stability and then the location of the height relative
 !     to the mixing height.
 
-   HEIGHT = HTINP
-   IF( UNSTAB )THEN
+   height = htinp
+   if( unstab )then
 !
-      IF( HEIGHT  <=  ZI )THEN
+      if( height  <=  zi )then
 ! ---       Assign unstable lapse rate of 0.0 for height .LE. ZI;
 !           value of XVAL is assigned 0.0 in MODULE MAIN1
-         VALUE  = XVAL
+         value  = xval
 
-      ELSE IF( HEIGHT <= ZI+500.0D0 )THEN
-         VALUE  = VPTGZI
+      else if( height <= zi+500.0d0 )then
+         value  = vptgzi
 
-      ELSE
-         VALUE  = 0.005D0
+      else
+         value  = 0.005d0
 
-      ENDIF
+      endif
 !
-   ELSE   ! stable atmosphere
+   else   ! stable atmosphere
 !        THETA_STAR and TG4PFL (dTheta/dZ at TREFHT) are computed
 !        in TGINIT
 !
-      IF (HEIGHT <= 2.0D0) THEN
+      if (height <= 2.0d0) then
 
-         VALUE = TG4PFL
+         value = tg4pfl
 
-      ELSE IF (HEIGHT <= 100.0D0) THEN
+      else if (height <= 100.0d0) then
 
-         IF( L_AdjUstar )THEN
-            VALUE = ( THSTAR / ( VONKAR * HEIGHT ) ) *&
-            &( 0.74D0 + 4.7D0 * HEIGHT / OBULEN )
-         ELSE
-            VALUE = ( THSTAR / ( VONKAR * HEIGHT ) ) *&
-            &( 1.00D0 + 5.0D0 * HEIGHT / OBULEN )
-         ENDIF
+         if( L_AdjUstar )then
+            value = ( thstar / ( vonkar * height ) ) *&
+            &( 0.74d0 + 4.7d0 * height / obulen )
+         else
+            value = ( thstar / ( vonkar * height ) ) *&
+            &( 1.00d0 + 5.0d0 * height / obulen )
+         endif
 
-      ELSE
+      else
 !           COMPUTE gradient from gradient at TREFHT
-         EXPARG =  -1.0D0*(HEIGHT-100.0D0) / (EFOLDH*MAX(HDELTH,ZI) )
-         IF (EXPARG > EXPLIM) THEN
-            VALUE = TG4XTR * DEXP( EXPARG )
-         ELSE
-            VALUE = 0.0D0
-         END IF
+         exparg =  -1.0d0*(height-100.0d0) / (efoldh*max(hdelth,zi) )
+         if (exparg > explim) then
+            value = tg4xtr * dexp( exparg )
+         else
+            value = 0.0d0
+         end if
 
-      ENDIF
+      endif
 
 !        Apply minimum value of 0.002 to all levels of stable profile.
-      VALUE = MAX( VALUE, SPTGMN )
+      value = max( value, sptgmn )
 
-   ENDIF
+   endif
 
-   RETURN
-END SUBROUTINE REFPTG
+   return
+end subroutine refptg
 
 
-SUBROUTINE NTRPTG ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
+subroutine ntrptg ( htbelo,vbelow, htabov,vabove, reqdht,value )
 !=======================================================================
 !                NTRPTG Module of the AERMOD Dispersion Model
 !
@@ -593,9 +593,9 @@ SUBROUTINE NTRPTG ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
 !
 !---- Variable declarations
 !
-   IMPLICIT NONE
-   DOUBLE PRECISION :: HTBELO, VBELOW, HTABOV, VABOVE, REQDHT, VALUE,&
-   &REFABV, REFBLW, RATIO, REFREQ, VALINT, REFINT
+   implicit none
+   double precision :: htbelo, vbelow, htabov, vabove, reqdht, value,&
+   &refabv, refblw, ratio, refreq, valint, refint
 
 !
 !---- Data dictionary
@@ -620,37 +620,37 @@ SUBROUTINE NTRPTG ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
 !
 !     Compute the reference profile value at the height below the
 !     requested height                                     --- CALL REFPTG
-   CALL REFPTG ( HTBELO, REFBLW )
+   call refptg ( htbelo, refblw )
 !
 !     Compute the reference profile value at the height above the
 !     requested height                                     --- CALL REFPTG
-   CALL REFPTG ( HTABOV, REFABV )
+   call refptg ( htabov, refabv )
 !
 !     Compute the reference profile value at the requested height
 !                                                          --- CALL REFPTG
-   CALL REFPTG ( REQDHT, REFREQ )
+   call refptg ( reqdht, refreq )
 !
-   IF( DABS(REFABV - REFBLW) > 0.0001D0 )THEN
+   if( dabs(refabv - refblw) > 0.0001d0 )then
 !
 !        Linearly interpolate to REQDHT from observed and reference profiles
-      CALL GINTRP ( HTBELO,VBELOW, HTABOV, VABOVE, REQDHT,VALINT )
-      CALL GINTRP ( HTBELO,REFBLW, HTABOV, REFABV, REQDHT,REFINT )
+      call gintrp ( htbelo,vbelow, htabov, vabove, reqdht,valint )
+      call gintrp ( htbelo,refblw, htabov, refabv, reqdht,refint )
 !        REFREQ is value from REFerence profile at REQuired height
 !        REFINT is value from REFerence profile linearly INTerpolated to req ht
 !        VALINT is the observed VALue linearly INTerpolated to required height
-      RATIO = REFREQ/REFINT
-      VALUE = RATIO * VALINT
-   ELSE
+      ratio = refreq/refint
+      value = ratio * valint
+   else
 !        INTERPOLATE between VABOVE and VBELOW
-      CALL GINTRP ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
+      call gintrp ( htbelo,vbelow, htabov,vabove, reqdht,value )
 !
-   ENDIF
+   endif
 
-   RETURN
-END SUBROUTINE NTRPTG
+   return
+end subroutine ntrptg
 
 
-SUBROUTINE XTRPTG ( PFLZ, PFLVAL, GRDZ, VALUE )
+subroutine xtrptg ( pflz, pflval, grdz, value )
 !=======================================================================
 !                XTRPTG Module of the AERMOD Dispersion Model
 !
@@ -683,14 +683,14 @@ SUBROUTINE XTRPTG ( PFLZ, PFLVAL, GRDZ, VALUE )
 !-----------------------------------------------------------------------
 !
 !---- Variable declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION, PARAMETER :: HDELTH = 100.0D0
-   DOUBLE PRECISION  :: VALOBS, VALGRD, PFLZ, GRDZ, VALUE, PFLVAL, RATIO
+   double precision, parameter :: hdelth = 100.0d0
+   double precision  :: valobs, valgrd, pflz, grdz, value, pflval, ratio
 
-   MODNAM = 'XTRPTG'
+   modnam = 'XTRPTG'
 !
 !---- Data dictionary
 
@@ -709,38 +709,38 @@ SUBROUTINE XTRPTG ( PFLZ, PFLVAL, GRDZ, VALUE )
 !     Compute the reference profile value at the height of the highest
 !     (lowest) observed value                              --- CALL REFPTG
 
-   CALL REFPTG ( PFLZ, VALOBS )
+   call refptg ( pflz, valobs )
 
 !     Compute the reference profile value at the height where a value
 !     is required                                          --- CALL REFPTG
 
-   CALL REFPTG ( GRDZ, VALGRD )
+   call refptg ( grdz, valgrd )
 
 !     The potential temperature gradient is the only profile parameter
 !     that can take on a negative value (and in the initial programming
 !     of AERMOD, this is in the well-mixed layer for an unstable
 !     atmosphere); therefore, if VALOBS is zero, then RATIO = 1.0.
 
-   IF( DABS( VALOBS ) < 0.0001D0 ) THEN
-      RATIO = 1.0D0
-   ELSE
-      RATIO = VALGRD / VALOBS
-   ENDIF
+   if( dabs( valobs ) < 0.0001d0 ) then
+      ratio = 1.0d0
+   else
+      ratio = valgrd / valobs
+   endif
 !
-   IF (PFLZ <= 100.0D0) THEN
-      VALUE = RATIO * PFLVAL
-   ELSE
+   if (pflz <= 100.0d0) then
+      value = ratio * pflval
+   else
 !        Highest measured Dtheta/Dz is above 100m.  Apply exponential
 !        extrapolation term above PFLZ.
-      VALUE = PFLVAL * DEXP( -(GRDZ-PFLZ) /&
-      &(EFOLDH * MAX(HDELTH,ZI) ) )
-   END IF
+      value = pflval * dexp( -(grdz-pflz) /&
+      &(efoldh * max(hdelth,zi) ) )
+   end if
 !
-   RETURN
-END SUBROUTINE XTRPTG
+   return
+end subroutine xtrptg
 
 
-SUBROUTINE XTRPDN ( GRDZ, VALUE )
+subroutine xtrpdn ( grdz, value )
 !=======================================================================
 !                XTRPDN Module of the AERMOD Dispersion Model
 !
@@ -769,13 +769,13 @@ SUBROUTINE XTRPDN ( GRDZ, VALUE )
 !
 !---- Variable declarations
 
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION  :: GRDZ, VALUE
+   double precision  :: grdz, value
 
-   MODNAM = 'XTRPDN'
+   modnam = 'XTRPDN'
 !
 !---- Data dictionary
 
@@ -785,44 +785,44 @@ SUBROUTINE XTRPDN ( GRDZ, VALUE )
 !---- Data initializations
 !
 !.......................................................................
-   IF( UNSTAB )THEN
+   if( unstab )then
 
-      IF( GRDZ  <=  ZI )THEN
-         VALUE  = XVAL
+      if( grdz  <=  zi )then
+         value  = xval
 
-      ELSE IF( GRDZ <= ZI+500.0D0 )THEN
-         VALUE  = VPTGZI
+      else if( grdz <= zi+500.0d0 )then
+         value  = vptgzi
 
-      ELSE
-         VALUE  = 0.005D0
+      else
+         value  = 0.005d0
 
-      ENDIF
+      endif
 
-   ELSE   ! stable atmosphere
+   else   ! stable atmosphere
 !        THETA_STAR and TG4PFL (dTheta/dZ at TREFHT) were computed
 !        in TGINIT
 
-      IF( GRDZ < 2.0D0 )THEN
-         VALUE = TG4PFL
+      if( grdz < 2.0d0 )then
+         value = tg4pfl
 
-      ELSE
+      else
 !           Extrapolate gradient using similarity
-         IF( L_AdjUstar )THEN
-            VALUE  = ( THSTAR / ( VONKAR * GRDZ ) ) *&
-            &( 0.74D0  +  4.7D0 * GRDZ / OBULEN )
-         ELSE
-            VALUE  = ( THSTAR / ( VONKAR * GRDZ ) ) *&
-            &( 1.0D0  +  5.0D0 * GRDZ / OBULEN )
-         ENDIF
+         if( L_AdjUstar )then
+            value  = ( thstar / ( vonkar * grdz ) ) *&
+            &( 0.74d0  +  4.7d0 * grdz / obulen )
+         else
+            value  = ( thstar / ( vonkar * grdz ) ) *&
+            &( 1.0d0  +  5.0d0 * grdz / obulen )
+         endif
 
-      ENDIF
-   ENDIF
+      endif
+   endif
 
-   RETURN
-END SUBROUTINE XTRPDN
+   return
+end subroutine xtrpdn
 
 
-SUBROUTINE GRDPT ()
+subroutine grdpt ()
 !=======================================================================
 !                GRDPT module of the AERMOD Dispersion Model
 !
@@ -857,13 +857,13 @@ SUBROUTINE GRDPT ()
 !
 !---- Variable declarations
 
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: L, NBELOW
-   DOUBLE PRECISION :: PTREF
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: l, nbelow
+   double precision :: ptref
 
-   MODNAM = 'GRDPT'
+   modnam = 'GRDPT'
 
 !---- Data definitions
 !
@@ -877,45 +877,45 @@ SUBROUTINE GRDPT ()
 !---- Determine the grid level below the temperature reference
 !     height (as defined in the scalar file)               ---- CALL LOCATE
 
-   CALL LOCATE( GRIDHT, 1, MXGLVL, TREFHT, NBELOW )
+   call locate( gridht, 1, mxglvl, trefht, nbelow )
 
 !---- Compute the potential temperature at the reference level
 !     using the reference temperature (TA), the reference
 !     temperature height (TREFHT), and the average stack base
 !     elevation of all the emission sources (ZBASE)
 
-   PTREF = TA + GOVRCP * (TREFHT + ZBASE)
+   ptref = ta + govrcp * (trefht + zbase)
 
 !---- Compute the potential temperature at the grid level below
 !     the temperature reference height
 
-   GRIDPT(NBELOW) = PTREF -&
-   &0.5D0 * (GRIDTG(NBELOW+1) + GRIDTG(NBELOW)) *&
-   &(TREFHT - GRIDHT(NBELOW))
+   gridpt(nbelow) = ptref -&
+   &0.5d0 * (gridtg(nbelow+1) + gridtg(nbelow)) *&
+   &(trefht - gridht(nbelow))
 
 
 !---- Compute Potential Temp Values for Grid Levels Below Reference Ht.
-   DO L = NBELOW-1, 1, -1
+   do l = nbelow-1, 1, -1
 
-      GRIDPT(L) = GRIDPT(L+1) - 0.5D0 * (GRIDTG(L+1) + GRIDTG(L)) *&
-      &(GRIDHT(L+1) - GRIDHT(L))
+      gridpt(l) = gridpt(l+1) - 0.5d0 * (gridtg(l+1) + gridtg(l)) *&
+      &(gridht(l+1) - gridht(l))
 
-   END DO
+   end do
 
 
 !---- Compute Potential Temp Values for Grid Levels Above Reference Ht.
-   DO L = NBELOW+1, MXGLVL
+   do l = nbelow+1, mxglvl
 
-      GRIDPT(L) = GRIDPT(L-1) + 0.5D0 * (GRIDTG(L) + GRIDTG(L-1)) *&
-      &(GRIDHT(L) - GRIDHT(L-1))
+      gridpt(l) = gridpt(l-1) + 0.5d0 * (gridtg(l) + gridtg(l-1)) *&
+      &(gridht(l) - gridht(l-1))
 
-   END DO
+   end do
 
-   RETURN
-END SUBROUTINE GRDPT
+   return
+end subroutine grdpt
 
 
-SUBROUTINE GRDDEN
+subroutine grdden
 !=======================================================================
 !                GRDDEN module of the AERMOD Dispersion Model
 !
@@ -940,13 +940,13 @@ SUBROUTINE GRDDEN
 !
 !---- Variable declarations
 
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: I
-   DOUBLE PRECISION :: TAMB0, TAMB, TBAR, RAMB0, RGASM
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: i
+   double precision :: tamb0, tamb, tbar, ramb0, rgasm
 
-   MODNAM = 'GRDDEN'
+   modnam = 'GRDDEN'
 
 !---- Data definitions
 !
@@ -957,23 +957,23 @@ SUBROUTINE GRDDEN
 !.......................................................................
 !
 ! --- Set the surface temperature (deg. K) & air density (kg/m**3)
-   tamb0=TA
-   ramb0=1.2D0
+   tamb0=ta
+   ramb0=1.2d0
 
 ! --- Set the gas constant (m**2/s**2/deg. K)
-   rgasm=287.026D0
+   rgasm=287.026d0
 
 !---- Compute Ambient Air Density Values
-   DO I = 1, MXGLVL
+   do i = 1, mxglvl
 
 ! ---    Compute ambient air density at height, ZGPTA(i)
 
       tamb = gridpt(i) - govrcp * (gridht(i) + zbase)
-      tbar = 0.5D0 * (tamb + tamb0)
-      GRIDRHO(I) = ramb0*(tamb0/tamb)*DEXP(-g*gridht(i)/&
+      tbar = 0.5d0 * (tamb + tamb0)
+      gridrho(i) = ramb0*(tamb0/tamb)*dexp(-g*gridht(i)/&
       &(rgasm*tbar))
 
-   END DO
+   end do
 
-   RETURN
-END SUBROUTINE GRDDEN
+   return
+end subroutine grdden

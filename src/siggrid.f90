@@ -1,4 +1,4 @@
-SUBROUTINE GRDSV ()
+subroutine grdsv ()
 !=======================================================================
 !                GRDSV module of the AERMOD Dispersion Model
 !
@@ -29,12 +29,12 @@ SUBROUTINE GRDSV ()
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER     :: PINDEX, GINDEX
-   DOUBLE PRECISION :: VBELOW, HTBELO
+   integer     :: pindex, gindex
+   double precision :: vbelow, htbelo
 !
 !---- Data definitions
 !        PINDEX    Array index for the profile of observed values
@@ -45,11 +45,11 @@ SUBROUTINE GRDSV ()
 !
 !---- Data initializations
 !
-   MODNAM = 'GRDSV '
+   modnam = 'GRDSV '
 
-   GINDEX = 1
-   PINDEX = 1
-   VBELOW = -999.0D0
+   gindex = 1
+   pindex = 1
+   vbelow = -999.0d0
 !
 !     ------------------------------------------------------------------
 !     Loop over each grid level until a value is computed for each level
@@ -57,61 +57,61 @@ SUBROUTINE GRDSV ()
 !     profile exceeds the maximum number
 !     ------------------------------------------------------------------
 !
-   DO WHILE( GINDEX <= MXGLVL )
+   do while( gindex <= mxglvl )
 !
 !        -------------------------------------------
 !        Now begin looping over the observed profile
 !        -------------------------------------------
 !
-      DO WHILE( GRIDSV(GINDEX) < -90.0D0 .and. PINDEX<=NPLVLS )
+      do while( gridsv(gindex) < -90.0d0 .and. pindex<=nplvls )
 !
-         IF( PFLSV(PINDEX) >= 0.0D0 )THEN
+         if( pflsv(pindex) >= 0.0d0 )then
 !
 !              -------------------------------------------------
 !              Data at this level are not missing; determine its
 !              location relative to the height at which data are
 !              required and act accordingly.
 !              -------------------------------------------------
-            IF( DABS( PFLHT(PINDEX)-GRIDHT(GINDEX)) <= 0.1D0 )THEN
+            if( dabs( pflht(pindex)-gridht(gindex)) <= 0.1d0 )then
 !                 USE the parameter at this level
-               GRIDSV(GINDEX) = PFLSV(PINDEX)
+               gridsv(gindex) = pflsv(pindex)
 !
-            ELSEIF( GRIDHT(GINDEX)  >  PFLHT(PINDEX) )THEN
-               IF( PINDEX < NPLVLS )THEN
+            elseif( gridht(gindex)  >  pflht(pindex) )then
+               if( pindex < nplvls )then
 !                    SAVE value for possible interpolation
-                  VBELOW = PFLSV(PINDEX)
-                  HTBELO = PFLHT(PINDEX)
+                  vbelow = pflsv(pindex)
+                  htbelo = pflht(pindex)
 
-               ELSE   ! this is the top level
+               else   ! this is the top level
 !                    PROFILE upward from this level        --- CALL XTRPSV
-                  CALL XTRPSV ( PFLHT(PINDEX), PFLSV(PINDEX),&
-                  &GRIDHT(GINDEX), GRIDSV(GINDEX) )
-               ENDIF
+                  call xtrpsv ( pflht(pindex), pflsv(pindex),&
+                  &gridht(gindex), gridsv(gindex) )
+               endif
 !
-            ELSEIF( GRIDHT(GINDEX)  <  PFLHT(PINDEX) )THEN
-               IF( VBELOW >= 0.0D0 )THEN
+            elseif( gridht(gindex)  <  pflht(pindex) )then
+               if( vbelow >= 0.0d0 )then
 !                    INTERPOLATE between the two values    --- CALL NTRPSV
-                  CALL NTRPSV ( HTBELO, VBELOW, PFLHT(PINDEX),&
-                  &PFLSV(PINDEX), GRIDHT(GINDEX),&
-                  &GRIDSV(GINDEX) )
+                  call ntrpsv ( htbelo, vbelow, pflht(pindex),&
+                  &pflsv(pindex), gridht(gindex),&
+                  &gridsv(gindex) )
 
-               ELSE   ! BELOW is missing
+               else   ! BELOW is missing
 !                    PROFILE down from this level          --- CALL XTRPSV
-                  CALL XTRPSV ( PFLHT(PINDEX), PFLSV(PINDEX),&
-                  &GRIDHT(GINDEX), GRIDSV(GINDEX) )
+                  call xtrpsv ( pflht(pindex), pflsv(pindex),&
+                  &gridht(gindex), gridsv(gindex) )
 
-               ENDIF
+               endif
 !
-            ELSE
+            else
 !                 This section is for DEBUGging - the program should never
 !                 reach this point
-               WRITE(*,*) ' ---> ERROR: The search for data to'
-               WRITE(*,*) '             construct the gridded '
-               WRITE(*,*) '             profile failed on ', KURDAT
+               write(*,*) ' ---> ERROR: The search for data to'
+               write(*,*) '             construct the gridded '
+               write(*,*) '             profile failed on ', kurdat
 !
-            ENDIF
+            endif
 !
-         ELSE
+         else
 !
 !              -------------------------------------------------------
 !              The parameter at this level is missing - if this is not
@@ -119,23 +119,23 @@ SUBROUTINE GRDSV ()
 !              level, then make a computation.
 !              -------------------------------------------------------
 !
-            IF( PINDEX == NPLVLS )THEN
-               IF( VBELOW  >=  0.0D0 )THEN
+            if( pindex == nplvls )then
+               if( vbelow  >=  0.0d0 )then
 !                    PROFILE up from BELOW                 --- CALL XTRPSV
-                  CALL XTRPSV ( HTBELO, VBELOW,&
-                  &GRIDHT(GINDEX), GRIDSV(GINDEX) )
+                  call xtrpsv ( htbelo, vbelow,&
+                  &gridht(gindex), gridsv(gindex) )
 
-               ELSE   ! there are no data
+               else   ! there are no data
 !                    COMPUTE value: full parameterization  --- CALL REFSV
-                  CALL REFSV ( GRIDHT(GINDEX), GRIDSV(GINDEX) )
-               ENDIF
+                  call refsv ( gridht(gindex), gridsv(gindex) )
+               endif
 !
-            ELSE   ! this is not the top level, repeat loop
-               CONTINUE
+            else   ! this is not the top level, repeat loop
+               continue
 !
-            ENDIF
+            endif
 !
-         ENDIF   ! parameter (not) missing at this level
+         endif   ! parameter (not) missing at this level
 !
 !           ---------------------------------------------------------
 !           Increment the observed profile counter if a value at this
@@ -143,12 +143,12 @@ SUBROUTINE GRDSV ()
 !           processing
 !           ---------------------------------------------------------
 !
-         IF( (GRIDSV(GINDEX) < 0.0D0)  .and.&
-         &(PINDEX < NPLVLS) )THEN
-            PINDEX = PINDEX + 1
-         ENDIF
+         if( (gridsv(gindex) < 0.0d0)  .and.&
+         &(pindex < nplvls) )then
+            pindex = pindex + 1
+         endif
 !
-      END DO   ! Loop over observed data profile
+      end do   ! Loop over observed data profile
 !
 !        ------------------------------------------------------------
 !        Increment the gridded profile counter and repeat the process
@@ -156,14 +156,14 @@ SUBROUTINE GRDSV ()
 !        defined by PINDEX
 !        ------------------------------------------------------------
 !
-      GINDEX = GINDEX + 1
+      gindex = gindex + 1
 !
-   END DO   ! Loop over gridded data profile
+   end do   ! Loop over gridded data profile
 !
-   RETURN
-END SUBROUTINE GRDSV
+   return
+end subroutine grdsv
 
-SUBROUTINE REFSV ( HTINP, VALUE )
+subroutine refsv ( htinp, value )
 !=======================================================================
 !                REFSV Module of the AERMOD Dispersion Model
 !
@@ -194,45 +194,45 @@ SUBROUTINE REFSV ( HTINP, VALUE )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION :: HEIGHT, VALUE, SVC, SVM
-   DOUBLE PRECISION :: HTINP
+   double precision :: height, value, svc, svm
+   double precision :: htinp
 !
 !---- Data dictionary
 !
 !---- Data initializations
 !
-   MODNAM = 'REFSV '
+   modnam = 'REFSV '
 
-   HEIGHT = HTINP
+   height = htinp
 !
 !.......................................................................
 !
-   IF( UNSTAB )THEN
+   if( unstab )then
 !        Compute the convective component of sigma-v, SVC
-      CALL REFSVC( HEIGHT, SVC )
+      call refsvc( height, svc )
 
 !        Compute the mechanical component of sigma-v, SVM
-      CALL REFSVM( HEIGHT, SVM )
+      call refsvm( height, svm )
 
-      VALUE = DSQRT( SVC*SVC + SVM*SVM )
+      value = dsqrt( svc*svc + svm*svm )
 
-   ELSEIF( STABLE )THEN
+   elseif( stable )then
 !        Compute the mechanical component of sigma-v, SVM
-      CALL REFSVM( HEIGHT, SVM )
+      call refsvm( height, svm )
 
-      VALUE = SVM
+      value = svm
 
-   ENDIF
+   endif
 
 !
-   RETURN
-END SUBROUTINE REFSV
+   return
+end subroutine refsv
 
-SUBROUTINE REFSVC ( HTINP, VALUE )
+subroutine refsvc ( htinp, value )
 !=======================================================================
 !                REFSVC Module of the AERMOD Dispersion Model
 !
@@ -263,12 +263,12 @@ SUBROUTINE REFSVC ( HTINP, VALUE )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION :: HEIGHT, VALUE, SV2, ZDCRS, ATZI, SV2DCR, VAL2
-   DOUBLE PRECISION :: HTINP
+   double precision :: height, value, sv2, zdcrs, atzi, sv2dcr, val2
+   double precision :: htinp
 !
 !---- Data dictionary
 !     SV2    = variance of the horizontal component of the wind
@@ -281,35 +281,35 @@ SUBROUTINE REFSVC ( HTINP, VALUE )
 !
 !---- Data initializations
 !
-   MODNAM = 'REFSVC'
+   modnam = 'REFSVC'
 
-   HEIGHT = HTINP
-   ZDCRS  =  AT1PT2 * ZICONV
+   height = htinp
+   zdcrs  =  at1pt2 * ziconv
 !
 !.......................................................................
 !
-   SV2 = 0.35D0 * WSTAR**2
+   sv2 = 0.35d0 * wstar**2
 !
-   IF( HEIGHT  <=  ZICONV )THEN
-      VALUE = DSQRT( SV2 )
+   if( height  <=  ziconv )then
+      value = dsqrt( sv2 )
 
-   ELSEIF( HEIGHT > ZICONV  .and.  HEIGHT <= ZDCRS )THEN
+   elseif( height > ziconv  .and.  height <= zdcrs )then
 !        COMPUTE sigmaV at 1.2*ZI
-      SV2DCR = MIN( SV2, 0.25D0 )
+      sv2dcr = min( sv2, 0.25d0 )
 !        INTERPOLATE between value of SV2 at ZI and at 1.2*ZI
-      CALL GINTRP ( ZICONV, SV2, ZDCRS, SV2DCR, HEIGHT, VAL2 )
-      VALUE = DSQRT( VAL2 )
+      call gintrp ( ziconv, sv2, zdcrs, sv2dcr, height, val2 )
+      value = dsqrt( val2 )
 
-   ELSE   ! requested height is above 1.2*mixing height
-      ATZI  = DSQRT( SV2 )
-      VALUE = MIN( ATZI, 0.5D0 )
+   else   ! requested height is above 1.2*mixing height
+      atzi  = dsqrt( sv2 )
+      value = min( atzi, 0.5d0 )
 
-   ENDIF
+   endif
 !
-   RETURN
-END SUBROUTINE REFSVC
+   return
+end subroutine refsvc
 
-SUBROUTINE REFSVM ( HTINP, VALUE )
+subroutine refsvm ( htinp, value )
 !=======================================================================
 !                REFSVM Module of the AERMOD Dispersion Model
 !
@@ -340,12 +340,12 @@ SUBROUTINE REFSVM ( HTINP, VALUE )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION :: HEIGHT, VALUE, SV02, SV2ZI, VARV
-   DOUBLE PRECISION :: HTINP
+   double precision :: height, value, sv02, sv2zi, varv
+   double precision :: htinp
 !
 !---- Data dictionary
 !     SV02   = variance of the horizontal component of the wind at the
@@ -353,35 +353,35 @@ SUBROUTINE REFSVM ( HTINP, VALUE )
 !
 !---- Data initializations
 !
-   MODNAM = 'REFSVM'
+   modnam = 'REFSVM'
 
-   HEIGHT = HTINP
+   height = htinp
 !
 !.......................................................................
 !
 !     Compute SV2 at the surface
-   SV02 = 3.6D0 * USTAR**2
+   sv02 = 3.6d0 * ustar**2
 !
 !     Compute SV2 at ZI;
 !     Do not let SV2 at ZI exceed the surface value.
-   SV2ZI = MIN( SV02, 0.25D0 )
+   sv2zi = min( sv02, 0.25d0 )
 
-   IF( HEIGHT  <=  ZIMECH )THEN
+   if( height  <=  zimech )then
 !        INTERPOLATE between these two values of the variance if HEIGHT is
 !        below ZIMECH
-      CALL GINTRP ( 0.0D0, SV02, ZIMECH, SV2ZI, HEIGHT, VARV )
-      VALUE = DSQRT(VARV)
+      call gintrp ( 0.0d0, sv02, zimech, sv2zi, height, varv )
+      value = dsqrt(varv)
 
-   ELSE
+   else
 !        Persist value at ZIMECH upward.
-      VALUE = DSQRT(SV2ZI)
+      value = dsqrt(sv2zi)
 
-   ENDIF
+   endif
 !
-   RETURN
-END SUBROUTINE REFSVM
+   return
+end subroutine refsvm
 
-SUBROUTINE NTRPSV ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
+subroutine ntrpsv ( htbelo,vbelow, htabov,vabove, reqdht,value )
 !=======================================================================
 !                NTRPSV Module of the AERMOD Dispersion Model
 !
@@ -415,9 +415,9 @@ SUBROUTINE NTRPSV ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
 !
 !---- Variable declarations
 !
-   IMPLICIT NONE
-   DOUBLE PRECISION ::  HTBELO, VBELOW, HTABOV, VABOVE, REQDHT,&
-   &VALUE, REFABV, REFBLW, RATIO, REFREQ, VALINT, REFINT
+   implicit none
+   double precision ::  htbelo, vbelow, htabov, vabove, reqdht,&
+   &value, refabv, refblw, ratio, refreq, valint, refint
 !
 !---- Data dictionary
 !
@@ -436,31 +436,31 @@ SUBROUTINE NTRPSV ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height below the requested height (REFBLW)    --- CALL REFSV
 !
-   CALL REFSV (  HTBELO, REFBLW )
+   call refsv (  htbelo, refblw )
 
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height above the requested height (REFABV)    --- CALL REFSV
 !
-   CALL REFSV (  HTABOV, REFABV )
+   call refsv (  htabov, refabv )
 !     COMPUTE the value of the parameter from the reference profile
 !     at the requested height (REFREQ)                     --- CALL REFSV
 !
-   CALL REFSV ( REQDHT, REFREQ )
+   call refsv ( reqdht, refreq )
 
 !
 !     Linearly interpolate to REQDHT from observed and reference profiles
-   CALL GINTRP ( HTBELO,VBELOW, HTABOV, VABOVE, REQDHT,VALINT )
-   CALL GINTRP ( HTBELO,REFBLW, HTABOV, REFABV, REQDHT,REFINT )
+   call gintrp ( htbelo,vbelow, htabov, vabove, reqdht,valint )
+   call gintrp ( htbelo,refblw, htabov, refabv, reqdht,refint )
 !     REFREQ is value from REFerence profile at REQuired height
 !     REFINT is value from REFerence profile linearly INTerpolated to req ht
 !     VALINT is the observed VALue linearly INTerpolated to required height
-   RATIO = REFREQ/REFINT
-   VALUE = RATIO * VALINT
+   ratio = refreq/refint
+   value = ratio * valint
 
-   RETURN
-END SUBROUTINE NTRPSV
+   return
+end subroutine ntrpsv
 
-SUBROUTINE XTRPSV ( PFLZ, PFLVAL, GRDZ, VALUE )
+subroutine xtrpsv ( pflz, pflval, grdz, value )
 !=======================================================================
 !                XTRPSV Module of the AERMOD Dispersion Model
 !
@@ -492,9 +492,9 @@ SUBROUTINE XTRPSV ( PFLZ, PFLVAL, GRDZ, VALUE )
 !
 !---- Variable declarations
 !
-   IMPLICIT NONE
-   DOUBLE PRECISION :: PFLZ, PFLVAL, GRDZ, VALUE, VALOBS, VALGRD,&
-   &RATIO
+   implicit none
+   double precision :: pflz, pflval, grdz, value, valobs, valgrd,&
+   &ratio
 !
 !---- Data dictionary
 !
@@ -512,23 +512,23 @@ SUBROUTINE XTRPSV ( PFLZ, PFLVAL, GRDZ, VALUE )
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height of the highest(lowest) observed value --- CALL REFSV
 !
-   CALL REFSV ( PFLZ, VALOBS )
+   call refsv ( pflz, valobs )
 !
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height where a value is required             --- CALL REFSV
 !
-   CALL REFSV ( GRDZ, VALGRD )
+   call refsv ( grdz, valgrd )
 !
-   RATIO = VALGRD / VALOBS
+   ratio = valgrd / valobs
 !
-   VALUE = RATIO * PFLVAL
+   value = ratio * pflval
 !
-   RETURN
-END SUBROUTINE XTRPSV
+   return
+end subroutine xtrpsv
 
 
 
-SUBROUTINE GRDSW ()
+subroutine grdsw ()
 !=======================================================================
 !                GRDSW module of the AERMOD Dispersion Model
 !
@@ -558,12 +558,12 @@ SUBROUTINE GRDSW ()
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER     :: PINDEX, GINDEX
-   DOUBLE PRECISION :: VBELOW, HTBELO
+   integer     :: pindex, gindex
+   double precision :: vbelow, htbelo
 !
 !---- Data definitions
 !        PINDEX    Array index for the profile of observed values
@@ -574,11 +574,11 @@ SUBROUTINE GRDSW ()
 !
 !---- Data initializations
 !
-   MODNAM = 'GRDSW '
+   modnam = 'GRDSW '
 !
-   GINDEX = 1
-   PINDEX = 1
-   VBELOW = -999.0D0
+   gindex = 1
+   pindex = 1
+   vbelow = -999.0d0
 !
 !     ------------------------------------------------------------------
 !     Loop over each grid level until a value is computed for each level
@@ -586,61 +586,61 @@ SUBROUTINE GRDSW ()
 !     profile exceeds the maximum number
 !     ------------------------------------------------------------------
 
-   DO WHILE( GINDEX <= MXGLVL )
+   do while( gindex <= mxglvl )
 
 !        -------------------------------------------
 !        Now begin looping over the observed profile
 !        -------------------------------------------
 !
-      DO WHILE( GRIDSW(GINDEX) < -90.0D0 .and. PINDEX<=NPLVLS )
+      do while( gridsw(gindex) < -90.0d0 .and. pindex<=nplvls )
 !
-         IF( PFLSW(PINDEX) >= 0.0D0 )THEN
+         if( pflsw(pindex) >= 0.0d0 )then
 !
 !              -------------------------------------------------
 !              Data at this level are not missing; determine its
 !              location relative to the height at which data are
 !              required and act accordingly.
 !              -------------------------------------------------
-            IF( DABS( PFLHT(PINDEX) - GRIDHT(GINDEX) )<=0.1D0 )THEN
+            if( dabs( pflht(pindex) - gridht(gindex) )<=0.1d0 )then
 !                 USE the parameter at this level
-               GRIDSW(GINDEX) = PFLSW(PINDEX)
+               gridsw(gindex) = pflsw(pindex)
 !
-            ELSEIF( GRIDHT(GINDEX)  >  PFLHT(PINDEX) )THEN
-               IF( PINDEX < NPLVLS )THEN
+            elseif( gridht(gindex)  >  pflht(pindex) )then
+               if( pindex < nplvls )then
 !                    SAVE value for possible interpolation
-                  VBELOW = PFLSW(PINDEX)
-                  HTBELO = PFLHT(PINDEX)
+                  vbelow = pflsw(pindex)
+                  htbelo = pflht(pindex)
 
-               ELSE   ! this is the top level
+               else   ! this is the top level
 !                    PROFILE upward from this level        --- CALL XTRPSW
-                  CALL XTRPSW ( PFLHT(PINDEX), PFLSW(PINDEX),&
-                  &GRIDHT(GINDEX), GRIDSW(GINDEX) )
-               ENDIF
+                  call xtrpsw ( pflht(pindex), pflsw(pindex),&
+                  &gridht(gindex), gridsw(gindex) )
+               endif
 !
-            ELSEIF( GRIDHT(GINDEX)  <  PFLHT(PINDEX) )THEN
-               IF( VBELOW >= 0.0D0 )THEN
+            elseif( gridht(gindex)  <  pflht(pindex) )then
+               if( vbelow >= 0.0d0 )then
 !                    INTERPOLATE between the two values    --- CALL NTRPSW
-                  CALL NTRPSW ( HTBELO, VBELOW, PFLHT(PINDEX),&
-                  &PFLSW(PINDEX), GRIDHT(GINDEX),&
-                  &GRIDSW(GINDEX) )
+                  call ntrpsw ( htbelo, vbelow, pflht(pindex),&
+                  &pflsw(pindex), gridht(gindex),&
+                  &gridsw(gindex) )
 
-               ELSE   ! BELOW is missing
+               else   ! BELOW is missing
 !                    PROFILE down from this level          --- CALL XTRPSW
-                  CALL XTRPSW ( PFLHT(PINDEX), PFLSW(PINDEX),&
-                  &GRIDHT(GINDEX), GRIDSW(GINDEX) )
+                  call xtrpsw ( pflht(pindex), pflsw(pindex),&
+                  &gridht(gindex), gridsw(gindex) )
 
-               ENDIF
+               endif
 !
-            ELSE
+            else
 !                 This section is for DEBUGging - the program should never
 !                 reach this point
-               WRITE(*,*) ' ---> ERROR: The search for data to'
-               WRITE(*,*) '             construct the gridded '
-               WRITE(*,*) '             profile failed on ', KURDAT
+               write(*,*) ' ---> ERROR: The search for data to'
+               write(*,*) '             construct the gridded '
+               write(*,*) '             profile failed on ', kurdat
 !
-            ENDIF
+            endif
 !
-         ELSE
+         else
 !
 !              -------------------------------------------------------
 !              The parameter at this level is missing - if this is not
@@ -648,23 +648,23 @@ SUBROUTINE GRDSW ()
 !              level, then make a computation.
 !              -------------------------------------------------------
 !
-            IF( PINDEX == NPLVLS )THEN
-               IF( VBELOW  >=  0.0D0 )THEN
+            if( pindex == nplvls )then
+               if( vbelow  >=  0.0d0 )then
 !                    PROFILE up from BELOW                 --- CALL XTRPSW
-                  CALL XTRPSW ( HTBELO, VBELOW,&
-                  &GRIDHT(GINDEX), GRIDSW(GINDEX) )
+                  call xtrpsw ( htbelo, vbelow,&
+                  &gridht(gindex), gridsw(gindex) )
 
-               ELSE   ! there are no data
+               else   ! there are no data
 !                    COMPUTE value: full parameterization  --- CALL REFSW
-                  CALL REFSW ( GRIDHT(GINDEX), GRIDSW(GINDEX) )
-               ENDIF
+                  call refsw ( gridht(gindex), gridsw(gindex) )
+               endif
 !
-            ELSE   ! this is not the top level, repeat loop
-               CONTINUE
+            else   ! this is not the top level, repeat loop
+               continue
 !
-            ENDIF
+            endif
 !
-         ENDIF   ! parameter (not) missing at this level
+         endif   ! parameter (not) missing at this level
 !
 !           ---------------------------------------------------------
 !           Increment the observed profile counter if a value at this
@@ -672,12 +672,12 @@ SUBROUTINE GRDSW ()
 !           processing
 !           ---------------------------------------------------------
 !
-         IF( (GRIDSW(GINDEX) < 0.0D0)  .and.&
-         &(PINDEX < NPLVLS) )THEN
-            PINDEX = PINDEX + 1
-         ENDIF
+         if( (gridsw(gindex) < 0.0d0)  .and.&
+         &(pindex < nplvls) )then
+            pindex = pindex + 1
+         endif
 !
-      END DO   ! Loop over observed data profile
+      end do   ! Loop over observed data profile
 !
 !        ------------------------------------------------------------
 !        Increment the gridded profile counter and repeat the process
@@ -685,16 +685,16 @@ SUBROUTINE GRDSW ()
 !        defined by PINDEX
 !        ------------------------------------------------------------
 !
-      GINDEX = GINDEX + 1
+      gindex = gindex + 1
 !
-   END DO   ! Loop over gridded data profile
+   end do   ! Loop over gridded data profile
 !
 
 
-   RETURN
-END SUBROUTINE GRDSW
+   return
+end subroutine grdsw
 
-SUBROUTINE REFSW ( HTINP, VALUE )
+subroutine refsw ( htinp, value )
 !=======================================================================
 !                REFSW Module of the AERMOD Dispersion Model
 !
@@ -728,12 +728,12 @@ SUBROUTINE REFSW ( HTINP, VALUE )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION :: HEIGHT, VALUE, SWC, SWM
-   DOUBLE PRECISION :: HTINP
+   double precision :: height, value, swc, swm
+   double precision :: htinp
 !
 !---- Data dictionary
 !
@@ -742,24 +742,24 @@ SUBROUTINE REFSW ( HTINP, VALUE )
 !
 !---- Data initializations
 !
-   MODNAM = 'REFSW '
+   modnam = 'REFSW '
 
-   HEIGHT = HTINP
+   height = htinp
 !
 !.......................................................................
 !
-   IF (UNSTAB) THEN
+   if (unstab) then
 !        Compute the convective component of sigma-w, SWC
-      CALL REFSWC( HEIGHT, SWC )
+      call refswc( height, swc )
 
 !        Compute the mechanical component of sigma-w, SWM
-      CALL REFSWM( HEIGHT, SWM )
+      call refswm( height, swm )
 
 !        Apply a lower limit > 0 to convective and mechanical components of sigma-w
-      SWC = MAX( SWC, 0.0001D0 )
-      SWM = MAX( SWM, 0.0001D0 )
+      swc = max( swc, 0.0001d0 )
+      swm = max( swm, 0.0001d0 )
 
-      VALUE = DSQRT( SWC*SWC + SWM*SWM )
+      value = dsqrt( swc*swc + swm*swm )
 
 !rwb     Output convective and mechanical components of profile.
 !rwb         if (METEOR) then
@@ -773,20 +773,20 @@ SUBROUTINE REFSW ( HTINP, VALUE )
 !rwb919         format(1x,f8.2,3(3x,g13.5))
 !rwb         end if
 
-   ELSE IF (STABLE) THEN
+   else if (stable) then
 
 !        Compute the mechanical component of sigma-w, SWM
-      CALL REFSWM( HEIGHT, SWM )
+      call refswm( height, swm )
 
 !        Apply a lower limit > 0 to convective and mechanical components of sigma-w
-      VALUE = MAX( SWM, 0.0001D0 )
+      value = max( swm, 0.0001d0 )
 
-   END IF
+   end if
 
-   RETURN
-END SUBROUTINE REFSW
+   return
+end subroutine refsw
 
-SUBROUTINE REFSWC ( HTINP, VALUE )
+subroutine refswc ( htinp, value )
 !=======================================================================
 !                REFSWC Module of the AERMOD Dispersion Model
 !
@@ -821,12 +821,12 @@ SUBROUTINE REFSWC ( HTINP, VALUE )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION :: HEIGHT, VALUE, SW2, EXPARG
-   DOUBLE PRECISION :: HTINP
+   double precision :: height, value, sw2, exparg
+   double precision :: htinp
 !
 !---- Data dictionary
 !
@@ -834,36 +834,36 @@ SUBROUTINE REFSWC ( HTINP, VALUE )
 !
 !---- Data initializations
 !
-   MODNAM = 'REFSWC'
+   modnam = 'REFSWC'
 
-   HEIGHT = HTINP
+   height = htinp
 !
 !.......................................................................
 !
-   IF( HEIGHT  <=  0.1D0*ZICONV )THEN
-      SW2 = 1.6D0 * ( HEIGHT / ZICONV )**(2.0D0*THIRD) * WSTAR**2
-      VALUE  = DSQRT( SW2 )
+   if( height  <=  0.1d0*ziconv )then
+      sw2 = 1.6d0 * ( height / ziconv )**(2.0d0*third) * wstar**2
+      value  = dsqrt( sw2 )
 
-   ELSEIF( HEIGHT > 0.1D0*ZICONV  .and.  HEIGHT <= ZICONV )THEN
-      VALUE = DSQRT( 0.35D0 * WSTAR**2 )
+   elseif( height > 0.1d0*ziconv  .and.  height <= ziconv )then
+      value = dsqrt( 0.35d0 * wstar**2 )
 
-   ELSEIF( HEIGHT > ZICONV )THEN
-      EXPARG = -6.0D0*(HEIGHT - ZICONV)/ZICONV
-      IF (EXPARG > EXPLIM) THEN
-         SW2 = 0.35D0 * WSTAR**2 * DEXP( EXPARG )
-         VALUE = DSQRT( SW2 )
-      ELSE
-         SW2 = 0.0D0
-         VALUE = 0.0D0
-      END IF
+   elseif( height > ziconv )then
+      exparg = -6.0d0*(height - ziconv)/ziconv
+      if (exparg > explim) then
+         sw2 = 0.35d0 * wstar**2 * dexp( exparg )
+         value = dsqrt( sw2 )
+      else
+         sw2 = 0.0d0
+         value = 0.0d0
+      end if
 
-   ENDIF
+   endif
 !
 
-   RETURN
-END SUBROUTINE REFSWC
+   return
+end subroutine refswc
 
-SUBROUTINE REFSWM ( HTINP, VALUE )
+subroutine refswm ( htinp, value )
 !=======================================================================
 !                REFSWM Module of the AERMOD Dispersion Model
 !
@@ -898,12 +898,12 @@ SUBROUTINE REFSWM ( HTINP, VALUE )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION :: HEIGHT, VALUE, SWR, SWBL
-   DOUBLE PRECISION :: HTINP
+   double precision :: height, value, swr, swbl
+   double precision :: htinp
 !
 !---- Data dictionary
 !
@@ -912,29 +912,29 @@ SUBROUTINE REFSWM ( HTINP, VALUE )
 !
 !---- Data initializations
 !
-   MODNAM = 'REFSWM'
+   modnam = 'REFSWM'
 
-   HEIGHT = HTINP
+   height = htinp
 !
 !.......................................................................
 !
 !
 
-   SWR  = SWRMAX * MIN( 1.0D0, HEIGHT/ZI)
+   swr  = swrmax * min( 1.0d0, height/zi)
 
-   IF (HEIGHT < ZI) THEN
-      SWBL = 1.3D0 * USTAR * DSQRT( 1.0D0 - HEIGHT/ZI)
-   ELSE
-      SWBL = 0.0D0
-   END IF
+   if (height < zi) then
+      swbl = 1.3d0 * ustar * dsqrt( 1.0d0 - height/zi)
+   else
+      swbl = 0.0d0
+   end if
 
-   VALUE = DSQRT( SWR*SWR + SWBL*SWBL )
+   value = dsqrt( swr*swr + swbl*swbl )
 
 
-   RETURN
-END SUBROUTINE REFSWM
+   return
+end subroutine refswm
 
-SUBROUTINE NTRPSW ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
+subroutine ntrpsw ( htbelo,vbelow, htabov,vabove, reqdht,value )
 !=======================================================================
 !                NTRPSW Module of the AERMOD Dispersion Model
 !
@@ -967,10 +967,10 @@ SUBROUTINE NTRPSW ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
 !
 !---- Variable declarations
 !
-   IMPLICIT NONE
+   implicit none
 
-   DOUBLE PRECISION :: REFABV, REFBLW, RATIO, REFREQ, VALINT, REFINT,&
-   &HTBELO, VBELOW, HTABOV, VABOVE, REQDHT, VALUE
+   double precision :: refabv, refblw, ratio, refreq, valint, refint,&
+   &htbelo, vbelow, htabov, vabove, reqdht, value
 !
 !---- Data dictionary
 !
@@ -987,30 +987,30 @@ SUBROUTINE NTRPSW ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
 !
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height below the requested height (REFBLW)         --- CALL REFSW
-   CALL REFSW ( HTBELO, REFBLW )
+   call refsw ( htbelo, refblw )
 
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height above the requested height (REFABV)         --- CALL REFSW
-   CALL REFSW ( HTABOV, REFABV )
+   call refsw ( htabov, refabv )
 !
 !     COMPUTE the value of the parameter from the reference profile
 !     at the requested height (REFREQ)                          --- CALL REFSW
-   CALL REFSW ( REQDHT, REFREQ )
+   call refsw ( reqdht, refreq )
 !
 !
 !     Linearly interpolate to REQDHT from observed and reference profiles
-   CALL GINTRP ( HTBELO,VBELOW, HTABOV, VABOVE, REQDHT,VALINT )
-   CALL GINTRP ( HTBELO,REFBLW, HTABOV, REFABV, REQDHT,REFINT )
+   call gintrp ( htbelo,vbelow, htabov, vabove, reqdht,valint )
+   call gintrp ( htbelo,refblw, htabov, refabv, reqdht,refint )
 !     REFREQ is value from REFerence profile at REQuired height
 !     REFINT is value from REFerence profile linearly INTerpolated to req ht
 !     VALINT is the observed VALue linearly INTerpolated to required height
-   RATIO = REFREQ/REFINT
-   VALUE = RATIO * VALINT
+   ratio = refreq/refint
+   value = ratio * valint
 
-   RETURN
-END SUBROUTINE NTRPSW
+   return
+end subroutine ntrpsw
 
-SUBROUTINE XTRPSW ( PFLZ, PFLVAL, GRDZ, VALUE )
+subroutine xtrpsw ( pflz, pflval, grdz, value )
 !=======================================================================
 !                XTRPSW Module of the AERMOD Dispersion Model
 !
@@ -1042,10 +1042,10 @@ SUBROUTINE XTRPSW ( PFLZ, PFLVAL, GRDZ, VALUE )
 !
 !---- Variable declarations
 !
-   IMPLICIT NONE
+   implicit none
 
-   DOUBLE PRECISION :: GRDZ, PFLVAL, PFLZ, RATIO, VALOBS, VALGRD,&
-   &VALUE
+   double precision :: grdz, pflval, pflz, ratio, valobs, valgrd,&
+   &value
 !
 !---- Data dictionary
 !
@@ -1062,15 +1062,15 @@ SUBROUTINE XTRPSW ( PFLZ, PFLVAL, GRDZ, VALUE )
 !
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height of the highest(lowest) observed value      --- CALL REFSW
-   CALL REFSW ( PFLZ, VALOBS )
+   call refsw ( pflz, valobs )
 !
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height where a value is required                  --- CALL REFSW
-   CALL REFSW ( GRDZ, VALGRD )
+   call refsw ( grdz, valgrd )
 !
-   RATIO = VALGRD / VALOBS
+   ratio = valgrd / valobs
 !
-   VALUE = RATIO * PFLVAL
+   value = ratio * pflval
 !
-   RETURN
-END SUBROUTINE XTRPSW
+   return
+end subroutine xtrpsw

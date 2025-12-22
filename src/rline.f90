@@ -1,4 +1,4 @@
-SUBROUTINE RLCALC
+subroutine rlcalc
 !***********************************************************************
 !                 RLCALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -41,38 +41,38 @@ SUBROUTINE RLCALC
 !     Variable Declarations:
 !CRT/ORD 5/17/2022 - Add DISTR from Main1 module to initialize for RLINE source
 ! Wood 10/10/22 removed FOPT FROM MAIN1; NOT USED HERE
-   USE MAIN1, ONLY: AZFLAG, HRVAL, NUMTYP,&
-   &NUMGRP, IGRP, ISRC, IREC, NUMREC, L_HRLYSIG,&
-   &ITYP, ARM2, CHI, EVONLY, AQS, AHS, ASZINI, QFLAG,&
-   &URBSRC, NUMURB, STABLE, L_MorningTrans,&
-   &ZI, ZIURB, ZIRUR, ZIMECH, URBAN, SRCTYP,&
-   &USTAR, URBUSTR, RURUSTR, URBSTAB,&
-   &IURB, OBULEN, URBOBULEN, RUROBULEN, IURBGRP,&
-   &WSTAR, URBWSTR, EMIFAC, QTK,&
-   &RLINEDBG, RLINEDBUNT, KURDAT,&
-   &SFCZ0, URBZ0, GRIDSV, GRDSVR, GRDSVU, MXGLVL,&
-   &FASTALL, DISTR,&
-   &AZELEV, ZELEV, AZHILL, ZHILL, ZFLAG, ZS, AZS !Wood 7/5/2022
+   use main1, only: azflag, hrval, numtyp,&
+   &numgrp, igrp, isrc, irec, numrec, l_hrlysig,&
+   &ityp, arm2, chi, evonly, aqs, ahs, aszini, qflag,&
+   &urbsrc, numurb, stable, L_MorningTrans,&
+   &zi, ziurb, zirur, zimech, urban, srctyp,&
+   &ustar, urbustr, rurustr, urbstab,&
+   &iurb, obulen, urbobulen, rurobulen, iurbgrp,&
+   &wstar, urbwstr, emifac, qtk,&
+   &rlinedbg, rlinedbunt, kurdat,&
+   &sfcz0, urbz0, gridsv, grdsvr, grdsvu, mxglvl,&
+   &fastall, distr,&
+   &azelev, zelev, azhill, zhill, zflag, zs, azs !Wood 7/5/2022
 !     &                 FOPT !Wood 7/5/2022
 !     rline_emisfact_d42_Wood
 !     Added import of QTK from MAIN1 above, and new local QEMIS below
-   USE RLINE_DATA
-   IMPLICIT NONE
+   use rline_data
+   implicit none
 
-   INTEGER  :: I
-   DOUBLE PRECISION  :: ERROR
-   DOUBLE PRECISION  :: CONCD
-   DOUBLE PRECISION  :: CONCENTRATION
-   DOUBLE PRECISION  :: QEMIS
-   DOUBLE PRECISION  :: SFCZ0_sav, ZI_SAV
-   DOUBLE PRECISION  :: ZI_ORIG !D178
+   integer  :: i
+   double precision  :: error
+   double precision  :: concd
+   double precision  :: concentration
+   double precision  :: qemis
+   double precision  :: SFCZ0_sav, zi_sav
+   double precision  :: zi_orig !D178
 
 !     ERROR         = error in numerical integration
 !     CONCD         = dummy concentration at receptor
 !     CONCENTRATION = concentration
 !     QEMIS         = emission rate
 
-   DOUBLE PRECISION  :: XTEMP, YTEMP, ZTEMP
+   double precision  :: xtemp, ytemp, ztemp
 !     XTEMP          = temporary x-coordinate of receptor for line orientation
 !     YTEMP          = temporary y-coordinate of receptor for line orientation
 !     ZTEMP          = temporary z-coordinate of receptor for line orientation
@@ -81,236 +81,236 @@ SUBROUTINE RLCALC
 !MGS      CONCD = 0.0D0 !D178_RLINE_RecpOrder_WSP: Moved to REC loop
 !MGS     CONCENTRATION = 0.0D0  !D178_RLINE_RecpOrder_WSP: moved to REC loop
 !CRT/ORD 5/17/2022 - Reset DISTR if used from previous sources
-   DISTR = 0.0D0
+   distr = 0.0d0
 
 !     Initialize __VAL arrays
 !MGS      HRVAL = 0.0D0 !D178_RLINE_RecpOrder_WSP
-   HRVAL(:) = 0.0D0
+   hrval(:) = 0.0d0
 
 !     rline_emisfact_d42_Wood
 !     Local QEMIS will hold the hourly source specific emission to be
 !     used in the calculation of concentration below, replacing the use
 !     of RLSOURCE(ISRC)%QEMIS in those expressions.
-   QEMIS = RLSOURCE(ISRC)%QEMIS
-   IF(QFLAG(ISRC) == 'HOURLY') THEN
+   qemis = rlsource(isrc)%qemis
+   if(qflag(isrc) == 'HOURLY') then
 !        Set hourly variable source height and sigmaz-initial (optional)
-      IF(L_HRLYSIG(ISRC)) THEN
-         RLSOURCE(ISRC)%ZSB = AHS(ISRC)
-         RLSOURCE(ISRC)%ZSE = AHS(ISRC)
-         RLSOURCE(ISRC)%INIT_SIGMAZ = ASZINI(ISRC)
-      END IF
+      if(l_hrlysig(isrc)) then
+         rlsource(isrc)%zsb = ahs(isrc)
+         rlsource(isrc)%zse = ahs(isrc)
+         rlsource(isrc)%init_sigmaz = aszini(isrc)
+      end if
 !        Set hourly variable emission rate (required)
-      IF(SRCTYP(ISRC) == 'RLINEXT') THEN
-         QEMIS = AQS(ISRC)
-      ELSE ! RLINE source with Lnemis inputs
-         QEMIS = AQS(ISRC)*RLSOURCE(ISRC)%WIDTH
-      END IF
+      if(srctyp(isrc) == 'RLINEXT') then
+         qemis = aqs(isrc)
+      else ! RLINE source with Lnemis inputs
+         qemis = aqs(isrc)*rlsource(isrc)%width
+      end if
 !     rline_emisfact_d42_Wood
 !     The following block is added to process the EMISFACT keyword with
 !     RLINE sources, set QTK equal to appropriate emission factor, and
 !     multiply by emission rate.
-   ELSE IF ((QFLAG(ISRC) == 'MONTH') .or.&
-   &(QFLAG(ISRC) == 'HROFDY') .or.&
-   &(QFLAG(ISRC) == 'WSPEED') .or.&
-   &(QFLAG(ISRC) == 'SEASON') .or.&
-   &(QFLAG(ISRC) == 'SEASHR') .or.&
-   &(QFLAG(ISRC) == 'HRDOW') .or.&
-   &(QFLAG(ISRC) == 'HRDOW7') .or.&
-   &(QFLAG(ISRC) == 'SHRDOW') .or.&
-   &(QFLAG(ISRC) == 'SHRDOW7') .or.&
-   &(QFLAG(ISRC) == 'MHRDOW') .or.&
-   &(QFLAG(ISRC) == 'MHRDOW7')) THEN
-      CALL EMFACT(1.0D0)
-      QEMIS = RLSOURCE(ISRC)%QEMIS*QTK
-   END IF
+   else if ((qflag(isrc) == 'MONTH') .or.&
+   &(qflag(isrc) == 'HROFDY') .or.&
+   &(qflag(isrc) == 'WSPEED') .or.&
+   &(qflag(isrc) == 'SEASON') .or.&
+   &(qflag(isrc) == 'SEASHR') .or.&
+   &(qflag(isrc) == 'HRDOW') .or.&
+   &(qflag(isrc) == 'HRDOW7') .or.&
+   &(qflag(isrc) == 'SHRDOW') .or.&
+   &(qflag(isrc) == 'SHRDOW7') .or.&
+   &(qflag(isrc) == 'MHRDOW') .or.&
+   &(qflag(isrc) == 'MHRDOW7')) then
+      call emfact(1.0d0)
+      qemis = rlsource(isrc)%qemis*qtk
+   end if
 !     Perform first hour calculations
-   IF(RLFIRSTHR) THEN
+   if(rlfirsthr) then
 !        Create exponential tables                                           --- CALL CREATE_EXP_TABLE
-      CALL CREATE_EXP_TABLE
+      call create_exp_table
 !        Perform MOVES to RLINE unit conversion                              --- CALL RLEMCONV
-      CALL RLEMCONV
-      RLFIRSTHR = .FALSE.
-   END IF
+      call rlemconv
+      rlfirsthr = .false.
+   end if
 
 !        Save the original SFCZ0 & ZI
-   SFCZ0_sav = SFCZ0
-   ZI_ORIG    = ZI ! D096; D178 switch ZI_SAV to ZI_ORIG
+   SFCZ0_sav = sfcz0
+   zi_orig    = zi ! D096; D178 switch ZI_SAV to ZI_ORIG
 !        Set Mixing Height and Adjust L & USTAR for Urban Option if Needed
-   IF (URBSRC(ISRC) == 'Y') THEN
+   if (urbsrc(isrc) == 'Y') then
 !           Find Urban Area Index for This Source
-      DO I = 1, NUMURB
-         IF (IURBGRP(ISRC,I) == 1) THEN
-            IURB = I
-            EXIT
-         END IF
-      END DO
-      IF (STABLE .or. L_MorningTrans(IURB)) THEN
-         URBSTAB = .TRUE.
-         ZI = MAX( ZIURB(IURB), ZIMECH )
-         GRIDSV = GRDSVU(1:MXGLVL,IURB)
-         OBULEN = URBOBULEN(IURB)
-         USTAR  = URBUSTR(IURB)
-         RLWSTAR = URBWSTR(IURB)
-         SFCZ0 = URBZ0(IURB)
-      ELSE
-         URBSTAB = .FALSE.
-         ZI = ZIRUR
-         GRIDSV = GRDSVR
-         OBULEN = RUROBULEN
-         USTAR  = RURUSTR
-         RLWSTAR = WSTAR
-      END IF
-   ELSE IF (URBAN .and. URBSRC(ISRC) == 'N') THEN
-      URBSTAB = .FALSE.
-      ZI = ZIRUR
-      GRIDSV = GRDSVR
-      OBULEN = RUROBULEN
-      USTAR  = RURUSTR
-      RLWSTAR = WSTAR
-   ELSE
+      do i = 1, numurb
+         if (iurbgrp(isrc,i) == 1) then
+            iurb = i
+            exit
+         end if
+      end do
+      if (stable .or. L_MorningTrans(iurb)) then
+         urbstab = .true.
+         zi = max( ziurb(iurb), zimech )
+         gridsv = grdsvu(1:mxglvl,iurb)
+         obulen = urbobulen(iurb)
+         ustar  = urbustr(iurb)
+         rlwstar = urbwstr(iurb)
+         sfcz0 = urbz0(iurb)
+      else
+         urbstab = .false.
+         zi = zirur
+         gridsv = grdsvr
+         obulen = rurobulen
+         ustar  = rurustr
+         rlwstar = wstar
+      end if
+   else if (urban .and. urbsrc(isrc) == 'N') then
+      urbstab = .false.
+      zi = zirur
+      gridsv = grdsvr
+      obulen = rurobulen
+      ustar  = rurustr
+      rlwstar = wstar
+   else
 ! ---       Rural
-      URBSTAB = .FALSE.
-      RLWSTAR = WSTAR
-   END IF
-   ZI_SAV = ZI !D178
+      urbstab = .false.
+      rlwstar = wstar
+   end if
+   zi_sav = zi !D178
 
-   IF(.NOT. RLPROCESSED) THEN
+   if(.not. rlprocessed) then
 !        Translate and rotate the line source to align with wind direction   --- CALL TRANSLATE_ROTATE
-      CALL TRANSLATE_ROTATE
-   END IF
+      call translate_rotate
+   end if
 
 !        Get translated an rotated source information
-   SIGMAZ0 = RLSOURCE(ISRC)%INIT_SIGMAZ
-   XSBEGIN = XSB_ROT(ISRC)
-   YSBEGIN = YSB_ROT(ISRC)
-   XSEND   = XSE_ROT(ISRC)
-   YSEND   = YSE_ROT(ISRC)
-   ZSBEGIN = RLSOURCE(ISRC)%ZSB
-   ZSEND   = RLSOURCE(ISRC)%ZSE
+   sigmaz0 = rlsource(isrc)%init_sigmaz
+   xsbegin = xsb_rot(isrc)
+   ysbegin = ysb_rot(isrc)
+   xsend   = xse_rot(isrc)
+   ysend   = yse_rot(isrc)
+   zsbegin = rlsource(isrc)%zsb
+   zsend   = rlsource(isrc)%zse
 
 !     Orient the end points so the begining has a lower Y value
-   IF (YSEND < YSBEGIN) THEN
-      XTEMP   = XSEND
-      YTEMP   = YSEND
-      ZTEMP   = ZSEND
-      XSEND   = XSBEGIN
-      YSEND   = YSBEGIN
-      ZSEND   = ZSBEGIN
-      XSBEGIN = XTEMP
-      YSBEGIN = YTEMP
-      ZSBEGIN = ZTEMP
-   END IF
-   THETA_LINE = DATAN2(YSEND - YSBEGIN, XSEND - XSBEGIN)
+   if (ysend < ysbegin) then
+      xtemp   = xsend
+      ytemp   = ysend
+      ztemp   = zsend
+      xsend   = xsbegin
+      ysend   = ysbegin
+      zsend   = zsbegin
+      xsbegin = xtemp
+      ysbegin = ytemp
+      zsbegin = ztemp
+   end if
+   theta_line = datan2(ysend - ysbegin, xsend - xsbegin)
 
 !        Calculate a vertical displacement of the source to
 !        account for the effect of a roadside barrier                        --- CALL BARRIER_DISPLACEMENT
-   IF((RLSOURCE(ISRC)%HTWALL  > 0.0D0) .or.&
-   &(RLSOURCE(ISRC)%HTWALL2 > 0.0D0)) THEN
-      CALL BARRIER_DISPLACEMENT
-   ELSE
-      NBARR = 0
-      SHIFT_FLAG  = .FALSE.
-      XSHIFT      = 0.0D0
+   if((rlsource(isrc)%htwall  > 0.0d0) .or.&
+   &(rlsource(isrc)%htwall2 > 0.0d0)) then
+      call barrier_displacement
+   else
+      nbarr = 0
+      shift_flag  = .false.
+      xshift      = 0.0d0
 !CRT/ORD  5/17/2022 variables added to initialization
-      YSHIFT      = 0.0D0
-      HBU         = 0.0D0
-      HBD         = 0.0D0
-   END IF
+      yshift      = 0.0d0
+      hbu         = 0.0d0
+      hbd         = 0.0d0
+   end if
 
 !     Calculate initial sigma-y from the road width
-   SIGMAY0 = 0.0D0
-   SIGMAY0 = DABS(0.5D0 * (RLSOURCE(ISRC)%WIDTH) *&
-   &DCOS(THETA_LINE))
+   sigmay0 = 0.0d0
+   sigmay0 = dabs(0.5d0 * (rlsource(isrc)%width) *&
+   &dcos(theta_line))
 
 !     Calculate met parameters                                               --- CALL COMPUTE_MET
-   CALL COMPUTE_MET
+   call compute_met
 
 !     Set up interpolation coefficients for FAST option
-   IF(FASTALL) THEN
-      CALL INTERP_COEFFS
-   END IF
+   if(fastall) then
+      call interp_coeffs
+   end if
 
 ! Set elevation of source, global variable in main1 - Wood 7/5/2022
-   ZS = AZS(ISRC)
+   zs = azs(isrc)
 
 !     Begin loop over receptors
-   RECEPTOR_LOOP: DO IREC = 1, NUMREC
+   receptor_loop: do irec = 1, numrec
 !RLM D178 Reset ZI
 !RLM Not necessarily needed here. Safe guard for possible other instances where ZI is
 !RLM changed within the receptor loop. ZI changed within PLUME_CONC; this has been corrected with D178.
-      ZI = ZI_SAV
+      zi = zi_sav
 !MGS     D178_RLINE_RecpOrder_WSP Moved these initalizations from top of RLCALC
-      CONCD = 0.0D0 !D178_RLINE_RecpOrder_WSP
-      CONCENTRATION = 0.0D0  !D178_RLINE_RecpOrder_WSP
+      concd = 0.0d0 !D178_RLINE_RecpOrder_WSP
+      concentration = 0.0d0  !D178_RLINE_RecpOrder_WSP
 
 ! ----Write date and source values to RLINE.DBG
-      IF (RLINEDBG) THEN
-         WRITE(RLINEDBUNT,'(A, (A, I8),2(" , ", A, I8))')&
+      if (rlinedbg) then
+         write(rlinedbunt,'(A, (A, I8),2(" , ", A, I8))')&
          &'rline.f/RLCALC: ',&
-         &'KURDAT = ', KURDAT,&
-         &'ISRC = ', ISRC,&
-         &'IREC = ', IREC
-      END IF
+         &'KURDAT = ', kurdat,&
+         &'ISRC = ', isrc,&
+         &'IREC = ', irec
+      end if
 
 !        Rotate X, Y receptors.  Z receptor not rotated.
-      XR_ROT = XRCP_ROT(IREC)
-      YR_ROT = YRCP_ROT(IREC)
-      ZRECEP = AZFLAG(IREC)
+      xr_rot = xrcp_rot(irec)
+      yr_rot = yrcp_rot(irec)
+      zrecep = azflag(irec)
 
 ! begin - Add terrain treatment - Wood 7/5/2022
-      ZFLAG = AZFLAG(IREC)
-      ZELEV = AZELEV(IREC)
-      ZHILL = AZHILL(IREC)
+      zflag = azflag(irec)
+      zelev = azelev(irec)
+      zhill = azhill(irec)
 ! end - Add terrain treatment - Wood 7/5/2022
 !        Calculate the contribution to concentration at a
 !        receptor due to a line source using Romberg integration             --- CALL NUMERICAL_LINE_SOURCE
 
-      CALL NUMERICAL_LINE_SOURCE(CONCD, ERROR)
+      call numerical_line_source(concd, error)
 
 !        Convert Qemis from MOVES units (g/hr/link) to RLINE units (g/m/s)
 !        EMIFAC(1) is for concentration
 !        rline_emisfact_d42_Wood, using local QEMIS
-      CONCENTRATION = CONCD * EMIFAC(1) * QEMIS * RLEMISCONV(ISRC)
-      HRVAL(:) = CONCENTRATION
+      concentration = concd * emifac(1) * qemis * rlemisconv(isrc)
+      hrval(:) = concentration
 
 !        For the initial integration of R-LINE v1.2 into AERMOD,
 !        only including ARM2 chemistry options.  OLM, PVMRM and GRSM not included.
-      IF (ARM2) THEN
+      if (arm2) then
 !           Store conc by source and receptor for ARM2 options
-         DO ITYP = 1, NUMTYP
-            CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-         END DO
+         do ityp = 1, numtyp
+            chi(irec,isrc,ityp) = hrval(ityp)
+         end do
 
 !           Initialize __VAL arrays (1:NUMTYP)
-         HRVAL   = 0.0D0
+         hrval   = 0.0d0
 
-      END IF
+      end if
 
 !        Sum HRVAL to AVEVAL and ANNVAL Arrays                               --- CALL SUMVAL
-      IF (EVONLY) THEN
-         CALL EV_SUMVAL
-      ELSE
-         DO IGRP = 1, NUMGRP
-            CALL SUMVAL
-         END DO
-      END IF
+      if (evonly) then
+         call ev_sumval
+      else
+         do igrp = 1, numgrp
+            call sumval
+         end do
+      end if
 
 !        Initialize __VAL arrays (1:NUMTYP)
-      HRVAL(:) = 0.0D0
+      hrval(:) = 0.0d0
 
 !        Reset concentration value
 !MGS      CONCENTRATION = 0.0D0 !D178_RLINE_RecpOrder_WSP: Moved to top of REC loop
 
-   END DO RECEPTOR_LOOP
+   end do receptor_loop
 
 !     Reset SFCZ0 to the saved SFCZ0
 !     Reset ZI to ZI_SAV; D178 switch ZI_SAV to ZI_ORIG
-   SFCZ0  = SFCZ0_sav
-   ZI     = ZI_ORIG ! D096; D178 switch ZI_SAV to ZI_ORIG
+   sfcz0  = SFCZ0_sav
+   zi     = zi_orig ! D096; D178 switch ZI_SAV to ZI_ORIG
 
-END SUBROUTINE RLCALC
+end subroutine rlcalc
 
-SUBROUTINE BARRIER_DISPLACEMENT
+subroutine barrier_displacement
 !***********************************************************************
 !       BARRIER_DISPLACEMENT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -339,20 +339,20 @@ SUBROUTINE BARRIER_DISPLACEMENT
 
 !     Variable Declarations:
 !CRT 3/24/2021, D058 2 Barriers - add variables for error handling
-   USE MAIN1, ONLY: ISRC, SRCID, PATH, SFCZ0
-   USE RLINE_DATA, ONLY: RLSOURCE, ZSBEGIN, ZSEND,&
-   &THETA_LINE, SM_NUM, NBARR, BDW_FLAG,&
-   &DWU, DW_PERU, HBU, DWD, DW_PERD, HBD,&
-   &XSHIFT, SHIFT_FLAG, ALPHA_U, ALPHA_D, YSHIFT
+   use main1, only: isrc, srcid, path, sfcz0
+   use rline_data, only: rlsource, zsbegin, zsend,&
+   &theta_line, sm_num, nbarr, bdw_flag,&
+   &dwu, dw_peru, hbu, dwd, dw_perd, hbd,&
+   &xshift, shift_flag, alpha_u, alpha_d, yshift
 
-   IMPLICIT NONE
+   implicit none
 
 !     Local Variables:
-   DOUBLE PRECISION      :: HB(2), DW(2), DW_PER(2)
+   double precision      :: hb(2), dw(2), dw_per(2)
 !     JAT D065 8/9/21 HBMAX SET BUT NOT USED
 !      DOUBLE PRECISION      :: RECIRC_LENGTH, HBMAX, Z0
-   DOUBLE PRECISION      :: RECIRC_LENGTH, Z0
-   INTEGER               :: I
+   double precision      :: recirc_length, z0
+   integer               :: i
 !     HB            = height of barrier; for up to 2 barriers
 !     DW            = along wind distance between source and barrier; for up to 2 barriers
 !     DW_PER        = perpendicular distance between source and barrier; for up to 2 barriers
@@ -362,171 +362,171 @@ SUBROUTINE BARRIER_DISPLACEMENT
 !     I             = index to indicate if barrier 1 or barrier 2
 
 !     Initialize Variables:
-   I        = 2     ! assume barrier 2 is present, correct if necessary
-   HBD      = 0.0D0 ! height of downwind barrier
-   DW_PERD  = 0.0D0 ! perpendicular distance between source and downwind barrier
-   DWD      = 0.0D0 ! along wind distance between source and downwind barrier
+   i        = 2     ! assume barrier 2 is present, correct if necessary
+   hbd      = 0.0d0 ! height of downwind barrier
+   dw_perd  = 0.0d0 ! perpendicular distance between source and downwind barrier
+   dwd      = 0.0d0 ! along wind distance between source and downwind barrier
 
-   HBU      = 0.0D0 ! height of upwind barrier
-   DW_PERU  = 0.0D0 ! perpendicular distance between source and upwind barrier
-   DWU      = 0.0D0 ! along wind distance between source and upwind barrier
+   hbu      = 0.0d0 ! height of upwind barrier
+   dw_peru  = 0.0d0 ! perpendicular distance between source and upwind barrier
+   dwu      = 0.0d0 ! along wind distance between source and upwind barrier
 
-   NBARR    = 0     ! number of barriers present
+   nbarr    = 0     ! number of barriers present
 
-   SHIFT_FLAG    = .FALSE.
-   XSHIFT        = 0.0D0
+   shift_flag    = .false.
+   xshift        = 0.0d0
 !CRT/ORD  5/17/2022 variables added to initialization
-   YSHIFT        = 0.0D0
-   RECIRC_LENGTH = 0.0D0
+   yshift        = 0.0d0
+   recirc_length = 0.0d0
 
-   ALPHA_U = 1.0D0
-   ALPHA_D = 1.0D0
-   Z0      = SFCZ0  ! initialize local zrough for UH calculations
+   alpha_u = 1.0d0
+   alpha_d = 1.0d0
+   z0      = sfcz0  ! initialize local zrough for UH calculations
 !     JAT D065 8/9/21 HBMAX SET BUT NOT USED
 !      HBMAX   = 0.0D0  ! needed for 2 barrier case
 
 !     Check for existence of barriers in user input
-   IF((RLSOURCE(ISRC)%HTWALL  > 0.0D0) .or.&
-   &(RLSOURCE(ISRC)%HTWALL2 > 0.0D0)) THEN
+   if((rlsource(isrc)%htwall  > 0.0d0) .or.&
+   &(rlsource(isrc)%htwall2 > 0.0d0)) then
 
 !     Calculate barriers distances and source height
-      ZSBEGIN     = 0.5D0 * (ZSBEGIN + ZSEND)
-      ZSEND       = ZSBEGIN
+      zsbegin     = 0.5d0 * (zsbegin + zsend)
+      zsend       = zsbegin
 
-      HB(1)       = RLSOURCE(ISRC)%HTWALL
-      DW_PER(1)   = DABS(RLSOURCE(ISRC)%DCLWALL -&
-      &RLSOURCE(ISRC)%DCL)
-      DW(1)       = DW_PER(1) / (DABS(DSIN(THETA_LINE)) + SM_NUM)     ! distance between source and barrier along wind direction
+      hb(1)       = rlsource(isrc)%htwall
+      dw_per(1)   = dabs(rlsource(isrc)%dclwall -&
+      &rlsource(isrc)%dcl)
+      dw(1)       = dw_per(1) / (dabs(dsin(theta_line)) + sm_num)     ! distance between source and barrier along wind direction
 
-      HB(2)       = RLSOURCE(ISRC)%HTWALL2
-      DW_PER(2)   = DABS(RLSOURCE(ISRC)%DCLWALL2 -&
-      &RLSOURCE(ISRC)%DCL)
-      DW(2)       = DW_PER(2) / (DABS(DSIN(THETA_LINE)) + SM_NUM)
+      hb(2)       = rlsource(isrc)%htwall2
+      dw_per(2)   = dabs(rlsource(isrc)%dclwall2 -&
+      &rlsource(isrc)%dcl)
+      dw(2)       = dw_per(2) / (dabs(dsin(theta_line)) + sm_num)
 
 !     Determine number of barriers (0, 1, or 2)
-      IF ((HB(1) > 0.0D0) .and. (HB(2) > 0.0D0)) THEN           ! TWO BARRIERS
-         NBARR = 2
-      ELSE IF ((HB(1) == 0.0D0) .and. (HB(2) == 0.0D0)) THEN    ! NO BARRIERS
-         NBARR = 0
-      ELSE IF ((HB(1) > 0.0D0) .or. (HB(2) == 0.0D0)) THEN      ! ONE BARRIER
-         NBARR = 1
-      ELSE
-         NBARR = -1
-      END IF
+      if ((hb(1) > 0.0d0) .and. (hb(2) > 0.0d0)) then           ! TWO BARRIERS
+         nbarr = 2
+      else if ((hb(1) == 0.0d0) .and. (hb(2) == 0.0d0)) then    ! NO BARRIERS
+         nbarr = 0
+      else if ((hb(1) > 0.0d0) .or. (hb(2) == 0.0d0)) then      ! ONE BARRIER
+         nbarr = 1
+      else
+         nbarr = -1
+      end if
 
 !     Assigning barriers 1 or 2 to upwind or downwind; setting barrier displacement variables for each case
-      SELECT CASE(NBARR)
-       CASE(0) ! NO BARRIERS
-         DW_PERU   = 0.0D0
-         DWU       = 0.0D0
-         DW_PERD   = 0.0D0
-         DWD       = 0.0D0
+      select case(nbarr)
+       case(0) ! NO BARRIERS
+         dw_peru   = 0.0d0
+         dwu       = 0.0d0
+         dw_perd   = 0.0d0
+         dwd       = 0.0d0
 
-       CASE(1) ! ONE BARRIER
-         IF (HB(1) > 0.0D0) I = 1
-         IF(BDW_FLAG(ISRC,I) == 1) THEN                            ! located on downwind side
-            HBD     = HB(I)
-            DWD     = DW(I)
-            DW_PERD = DW_PER(I)
-            HBU     = 0.0D0
-            DWU     = 0.0D0
-            DW_PERU = 0.0D0
-            Z0      = MAX(HBD / 9.0D0, SFCZ0)                         ! adjusting surface reference for presence of barrier
-            ALPHA_D = MAX(1.0D0, EXP(0.14D0 * LOG(Z0 / SFCZ0)))       ! Venkatram & Schulte (2018) alpha; Note: exp(n*log(x)) = x**n
-         ELSE                                                        ! located on upwind side
-            HBD     = 0.0D0
-            DWD     = 0.0D0
-            DW_PERD = 0.0D0
-            HBU     = HB(I)
-            DWU     = DW(I)
-            DW_PERU = DW_PER(I)
-            Z0      = MAX(HBU / 9.0D0, SFCZ0)                         ! adjusting surface reference for presence of barrier
-            ALPHA_U = MAX(1.0D0, EXP(0.14D0 * LOG(Z0 / SFCZ0)))       ! Venkatram & Schulte (2018) alpha; Note: exp(n*log(x)) = x**n
-            RECIRC_LENGTH = 6.5D0 * HBU                               ! recirculation zone is 6.5h when one barrier present
-         END IF
+       case(1) ! ONE BARRIER
+         if (hb(1) > 0.0d0) i = 1
+         if(bdw_flag(isrc,i) == 1) then                            ! located on downwind side
+            hbd     = hb(i)
+            dwd     = dw(i)
+            dw_perd = dw_per(i)
+            hbu     = 0.0d0
+            dwu     = 0.0d0
+            dw_peru = 0.0d0
+            z0      = max(hbd / 9.0d0, sfcz0)                         ! adjusting surface reference for presence of barrier
+            alpha_d = max(1.0d0, exp(0.14d0 * log(z0 / sfcz0)))       ! Venkatram & Schulte (2018) alpha; Note: exp(n*log(x)) = x**n
+         else                                                        ! located on upwind side
+            hbd     = 0.0d0
+            dwd     = 0.0d0
+            dw_perd = 0.0d0
+            hbu     = hb(i)
+            dwu     = dw(i)
+            dw_peru = dw_per(i)
+            z0      = max(hbu / 9.0d0, sfcz0)                         ! adjusting surface reference for presence of barrier
+            alpha_u = max(1.0d0, exp(0.14d0 * log(z0 / sfcz0)))       ! Venkatram & Schulte (2018) alpha; Note: exp(n*log(x)) = x**n
+            recirc_length = 6.5d0 * hbu                               ! recirculation zone is 6.5h when one barrier present
+         end if
 
-       CASE(2) ! TWO BARRIERS
-         IF(BDW_FLAG(ISRC, 1) == BDW_FLAG(ISRC, 2)) THEN           ! both are on same side of source
-            PRINT *, "WARNING: Both barriers associated with source ",&
-            &SRCID(ISRC)," are on the same side of the source."
-            PRINT *, "Barrier closer to source will be used."
+       case(2) ! TWO BARRIERS
+         if(bdw_flag(isrc, 1) == bdw_flag(isrc, 2)) then           ! both are on same side of source
+            print *, "WARNING: Both barriers associated with source ",&
+            &srcid(isrc)," are on the same side of the source."
+            print *, "Barrier closer to source will be used."
 !CRT 3/24/2021, D058 2 Barriers - write warning to .out/.err file
-            CALL ERRHDL(PATH,'RLINE','W','620',SRCID(ISRC))
-            NBARR     = 1
-            I         = 2                                             ! assume barrier 2 is close; change in next line if not
-            IF(DABS(DW_PER(1)) < DABS(DW_PER(2))) I = 1               ! dw_per(i) is closer to source
+            call errhdl(path,'RLINE','W','620',srcid(isrc))
+            nbarr     = 1
+            i         = 2                                             ! assume barrier 2 is close; change in next line if not
+            if(dabs(dw_per(1)) < dabs(dw_per(2))) i = 1               ! dw_per(i) is closer to source
 
-            IF (BDW_FLAG(ISRC, I) == 1) THEN                        ! barriers are downwind of source but only choosing closest barrier
-               HBD     = HB(I)
-               DWD     = DW(I)
-               DW_PERD = DW_PER(I)
-               HBU     = 0.0D0
-               DWU     = 0.0D0
-               DW_PERU = 0.0D0
-               Z0      = MAX(HBD / 9.0D0, SFCZ0)                       ! adjusting surface reference for presence of barrier
-               ALPHA_D = MAX(1.0D0, EXP(0.14D0 * LOG(Z0 / SFCZ0)))     ! Venkatram & Schulte (2018) alpha
-            ELSE                                                      ! barriers are upwind of the source but only choosing closest barrier
-               HBD     = 0.0D0
-               DWD     = 0.0D0
-               DW_PERD = 0.0D0
-               HBU     = HB(I)
-               DWU     = DW(I)
-               DW_PERU = DW_PER(I)
-               Z0      = MAX(HBU / 9.0D0, SFCZ0)                       ! adjusting surface reference for presence of barrier
-               ALPHA_U = MAX(1.0D0, EXP(0.14D0 * LOG(Z0 / SFCZ0)))     ! Venkatram & Schulte (2018) alpha
-               RECIRC_LENGTH = 6.5D0 * HBU                             ! assuming one upwind barrier so recirculation zone is 6.5H
-            END IF
+            if (bdw_flag(isrc, i) == 1) then                        ! barriers are downwind of source but only choosing closest barrier
+               hbd     = hb(i)
+               dwd     = dw(i)
+               dw_perd = dw_per(i)
+               hbu     = 0.0d0
+               dwu     = 0.0d0
+               dw_peru = 0.0d0
+               z0      = max(hbd / 9.0d0, sfcz0)                       ! adjusting surface reference for presence of barrier
+               alpha_d = max(1.0d0, exp(0.14d0 * log(z0 / sfcz0)))     ! Venkatram & Schulte (2018) alpha
+            else                                                      ! barriers are upwind of the source but only choosing closest barrier
+               hbd     = 0.0d0
+               dwd     = 0.0d0
+               dw_perd = 0.0d0
+               hbu     = hb(i)
+               dwu     = dw(i)
+               dw_peru = dw_per(i)
+               z0      = max(hbu / 9.0d0, sfcz0)                       ! adjusting surface reference for presence of barrier
+               alpha_u = max(1.0d0, exp(0.14d0 * log(z0 / sfcz0)))     ! Venkatram & Schulte (2018) alpha
+               recirc_length = 6.5d0 * hbu                             ! assuming one upwind barrier so recirculation zone is 6.5H
+            end if
 
-         ELSE                                                        ! barriers are on opposite sides of source
-            IF (BDW_FLAG(ISRC,1) == 1) THEN                         ! barrier 1 is downwind, barrier 2 is upwind
-               HBD     = HB(1)
-               DW_PERD = DW_PER(1)
-               DWD     = DW(1)
-               HBU     = HB(2)
-               DW_PERU = DW_PER(2)
-               DWU     = DW(2)
-               RECIRC_LENGTH = 4.0D0 * HBU                             ! recirculation zone is 4H when two barriers present
-            ELSE                                                      ! barrier 2 is downwind, barrier 1 is upwind
-               HBD     = HB(2)
-               DW_PERD = DW_PER(2)
-               DWD     = DW(2)
-               HBU     = HB(1)
-               DW_PERU = DW_PER(1)
-               DWU     = DW(1)
-               RECIRC_LENGTH = 4.0D0 * HBU                             ! recirculation zone is 4H when two barriers present
-            END IF
-            Z0      = MAX(HBU / 9.0D0, SFCZ0)                         ! adjusting surface reference for presence of barrier
-            ALPHA_U = MAX(1.0D0, EXP(0.14D0 * LOG(Z0 / SFCZ0)))       ! Venkatram & Schulte (2018) alpha
-            Z0      = MAX(HBD / 9.0D0, SFCZ0)                         ! adjusting surface reference for presence of barrier
-            ALPHA_D = MAX(1.0D0, EXP(0.14D0 * LOG(Z0 / SFCZ0)))       ! Venkatram & Schulte (2018) alpha
-         END IF
+         else                                                        ! barriers are on opposite sides of source
+            if (bdw_flag(isrc,1) == 1) then                         ! barrier 1 is downwind, barrier 2 is upwind
+               hbd     = hb(1)
+               dw_perd = dw_per(1)
+               dwd     = dw(1)
+               hbu     = hb(2)
+               dw_peru = dw_per(2)
+               dwu     = dw(2)
+               recirc_length = 4.0d0 * hbu                             ! recirculation zone is 4H when two barriers present
+            else                                                      ! barrier 2 is downwind, barrier 1 is upwind
+               hbd     = hb(2)
+               dw_perd = dw_per(2)
+               dwd     = dw(2)
+               hbu     = hb(1)
+               dw_peru = dw_per(1)
+               dwu     = dw(1)
+               recirc_length = 4.0d0 * hbu                             ! recirculation zone is 4H when two barriers present
+            end if
+            z0      = max(hbu / 9.0d0, sfcz0)                         ! adjusting surface reference for presence of barrier
+            alpha_u = max(1.0d0, exp(0.14d0 * log(z0 / sfcz0)))       ! Venkatram & Schulte (2018) alpha
+            z0      = max(hbd / 9.0d0, sfcz0)                         ! adjusting surface reference for presence of barrier
+            alpha_d = max(1.0d0, exp(0.14d0 * log(z0 / sfcz0)))       ! Venkatram & Schulte (2018) alpha
+         end if
 
-       CASE DEFAULT
-         PRINT *, "WARNING: Barriers input problem with source ", ISRC
+       case default
+         print *, "WARNING: Barriers input problem with source ", isrc
 
-      END SELECT
+      end select
 
 !     Set Shift_flag for cases when there is an upwind barrier present
-      IF((HBU > 0.0D0) .and. (DW_PERU < RECIRC_LENGTH)) THEN
-         SHIFT_FLAG = .TRUE.
-         XSHIFT = DW_PERU * DSIN(THETA_LINE)
-         YSHIFT = -1.0D0 * DW_PERU * DCOS(THETA_LINE)
-         DWD    = DWD + XSHIFT                                    ! adjusting distance to downwind barrier due to shifting source to upwind barrier
-      ELSE
-         SHIFT_FLAG  = .FALSE.
-         XSHIFT      = 0.0D0
+      if((hbu > 0.0d0) .and. (dw_peru < recirc_length)) then
+         shift_flag = .true.
+         xshift = dw_peru * dsin(theta_line)
+         yshift = -1.0d0 * dw_peru * dcos(theta_line)
+         dwd    = dwd + xshift                                    ! adjusting distance to downwind barrier due to shifting source to upwind barrier
+      else
+         shift_flag  = .false.
+         xshift      = 0.0d0
 !CRT/ORD  5/17/2022 variables added to initialization
-         YSHIFT      = 0.0D0
-      END IF
+         yshift      = 0.0d0
+      end if
 
-   END IF
+   end if
 
 !      Possible future debugging print statement
 !      PRINT *, "Xshift = ", Xshift, "Shift_flag = ", Shift_flag
 
-END SUBROUTINE BARRIER_DISPLACEMENT
+end subroutine barrier_displacement
 
-SUBROUTINE COMPUTE_MET
+subroutine compute_met
 !***********************************************************************
 !        COMPUTE_MET Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -569,38 +569,38 @@ SUBROUTINE COMPUTE_MET
 
 !     Variable Declarations:
 ! Wood 10/10/22 removed ISRC, JDAY, GRIDSV, GRIDWS FROM MAIN1; NOT USED HERE
-   USE MAIN1, ONLY: USTAR, OBULEN, UREFHT, UREF,&
-   &RLINEDBUNT, RLINEDBG, SFCZ0, SVMIN,&
-   &GRIDSV, RTOF2, WSMIN, GRIDHT, MXGLVL,&
-   &RL_GRIDWS,&     !Added for RL_GRIDWS calculation Wood 7/5/2022
-   &ZI,&   !Added for RL_GRIDWS calculation Wood 7/14
-   &RLINEDBUNT_WS,IYEAR,IMONTH,IDAY,IHOUR  !Wood GRID_WS DBUG FILE 10/11
+   use main1, only: ustar, obulen, urefht, uref,&
+   &rlinedbunt, rlinedbg, sfcz0, svmin,&
+   &gridsv, rtof2, wsmin, gridht, mxglvl,&
+   &rl_gridws,&     !Added for RL_GRIDWS calculation Wood 7/5/2022
+   &zi,&   !Added for RL_GRIDWS calculation Wood 7/14
+   &rlinedbunt_ws,iyear,imonth,iday,ihour  !Wood GRID_WS DBUG FILE 10/11
 
-   USE RLINE_DATA, ONLY: SIGMAV, FAC_DISPHT, DISPHT, RLWSTAR,&
-   &WSPD_ADJ, UH, HBD, HBU, I_ALPHA,&
-   &ALPHA_D, ALPHA_U,&
-   &Z0_A, DH_A, UST_A, LMO_A, UMIN, RLWSTAR,&
-   &RLPROCESSED     !Wood 10/12/22
-   IMPLICIT NONE
+   use rline_data, only: sigmav, fac_dispht, dispht, rlwstar,&
+   &wspd_adj, uh, hbd, hbu, i_alpha,&
+   &alpha_d, alpha_u,&
+   &z0_a, dh_a, ust_a, lmo_a, umin, rlwstar,&
+   &rlprocessed     !Wood 10/12/22
+   implicit none
 
 !     External Functions:
-   DOUBLE PRECISION, EXTERNAL  :: MOST_WIND
+   double precision, external  :: most_wind
 
 !     Local Variables:
 !     DOUBLE PRECISION  :: SIGMAV_CALC, UREFCALC  ! D096
-   DOUBLE PRECISION  :: UREFCALC               ! D096
-   DOUBLE PRECISION  :: WSTAR_LOC
-   DOUBLE PRECISION  :: ALPHAS(3)
-   DOUBLE PRECISION  :: ZIMECH_WS !Added for RL_GRIDWS calculation Wood 7/14
-   INTEGER  :: NDXBL_Ref
-   INTEGER  :: NP !added to loop over grid levels for RL_GRIDWS - Wood 7/5/2022
-   INTEGER  :: WS_I !added to loop over grid levels for RLINE grid ws dbg - Wood 10/10/22
+   double precision  :: urefcalc               ! D096
+   double precision  :: wstar_loc
+   double precision  :: alphas(3)
+   double precision  :: zimech_ws !Added for RL_GRIDWS calculation Wood 7/14
+   integer  :: NDXBL_Ref
+   integer  :: np !added to loop over grid levels for RL_GRIDWS - Wood 7/5/2022
+   integer  :: ws_i !added to loop over grid levels for RLINE grid ws dbg - Wood 10/10/22
 
 !     UREFCALC    = theoretical value of wind speed at z = UREFHT
 !     ALPHAS      = enhancement of ustar (UST) due to barrier presence
 
 !     Variable Initialization:
-   UH        = 0.0D0   ! wind speed at barrier height (H)
+   uh        = 0.0d0   ! wind speed at barrier height (H)
 
 !     Check for WSTAR from metext.f
 !      WSTAR_LOC = MAX(RLWSTAR, 0.0D0)                       ! D096
@@ -612,81 +612,81 @@ SUBROUTINE COMPUTE_MET
 !     SIGMAV      = MAX(SIGMAV_CALC, SVMIN)                 ! D096
 
 !     Obtain Sigma-V value from GRIDSV at the reference height by using GINTRP
-   CALL LOCATE(GRIDHT, 1, MXGLVL, UREFHT, NDXBL_Ref)     ! D096
+   call locate(gridht, 1, mxglvl, urefht, NDXBL_Ref)     ! D096
 
-   CALL GINTRP( GRIDHT(NDXBL_Ref), GRIDSV(NDXBL_Ref),&    ! D096
-   &GRIDHT(NDXBL_Ref+1), GRIDSV(NDXBL_Ref+1),&  ! D096
-   &UREFHT, SIGMAV)                            ! D096
-   SIGMAV      = MAX(SIGMAV, SVMIN)                      ! D096
+   call gintrp( gridht(NDXBL_Ref), gridsv(NDXBL_Ref),&    ! D096
+   &gridht(NDXBL_Ref+1), gridsv(NDXBL_Ref+1),&  ! D096
+   &urefht, sigmav)                            ! D096
+   sigmav      = max(sigmav, svmin)                      ! D096
 
 ! ----Write met variables to RLINE.DBG
-   IF (RLINEDBG) THEN
-      WRITE(RLINEDBUNT,'(A, (A, F5.3),(",", A, F5.3))')&
+   if (rlinedbg) then
+      write(rlinedbunt,'(A, (A, F5.3),(",", A, F5.3))')&
       &'rline.f/COMPUTE_MET: ',&
-      &'USTAR = ', USTAR,&
-      &'SIGMAV = ', SIGMAV
-   END IF
+      &'USTAR = ', ustar,&
+      &'SIGMAV = ', sigmav
+   end if
 
 !     Calculate z0 and dh for three cases - no barrier and two possible barrier heights
-   Z0_A(1)  = SFCZ0
-   Z0_A(2)  = MAX(HBD / 9.0D0, SFCZ0)                                  ! adjusting surface reference for presence of barrier
-   Z0_A(3)  = MAX(HBU / 9.0D0, SFCZ0)                                  ! adjusting surface reference for presence of barrier
-   DH_A(:)  = FAC_DISPHT * Z0_A(:)
-   DISPHT = DH_A(1)
-   ALPHAS(1) = 1.0D0
-   ALPHAS(2) = ALPHA_D
-   ALPHAS(3) = ALPHA_U
-   UST_A(:)    = USTAR * ALPHAS(:)
-   LMO_A(:)    = OBULEN * ALPHAS(:)**3
+   z0_a(1)  = sfcz0
+   z0_a(2)  = max(hbd / 9.0d0, sfcz0)                                  ! adjusting surface reference for presence of barrier
+   z0_a(3)  = max(hbu / 9.0d0, sfcz0)                                  ! adjusting surface reference for presence of barrier
+   dh_a(:)  = fac_dispht * z0_a(:)
+   dispht = dh_a(1)
+   alphas(1) = 1.0d0
+   alphas(2) = alpha_d
+   alphas(3) = alpha_u
+   ust_a(:)    = ustar * alphas(:)
+   lmo_a(:)    = obulen * alphas(:)**3
 !                                                                            --- CALL MOST_WIND
-   CALL CREATE_WIND_TABLE
+   call create_wind_table
 !     From Bentham & Britter (AE, 2003), assuming z0 = H/10, H = roughness element heights
-   I_ALPHA  = 1
-   UMIN     = MAX(4.47*UST_A(I_ALPHA), RTOF2 * SIGMAV)
-   UMIN     = MAX(UMIN, WSMIN)
-   WSPD_ADJ = 1.0D0                      ! D096
-   UREFCALC = MOST_WIND(UREFHT,I_ALPHA)
-   WSPD_ADJ = UREF / UREFCALC
+   i_alpha  = 1
+   umin     = max(4.47*ust_a(i_alpha), rtof2 * sigmav)
+   umin     = max(umin, wsmin)
+   wspd_adj = 1.0d0                      ! D096
+   urefcalc = most_wind(urefht,i_alpha)
+   wspd_adj = uref / urefcalc
 
-   IF (HBD > 0.0D0) THEN
+   if (hbd > 0.0d0) then
 !                                                                            --- CALL MOST_WIND
-      I_ALPHA = 2
+      i_alpha = 2
 !          UH      = MOST_WIND(HBD,I_ALPHA) * WSPD_ADJ ! D096
-      UH      = MOST_WIND(HBD,I_ALPHA) ! D096
-   END IF
+      uh      = most_wind(hbd,i_alpha) ! D096
+   end if
 
 ! begin ---     Create Wind speed array for use in calc2.f/CRITDS - Wood 7/5/2022
 !         Modified to only use I_ALPHA=1 (no barrier), since the barrier open will still require FLAT MODELOPT.
 !         Note, the array still has 2nd dimension with length 3, but they are set equal. - Wood 8/16/2022
 
-   RL_GRIDWS(:,:) = 0.0D0
+   rl_gridws(:,:) = 0.0d0
 !      ZIMECH_WS = MOST_WIND(ZI,1)  * WSPD_ADJ !Compute wind speed at top of boundary layer (ZI) Wood 8/16/2022 D096
-   ZIMECH_WS = MOST_WIND(ZI,1)  ! Compute wind speed at top of boundary layer (ZI) Wood 8/16/2022 D096
+   zimech_ws = most_wind(zi,1)  ! Compute wind speed at top of boundary layer (ZI) Wood 8/16/2022 D096
 
-   DO NP = 1, MXGLVL !Number of Grid levels
-      DO I_ALPHA = 1,1 ! For each Barrier case (none, downwind, upwind) - set to 1, since barriers will not consider terrain
-         RL_GRIDWS(NP,:) =&
+   do np = 1, mxglvl !Number of Grid levels
+      do i_alpha = 1,1 ! For each Barrier case (none, downwind, upwind) - set to 1, since barriers will not consider terrain
+         rl_gridws(np,:) =&
 !     &                    MOST_WIND(GRIDHT(NP),I_ALPHA)  * WSPD_ADJ D096
-         &MOST_WIND(GRIDHT(NP),I_ALPHA) !  D096
+         &most_wind(gridht(np),i_alpha) !  D096
 
-      END DO
-   END DO
+      end do
+   end do
 ! end ---     Create Wind speed array for use in calc2.f/CRITDS - Wood 7/5/2022
 ! --- Write components and values to RLINE_GRIDWS.DBG
 !     Added gridded wind speed debug file call Wood 10/11/22
 !     To keep from being repeated for each source use the RLPROCESSED logical
-   IF (RLINEDBG) THEN
-      IF(.NOT. RLPROCESSED) THEN
-         DO WS_I = 1,MXGLVL
-            WRITE(RLINEDBUNT_WS,'(1X,4(2X,I2),F8.2, 1X, F10.7)')&
-            &IYEAR,IMONTH,IDAY,IHOUR,GRIDHT(WS_I),(RL_GRIDWS(WS_I,1))
-         END DO
-      END IF
-   END IF
+   if (rlinedbg) then
+      if(.not. rlprocessed) then
+         do ws_i = 1,mxglvl
+            write(rlinedbunt_ws,'(1X,4(2X,I2),F8.2, 1X, F10.7)')&
+            &iyear,imonth,iday,ihour,gridht(ws_i),(rl_gridws(ws_i,1))
+         end do
+      end if
+   end if
 
-END SUBROUTINE COMPUTE_MET
+end subroutine compute_met
 
-SUBROUTINE CREATE_EXP_TABLE
+subroutine create_exp_table
 !***********************************************************************
 !        CREATE_EXP_TABLE Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -712,37 +712,37 @@ SUBROUTINE CREATE_EXP_TABLE
 !***********************************************************************
 
 !     Variable Declarations:
-   USE RLINE_DATA, ONLY: XEXP, AEXP, BEXP, DELEXP
-   IMPLICIT NONE
+   use rline_data, only: xexp, aexp, bexp, delexp
+   implicit none
 
 !     Local Variables:
-   INTEGER  :: IND
-   DOUBLE PRECISION, DIMENSION(1000)  :: EXT
+   integer  :: ind
+   double precision, dimension(1000)  :: ext
 !     IND         = local source index
 !     EXT         = exponent
 
 !     Create look-up table
-   DELEXP  = 20.0D0 / 999.0D0
-   XEXP(1) = -20.0D0
-   EXT(1)  = DEXP(XEXP(1))
+   delexp  = 20.0d0 / 999.0d0
+   xexp(1) = -20.0d0
+   ext(1)  = dexp(xexp(1))
 
-   DO IND = 2, 1000
-      XEXP(IND) = XEXP(IND - 1) + DELEXP
-      EXT(IND)  = DEXP(XEXP(IND))
-   END DO
+   do ind = 2, 1000
+      xexp(ind) = xexp(ind - 1) + delexp
+      ext(ind)  = dexp(xexp(ind))
+   end do
 
-   DO IND = 1, 999
-      BEXP(IND) = (EXT(IND + 1) - EXT(IND)) /&
-      &(XEXP(IND + 1) - XEXP(IND))
-      AEXP(IND) = EXT(IND) - BEXP(IND) * XEXP(IND)
-   END DO
+   do ind = 1, 999
+      bexp(ind) = (ext(ind + 1) - ext(ind)) /&
+      &(xexp(ind + 1) - xexp(ind))
+      aexp(ind) = ext(ind) - bexp(ind) * xexp(ind)
+   end do
 
-   BEXP(1000) = BEXP(999)
-   AEXP(1000) = AEXP(999)
+   bexp(1000) = bexp(999)
+   aexp(1000) = aexp(999)
 
-END SUBROUTINE CREATE_EXP_TABLE
+end subroutine create_exp_table
 
-SUBROUTINE CREATE_WIND_TABLE
+subroutine create_wind_table
 !***********************************************************************
 !        CREATE_WIND_TABLE Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -764,19 +764,19 @@ SUBROUTINE CREATE_WIND_TABLE
 !***********************************************************************
 ! Wood 10/10/22 removed ISRC FROM MAIN1; NOT USED HERE
 !      USE MAIN1, ONLY: STABLE, VONKAR, ZI, ISRC, PI
-   USE MAIN1, ONLY: STABLE, VONKAR, ZI, PI
+   use main1, only: stable, vonkar, zi, pi
 ! Wood 10/10/22 removed SIGMAV FROM RLINE_DATA; NOT USED HERE
 !      USE RLINE_DATA, ONLY: SIGMAV, LOGZMIN, LOGZMAX,
-   USE RLINE_DATA, ONLY: LOGZMIN, LOGZMAX,&
-   &ZWIND, AWIND, BWIND, DELZ,&
-   &Z0_A, DH_A, UST_A, LMO_A, NP
+   use rline_data, only: logzmin, logzmax,&
+   &zwind, awind, bwind, delz,&
+   &z0_a, dh_a, ust_a, lmo_a, np
 
-   IMPLICIT NONE
+   implicit none
 
-   DOUBLE PRECISION  :: X1(NP,3), PSI1(NP,3), UTBL(NP,3)
-   DOUBLE PRECISION  :: X2(3), PSI2(3)
-   DOUBLE PRECISION  :: EXPDELZ
-   INTEGER           :: IZ, IA
+   double precision  :: x1(np,3), psi1(np,3), utbl(np,3)
+   double precision  :: x2(3), psi2(3)
+   double precision  :: expdelz
+   integer           :: iz, ia
 
 !     Z0_A        = surface roughness length
 !     DH_A        = displacement height
@@ -793,76 +793,76 @@ SUBROUTINE CREATE_WIND_TABLE
 !     UTBL        = Wind speed table
 
 !     Create heights for wind table - ZWIND
-   DO IA = 1, 3
-      LOGZMAX     = MAX(DLOG(500.0D0),DLOG(ZI))
-      LOGZMIN(IA) = DLOG(Z0_A(IA) + DH_A(IA))
-      DELZ(IA)    = (LOGZMAX - LOGZMIN(IA))/DBLE(NP - 1)
-      EXPDELZ     = DEXP(DELZ(IA))
+   do ia = 1, 3
+      logzmax     = max(dlog(500.0d0),dlog(zi))
+      logzmin(ia) = dlog(z0_a(ia) + dh_a(ia))
+      delz(ia)    = (logzmax - logzmin(ia))/dble(np - 1)
+      expdelz     = dexp(delz(ia))
 
 !     Create heights for wind table - ZWIND
 !     These heights are log-spaced for better resolution near the ground.
-      ZWIND(1,IA) = Z0_A(IA) + DH_A(IA)
-      DO IZ = 2, NP
-         ZWIND(IZ,IA) = ZWIND(IZ - 1,IA) * EXPDELZ
-      END DO
-   END DO
+      zwind(1,ia) = z0_a(ia) + dh_a(ia)
+      do iz = 2, np
+         zwind(iz,ia) = zwind(iz - 1,ia) * expdelz
+      end do
+   end do
 
 !     Create wind speed table - UTBL
-   IF (STABLE) THEN
+   if (stable) then
 !MGS        LMO_A(:)     = ABS(LMO_A(:)) !D178_RLINE_RecpOrder_WSP
-      LMO_A(:)     = DABS(LMO_A(:))
-      DO IA = 1, 3
-         PSI1(:,IA) = -17.0D0 * (1.0D0 - DEXP(-0.29D0 *&
-         &(ZWIND(:,IA) - DH_A(IA)) / LMO_A(IA)))
-         PSI2(IA)   = -17.0D0 * (1.0D0 - DEXP(-0.29D0 *&
-         &Z0_A(IA) / LMO_A(IA)))
-      END DO
+      lmo_a(:)     = dabs(lmo_a(:))
+      do ia = 1, 3
+         psi1(:,ia) = -17.0d0 * (1.0d0 - dexp(-0.29d0 *&
+         &(zwind(:,ia) - dh_a(ia)) / lmo_a(ia)))
+         psi2(ia)   = -17.0d0 * (1.0d0 - dexp(-0.29d0 *&
+         &z0_a(ia) / lmo_a(ia)))
+      end do
 
-   ELSE
+   else
 !MGS        LMO_A(:)   = -1.0D0 * ABS(LMO_A(:)) !D178_RLINE_RecpOrder_WSP
-      LMO_A(:)   = -1.0D0 * DABS(LMO_A(:))
-      DO IA = 1, 3
+      lmo_a(:)   = -1.0d0 * dabs(lmo_a(:))
+      do ia = 1, 3
 !MGS          X1(:,IA) = SQRT(SQRT(1.0D0 - 16.0D0 * !D178_RLINE_RecpOrder_WSP
-         X1(:,IA) = DSQRT(DSQRT(1.0D0 - 16.0D0 *&
-         &(ZWIND(:,IA) - DH_A(IA)) /&
-         &LMO_A(IA)))
+         x1(:,ia) = dsqrt(dsqrt(1.0d0 - 16.0d0 *&
+         &(zwind(:,ia) - dh_a(ia)) /&
+         &lmo_a(ia)))
 !MGS          X2(IA)   = SQRT(SQRT(1.0D0 - 16.0D0 * !D178_RLINE_RecpOrder_WSP
-         X2(IA)   = DSQRT(DSQRT(1.0D0 - 16.0D0 *&
-         &Z0_A(IA) / LMO_A(IA)))
-         PSI1(:,IA) = 2.0D0 * DLOG((1.0D0 + X1(:,IA)) / 2.0D0) +&
-         &DLOG((1.0 + X1(:,IA) * X1(:,IA)) / 2.0D0) -&
-         &2.0D0 * DATAN(X1(:,IA)) + PI / 2.0D0
-         PSI2(IA)   = 2.0D0 * DLOG((1.0D0 + X2(IA)) / 2.0D0) +&
-         &DLOG((1.0 + X2(IA) * X2(IA)) / 2.0D0) -&
-         &2.0D0 * DATAN(X2(IA)) + PI / 2.0D0
-      END DO
+         x2(ia)   = dsqrt(dsqrt(1.0d0 - 16.0d0 *&
+         &z0_a(ia) / lmo_a(ia)))
+         psi1(:,ia) = 2.0d0 * dlog((1.0d0 + x1(:,ia)) / 2.0d0) +&
+         &dlog((1.0 + x1(:,ia) * x1(:,ia)) / 2.0d0) -&
+         &2.0d0 * datan(x1(:,ia)) + pi / 2.0d0
+         psi2(ia)   = 2.0d0 * dlog((1.0d0 + x2(ia)) / 2.0d0) +&
+         &dlog((1.0 + x2(ia) * x2(ia)) / 2.0d0) -&
+         &2.0d0 * datan(x2(ia)) + pi / 2.0d0
+      end do
 
-   END IF
+   end if
 
-   DO IA = 1,3
-      UTBL(:,IA)    = UST_A(IA) *&
-      &(DLOG((ZWIND(:,IA) - DH_A(IA)) / Z0_A(IA)) -&
-      &PSI1(:,IA) + PSI2(IA)) / VONKAR
-   END DO
+   do ia = 1,3
+      utbl(:,ia)    = ust_a(ia) *&
+      &(dlog((zwind(:,ia) - dh_a(ia)) / z0_a(ia)) -&
+      &psi1(:,ia) + psi2(ia)) / vonkar
+   end do
 
 !     Ensure there are no negative values for wind speed due to slight rounding
-   WHERE(UTBL < 0.0D0) UTBL = 0.0D0
+   where(utbl < 0.0d0) utbl = 0.0d0
 
 !     Calculate slope and intercept for each height for use in MOST_WIND function
-   DO IA = 1,3
-      DO IZ = 1,NP-1
-         BWIND(IZ,IA) = (UTBL(IZ+1,IA) - UTBL(IZ,IA)) /&
-         &(ZWIND(IZ+1,IA) - ZWIND(IZ,IA))
-      END DO
-      BWIND(NP,IA) = BWIND(NP-1,IA)
-      AWIND(:,IA)    = UTBL(:,IA) - BWIND(:,IA) * ZWIND(:,IA)
-      AWIND(NP,IA) = AWIND(NP-1,IA)
-   END DO
+   do ia = 1,3
+      do iz = 1,np-1
+         bwind(iz,ia) = (utbl(iz+1,ia) - utbl(iz,ia)) /&
+         &(zwind(iz+1,ia) - zwind(iz,ia))
+      end do
+      bwind(np,ia) = bwind(np-1,ia)
+      awind(:,ia)    = utbl(:,ia) - bwind(:,ia) * zwind(:,ia)
+      awind(np,ia) = awind(np-1,ia)
+   end do
 
-END SUBROUTINE CREATE_WIND_TABLE
+end subroutine create_wind_table
 
 
-DOUBLE PRECISION FUNCTION DEPRESSED_DISPLACEMENT(THETA_LINE,IND)
+double precision function depressed_displacement(theta_line,ind)
 !***********************************************************************
 !        DEPRESSED_DISPLACEMENT Function of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -889,14 +889,14 @@ DOUBLE PRECISION FUNCTION DEPRESSED_DISPLACEMENT(THETA_LINE,IND)
 !***********************************************************************
 
 !     Variable Declarations:
-   USE RLINE_DATA, ONLY: RLSOURCE, THETAW
-   IMPLICIT NONE
+   use rline_data, only: rlsource, thetaw
+   implicit none
 
 !     Local Variables:
-   INTEGER  :: IND
-   DOUBLE PRECISION  :: THETA_LINE
-   DOUBLE PRECISION  :: DEPTH, WTOP, WBOTTOM, DCL
-   DOUBLE PRECISION  :: EFFD, RELD, FRACW, EFFW, THETA_REL, DCRIT, F
+   integer  :: ind
+   double precision  :: theta_line
+   double precision  :: depth, wtop, wbottom, dcl
+   double precision  :: effd, reld, fracw, effw, theta_rel, dcrit, f
 !     IND         = local source index
 !     THETA_LINE  = angle between wind direction and source
 !     DEPTH       = depth of depression
@@ -911,38 +911,38 @@ DOUBLE PRECISION FUNCTION DEPRESSED_DISPLACEMENT(THETA_LINE,IND)
 !     DCRIT       = critical depth
 !     F           = effective wind fraction
 
-   DEPTH     = RLSOURCE(IND)%DEPTH
-   WBOTTOM   = RLSOURCE(IND)%WBOTTOM
-   WTOP      = RLSOURCE(IND)%WTOP
-   DCL       = RLSOURCE(IND)%DCL
+   depth     = rlsource(ind)%depth
+   wbottom   = rlsource(ind)%wbottom
+   wtop      = rlsource(ind)%wtop
+   dcl       = rlsource(ind)%dcl
 
-   THETA_REL = THETA_LINE - THETAW
+   theta_rel = theta_line - thetaw
 
-   EFFD      = (WBOTTOM * DABS(DEPTH) + ((WTOP - WBOTTOM) /&
-   &2D0 * DABS(DEPTH))) / WTOP
-   RELD      = EFFD / WBOTTOM
+   effd      = (wbottom * dabs(depth) + ((wtop - wbottom) /&
+   &2d0 * dabs(depth))) / wtop
+   reld      = effd / wbottom
 
-   IF (RELD >= 0.0483D0) THEN
-      FRACW = 1.0D0
-   ELSE
-      FRACW = -0.0776D0 + DSQRT(1.506D0 - 7.143D0 * RELD)
-   END IF
+   if (reld >= 0.0483d0) then
+      fracw = 1.0d0
+   else
+      fracw = -0.0776d0 + dsqrt(1.506d0 - 7.143d0 * reld)
+   end if
 
-   EFFW    = FRACW**(1.0D0 - (DCOS(DABS(THETA_REL)) *&
-   &DCOS(DABS(THETA_REL)))) * WBOTTOM
-   DCRIT   = 0.2064D0 * WTOP * WBOTTOM / (0.5D0 * (WTOP + WBOTTOM))
-   F       = MIN(1.0D0, WBOTTOM / WTOP *&
-   &(1.0D0 + DABS(DEPTH) / DCRIT))
+   effw    = fracw**(1.0d0 - (dcos(dabs(theta_rel)) *&
+   &dcos(dabs(theta_rel)))) * wbottom
+   dcrit   = 0.2064d0 * wtop * wbottom / (0.5d0 * (wtop + wbottom))
+   f       = min(1.0d0, wbottom / wtop *&
+   &(1.0d0 + dabs(depth) / dcrit))
 
-   DEPRESSED_DISPLACEMENT = ((WTOP * F - EFFW) / 2.0D0)*&
-   &((DSIN(THETA_REL))**2) *&
-   &DSIGN(1.0D0, DSIN(THETA_REL)) -&
-   &(EFFW / WBOTTOM * DCL) *&
-   &DSIGN(1.0D0, DSIN(THETA_LINE))
+   depressed_displacement = ((wtop * f - effw) / 2.0d0)*&
+   &((dsin(theta_rel))**2) *&
+   &dsign(1.0d0, dsin(theta_rel)) -&
+   &(effw / wbottom * dcl) *&
+   &dsign(1.0d0, dsin(theta_line))
 
-END FUNCTION DEPRESSED_DISPLACEMENT
+end function depressed_displacement
 
-SUBROUTINE EFFECTIVE_WIND(XD,HEFF,HSHIFT)
+subroutine effective_wind(xd,heff,hshift)
 !***********************************************************************
 !        EFFECTIVE_WIND Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -979,25 +979,25 @@ SUBROUTINE EFFECTIVE_WIND(XD,HEFF,HSHIFT)
 !***********************************************************************
 
 !     Variable Declarations:
-   USE MAIN1, ONLY: RTOF2, RT2BYPI, RLINEDBG, RLINEDBUNT
+   use main1, only: rtof2, rt2bypi, rlinedbg, rlinedbunt
 ! JAT 06/22/21 DO65 REMOVE DISPHT AS VARIABLE FROM RLINE_DATA; NOT USED HERE
 ! Wood 10/10/22 removed Z0_A, UST_A, LMO_A, DH_A FROM RLINE_DATA; NOT USED HERE
 !      USE RLINE_DATA, ONLY: UEFF, SIGMAV, WSPD_ADJ, DISPHT,
-   USE RLINE_DATA, ONLY: UEFF, SIGMAV, WSPD_ADJ,&
+   use rline_data, only: ueff, sigmav, wspd_adj,&
 !     &    I_ALPHA, Z0_A, DH_A, UST_A, LMO_A,
-   &I_ALPHA,&
-   &PU1, PU2, PU3, PU4, FASTRLINE
+   &i_alpha,&
+   &pu1, pu2, pu3, pu4, fastrline
 
-   IMPLICIT NONE
+   implicit none
 
 !     External Functions:
-   DOUBLE PRECISION, EXTERNAL  :: SIGMAZ, MOST_WIND, EXPX
+   double precision, external  :: sigmaz, most_wind, expx
 
 !     Local Variables:
-   INTEGER  :: ITER
-   DOUBLE PRECISION  :: ERF
-   DOUBLE PRECISION  :: SZ, SZ_NEW, ERR, ZBAR
-   DOUBLE PRECISION, INTENT(IN)  :: XD, HEFF, HSHIFT
+   integer  :: iter
+   double precision  :: erf
+   double precision  :: sz, sz_new, err, zbar
+   double precision, intent(in)  :: xd, heff, hshift
 !     ITER        = iteration
 !     ERF         = error function
 !     SZ          = effective SIGMAZ
@@ -1008,52 +1008,52 @@ SUBROUTINE EFFECTIVE_WIND(XD,HEFF,HSHIFT)
 !     HEFF        = effective source height
 !     HSHIFT      = vertical shift in source height for barriers
 
-   IF(FASTRLINE) THEN
-      IF(XD <= 10) THEN
-         UEFF   = PU1 + PU2 * LOG(ABS(XD))
-      ELSE
-         UEFF   = PU3 + PU4 * LOG(ABS(XD))
-      END IF
-      RETURN
-   END IF
+   if(fastrline) then
+      if(xd <= 10) then
+         ueff   = pu1 + pu2 * log(abs(xd))
+      else
+         ueff   = pu3 + pu4 * log(abs(xd))
+      end if
+      return
+   end if
 
 !     Initialize variables:
-   ZBAR = 0.0D0
-   ERR  = 10.0D0
-   ITER = 1
+   zbar = 0.0d0
+   err  = 10.0d0
+   iter = 1
 
 !                                                                            --- CALL MOST_WIND
 !      UEFF = MOST_WIND(HEFF,I_ALPHA) * WSPD_ADJ ! D096
-   UEFF = MOST_WIND(HEFF,I_ALPHA) ! * WSPD_ADJ D096
+   ueff = most_wind(heff,i_alpha) ! * WSPD_ADJ D096
 !      UEFF = DSQRT(2.0D0 * SIGMAV**2  + UEFF**2)  ! D096
-   SZ   = SIGMAZ(XD)
+   sz   = sigmaz(xd)
 !                                                                            --- CALL EXPX
 !MGS      DO WHILE ((ERR > 1.0E-02) .and. (ITER < 20)) !D178_RLINE_RecpOrder_WSP
-   DO WHILE ((ERR > 1.0D-02) .and. (ITER < 20))
-      ZBAR   = RT2BYPI * SZ * EXPX(-0.5D0 * (HEFF / SZ)**2) +&
-      &HEFF * ERF(HEFF / (RTOF2 * SZ)) + HSHIFT                   ! Venkatram et al. (2013)
+   do while ((err > 1.0d-02) .and. (iter < 20))
+      zbar   = rt2bypi * sz * expx(-0.5d0 * (heff / sz)**2) +&
+      &heff * erf(heff / (rtof2 * sz)) + hshift                   ! Venkatram et al. (2013)
 !                                                                            --- CALL MOST_WIND
 !         UEFF   = MOST_WIND(MAX(ZBAR, HEFF), I_ALPHA) *     ! D096
 !     &            WSPD_ADJ                                  ! D096
-      UEFF   = MOST_WIND(MAX(ZBAR, HEFF), I_ALPHA) ! *  D096
+      ueff   = most_wind(max(zbar, heff), i_alpha) ! *  D096
 !     &            WSPD_ADJ                           !    D096
 !         UEFF   = DSQRT(2.0D0 * SIGMAV**2  + UEFF**2)  ! D096
-      SZ_NEW = SIGMAZ(XD)
-      ERR    = DABS((SZ_NEW - SZ) / SZ)
-      SZ     = SZ_NEW
-      ITER   = ITER + 1
-   END DO
+      sz_new = sigmaz(xd)
+      err    = dabs((sz_new - sz) / sz)
+      sz     = sz_new
+      iter   = iter + 1
+   end do
 ! ----Write components and values to RLINE.DBG
 !     Added debug file call to write out mean plume height Wood 10/10/22
-   IF (RLINEDBG) THEN
-      WRITE(RLINEDBUNT,&
+   if (rlinedbg) then
+      write(rlinedbunt,&
       &'(A, A, F9.3)')&
       &'rline.f/EFFECTIVE_WIND: ',&
-      &'ZBAR = ', ZBAR
-   END IF
-END SUBROUTINE EFFECTIVE_WIND
+      &'ZBAR = ', zbar
+   end if
+end subroutine effective_wind
 
-DOUBLE PRECISION FUNCTION EXPX(XP)
+double precision function expx(xp)
 !***********************************************************************
 !        EXPX Function of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1079,26 +1079,26 @@ DOUBLE PRECISION FUNCTION EXPX(XP)
 !***********************************************************************
 
 !     Variable Declarations:
-   USE RLINE_DATA, ONLY: DELEXP, AEXP, BEXP, XEXP
-   IMPLICIT NONE
+   use rline_data, only: delexp, aexp, bexp, xexp
+   implicit none
 
 !     Local Variables:
-   INTEGER  :: P
-   DOUBLE PRECISION  :: XPD
-   DOUBLE PRECISION, INTENT(IN) :: XP
+   integer  :: p
+   double precision  :: xpd
+   double precision, intent(in) :: xp
 !     P           = exponential table index
 !     XPD         = closest precalculated exponent value
 !     XP          = input exponent value
 
 
-   XPD  = XP
-   XPD  = MAX(XEXP(1), XPD)
-   P    = FLOOR((XPD + 20.0D0) / DELEXP) + 1.0D0
-   EXPX = AEXP(P) + BEXP(P) * XPD
+   xpd  = xp
+   xpd  = max(xexp(1), xpd)
+   p    = floor((xpd + 20.0d0) / delexp) + 1.0d0
+   expx = aexp(p) + bexp(p) * xpd
 
-END FUNCTION EXPX
+end function expx
 
-SUBROUTINE  INTERP_COEFFS
+subroutine  interp_coeffs
 !***********************************************************************
 !        INTERP_COEFFS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1128,86 +1128,86 @@ SUBROUTINE  INTERP_COEFFS
 !***********************************************************************
 
 !     Variable Declarations:
-   USE RLINE_DATA, ONLY: UEFF, ZSBEGIN, ZSEND,&
-   &PSY1, PSY2, PSY3, PSY4,&
-   &PSZ1, PSZ2, PSZ3, PSZ4,&
-   &PU1, PU2, PU3, PU4, ALPHA,&
-   &FASTRLINE, I_ALPHA
-   IMPLICIT NONE
+   use rline_data, only: ueff, zsbegin, zsend,&
+   &psy1, psy2, psy3, psy4,&
+   &psz1, psz2, psz3, psz4,&
+   &pu1, pu2, pu3, pu4, alpha,&
+   &fastrline, i_alpha
+   implicit none
 
 !     External Functions:
-   DOUBLE PRECISION, EXTERNAL :: SIGMAY, SIGMAZ
+   double precision, external :: sigmay, sigmaz
 
 !     Local Variables:
-   DOUBLE PRECISION :: U1, U2, U3
-   DOUBLE PRECISION :: SY1, SY2, SY3, LNSY1, LNSY2, LNSY3
-   DOUBLE PRECISION :: SZ1, SZ2, SZ3, LNSZ1, LNSZ2, LNSZ3
-   DOUBLE PRECISION :: X1, X2, X3, LNX1, LNX2, LNX3
-   DOUBLE PRECISION :: HSHIFT, ZS
+   double precision :: u1, u2, u3
+   double precision :: sy1, sy2, sy3, lnsy1, lnsy2, lnsy3
+   double precision :: sz1, sz2, sz3, lnsz1, lnsz2, lnsz3
+   double precision :: x1, x2, x3, lnx1, lnx2, lnx3
+   double precision :: hshift, zs
 
 !     X1, X2, X3  = Distances at which functions are evaluated
 !     HSHIFT      = Used in barrier algorithm, set to zero for FAST option
 !     Set FASTRLINE to FALSE to calculate interp coeffs using the real functions,
 !     then set to TRUE to use the interpolation functions in the receptor loop.
 
-   FASTRLINE = .FALSE.
-   ALPHA   = 1.0D0
-   I_ALPHA = 1          ! D096
-   HSHIFT = 0.0D0
-   X1     = 1.0D0
-   X2     = 10.0D0
-   X3     = 500.0D0
-   LNX1   = 0.0D0
-   LNX2   = LOG(X2)
-   LNX3   = LOG(X3)
-   ZS     = 0.5D0 * (ZSBEGIN + ZSEND)
+   fastrline = .false.
+   alpha   = 1.0d0
+   i_alpha = 1          ! D096
+   hshift = 0.0d0
+   x1     = 1.0d0
+   x2     = 10.0d0
+   x3     = 500.0d0
+   lnx1   = 0.0d0
+   lnx2   = log(x2)
+   lnx3   = log(x3)
+   zs     = 0.5d0 * (zsbegin + zsend)
 
 !     Location 1 calculations
-   CALL EFFECTIVE_WIND(X1, ZS, HSHIFT)
-   U1      = UEFF
-   SZ1     = SIGMAZ(X1)
-   LNSZ1   = LOG(SZ1)
-   SY1     = SIGMAY(X1)
-   LNSY1   = LOG(SY1)
+   call effective_wind(x1, zs, hshift)
+   u1      = ueff
+   sz1     = sigmaz(x1)
+   lnsz1   = log(sz1)
+   sy1     = sigmay(x1)
+   lnsy1   = log(sy1)
 
 !     Location 2 calculations
-   CALL EFFECTIVE_WIND(X2, ZS, HSHIFT)
-   U2      = UEFF
-   SZ2     = SIGMAZ(X2)
-   LNSZ2   = LOG(SZ2)
-   SY2     = SIGMAY(X2)
-   LNSY2   = LOG(SY2)
+   call effective_wind(x2, zs, hshift)
+   u2      = ueff
+   sz2     = sigmaz(x2)
+   lnsz2   = log(sz2)
+   sy2     = sigmay(x2)
+   lnsy2   = log(sy2)
 
 !     Location 3 calculations
-   CALL EFFECTIVE_WIND(X3, ZS, HSHIFT)
-   U3      = UEFF
-   SZ3     = SIGMAZ(X3)
-   LNSZ3   = LOG(SZ3)
-   SY3     = SIGMAY(X3)
-   LNSY3   = LOG(SY3)
+   call effective_wind(x3, zs, hshift)
+   u3      = ueff
+   sz3     = sigmaz(x3)
+   lnsz3   = log(sz3)
+   sy3     = sigmay(x3)
+   lnsy3   = log(sy3)
 
 !     Calculate interpolation coeffs for Ueff
-   PU2     = (U2 - U1) / (LNX2 - LNX1)
-   PU1     = U2 - PU2 * LNX2
-   PU4     = (U3 - U2) / (LNX3 - LNX2)
-   PU3     = U2 - PU4 * LNX2
+   pu2     = (u2 - u1) / (lnx2 - lnx1)
+   pu1     = u2 - pu2 * lnx2
+   pu4     = (u3 - u2) / (lnx3 - lnx2)
+   pu3     = u2 - pu4 * lnx2
 
 !     Calculate interpolation coeffs for SIGMAY
-   PSY2    = (LNSY2 - LNSY1) / (LNX2 - LNX1)
-   PSY1    = EXP(0.5D0 * (LNSY1 + LNSY2 - PSY2 * (LNX1 + LNX2)))
-   PSY4    = (LNSY3 - LNSY2) / (LNX3 - LNX2)
-   PSY3    = EXP(0.5D0 * (LNSY2 + LNSY3 - PSY4 * (LNX2 + LNX3)))
+   psy2    = (lnsy2 - lnsy1) / (lnx2 - lnx1)
+   psy1    = exp(0.5d0 * (lnsy1 + lnsy2 - psy2 * (lnx1 + lnx2)))
+   psy4    = (lnsy3 - lnsy2) / (lnx3 - lnx2)
+   psy3    = exp(0.5d0 * (lnsy2 + lnsy3 - psy4 * (lnx2 + lnx3)))
 
 !     Calculate interpolation coeffs for SIGMAY
-   PSZ2    = (LNSZ2 - LNSZ1) / (LNX2 - LNX1)
-   PSZ1    = EXP(0.5D0 * (LNSZ1 + LNSZ2 - PSZ2 * (LNX1 + LNX2)))
-   PSZ4    = (LNSZ3 - LNSZ2) / (LNX3 - LNX2)
-   PSZ3    = EXP(0.5D0 * (LNSZ2 + LNSZ3 - PSZ4 * (LNX2 + LNX3)))
+   psz2    = (lnsz2 - lnsz1) / (lnx2 - lnx1)
+   psz1    = exp(0.5d0 * (lnsz1 + lnsz2 - psz2 * (lnx1 + lnx2)))
+   psz4    = (lnsz3 - lnsz2) / (lnx3 - lnx2)
+   psz3    = exp(0.5d0 * (lnsz2 + lnsz3 - psz4 * (lnx2 + lnx3)))
 
-   FASTRLINE = .TRUE.
-END SUBROUTINE INTERP_COEFFS
+   fastrline = .true.
+end subroutine interp_coeffs
 
-DOUBLE PRECISION FUNCTION MEANDER(X, Y, Z, HSHIFT)
+double precision function meander(x, y, z, hshift)
 !***********************************************************************
 !        MEANDER Function of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1242,17 +1242,17 @@ DOUBLE PRECISION FUNCTION MEANDER(X, Y, Z, HSHIFT)
 !***********************************************************************
 
 !     Variable Declarations:
-   USE MAIN1,      ONLY: PI, RT2BYPI
-   USE RLINE_DATA, ONLY: XR_ROT, YR_ROT, XD_MIN, ZRECEP, UEFF,&
-   &XD_MIN, HBD, HBU
-   IMPLICIT NONE
+   use main1,      only: pi, rt2bypi
+   use rline_data, only: xr_rot, yr_rot, xd_min, zrecep, ueff,&
+   &xd_min, hbd, hbu
+   implicit none
 
 !     External functions:
-   DOUBLE PRECISION, EXTERNAL :: SIGMAZ, EXPX
+   double precision, external :: sigmaz, expx
 
 !     Local Variables:
-   DOUBLE PRECISION  :: R, VERT, HORZ, SZ, HEFF
-   DOUBLE PRECISION, INTENT(IN)  :: X, Y, Z, HSHIFT
+   double precision  :: r, vert, horz, sz, heff
+   double precision, intent(in)  :: x, y, z, hshift
 !     R           = radial distance to receptor
 !     VERT        = vertical component of concentration
 !     HORZ        = horizontal component of concentration
@@ -1263,25 +1263,25 @@ DOUBLE PRECISION FUNCTION MEANDER(X, Y, Z, HSHIFT)
 !     Z           = z-coordinate of source location
 !     HSHIFT      = vertical shift in source height for barriers
 
-   R       = DSQRT((XR_ROT - X)**2 + (YR_ROT - Y)**2)                     ! radial distance to the receptor
-   R       = MAX(R, XD_MIN)
-   HEFF    = MAX(Z, 0.75D0 * MAX(HBU, HBD))                               ! if no barrier, heff = Z; if barrier, heff = 0.75*H using largest H
+   r       = dsqrt((xr_rot - x)**2 + (yr_rot - y)**2)                     ! radial distance to the receptor
+   r       = max(r, xd_min)
+   heff    = max(z, 0.75d0 * max(hbu, hbd))                               ! if no barrier, heff = Z; if barrier, heff = 0.75*H using largest H
 
 !     Calculate effective wind speed                                         --- CALL EFFECTIVE_WIND
-   CALL EFFECTIVE_WIND(R,HEFF,HSHIFT)
+   call effective_wind(r,heff,hshift)
 
 !     Account for source height                                              --- CALL EXPX
-   SZ      = SIGMAZ(R)
-   VERT    = RT2BYPI * (EXPX(-0.5D0 * ((HEFF - ZRECEP)&
-   &/ SZ)**2) + EXPX(-0.5D0 *&
-   &((HEFF + ZRECEP) / SZ)**2))/(2.0D0*SZ*UEFF)
+   sz      = sigmaz(r)
+   vert    = rt2bypi * (expx(-0.5d0 * ((heff - zrecep)&
+   &/ sz)**2) + expx(-0.5d0 *&
+   &((heff + zrecep) / sz)**2))/(2.0d0*sz*ueff)
 
-   HORZ    = 1.0D0 / (2.0D0 * PI * R)
-   MEANDER = VERT * HORZ
+   horz    = 1.0d0 / (2.0d0 * pi * r)
+   meander = vert * horz
 
-END FUNCTION MEANDER
+end function meander
 
-DOUBLE PRECISION FUNCTION MOST_WIND(Z, IA)
+double precision function most_wind(z, ia)
 !***********************************************************************
 !        MOST_WIND Function of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1307,31 +1307,31 @@ DOUBLE PRECISION FUNCTION MOST_WIND(Z, IA)
 !     Variable Declarations
 ! Wood 10/10/22 removed LOGZMAX FROM RLINE_DATA; NOT USED HERE
 !      USE RLINE_DATA, ONLY: LOGZMAX, LOGZMIN, DELZ, UMIN,
-   USE RLINE_DATA, ONLY: LOGZMIN, DELZ, UMIN,&
-   &ZWIND, AWIND, BWIND, NP,&
-   &WSPD_ADJ    ! D096
-   IMPLICIT NONE
+   use rline_data, only: logzmin, delz, umin,&
+   &zwind, awind, bwind, np,&
+   &wspd_adj    ! D096
+   implicit none
 
-   INTEGER  :: P, IA
-   DOUBLE PRECISION  :: ZD, UMOST
-   DOUBLE PRECISION, INTENT(IN) :: Z
+   integer  :: p, ia
+   double precision  :: zd, umost
+   double precision, intent(in) :: z
 !     Z          = input height value
 !     P          = velocity table index for closest height
 !     ZD         = closest precalculated height
 
-   ZD        = MAX(ZWIND(1,IA), Z)
-   P         = INT((DLOG(ZD) - LOGZMIN(IA))/DELZ(IA)) + 1
-   P         = MIN(P, NP)
-   UMOST     = AWIND(P,IA) + BWIND(P,IA) * ZD   ! D096
+   zd        = max(zwind(1,ia), z)
+   p         = int((dlog(zd) - logzmin(ia))/delz(ia)) + 1
+   p         = min(p, np)
+   umost     = awind(p,ia) + bwind(p,ia) * zd   ! D096
 !      UMOST     = UMOST * WSPD_ADJ   ! D096
 !      MOST_WIND = MAX(UMOST,UMIN)    ! D096
 
-   UMOST     = MAX(UMOST,UMIN)     ! D096
-   MOST_WIND = MAX(UMOST * WSPD_ADJ,UMIN)    ! D096
+   umost     = max(umost,umin)     ! D096
+   most_wind = max(umost * wspd_adj,umin)    ! D096
 
-END FUNCTION MOST_WIND
+end function most_wind
 
-SUBROUTINE NUMERICAL_LINE_SOURCE(CONC_NUM,ERR)
+subroutine numerical_line_source(conc_num,err)
 !***********************************************************************
 !     NUMERICAL_LINE_SOURCE Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1371,23 +1371,23 @@ SUBROUTINE NUMERICAL_LINE_SOURCE(CONC_NUM,ERR)
 !***********************************************************************
 
 !     Variable Declarations:
-   USE RLINE_DATA, ONLY: XSBEGIN, YSBEGIN, ZSBEGIN, XSEND, YSEND,&
-   &ZSEND, XR_ROT, YR_ROT, SM_NUM, XPER,&
-   &ERROR_LIMIT, XD_MIN, THETA_LINE,&
-   &FRAN_SUM, SIGMAV_SUM, UEFF_SUM,&
-   &VERT_SUM, HORZ_SUM, CONC_P_SUM, CONC_M_SUM,&
-   &POINT_CONC_SUM
+   use rline_data, only: xsbegin, ysbegin, zsbegin, xsend, ysend,&
+   &zsend, xr_rot, yr_rot, sm_num, xper,&
+   &error_limit, xd_min, theta_line,&
+   &fran_sum, sigmav_sum, ueff_sum,&
+   &vert_sum, horz_sum, conc_p_sum, conc_m_sum,&
+   &point_conc_sum
 
-   USE MAIN1, ONLY:  RLINEDBG, RLINEDBUNT
-   IMPLICIT NONE
+   use main1, only:  rlinedbg, rlinedbunt
+   implicit none
 
 !     External Functions:
-   DOUBLE PRECISION, EXTERNAL  :: POINT_CONC
+   double precision, external  :: point_conc
 
 !     Local Variables:
-   INTEGER  :: NO_POINTS, J, IS, MINJ, IT_LIM, TOT_NO_POINTS
-   INTEGER  :: ALLOCATESTATUS, ALLOCERROR
-   INTEGER  :: ST, FI
+   integer  :: no_points, j, is, minj, it_lim, tot_no_points
+   integer  :: allocatestatus, allocerror
+   integer  :: st, fi
 !     NO_POINTS       = number of points added each step
 !     J               = index
 !     IS              = index for integration of point sources
@@ -1398,13 +1398,13 @@ SUBROUTINE NUMERICAL_LINE_SOURCE(CONC_NUM,ERR)
 !     ST              = starting indice
 !     FI              = finishing indice
 
-   DOUBLE PRECISION  :: XDIF, YDIF, ZDIF
-   DOUBLE PRECISION  :: DISP
-   DOUBLE PRECISION  :: HDUM(3), CONCDUM(3)
-   DOUBLE PRECISION  :: CONC_INT
-   DOUBLE PRECISION  :: X, Y, Z, DELT, PHI
-   DOUBLE PRECISION  :: T, TMAX, COST, SINT, SINP, COSP, XREC
-   DOUBLE PRECISION  :: DR
+   double precision  :: xdif, ydif, zdif
+   double precision  :: disp
+   double precision  :: hdum(3), concdum(3)
+   double precision  :: conc_int
+   double precision  :: x, y, z, delt, phi
+   double precision  :: t, tmax, cost, sint, sinp, cosp, xrec
+   double precision  :: dr
 !     XDIF           = x integral limit
 !     YDIF           = y integral limit
 !     ZDIF           = z integral limit
@@ -1426,208 +1426,208 @@ SUBROUTINE NUMERICAL_LINE_SOURCE(CONC_NUM,ERR)
 !     XREC           = x-coordinate of point on source directly upwind of receptor
 !     DR             = distance beetween source and receptor in wind direction
 
-   DOUBLE PRECISION, INTENT(OUT)  :: CONC_NUM
-   DOUBLE PRECISION, INTENT(OUT)  :: ERR
+   double precision, intent(out)  :: conc_num
+   double precision, intent(out)  :: err
 !     CONC_NUM       = numerical routine output concentration
 !     ERR            = integration is set to an arbitrarily large value before it is reduced
 
-   DOUBLE PRECISION, ALLOCATABLE  :: H(:), CONC(:)
+   double precision, allocatable  :: h(:), conc(:)
 !     H              =  step size
 !     CONC           =  successive concentration approximations
 
 !     2K is the order of Romberg integration.  Nmax needs to be greater than K for Romberg integration to be used,
 !     otherwise trapezoidal integration is used
-   INTEGER, PARAMETER  :: K = 3
+   integer, parameter  :: k = 3
 
 !     Computation Parameters
-   DOUBLE PRECISION, PARAMETER :: XINTERP = 0.0D0, A = 1.0d0
+   double precision, parameter :: xinterp = 0.0d0, a = 1.0d0
 
 !     Variable Initializations
-   CONC_NUM = 0.0D0
-   ERR = 2.0D0*ERROR_LIMIT !D178_RLINE_RecpOrder_WSP
+   conc_num = 0.0d0
+   err = 2.0d0*error_limit !D178_RLINE_RecpOrder_WSP
 
-   XDIF  = XSEND - XSBEGIN
-   YDIF  = YSEND - YSBEGIN
-   ZDIF  = ZSEND - ZSBEGIN
+   xdif  = xsend - xsbegin
+   ydif  = ysend - ysbegin
+   zdif  = zsend - zsbegin
 
-   TMAX  = DSQRT(XDIF * XDIF + YDIF * YDIF + ZDIF * ZDIF)
-   PHI   = DASIN(ZDIF / (TMAX + SM_NUM))
-   SINP  = DSIN(PHI)
-   COSP  = DCOS(PHI)
-   COST  = DCOS(THETA_LINE)
-   SINT  = DSIN(THETA_LINE)
+   tmax  = dsqrt(xdif * xdif + ydif * ydif + zdif * zdif)
+   phi   = dasin(zdif / (tmax + sm_num))
+   sinp  = dsin(phi)
+   cosp  = dcos(phi)
+   cost  = dcos(theta_line)
+   sint  = dsin(theta_line)
 
 !     Find x-coordinate of point on source line directly upwind of receptor
-   XREC = (XSEND - (YSEND - YR_ROT) * (XSEND - XSBEGIN) /&
-   &(YSEND - YSBEGIN))
-   DR   = DABS(XR_ROT - XREC)
+   xrec = (xsend - (ysend - yr_rot) * (xsend - xsbegin) /&
+   &(ysend - ysbegin))
+   dr   = dabs(xr_rot - xrec)
 
 !     Prevent user from placing receptor on source
-   DR   = MAX(XD_MIN, DR)
-   XPER = DSIGN(A, XR_ROT - XREC) * DABS(-1.0D0 * YDIF *&
-   &(XR_ROT - XSBEGIN) + XDIF * (YR_ROT - YSBEGIN)) /&
-   &DSQRT(XDIF**2 + YDIF**2)
+   dr   = max(xd_min, dr)
+   xper = dsign(a, xr_rot - xrec) * dabs(-1.0d0 * ydif *&
+   &(xr_rot - xsbegin) + xdif * (yr_rot - ysbegin)) /&
+   &dsqrt(xdif**2 + ydif**2)
 
 !     Convergence Criteria: Minimum Iterations
-   IF ((YR_ROT > YSBEGIN - TMAX / 2.0D0 * DABS(COST)) .and.&
-   &(YR_ROT < YSEND + TMAX / 2.0D0 * DABS(COST))) THEN
-      MINJ = CEILING(DLOG(2.0D0 * TMAX /&
-      &(MAX(XD_MIN, DR * DABS(SINT))) -&
-      &2.0D0) / DLOG(2.0D0)) + 2.0D0
-   ELSE
+   if ((yr_rot > ysbegin - tmax / 2.0d0 * dabs(cost)) .and.&
+   &(yr_rot < ysend + tmax / 2.0d0 * dabs(cost))) then
+      minj = ceiling(dlog(2.0d0 * tmax /&
+      &(max(xd_min, dr * dabs(sint))) -&
+      &2.0d0) / dlog(2.0d0)) + 2.0d0
+   else
 !        Set MINJ = 0 so if receptor is upwind, the conc will converge quickly
-      MINJ = 0
-   END IF
+      minj = 0
+   end if
 
 !     If receptor is upwind of the line
-   IF ((XR_ROT < XSBEGIN) .and. (XR_ROT < XSEND)) MINJ = 0
+   if ((xr_rot < xsbegin) .and. (xr_rot < xsend)) minj = 0
 
-   IT_LIM = MAX(10, 2 * MINJ)
+   it_lim = max(10, 2 * minj)
 
-   ALLOCATE(H(IT_LIM), STAT = ALLOCATESTATUS)
-   ALLOCATE(CONC(IT_LIM), STAT = ALLOCATESTATUS)
+   allocate(h(it_lim), stat = allocatestatus)
+   allocate(conc(it_lim), stat = allocatestatus)
 
 !     Compute concentration at receptor
 !     Initialize concentrations
-   CONC(:) = 0.0D0
-   H(:)    = 0.0D0
+   conc(:) = 0.0d0
+   h(:)    = 0.0d0
 
 !     Initialize variables for DEBUG file
-   TOT_NO_POINTS = 0
-   FRAN_SUM = 0.0D0
-   SIGMAV_SUM = 0.0D0
-   UEFF_SUM = 0.0D0
-   VERT_SUM = 0.0D0
-   HORZ_SUM = 0.0D0
-   CONC_P_SUM = 0.0D0
-   CONC_M_SUM = 0.0D0
-   POINT_CONC_SUM = 0.0D0
+   tot_no_points = 0
+   fran_sum = 0.0d0
+   sigmav_sum = 0.0d0
+   ueff_sum = 0.0d0
+   vert_sum = 0.0d0
+   horz_sum = 0.0d0
+   conc_p_sum = 0.0d0
+   conc_m_sum = 0.0d0
+   point_conc_sum = 0.0d0
 
 !                                                                            --- CALL POINT_CONC
-   DISP    = (POINT_CONC(XSBEGIN, YSBEGIN, ZSBEGIN) +&
-   &POINT_CONC(XSEND, YSEND, ZSEND)) * 0.5D0
+   disp    = (point_conc(xsbegin, ysbegin, zsbegin) +&
+   &point_conc(xsend, ysend, zsend)) * 0.5d0
 
 ! ----Write components and values to RLINE.DBG; note: the "+2" is for the first iteration where both end points are used.
 !     This is only output for iteration 1, J & NO_POINTS not set till loop below.
-   IF (RLINEDBG) THEN
-      NO_POINTS = 2
-      TOT_NO_POINTS = TOT_NO_POINTS + NO_POINTS
-      J = 1
-      WRITE(RLINEDBUNT,&
+   if (rlinedbg) then
+      no_points = 2
+      tot_no_points = tot_no_points + no_points
+      j = 1
+      write(rlinedbunt,&
       &'(A,I4,2(" , ",A,I4)," , ",(A, F5.3),2(" , ", A, F7.3))')&
-      &'rline.f/NUMERICAL_LINE_SOURCE: LAST ITERATION = ', J,&
-      &'NO_POINTS_ADDED = ', NO_POINTS,&
-      &'TOT_NO_POINTS = ', TOT_NO_POINTS,&
-      &'FRAN_AVG = ', FRAN_SUM/TOT_NO_POINTS,&
-      &'SIGMAV_AVG = ', SIGMAV_SUM/TOT_NO_POINTS,&
-      &'UEFF_AVG = ', UEFF_SUM/TOT_NO_POINTS
+      &'rline.f/NUMERICAL_LINE_SOURCE: LAST ITERATION = ', j,&
+      &'NO_POINTS_ADDED = ', no_points,&
+      &'TOT_NO_POINTS = ', tot_no_points,&
+      &'FRAN_AVG = ', fran_sum/tot_no_points,&
+      &'SIGMAV_AVG = ', sigmav_sum/tot_no_points,&
+      &'UEFF_AVG = ', ueff_sum/tot_no_points
 
-      WRITE(RLINEDBUNT,&
+      write(rlinedbunt,&
       &'((A,E9.3),5(" , ", A, E9.3))')&
-      &'                           VERT_AVG = ', VERT_SUM/TOT_NO_POINTS,&
-      &'HORZ_AVG = ', HORZ_SUM/TOT_NO_POINTS,&
-      &'CONC_P_AVG = ', CONC_P_SUM/TOT_NO_POINTS,&
-      &'CONC_M_AVG = ', CONC_M_SUM/TOT_NO_POINTS,&
-      &'POINT_CONC_AVG = ', POINT_CONC_SUM/TOT_NO_POINTS,&
-      &'CONC_NUM = ', DISP
-   END IF
+      &'                           VERT_AVG = ', vert_sum/tot_no_points,&
+      &'HORZ_AVG = ', horz_sum/tot_no_points,&
+      &'CONC_P_AVG = ', conc_p_sum/tot_no_points,&
+      &'CONC_M_AVG = ', conc_m_sum/tot_no_points,&
+      &'POINT_CONC_AVG = ', point_conc_sum/tot_no_points,&
+      &'CONC_NUM = ', disp
+   end if
 
 !     Calculate first approximation of the integration.  Set relative size of
 !     integration interval
-   CONC(1) = DISP * TMAX
-   H(1)    = 1.0D0
+   conc(1) = disp * tmax
+   h(1)    = 1.0d0
 !     Trapezoidal integration
-   DO J = 2, IT_LIM
-      NO_POINTS = 2**(J - 2)
-      DELT      = TMAX / NO_POINTS
-      T         = DELT / 2.0D0
-      DISP      = 0.0D0
-      DO IS = 1, NO_POINTS
-         X      = T * COST * COSP + XSBEGIN
-         Y      = T * SINT * COSP + YSBEGIN
-         Z      = T * SINP + ZSBEGIN
-         DISP   = DISP + POINT_CONC(X, Y, Z)
-         T      = T + DELT
-      END DO
-      CONC(J) = (DISP * DELT + CONC(J - 1)) / 2.0D0
+   do j = 2, it_lim
+      no_points = 2**(j - 2)
+      delt      = tmax / no_points
+      t         = delt / 2.0d0
+      disp      = 0.0d0
+      do is = 1, no_points
+         x      = t * cost * cosp + xsbegin
+         y      = t * sint * cosp + ysbegin
+         z      = t * sinp + zsbegin
+         disp   = disp + point_conc(x, y, z)
+         t      = t + delt
+      end do
+      conc(j) = (disp * delt + conc(j - 1)) / 2.0d0
 !        See page 134 in "Numerical Receipes" for an explanation
-      H(J)    = 0.25D0 * H(J - 1)
+      h(j)    = 0.25d0 * h(j - 1)
 
 
 ! Keep track of total number of points int he integration (for DEBUG file & average calcs in DEBUG file)
-      TOT_NO_POINTS = TOT_NO_POINTS + NO_POINTS
+      tot_no_points = tot_no_points + no_points
 
 !        Romberg integration is invoked if (J >= K)
-      IF (J >= K) THEN
-         ST       = J - K + 1
-         FI       = ST + K - 1
-         HDUM     = H(ST:FI)
-         CONCDUM  = CONC(ST:FI)
+      if (j >= k) then
+         st       = j - k + 1
+         fi       = st + k - 1
+         hdum     = h(st:fi)
+         concdum  = conc(st:fi)
 !           Extrapolate to H=0.0 to compute integral                         --- CALL POLYINTERP
-         CALL POLYINTERP(CONC_INT, ERR, HDUM, CONCDUM, XINTERP, K)
-         CONC_NUM = DABS(CONC_INT)
+         call polyinterp(conc_int, err, hdum, concdum, xinterp, k)
+         conc_num = dabs(conc_int)
 
 !           Check convergence criteria
-         IF ((DABS(ERR) < ERROR_LIMIT) .and. (J > MINJ)) THEN
-            DEALLOCATE(H, CONC, STAT = ALLOCERROR)
+         if ((dabs(err) < error_limit) .and. (j > minj)) then
+            deallocate(h, conc, stat = allocerror)
 ! ----  Write components and values to RLINE.DBG
 !       This is for iterations when J >= K (where K=3 above).
-            IF (RLINEDBG) THEN
-               WRITE(RLINEDBUNT,&
+            if (rlinedbg) then
+               write(rlinedbunt,&
                &'(A,I4,2(" , ",A,I4)," , ",(A, F5.3),2(" , ", A, F7.3))')&
-               &'rline.f/NUMERICAL_LINE_SOURCE: LAST ITERATION = ', J,&
-               &'NO_POINTS_ADDED = ', NO_POINTS,&
-               &'TOT_NO_POINTS = ', TOT_NO_POINTS,&
-               &'FRAN_AVG = ', FRAN_SUM/TOT_NO_POINTS,&
-               &'SIGMAV_AVG = ', SIGMAV_SUM/TOT_NO_POINTS,&
-               &'UEFF_AVG = ', UEFF_SUM/TOT_NO_POINTS
+               &'rline.f/NUMERICAL_LINE_SOURCE: LAST ITERATION = ', j,&
+               &'NO_POINTS_ADDED = ', no_points,&
+               &'TOT_NO_POINTS = ', tot_no_points,&
+               &'FRAN_AVG = ', fran_sum/tot_no_points,&
+               &'SIGMAV_AVG = ', sigmav_sum/tot_no_points,&
+               &'UEFF_AVG = ', ueff_sum/tot_no_points
 
-               WRITE(RLINEDBUNT,'((A,E9.3),5(" , ", A, E9.3))')&
-               &'                           VERT_AVG = ', VERT_SUM/TOT_NO_POINTS,&
-               &'HORZ_AVG = ', HORZ_SUM/TOT_NO_POINTS,&
-               &'CONC_P_AVG = ', CONC_P_SUM/TOT_NO_POINTS,&
-               &'CONC_M_AVG = ', CONC_M_SUM/TOT_NO_POINTS,&
-               &'POINT_CONC_AVG = ', POINT_CONC_SUM/TOT_NO_POINTS,&
-               &'CONC_NUM = ', CONC_NUM
-            END IF
-            RETURN
-         END IF
+               write(rlinedbunt,'((A,E9.3),5(" , ", A, E9.3))')&
+               &'                           VERT_AVG = ', vert_sum/tot_no_points,&
+               &'HORZ_AVG = ', horz_sum/tot_no_points,&
+               &'CONC_P_AVG = ', conc_p_sum/tot_no_points,&
+               &'CONC_M_AVG = ', conc_m_sum/tot_no_points,&
+               &'POINT_CONC_AVG = ', point_conc_sum/tot_no_points,&
+               &'CONC_NUM = ', conc_num
+            end if
+            return
+         end if
 
-      END IF
+      end if
 
-      CONC_NUM = DABS(CONC(J))
+      conc_num = dabs(conc(j))
 
 ! ----Write components and values to RLINE.DBG
 !     This is only output for iteration 2 when J = 2.
-      IF (RLINEDBG) THEN
-         WRITE(RLINEDBUNT,&
+      if (rlinedbg) then
+         write(rlinedbunt,&
          &'(A,I4,2(" , ",A,I4)," , ",(A, F5.3),2(" , ", A, F7.3))')&
-         &'rline.f/NUMERICAL_LINE_SOURCE: LAST ITERATION = ', J,&
-         &'NO_POINTS_ADDED = ', NO_POINTS,&
-         &'TOT_NO_POINTS = ', TOT_NO_POINTS,&
-         &'FRAN_AVG = ', FRAN_SUM/TOT_NO_POINTS,&
-         &'SIGMAV_AVG = ', SIGMAV_SUM/TOT_NO_POINTS,&
-         &'UEFF_AVG = ', UEFF_SUM/TOT_NO_POINTS
+         &'rline.f/NUMERICAL_LINE_SOURCE: LAST ITERATION = ', j,&
+         &'NO_POINTS_ADDED = ', no_points,&
+         &'TOT_NO_POINTS = ', tot_no_points,&
+         &'FRAN_AVG = ', fran_sum/tot_no_points,&
+         &'SIGMAV_AVG = ', sigmav_sum/tot_no_points,&
+         &'UEFF_AVG = ', ueff_sum/tot_no_points
 
-         WRITE(RLINEDBUNT,&
+         write(rlinedbunt,&
          &'((A,E9.3),5(" , ", A, E9.3))')&
-         &'                           VERT_AVG = ', VERT_SUM/TOT_NO_POINTS,&
-         &'HORZ_AVG = ', HORZ_SUM/TOT_NO_POINTS,&
-         &'CONC_P_AVG = ', CONC_P_SUM/TOT_NO_POINTS,&
-         &'CONC_M_AVG = ', CONC_M_SUM/TOT_NO_POINTS,&
-         &'POINT_CONC_AVG = ', POINT_CONC_SUM/TOT_NO_POINTS,&
-         &'CONC_NUM = ', CONC_NUM
-      END IF
+         &'                           VERT_AVG = ', vert_sum/tot_no_points,&
+         &'HORZ_AVG = ', horz_sum/tot_no_points,&
+         &'CONC_P_AVG = ', conc_p_sum/tot_no_points,&
+         &'CONC_M_AVG = ', conc_m_sum/tot_no_points,&
+         &'POINT_CONC_AVG = ', point_conc_sum/tot_no_points,&
+         &'CONC_NUM = ', conc_num
+      end if
 
 
-   END DO
+   end do
 
 
 
-END SUBROUTINE NUMERICAL_LINE_SOURCE
+end subroutine numerical_line_source
 
-SUBROUTINE PLUME_CONC (XD, YD, Z, DWDT, HEFF, HSHIFT,&
-&HBDEFF, HBMAX, CONC_PLUME)
+subroutine plume_conc (xd, yd, z, dwdt, heff, hshift,&
+&hbdeff, hbmax, conc_plume)
 !***********************************************************************
 !     PLUME_CONC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1657,37 +1657,37 @@ SUBROUTINE PLUME_CONC (XD, YD, Z, DWDT, HEFF, HSHIFT,&
 !***********************************************************************
 
 !     Variable Declarations:
-   USE MAIN1,      ONLY: RT2BYPI, SRT2PI,RLINEDBG, RLINEDBUNT,&
-   &FSUBZ, ZI, ZR                      ! D096
+   use main1,      only: rt2bypi, srt2pi,rlinedbg, rlinedbunt,&
+   &fsubz, zi, zr                      ! D096
 ! JAT 06/22/21 D065, REMOVE XPER AS A VARIABLE USED FROM RLINE_DATA, NOT USED
-   USE RLINE_DATA, ONLY: XR_ROT, YR_ROT, ZRECEP, UEFF,&
-   &XSBEGIN, XSEND, XR_ROT, YR_ROT,&
-   &ZRECEP, HBD, DWD, DW_PERD, HBU,&
+   use rline_data, only: xr_rot, yr_rot, zrecep, ueff,&
+   &xsbegin, xsend, xr_rot, yr_rot,&
+   &zrecep, hbd, dwd, dw_perd, hbu,&
 !     &                      SIGMAZ0, SIGMAV, SZB, UEFF, XPER,
-   &SIGMAZ0, SIGMAV, SZB, UEFF,&
-   &NBARR, UH, XSHIFT, SHIFT_FLAG, XD_MIN,&
-   &I_ALPHA, ALPHA, ALPHA_U, ALPHA_D,&
-   &FRAN_SUM, SIGMAV_SUM, UEFF_SUM,&
-   &VERT_SUM, HORZ_SUM, CONC_P_SUM, CONC_M_SUM,&
-   &POINT_CONC_SUM, YSHIFT
-   IMPLICIT NONE
+   &sigmaz0, sigmav, szb, ueff,&
+   &nbarr, uh, xshift, shift_flag, xd_min,&
+   &i_alpha, alpha, alpha_u, alpha_d,&
+   &fran_sum, sigmav_sum, ueff_sum,&
+   &vert_sum, horz_sum, conc_p_sum, conc_m_sum,&
+   &point_conc_sum, yshift
+   implicit none
 
 !     External Functions:
-   DOUBLE PRECISION, EXTERNAL  :: EXPX, SIGMAY, SIGMAZ
+   double precision, external  :: expx, sigmay, sigmaz
 
 !     Local Variables:
-   DOUBLE PRECISION :: XD  !removed INTENT(IN) ... cause it is set below, compiler did not like it
-   DOUBLE PRECISION, INTENT(IN)  :: YD, Z,  DWDT
-   DOUBLE PRECISION, INTENT(IN)  :: HBDEFF, HBMAX !set in POINT_CONC, used here
-   DOUBLE PRECISION, INTENT(INOUT)  :: HEFF !will be input as Z .. might be changed here, used by terrain functions in POINT_CONC
-   DOUBLE PRECISION, INTENT(INOUT)  :: HSHIFT !will be input as 0 .. might be changed here, used by terrain functions in POINT_CONC
-   DOUBLE PRECISION, INTENT(OUT)  :: CONC_PLUME
-   DOUBLE PRECISION  :: SY, SZ, SIGMAZ0_ORIG
-   DOUBLE PRECISION  :: CQ, FQ, UEFF_BU
-   DOUBLE PRECISION  :: F_UEFF, F_UH, HMAX, A
-   DOUBLE PRECISION  :: VERT, HORZ
-   DOUBLE PRECISION  :: ZIEFF !D178, used to not overwrite ZI
-   INTEGER           :: IA_MAX
+   double precision :: xd  !removed INTENT(IN) ... cause it is set below, compiler did not like it
+   double precision, intent(in)  :: yd, z,  dwdt
+   double precision, intent(in)  :: hbdeff, hbmax !set in POINT_CONC, used here
+   double precision, intent(inout)  :: heff !will be input as Z .. might be changed here, used by terrain functions in POINT_CONC
+   double precision, intent(inout)  :: hshift !will be input as 0 .. might be changed here, used by terrain functions in POINT_CONC
+   double precision, intent(out)  :: conc_plume
+   double precision  :: sy, sz, sigmaz0_orig
+   double precision  :: cq, fq, ueff_bu
+   double precision  :: f_ueff, f_uh, hmax, a
+   double precision  :: vert, horz
+   double precision  :: zieff !D178, used to not overwrite ZI
+   integer           :: ia_max
 
 !     Declare flags:
    logical ::  Direct_flag     ! TRUE = direct plume; FALSE = meander only plume
@@ -1717,164 +1717,164 @@ SUBROUTINE PLUME_CONC (XD, YD, Z, DWDT, HEFF, HSHIFT,&
 !     ----------------------------------------------------------------------------------
 
 !     Initialize local variables
-   DIRECT_FLAG   = .FALSE.
-   GAUSSIAN_FLAG = .FALSE.
-   SZB     = 0.0D0
-   SY      = 0.0D0
-   SZ      = 0.0D0
-   VERT    = 0.0D0
-   HORZ    = 0.0D0
-   ALPHA   = 1.0D0
-   I_ALPHA = 1
-   IA_MAX  = 2
-   SIGMAZ0_ORIG = SIGMAZ0  ! store intial sigmaz value from input file
-   F_UEFF  = 1.0D0  ! factor for lowering ueff and then slowly increasing back to original ueff
-   ZIEFF   = 0.0D0  !D178
+   direct_flag   = .false.
+   gaussian_flag = .false.
+   szb     = 0.0d0
+   sy      = 0.0d0
+   sz      = 0.0d0
+   vert    = 0.0d0
+   horz    = 0.0d0
+   alpha   = 1.0d0
+   i_alpha = 1
+   ia_max  = 2
+   sigmaz0_orig = sigmaz0  ! store intial sigmaz value from input file
+   f_ueff  = 1.0d0  ! factor for lowering ueff and then slowly increasing back to original ueff
+   zieff   = 0.0d0  !D178
 
 !     Set flags for direct/meander and gaussian/mixed-wake
-   IF (XD < 0.0001D0) THEN
+   if (xd < 0.0001d0) then
 !       NO DIRECT PLUME
-      DIRECT_FLAG = .FALSE.
-   ELSE
+      direct_flag = .false.
+   else
 !       DIRECT PLUME
-      XD            = MAX(XD, XD_MIN)                                      ! shift in x has already occurred if needed
-      DIRECT_FLAG   = .TRUE.
-      GAUSSIAN_FLAG = .TRUE.
+      xd            = max(xd, xd_min)                                      ! shift in x has already occurred if needed
+      direct_flag   = .true.
+      gaussian_flag = .true.
 
 !       If there is a downwind barrier and receptor is downwind of it then mixed-wake mode
-      IF((HBD > 0.0D0) .and. (XD > DWDT)) THEN
-         GAUSSIAN_FLAG = .FALSE.
-      END IF
+      if((hbd > 0.0d0) .and. (xd > dwdt)) then
+         gaussian_flag = .false.
+      end if
 
-   END IF
+   end if
 
 !     Setting heff, szB, i_alpha, and alpha (and F_UEFF for upwind barriers)
-   IF(DIRECT_FLAG) THEN
-      IF(SHIFT_FLAG) THEN
+   if(direct_flag) then
+      if(shift_flag) then
 !         Corresponding to case numbers 7, 11, 14 (shift cases)
-         HEFF    = MAX(Z, 0.75D0 * HBU)                                     ! source height is adjusted upwards due to the upwind barrier
-         SZB     = 0.0D0
-         I_ALPHA = 3                                                        ! set index for ALPHA_U
-         ALPHA   = ALPHA_U                                                  ! set alpha
+         heff    = max(z, 0.75d0 * hbu)                                     ! source height is adjusted upwards due to the upwind barrier
+         szb     = 0.0d0
+         i_alpha = 3                                                        ! set index for ALPHA_U
+         alpha   = alpha_u                                                  ! set alpha
 !                                                                            --- CALL EXPX
-         F_UEFF  = 1.0D0 - 1.0D0 * EXPX(-1.0D0 * XD / (8.0D0 * HBU))        ! factor for reducing ueff in upwind barrier shift cases
-      ELSE
+         f_ueff  = 1.0d0 - 1.0d0 * expx(-1.0d0 * xd / (8.0d0 * hbu))        ! factor for reducing ueff in upwind barrier shift cases
+      else
 !         Corresponding to case numbers 2, 4, 5, 9, 13, 15 (no shift cases)
-         HEFF    = Z
-         SZB     = 0.0D0
-         I_ALPHA = 1                                                        ! set index for ALPHA = 1.0D0
-         ALPHA   = 1.0D0                                                    ! set alpha
-      END IF
-   ELSE
+         heff    = z
+         szb     = 0.0d0
+         i_alpha = 1                                                        ! set index for ALPHA = 1.0D0
+         alpha   = 1.0d0                                                    ! set alpha
+      end if
+   else
 !       Corresponding to case numbers 1, 3, 6, 8, 10, 12 (meander only cases)
 !       Note that heff is set in MEANDER subroutine
-      IF(NBARR > 0) THEN
-         SZB     = 0.25D0 * HBMAX
-         IF(HBU > HBD) IA_MAX = 3                                        ! If HBU > HBD, use ALPHA_U
-         I_ALPHA = IA_MAX                                                   ! set index for MAX(ALPHA_D, ALPHA_U)
-         ALPHA   = MAX(ALPHA_D, ALPHA_U)                                    ! set alpha
-      ELSE
-         I_ALPHA = 1
-         ALPHA   = 1.0D0
-      END IF
-   END IF
+      if(nbarr > 0) then
+         szb     = 0.25d0 * hbmax
+         if(hbu > hbd) ia_max = 3                                        ! If HBU > HBD, use ALPHA_U
+         i_alpha = ia_max                                                   ! set index for MAX(ALPHA_D, ALPHA_U)
+         alpha   = max(alpha_d, alpha_u)                                    ! set alpha
+      else
+         i_alpha = 1
+         alpha   = 1.0d0
+      end if
+   end if
 
 !     Calculate vertical plume
-   IF((DIRECT_FLAG) .and.&
-   &(GAUSSIAN_FLAG)) THEN
+   if((direct_flag) .and.&
+   &(gaussian_flag)) then
 !       Calculate with gaussian mode equations
 !       Corresponding to case numbers 2, 4, 7, 9, 11, 13 (gaussian cases)
-      HSHIFT = 0.0D0
+      hshift = 0.0d0
 !                                                                            --- CALL EFFECTIVE_WIND
-      CALL EFFECTIVE_WIND(XD, Z, HSHIFT)
-      SZ     = SIGMAZ(XD)
-      SY     = SIGMAY(XD)
-      UEFF_BU = F_UEFF * UEFF                                              ! reduce ueff immediately downwind of the barrier and then slowly increase back to ueff
+      call effective_wind(xd, z, hshift)
+      sz     = sigmaz(xd)
+      sy     = sigmay(xd)
+      ueff_bu = f_ueff * ueff                                              ! reduce ueff immediately downwind of the barrier and then slowly increase back to ueff
 
 !       Calculate vertical plume for gaussian mode                           --- CALL EXPX
 !        VERT   = RT2BYPI * (EXPX(-0.5D0 * ((HEFF - ZRECEP) / SZ)**2)   ! D096
 !     &           + EXPX(-0.5D0 * ((HEFF + ZRECEP) / SZ)**2)) /         ! D096
 !     &           (2.0D0 * SZ * UEFF_BU)                                ! D096
-      ZR = ZRECEP                      ! D096
+      zr = zrecep                      ! D096
 !RLM D178 Creating local ZIEFF to not change ZI global
 !RLM        ZI = MAX(ZI, HEFF + 2.15 * SZ)   ! D096
 !RLM        CALL VRTSBL(SZ, HEFF, ZI)        ! D096
-      ZIEFF = MAX(ZI, HEFF + 2.15 * SZ)   !D178 ZI changes to ZIEFF
-      CALL VRTSBL(SZ, HEFF, ZIEFF)        !D178 ZI changes to ZIEFF
-      VERT = FSUBZ / UEFF_BU           ! D096
+      zieff = max(zi, heff + 2.15 * sz)   !D178 ZI changes to ZIEFF
+      call vrtsbl(sz, heff, zieff)        !D178 ZI changes to ZIEFF
+      vert = fsubz / ueff_bu           ! D096
 !      Calculate horizontal plume                                            --- CALL EXPX
-      HORZ   = 1.0D0 / (SRT2PI * SY) * EXPX(-0.5D0 * (YD / SY)**2)
+      horz   = 1.0d0 / (srt2pi * sy) * expx(-0.5d0 * (yd / sy)**2)
 
-   ELSE IF((DIRECT_FLAG) .and. (.NOT. GAUSSIAN_FLAG)) THEN
+   else if((direct_flag) .and. (.not. gaussian_flag)) then
 !       Corresponding to case numbers 5, 14, 15 (mixed-wake cases)
 !       Calculate with mixed-wake mode equations in 2 steps
 
 !       Step 1: calculate plume spread between source and downwind barrier   --- CALL EFFECTIVE_WIND
-      HSHIFT  = HBD
-      CALL EFFECTIVE_WIND(DWDT, HEFF, HSHIFT)
-      SZB     = SIGMAZ(DWDT) + 0.1D0 * HBD                                 ! assigns vertical spread of plume at dwDt to szB
-      SIGMAZ0 = 0.0D0                                                      ! set to zero to not double count intial sigmaz
+      hshift  = hbd
+      call effective_wind(dwdt, heff, hshift)
+      szb     = sigmaz(dwdt) + 0.1d0 * hbd                                 ! assigns vertical spread of plume at dwDt to szB
+      sigmaz0 = 0.0d0                                                      ! set to zero to not double count intial sigmaz
 
 !       Step 2: calculate plume spread beyond the downwind barrier           --- CALL EFFECTIVE_WIND
-      I_ALPHA = 2                                                          ! set index for ALPHA_D
-      ALPHA   = ALPHA_D                                                    ! set alpha
-      CALL EFFECTIVE_WIND(XD - DWDT, HEFF, HSHIFT)
-      SZ      = SIGMAZ(XD - DWDT)
-      SY      = SIGMAY(XD - DWDT)
-      SIGMAZ0 = SIGMAZ0_ORIG                                               ! reset sigmaz0 for next time thru subroutine
+      i_alpha = 2                                                          ! set index for ALPHA_D
+      alpha   = alpha_d                                                    ! set alpha
+      call effective_wind(xd - dwdt, heff, hshift)
+      sz      = sigmaz(xd - dwdt)
+      sy      = sigmay(xd - dwdt)
+      sigmaz0 = sigmaz0_orig                                               ! reset sigmaz0 for next time thru subroutine
 
 !       Calculate vertical plume for mixed-wake mode                         --- CALL EXPX
-      CQ      = (1.0D0 / (SRT2PI * SZ * UEFF)) * 2.0D0 *&
-      &EXPX(-0.5D0 * (HEFF / SZ)**2)                             ! Venkatram et al. (2021)
+      cq      = (1.0d0 / (srt2pi * sz * ueff)) * 2.0d0 *&
+      &expx(-0.5d0 * (heff / sz)**2)                             ! Venkatram et al. (2021)
 
-      HMAX    = MAX(HBD,12.0D0)                                            ! tallest barrier height affected by downwind barrier effect
-      A       = (1.0D0 - (0.75D0 * HBD)/HMAX)
+      hmax    = max(hbd,12.0d0)                                            ! tallest barrier height affected by downwind barrier effect
+      a       = (1.0d0 - (0.75d0 * hbd)/hmax)
 !                                                                            --- CALL EXPX
-      F_UH    = 1.0D0 - A * EXPX(-(XD - DWDT) / (9.0D0 * HBD))             ! UH factor; 9H is the scaling factor controlling rise back to original ueff
+      f_uh    = 1.0d0 - a * expx(-(xd - dwdt) / (9.0d0 * hbd))             ! UH factor; 9H is the scaling factor controlling rise back to original ueff
 
-      FQ      = 1.0D0 / (1.0D0 + F_UH * 0.5D0 * UH * CQ * HBDEFF)          ! Venkatram et al. (2021); assuming unit emissions
+      fq      = 1.0d0 / (1.0d0 + f_uh * 0.5d0 * uh * cq * hbdeff)          ! Venkatram et al. (2021); assuming unit emissions
 
 !                                                                            --- CALL EXPX
-      IF(ZRECEP > HBDEFF) THEN
+      if(zrecep > hbdeff) then
 !         Note: reflection term is about Z = HBDEFF, so the reflective source is at z = HBDEFF-HEFF
-         VERT  = FQ * (1.0D0 / (SRT2PI * SZ * UEFF)) *&
-         &(EXPX(-0.5D0 * ((ZRECEP - HBDEFF - HEFF) / SZ)**2) +&
-         &EXPX(-0.5D0 * ((ZRECEP - HBDEFF + HEFF) / SZ)**2))         ! Venkatram et al. (2021)
-      ELSE
-         VERT  = FQ * CQ                                                    ! Venkatram et al. (2021)
-      END IF
+         vert  = fq * (1.0d0 / (srt2pi * sz * ueff)) *&
+         &(expx(-0.5d0 * ((zrecep - hbdeff - heff) / sz)**2) +&
+         &expx(-0.5d0 * ((zrecep - hbdeff + heff) / sz)**2))         ! Venkatram et al. (2021)
+      else
+         vert  = fq * cq                                                    ! Venkatram et al. (2021)
+      end if
 !      Calculate horizontal plume                                            --- CALL EXPX
-      HORZ   = 1.0D0 / (SRT2PI * SY) * EXPX(-0.5D0 * (YD / SY)**2)
+      horz   = 1.0d0 / (srt2pi * sy) * expx(-0.5d0 * (yd / sy)**2)
 
-   ELSE
+   else
 !       Corresponding to case numbers 1, 3, 6, 8, 10, 12 (meander only cases)
-      HSHIFT = 0.0D0
+      hshift = 0.0d0
 !        CALL EFFECTIVE_WIND(XD, HEFF, HSHIFT)                               !D160 DKH 3/31/23
-      VERT = 0.0D0                                                         ! no direct plume, so CONC_P should be zero
-      HORZ = 0.0D0
+      vert = 0.0d0                                                         ! no direct plume, so CONC_P should be zero
+      horz = 0.0d0
 
-   END IF
+   end if
 
 !     Calculate total direct plume
-   CONC_PLUME = VERT * HORZ
+   conc_plume = vert * horz
 
 
 !RLM --- FROM POINT_CONC D178
 ! ----Write components and values to RLINE.DBG
-   IF (RLINEDBG) THEN
-      WRITE(RLINEDBUNT,&
+   if (rlinedbg) then
+      write(rlinedbunt,&
       &'(A,(A, E9.3),2(" , ", A, E9.3))')&
       &'rline.f/PLUME_CONC: ',&
-      &'VERT = ', VERT,&
-      &'HORZ = ', HORZ,&
-      &'CONC_PLUME = ', CONC_PLUME
-   END IF
+      &'VERT = ', vert,&
+      &'HORZ = ', horz,&
+      &'CONC_PLUME = ', conc_plume
+   end if
 !RLM ---
 
-END SUBROUTINE PLUME_CONC
+end subroutine plume_conc
 
 
-DOUBLE PRECISION FUNCTION POINT_CONC(X, Y, Z)
+double precision function point_conc(x, y, z)
 !***********************************************************************
 !        POINT_CONC Function of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1929,47 +1929,47 @@ DOUBLE PRECISION FUNCTION POINT_CONC(X, Y, Z)
 ! Wood 10/10/22 Removed CLIFT, CWRAP, IHOUR, L_FLATSRC, FLAT, RT2BYPI, SRT2PI,
 !                       ZHILL FROM MAIN1, NOT USED
 !      USE MAIN1,      ONLY: RT2BYPI, SRT2PI,RLINEDBG, RLINEDBUNT,
-   USE MAIN1,      ONLY: RLINEDBG, RLINEDBUNT,&
+   use main1,      only: rlinedbg, rlinedbunt,&
 !     &                      ZELEV, ZFLAG, ZHILL, ZRT, ZS, STABLE, !WOOD 7/5/2022
-   &ZELEV, ZFLAG, ZRT, ZS, STABLE,& !WOOD 7/5/2022
+   &zelev, zflag, zrt, zs, stable,& !WOOD 7/5/2022
 !     &                       CLIFT, CWRAP, HCRIT, FOPT, IHOUR, ! WOOD 6-28-2022
-   &HCRIT, FOPT,& ! WOOD 6-28-2022
-   &L_FLATSRC,ISRC,&  !D173 WSP - 7/24/2023
+   &hcrit, fopt,& ! WOOD 6-28-2022
+   &l_flatsrc,isrc,&  !D173 WSP - 7/24/2023
 !     &                       L_FLATSRC, FLAT, HSBL, PHEE, SZ, ZI, UNSTAB ! WOOD 6-28-2022
-   &HSBL, PHEE, SZ, ZI, UNSTAB ! WOOD 6-28-2022
+   &hsbl, phee, sz, zi, unstab ! WOOD 6-28-2022
 ! JAT 06/22/21 D065, REMOVE XPER AS A VARIABLE USED FROM RLINE_DATA, NOT USED
 ! Wood 10/10/22 Removed ALPHA, ALPHA_U, ALPHA_D, SHIFT_FLAG, SIGMAZ0, SZB, UH
 !                       XD_MIN,  FROM RLINE_DATA, NOT USED
-   USE RLINE_DATA, ONLY: XR_ROT, YR_ROT, ZRECEP, UEFF,&
-   &XSBEGIN, XSEND, XR_ROT, YR_ROT,&
-   &ZRECEP, HBD, DWD, DW_PERD, HBU,&
+   use rline_data, only: xr_rot, yr_rot, zrecep, ueff,&
+   &xsbegin, xsend, xr_rot, yr_rot,&
+   &zrecep, hbd, dwd, dw_perd, hbu,&
 !     &                      SIGMAZ0, SIGMAV, SZB, UEFF, XPER,
-   &SIGMAV, UEFF,&
+   &sigmav, ueff,&
 !     &                      NBARR, UH, XSHIFT, SHIFT_FLAG, XD_MIN,
-   &NBARR,  XSHIFT,&
+   &nbarr,  xshift,&
 !     &                      I_ALPHA, ALPHA, ALPHA_U, ALPHA_D,
-   &I_ALPHA,&
-   &FRAN_SUM, SIGMAV_SUM, UEFF_SUM,&
-   &VERT_SUM, HORZ_SUM, CONC_P_SUM, CONC_M_SUM,&
-   &POINT_CONC_SUM, YSHIFT
-   IMPLICIT NONE
+   &i_alpha,&
+   &fran_sum, sigmav_sum, ueff_sum,&
+   &vert_sum, horz_sum, conc_p_sum, conc_m_sum,&
+   &point_conc_sum, yshift
+   implicit none
 
 !     External Functions:
-   DOUBLE PRECISION, EXTERNAL  :: MEANDER, EXPX
-   DOUBLE PRECISION, EXTERNAL  :: SIGMAY, SIGMAZ
+   double precision, external  :: meander, expx
+   double precision, external  :: sigmay, sigmaz
 
 !     Local Variables:
 ! Wood 10/10/22 Removed CQ, FQ,F_UEFF, F_UH, HMAX, A, IA_MAX, UEFF_BU NOT USED
-   DOUBLE PRECISION  :: CONC_M, CONC_P, VERT, HORZ
+   double precision  :: conc_m, conc_p, vert, horz
 !     DOUBLE PRECISION  :: SY, SZ, SIGMAZ0_ORIG  ! Wood moved to PLUME_CONC for terrain calculations 7/5/2022
-   DOUBLE PRECISION  :: FRAN
-   DOUBLE PRECISION  :: XD, YD, XMAX, DWDT
-   DOUBLE PRECISION  :: HEFF, HSHIFT, HBMAX, HBDEFF
+   double precision  :: fran
+   double precision  :: xd, yd, xmax, dwdt
+   double precision  :: heff, hshift, hbmax, hbdeff
 !      DOUBLE PRECISION  :: CQ, FQ, UEFF_BU
 !      DOUBLE PRECISION  :: F_UEFF, F_UH, HMAX, A
 !      INTEGER           :: IA_MAX
-   DOUBLE PRECISION, INTENT(IN)  :: X, Y, Z
-   DOUBLE PRECISION  :: CLIFT_M, CLIFT_P, CWRAP_P, CWRAP_M !Wood 6-8-2022 for terrain calculations
+   double precision, intent(in)  :: x, y, z
+   double precision  :: clift_m, clift_p, cwrap_p, cwrap_m !Wood 6-8-2022 for terrain calculations
 
 !     CONC_M      = meander concentration
 !     CONC_P      = direct plume concentration
@@ -2029,46 +2029,46 @@ DOUBLE PRECISION FUNCTION POINT_CONC(X, Y, Z)
 !     Initialize local variables
 !      DIRECT_FLAG   = .FALSE. !moved to PLUME_CONC - Wood 7/5/2022
 !      GAUSSIAN_FLAG = .FALSE. !moved to PLUME_CONC - Wood 7/5/2022
-   CONC_P  = 0.0D0
-   CONC_M  = 0.0D0
-   FRAN    = 0.0D0
+   conc_p  = 0.0d0
+   conc_m  = 0.0d0
+   fran    = 0.0d0
 !      SZB     = 0.0D0 !moved to PLUME_CONC - Wood 7/5/2022
 !      SY      = 0.0D0 !moved to PLUME_CONC - Wood 7/5/2022
 !      SZ      = 0.0D0 !moved to PLUME_CONC - Wood 7/5/2022
-   XMAX    = 0.0D0
+   xmax    = 0.0d0
 !      VERT    = 0.0D0 !moved to PLUME_CONC - Wood 7/5/2022
 !      HORZ    = 0.0D0 !moved to PLUME_CONC - Wood 7/5/2022
-   DWDT    = 0.0D0
+   dwdt    = 0.0d0
 !      ALPHA   = 1.0D0 !moved to PLUME_CONC - Wood 7/5/2022
 !      I_ALPHA = 1 !moved to PLUME_CONC - Wood 7/5/2022
 !      IA_MAX  = 2 !moved to PLUME_CONC - Wood 7/5/2022                                               ! assume HBD > HBU (will correct this below if it's not)
-   HEFF    = Z !initialized here, could be modified in PLUME_CONC - Wood 7/5/2022
-   HBDEFF  = 0.0D0 !set here, used in PLUME_CONC - Wood 7/5/2022
-   HSHIFT  = 0.0D0 !initialized here, could be modified in PLUME_CONC - Wood 7/5/2022
+   heff    = z !initialized here, could be modified in PLUME_CONC - Wood 7/5/2022
+   hbdeff  = 0.0d0 !set here, used in PLUME_CONC - Wood 7/5/2022
+   hshift  = 0.0d0 !initialized here, could be modified in PLUME_CONC - Wood 7/5/2022
 !      SIGMAZ0_ORIG = SIGMAZ0  ! store intial sigmaz value from input file !moved to PLUME_CONC - Wood 7/5/2022
 !      F_UEFF  = 1.0D0     ! factor for lowering ueff and then slowly increasing back to original ueff !moved to PLUME_CONC - Wood 7/5/2022
 
 ! Initialize WRAP and LIFT components - Wood 7/5/2022
-   CWRAP_P = 0.0D0
-   CWRAP_M = 0.0D0
-   CLIFT_P = 0.0D0
-   CLIFT_M = 0.0D0
+   cwrap_p = 0.0d0
+   cwrap_m = 0.0d0
+   clift_p = 0.0d0
+   clift_m = 0.0d0
 
 !     Compute distance from source to barrier, adjusting for upwind barrier when appropriate
-   XD     = XR_ROT - (X - XSHIFT)                             ! shift in x is applied here
-   YD     = YR_ROT - (Y - YSHIFT)                             ! shift in y is applied here
+   xd     = xr_rot - (x - xshift)                             ! shift in x is applied here
+   yd     = yr_rot - (y - yshift)                             ! shift in y is applied here
 
 !     Setting up options for barrier combinations
-   IF(NBARR > 0) THEN
-      HBMAX   = MAX(HBU, HBD)
-      HBDEFF  = HBD * 1.25D0                                   ! effective barrier height in the mixed-wake algorithm
+   if(nbarr > 0) then
+      hbmax   = max(hbu, hbd)
+      hbdeff  = hbd * 1.25d0                                   ! effective barrier height in the mixed-wake algorithm
 
 !       For nearly parallel winds, prevent dwDt from exceeding the distance to the end of the line source
-      XMAX    = MAX(DABS(XR_ROT - (XSBEGIN - XSHIFT)),&
-      &DABS(XR_ROT - (XSEND - XSHIFT)))
-      IF(XMAX < DW_PERD) DWDT = DWD
-      IF(XMAX >= DW_PERD) DWDT = MIN(XMAX, DWD)
-   END IF
+      xmax    = max(dabs(xr_rot - (xsbegin - xshift)),&
+      &dabs(xr_rot - (xsend - xshift)))
+      if(xmax < dw_perd) dwdt = dwd
+      if(xmax >= dw_perd) dwdt = min(xmax, dwd)
+   end if
 
 ! begin - Moved calculation of Vertical and Horizontal plumes to PLUME_CONC  - Wood 7/5/2022
 
@@ -2208,87 +2208,87 @@ DOUBLE PRECISION FUNCTION POINT_CONC(X, Y, Z)
 !     Calculate height of receptor above stack base, ZRT
 !WSP         ZRT = ZELEV - ZS + ZFLAG
 !WSP --- Begin: D173 WSP add 7/24/2023
-   IF (L_FLATSRC(ISRC)) THEN
-      ZRT = ZFLAG
-   ELSE
-      ZRT = ZELEV - ZS + ZFLAG
-   END IF
+   if (l_flatsrc(isrc)) then
+      zrt = zflag
+   else
+      zrt = zelev - zs + zflag
+   end if
 !WSP --- End: D173 WSP add 7/24/2023
 
 ! Calculate FOPT for I_ALPHA= 1 (i.e. no barrier) and HEFF = Z (set above) - Wood 7/5/2022
 ! note: I_ALPHA & HSHIFT are not set YET!
-   I_ALPHA = 1
+   i_alpha = 1
 
 !  Calculate height of the "effective reflecting surface" !MGS - 7/18/2022
-   IF (STABLE .or. (UNSTAB.and.(ZS>=ZI))) THEN
-      SZ = SIGMAZ(XD)
-      CALL REFL_HT (HEFF, XD, 0.0D0, SZ, HSBL)
-   ELSEIF ( UNSTAB ) THEN
-      HSBL = 0.0D0
-   END IF
+   if (stable .or. (unstab.and.(zs>=zi))) then
+      sz = sigmaz(xd)
+      call refl_ht (heff, xd, 0.0d0, sz, hsbl)
+   elseif ( unstab ) then
+      hsbl = 0.0d0
+   end if
 
 !     Determine the CRITical Dividing Streamline---   CALL CRITDS
-   CALL CRITDS (HEFF)
+   call critds (heff)
 
 !     Calculate the fraction of plume below   HCRIT, PHEE                               ---   CALL PFRACT
-   CALL PFRACT (HEFF)
+   call pfract (heff)
 
 !     Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-   CALL FTERM
+   call fterm
 
 
 !---- Calculate the contribution due to horizontal plume, CWRAP
-   IF (FOPT == 0.0D0) THEN
-      CWRAP_P = 0.0D0
-      CWRAP_M = 0.0D0
-   ELSE
-      ZRECEP = ZRT
-      CALL PLUME_CONC(XD, YD, Z, DWDT, HEFF, HSHIFT, HBDEFF, HBMAX,&
-      &CWRAP_P)
-      CWRAP_M = MEANDER(X, Y, Z, HSHIFT)
+   if (fopt == 0.0d0) then
+      cwrap_p = 0.0d0
+      cwrap_m = 0.0d0
+   else
+      zrecep = zrt
+      call plume_conc(xd, yd, z, dwdt, heff, hshift, hbdeff, hbmax,&
+      &cwrap_p)
+      cwrap_m = meander(x, y, z, hshift)
 
-   END IF
+   end if
 
 
 !---- Calculate the contribution due to terrain-following plume, CLIFT
-   IF (ZRT == ZFLAG) THEN
+   if (zrt == zflag) then
 !----    Effective receptor heights are equal, therefore CLIFT = CWRAP
-      CLIFT_P = CWRAP_P
-      CLIFT_M = CWRAP_M
-   ELSE IF (FOPT == 1.0D0) THEN
-      CLIFT_P = 0.0D0
-      CLIFT_M = 0.0D0
-   ELSE
-      ZRECEP = ZFLAG
-      CALL PLUME_CONC(XD, YD, Z, DWDT, HEFF, HSHIFT, HBDEFF, HBMAX,&
-      &CLIFT_P)
-      CLIFT_M = MEANDER(X, Y, Z, HSHIFT)
-   END IF
+      clift_p = cwrap_p
+      clift_m = cwrap_m
+   else if (fopt == 1.0d0) then
+      clift_p = 0.0d0
+      clift_m = 0.0d0
+   else
+      zrecep = zflag
+      call plume_conc(xd, yd, z, dwdt, heff, hshift, hbdeff, hbmax,&
+      &clift_p)
+      clift_m = meander(x, y, z, hshift)
+   end if
 
 ! Re-Calculate FOPT if I_ALPHA changes from 1 in PLUME_CONC (i.e. there is a barrier) - Wood 7/5/2022
-   IF((I_ALPHA /= 1) .or. (HEFF /= Z)) THEN
+   if((i_alpha /= 1) .or. (heff /= z)) then
 
 !     Calculate height of the "effective reflecting surface" !Wood - 7/18/2022
-      IF (STABLE .or. (UNSTAB.and.(ZS>=ZI))) THEN
-         SZ = SIGMAZ(XD)
-         CALL REFL_HT (HEFF, XD, SZ, 0.0D0, HSBL)
-      ELSEIF ( UNSTAB ) THEN
-         HSBL = 0.0D0
-      END IF
+      if (stable .or. (unstab.and.(zs>=zi))) then
+         sz = sigmaz(xd)
+         call refl_ht (heff, xd, sz, 0.0d0, hsbl)
+      elseif ( unstab ) then
+         hsbl = 0.0d0
+      end if
 
 !        Determine the CRITical Dividing Streamline  ---   CALL CRITDS
-      CALL CRITDS (HEFF)
+      call critds (heff)
 
 !        Calculate the fraction of plume below   HCRIT, PHEE   ---   CALL PFRACT
-      CALL PFRACT (HEFF)
+      call pfract (heff)
 
 !        Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-      CALL FTERM
-   END IF
+      call fterm
+   end if
 
 !     Terrain Weighting of CLIFT (Terrain-following) and CWRAP( horizontal plume) for MEANDER and Direct PLUME
-   CONC_P =  FOPT * CWRAP_P + ((1.0D0 - FOPT) * CLIFT_P)
-   CONC_M =  FOPT * CWRAP_M + ((1.0D0 - FOPT) * CLIFT_M)
+   conc_p =  fopt * cwrap_p + ((1.0d0 - fopt) * clift_p)
+   conc_m =  fopt * cwrap_m + ((1.0d0 - fopt) * clift_m)
 
 !     Get fraction of random kinetic energy (from AERMOD routines)           --- CALL MEANDR
 !      CALL MEANDR(UEFF,SIGMAV,FRAN)    ! D096, move MEANDR call after MEANDER call
@@ -2297,48 +2297,48 @@ DOUBLE PRECISION FUNCTION POINT_CONC(X, Y, Z)
 
 !     Calculate meander concentration
 !     Get fraction of random kinetic energy (from AERMOD routines)           --- CALL MEANDR
-   CALL MEANDR(UEFF,SIGMAV,FRAN)    ! D096, move MEANDR call after MEANDER call
+   call meandr(ueff,sigmav,fran)    ! D096, move MEANDR call after MEANDER call
 
 ! end - Terrain adjustments to CONC_P and CONC_M - Wood 7/5/2022
 
 !     Combine direct plume and meander contributions with the terrain included
-   POINT_CONC = CONC_P * (1.0D0 - FRAN) + CONC_M * FRAN
+   point_conc = conc_p * (1.0d0 - fran) + conc_m * fran
 
 ! ----Write components and values to RLINE.DBG
-   IF (RLINEDBG) THEN
-      WRITE(RLINEDBUNT,&
+   if (rlinedbg) then
+      write(rlinedbunt,&
 !RLM     & '(A,(A, F5.3),2(" , ", A, F7.3),5(" , ", A, E9.3))') !D178
       &'(A,(A, F5.3),2(" , ", A, F7.3),3(" , ", A, E9.3))')&
       &'rline.f/POINT_CONC: ',&
-      &'FRAN = ', FRAN,&
-      &'SIGMAV = ', SIGMAV,&
-      &'UEFF = ', UEFF,&
+      &'FRAN = ', fran,&
+      &'SIGMAV = ', sigmav,&
+      &'UEFF = ', ueff,&
 !RLM     &           'VERT = ', VERT, !D178
 !RLM     &           'HORZ = ', HORZ, !D178
-      &'CONC_P = ', CONC_P,&
-      &'CONC_M = ', CONC_M,&
-      &'POINT_CONC = ', POINT_CONC
+      &'CONC_P = ', conc_p,&
+      &'CONC_M = ', conc_m,&
+      &'POINT_CONC = ', point_conc
 !     Added HCRIT, FOPT and PHEE Wood 10/10/22
-      WRITE(RLINEDBUNT,&
+      write(rlinedbunt,&
       &'((A, E9.3), 2(" , ", A, E9.3))')&
-      &'                           HCRIT = ', HCRIT,&
-      &'FOPT = ', FOPT,&
-      &'PHEE = ', PHEE
-   END IF
+      &'                           HCRIT = ', hcrit,&
+      &'FOPT = ', fopt,&
+      &'PHEE = ', phee
+   end if
 
 ! Store/Update cumulative variables for integration, averages output in numerical line source for last iteration
-   FRAN_SUM = FRAN_SUM + FRAN
-   SIGMAV_SUM = SIGMAV_SUM + SIGMAV
-   UEFF_SUM = UEFF_SUM + UEFF
-   VERT_SUM = VERT_SUM + VERT
-   HORZ_SUM = HORZ_SUM + HORZ
-   CONC_P_SUM = CONC_P_SUM + CONC_P
-   CONC_M_SUM = CONC_M_SUM + CONC_M
-   POINT_CONC_SUM = POINT_CONC_SUM + POINT_CONC
+   fran_sum = fran_sum + fran
+   sigmav_sum = sigmav_sum + sigmav
+   ueff_sum = ueff_sum + ueff
+   vert_sum = vert_sum + vert
+   horz_sum = horz_sum + horz
+   conc_p_sum = conc_p_sum + conc_p
+   conc_m_sum = conc_m_sum + conc_m
+   point_conc_sum = point_conc_sum + point_conc
 
-END FUNCTION POINT_CONC
+end function point_conc
 
-SUBROUTINE POLYINTERP(Y,ERR,XA,YA,X,N)
+subroutine polyinterp(y,err,xa,ya,x,n)
 !***********************************************************************
 !        POLYINTERP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2367,33 +2367,33 @@ SUBROUTINE POLYINTERP(Y,ERR,XA,YA,X,N)
 !***********************************************************************
 
 !     Variable Declarations:
-   IMPLICIT NONE
+   implicit none
 
 !     D108 - CRT, 11/16/2021 Moved declaration of subroutine arguments
 !     from below and reordered to put declaration of N before all others
 !     N is used to set length of arrays
-   INTEGER, INTENT(IN)  :: N
+   integer, intent(in)  :: n
 !     N           = length of XA and YA arrays
-   DOUBLE PRECISION, INTENT(IN)   :: X
-   DOUBLE PRECISION, INTENT(IN)   :: XA(N), YA(N)
-   DOUBLE PRECISION, INTENT(OUT)  :: ERR
-   DOUBLE PRECISION, INTENT(OUT)  :: Y
+   double precision, intent(in)   :: x
+   double precision, intent(in)   :: xa(n), ya(n)
+   double precision, intent(out)  :: err
+   double precision, intent(out)  :: y
 !     XA(N)       = table of XA values used in interpolation
 !     YA(N)       = table of YA values used in interpolation
 !     ERR         = error in interpolation
 !     Y           = interpolated value at X
 
 !     Local Variables:
-   INTEGER  :: NS
-   INTEGER  :: I, M
+   integer  :: ns
+   integer  :: i, m
 !     NS          = position of x in array
 !     I           = counting index
 !     M           = counting index
 
-   DOUBLE PRECISION  :: DIF, DIFT
-   DOUBLE PRECISION  :: HO, HP, W, DEN
-   DOUBLE PRECISION  :: DELTAY
-   DOUBLE PRECISION, DIMENSION(N)  :: C, D
+   double precision  :: dif, dift
+   double precision  :: ho, hp, w, den
+   double precision  :: deltay
+   double precision, dimension(n)  :: c, d
 !     DIF         = difference used in calculations
 !     DIFT        = difference used in calculations
 !     HO          = polyinterpolation point
@@ -2405,48 +2405,48 @@ SUBROUTINE POLYINTERP(Y,ERR,XA,YA,X,N)
 
 !     Computation Parameters:
 !MGS      DOUBLE PRECISION  :: EPS = 1.0E-10  !D178_RLINE_RecpOrder_WSP
-   DOUBLE PRECISION  :: EPS = 1.0D-10
+   double precision  :: eps = 1.0d-10
 
 !     Variable Initializations:
-   DELTAY = 0.0D0
+   deltay = 0.0d0
 
 
-   NS  = 1
-   DIF = DABS(X - XA(1))
-   DO I = 1, N
-      DIFT = DABS(X - XA(I))
-      IF (DIFT < DIF) THEN
-         NS  = I
-         DIF = DIFT
-      END IF
-      C(I) = YA(I)
-      D(I) = YA(I)
-   END DO
-   Y  = YA(NS)
-   NS = NS - 1
-   DO M = 1, N - 1
-      DO I = 1, N - M
-         HO   = XA(I) - X
-         HP   = XA(I + M) - X
-         W    = C(I + 1) - D(I)
-         DEN  = HO - HP
-         D(I) = W * HP / DEN
-         C(I) = W * HO / DEN
-      END DO
-      IF (2 * NS < (N - M)) THEN
-         DELTAY = C(NS + 1)
-      ELSE
-         DELTAY = D(NS)
-         NS = NS - 1
-      END IF
-      Y = Y + DELTAY
-   END DO
+   ns  = 1
+   dif = dabs(x - xa(1))
+   do i = 1, n
+      dift = dabs(x - xa(i))
+      if (dift < dif) then
+         ns  = i
+         dif = dift
+      end if
+      c(i) = ya(i)
+      d(i) = ya(i)
+   end do
+   y  = ya(ns)
+   ns = ns - 1
+   do m = 1, n - 1
+      do i = 1, n - m
+         ho   = xa(i) - x
+         hp   = xa(i + m) - x
+         w    = c(i + 1) - d(i)
+         den  = ho - hp
+         d(i) = w * hp / den
+         c(i) = w * ho / den
+      end do
+      if (2 * ns < (n - m)) then
+         deltay = c(ns + 1)
+      else
+         deltay = d(ns)
+         ns = ns - 1
+      end if
+      y = y + deltay
+   end do
 
-   ERR = DABS(DELTAY / (Y + EPS))
+   err = dabs(deltay / (y + eps))
 
-END SUBROUTINE POLYINTERP
+end subroutine polyinterp
 
-SUBROUTINE RLEMCONV
+subroutine rlemconv
 !***********************************************************************
 !        RLEMCONV Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2472,37 +2472,37 @@ SUBROUTINE RLEMCONV
 !***********************************************************************
 
 !     Variable Declarations:
-   USE MAIN1, ONLY: ISRC, NUMSRC, SRCTYP
-   USE RLINE_DATA, ONLY: RLEMISCONV, RLSOURCE, RLMOVESCONV
-   IMPLICIT NONE
+   use main1, only: isrc, numsrc, srctyp
+   use rline_data, only: rlemisconv, rlsource, rlmovesconv
+   implicit none
 
 !     Local Variables:
-   INTEGER  :: INDEX
-   DOUBLE PRECISION  :: LENGTH
+   integer  :: index
+   double precision  :: length
 !     INDEX       = index
 !     LENGTH      = length of RLINE source
 
-   RLEMISCONV(:) = 1.0d0
+   rlemisconv(:) = 1.0d0
 
 !     Perform conversion of MOVES units (g/hr/link) to RLINE units (g/m/s)
 !     only for RLINE sources.
-   IF(RLMOVESCONV) THEN
-      DO INDEX = ISRC, NUMSRC
-         IF (SRCTYP(INDEX) == 'RLINE') THEN
-            LENGTH = DSQRT((RLSOURCE(INDEX)%XSB -&
-            &RLSOURCE(INDEX)%XSE)**2 +&
-            &(RLSOURCE(INDEX)%YSB -&
-            &RLSOURCE(INDEX)%YSE)**2)
-            RLEMISCONV(INDEX) = 1.0d0 / LENGTH / 3600d0
-         END IF
-      END DO
-   END IF
+   if(rlmovesconv) then
+      do index = isrc, numsrc
+         if (srctyp(index) == 'RLINE') then
+            length = dsqrt((rlsource(index)%xsb -&
+            &rlsource(index)%xse)**2 +&
+            &(rlsource(index)%ysb -&
+            &rlsource(index)%yse)**2)
+            rlemisconv(index) = 1.0d0 / length / 3600d0
+         end if
+      end do
+   end if
 
-END SUBROUTINE RLEMCONV
+end subroutine rlemconv
 
 
 
-DOUBLE PRECISION FUNCTION SIGMAY(XD)
+double precision function sigmay(xd)
 
 
 !***********************************************************************
@@ -2531,29 +2531,29 @@ DOUBLE PRECISION FUNCTION SIGMAY(XD)
 !***********************************************************************
 
 !     Variable Declarations:
-   USE MAIN1, ONLY: OBULEN, USTAR, STABLE
-   USE RLINE_DATA, ONLY: SIGMAV, SIGMAY0, SIGZ_Y,&
-   &PSY1, PSY2, PSY3, PSY4, FASTRLINE
-   IMPLICIT NONE
+   use main1, only: obulen, ustar, stable
+   use rline_data, only: sigmav, sigmay0, sigz_y,&
+   &psy1, psy2, psy3, psy4, fastrline
+   implicit none
 
 !     Local Variables:
-   DOUBLE PRECISION  :: SZ
+   double precision  :: sz
 
-   DOUBLE PRECISION, INTENT(IN)  :: XD
+   double precision, intent(in)  :: xd
 !     SZ          = vertical dispersion
 !     XD          = distance between source and receptor in direction parallel to wind
 
-   IF(FASTRLINE) THEN
-      IF(XD <= 10) THEN
-         SIGMAY   = PSY1 * XD**PSY2
-      ELSE
-         SIGMAY   = PSY3 * XD**PSY4
-      END IF
-      RETURN
-   END IF
+   if(fastrline) then
+      if(xd <= 10) then
+         sigmay   = psy1 * xd**psy2
+      else
+         sigmay   = psy3 * xd**psy4
+      end if
+      return
+   end if
 
 !     Set sigmaz to SIGZ from SIGMAZ function before minimum taken & before sz0 included
-   SZ = SIGZ_Y
+   sz = sigz_y
 
 !     Calculate SIGMAY based on stability
 !      IF (STABLE) THEN
@@ -2564,19 +2564,19 @@ DOUBLE PRECISION FUNCTION SIGMAY(XD)
 !     &            DSQRT(1.0D0 + 1.0D0 * SZ / DABS(OBULEN))
 !      END IF
 !     D096 Updated the SigmaY coefficients based on optimization WSP 4/5/23
-   IF (STABLE) THEN
-      SIGMAY = 1.4D0 * SIGMAV / USTAR * SZ *&
-      &(1.0D0 + 1.5D0 * SZ / DABS(OBULEN))
-   ELSE
-      SIGMAY = 1.40 * SIGMAV / USTAR * SZ /&
-      &DSQRT(1.0D0 + 2.5D0 * SZ / DABS(OBULEN))
-   END IF
+   if (stable) then
+      sigmay = 1.4d0 * sigmav / ustar * sz *&
+      &(1.0d0 + 1.5d0 * sz / dabs(obulen))
+   else
+      sigmay = 1.40 * sigmav / ustar * sz /&
+      &dsqrt(1.0d0 + 2.5d0 * sz / dabs(obulen))
+   end if
 
-   SIGMAY = DSQRT(SIGMAY**2 + SIGMAY0**2)
+   sigmay = dsqrt(sigmay**2 + sigmay0**2)
 
-END FUNCTION SIGMAY
+end function sigmay
 
-DOUBLE PRECISION FUNCTION SIGMAZ(XD)
+double precision function sigmaz(xd)
 !***********************************************************************
 !        SIGMAZ Function of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2607,19 +2607,19 @@ DOUBLE PRECISION FUNCTION SIGMAZ(XD)
 !***********************************************************************
 
 !     Variable Declarations:
-   USE MAIN1, ONLY: ZI, ISRC, STABLE,&
-   &RT2BYPI, TWOTHIRDS
-   USE RLINE_DATA, ONLY: RLSOURCE, UEFF, SIGMAZ0, SZB,&
-   &NBARR, SIGZ_Y, PSZ1, PSZ2, PSZ3, PSZ4,&
-   &FASTRLINE, UST_A, LMO_A, I_ALPHA
-   IMPLICIT NONE
+   use main1, only: zi, isrc, stable,&
+   &rt2bypi, twothirds
+   use rline_data, only: rlsource, ueff, sigmaz0, szb,&
+   &nbarr, sigz_y, psz1, psz2, psz3, psz4,&
+   &fastrline, ust_a, lmo_a, i_alpha
+   implicit none
 
 !     Local Variables:
-   DOUBLE PRECISION  :: SIGMAZ_MAX, XBAR, XDABS, URATIO
-   DOUBLE PRECISION  :: SIGZ
-   DOUBLE PRECISION  :: SIGMAZD
-   DOUBLE PRECISION  :: SIGMAZB
-   DOUBLE PRECISION, INTENT(IN)  :: XD
+   double precision  :: sigmaz_max, xbar, xdabs, uratio
+   double precision  :: sigz
+   double precision  :: sigmazd
+   double precision  :: sigmazb
+   double precision, intent(in)  :: xd
 !     SIGMAZ_MAX  = maximum vertical dispersion
 !     XBAR        = absolute value of XD/L
 !     XDABS       = absolute value of XD
@@ -2630,63 +2630,63 @@ DOUBLE PRECISION FUNCTION SIGMAZ(XD)
 !     XD          = distance between source and receptor in direction parallel to wind
 
 !      SIGMAZ_MAX = RT2BYPI * ZI       ! D096
-   IF(FASTRLINE) THEN
-      IF(XD <= 10) THEN
-         SIGZ   = PSZ1 * XD**PSZ2
-      ELSE
-         SIGZ   = PSZ3 * XD**PSZ4
-      END IF
+   if(fastrline) then
+      if(xd <= 10) then
+         sigz   = psz1 * xd**psz2
+      else
+         sigz   = psz3 * xd**psz4
+      end if
 !        SIGMAZ = MIN(SIGZ, SIGMAZ_MAX)   ! D096
-      SIGMAZ = SIGZ                   ! D096
-      RETURN
-   END IF
+      sigmaz = sigz                   ! D096
+      return
+   end if
 
-   XBAR       = DABS(XD / LMO_A(I_ALPHA))
-   XDABS      = DABS(XD)
-   SIGMAZD    = 0.0D0
-   SIGMAZB    = 0.0D0
-   URATIO     = UST_A(I_ALPHA) / UEFF
+   xbar       = dabs(xd / lmo_a(i_alpha))
+   xdabs      = dabs(xd)
+   sigmazd    = 0.0d0
+   sigmazb    = 0.0d0
+   uratio     = ust_a(i_alpha) / ueff
 
 !     Calculate vertical dispersion curve based on stability
-   IF (STABLE) THEN
+   if (stable) then
 !         SIGZ = 0.57D0 * (URATIO * XDABS) /     ! D096
 !     &          (1.0D0 + 3.0D0 * URATIO *       ! D096
 !     &          (EXP(TWOTHIRDS * LOG(XBAR))))   ! D096
 
 !        D096 updated coefficies a, bs, and bu based on optimization 4/5/23 WSP
-      SIGZ = 0.70D0 * (URATIO * XDABS) /&      ! D096
-      &(1.0D0 + 1.5D0 * URATIO *&        ! D096
+      sigz = 0.70d0 * (uratio * xdabs) /&      ! D096
+      &(1.0d0 + 1.5d0 * uratio *&        ! D096
 !MGS     &          (EXP(TWOTHIRDS * LOG(XBAR)))) !D178_RLINE_RecpOrder_WSP
-      &(DEXP(TWOTHIRDS * DLOG(XBAR))))
-   ELSE
+      &(dexp(twothirds * dlog(xbar))))
+   else
 !         SIGZ = 0.57D0 * (URATIO * XDABS) *          ! D096
 !     &          (1.0D0 + 1.5D0 * (URATIO  * XBAR))   ! D096
 
 !        D096 updated coefficies a, bs, and bu based on optimization 4/5/23 WSP
-      SIGZ = 0.70D0 * (URATIO * XDABS) *&    ! D096
-      &(1.0D0 + 1.0D0 * (URATIO  * XBAR))
-   END IF
+      sigz = 0.70d0 * (uratio * xdabs) *&    ! D096
+      &(1.0d0 + 1.0d0 * (uratio  * xbar))
+   end if
 
 !     Adjust for depressed roadway, if used
-   IF (RLSOURCE(ISRC)%DEPTH < 0.0D0) THEN
-      SIGMAZD = -1.0D0 * RLSOURCE(ISRC)%DEPTH / 2.15D0
-   END IF
+   if (rlsource(isrc)%depth < 0.0d0) then
+      sigmazd = -1.0d0 * rlsource(isrc)%depth / 2.15d0
+   end if
 
 !     Adjust for barrier, if barrier is present
-   IF(NBARR > 0) THEN
-      SIGMAZB = SZB
-   END IF
+   if(nbarr > 0) then
+      sigmazb = szb
+   end if
 
-   SIGZ_Y = SIGZ
-   SIGZ   = DSQRT(SIGZ * SIGZ + SIGMAZ0 * SIGMAZ0 +&
-   &SIGMAZD * SIGMAZD + SIGMAZB * SIGMAZB)
+   sigz_y = sigz
+   sigz   = dsqrt(sigz * sigz + sigmaz0 * sigmaz0 +&
+   &sigmazd * sigmazd + sigmazb * sigmazb)
 
 !      SIGMAZ = MIN(SIGZ, SIGMAZ_MAX)   ! D096
-   SIGMAZ = SIGZ   ! D096
+   sigmaz = sigz   ! D096
 
-END FUNCTION SIGMAZ
+end function sigmaz
 
-SUBROUTINE  TRANSLATE_ROTATE
+subroutine  translate_rotate
 !***********************************************************************
 !        TRANSLATE_ROTATE Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2717,21 +2717,21 @@ SUBROUTINE  TRANSLATE_ROTATE
 !***********************************************************************
 
 !     Variable Declarations:
-   USE MAIN1, ONLY: AXR, AYR, NUMREC, NUMSRC, ISRC, SRCTYP, WDREF, PI
-   USE RLINE_DATA, ONLY: X0, Y0, XSB_ROT, YSB_ROT, XSE_ROT, YSE_ROT,&
-   &THETAW, XRCP_ROT, YRCP_ROT, RLSOURCE,&
-   &BDW_FLAG, THETA_LINE
-   IMPLICIT NONE
+   use main1, only: axr, ayr, numrec, numsrc, isrc, srctyp, wdref, pi
+   use rline_data, only: x0, y0, xsb_rot, ysb_rot, xse_rot, yse_rot,&
+   &thetaw, xrcp_rot, yrcp_rot, rlsource,&
+   &bdw_flag, theta_line
+   implicit none
 
 !     External Functions:
-   DOUBLE PRECISION, EXTERNAL :: DEPRESSED_DISPLACEMENT
+   double precision, external :: depressed_displacement
 
 !     Local Variables:
-   INTEGER  :: INDEX, I
-   DOUBLE PRECISION :: XR_TRAN, YR_TRAN, ANGLE
-   DOUBLE PRECISION :: XSB_TRAN, YSB_TRAN, XSE_TRAN, YSE_TRAN
-   DOUBLE PRECISION :: DCL_LOC, DCLWALL_LOC(2)
-   DOUBLE PRECISION :: XBB, YBB, XBB_ROT
+   integer  :: index, i
+   double precision :: xr_tran, yr_tran, angle
+   double precision :: xsb_tran, ysb_tran, xse_tran, yse_tran
+   double precision :: dcl_loc, dclwall_loc(2)
+   double precision :: xbb, ybb, xbb_rot
 !     INDEX       = index
 !     I           = index
 !     XR_TRAN     = x-coordinate for translated receptor
@@ -2748,104 +2748,104 @@ SUBROUTINE  TRANSLATE_ROTATE
 !     XBB_ROT        = rotated beginning coordinates of the barrier
 
 !     Initialize flag for 'barrier is downwind of source' (1 if true, 0 if false)
-   BDW_FLAG(:,:) = 0
+   bdw_flag(:,:) = 0
 
-   ANGLE = 270.0D0 - WDREF
-   IF (ANGLE > 180.0D0) THEN
-      ANGLE = ANGLE - 360.0D0
-   END IF
-   THETAW = ANGLE*PI / 180.0D0
+   angle = 270.0d0 - wdref
+   if (angle > 180.0d0) then
+      angle = angle - 360.0d0
+   end if
+   thetaw = angle*pi / 180.0d0
 
 !     Translate line source origin
-   X0 = RLSOURCE(ISRC)%XSB
-   Y0 = RLSOURCE(ISRC)%YSB
+   x0 = rlsource(isrc)%xsb
+   y0 = rlsource(isrc)%ysb
 
 !     Translate source and receptor coordinates and then rotate them along wind direction
-   DO INDEX = ISRC, NUMSRC
-      IF (SRCTYP(INDEX) == 'RLINE' .or.&
-      &SRCTYP(INDEX) == 'RLINEXT') THEN
+   do index = isrc, numsrc
+      if (srctyp(index) == 'RLINE' .or.&
+      &srctyp(index) == 'RLINEXT') then
 !           Initialize variables used
-         DCL_LOC        = RLSOURCE(INDEX)%DCL
-         DCLWALL_LOC(1) = RLSOURCE(INDEX)%DCLWALL
-         DCLWALL_LOC(2) = RLSOURCE(INDEX)%DCLWALL2
+         dcl_loc        = rlsource(index)%dcl
+         dclwall_loc(1) = rlsource(index)%dclwall
+         dclwall_loc(2) = rlsource(index)%dclwall2
 
 !           Move initial user coordinate system so the origin is at the beginning of first source
-         XSB_TRAN = RLSOURCE(INDEX)%XSB - X0
-         YSB_TRAN = RLSOURCE(INDEX)%YSB - Y0
-         XSE_TRAN = RLSOURCE(INDEX)%XSE - X0
-         YSE_TRAN = RLSOURCE(INDEX)%YSE - Y0
-         THETA_LINE = DATAN2(YSE_TRAN - YSB_TRAN, XSE_TRAN -&
-         &XSB_TRAN)
+         xsb_tran = rlsource(index)%xsb - x0
+         ysb_tran = rlsource(index)%ysb - y0
+         xse_tran = rlsource(index)%xse - x0
+         yse_tran = rlsource(index)%yse - y0
+         theta_line = datan2(yse_tran - ysb_tran, xse_tran -&
+         &xsb_tran)
 
 !           Account for due east and north source lines
-         IF (DSIN(THETA_LINE) == 0.0D0) THEN
-            DCL_LOC        = -1.0D0 * DCL_LOC              ! needed for lines running West-East; + is North
-            DCLWALL_LOC(1) = -1.0D0 * DCLWALL_LOC(1)
-            DCLWALL_LOC(2) = -1.0D0 * DCLWALL_LOC(2)
-         END IF
+         if (dsin(theta_line) == 0.0d0) then
+            dcl_loc        = -1.0d0 * dcl_loc              ! needed for lines running West-East; + is North
+            dclwall_loc(1) = -1.0d0 * dclwall_loc(1)
+            dclwall_loc(2) = -1.0d0 * dclwall_loc(2)
+         end if
 
 !           Determine location of the line that is not within a depression,
 !           but is specified in source file with the centerline and distance
 !           from the centerline
-         IF (DCL_LOC /= 0.0D0 .and.&
-         &RLSOURCE(INDEX)%DEPTH == 0.0D0) THEN
-            XSE_TRAN = XSE_TRAN + DCL_LOC * DSIN(THETA_LINE) *&
-            &DSIGN(1.0D0, DSIN(THETA_LINE))
-            YSE_TRAN = YSE_TRAN - DCL_LOC * DCOS(THETA_LINE) *&
-            &DSIGN(1.0D0, DSIN(THETA_LINE))
-            XSB_TRAN = XSB_TRAN + DCL_LOC * DSIN(THETA_LINE) *&
-            &DSIGN(1.0D0, DSIN(THETA_LINE))
-            YSB_TRAN = YSB_TRAN - DCL_LOC * DCOS(THETA_LINE) *&
-            &DSIGN(1.0D0, DSIN(THETA_LINE))
-         END IF
+         if (dcl_loc /= 0.0d0 .and.&
+         &rlsource(index)%depth == 0.0d0) then
+            xse_tran = xse_tran + dcl_loc * dsin(theta_line) *&
+            &dsign(1.0d0, dsin(theta_line))
+            yse_tran = yse_tran - dcl_loc * dcos(theta_line) *&
+            &dsign(1.0d0, dsin(theta_line))
+            xsb_tran = xsb_tran + dcl_loc * dsin(theta_line) *&
+            &dsign(1.0d0, dsin(theta_line))
+            ysb_tran = ysb_tran - dcl_loc * dcos(theta_line) *&
+            &dsign(1.0d0, dsin(theta_line))
+         end if
 
 !           Adjustments for near source configurations (depression)
-         IF (RLSOURCE(INDEX)%DEPTH < 0.0D0) THEN
-            XSE_TRAN = XSE_TRAN -&
-            &DEPRESSED_DISPLACEMENT(THETA_LINE, INDEX) *&
-            &DSIN(THETA_LINE)
-            YSE_TRAN = YSE_TRAN +&
-            &DEPRESSED_DISPLACEMENT(THETA_LINE, INDEX) *&
-            &DCOS(THETA_LINE)
-            XSB_TRAN = XSB_TRAN -&
-            &DEPRESSED_DISPLACEMENT(THETA_LINE, INDEX) *&
-            &DSIN(THETA_LINE)
-            YSB_TRAN = YSB_TRAN +&
-            &DEPRESSED_DISPLACEMENT(THETA_LINE, INDEX) *&
-            &DCOS(THETA_LINE)
-         END IF
+         if (rlsource(index)%depth < 0.0d0) then
+            xse_tran = xse_tran -&
+            &depressed_displacement(theta_line, index) *&
+            &dsin(theta_line)
+            yse_tran = yse_tran +&
+            &depressed_displacement(theta_line, index) *&
+            &dcos(theta_line)
+            xsb_tran = xsb_tran -&
+            &depressed_displacement(theta_line, index) *&
+            &dsin(theta_line)
+            ysb_tran = ysb_tran +&
+            &depressed_displacement(theta_line, index) *&
+            &dcos(theta_line)
+         end if
 
-         XSB_ROT(INDEX) = XSB_TRAN * DCOS(THETAW) +&
-         &YSB_TRAN * DSIN(THETAW)
-         YSB_ROT(INDEX) = -1.0D0 * XSB_TRAN * DSIN(THETAW) +&
-         &YSB_TRAN * DCOS(THETAW)
-         XSE_ROT(INDEX) = XSE_TRAN * DCOS(THETAW) +&
-         &YSE_TRAN * DSIN(THETAW)
-         YSE_ROT(INDEX) = -1.0D0 * XSE_TRAN * DSIN(THETAW) +&
-         &YSE_TRAN * DCOS(THETAW)
+         xsb_rot(index) = xsb_tran * dcos(thetaw) +&
+         &ysb_tran * dsin(thetaw)
+         ysb_rot(index) = -1.0d0 * xsb_tran * dsin(thetaw) +&
+         &ysb_tran * dcos(thetaw)
+         xse_rot(index) = xse_tran * dcos(thetaw) +&
+         &yse_tran * dsin(thetaw)
+         yse_rot(index) = -1.0d0 * xse_tran * dsin(thetaw) +&
+         &yse_tran * dcos(thetaw)
 
 !           For barrier algorithm: Calculate the beginning coordinates of the barrier.
 !           After rotation, determine if the barrier is downwind of the roadway. If so, set a flag.
-         IF(THETA_LINE == THETAW) THETA_LINE = THETA_LINE + 0.001D0
-         DO I = 1, 2
-            XBB     = XSB_TRAN + (DCLWALL_LOC(I) - DCL_LOC) *&
-            &DSIN(THETA_LINE) * DSIGN(1.0D0, DSIN(THETA_LINE))
-            YBB     = YSB_TRAN - (DCLWALL_LOC(I) - DCL_LOC) *&
-            &DCOS(THETA_LINE) * DSIGN(1.0D0, DSIN(THETA_LINE))
-            XBB_ROT = XBB * DCOS(THETAW) + YBB * DSIN(THETAW)
-            IF(XBB_ROT > XSB_ROT(INDEX)) BDW_FLAG(INDEX, I) = 1
-         END DO
+         if(theta_line == thetaw) theta_line = theta_line + 0.001d0
+         do i = 1, 2
+            xbb     = xsb_tran + (dclwall_loc(i) - dcl_loc) *&
+            &dsin(theta_line) * dsign(1.0d0, dsin(theta_line))
+            ybb     = ysb_tran - (dclwall_loc(i) - dcl_loc) *&
+            &dcos(theta_line) * dsign(1.0d0, dsin(theta_line))
+            xbb_rot = xbb * dcos(thetaw) + ybb * dsin(thetaw)
+            if(xbb_rot > xsb_rot(index)) bdw_flag(index, i) = 1
+         end do
 
-      END IF
-   END DO
+      end if
+   end do
 
-   DO INDEX = 1, NUMREC
-      XR_TRAN = AXR(INDEX) - X0
-      YR_TRAN = AYR(INDEX) - Y0
-      XRCP_ROT(INDEX) = XR_TRAN * DCOS(THETAW) +&
-      &YR_TRAN * DSIN(THETAW)
-      YRCP_ROT(INDEX) = -1.0D0 * XR_TRAN * DSIN(THETAW) +&
-      &YR_TRAN * DCOS(THETAW)
-   END DO
+   do index = 1, numrec
+      xr_tran = axr(index) - x0
+      yr_tran = ayr(index) - y0
+      xrcp_rot(index) = xr_tran * dcos(thetaw) +&
+      &yr_tran * dsin(thetaw)
+      yrcp_rot(index) = -1.0d0 * xr_tran * dsin(thetaw) +&
+      &yr_tran * dcos(thetaw)
+   end do
 
-END SUBROUTINE TRANSLATE_ROTATE
+end subroutine translate_rotate

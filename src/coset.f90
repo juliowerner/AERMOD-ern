@@ -1,4 +1,4 @@
-SUBROUTINE COCARD
+subroutine cocard
 !***********************************************************************
 !                 COCARD Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -52,867 +52,867 @@ SUBROUTINE COCARD
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: I
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: i
 
 !     Variable Initializations
-   MODNAM = 'COCARD'
+   modnam = 'COCARD'
 
-   IF (KEYWRD == 'STARTING') THEN
-      IURB = 0
+   if (keywrd == 'STARTING') then
+      iurb = 0
 !        Set Status Switch
-      ISTART = .TRUE.
-      ICSTAT(1) = ICSTAT(1) + 1
-      IF (ICSTAT(1) /= 1) THEN
+      istart = .true.
+      icstat(1) = icstat(1) + 1
+      if (icstat(1) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      END IF
-   ELSE IF (KEYWRD == 'TITLEONE') THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      end if
+   else if (keywrd == 'TITLEONE') then
 !        Set Status Switch
-      ICSTAT(2) = ICSTAT(2) + 1
-      IF (ICSTAT(2) /= 1) THEN
+      icstat(2) = icstat(2) + 1
+      if (icstat(2) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Titles                                  ---   CALL TITLES
-         CALL TITLES
-      END IF
-   ELSE IF (KEYWRD == 'TITLETWO') THEN
+         call titles
+      end if
+   else if (keywrd == 'TITLETWO') then
 !        Set Status Switch
-      ICSTAT(3) = ICSTAT(3) + 1
-      IF (ICSTAT(3) /= 1) THEN
+      icstat(3) = icstat(3) + 1
+      if (icstat(3) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Titles                                  ---   CALL TITLES
-         CALL TITLES
-      END IF
-   ELSE IF (KEYWRD == 'MODELOPT') THEN
+         call titles
+      end if
+   else if (keywrd == 'MODELOPT') then
 !        Set Status Switch
-      ICSTAT(4) = ICSTAT(4) + 1
-      IF (ICSTAT(4) /= 1) THEN
+      icstat(4) = icstat(4) + 1
+      if (icstat(4) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Modeling Options                        ---   CALL MODOPT
-         CALL MODOPT
-      END IF
-   ELSE IF (KEYWRD == 'AVERTIME') THEN
+         call modopt
+      end if
+   else if (keywrd == 'AVERTIME') then
 !        Set Status Switch
-      ICSTAT(5) = ICSTAT(5) + 1
-      IF (ICSTAT(5) /= 1) THEN
+      icstat(5) = icstat(5) + 1
+      if (icstat(5) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Averaging Time Options                  ---   CALL AVETIM
-         CALL AVETIM
-      END IF
-   ELSE IF (KEYWRD == 'POLLUTID') THEN
+         call avetim
+      end if
+   else if (keywrd == 'POLLUTID') then
 !        Set Status Switch
-      ICSTAT(6) = ICSTAT(6) + 1
-      IF (ICSTAT(6) /= 1) THEN
+      icstat(6) = icstat(6) + 1
+      if (icstat(6) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Pollutant ID Option                     ---   CALL POLLID
-         CALL POLLID
-      END IF
-   ELSE IF (KEYWRD == 'HALFLIFE' .or.&
-   &KEYWRD == 'DCAYCOEF') THEN
-      IF (KEYWRD == 'HALFLIFE') THEN
+         call pollid
+      end if
+   else if (keywrd == 'HALFLIFE' .or.&
+   &keywrd == 'DCAYCOEF') then
+      if (keywrd == 'HALFLIFE') then
 !           Check for Previous DCAYCOEF Keyword in Runstream File
-         IF (ICSTAT(8) /= 0) THEN
-            CALL ERRHDL(PATH,MODNAM,'W','155',KEYWRD)
-            GO TO 999
-         ELSE
+         if (icstat(8) /= 0) then
+            call errhdl(path,modnam,'W','155',keywrd)
+            go to 999
+         else
 !              Set Status Switch and Check for Duplicate Keyword
-            ICSTAT(7) = ICSTAT(7) + 1
-            IF (ICSTAT(7) /= 1) THEN
+            icstat(7) = icstat(7) + 1
+            if (icstat(7) /= 1) then
 !                 WRITE Error Message: Repeat Non-repeatable Keyword
-               CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-               GO TO 999
-            END IF
-         END IF
-      ELSE IF (KEYWRD == 'DCAYCOEF') THEN
+               call errhdl(path,modnam,'E','135',keywrd)
+               go to 999
+            end if
+         end if
+      else if (keywrd == 'DCAYCOEF') then
 !           Check for Previous HALFLIFE Keyword in Runstream File
-         IF (ICSTAT(7) /= 0) THEN
-            CALL ERRHDL(PATH,MODNAM,'W','155',KEYWRD)
-            GO TO 999
-         ELSE
+         if (icstat(7) /= 0) then
+            call errhdl(path,modnam,'W','155',keywrd)
+            go to 999
+         else
 !              Set Status Switch and Check for Duplicate Keyword
-            ICSTAT(8) = ICSTAT(8) + 1
-            IF (ICSTAT(8) /= 1) THEN
+            icstat(8) = icstat(8) + 1
+            if (icstat(8) /= 1) then
 !                 WRITE Error Message: Repeat Non-repeatable Keyword
-               CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-               GO TO 999
-            END IF
-         END IF
-      END IF
+               call errhdl(path,modnam,'E','135',keywrd)
+               go to 999
+            end if
+         end if
+      end if
 !        Check for Keyword Out of Order
-      IF (ICSTAT(4) /= 1) THEN
+      if (icstat(4) /= 1) then
 !           WRITE Error Message: Keyword Out of Order (Must Follow MODELOPT)
-         CALL ERRHDL(PATH,MODNAM,'E','140',KEYWRD)
-      ELSE IF (ICSTAT(6) /= 1) THEN
+         call errhdl(path,modnam,'E','140',keywrd)
+      else if (icstat(6) /= 1) then
 !           WRITE Error Message: Keyword Out of Order (Must Follow POLLUTID)
-         CALL ERRHDL(PATH,MODNAM,'E','140',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','140',keywrd)
+      end if
 !        Process Exponential Decay Option                   ---   CALL EDECAY
-      CALL EDECAY
-   ELSE IF (KEYWRD == 'FLAGPOLE') THEN
+      call edecay
+   else if (keywrd == 'FLAGPOLE') then
 !        Set Status Switch
-      ICSTAT(11) = ICSTAT(11) + 1
-      IF (ICSTAT(11) /= 1) THEN
+      icstat(11) = icstat(11) + 1
+      if (icstat(11) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Flagpole Receptor Height Option         ---   CALL FLAGDF
-         CALL FLAGDF
-      END IF
-   ELSE IF (KEYWRD == 'RUNORNOT') THEN
+         call flagdf
+      end if
+   else if (keywrd == 'RUNORNOT') then
 !        Set Status Switch
-      ICSTAT(12) = ICSTAT(12) + 1
-      IF (ICSTAT(12) /= 1) THEN
+      icstat(12) = icstat(12) + 1
+      if (icstat(12) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Option to Run Model or Not              ---   CALL RUNNOT
-         CALL RUNNOT
-      END IF
-   ELSE IF (.NOT.EVONLY .and. KEYWRD == 'EVENTFIL') THEN
+         call runnot
+      end if
+   else if (.not.evonly .and. keywrd == 'EVENTFIL') then
 !        Set Status Switch
-      ICSTAT(13) = ICSTAT(13) + 1
-      IF (ICSTAT(13) /= 1) THEN
+      icstat(13) = icstat(13) + 1
+      if (icstat(13) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
-         IF (PSDCREDIT) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
+         if (psdcredit) then
 !              WRITE Warning Message:  PSDCREDIT option cannot be used with EVENT option
-            CALL ERRHDL(PATH,MODNAM,'W','147',KEYWRD)
-         END IF
+            call errhdl(path,modnam,'W','147',keywrd)
+         end if
 !           Process EVENT File Option                       ---   CALL EVNTFL
-         CALL EVNTFL
-      END IF
-   ELSE IF (.NOT.EVONLY .and. KEYWRD == 'SAVEFILE') THEN
+         call evntfl
+      end if
+   else if (.not.evonly .and. keywrd == 'SAVEFILE') then
 !        Set Status Switch
-      ICSTAT(14) = ICSTAT(14) + 1
-      IF (ICSTAT(14) /= 1) THEN
+      icstat(14) = icstat(14) + 1
+      if (icstat(14) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Model Re-start Save File Option         ---   CALL SAVEFL
-         CALL SAVEFL
-      END IF
-   ELSE IF (.NOT.EVONLY .and. KEYWRD == 'INITFILE') THEN
+         call savefl
+      end if
+   else if (.not.evonly .and. keywrd == 'INITFILE') then
 !        Set Status Switch
-      ICSTAT(15) = ICSTAT(15) + 1
-      IF (ICSTAT(15) /= 1) THEN
+      icstat(15) = icstat(15) + 1
+      if (icstat(15) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Re-start Initialization File Option     ---   CALL INITFL
-         CALL INITFL
-      END IF
-   ELSE IF (.NOT.EVONLY .and. KEYWRD == 'MULTYEAR') THEN
+         call initfl
+      end if
+   else if (.not.evonly .and. keywrd == 'MULTYEAR') then
 !        Set Status Switch
-      ICSTAT(16) = ICSTAT(16) + 1
-      IF (ICSTAT(16) /= 1) THEN
+      icstat(16) = icstat(16) + 1
+      if (icstat(16) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Multiple-Year Run Option                ---   CALL MYEAR
-         CALL MYEAR
-      END IF
-   ELSE IF (KEYWRD == 'ERRORFIL') THEN
+         call myear
+      end if
+   else if (keywrd == 'ERRORFIL') then
 !        Set Status Switch
-      ICSTAT(17) = ICSTAT(17) + 1
-      IF (ICSTAT(17) /= 1) THEN
+      icstat(17) = icstat(17) + 1
+      if (icstat(17) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Error File Option                       ---   CALL ERRFIL
-         CALL ERRFIL
-      END IF
-   ELSE IF (KEYWRD == 'GDSEASON') THEN
+         call errfil
+      end if
+   else if (keywrd == 'GDSEASON') then
 !        Set Status Switch
-      ICSTAT(18) = ICSTAT(18) + 1
-      IF (ICSTAT(18) /= 1) THEN
+      icstat(18) = icstat(18) + 1
+      if (icstat(18) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Seasons for GASDEP Option              ---   CALL GDSEAS
-         CALL GDSEAS
-      END IF
-   ELSE IF (KEYWRD == 'GASDEPDF') THEN
+         call gdseas
+      end if
+   else if (keywrd == 'GASDEPDF') then
 !        Set Status Switch
-      ICSTAT(19) = ICSTAT(19) + 1
-      IF (ICSTAT(19) /= 1) THEN
+      icstat(19) = icstat(19) + 1
+      if (icstat(19) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process GASDEP Defaults Option                  ---   CALL GDDEF
-         CALL GDDEF
-      END IF
-   ELSE IF (KEYWRD == 'GDLANUSE') THEN
+         call gddef
+      end if
+   else if (keywrd == 'GDLANUSE') then
 !        Set Status Switch
-      ICSTAT(20) = ICSTAT(20) + 1
-      IF (ICSTAT(20) /= 1) THEN
+      icstat(20) = icstat(20) + 1
+      if (icstat(20) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Error File Option                       ---   CALL GDLAND
-         CALL GDLAND
-      END IF
-   ELSE IF (KEYWRD == 'GASDEPVD') THEN
+         call gdland
+      end if
+   else if (keywrd == 'GASDEPVD') then
 !        Set Status Switch
-      ICSTAT(21) = ICSTAT(21) + 1
-      IF (ICSTAT(21) /= 1) THEN
+      icstat(21) = icstat(21) + 1
+      if (icstat(21) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           User Specified Deposition Velocity Option       ---   CALL GVSUBD
-         CALL GVSUBD
-      END IF
-   ELSE IF (KEYWRD == 'DEBUGOPT') THEN
+         call gvsubd
+      end if
+   else if (keywrd == 'DEBUGOPT') then
 !        Set Status Switch
-      ICSTAT(22) = ICSTAT(22) + 1
-      IF (ICSTAT(22) /= 1) THEN
+      icstat(22) = icstat(22) + 1
+      if (icstat(22) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Error File Option                       ---   CALL DEBOPT
-         CALL DEBOPT
-      END IF
-   ELSE IF (KEYWRD == 'URBANOPT') THEN
+         call debopt
+      end if
+   else if (keywrd == 'URBANOPT') then
 !        Set Status Switch
-      ICSTAT(23) = ICSTAT(23) + 1
+      icstat(23) = icstat(23) + 1
 !        Check for Keyword Out of Order
-      IF (ICSTAT(4) /= 1) THEN
+      if (icstat(4) /= 1) then
 !           WRITE Error Message: Keyword Out of Order (Must Follow MODELOPT)
-         CALL ERRHDL(PATH,MODNAM,'E','140',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','140',keywrd)
+      end if
 !        Process Urban Option                               ---   CALL URBOPT
-      CALL URBOPT
-   ELSE IF (KEYWRD == 'OZONEVAL') THEN
+      call urbopt
+   else if (keywrd == 'OZONEVAL') then
 !        Set Status Switch
-      ICSTAT(24) = ICSTAT(24) + 1
-      IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
+      icstat(24) = icstat(24) + 1
+      if (pvmrm .or. olm .or. runttrm .or. grsm) then
 !           Process O3 Value Option                         ---   CALL O3VAL
-         CALL O3VAL
-      ELSE
+         call o3val
+      else
 !RCO 3/1/2021 Check to see if we want to use 142 or 600 error code. CERC used 600
 !           Write Error Message:  OZONEVAL specified w\o PVMRM, OLM, TTRM, GRSM
-         CALL ERRHDL(PATH,MODNAM,'E','600',KEYWRD)
-      END IF
-   ELSE IF (KEYWRD == 'O3VALUES') THEN
+         call errhdl(path,modnam,'E','600',keywrd)
+      end if
+   else if (keywrd == 'O3VALUES') then
 !        Set Status Switch
-      ICSTAT(25) = ICSTAT(25) + 1
-      IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
+      icstat(25) = icstat(25) + 1
+      if (pvmrm .or. olm .or. runttrm .or. grsm) then
 !           Process O3 Value Option                         ---   CALL O3VALS
-         CALL O3VALS
-      ELSE
+         call o3vals
+      else
 !           Write Error Message: O3VALUES specified w\o PVMRM, OLM, TTRM, or GRSM
-         CALL ERRHDL(PATH,MODNAM,'E','600',KEYWRD)
-      END IF
-   ELSE IF (KEYWRD == 'OZONEFIL') THEN
+         call errhdl(path,modnam,'E','600',keywrd)
+      end if
+   else if (keywrd == 'OZONEFIL') then
 !        Set Status Switch
-      ICSTAT(26) = ICSTAT(26) + 1
-      IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
+      icstat(26) = icstat(26) + 1
+      if (pvmrm .or. olm .or. runttrm .or. grsm) then
 !           Process O3 File Option                          ---   CALL O3FILE
-         CALL O3FILE
-      ELSE
+         call o3file
+      else
 !           Write Error Message: O3VALUES specified w\o PVMRM, OLM, TTRM, or GRSM
-         CALL ERRHDL(PATH,MODNAM,'E','600',KEYWRD)
-      END IF
-   ELSE IF (KEYWRD == 'OZONUNIT') THEN
+         call errhdl(path,modnam,'E','600',keywrd)
+      end if
+   else if (keywrd == 'OZONUNIT') then
 !        Set Status Switch
-      ICSTAT(27) = ICSTAT(27) + 1
-      IF (ICSTAT(27) /= 1) THEN
+      icstat(27) = icstat(27) + 1
+      if (icstat(27) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
-         IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
+         if (pvmrm .or. olm .or. runttrm .or. grsm) then
 !              Process the OZONUNIT Card                    ---   CALL OZON_UNIT
-            CALL OZON_UNIT
-         ELSE
+            call ozon_unit
+         else
 !              Write Error Message: O3VALUES specified w\o PVMRM, OLM, TTRM, or GRSM
-            CALL ERRHDL(PATH,MODNAM,'E','600',KEYWRD)
-         END IF
-      END IF
-   ELSE IF (KEYWRD == 'NO2STACK') THEN
+            call errhdl(path,modnam,'E','600',keywrd)
+         end if
+      end if
+   else if (keywrd == 'NO2STACK') then
 !        Set Status Switch
-      ICSTAT(28) = ICSTAT(28) + 1
-      IF (ICSTAT(28) /= 1) THEN
+      icstat(28) = icstat(28) + 1
+      if (icstat(28) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
-         IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
+         if (pvmrm .or. olm .or. runttrm .or. grsm) then
 !              Process NO2Stack Option                      ---   CALL NO2STK
-            CALL NO2STK
-         ELSE
+            call no2stk
+         else
 !              Write Error Message: NO2STACK specified w/o PVMRM, OLM, TTRM, GRSM
-            CALL ERRHDL(PATH,MODNAM,'E','600',KEYWRD)
-         END IF
-      END IF
-   ELSE IF (KEYWRD == 'NO2EQUIL') THEN
+            call errhdl(path,modnam,'E','600',keywrd)
+         end if
+      end if
+   else if (keywrd == 'NO2EQUIL') then
 !        Set Status Switch
-      ICSTAT(29) = ICSTAT(29) + 1
-      IF (ICSTAT(29) /= 1) THEN
+      icstat(29) = icstat(29) + 1
+      if (icstat(29) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 ! Add equilibrium limit for GRSM also?
-         IF (PVMRM .or. OLM .or. RUNTTRM) THEN
+         if (pvmrm .or. olm .or. runttrm) then
 !              Process NO2Equil Option                      ---   CALL NO2EQ
-            CALL NO2EQ
-         ELSE
+            call no2eq
+         else
 !              Write Error Message:  NO2EQUIL specified without PVMRM or OLM or TTRM
-            CALL ERRHDL(PATH,MODNAM,'E','142',KEYWRD)
-         END IF
-      END IF
-   ELSE IF (KEYWRD == 'LOW_WIND') THEN
+            call errhdl(path,modnam,'E','142',keywrd)
+         end if
+      end if
+   else if (keywrd == 'LOW_WIND') then
 !        Set Status Switch
-      ICSTAT(30) = ICSTAT(30) + 1
-      IF (ICSTAT(30) /= 1) THEN
+      icstat(30) = icstat(30) + 1
+      if (icstat(30) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE IF (L_ALPHA) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      else if (l_alpha) then
 !            Process LOW_WIND keyword                       ---   CALL LOW_WND
-         CALL LOW_WND
-      ELSE
+         call low_wnd
+      else
 !           WRITE Error Message: LOW_WIND option requires ALPHA option
-         CALL ERRHDL(PATH,MODNAM,'E','133',KEYWRD)
-      END IF
-   ELSE IF (KEYWRD == 'O3SECTOR') THEN
+         call errhdl(path,modnam,'E','133',keywrd)
+      end if
+   else if (keywrd == 'O3SECTOR') then
 !        Set Status Switch
-      ICSTAT(31) = ICSTAT(31) + 1
-      IF (ICSTAT(31) /= 1) THEN
+      icstat(31) = icstat(31) + 1
+      if (icstat(31) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
-         IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
+         if (pvmrm .or. olm .or. runttrm .or. grsm) then
 !              Process O3SECTOR keyword                     ---   CALL O3SECTOR
-            CALL O3SECTOR
-         ELSE
+            call o3sector
+         else
 !              Write Error Message: O3SECTOR specified w/o PVMRM, OLM, TTRM, GRSM
-            CALL ERRHDL(PATH,MODNAM,'E','600',KEYWRD)
-         END IF
-      END IF
-   ELSE IF (KEYWRD == 'ARMRATIO') THEN
+            call errhdl(path,modnam,'E','600',keywrd)
+         end if
+      end if
+   else if (keywrd == 'ARMRATIO') then
 !        Set Status Switch
-      ICSTAT(32) = ICSTAT(32) + 1
-      IF (ICSTAT(32) /= 1) THEN
+      icstat(32) = icstat(32) + 1
+      if (icstat(32) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
-         IF (ARM2) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
+         if (arm2) then
 !              Process ARM2_Ratios Option                   ---   CALL ARM2_Ratios
-            CALL ARM2_Ratios
-         ELSE
+            call ARM2_Ratios
+         else
 !              Write Error Message:  ARMRATIO specified without ARM2
-            CALL ERRHDL(PATH,MODNAM,'E','145',KEYWRD)
-         END IF
-      END IF
-   ELSE IF (KEYWRD == 'AWMADWNW') THEN
+            call errhdl(path,modnam,'E','145',keywrd)
+         end if
+      end if
+   else if (keywrd == 'AWMADWNW') then
 !        Set Status Switch
-      ICSTAT(33) = ICSTAT(33) + 1
-      IF (ICSTAT(33) /= 1) THEN
+      icstat(33) = icstat(33) + 1
+      if (icstat(33) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE IF (L_ALPHA) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      else if (l_alpha) then
 !           Process AWMADWNW keyword                         ---   CALL AWMA_DOWNWASH
-         CALL AWMA_DOWNWASH
-      ELSE
+         call awma_downwash
+      else
 !           WRITE Error Message: AWMADWNW option requires ALPHA option
-         CALL ERRHDL(PATH,MODNAM,'E','122',KEYWRD)
-      END IF
-   ELSE IF (KEYWRD == 'ORD_DWNW') THEN
+         call errhdl(path,modnam,'E','122',keywrd)
+      end if
+   else if (keywrd == 'ORD_DWNW') then
 !        Set Status Switch
-      ICSTAT(34) = ICSTAT(34) + 1
-      IF (ICSTAT(34) /= 1) THEN
+      icstat(34) = icstat(34) + 1
+      if (icstat(34) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE IF (L_ALPHA) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      else if (l_alpha) then
 !           Process ORD_DWNW keyword                       ---   CALL ORD_DOWNWASH
-         CALL ORD_DOWNWASH
-      ELSE
+         call ord_downwash
+      else
 !           WRITE Error Message: ORD_DWNW option requires ALPHA option
-         CALL ERRHDL(PATH,MODNAM,'E','123',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','123',keywrd)
+      end if
 !     CERC 11/30/20:
-   ELSE IF (KEYWRD == 'NOXSECTR') THEN
+   else if (keywrd == 'NOXSECTR') then
 !        Set Status Switch
-      ICSTAT(35) = ICSTAT(35) + 1
-      IF (ICSTAT(35) /= 1) THEN
+      icstat(35) = icstat(35) + 1
+      if (icstat(35) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
-         IF (GRSM) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
+         if (grsm) then
 !              Process NOXSECTR keyword                    ---   CALL NOXSECTOR
-            CALL NOXSECTOR
-         ELSE
+            call noxsector
+         else
 !              Write Error Message:  NOXSECTR specified without GRSM
-            CALL ERRHDL(PATH,MODNAM,'E','602',KEYWRD)
-         END IF
-      END IF
-   ELSE IF (KEYWRD == 'NOXVALUE') THEN
+            call errhdl(path,modnam,'E','602',keywrd)
+         end if
+      end if
+   else if (keywrd == 'NOXVALUE') then
 !        Set Status Switch
-      ICSTAT(36) = ICSTAT(36) + 1
-      IF (GRSM) THEN
+      icstat(36) = icstat(36) + 1
+      if (grsm) then
 !           Process NOX Value Option                    ---   CALL NOXVAL
-         CALL NOXVAL
-      ELSE
+         call noxval
+      else
 !           Write Error Message:  NOXVALUE specified without GRSM
-         CALL ERRHDL(PATH,MODNAM,'E','602',KEYWRD)
-      END IF
-   ELSE IF (KEYWRD == 'NOX_VALS') THEN
+         call errhdl(path,modnam,'E','602',keywrd)
+      end if
+   else if (keywrd == 'NOX_VALS') then
 !        Set Status Switch
-      ICSTAT(37) = ICSTAT(37) + 1
-      IF (GRSM) THEN
+      icstat(37) = icstat(37) + 1
+      if (grsm) then
 !           Process NOx Value Option                    ---   CALL NOXVALS
-         CALL NOXVALS
-      ELSE
+         call noxvals
+      else
 !           Write Error Message:  NOX_VALS specified without GRSM
-         CALL ERRHDL(PATH,MODNAM,'E','602',KEYWRD)
-      END IF
-   ELSE IF (KEYWRD == 'NOX_UNIT') THEN
+         call errhdl(path,modnam,'E','602',keywrd)
+      end if
+   else if (keywrd == 'NOX_UNIT') then
 !        Set Status Switch
-      ICSTAT(38) = ICSTAT(38) + 1
-      IF (ICSTAT(38) /= 1) THEN
+      icstat(38) = icstat(38) + 1
+      if (icstat(38) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
-         IF (GRSM) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
+         if (grsm) then
 !              Process the NOX_UNIT Card                    ---   CALL NOX_UNIT
-            CALL NOX_UNIT
-         ELSE
+            call nox_unit
+         else
 !              Write Error Message:  NOX_UNIT specified without GRSM
-            CALL ERRHDL(PATH,MODNAM,'E','602',KEYWRD)
-         END IF
-      END IF
-   ELSE IF (KEYWRD == 'NOX_FILE') THEN
+            call errhdl(path,modnam,'E','602',keywrd)
+         end if
+      end if
+   else if (keywrd == 'NOX_FILE') then
 !        Set Status Switch
-      ICSTAT(39) = ICSTAT(39) + 1
-      IF (GRSM) THEN
+      icstat(39) = icstat(39) + 1
+      if (grsm) then
 !           Process NOX File Option                    ---   CALL NOXFILE
-         CALL NOXFILE
-      ELSE
+         call noxfile
+      else
 !           Write Error Message:  NOX_FILE specified without GRSM
-         CALL ERRHDL(PATH,MODNAM,'E','602',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','602',keywrd)
+      end if
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   ELSE IF (KEYWRD == 'ARCFTOPT') THEN
+   else if (keywrd == 'ARCFTOPT') then
 !        Set Status Switch
-      ICSTAT(40) = ICSTAT(40) + 1
+      icstat(40) = icstat(40) + 1
 !        Check for Keyword Out of Order
-      IF(ICSTAT(4) /= 1) THEN
+      if(icstat(4) /= 1) then
 !           WRITE Error Message: Keyword Out of Order (Must Follow
 !           MODELOPT)
-         CALL ERRHDL(PATH,MODNAM,'E','140',KEYWRD)
-      END IF
-      IF (IFC == 3) THEN
+         call errhdl(path,modnam,'E','140',keywrd)
+      end if
+      if (ifc == 3) then
 !            Assign the airport name (optional)
-         AFTID(1) = FIELD(3)
-      END IF
+         aftid(1) = field(3)
+      end if
 !     Assign Logical for Aircraft Option
-      ARCFT  = .TRUE.
+      arcft  = .true.
 !**  End Aircraft Plume Rise insert; April 2023
 
-   ELSE IF (KEYWRD == 'FINISHED') THEN
+   else if (keywrd == 'FINISHED') then
 !        Set Status Switch
-      IFINIS = .TRUE.
+      ifinis = .true.
 !        Set Status Switch
-      ICSTAT(50) = ICSTAT(50) + 1
-      IF (ICSTAT(50) /= 1) THEN
+      icstat(50) = icstat(50) + 1
+      if (icstat(50) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','135',keywrd)
+         go to 999
+      end if
 
 !        Check for Missing Mandatory Keywords
-      IF (ICSTAT(1) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','STARTING')
-      END IF
-      IF (ICSTAT(2) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','TITLEONE')
-      END IF
-      IF (ICSTAT(4) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','MODELOPT')
-      END IF
-      IF (ICSTAT(5) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','AVERTIME')
-      END IF
-      IF (ICSTAT(6) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','POLLUTID')
-      END IF
-      IF (ICSTAT(12) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','RUNORNOT')
-      END IF
+      if (icstat(1) == 0) then
+         call errhdl(path,modnam,'E','130','STARTING')
+      end if
+      if (icstat(2) == 0) then
+         call errhdl(path,modnam,'E','130','TITLEONE')
+      end if
+      if (icstat(4) == 0) then
+         call errhdl(path,modnam,'E','130','MODELOPT')
+      end if
+      if (icstat(5) == 0) then
+         call errhdl(path,modnam,'E','130','AVERTIME')
+      end if
+      if (icstat(6) == 0) then
+         call errhdl(path,modnam,'E','130','POLLUTID')
+      end if
+      if (icstat(12) == 0) then
+         call errhdl(path,modnam,'E','130','RUNORNOT')
+      end if
 
-      IF (OLM .or. PVMRM .or. RUNTTRM .or. GRSM) THEN
+      if (olm .or. pvmrm .or. runttrm .or. grsm) then
 ! ---       Check for background Ozone options for OLM/PVMRM/GRSM
-         IF (ICSTAT(24)==0 .and. ICSTAT(25)==0 .and.&
-         &ICSTAT(26)==0) THEN
+         if (icstat(24)==0 .and. icstat(25)==0 .and.&
+         &icstat(26)==0) then
 !              Write Error Message:  Ozone value or data file needed
-            IF (OLM) THEN
-               DUMMY = 'OLM Option  '
-            ELSE IF (PVMRM) THEN
-               DUMMY = 'PVMRM Option'
-            ELSE IF (GRSM) THEN
-               DUMMY = 'GRSM Option'
-            ELSE IF (RUNTTRM) THEN
-               DUMMY = 'TTRM Option  '
-            END IF
-            CALL ERRHDL(PATH,MODNAM,'E','283',DUMMY)
-         ELSE IF (ICSTAT(24)>0 .and. ICSTAT(25)>0) THEN
+            if (olm) then
+               dummy = 'OLM Option  '
+            else if (pvmrm) then
+               dummy = 'PVMRM Option'
+            else if (grsm) then
+               dummy = 'GRSM Option'
+            else if (runttrm) then
+               dummy = 'TTRM Option  '
+            end if
+            call errhdl(path,modnam,'E','283',dummy)
+         else if (icstat(24)>0 .and. icstat(25)>0) then
 ! ---          Both OZONEVAL and O3VALUES keywords have been specified;
 !              issue error message if needed; first check for O3SECTOR option
-            IF (.NOT. L_O3Sector) THEN
+            if (.not. L_O3Sector) then
 !                 No O3SECTORs; issue error message
-               IF (OLM) THEN
-                  DUMMY = 'for OLM   '
-               ELSE IF (PVMRM) THEN
-                  DUMMY = 'for PVMRM '
-               ELSE IF (GRSM) THEN
-                  DUMMY = 'for GRSM '
-               ELSE IF (RUNTTRM) THEN
-                  DUMMY = 'for TTRM   '
-               END IF
+               if (olm) then
+                  dummy = 'for OLM   '
+               else if (pvmrm) then
+                  dummy = 'for PVMRM '
+               else if (grsm) then
+                  dummy = 'for GRSM '
+               else if (runttrm) then
+                  dummy = 'for TTRM   '
+               end if
 !                 Issue error message for conflicting O3 options
-               CALL ERRHDL(PATH,MODNAM,'E','148',DUMMY)
-            ELSE
+               call errhdl(path,modnam,'E','148',dummy)
+            else
 ! ---             Loop through O3SECTORs for both OZONEVAL & O3VALUES
-               DO I = 1, NUMO3sects
-                  IF (L_O3VAL(I) .and. L_O3VALUES(I)) THEN
+               do i = 1, NUMO3sects
+                  if (l_o3val(i) .and. l_o3values(i)) then
 !                       Issue error message; OZONEVAL & O3VALUES for this sector
-                     IF (OLM) THEN
-                        WRITE(DUMMY,'(''  OLM SECT'',I1)') I
-                     ELSE IF (PVMRM) THEN
-                        WRITE(DUMMY,'(''PVMRM SECT'',I1)') I
-                     ELSE IF (GRSM) THEN
-                        WRITE(DUMMY,'(''GRSM SECT'',I1)') I
-                     ELSE IF (RUNTTRM) THEN
-                        WRITE(DUMMY,'(''  TTRM SECT'',I1)') I
-                     END IF
-                     CALL ERRHDL(PATH,MODNAM,'E','148',DUMMY)
-                  END IF
-               END DO
-            END IF
-         END IF
+                     if (olm) then
+                        write(dummy,'(''  OLM SECT'',I1)') i
+                     else if (pvmrm) then
+                        write(dummy,'(''PVMRM SECT'',I1)') i
+                     else if (grsm) then
+                        write(dummy,'(''GRSM SECT'',I1)') i
+                     else if (runttrm) then
+                        write(dummy,'(''  TTRM SECT'',I1)') i
+                     end if
+                     call errhdl(path,modnam,'E','148',dummy)
+                  end if
+               end do
+            end if
+         end if
 !           CERC 11/30/20
-         IF (GRSM) THEN
+         if (grsm) then
 ! ---         Check for background NOx options for GRSM
-            IF (ICSTAT(36)==0 .and. ICSTAT(37)==0 .and.&
-            &ICSTAT(39)==0 ) THEN
+            if (icstat(36)==0 .and. icstat(37)==0 .and.&
+            &icstat(39)==0 ) then
 !               No NOx background has been specified so it will be calculated from NO2 equilibrium
 ! If the background NOX is missing, is it appropriate to compute from the equilibrium?
 ! Or use a fill value (default) to make sure it's conservative.
-               L_CalcNOXFromNO2 = .TRUE.
+               L_CalcNOXFromNO2 = .true.
 !               Write Wng Message:  NOx calculated from NO2
-               DUMMY = 'for GRSM'
-               CALL ERRHDL(PATH,MODNAM,'W','612',DUMMY)
-            ELSE IF (ICSTAT(36)>0 .and. ICSTAT(37)>0) THEN
+               dummy = 'for GRSM'
+               call errhdl(path,modnam,'W','612',dummy)
+            else if (icstat(36)>0 .and. icstat(37)>0) then
 ! ---           Both NOXVALUE and NOX_VALS keywords have been specified;
 !               issue error message if needed; first check for NOXSECTOR option
-               IF (.NOT. L_NOxSector) THEN
+               if (.not. L_NOxSector) then
 !                 No NOXSECTORs; issue error message for conflicting NOx options
-                  CALL ERRHDL(PATH,MODNAM,'E','605','for GRSM ')
-               ELSE
+                  call errhdl(path,modnam,'E','605','for GRSM ')
+               else
 ! ---             Loop through NOxSECTORs for both NOXVALUE & NOX_VALS
-                  DO I = 1, NUMNOxsects
-                     IF (L_NOXVALUE(I) .and. L_NOX_VALS(I)) THEN
+                  do i = 1, NUMNOxsects
+                     if (l_noxvalue(i) .and. l_nox_vals(i)) then
 !                       Issue error message; NOXVALUE & NOX_VALS for this sector
-                        WRITE(DUMMY,'(''GRSM SECT'',I1)') I
-                        CALL ERRHDL(PATH,MODNAM,'E','605',DUMMY)
-                     END IF
-                  END DO
-               END IF
-            END IF
-         END IF
-         IF ((PVMRM .or. OLM .or. RUNTTRM .or. GRSM)&
-         &.and. ICSTAT(28)==0) THEN
+                        write(dummy,'(''GRSM SECT'',I1)') i
+                        call errhdl(path,modnam,'E','605',dummy)
+                     end if
+                  end do
+               end if
+            end if
+         end if
+         if ((pvmrm .or. olm .or. runttrm .or. grsm)&
+         &.and. icstat(28)==0) then
 !              No NO2STACK card specified for PVMRM, OLM, TTRM or GRSM options.
 !              Reinitialize ANO2_RATIO array to -9.0 to track whether
 !              NO2/NOx ratios are applied on the SO Pathway with
 !              NO2RATIO card for each source.
-            ANO2_RATIO(:) = -9.0D0
-         END IF
+            ano2_ratio(:) = -9.0d0
+         end if
 ! ---       Check for OZONUNIT keyword without O3VALUES keyword
-         IF (ICSTAT(25) == 0 .and. ICSTAT(27) > 0) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','193','CO O3VALUES')
-         END IF
+         if (icstat(25) == 0 .and. icstat(27) > 0) then
+            call errhdl(path,modnam,'E','193','CO O3VALUES')
+         end if
 ! ---       CERC 11/30/20 Check for NOXUNIT keyword without NOX_VALS keyword
-         IF (ICSTAT(37) == 0 .and. ICSTAT(38) > 0) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','193','CO NOX_VALS')
-         END IF
-      END IF
+         if (icstat(37) == 0 .and. icstat(38) > 0) then
+            call errhdl(path,modnam,'E','193','CO NOX_VALS')
+         end if
+      end if
 
 ! ---    Check for ARM2 inputs
-      IF (ARM2) THEN
-         IF (ICSTAT(32) == 0) THEN
+      if (arm2) then
+         if (icstat(32) == 0) then
 ! ---          No ARMRATIO keyword specified; apply default ratios for ARM2
-            ARM2_Min = 0.50D0
-            ARM2_Max = 0.90D0
-         END IF
-      END IF
+            ARM2_Min = 0.50d0
+            ARM2_Max = 0.90d0
+         end if
+      end if
 
 !        OPEN Restart Save and Initialization Files
-      IF (RSTSAV) THEN
-         DUMMY = 'SAVEFILE'
-         OPEN(UNIT=IDPUNT,ERR=99,FILE=SAVFIL,FORM='UNFORMATTED',&
-         &IOSTAT=IOERRN,STATUS='REPLACE')
+      if (rstsav) then
+         dummy = 'SAVEFILE'
+         open(unit=idpunt,err=99,file=savfil,form='UNFORMATTED',&
+         &iostat=ioerrn,status='REPLACE')
 !           Close SAVEFILE since it is re-opened in RSDUMP
-         CLOSE (IDPUNT)
-         IF (SAVFL2 /= SAVFIL) THEN
-            OPEN(UNIT=IDPUN2,ERR=99,FILE=SAVFL2,FORM='UNFORMATTED',&
-            &IOSTAT=IOERRN,STATUS='REPLACE')
+         close (idpunt)
+         if (savfl2 /= savfil) then
+            open(unit=idpun2,err=99,file=savfl2,form='UNFORMATTED',&
+            &iostat=ioerrn,status='REPLACE')
 !              Close SAVEFILE since it is re-opened in RSDUMP
-            CLOSE (IDPUN2)
-         END IF
-      END IF
-      IF (RSTINP) THEN
-         IF (RSTSAV) THEN
+            close (idpun2)
+         end if
+      end if
+      if (rstinp) then
+         if (rstsav) then
 ! ---          First check for filename conflicts with SAVEFILEs
-            IF (INIFIL == SAVFIL .or. INIFIL == SAVFL2) THEN
+            if (inifil == savfil .or. inifil == savfl2) then
 ! ---             The INITFILE name matches a SAVEFILE name;
 !                 issue error message
-               CALL ERRHDL(PATH,MODNAM,'E','590','       ')
-            ELSE
+               call errhdl(path,modnam,'E','590','       ')
+            else
 ! ---             No filename conflict, open INITFILE
-               DUMMY = 'INITFILE'
-               OPEN(UNIT=IRSUNT,ERR=99,FILE=INIFIL,&
-               &FORM='UNFORMATTED',IOSTAT=IOERRN,STATUS='OLD')
-            END IF
-         ELSE
+               dummy = 'INITFILE'
+               open(unit=irsunt,err=99,file=inifil,&
+               &form='UNFORMATTED',iostat=ioerrn,status='OLD')
+            end if
+         else
 ! ---          No SAVEFILEs, so open INITFILE
-            DUMMY = 'INITFILE'
-            OPEN(UNIT=IRSUNT,ERR=99,FILE=INIFIL,FORM='UNFORMATTED',&
-            &IOSTAT=IOERRN,STATUS='OLD')
-         END IF
-      END IF
+            dummy = 'INITFILE'
+            open(unit=irsunt,err=99,file=inifil,form='UNFORMATTED',&
+            &iostat=ioerrn,status='OLD')
+         end if
+      end if
 
 !        Check Averaging Periods Selected for SCREEN Mode Option
-      IF (SCREEN) THEN
-         IF (NUMAVE > 1) THEN
+      if (screen) then
+         if (numave > 1) then
 !              WRITE Error Message:  Too Many Averaging Periods Selected
-            CALL ERRHDL(PATH,MODNAM,'E','295',' 1h Only')
-         ELSE IF (KAVE(1) /= 1) THEN
+            call errhdl(path,modnam,'E','295',' 1h Only')
+         else if (kave(1) /= 1) then
 !              WRITE Error Message:  Invalid Averaging Period Selected
-            CALL ERRHDL(PATH,MODNAM,'E','295',' 1h Only')
-         END IF
-         IF (PERIOD) THEN
+            call errhdl(path,modnam,'E','295',' 1h Only')
+         end if
+         if (period) then
 !              WRITE Error Message:  Too Many Averaging Periods Selected
-            CALL ERRHDL(PATH,MODNAM,'E','295',' 1h Only')
-         END IF
-      END IF
+            call errhdl(path,modnam,'E','295',' 1h Only')
+         end if
+      end if
 
 ! ---    Check for non-DFAULT gas deposition options
 ! JAT 7/2/19 CHECK FOR ALPHA AND GAS DEPOSITION PARAMETERS
 !         IF GAS DEPOSITION PARAMETERS AND NO ALPHA OPTION
 !     ISSUE ERROR.  THERE IS ALSO A CHECK FOR GASDEPOS AND
 !     ALPHA IN SOCARD
-      IF (DFAULT .and. ICSTAT(18) > 0) THEN
+      if (dfault .and. icstat(18) > 0) then
 !           Write Error Message:  Gas Dry Deposition Option w/ DFAULT Option
-         CALL ERRHDL(PATH,MODNAM,'E','196','GDSEASON')
-      ELSEIF (.NOT. L_ALPHA .and. ICSTAT(18) > 0) THEN !JAT ADDED 7/2/19
+         call errhdl(path,modnam,'E','196','GDSEASON')
+      elseif (.not. l_alpha .and. icstat(18) > 0) then !JAT ADDED 7/2/19
 !           Write Error Message:  Gas Dry Deposition Option w/o ALPHA Option
-         CALL ERRHDL(PATH,MODNAM,'E','198','GDSEASON')
-      ELSE IF (ICSTAT(18) > 0) THEN
+         call errhdl(path,modnam,'E','198','GDSEASON')
+      else if (icstat(18) > 0) then
 !           Set flag for use of non-DEFAULT option
-         L_NonDFAULT = .TRUE.
-      END IF
-      IF (DFAULT .and. ICSTAT(19) > 0) THEN
+         L_NonDFAULT = .true.
+      end if
+      if (dfault .and. icstat(19) > 0) then
 !           Write Error Message:  Gas Dry Deposition Option w/ DFAULT Option
-         CALL ERRHDL(PATH,MODNAM,'E','196','GASDEPDF')
-      ELSEIF (.NOT. L_ALPHA .and. ICSTAT(19) > 0) THEN !JAT ADDED 7/2/19
+         call errhdl(path,modnam,'E','196','GASDEPDF')
+      elseif (.not. l_alpha .and. icstat(19) > 0) then !JAT ADDED 7/2/19
 !           Write Error Message:  Gas Dry Deposition Option w/o ALPHA Option
-         CALL ERRHDL(PATH,MODNAM,'E','198','GASDEPDF')
-      ELSE IF (ICSTAT(19) > 0) THEN
+         call errhdl(path,modnam,'E','198','GASDEPDF')
+      else if (icstat(19) > 0) then
 !           Set flag for use of non-DEFAULT option
-         L_NonDFAULT = .TRUE.
-      END IF
-      IF (DFAULT .and. ICSTAT(20) > 0) THEN
+         L_NonDFAULT = .true.
+      end if
+      if (dfault .and. icstat(20) > 0) then
 !           Write Error Message:  Gas Dry Deposition Option w/ DFAULT Option
-         CALL ERRHDL(PATH,MODNAM,'E','196','GDLANUSE')
-      ELSEIF (.NOT. L_ALPHA .and. ICSTAT(20) > 0) THEN !JAT ADDED 7/2/19
+         call errhdl(path,modnam,'E','196','GDLANUSE')
+      elseif (.not. l_alpha .and. icstat(20) > 0) then !JAT ADDED 7/2/19
 !           Write Error Message:  Gas Dry Deposition Option w/o ALPHA Option
-         CALL ERRHDL(PATH,MODNAM,'E','198','GDLANUSE')
-      ELSE IF (ICSTAT(20) > 0) THEN
+         call errhdl(path,modnam,'E','198','GDLANUSE')
+      else if (icstat(20) > 0) then
 !           Set flag for use of non-DEFAULT option
-         L_NonDFAULT = .TRUE.
-      END IF
-      IF (DFAULT .and. ICSTAT(21) > 0) THEN
+         L_NonDFAULT = .true.
+      end if
+      if (dfault .and. icstat(21) > 0) then
 !           Write Error Message:  Gas Dry Deposition Option w/ DFAULT Option
-         CALL ERRHDL(PATH,MODNAM,'E','196','GASDEPVD')
-      ELSEIF (.NOT. L_ALPHA .and. ICSTAT(21) > 0) THEN !JAT ADDED 7/2/19
+         call errhdl(path,modnam,'E','196','GASDEPVD')
+      elseif (.not. l_alpha .and. icstat(21) > 0) then !JAT ADDED 7/2/19
 !           Write Error Message:  Gas Dry Deposition Option w/o ALPHA Option
-         CALL ERRHDL(PATH,MODNAM,'E','198','GASDEPVD')
-      ELSE IF (ICSTAT(21) > 0) THEN
+         call errhdl(path,modnam,'E','198','GASDEPVD')
+      else if (icstat(21) > 0) then
 !           Set flag for use of non-DEFAULT option
-         L_NonDFAULT = .TRUE.
-      END IF
+         L_NonDFAULT = .true.
+      end if
 
 ! ---    Check for incompatibilities with user-specified deposition velocity
-      IF (LUSERVD .and. (DEPOS .or. WDEP .or. WDPLETE)) THEN
+      if (luservd .and. (depos .or. wdep .or. wdplete)) then
 !           Write Error Message: Wet deposition output incompatible with GASDEPVD option
-         CALL ERRHDL(PATH,MODNAM,'E','243','GASDEPVD')
-      END IF
+         call errhdl(path,modnam,'E','243','GASDEPVD')
+      end if
 
 ! ---    Check for incompatible gas deposition inputs with GASDEPVD option for
 !        user-specified gas dry deposition velocity
-      IF (LUSERVD .and. ICSTAT(18) > 0) THEN
+      if (luservd .and. icstat(18) > 0) then
 !           Write Error Message:  Gas Dry Deposition Option w/ user-specified GASDEPVD
-         CALL ERRHDL(PATH,MODNAM,'E','195','GDSEASON')
-      END IF
-      IF (LUSERVD .and. ICSTAT(19) > 0) THEN
+         call errhdl(path,modnam,'E','195','GDSEASON')
+      end if
+      if (luservd .and. icstat(19) > 0) then
 !           Write Error Message:  Gas Dry Deposition Option w/ user-specified GASDEPVD
-         CALL ERRHDL(PATH,MODNAM,'E','195','GASDEPDF')
-      END IF
-      IF (LUSERVD .and. ICSTAT(20) > 0) THEN
+         call errhdl(path,modnam,'E','195','GASDEPDF')
+      end if
+      if (luservd .and. icstat(20) > 0) then
 !           Write Error Message:  Gas Dry Deposition Option w/ user-specified GASDEPVD
-         CALL ERRHDL(PATH,MODNAM,'E','195','GDLANUSE')
-      END IF
+         call errhdl(path,modnam,'E','195','GDLANUSE')
+      end if
 
 !        Generate MODOPS Character Array to Summarize Modeling Options
-      IF (DFAULT) THEN
-         MODOPS(1) = 'RegDFAULT'
-      ELSE IF (L_NonDFAULT) THEN
-         MODOPS(1) = 'NonDFAULT'
-      ELSE
-         MODOPS(1) = '         '
-      END IF
+      if (dfault) then
+         modops(1) = 'RegDFAULT'
+      else if (L_NonDFAULT) then
+         modops(1) = 'NonDFAULT'
+      else
+         modops(1) = '         '
+      end if
 
-      IF (CONC) THEN
-         MODOPS(2) = 'CONC'
-      END IF
-      IF (DEPOS) THEN
-         MODOPS(3) = 'DEPOS'
-      END IF
-      IF (DDEP) THEN
-         MODOPS(4) = 'DDEP'
-      END IF
-      IF (WDEP) THEN
-         MODOPS(5) = 'WDEP'
-      END IF
+      if (conc) then
+         modops(2) = 'CONC'
+      end if
+      if (depos) then
+         modops(3) = 'DEPOS'
+      end if
+      if (ddep) then
+         modops(4) = 'DDEP'
+      end if
+      if (wdep) then
+         modops(5) = 'WDEP'
+      end if
 
-      IF (FLATSRCS) THEN
-         MODOPS(6) = 'FLAT and'
-         MODOPS(7) = 'ELEV'
-      ELSE IF (FLAT) THEN
-         MODOPS(6) = 'FLAT'
-      ELSE
-         MODOPS(7) = 'ELEV'
-      END IF
+      if (flatsrcs) then
+         modops(6) = 'FLAT and'
+         modops(7) = 'ELEV'
+      else if (flat) then
+         modops(6) = 'FLAT'
+      else
+         modops(7) = 'ELEV'
+      end if
 
-      IF (FLGPOL) MODOPS(8)  = 'FLGPOL'
-      IF (NOSTD)  MODOPS(9)  = 'NOSTD'
-      IF (NOCHKD) THEN
-         MODOPS(10) = 'NOCHKD'
-      ELSE IF (L_WARNCHKD) THEN
-         MODOPS(10) = 'WARNCHKD'
-      END IF
+      if (flgpol) modops(8)  = 'FLGPOL'
+      if (nostd)  modops(9)  = 'NOSTD'
+      if (nochkd) then
+         modops(10) = 'NOCHKD'
+      else if (l_warnchkd) then
+         modops(10) = 'WARNCHKD'
+      end if
 
-      IF (FASTALL) THEN
-         MODOPS(11) = 'FASTALL'
-      ELSE IF (FASTAREA) THEN
-         MODOPS(11) = 'FASTAREA'
-      ELSE IF (NOWARN) THEN
-         MODOPS(11) = 'NOWARN'
-      END IF
+      if (fastall) then
+         modops(11) = 'FASTALL'
+      else if (fastarea) then
+         modops(11) = 'FASTAREA'
+      else if (nowarn) then
+         modops(11) = 'NOWARN'
+      end if
 
-      IF (SCREEN) MODOPS(12) = 'SCREEN'
-      IF (MULTYR) MODOPS(13) = 'MULTYR'
+      if (screen) modops(12) = 'SCREEN'
+      if (multyr) modops(13) = 'MULTYR'
 
-      IF (ARDPLETE) THEN
-         MODOPS(14) = 'AREADPLT'
-      ELSE IF (ROMBERG) THEN
-         MODOPS(14) = 'ROMBERG'
-      ELSE IF (DDPLETE) THEN
-         MODOPS(14) = 'DRYDPLT'
-      ELSE IF (.NOT.DDPLETE) THEN
-         MODOPS(14) = 'NODRYDPLT'
-      END IF
+      if (ardplete) then
+         modops(14) = 'AREADPLT'
+      else if (romberg) then
+         modops(14) = 'ROMBERG'
+      else if (ddplete) then
+         modops(14) = 'DRYDPLT'
+      else if (.not.ddplete) then
+         modops(14) = 'NODRYDPLT'
+      end if
 
-      IF (WDPLETE) THEN
-         MODOPS(15) = 'WETDPLT'
-      ELSE IF (.NOT.WDPLETE) THEN
-         MODOPS(15) = 'NOWETDPLT'
-      END IF
+      if (wdplete) then
+         modops(15) = 'WETDPLT'
+      else if (.not.wdplete) then
+         modops(15) = 'NOWETDPLT'
+      end if
 
-      IF (SCIM) MODOPS(16) = 'SCIM'
+      if (scim) modops(16) = 'SCIM'
 
-      IF (RUNTTRM2) THEN
-         IF (PVMRM) THEN
-            MODOPS(17) = 'TTRM2_PVMRM'
-         ELSE IF (OLM) THEN
-            MODOPS(17) = 'TTRM2_OLM'
-         ELSE IF (ARM2) THEN
-            MODOPS(17) = 'TTRM2_ARM2'
-         END IF
-      ELSE IF (PVMRM) THEN
-         MODOPS(17) = 'PVMRM'
-      ELSE IF (OLM) THEN
-         MODOPS(17) = 'OLM'
-      ELSE IF (ARM2) THEN
-         MODOPS(17) = 'ARM2'
-      ELSE IF (GRSM) THEN
-         MODOPS(17) = 'GRSM'
-      ELSE IF (RUNTTRM) THEN
-         MODOPS(17) = 'TTRM'
-      END IF
+      if (runttrm2) then
+         if (pvmrm) then
+            modops(17) = 'TTRM2_PVMRM'
+         else if (olm) then
+            modops(17) = 'TTRM2_OLM'
+         else if (arm2) then
+            modops(17) = 'TTRM2_ARM2'
+         end if
+      else if (pvmrm) then
+         modops(17) = 'PVMRM'
+      else if (olm) then
+         modops(17) = 'OLM'
+      else if (arm2) then
+         modops(17) = 'ARM2'
+      else if (grsm) then
+         modops(17) = 'GRSM'
+      else if (runttrm) then
+         modops(17) = 'TTRM'
+      end if
 
-      IF (PSDCREDIT) THEN
-         MODOPS(18) = 'PSDCREDIT'
-      ENDIF
+      if (psdcredit) then
+         modops(18) = 'PSDCREDIT'
+      endif
 
 ! ---    Add labels for non-DFAULT ALPHA and BETA Options
-      IF (.NOT. DFAULT .and. L_ALPHA) THEN
-         MODOPS(19) = 'ALPHA'
-      ELSE IF (.NOT. DFAULT .and. BETA) THEN
-         MODOPS(19) = 'BETA'
-      ELSE IF (DFAULT .and. BETA) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','204','BETA')
-      ELSE IF (DFAULT .and. L_ALPHA) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','204','ALPHA')
-      END IF
+      if (.not. dfault .and. l_alpha) then
+         modops(19) = 'ALPHA'
+      else if (.not. dfault .and. beta) then
+         modops(19) = 'BETA'
+      else if (dfault .and. beta) then
+         call errhdl(path,modnam,'E','204','BETA')
+      else if (dfault .and. l_alpha) then
+         call errhdl(path,modnam,'E','204','ALPHA')
+      end if
 
 ! ---    Add MODOPS field for RURAL, URBAN, or RUR&URB
-      IF (NURBSRC == 0) THEN
+      if (nurbsrc == 0) then
 ! ---       No URBAN sources
-         MODOPS(20) = 'RURAL'
-      ELSEIF (NURBSRC == NSRC) THEN
+         modops(20) = 'RURAL'
+      elseif (nurbsrc == nsrc) then
 ! ---       All sources are URBAN
-         MODOPS(20) = 'URBAN'
-      ELSE
+         modops(20) = 'URBAN'
+      else
 ! ---       Urban and Rural sources
-         MODOPS(20) = 'Urb&Rur'
-      END IF
+         modops(20) = 'Urb&Rur'
+      end if
 
 !---     Add label for NoUrbTran Non-regulatory Option
-      IF (.NOT. L_UrbanTransition) THEN
-         MODOPS(21) = 'NoUrbTran'
-      END IF
+      if (.not. L_UrbanTransition) then
+         modops(21) = 'NoUrbTran'
+      end if
 
-      IF (L_VectorWS) THEN
-         MODOPS(23) = 'VectorWS'
-      END IF
+      if (L_VectorWS) then
+         modops(23) = 'VectorWS'
+      end if
 
 !CRCO 1/7/21 D074 Add NoMinO3 to summary of model options
 !Question - MODOPS seems to have double setting of some entries. In
 !meset MODOPS(23) is also set (along with 24). Then in metext 26 & 26 are
 !set. So setting to 28 here, as it seems to be the largest of the array not set
 !(current array size is 30). Delete this extra comment during review.
-      IF (NOMINO3) THEN
-         MODOPS(28) = 'NoMinO3'
-      END IF
+      if (nomino3) then
+         modops(28) = 'NoMinO3'
+      end if
 
 !**  Added for Aircraft Plume Rise; UNC-IE
 ! ---    Add MODOPS field for Aircraft
-      IF (NAFTSRC == NSRC .or. NAFTSRC > 0.0D0) THEN
+      if (naftsrc == nsrc .or. naftsrc > 0.0d0) then
 ! ---       Aircraft sources
-         MODOPS(24) = 'AIRCRAFT'
+         modops(24) = 'AIRCRAFT'
 !             Check for ALPHA and DFAULT conflicts
 !WSP begin --- D151 ALPHA requirement MGS 5/18/2023
 !WSP              IF (.NOT. BETA) THEN
@@ -920,22 +920,22 @@ SUBROUTINE COCARD
 !WSP                CALL ERRHDL(PATH,MODNAM,'E','199','ARCFTOPT')
 !WSP              END IF
 !WSP          CHECK ALPHA ON MODELOPT
-         IF (.NOT. L_ALPHA) THEN
+         if (.not. l_alpha) then
 !               WRITE Error Message     ! ALPHA Option Required for ARCFT
-            CALL ERRHDL(PATH,MODNAM,'E','198','ARCFTOPT')
-         END IF
+            call errhdl(path,modnam,'E','198','ARCFTOPT')
+         end if
 !WSP end  --- D151 ALPHA requirement MGS 5/18/2023
-         IF (DFAULT) THEN
+         if (dfault) then
 !               WRITE Error Message     ! Non-DEFAULT Option Conflict
-            CALL ERRHDL(PATH,MODNAM,'E','204','ARCFTOPT')
-         END IF
-      END IF
+            call errhdl(path,modnam,'E','204','ARCFTOPT')
+         end if
+      end if
 !**  End Aircraft Plume Rise insert; April 2023
 
 ! Added for HBP, JAN 2023
-      IF (HBPLUME) THEN
-         MODOPS(29) = 'HBP'
-      END IF
+      if (hbplume) then
+         modops(29) = 'HBP'
+      end if
 ! End HBP insert
 
 
@@ -943,430 +943,430 @@ SUBROUTINE COCARD
 !        with the ADJ_U* option in AERMET or using MMIF-generated met inputs
 !        are identified based on flags included in the surface file header.
 
-      IF (SCIM .and. NUMAVE>0) THEN
+      if (scim .and. numave>0) then
 !           Write Error Message:  Cannot use SCIM with short term averages
-         CALL ERRHDL(PATH,MODNAM,'E','154','ST AVES')
-      END IF
-      IF (SCIM .and. PERIOD) THEN
+         call errhdl(path,modnam,'E','154','ST AVES')
+      end if
+      if (scim .and. period) then
 !           Write Error Message:  Cannot use SCIM with PERIOD average
-         CALL ERRHDL(PATH,MODNAM,'E','154','PERIOD')
-      END IF
-      IF (SCIM .and. DEPOS) THEN
+         call errhdl(path,modnam,'E','154','PERIOD')
+      end if
+      if (scim .and. depos) then
 !           Write Warning Message:  Ignore DEPOS when using SCIM
-         DEPOS = .FALSE.
-         NUMTYP = NUMTYP - 1
-         CALL ERRHDL(PATH,MODNAM,'W','156',' DEPOS ')
-      END IF
+         depos = .false.
+         numtyp = numtyp - 1
+         call errhdl(path,modnam,'W','156',' DEPOS ')
+      end if
 
 !        Adjust output label for ANNUAL average deposition fluxes
-      IF (ANNUAL) THEN
-         DO ITYP = 1, NUMTYP
-            IF (.NOT.CONC .or. ITYP>1) THEN
-               PERLBL(ITYP) = 'GRAMS/M**2/YR'
-            END IF
-         END DO
-      END IF
+      if (annual) then
+         do ityp = 1, numtyp
+            if (.not.conc .or. ityp>1) then
+               perlbl(ityp) = 'GRAMS/M**2/YR'
+            end if
+         end do
+      end if
 
 ! ---    Check for completeness of O3 data inputs
-      IF (L_O3Sector) THEN
+      if (L_O3Sector) then
 ! ---       Check for temporally varying O3VALUES concentrations, OZONEVAL, and/or O3FILEs by sector.
-         DO I = 1, NUMO3Sects
-            IF (L_O3File(I)) THEN
+         do i = 1, NUMO3Sects
+            if (L_O3File(i)) then
 !                 O3FILE for this sector; check for O3VALUES
-               IF (L_O3VALUES(I)) THEN
+               if (l_o3values(i)) then
 !                    O3VALUES values available for this sector; check completeness
-                  IF (IO3SET(I) < IO3MAX(I)) THEN
+                  if (io3set(i) < io3max(i)) then
 !                       WRITE Error Message: Not Enough O3VALUES values
-                     IF (IO3SET(I) < 100) THEN
-                        WRITE(DUMMY,'(''O3SECT'',I1,'' N='',I2)')&
-                        &I, IO3SET(I)
-                     ELSE
-                        WRITE(DUMMY,'(''SECT'',I1,'' N='',I4)')&
-                        &I, IO3SET(I)
-                     END IF
-                     CALL ERRHDL(PATH,MODNAM,'E','261',DUMMY)
-                  END IF
-               ELSE IF (.NOT. L_O3VALUES(I).and.&
-               &.NOT. L_O3VAL(I)) THEN
+                     if (io3set(i) < 100) then
+                        write(dummy,'(''O3SECT'',I1,'' N='',I2)')&
+                        &i, io3set(i)
+                     else
+                        write(dummy,'(''SECT'',I1,'' N='',I4)')&
+                        &i, io3set(i)
+                     end if
+                     call errhdl(path,modnam,'E','261',dummy)
+                  end if
+               else if (.not. l_o3values(i).and.&
+               &.not. l_o3val(i)) then
 ! ---                WRITE Warning Message: HOURLY O3FILE but no O3VALs avail for this Sector;
 !                    full conversion assumed for missing hourly data (subject to equilibrium
 !                    ratio)
-                  WRITE(DUMMY,'(''O3SECT'',I1)') I
-                  CALL ERRHDL(PATH,MODNAM,'W','271',DUMMY)
-               END IF
-            ELSE IF (.NOT. L_O3File(I)) THEN
+                  write(dummy,'(''O3SECT'',I1)') i
+                  call errhdl(path,modnam,'W','271',dummy)
+               end if
+            else if (.not. L_O3File(i)) then
 !                 No HOURLY O3 file available for this sector; check for O3VALUES
-               IF (L_O3VALUES(I)) THEN
+               if (l_o3values(i)) then
 !                    O3VALUES values available for this sector; check completeness
-                  IF (IO3SET(I) < IO3MAX(I)) THEN
+                  if (io3set(i) < io3max(i)) then
 !                       WRITE Error Message: Not Enough O3VALUES values
-                     IF (IO3SET(I) < 100) THEN
-                        WRITE(DUMMY,'(''O3SECT'',I1,'' N='',I2)')&
-                        &I, IO3SET(I)
-                     ELSE
-                        WRITE(DUMMY,'(''SECT'',I1,'' N='',I4)')&
-                        &I, IO3SET(I)
-                     END IF
-                     CALL ERRHDL(PATH,MODNAM,'E','261',DUMMY)
-                  END IF
-               ELSE IF (.NOT. L_O3VALUES(I).and.&
-               &.NOT. L_O3VAL(I)) THEN
+                     if (io3set(i) < 100) then
+                        write(dummy,'(''O3SECT'',I1,'' N='',I2)')&
+                        &i, io3set(i)
+                     else
+                        write(dummy,'(''SECT'',I1,'' N='',I4)')&
+                        &i, io3set(i)
+                     end if
+                     call errhdl(path,modnam,'E','261',dummy)
+                  end if
+               else if (.not. l_o3values(i).and.&
+               &.not. l_o3val(i)) then
 !                    WRITE Error Message: No O3VALUES values and no O3FILE - Missing Sector
-                  WRITE(DUMMY,'(''O3SECT'',I1,'' Msg'')') I
-                  CALL ERRHDL(PATH,MODNAM,'E','261',DUMMY)
-               END IF
-            END IF
-         END DO
-      ELSE ! .NOT. L_O3Sector
+                  write(dummy,'(''O3SECT'',I1,'' Msg'')') i
+                  call errhdl(path,modnam,'E','261',dummy)
+               end if
+            end if
+         end do
+      else ! .NOT. L_O3Sector
 ! ---       No O3SECTORs, check for temporally varying O3VALUES concentrations and/or O3FILE
 !           Set sector index (I) to 1
-         I = 1
-         IF (L_O3File(I)) THEN
+         i = 1
+         if (L_O3File(i)) then
 !              O3FILE for this sector; check for O3VALUES
-            IF (L_O3VALUES(I)) THEN
+            if (l_o3values(i)) then
 !                 O3VALUES values available for this sector; check completeness
-               IF (IO3SET(I) < IO3MAX(I)) THEN
+               if (io3set(i) < io3max(i)) then
 !                    WRITE Error Message: Not Enough O3VALUES values
-                  WRITE(DUMMY,'(''NumVals='',I4)') IO3SET(I)
-                  CALL ERRHDL(PATH,MODNAM,'E','261',DUMMY)
-               END IF
-            ELSE IF (.NOT. L_O3VALUES(I) .and.&
-            &.NOT. L_O3VAL(I)) THEN
+                  write(dummy,'(''NumVals='',I4)') io3set(i)
+                  call errhdl(path,modnam,'E','261',dummy)
+               end if
+            else if (.not. l_o3values(i) .and.&
+            &.not. l_o3val(i)) then
 ! ---             WRITE Warning Message: HOURLY O3FILE but no O3VALs avail for this Sector;
 !                 full conversion assumed for missing hourly data (subject to equilibrium
 !                 ratio)
-               CALL ERRHDL(PATH,MODNAM,'W','271',' ')
-            END IF
-         ELSE IF (.NOT. L_O3File(I)) THEN
-            IF (L_O3VALUES(I)) THEN
+               call errhdl(path,modnam,'W','271',' ')
+            end if
+         else if (.not. L_O3File(i)) then
+            if (l_o3values(i)) then
 !                 No O3FILE, but O3VALUES values available for this sector; check completeness
-               IF (IO3SET(I) < IO3MAX(I)) THEN
+               if (io3set(i) < io3max(i)) then
 !                    WRITE Error Message: Not Enough O3VALUES values
-                  WRITE(DUMMY,'(''NumVals='',I4)') IO3SET(I)
-                  CALL ERRHDL(PATH,MODNAM,'E','261',DUMMY)
-               END IF
-            END IF
-         END IF
+                  write(dummy,'(''NumVals='',I4)') io3set(i)
+                  call errhdl(path,modnam,'E','261',dummy)
+               end if
+            end if
+         end if
 
-      END IF
+      end if
 
 ! ---    CERC 11/30/20 Check for completeness of NOx data inputs
-      IF(L_NOxSector)THEN
+      if(L_NOxSector)then
 ! ---      Check for temporally varying NOXVALUE, NOX_VALS, NOX_FILE by sector.
-         DO I = 1, NUMNOxSects
-            IF (L_NOxFile(I)) THEN
+         do i = 1, NUMNOxSects
+            if (L_NOxFile(i)) then
 !                 NOX_FILE for this sector; check for NOX_VALS
-               IF (L_NOX_VALS(I)) THEN
+               if (l_nox_vals(i)) then
 !                    NOX_VALS values available for this sector; check completeness
-                  IF (INOXSET(I) < INOXMAX(I)) THEN
+                  if (inoxset(i) < inoxmax(i)) then
 !                       WRITE Error Message: Not Enough NOX_VALS values
-                     IF (INOXSET(I) < 100) THEN
-                        WRITE(DUMMY,'(''NOXSCT'',I1,'' N='',I2)')&
-                        &I, INOXSET(I)
-                     ELSE
-                        WRITE(DUMMY,'(''SECT'',I1,'' N='',I4)')&
-                        &I, INOXSET(I)
-                     END IF
-                     CALL ERRHDL(PATH,MODNAM,'E','603',DUMMY)
-                  END IF
-               ELSE IF (.NOT. L_NOX_VALS(I).and.&
-               &.NOT. L_NOXVALUE(I)) THEN
+                     if (inoxset(i) < 100) then
+                        write(dummy,'(''NOXSCT'',I1,'' N='',I2)')&
+                        &i, inoxset(i)
+                     else
+                        write(dummy,'(''SECT'',I1,'' N='',I4)')&
+                        &i, inoxset(i)
+                     end if
+                     call errhdl(path,modnam,'E','603',dummy)
+                  end if
+               else if (.not. l_nox_vals(i).and.&
+               &.not. l_noxvalue(i)) then
 ! ---                WRITE Warning Message: HOURLY NOX_FILE but no NOX_VALS avail for this Sector;
 !                    give zero concentration
-                  WRITE(DUMMY,'(''NOXSECT'',I1)') I
-                  CALL ERRHDL(PATH,MODNAM,'W','611',DUMMY)
-               END IF
-            ELSE IF (.NOT. L_NOxFile(I)) THEN
+                  write(dummy,'(''NOXSECT'',I1)') i
+                  call errhdl(path,modnam,'W','611',dummy)
+               end if
+            else if (.not. L_NOxFile(i)) then
 !                 No HOURLY NOx file available for this sector; check for NOX_VALS
-               IF (L_NOX_VALS(I)) THEN
+               if (l_nox_vals(i)) then
 !                    NOX_VALS avaialable for this sector; check completeness
-                  IF(INOXSET(I) < INOXMAX(I))THEN
+                  if(inoxset(i) < inoxmax(i))then
 !                       WRITE Error Message: Not enough NOX_VALS values
-                     IF (INOXSET(I) < 100) THEN
-                        WRITE(DUMMY, '(''NOXSCT'',I1,'' N='',I2)')&
-                        &I, INOXSET(I)
-                     ELSE
-                        WRITE(DUMMY,'(''SECT'',I1,'' N='',I4)')&
-                        &I, INOXSET(I)
-                     END IF
-                     CALL ERRHDL(PATH,MODNAM,'E','603',DUMMY)
-                  END IF
-               ELSE IF (.NOT. L_NOX_VALS(I).and.&
-               &.NOT. L_NOXVALUE(I)) THEN
+                     if (inoxset(i) < 100) then
+                        write(dummy, '(''NOXSCT'',I1,'' N='',I2)')&
+                        &i, inoxset(i)
+                     else
+                        write(dummy,'(''SECT'',I1,'' N='',I4)')&
+                        &i, inoxset(i)
+                     end if
+                     call errhdl(path,modnam,'E','603',dummy)
+                  end if
+               else if (.not. l_nox_vals(i).and.&
+               &.not. l_noxvalue(i)) then
 !                    WRITE Error Message: No NOX_VALS values and no NOXFILE - Missing Sector
-                  WRITE(DUMMY,'(''NOXSECT'',I1,'' Msg'')') I
-                  CALL ERRHDL(PATH,MODNAM,'E','603',DUMMY)
-               END IF
-            END IF
-         END DO
-      ELSE ! .NOT. L_NOxSector
+                  write(dummy,'(''NOXSECT'',I1,'' Msg'')') i
+                  call errhdl(path,modnam,'E','603',dummy)
+               end if
+            end if
+         end do
+      else ! .NOT. L_NOxSector
 ! ---      NO NOxSectors, check for temporally-varying NOX_VALS concentrations
 !          Set sector index (I) to 1
-         I = 1
-         IF (L_NOxFile(I)) THEN
+         i = 1
+         if (L_NOxFile(i)) then
 !              NOX_FILE for this sector; check for NOX_VALS
-            IF (L_NOX_VALS(I)) THEN
+            if (l_nox_vals(i)) then
 !                 NOX_VALS values available for this sector; check completeness
-               IF (INOXSET(I) < INOXMAX(I)) THEN
+               if (inoxset(i) < inoxmax(i)) then
 !                    WRITE Error Message: Not Enough NOX_VALS values
-                  WRITE(DUMMY,'(''NumVals='',I4)') INOXSET(I)
-                  CALL ERRHDL(PATH,MODNAM,'E','603',DUMMY)
-               END IF
-            ELSE IF (.NOT. L_NOX_VALS(I) .and.&
-            &.NOT. L_NOXVALUE(I)) THEN
+                  write(dummy,'(''NumVals='',I4)') inoxset(i)
+                  call errhdl(path,modnam,'E','603',dummy)
+               end if
+            else if (.not. l_nox_vals(i) .and.&
+            &.not. l_noxvalue(i)) then
 ! ---             WRITE Warning Message: HOURLY NOX_FILE but no NOXVALs avail for this Sector;
 !                 give zero concentration
-               CALL ERRHDL(PATH,MODNAM,'W','611',' ')
-            END IF
-         ELSE IF (.NOT. L_NOXFile(I)) THEN
-            IF(L_NOX_VALS(I))THEN
+               call errhdl(path,modnam,'W','611',' ')
+            end if
+         else if (.not. L_NOXFile(i)) then
+            if(l_nox_vals(i))then
 !                 No NOXFILE but NOX_VALS values available for this sector; check completeness
-               IF (INOXSET(I) < INOXMAX(I)) THEN
+               if (inoxset(i) < inoxmax(i)) then
 !                    WRITE Error Message: Not Enough NOX_VALS values
-                  WRITE(DUMMY,'(''NumVals'',I4)') INOXSET(I)
-                  CALL ERRHDL(PATH,MODNAM,'E','603',DUMMY)
-               END IF
-            END IF
-         END IF
-      END IF
+                  write(dummy,'(''NumVals'',I4)') inoxset(i)
+                  call errhdl(path,modnam,'E','603',dummy)
+               end if
+            end if
+         end if
+      end if
 
 ! ---    Check for user-specified ozone units; apply default if needed
-      IF (ICSTAT(27) /= 1) THEN
+      if (icstat(27) /= 1) then
          OzoneUnits = 'PPB'
-      END IF
+      end if
 
 ! ---    CERC 11/30/20 Check for user-specified NOx units; apply default if needed
-      IF (ICSTAT(38) /= 1) THEN
+      if (icstat(38) /= 1) then
          NOxUnits = 'PPB'
-      END IF
+      end if
 
 ! ---    Check for PM25 processing
-      IF ((POLLUT == 'PM25'  .or. POLLUT == 'PM-2.5' .or.&
-      &POLLUT == 'PM-25' .or. POLLUT == 'PM2.5')) THEN
-         IF(.NOT.L_NO_PM25AVE .and. .NOT.NOCHKD .and.&
-         &.NOT.L_WARNCHKD   .and. .NOT.EVONLY) THEN
+      if ((pollut == 'PM25'  .or. pollut == 'PM-2.5' .or.&
+      &pollut == 'PM-25' .or. pollut == 'PM2.5')) then
+         if(.not.l_no_pm25ave .and. .not.nochkd .and.&
+         &.not.l_warnchkd   .and. .not.evonly) then
 ! ---          Set logical flag for PM25 processing, averaged across years
-            PM25AVE = .TRUE.
+            pm25ave = .true.
 ! ---          Now check for appropriate averaging periods for PM2.5
-            IF (NUMAVE>1 .or. (NUMAVE==1 .and.&
-            &KAVE(1)/=24)) THEN
+            if (numave>1 .or. (numave==1 .and.&
+            &kave(1)/=24)) then
 ! ---             Write Error Message: Short Term average must be 24-hr only
-               DO I = 1, NUMAVE
-                  IF (KAVE(I) /= 24) THEN
-                     WRITE(DUMMY,'(I3,''-hr Ave'')') KAVE(I)
-                     CALL ERRHDL(PATH,MODNAM,'E','363',DUMMY)
-                  END IF
-               END DO
-               PM25AVE = .FALSE.
-            END IF
-            IF (PERIOD) THEN
+               do i = 1, numave
+                  if (kave(i) /= 24) then
+                     write(dummy,'(I3,''-hr Ave'')') kave(i)
+                     call errhdl(path,modnam,'E','363',dummy)
+                  end if
+               end do
+               pm25ave = .false.
+            end if
+            if (period) then
 ! ---             Write Error Message: Long term average must be ANNUAL
-               CALL ERRHDL(PATH,MODNAM,'E','363','PERIOD Ave')
-               PM25AVE = .FALSE.
-            END IF
-         ELSE IF (.NOT.SCREEN .and. .NOT.EVONLY) THEN
+               call errhdl(path,modnam,'E','363','PERIOD Ave')
+               pm25ave = .false.
+            end if
+         else if (.not.screen .and. .not.evonly) then
 ! ---          Set to false for NOCHKD or WARNCHKD options, without the SCREEN or
 !              EVONLY options, and issue warning message
-            IF (NOCHKD) THEN
-               DUMMY = 'NOCHKD'
-            ELSE IF (L_WARNCHKD) THEN
-               DUMMY = 'WARNCHKD'
-            END IF
-            CALL ERRHDL(PATH,MODNAM,'W','363',DUMMY)
-            PM25AVE = .FALSE.
-         ELSE IF (SCREEN .or. EVONLY .or. L_NO_PM25AVE) THEN
+            if (nochkd) then
+               dummy = 'NOCHKD'
+            else if (l_warnchkd) then
+               dummy = 'WARNCHKD'
+            end if
+            call errhdl(path,modnam,'W','363',dummy)
+            pm25ave = .false.
+         else if (screen .or. evonly .or. l_no_pm25ave) then
 ! ---          Set PM25AVE to .FALSE. for SCREEN or EVONLY options or with
 !              L_NO_PM25AVE option, without any warnings
-            PM25AVE = .FALSE.
-         END IF
-      END IF
+            pm25ave = .false.
+         end if
+      end if
 
 ! ---    Check for NO2 1-hour NAAQS processing (NO2AVE = .T.)
-      IF (POLLUT == 'NO2' .and. .NOT.L_NO_NO2AVE .and.&
-      &.NOT.NOCHKD .and. .NOT.L_WARNCHKD  .and.&
-      &.NOT.SCREEN .and. .NOT.EVONLY) THEN
+      if (pollut == 'NO2' .and. .not.l_no_no2ave .and.&
+      &.not.nochkd .and. .not.l_warnchkd  .and.&
+      &.not.screen .and. .not.evonly) then
 ! ---       No options precluding NO2 1-hr NAAQS processing are specified;
 !           next check for averaging periods to determine if multi-year
 !           processing of maximum daily 1-hour averages is being done
-         IF (NUMAVE==1 .and. KAVE(1)==1 .and. .NOT.PERIOD&
-         &.and. .NOT.ANNUAL) THEN
+         if (numave==1 .and. kave(1)==1 .and. .not.period&
+         &.and. .not.annual) then
 ! ---          Set logical flag for 1-hr NO2 processing, averaged across years,
 !              without PERIOD or ANNUAL averages
-            NO2AVE = .TRUE.
-         ELSE IF (NUMAVE==1 .and. KAVE(1)==1 .and. PERIOD&
-         &.and. MULTYR) THEN
+            no2ave = .true.
+         else if (numave==1 .and. kave(1)==1 .and. period&
+         &.and. multyr) then
 ! ---          Set logical flag for 1-hr NO2 processing, averaged across years,
 !              using MULTYEAR option to address PERIOD averages
-            NO2AVE = .TRUE.
-         ELSE IF (NUMAVE==1 .and. KAVE(1)==1 .and.&
-         &(PERIOD .or. ANNUAL) .and.&
-         &.NOT.MULTYR) THEN
+            no2ave = .true.
+         else if (numave==1 .and. kave(1)==1 .and.&
+         &(period .or. annual) .and.&
+         &.not.multyr) then
 ! ---          Write Warning Message: PERIOD averages should not be
 !              processed with 1-hour averages for NO2 unless only 1 year
 !              of met data is being processed or if the MULTYEAR option
 !              is specified.
-            CALL ERRHDL(PATH,MODNAM,'W','361','MULTYEAR Opt')
+            call errhdl(path,modnam,'W','361','MULTYEAR Opt')
 ! ---          Allow processing to continue, but long-term results
 !              may be wrong.
-            NO2AVE = .TRUE.
-         ELSE IF (NUMAVE>1 .or.&
-         &(NUMAVE==1 .and. KAVE(1)/=1) .and.&
-         &(PERIOD .or. ANNUAL) .and.&
-         &.NOT.MULTYR) THEN
+            no2ave = .true.
+         else if (numave>1 .or.&
+         &(numave==1 .and. kave(1)/=1) .and.&
+         &(period .or. annual) .and.&
+         &.not.multyr) then
 ! ---          Write Warning Message: PERIOD averages should not be
 !              processed with 1-hour averages for NO2 unless only 1 year
 !              of met data is being processed or if the MULTYEAR option
 !              is specified.  If NUMAVE > 1 then a non-standard short-term
 !              average is being selected, and short-term averages other than
 !              1-hour cannot be processed with the 1-hr NO2 NAAQS.
-            CALL ERRHDL(PATH,MODNAM,'W','361','MULTYEAR Opt')
+            call errhdl(path,modnam,'W','361','MULTYEAR Opt')
 ! ---          Write Warning Message: Non-standard short term average for NO2,
 !              and disable special processing for 1-hour NAAQS.
-            DO I = 1, NUMAVE
-               IF (KAVE(I) /= 1) THEN
-                  WRITE(DUMMY,'(I3,''-hr Ave'')') KAVE(I)
-                  CALL ERRHDL(PATH,MODNAM,'W','362',DUMMY)
-               END IF
-            END DO
-            NO2AVE = .FALSE.
-         ELSE IF (NUMAVE>1 .or.&
-         &(NUMAVE==1 .and. KAVE(1)/=1) ) THEN
+            do i = 1, numave
+               if (kave(i) /= 1) then
+                  write(dummy,'(I3,''-hr Ave'')') kave(i)
+                  call errhdl(path,modnam,'W','362',dummy)
+               end if
+            end do
+            no2ave = .false.
+         else if (numave>1 .or.&
+         &(numave==1 .and. kave(1)/=1) ) then
 ! ---          Write Warning Message: Non-standard short term average for NO2
 ! ---          Write Warning Message: Short Term average should be 1-hr only for NO2
-            DO I = 1, NUMAVE
-               IF (KAVE(I) /= 1) THEN
-                  WRITE(DUMMY,'(I3,''-hr Ave'')') KAVE(I)
-                  CALL ERRHDL(PATH,MODNAM,'W','362',DUMMY)
-               END IF
-            END DO
-            NO2AVE = .FALSE.
-         ELSE
+            do i = 1, numave
+               if (kave(i) /= 1) then
+                  write(dummy,'(I3,''-hr Ave'')') kave(i)
+                  call errhdl(path,modnam,'W','362',dummy)
+               end if
+            end do
+            no2ave = .false.
+         else
 ! ---          Period or Annual average only, set NO2AVE = .F. but allow
 !              processing
-            NO2AVE = .FALSE.
-         END IF
-      ELSE IF (POLLUT == 'NO2' .and. .NOT.SCREEN .and.&
-      &.NOT.EVONLY) THEN
+            no2ave = .false.
+         end if
+      else if (pollut == 'NO2' .and. .not.screen .and.&
+      &.not.evonly) then
 ! ---       Set NO2AVE to false for NOCHKD, WARNCHKD and L_NO_NO2AVE options, without
 !           the SCREEN or EVONLY options; issue warning messages for NOCHKD or WARNCHKD
 !           (message has already been issued for L_NO_NO2AVE), and disable special
 !           processing for 1-hour NAAQS.
-         IF (NUMAVE==1 .and. KAVE(1)==1 .and.&
-         &((.NOT.PERIOD .and. .NOT.ANNUAL) .or.&
-         &(PERIOD .and. MULTYR) .or.&
-         &((PERIOD .or. ANNUAL) .and. .NOT.MULTYR)) )THEN
-            IF (NOCHKD) THEN
-               DUMMY = 'NOCHKD'
-               CALL ERRHDL(PATH,MODNAM,'W','362',DUMMY)
-            ELSE IF (L_WARNCHKD) THEN
-               DUMMY = 'WARNCHKD'
-               CALL ERRHDL(PATH,MODNAM,'W','362',DUMMY)
-            END IF
-            NO2AVE = .FALSE.
-         END IF
-      ELSE IF (POLLUT == 'NO2' .and. (SCREEN .or. EVONLY)) THEN
+         if (numave==1 .and. kave(1)==1 .and.&
+         &((.not.period .and. .not.annual) .or.&
+         &(period .and. multyr) .or.&
+         &((period .or. annual) .and. .not.multyr)) )then
+            if (nochkd) then
+               dummy = 'NOCHKD'
+               call errhdl(path,modnam,'W','362',dummy)
+            else if (l_warnchkd) then
+               dummy = 'WARNCHKD'
+               call errhdl(path,modnam,'W','362',dummy)
+            end if
+            no2ave = .false.
+         end if
+      else if (pollut == 'NO2' .and. (screen .or. evonly)) then
 ! ---       Set NO2AVE to .FALSE. for SCREEN or EVONLY options, without any warnings
-         NO2AVE = .FALSE.
-      END IF
+         no2ave = .false.
+      end if
 
 ! ---    Check for SO2 1-hour NAAQS processing (SO2AVE = .T.)
-      IF (POLLUT == 'SO2' .and. .NOT.NOCHKD .and. .NOT.L_NO_SO2AVE&
-      &.and. .NOT.L_WARNCHKD .and. .NOT.EVONLY) THEN
+      if (pollut == 'SO2' .and. .not.nochkd .and. .not.l_no_so2ave&
+      &.and. .not.l_warnchkd .and. .not.evonly) then
 ! ---       No options precluding SO2 1-hr NAAQS processing are specified;
 !           next check for averaging periods to determine if multi-year
 !           processing of maximum daily 1-hour averages is being done
-         IF (NUMAVE==1 .and. KAVE(1)==1 .and. .NOT.PERIOD&
-         &.and. .NOT.ANNUAL) THEN
+         if (numave==1 .and. kave(1)==1 .and. .not.period&
+         &.and. .not.annual) then
 ! ---          Set logical flag for 1-hr SO2 processing, averaged across years
-            SO2AVE = .TRUE.
-         ELSE IF (NUMAVE==1 .and. KAVE(1)==1 .and. PERIOD&
-         &.and. MULTYR) THEN
+            so2ave = .true.
+         else if (numave==1 .and. kave(1)==1 .and. period&
+         &.and. multyr) then
 ! ---          Set logical flag for 1-hr SO2 processing, averaged across years,
 !              using MULTYEAR option to address PERIOD averages
-            SO2AVE = .TRUE.
-         ELSE IF (NUMAVE==1 .and. KAVE(1)==1 .and.&
-         &(PERIOD .or. ANNUAL) .and.&
-         &.NOT.MULTYR) THEN
+            so2ave = .true.
+         else if (numave==1 .and. kave(1)==1 .and.&
+         &(period .or. annual) .and.&
+         &.not.multyr) then
 ! ---          Write Warning Message: PERIOD averages should not be
 !              processed with 1-hour averages for SO2 unless only 1 year
 !              of met data is being processed or if the MULTYEAR option
 !              is specified.
-            CALL ERRHDL(PATH,MODNAM,'W','361','MULTYEAR Opt')
+            call errhdl(path,modnam,'W','361','MULTYEAR Opt')
 ! ---          Allow processing to continue, but long-term results
 !              may be wrong.
-            SO2AVE = .TRUE.
-         ELSE IF (NUMAVE>1 .and. MINVAL(KAVE)==1 .and.&
-         &(PERIOD .or. ANNUAL) .and.&
-         &.NOT.MULTYR) THEN
+            so2ave = .true.
+         else if (numave>1 .and. minval(kave)==1 .and.&
+         &(period .or. annual) .and.&
+         &.not.multyr) then
 ! ---          Write Warning Message: PERIOD averages should not be
 !              processed with 1-hour averages for SO2 unless only 1 year
 !              of met data is being processed or if the MULTYEAR option
 !              is specified. Also, short-term averages other than
 !              1-hour cannot be processed with the 1-hr SO2 NAAQS.
-            CALL ERRHDL(PATH,MODNAM,'W','361','MULTYEAR Opt')
+            call errhdl(path,modnam,'W','361','MULTYEAR Opt')
 ! ---          Write Warning Message: Non-standard short term average for SO2,
 !              and disable special processing for 1-hour NAAQS.
-            DO I = 1, NUMAVE
-               IF (KAVE(I) /= 1) THEN
-                  WRITE(DUMMY,'(I3,''-hr Ave'')') KAVE(I)
-                  CALL ERRHDL(PATH,MODNAM,'W','362',DUMMY)
-               END IF
-            END DO
+            do i = 1, numave
+               if (kave(i) /= 1) then
+                  write(dummy,'(I3,''-hr Ave'')') kave(i)
+                  call errhdl(path,modnam,'W','362',dummy)
+               end if
+            end do
 ! ---          Allow processing to continue, but without special processing
 !              of 1-hr values averaged across years
-            SO2AVE = .FALSE.
-         ELSE IF (NUMAVE>1 .and. MINVAL(KAVE)==1) THEN
+            so2ave = .false.
+         else if (numave>1 .and. minval(kave)==1) then
 ! ---          Write Warning Message: Non-standard short term average for SO2,
 !              and disable special processing for 1-hour NAAQS.
-            DO I = 1, NUMAVE
-               IF (KAVE(I) /= 1) THEN
-                  WRITE(DUMMY,'(I3,''-hr Ave'')') KAVE(I)
-                  CALL ERRHDL(PATH,MODNAM,'W','362',DUMMY)
-               END IF
-            END DO
+            do i = 1, numave
+               if (kave(i) /= 1) then
+                  write(dummy,'(I3,''-hr Ave'')') kave(i)
+                  call errhdl(path,modnam,'W','362',dummy)
+               end if
+            end do
 ! ---          Allow processing to continue, but without special processing
 !              of 1-hr values averaged across years
-            SO2AVE = .FALSE.
-         ELSE
+            so2ave = .false.
+         else
 ! ---          Period or Annual average only, set SO2AVE = .F. but allow
 !              processing
-            SO2AVE = .FALSE.
-         END IF
-      ELSE IF (POLLUT == 'SO2' .and. .NOT.SCREEN .and.&
-      &.NOT.EVONLY) THEN
+            so2ave = .false.
+         end if
+      else if (pollut == 'SO2' .and. .not.screen .and.&
+      &.not.evonly) then
 ! ---       Set SO2AVE to false for NOCHKD or WARNCHKD options, without the
 !           SCREEN or EVONLY options, issue warning message, and disable
 !           special processing for 1-hour NAAQS.
-         IF (NUMAVE==1 .and. KAVE(1)==1 .and.&
-         &((.NOT.PERIOD .and. .NOT.ANNUAL) .or.&
-         &(PERIOD .and. MULTYR) .or.&
-         &((PERIOD .or. ANNUAL) .and. .NOT.MULTYR)) )THEN
-            IF (NOCHKD) THEN
-               DUMMY = 'NOCHKD'
-            ELSE IF (L_WARNCHKD) THEN
-               DUMMY = 'WARNCHKD'
-            END IF
-            CALL ERRHDL(PATH,MODNAM,'W','362',DUMMY)
-            SO2AVE = .FALSE.
-         END IF
-      ELSE IF (POLLUT == 'SO2' .and. (SCREEN .or. EVONLY)) THEN
+         if (numave==1 .and. kave(1)==1 .and.&
+         &((.not.period .and. .not.annual) .or.&
+         &(period .and. multyr) .or.&
+         &((period .or. annual) .and. .not.multyr)) )then
+            if (nochkd) then
+               dummy = 'NOCHKD'
+            else if (l_warnchkd) then
+               dummy = 'WARNCHKD'
+            end if
+            call errhdl(path,modnam,'W','362',dummy)
+            so2ave = .false.
+         end if
+      else if (pollut == 'SO2' .and. (screen .or. evonly)) then
 ! ---       Set SO2AVE to .FALSE. for SCREEN or EVONLY options, without any warnings
-         SO2AVE = .FALSE.
-      END IF
+         so2ave = .false.
+      end if
 
 ! ---    Check for pollutant ID = 'NO2' for PVMRM, OLM, ARM2 and GRSM options
-      IF ((PVMRM .or. OLM .or. ARM2 .or. GRSM) .and.&
-      &POLLUT /= 'NO2') THEN
+      if ((pvmrm .or. olm .or. arm2 .or. grsm) .and.&
+      &pollut /= 'NO2') then
 !           Write Error Message:  Pollutant ID doesn't match option
-         CALL ERRHDL(PATH,MODNAM,'E','284',' NO2 ')
-      END IF
+         call errhdl(path,modnam,'E','284',' NO2 ')
+      end if
 
 ! ---    Check for PM25, NO2, or SO2 processing based on ranked values
 !        averaged across years, and adjust PLOTFILE format accordingly
-      IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
-         PLTFRM = '(3(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,A5,5X,A8,2X,&
+      if (pm25ave .or. no2ave .or. so2ave) then
+         pltfrm = '(3(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,A5,5X,A8,2X,&
          &               10(F13.5,2X,I8.8,2X:))'
-      END IF
+      end if
 
 ! ---    AWMA enhancements to PRIME
 ! ---    AWMADWNW and ORD_DWNW and have different ways to define
@@ -1375,41 +1375,41 @@ SUBROUTINE COCARD
 !          be specified.  Check for that here.  A similar check is performed
 !          in ORD_DOWNWASH
 
-      IF (L_AWMA_UEFF .and. L_ORD_UEFF) THEN
+      if (l_awma_ueff .and. l_ord_ueff) then
 ! ---       Write error message
-         CALL ERRHDL(PATH,MODNAM,'E','124','  ')
-      END IF
+         call errhdl(path,modnam,'E','124','  ')
+      end if
 
 ! ---    Check for conflicts between AWMA and ORD Ueff options (which
 !         is an error) as well as AWMAUTurb and AWMAUturbHX (which only
 !         issues a warning)
-      IF (L_AWMA_UTurb .and. L_AWMA_UTurbHX) THEN
-         CALL ERRHDL(PATH,MODNAM,'W','478',' ')
-      END IF
+      if (L_AWMA_UTurb .and. L_AWMA_UTurbHX) then
+         call errhdl(path,modnam,'W','478',' ')
+      end if
 
-      GO TO 1000
+      go to 1000
 
 !        WRITE Error Message for Error Opening File
-99    CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
-      IF (DUMMY == 'SAVEFILE') THEN
+99    call errhdl(path,modnam,'E','500',dummy)
+      if (dummy == 'SAVEFILE') then
 !           Reset Logical Flag for SAVEFILE Option Due to Error Opening File
-         RSTSAV = .FALSE.
-      ELSE IF (DUMMY == 'INITFILE') THEN
+         rstsav = .false.
+      else if (dummy == 'INITFILE') then
 !           Reset Logical Flag for INITFILE Option Due to Error Opening File
-         RSTINP = .FALSE.
-      END IF
+         rstinp = .false.
+      end if
 
-1000  CONTINUE
+1000  continue
 
-   ELSE
+   else
 !        Write Error Message: Invalid Keyword for This Pathway
-      CALL ERRHDL(PATH,MODNAM,'E','110',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','110',keywrd)
+   end if
 
-999 RETURN
-END SUBROUTINE COCARD
+999 return
+end subroutine cocard
 
-SUBROUTINE TITLES
+subroutine titles
 !***********************************************************************
 !                 TITLES Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1427,36 +1427,36 @@ SUBROUTINE TITLES
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'TITLES'
+   modnam = 'TITLES'
 
-   IF (KEYWRD == 'TITLEONE') THEN
-      TITLE1 = RUNST1(LOCE(2)+2:MIN(LEN_TRIM(RUNST1),&
-      &(LOCE(2)+2+ILEN_FLD-1)))
-      IF (TITLE1 == ' ') THEN
+   if (keywrd == 'TITLEONE') then
+      title1 = runst1(loce(2)+2:min(len_trim(runst1),&
+      &(loce(2)+2+ilen_fld-1)))
+      if (title1 == ' ') then
 !*          Write Error Message: Missing Parameter Title
-         CALL ERRHDL(PATH,MODNAM,'W','200',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'W','200',keywrd)
+      end if
 
-   ELSE IF (KEYWRD == 'TITLETWO') THEN
-      TITLE2 = RUNST1(LOCE(2)+2:MIN(LEN_TRIM(RUNST1),&
-      &(LOCE(2)+2+ILEN_FLD-1)))
-      IF (TITLE2 == ' ') THEN
+   else if (keywrd == 'TITLETWO') then
+      title2 = runst1(loce(2)+2:min(len_trim(runst1),&
+      &(loce(2)+2+ilen_fld-1)))
+      if (title2 == ' ') then
 !*          Write Warning Message
-         CALL ERRHDL(PATH,MODNAM,'W','200',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'W','200',keywrd)
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END SUBROUTINE TITLES
+   return
+end subroutine titles
 
 
-SUBROUTINE MODOPT
+subroutine modopt
 !***********************************************************************
 !                 MODOPT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1512,38 +1512,38 @@ SUBROUTINE MODOPT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE RLINE_DATA, ONLY: FAC_DISPHT !needed for RLINEFDH MODELOPT (Wood 6/22/2021)
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   use rline_data, only: fac_dispht !needed for RLINEFDH MODELOPT (Wood 6/22/2021)
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I
-   CHARACTER :: KOPT*9
+   integer :: i
+   character :: kopt*9
 
 !     Variable Initializations - Initialize All Logical Switches to FALSE
-   MODNAM = 'MODOPT'
+   modnam = 'MODOPT'
 
 !     Check for Too Few or Too Many Parameters
-   IF (IFC < 3) THEN
+   if (ifc < 3) then
 !        WRITE Error Message     ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-   ELSE IF (IFC > 14) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+   else if (ifc > 14) then
 !        WRITE Warning Message   ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'W','202',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'W','202',keywrd)
+   end if
 
 ! --- Assign DEFAULT value of 0.2D0 to SVMIN, minimum
 !     sigma-v value (formerly assigned as a PARAMETER);
 !CRT  value of SVMIN may be increased to 0.5D0 using
 !CRT  the ALPHA option and the CO LOW_WIND keyword:
-   SVMIN = 0.2D0
+   svmin = 0.2d0
 
 ! --- Assign DEFAULT value for minimum wind speed of
 !     0.2828 m/s, equivalent to SQRT(2*SVMIN*SVMIN)
 !     used in previous versions.
 !CRT  User can change the value of WSMIN using the ALPHA model
 !CRT  option and the CO LOW_WIND keyword.
-   WSMIN = 0.2828D0
+   wsmin = 0.2828d0
 
 !CRT  Assign DEFAULT value of 1.0 for the maximum meander
 !CRT  factor, FRANMAX. The value of FRANMAX was adjusted
@@ -1554,288 +1554,288 @@ SUBROUTINE MODOPT
 !CRT  1/29/2018 LowWind2 has been removed as a BETA option. The user
 !CRT  can now modify the FRANMAX value is using the ALPHA
 !CRT  option and the CO LOW_WIND keyword
-   FRANMAX = 1.0D0
+   franmax = 1.0d0
 
 !**   3/18/2022 add FRANMIN for meander testing
 !**   range from 0 to 1. Default value is 0 -Wood
-   FRANMIN = 0.0D0
+   franmin = 0.0d0
 
 !CRT  CRT 9/11/2020, D062 User Minimum Sigma W
 !CRT  Assign DEFAULT value for minimum sigma w of 0.02 m/s
 !CRT  (formerly assigned as a PARAMETER;
 !CRT  Value can now be assigned by the user using the the ALPHA
 !CRT  model option and the CO LOW_WIND keyword.
-   SWMIN = 0.02D0
+   swmin = 0.02d0
 
 !RCO  RCO 9/27/2020, D061 User BIGT value
 !RCO  Assign DEFAULT value for BIGT value of 24 hours
 !RCO  (formerly a PARAMETER in MEANDR routine in calc2)
 !RCO  Value can now be assigned by the user using the the ALPHA
 !RCO  model option and the CO LOW_WIND keyword.
-   BIGT = 24.0D0
+   bigt = 24.0d0
 
 !MGS Added MODELOPT keyword RLINEFDH, which will change this value
 !MGS (from RLINE_v1_2) to =0.0. Wood 6/22/2021
-   FAC_DISPHT  = 5.0D0
+   fac_dispht  = 5.0d0
 
 
 ! --- Assign DEFAULT value of 2.15 for the SZCOEF parameter
 !     used in the IBL calculations.
-   SZCOEF = 2.15D0
+   szcoef = 2.15d0
 
 !     First Check for Presence of DFAULT Switch
-   DO I = 3, IFC
-      KOPT = FIELD(I)
-      IF (KOPT == 'DFAULT' .or. KOPT == 'DEFAULT') THEN
-         DFAULT      = .TRUE.
-         ELEV        = .TRUE.
-         FLAT        = .FALSE.
-         FLATSRCS    = .FALSE.
-         MSGPRO      = .TRUE.
-         NOSTD       = .FALSE.
-         NOCHKD      = .FALSE.
-         SCREEN      = .FALSE.
-         SCIM        = .FALSE.
-         PSDCREDIT   = .FALSE.
-         BETA        = .FALSE.
-         L_ALPHA     = .FALSE.
-         FASTAREA    = .FALSE.
-         FASTALL     = .FALSE.
-         L_EFFSIGY   = .FALSE.
-         LOW_WIND    = .FALSE.
-         L_NonDFAULT = .FALSE.
-         L_UrbanTransition = .TRUE.
-         GRSM       = .FALSE.
-         NOMINO3    = .FALSE.
-         L_AREAMNDR   = .FALSE.  !Added area meander flag to the alpha options D128 Wood 6/3/22
-         EXIT
-      END IF
-   END DO
+   do i = 3, ifc
+      kopt = field(i)
+      if (kopt == 'DFAULT' .or. kopt == 'DEFAULT') then
+         dfault      = .true.
+         elev        = .true.
+         flat        = .false.
+         flatsrcs    = .false.
+         msgpro      = .true.
+         nostd       = .false.
+         nochkd      = .false.
+         screen      = .false.
+         scim        = .false.
+         psdcredit   = .false.
+         beta        = .false.
+         l_alpha     = .false.
+         fastarea    = .false.
+         fastall     = .false.
+         l_effsigy   = .false.
+         low_wind    = .false.
+         L_NonDFAULT = .false.
+         L_UrbanTransition = .true.
+         grsm       = .false.
+         nomino3    = .false.
+         l_areamndr   = .false.  !Added area meander flag to the alpha options D128 Wood 6/3/22
+         exit
+      end if
+   end do
 
 !     Next check for presence of both FLAT and ELEV if NOT.DFAULT
-   IF (.NOT. DFAULT) THEN
+   if (.not. dfault) then
 !        First look for FLAT
-      DO I = 3, IFC
-         KOPT = FIELD(I)
-         IF (KOPT == 'FLAT') THEN
-            FLAT = .TRUE.
-            ELEV = .FALSE.
-            EXIT
-         END IF
-      END DO
+      do i = 3, ifc
+         kopt = field(i)
+         if (kopt == 'FLAT') then
+            flat = .true.
+            elev = .false.
+            exit
+         end if
+      end do
 !        If FLAT, next look for ELEV, indicating both FLAT and
 !        ELEV sources in the same run (FLATSRCS)
-      IF (FLAT) THEN
-         DO I = 3, IFC
-            KOPT = FIELD(I)
-            IF (KOPT == 'ELEV') THEN
-               ELEV     = .TRUE.
-               FLATSRCS = .TRUE.
-               EXIT
-            END IF
-         END DO
-      END IF
-   ELSE
+      if (flat) then
+         do i = 3, ifc
+            kopt = field(i)
+            if (kopt == 'ELEV') then
+               elev     = .true.
+               flatsrcs = .true.
+               exit
+            end if
+         end do
+      end if
+   else
 !        Look for FLAT with DFAULT
-      DO I = 3, IFC
-         KOPT = FIELD(I)
-         IF (KOPT == 'FLAT') THEN
+      do i = 3, ifc
+         kopt = field(i)
+         if (kopt == 'FLAT') then
 !              WRITE Warning Message     ! Non-DEFAULT Option Overridden
-            CALL ERRHDL(PATH,MODNAM,'W','206',KOPT)
-         END IF
-      END DO
-   END IF
+            call errhdl(path,modnam,'W','206',kopt)
+         end if
+      end do
+   end if
 
 !     Next Check for Presence of BETA Switch
-   DO I = 3, IFC
-      KOPT = FIELD(I)
-      IF (KOPT == 'BETA' .and. .NOT.DFAULT) THEN
-         BETA = .TRUE.
-      ELSE IF (KOPT == 'ALPHA' .and. .NOT.DFAULT) THEN
-         L_ALPHA = .TRUE.
-      END IF
-   END DO
+   do i = 3, ifc
+      kopt = field(i)
+      if (kopt == 'BETA' .and. .not.dfault) then
+         beta = .true.
+      else if (kopt == 'ALPHA' .and. .not.dfault) then
+         l_alpha = .true.
+      end if
+   end do
 
-   NUMTYP = 0
+   numtyp = 0
 !     Loop Through Fields Again Setting All Swithes
-   DO I = 3, IFC
-      KOPT = FIELD(I)
-      IF (KOPT == 'DFAULT' .or. KOPT == 'DEFAULT') THEN
-         DFAULT = .TRUE.
-      ELSE IF (KOPT == 'CONC') THEN
-         IF (.NOT. CONC) THEN
-            CONC   = .TRUE.
-            NUMTYP = NUMTYP + 1
-         END IF
-      ELSE IF (KOPT == 'DEPOS') THEN
-         IF (.NOT. DEPOS) THEN
-            DEPOS  = .TRUE.
-            NUMTYP = NUMTYP + 1
-         END IF
-      ELSE IF (KOPT == 'DDEP') THEN
-         IF (.NOT. DDEP) THEN
-            DDEP   = .TRUE.
-            NUMTYP = NUMTYP + 1
-         END IF
-      ELSE IF (KOPT == 'WDEP') THEN
-         IF (.NOT. WDEP) THEN
-            WDEP   = .TRUE.
-            NUMTYP = NUMTYP + 1
-         END IF
-      ELSE IF (KOPT == 'FLAT' .or. KOPT == 'ELEV') THEN
-         CYCLE
-      ELSE IF (KOPT == 'DRYDPLT' .and. .NOT.NODRYDPLT) THEN
-         DDPLETE = .TRUE.
-         DRYDPLT = .TRUE.
-      ELSE IF (KOPT == 'DRYDPLT' .and. NODRYDPLT) THEN
+   do i = 3, ifc
+      kopt = field(i)
+      if (kopt == 'DFAULT' .or. kopt == 'DEFAULT') then
+         dfault = .true.
+      else if (kopt == 'CONC') then
+         if (.not. conc) then
+            conc   = .true.
+            numtyp = numtyp + 1
+         end if
+      else if (kopt == 'DEPOS') then
+         if (.not. depos) then
+            depos  = .true.
+            numtyp = numtyp + 1
+         end if
+      else if (kopt == 'DDEP') then
+         if (.not. ddep) then
+            ddep   = .true.
+            numtyp = numtyp + 1
+         end if
+      else if (kopt == 'WDEP') then
+         if (.not. wdep) then
+            wdep   = .true.
+            numtyp = numtyp + 1
+         end if
+      else if (kopt == 'FLAT' .or. kopt == 'ELEV') then
+         cycle
+      else if (kopt == 'DRYDPLT' .and. .not.nodrydplt) then
+         ddplete = .true.
+         drydplt = .true.
+      else if (kopt == 'DRYDPLT' .and. nodrydplt) then
 ! ---       Write Error Message        ! Conflicting options specified
-         CALL ERRHDL(PATH,MODNAM,'E','149',KOPT)
-      ELSE IF (KOPT == 'NODRYDPLT' .and. .NOT.DRYDPLT) THEN
+         call errhdl(path,modnam,'E','149',kopt)
+      else if (kopt == 'NODRYDPLT' .and. .not.drydplt) then
 !           Dry depletion is now standard - include "option" to override it
-         DDPLETE = .FALSE.
+         ddplete = .false.
 !           Set separate logical for user-specified option to ensure that
 !           it is reflected in the page header
-         NODRYDPLT = .TRUE.
-      ELSE IF (KOPT == 'NODRYDPLT' .and. DRYDPLT) THEN
+         nodrydplt = .true.
+      else if (kopt == 'NODRYDPLT' .and. drydplt) then
 ! ---       Write Error Message        ! Conflicting options specified
-         CALL ERRHDL(PATH,MODNAM,'E','149',KOPT)
-      ELSE IF (KOPT == 'ROMBERG') THEN
-         ROMBERG = .TRUE.
-         DDPLETE = .TRUE.
-      ELSE IF (KOPT == 'AREADPLT') THEN
-         IF (.NOT. DFAULT) THEN
-            ARDPLETE = .TRUE.
-            DDPLETE  = .TRUE.
-         ELSE
+         call errhdl(path,modnam,'E','149',kopt)
+      else if (kopt == 'ROMBERG') then
+         romberg = .true.
+         ddplete = .true.
+      else if (kopt == 'AREADPLT') then
+         if (.not. dfault) then
+            ardplete = .true.
+            ddplete  = .true.
+         else
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
-            CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
-         END IF
-      ELSE IF (KOPT == 'WETDPLT' .and. .NOT.NOWETDPLT) THEN
-         WDPLETE = .TRUE.
-         WETDPLT = .TRUE.
-      ELSE IF (KOPT == 'WETDPLT' .and. NOWETDPLT) THEN
+            call errhdl(path,modnam,'E','204',kopt)
+         end if
+      else if (kopt == 'WETDPLT' .and. .not.nowetdplt) then
+         wdplete = .true.
+         wetdplt = .true.
+      else if (kopt == 'WETDPLT' .and. nowetdplt) then
 ! ---       Write Error Message        ! Conflicting options specified
-         CALL ERRHDL(PATH,MODNAM,'E','149',KOPT)
-      ELSE IF (KOPT == 'NOWETDPLT' .and. .NOT.WETDPLT) THEN
+         call errhdl(path,modnam,'E','149',kopt)
+      else if (kopt == 'NOWETDPLT' .and. .not.wetdplt) then
 !           Wet depletion is now standard - include "option" to override it
-         WDPLETE = .FALSE.
+         wdplete = .false.
 !           Set separate logical for user-specified option to ensure that
 !           it is reflected in the page header
-         NOWETDPLT = .TRUE.
-      ELSE IF (KOPT == 'NOWETDPLT' .and. WETDPLT) THEN
+         nowetdplt = .true.
+      else if (kopt == 'NOWETDPLT' .and. wetdplt) then
 ! ---       Write Error Message        ! Conflicting options specified
-         CALL ERRHDL(PATH,MODNAM,'E','149',KOPT)
-      ELSE IF (KOPT == 'NOSTD') THEN
-         IF (.NOT. DFAULT) THEN
-            NOSTD = .TRUE.
-         ELSE
+         call errhdl(path,modnam,'E','149',kopt)
+      else if (kopt == 'NOSTD') then
+         if (.not. dfault) then
+            nostd = .true.
+         else
 !              WRITE Warning Message     ! Non-DEFAULT Option Overridden
-            CALL ERRHDL(PATH,MODNAM,'W','206',KOPT)
-            NOSTD = .FALSE.
-         END IF
-      ELSE IF (KOPT == 'NOWARN') THEN
-         NOWARN = .TRUE.
-      ELSE IF (KOPT == 'NOCHKD') THEN
-         IF (.NOT. DFAULT .and. .NOT.L_WARNCHKD) THEN
-            NOCHKD = .TRUE.
-         ELSE IF (.NOT.DFAULT .and. L_WARNCHKD) THEN
+            call errhdl(path,modnam,'W','206',kopt)
+            nostd = .false.
+         end if
+      else if (kopt == 'NOWARN') then
+         nowarn = .true.
+      else if (kopt == 'NOCHKD') then
+         if (.not. dfault .and. .not.l_warnchkd) then
+            nochkd = .true.
+         else if (.not.dfault .and. l_warnchkd) then
 ! ---          Write Error Message        ! Conflicting options specified
-            CALL ERRHDL(PATH,MODNAM,'E','149',KOPT)
-         ELSE
+            call errhdl(path,modnam,'E','149',kopt)
+         else
 !              WRITE Warning Message     ! Non-DEFAULT Option Overridden
-            CALL ERRHDL(PATH,MODNAM,'W','206',KOPT)
-            NOCHKD = .FALSE.
-         END IF
-      ELSE IF (KOPT == 'WARNCHKD') THEN
-         IF (.NOT. NOCHKD) THEN
-            L_WARNCHKD = .TRUE.
-         ELSE
+            call errhdl(path,modnam,'W','206',kopt)
+            nochkd = .false.
+         end if
+      else if (kopt == 'WARNCHKD') then
+         if (.not. nochkd) then
+            l_warnchkd = .true.
+         else
 ! ---          Write Error Message        ! Conflicting options specified
-            CALL ERRHDL(PATH,MODNAM,'E','149',KOPT)
-         END IF
-      ELSE IF (KOPT == 'SCREEN') THEN
-         IF (.NOT. DFAULT) THEN
-            SCREEN = .TRUE.
+            call errhdl(path,modnam,'E','149',kopt)
+         end if
+      else if (kopt == 'SCREEN') then
+         if (.not. dfault) then
+            screen = .true.
 !              Set NOCHKD option on for SCREEN mode
-            NOCHKD = .TRUE.
-         ELSE
+            nochkd = .true.
+         else
 !              WRITE Warning Message     ! Non-DEFAULT Option Overridden
-            CALL ERRHDL(PATH,MODNAM,'W','206',KOPT)
-            SCREEN = .FALSE.
-         END IF
-      ELSE IF (KOPT == 'SCIM') THEN
-         IF (.NOT. DFAULT) THEN
-            SCIM = .TRUE.
-         ELSE
+            call errhdl(path,modnam,'W','206',kopt)
+            screen = .false.
+         end if
+      else if (kopt == 'SCIM') then
+         if (.not. dfault) then
+            scim = .true.
+         else
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
-            CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
-            SCIM = .FALSE.
-         END IF
-      ELSE IF (KOPT == 'TOXICS') THEN
+            call errhdl(path,modnam,'E','204',kopt)
+            scim = .false.
+         end if
+      else if (kopt == 'TOXICS') then
 ! ---       WRITE Warning Message        ! TOXICS option is obsolete
 !           If this run includes area or openpit sources, refer to
 !           FASTAREA option and set the logical flag
-         IF (NAREA > 0 .or. NLINE > 0 .or. NPIT > 0) THEN
-            CALL ERRHDL(PATH,MODNAM,'W','198','FASTAREA')
-         ELSE
-            CALL ERRHDL(PATH,MODNAM,'W','198','        ')
-         END IF
-         IF (.NOT. DFAULT) THEN
-            IF (NAREA > 0 .or. NLINE > 0 .or. NPIT > 0) THEN
+         if (narea > 0 .or. nline > 0 .or. npit > 0) then
+            call errhdl(path,modnam,'W','198','FASTAREA')
+         else
+            call errhdl(path,modnam,'W','198','        ')
+         end if
+         if (.not. dfault) then
+            if (narea > 0 .or. nline > 0 .or. npit > 0) then
 ! ---             Assign FASTAREA option to TRUE for consistency with
 !                 area source optimizations under obsolete TOXICS option
-               FASTAREA = .TRUE.
-            END IF
-         ELSE
+               fastarea = .true.
+            end if
+         else
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
-            CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
-         END IF
+            call errhdl(path,modnam,'E','204',kopt)
+         end if
 ! Added for Highly Buoyant Plume (HBP) option; JAN 2023
-      ELSE IF (KOPT == 'HBP') THEN
-         HBPLUME = .TRUE.
-         IF (.NOT. L_ALPHA) THEN
+      else if (kopt == 'HBP') then
+         hbplume = .true.
+         if (.not. l_alpha) then
 !              WRITE Error Message     ! ALPHA Option Required for TTRM2
-            CALL ERRHDL(PATH,MODNAM,'E','198',KOPT)
+            call errhdl(path,modnam,'E','198',kopt)
 !! End TTRM2 insert
-         END IF
-         IF (DFAULT) THEN
+         end if
+         if (dfault) then
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
-            CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
-         END IF
+            call errhdl(path,modnam,'E','204',kopt)
+         end if
 ! End HBP insert
-      ELSE IF (KOPT == 'PVMRM') THEN
-         PVMRM = .TRUE.
-      ELSE IF (KOPT == 'OLM') THEN
-         OLM = .TRUE.
-      ELSE IF (KOPT == 'TTRM') THEN
-         RUNTTRM = .TRUE.
-         IF (.NOT. L_ALPHA) THEN
+      else if (kopt == 'PVMRM') then
+         pvmrm = .true.
+      else if (kopt == 'OLM') then
+         olm = .true.
+      else if (kopt == 'TTRM') then
+         runttrm = .true.
+         if (.not. l_alpha) then
 !              WRITE Error Message     ! ALPHA Option Required for TTRM
-            CALL ERRHDL(PATH,MODNAM,'E','198',KOPT)
-         ENDIF
+            call errhdl(path,modnam,'E','198',kopt)
+         endif
 !! Added Nov. 2021
-      ELSE IF (KOPT == 'TTRM2') THEN
-         RUNTTRM2 = .TRUE.
-         RUNTTRM = .TRUE.
-         IF (.NOT. L_ALPHA) THEN
+      else if (kopt == 'TTRM2') then
+         runttrm2 = .true.
+         runttrm = .true.
+         if (.not. l_alpha) then
 !              WRITE Error Message     ! ALPHA Option Required for TTRM2
-            CALL ERRHDL(PATH,MODNAM,'E','198',KOPT)
+            call errhdl(path,modnam,'E','198',kopt)
 !! End TTRM2 insert
-         END IF
-         IF (DFAULT) THEN
+         end if
+         if (dfault) then
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
-            CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
-         END IF
-      ELSE IF (KOPT == 'ARM2') THEN
-         ARM2 = .TRUE.
-         IF( DFAULT )THEN
-            ARM2_Min = 0.50D0
-            ARM2_Max = 0.90D0
-         ENDIF
-      ELSE IF (KOPT == 'GRSM') THEN
+            call errhdl(path,modnam,'E','204',kopt)
+         end if
+      else if (kopt == 'ARM2') then
+         arm2 = .true.
+         if( dfault )then
+            ARM2_Min = 0.50d0
+            ARM2_Max = 0.90d0
+         endif
+      else if (kopt == 'GRSM') then
 !          CERC 11/30/20
 !CRT 4/1/2022 GRSM in version 21112 updated from ALPHA to BETA
-         GRSM = .TRUE.
+         grsm = .true.
 
 !MGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (begin)
 !MGS            IF (.NOT. BETA) THEN
@@ -1849,215 +1849,215 @@ SUBROUTINE MODOPT
 !MGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (end)
 
 !CRT 1/29/2018 Move PSDCREDIT from BETA to ALPHA option
-      ELSE IF (KOPT == 'PSDCREDIT') THEN                           ! jop 093006
-         IF (L_ALPHA .and. .NOT. DFAULT) THEN
-            PSDCREDIT = .TRUE.
-         ELSE IF (.NOT. L_ALPHA .and. .NOT. DFAULT) THEN
+      else if (kopt == 'PSDCREDIT') then                           ! jop 093006
+         if (l_alpha .and. .not. dfault) then
+            psdcredit = .true.
+         else if (.not. l_alpha .and. .not. dfault) then
 !              WRITE Error Message     ! ALPHA Option Required for PSDCREDIT
-            CALL ERRHDL(PATH,MODNAM,'E','198',KOPT)
-         ELSE
+            call errhdl(path,modnam,'E','198',kopt)
+         else
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
-            CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
-         END IF
+            call errhdl(path,modnam,'E','204',kopt)
+         end if
 !CRT 1/29/2018 Remove restriction that user can only specify ALPHA or BETA
-      ELSE IF (KOPT == 'ALPHA') THEN
+      else if (kopt == 'ALPHA') then
 !CRT            IF (BETA) THEN
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
 !CRT               CALL ERRHDL(PATH,MODNAM,'E','204','ALPHA & BETA')
 !CRT            ELSE IF (.NOT. DFAULT) THEN
-         IF (.NOT. DFAULT) THEN
-            L_ALPHA = .TRUE.
-         ELSE
+         if (.not. dfault) then
+            l_alpha = .true.
+         else
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
-            CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
-         END IF
+            call errhdl(path,modnam,'E','204',kopt)
+         end if
 !CRT 1/29/2018 Remove restriction that user can only specify ALPHA or BETA
-      ELSE IF (KOPT == 'BETA') THEN
+      else if (kopt == 'BETA') then
 !CRT            IF (L_ALPHA) THEN
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
 !CRT               CALL ERRHDL(PATH,MODNAM,'E','204','ALPHA & BETA')
 !CRT            ELSE IF (.NOT. DFAULT) THEN
-         IF (.NOT. DFAULT) THEN
-            BETA = .TRUE.
-         ELSE
+         if (.not. dfault) then
+            beta = .true.
+         else
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
-            CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
-         END IF
+            call errhdl(path,modnam,'E','204',kopt)
+         end if
 
-      ELSE IF (KOPT == 'FASTAREA') THEN
-         IF (FASTALL) THEN
+      else if (kopt == 'FASTAREA') then
+         if (fastall) then
 !              Issue warning message since FASTALL implies FASTAREA
-            CALL ERRHDL(PATH,MODNAM,'W','192','        ')
-         END IF
-         IF (.NOT. DFAULT) THEN
+            call errhdl(path,modnam,'W','192','        ')
+         end if
+         if (.not. dfault) then
 !              Set logical flag for FASTAREA for optimized area source;
 !              equivalent to optimizations associated with obsolete TOXICS option
-            FASTAREA = .TRUE.
-         ELSE
+            fastarea = .true.
+         else
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
-            CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
-         END IF
-      ELSE IF (KOPT == 'FASTALL') THEN
-         IF (FASTAREA) THEN
+            call errhdl(path,modnam,'E','204',kopt)
+         end if
+      else if (kopt == 'FASTALL') then
+         if (fastarea) then
 !              Issue warning message since FASTALL implies FASTAREA
-            CALL ERRHDL(PATH,MODNAM,'W','192','        ')
-         END IF
-         IF (.NOT. DFAULT) THEN
+            call errhdl(path,modnam,'W','192','        ')
+         end if
+         if (.not. dfault) then
 ! ---          Set logical flag for FASTAREA for optimized area source;
 !              equivalent to optimizations associated with obsolete TOXICS option.
-            FASTAREA = .TRUE.
+            fastarea = .true.
 ! ---          Also set L_EFFSIGY option flag for optimized meander option for
 !              point and volume sources.
-            FASTALL   = .TRUE.
-            L_EFFSIGY = .TRUE.
-         ELSE
+            fastall   = .true.
+            l_effsigy = .true.
+         else
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
-            CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
-         END IF
-      ELSE IF (KOPT == 'NOURBTRAN') THEN
-         IF (.NOT. DFAULT) THEN
+            call errhdl(path,modnam,'E','204',kopt)
+         end if
+      else if (kopt == 'NOURBTRAN') then
+         if (.not. dfault) then
 ! ---          Non-regulatory option to ignore transition from nighttime urban
 !              enhanced boundary layer to daytime convective boundary
 ! ---          Set logical switch to account for urban transition to .F. and
 !              issue warning message
-            L_UrbanTransition = .FALSE.
+            L_UrbanTransition = .false.
 !              WRITE Warning Message
-            CALL ERRHDL(PATH,MODNAM,'W','151','Keyword     ')
-         ELSE
+            call errhdl(path,modnam,'W','151','Keyword     ')
+         else
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
-            CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
-         END IF
+            call errhdl(path,modnam,'E','204',kopt)
+         end if
 
 ! -----  Add option for use of vector-mean wind speeds, VECTORWS
-      ELSE IF (KOPT == 'VECTORWS') THEN
-         L_VECTORWS = .TRUE.
+      else if (kopt == 'VECTORWS') then
+         l_vectorws = .true.
 ! ---       Write Warning Message
-         CALL ERRHDL(PATH,MODNAM,'W','116',KOPT)
+         call errhdl(path,modnam,'W','116',kopt)
 
 ! -----  Add ALPHA option for low-wind-speed modifications, LOWWIND
-      ELSE IF (KOPT == 'LOW_WIND') THEN
-         IF (L_ALPHA) THEN
+      else if (kopt == 'LOW_WIND') then
+         if (l_alpha) then
 ! ---          Assign LOW_WIND = .TRUE.
-            LOW_WIND = .TRUE.
-            CALL ERRHDL(PATH,MODNAM,'W','136','NonDFAULT')
-            DFAULT = .FALSE.
-         ELSE
-            LOW_WIND = .FALSE.
-            CALL ERRHDL(PATH,MODNAM,'E','133','NonDFAULT')
-         END IF
+            low_wind = .true.
+            call errhdl(path,modnam,'W','136','NonDFAULT')
+            dfault = .false.
+         else
+            low_wind = .false.
+            call errhdl(path,modnam,'E','133','NonDFAULT')
+         end if
 
 ! -----  Wood 6/3/22 D128 Add ALPHA option for area meander , AREAMNDR
-      ELSE IF (KOPT == 'AREAMNDR') THEN
-         IF (L_ALPHA) THEN
+      else if (kopt == 'AREAMNDR') then
+         if (l_alpha) then
 ! ---          Assign AREAMNDR = .TRUE.
-            L_AREAMNDR = .TRUE.
-            CALL ERRHDL(PATH,MODNAM,'W','134','NonDFAULT')
-            DFAULT = .FALSE.
-         ELSE
-            L_AREAMNDR = .FALSE.
-            CALL ERRHDL(PATH,MODNAM,'E','139','NonDFAULT')
-         END IF
+            l_areamndr = .true.
+            call errhdl(path,modnam,'W','134','NonDFAULT')
+            dfault = .false.
+         else
+            l_areamndr = .false.
+            call errhdl(path,modnam,'E','139','NonDFAULT')
+         end if
 
-         IF (.NOT.DFAULT) THEN
+         if (.not.dfault) then
 !              WRITE Error Message     ! ALPHA option required
-            CALL ERRHDL(PATH,MODNAM,'W','198',KOPT)
-         ELSE
+            call errhdl(path,modnam,'W','198',kopt)
+         else
 !              WRITE Error Message     ! DFAULT option specified;
 !                                        Issue ERROR message
-            CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
-         END IF
+            call errhdl(path,modnam,'E','204',kopt)
+         end if
 
 
 ! ---       Assign minimum wind speed, WSMIN
 ! WSMIN is already set above, approx. line 1241. Currently no "default"
 ! value for the LOW_WIND option specifically (which would be set here).
-         WSMIN = 0.2828D0
+         wsmin = 0.2828d0
 
 ! ---       Add option for RLINE to use zero displacement height in wind profile
 !            Michelle G. Snyder (Wood 6/22/2021)
-      ELSE IF (KOPT == 'RLINEFDH') THEN
-         IF (L_ALPHA) THEN !Require ALPHA on MODELOPT
-            FAC_DISPHT = 0.0D0
-         ELSE
-            CALL ERRHDL(PATH,MODNAM,'E','198','RLINEFDH')
-         END IF
+      else if (kopt == 'RLINEFDH') then
+         if (l_alpha) then !Require ALPHA on MODELOPT
+            fac_dispht = 0.0d0
+         else
+            call errhdl(path,modnam,'E','198','RLINEFDH')
+         end if
 
 !RCO 1/7/21 D074 Add NOMINO3 option
-      ELSE IF (KOPT == 'NOMINO3') THEN
-         NOMINO3 = .TRUE.
-         IF (.NOT.OLM .and. .NOT.PVMRM .and. .NOT.GRSM&
-         &.and. .NOT.RUNTTRM) THEN
+      else if (kopt == 'NOMINO3') then
+         nomino3 = .true.
+         if (.not.olm .and. .not.pvmrm .and. .not.grsm&
+         &.and. .not.runttrm) then
 !              WRITE Warning Message  ! NOMINO3 set without NO2 technique
 !              D154 Changed the warning message to an error is NOMINO3 is set without NO2 technique 1/31/23 WSP
 !               CALL ERRHDL(PATH,MODNAM,'W','621',KOPT)
-            CALL ERRHDL(PATH,MODNAM,'E','621',KOPT)
-         END IF
+            call errhdl(path,modnam,'E','621',kopt)
+         end if
 
-      ELSE !Not a vaild model option
+      else !Not a vaild model option
 !           WRITE Error Message     ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',KOPT)
+         call errhdl(path,modnam,'E','203',kopt)
 
 
-      END IF
+      end if
 
-   END DO
+   end do
 
 ! --- Check for conflicting NO2 options:
-   IF (OLM .and. PVMRM) THEN
+   if (olm .and. pvmrm) then
 !        WRITE Error Message       ! Can't specify OLM & PVMRM
-      CALL ERRHDL(PATH,MODNAM,'E','141','OLM & PVMRM')
-   ELSE IF (OLM .and. ARM2) THEN
+      call errhdl(path,modnam,'E','141','OLM & PVMRM')
+   else if (olm .and. arm2) then
 !        WRITE Error Message       ! Can't specify OLM & ARM2
-      CALL ERRHDL(PATH,MODNAM,'E','141','OLM & ARM2')
-   ELSE IF (OLM .and. GRSM) THEN
+      call errhdl(path,modnam,'E','141','OLM & ARM2')
+   else if (olm .and. grsm) then
 !        WRITE Error Message       ! Can't specify OLM & GRSM
-      CALL ERRHDL(PATH,MODNAM,'E','141','OLM & GRSM')
-   ELSE IF (PVMRM .and. ARM2) THEN
+      call errhdl(path,modnam,'E','141','OLM & GRSM')
+   else if (pvmrm .and. arm2) then
 !        WRITE Error Message       ! Can't specify PVMRM & ARM2
-      CALL ERRHDL(PATH,MODNAM,'E','141','PVMRM & ARM2')
-   ELSE IF (PVMRM .and. GRSM) THEN
+      call errhdl(path,modnam,'E','141','PVMRM & ARM2')
+   else if (pvmrm .and. grsm) then
 !        WRITE Error Message       ! Can't specify PVMRM & GRSM
-      CALL ERRHDL(PATH,MODNAM,'E','141','PVMRM & GRSM')
-   ELSE IF (ARM2 .and. GRSM) THEN
+      call errhdl(path,modnam,'E','141','PVMRM & GRSM')
+   else if (arm2 .and. grsm) then
 !        WRITE Error Message       ! Can't specify ARM2 & GRSM
-      CALL ERRHDL(PATH,MODNAM,'E','141','ARM2 & GRSM')
-   ELSE IF ((.NOT. RUNTTRM2) .and. (RUNTTRM .and. ARM2)) THEN
+      call errhdl(path,modnam,'E','141','ARM2 & GRSM')
+   else if ((.not. runttrm2) .and. (runttrm .and. arm2)) then
 !        WRITE Error Message       ! Can't specify TTRM & ARM2
-      CALL ERRHDL(PATH,MODNAM,'E','141','TTRM & ARM2')
-   ELSE IF ((.NOT. RUNTTRM2) .and. (RUNTTRM .and. OLM)) THEN
+      call errhdl(path,modnam,'E','141','TTRM & ARM2')
+   else if ((.not. runttrm2) .and. (runttrm .and. olm)) then
 !        WRITE Error Message       ! Can't specify TTRM & OLM
-      CALL ERRHDL(PATH,MODNAM,'E','141','TTRM & OLM')
-   ELSE IF ((.NOT. RUNTTRM2) .and. (RUNTTRM .and. PVMRM)) THEN
+      call errhdl(path,modnam,'E','141','TTRM & OLM')
+   else if ((.not. runttrm2) .and. (runttrm .and. pvmrm)) then
 !        WRITE Error Message       ! Can't specify TTRM & PVMRM
-      CALL ERRHDL(PATH,MODNAM,'E','141','TTRM & PVMRM')
-   ELSE IF (RUNTTRM .and. GRSM) THEN
+      call errhdl(path,modnam,'E','141','TTRM & PVMRM')
+   else if (runttrm .and. grsm) then
 !        WRITE Error Message       ! Can't specify TTRM & GRSM
-      CALL ERRHDL(PATH,MODNAM,'E','141','TTRM & GRSM')
+      call errhdl(path,modnam,'E','141','TTRM & GRSM')
 !! Added Nov. 2021
-   ELSE IF (RUNTTRM2 .and. GRSM ) THEN
+   else if (runttrm2 .and. grsm ) then
 !        WRITE Error Message       ! Can't specify TTRM & ARM2
-      CALL ERRHDL(PATH,MODNAM,'E','141','TTRM2 & GRSM')
-   ELSE IF (RUNTTRM2 .and. OLM .and. ARM2) THEN
+      call errhdl(path,modnam,'E','141','TTRM2 & GRSM')
+   else if (runttrm2 .and. olm .and. arm2) then
 !        WRITE Error Message       ! Can't specify TTRM & OLM
-      CALL ERRHDL(PATH,MODNAM,'E','141','TTRM2 & >2 NO2 Options')
-   ELSE IF (RUNTTRM2 .and. PVMRM .and. ARM2) THEN
+      call errhdl(path,modnam,'E','141','TTRM2 & >2 NO2 Options')
+   else if (runttrm2 .and. pvmrm .and. arm2) then
 !        WRITE Error Message       ! Can't specify TTRM & PVMRM
-      CALL ERRHDL(PATH,MODNAM,'E','141','TTRM2 & >2 NO2 Options')
-   ELSE IF (RUNTTRM2 .and. OLM .and. PVMRM) THEN
+      call errhdl(path,modnam,'E','141','TTRM2 & >2 NO2 Options')
+   else if (runttrm2 .and. olm .and. pvmrm) then
 !        WRITE Error Message       ! Can't specify TTRM & GRSM
-      CALL ERRHDL(PATH,MODNAM,'E','141','TTRM2 & >2 NO2 Options')
+      call errhdl(path,modnam,'E','141','TTRM2 & >2 NO2 Options')
 !! End Nov. 2021 TTRM insert
-   END IF
+   end if
 
-   IF (PSDCREDIT .and. .NOT.PVMRM) THEN
+   if (psdcredit .and. .not.pvmrm) then
 !        WRITE Error Message       ! Can't specify PSDCREDIT without PVMRM
-      CALL ERRHDL(PATH,MODNAM,'E','143','PSDCREDIT')
-   END IF
+      call errhdl(path,modnam,'E','143','PSDCREDIT')
+   end if
 
-   IF (PSDCREDIT .and. EVONLY) THEN
+   if (psdcredit .and. evonly) then
 !        WRITE Error Message       ! Can't use PSDCREDIT with EVONLY Processing
-      CALL ERRHDL(PATH,MODNAM,'E','147',' EVENTS ')
-   END IF
+      call errhdl(path,modnam,'E','147',' EVENTS ')
+   end if
 
 ! --- Check for Non-DFAULT options used without DFAULT; this will be used to
 !     set the option label in the file headers.
@@ -2072,285 +2072,285 @@ SUBROUTINE MODOPT
 !_OLD      END IF
 !CRT  1/29/2018: Added L_ALPHA to conditions for non-default options
 !CRT  4/11/2022: D131 FRAN Alpha - Add L_PBal to non-default options
-   IF (.NOT. DFAULT .and.&
-   &(FLAT .or. FLATSRCS .or. ARDPLETE .or. NOSTD .or. NOCHKD .or.&
-   &SCREEN .or. SCIM .or. PSDCREDIT .or. BETA .or. FASTAREA .or.&
-   &FASTALL .or. LOW_WIND .or. L_ALPHA .or. GRSM .or. L_PBal&
-   &.or. .NOT.L_UrbanTransition)) THEN
+   if (.not. dfault .and.&
+   &(flat .or. flatsrcs .or. ardplete .or. nostd .or. nochkd .or.&
+   &screen .or. scim .or. psdcredit .or. beta .or. fastarea .or.&
+   &fastall .or. low_wind .or. l_alpha .or. grsm .or. L_PBal&
+   &.or. .not.L_UrbanTransition)) then
 
-      L_NonDFAULT = .TRUE.
-   END IF
+      L_NonDFAULT = .true.
+   end if
 
 !     Setup Label Array for Concentration and Depositions
-   IF (NUMTYP > NTYP) THEN
+   if (numtyp > ntyp) then
 !        WRITE Error Message: Number of output types exceeds maximum
-      WRITE(DUMMY,'(I4)') NTYP
-      CALL ERRHDL(PATH,MODNAM,'E','280',DUMMY)
-   ELSE IF (NUMTYP == 0) THEN
+      write(dummy,'(I4)') ntyp
+      call errhdl(path,modnam,'E','280',dummy)
+   else if (numtyp == 0) then
 !        WRITE Warning Message: No Output Types Selected, Assume CONC Only
-      CALL ERRHDL(PATH,MODNAM,'W','205','CONC')
-      NUMTYP = 1
-      ITYP   = 1
-      CONC   = .TRUE.
-      CHIDEP(1,ITYP) = 'AVER'
-      CHIDEP(2,ITYP) = 'AGE '
-      CHIDEP(3,ITYP) = 'CONC'
-      CHIDEP(4,ITYP) = 'ENTR'
-      CHIDEP(5,ITYP) = 'ATIO'
-      CHIDEP(6,ITYP) = 'N   '
-      EMIFAC(ITYP) = 1.0D06
-      EMILBL(ITYP) = 'GRAMS/SEC'
-      OUTLBL(ITYP) = 'MICROGRAMS/M**3'
-      PERLBL(ITYP) = 'MICROGRAMS/M**3'
-      OUTTYP(ITYP) = 'CONC'
-   ELSE IF (CONC) THEN
-      ITYP = 1
-      CHIDEP(1,ITYP) = 'AVER'
-      CHIDEP(2,ITYP) = 'AGE '
-      CHIDEP(3,ITYP) = 'CONC'
-      CHIDEP(4,ITYP) = 'ENTR'
-      CHIDEP(5,ITYP) = 'ATIO'
-      CHIDEP(6,ITYP) = 'N   '
-      EMIFAC(ITYP) = 1.0D06
-      EMILBL(ITYP) = 'GRAMS/SEC'
-      OUTLBL(ITYP) = 'MICROGRAMS/M**3'
-      PERLBL(ITYP) = 'MICROGRAMS/M**3'
-      OUTTYP(ITYP) = 'CONC'
-      IF (DEPOS) THEN
-         ITYP = 2
-         CHIDEP(1,ITYP) = '  TO'
-         CHIDEP(2,ITYP) = 'TAL '
-         CHIDEP(3,ITYP) = 'DEPO'
-         CHIDEP(4,ITYP) = 'SITI'
-         CHIDEP(5,ITYP) = 'ON  '
-         CHIDEP(6,ITYP) = '    '
-         EMIFAC(ITYP) = 3600.0D0
-         EMILBL(ITYP) = 'GRAMS/SEC'
-         OUTLBL(ITYP) = 'GRAMS/M**2'
-         PERLBL(ITYP) = 'GRAMS/M**2'
-         OUTTYP(ITYP) = 'DEPOS'
-         IF (DDEP) THEN
-            ITYP = 3
-            CHIDEP(1,ITYP) = '    '
-            CHIDEP(2,ITYP) = 'DRY '
-            CHIDEP(3,ITYP) = 'DEPO'
-            CHIDEP(4,ITYP) = 'SITI'
-            CHIDEP(5,ITYP) = 'ON  '
-            CHIDEP(6,ITYP) = '    '
-            EMIFAC(ITYP) = 3600.0D0
-            EMILBL(ITYP) = 'GRAMS/SEC'
-            OUTLBL(ITYP) = 'GRAMS/M**2'
-            PERLBL(ITYP) = 'GRAMS/M**2'
-            OUTTYP(ITYP) = 'DDEP'
-            IF (WDEP) THEN
-               ITYP = 4
-               CHIDEP(1,ITYP) = '    '
-               CHIDEP(2,ITYP) = 'WET '
-               CHIDEP(3,ITYP) = 'DEPO'
-               CHIDEP(4,ITYP) = 'SITI'
-               CHIDEP(5,ITYP) = 'ON  '
-               CHIDEP(6,ITYP) = '    '
-               EMIFAC(ITYP) = 3600.0D0
-               EMILBL(ITYP) = 'GRAMS/SEC'
-               OUTLBL(ITYP) = 'GRAMS/M**2'
-               PERLBL(ITYP) = 'GRAMS/M**2'
-               OUTTYP(ITYP) = 'WDEP'
-            END IF
-         ELSE IF (WDEP) THEN
-            ITYP = 3
-            CHIDEP(1,ITYP) = '    '
-            CHIDEP(2,ITYP) = 'WET '
-            CHIDEP(3,ITYP) = 'DEPO'
-            CHIDEP(4,ITYP) = 'SITI'
-            CHIDEP(5,ITYP) = 'ON  '
-            CHIDEP(6,ITYP) = '    '
-            EMIFAC(ITYP) = 3600.0D0
-            EMILBL(ITYP) = 'GRAMS/SEC'
-            OUTLBL(ITYP) = 'GRAMS/M**2'
-            PERLBL(ITYP) = 'GRAMS/M**2'
-            OUTTYP(ITYP) = 'WDEP'
-         END IF
-      ELSE IF (DDEP) THEN
-         ITYP = 2
-         CHIDEP(1,ITYP) = '    '
-         CHIDEP(2,ITYP) = 'DRY '
-         CHIDEP(3,ITYP) = 'DEPO'
-         CHIDEP(4,ITYP) = 'SITI'
-         CHIDEP(5,ITYP) = 'ON  '
-         CHIDEP(6,ITYP) = '    '
-         EMIFAC(ITYP) = 3600.0D0
-         EMILBL(ITYP) = 'GRAMS/SEC'
-         OUTLBL(ITYP) = 'GRAMS/M**2'
-         PERLBL(ITYP) = 'GRAMS/M**2'
-         OUTTYP(ITYP) = 'DDEP'
-         IF (WDEP) THEN
-            ITYP = 3
-            CHIDEP(1,ITYP) = '    '
-            CHIDEP(2,ITYP) = 'WET '
-            CHIDEP(3,ITYP) = 'DEPO'
-            CHIDEP(4,ITYP) = 'SITI'
-            CHIDEP(5,ITYP) = 'ON  '
-            CHIDEP(6,ITYP) = '    '
-            EMIFAC(ITYP) = 3600.0D0
-            EMILBL(ITYP) = 'GRAMS/SEC'
-            OUTLBL(ITYP) = 'GRAMS/M**2'
-            PERLBL(ITYP) = 'GRAMS/M**2'
-            OUTTYP(ITYP) = 'WDEP'
-         END IF
-      ELSE IF (WDEP) THEN
-         ITYP = 2
-         CHIDEP(1,ITYP) = '    '
-         CHIDEP(2,ITYP) = 'WET '
-         CHIDEP(3,ITYP) = 'DEPO'
-         CHIDEP(4,ITYP) = 'SITI'
-         CHIDEP(5,ITYP) = 'ON  '
-         CHIDEP(6,ITYP) = '    '
-         EMIFAC(ITYP) = 3600.0D0
-         EMILBL(ITYP) = 'GRAMS/SEC'
-         OUTLBL(ITYP) = 'GRAMS/M**2'
-         PERLBL(ITYP) = 'GRAMS/M**2'
-         OUTTYP(ITYP) = 'WDEP'
-      END IF
-   ELSE IF (DEPOS) THEN
-      ITYP = 1
-      CHIDEP(1,ITYP) = '  TO'
-      CHIDEP(2,ITYP) = 'TAL '
-      CHIDEP(3,ITYP) = 'DEPO'
-      CHIDEP(4,ITYP) = 'SITI'
-      CHIDEP(5,ITYP) = 'ON  '
-      CHIDEP(6,ITYP) = '    '
-      EMIFAC(ITYP) = 3600.0D0
-      EMILBL(ITYP) = 'GRAMS/SEC'
-      OUTLBL(ITYP) = 'GRAMS/M**2'
-      PERLBL(ITYP) = 'GRAMS/M**2'
-      OUTTYP(ITYP) = 'DEPOS'
-      IF (DDEP) THEN
-         ITYP = 2
-         CHIDEP(1,ITYP) = '    '
-         CHIDEP(2,ITYP) = 'DRY '
-         CHIDEP(3,ITYP) = 'DEPO'
-         CHIDEP(4,ITYP) = 'SITI'
-         CHIDEP(5,ITYP) = 'ON  '
-         CHIDEP(6,ITYP) = '    '
-         EMIFAC(ITYP) = 3600.0D0
-         EMILBL(ITYP) = 'GRAMS/SEC'
-         OUTLBL(ITYP) = 'GRAMS/M**2'
-         PERLBL(ITYP) = 'GRAMS/M**2'
-         OUTTYP(ITYP) = 'DDEP'
-         IF (WDEP) THEN
-            ITYP = 3
-            CHIDEP(1,ITYP) = '    '
-            CHIDEP(2,ITYP) = 'WET '
-            CHIDEP(3,ITYP) = 'DEPO'
-            CHIDEP(4,ITYP) = 'SITI'
-            CHIDEP(5,ITYP) = 'ON  '
-            CHIDEP(6,ITYP) = '    '
-            EMIFAC(ITYP) = 3600.0D0
-            EMILBL(ITYP) = 'GRAMS/SEC'
-            OUTLBL(ITYP) = 'GRAMS/M**2'
-            PERLBL(ITYP) = 'GRAMS/M**2'
-            OUTTYP(ITYP) = 'WDEP'
-         END IF
-      ELSE IF (WDEP) THEN
-         ITYP = 2
-         CHIDEP(1,ITYP) = '    '
-         CHIDEP(2,ITYP) = 'WET '
-         CHIDEP(3,ITYP) = 'DEPO'
-         CHIDEP(4,ITYP) = 'SITI'
-         CHIDEP(5,ITYP) = 'ON  '
-         CHIDEP(6,ITYP) = '    '
-         EMIFAC(ITYP) = 3600.0D0
-         EMILBL(ITYP) = 'GRAMS/SEC'
-         OUTLBL(ITYP) = 'GRAMS/M**2'
-         PERLBL(ITYP) = 'GRAMS/M**2'
-         OUTTYP(ITYP) = 'WDEP'
-      END IF
-   ELSE IF (DDEP) THEN
-      ITYP = 1
-      CHIDEP(1,ITYP) = '    '
-      CHIDEP(2,ITYP) = 'DRY '
-      CHIDEP(3,ITYP) = 'DEPO'
-      CHIDEP(4,ITYP) = 'SITI'
-      CHIDEP(5,ITYP) = 'ON  '
-      CHIDEP(6,ITYP) = '    '
-      EMIFAC(ITYP) = 3600.0D0
-      EMILBL(ITYP) = 'GRAMS/SEC'
-      OUTLBL(ITYP) = 'GRAMS/M**2'
-      PERLBL(ITYP) = 'GRAMS/M**2'
-      OUTTYP(ITYP) = 'DDEP'
-      IF (WDEP) THEN
-         ITYP = 2
-         CHIDEP(1,ITYP) = '    '
-         CHIDEP(2,ITYP) = 'WET '
-         CHIDEP(3,ITYP) = 'DEPO'
-         CHIDEP(4,ITYP) = 'SITI'
-         CHIDEP(5,ITYP) = 'ON  '
-         CHIDEP(6,ITYP) = '    '
-         EMIFAC(ITYP) = 3600.0D0
-         EMILBL(ITYP) = 'GRAMS/SEC'
-         OUTLBL(ITYP) = 'GRAMS/M**2'
-         PERLBL(ITYP) = 'GRAMS/M**2'
-         OUTTYP(ITYP) = 'WDEP'
-      END IF
-   ELSE IF (WDEP) THEN
-      ITYP = 1
-      CHIDEP(1,ITYP) = '    '
-      CHIDEP(2,ITYP) = 'WET '
-      CHIDEP(3,ITYP) = 'DEPO'
-      CHIDEP(4,ITYP) = 'SITI'
-      CHIDEP(5,ITYP) = 'ON  '
-      CHIDEP(6,ITYP) = '    '
-      EMIFAC(ITYP) = 3600.0D0
-      EMILBL(ITYP) = 'GRAMS/SEC'
-      OUTLBL(ITYP) = 'GRAMS/M**2'
-      PERLBL(ITYP) = 'GRAMS/M**2'
-      OUTTYP(ITYP) = 'WDEP'
-   END IF
+      call errhdl(path,modnam,'W','205','CONC')
+      numtyp = 1
+      ityp   = 1
+      conc   = .true.
+      chidep(1,ityp) = 'AVER'
+      chidep(2,ityp) = 'AGE '
+      chidep(3,ityp) = 'CONC'
+      chidep(4,ityp) = 'ENTR'
+      chidep(5,ityp) = 'ATIO'
+      chidep(6,ityp) = 'N   '
+      emifac(ityp) = 1.0d06
+      emilbl(ityp) = 'GRAMS/SEC'
+      outlbl(ityp) = 'MICROGRAMS/M**3'
+      perlbl(ityp) = 'MICROGRAMS/M**3'
+      outtyp(ityp) = 'CONC'
+   else if (conc) then
+      ityp = 1
+      chidep(1,ityp) = 'AVER'
+      chidep(2,ityp) = 'AGE '
+      chidep(3,ityp) = 'CONC'
+      chidep(4,ityp) = 'ENTR'
+      chidep(5,ityp) = 'ATIO'
+      chidep(6,ityp) = 'N   '
+      emifac(ityp) = 1.0d06
+      emilbl(ityp) = 'GRAMS/SEC'
+      outlbl(ityp) = 'MICROGRAMS/M**3'
+      perlbl(ityp) = 'MICROGRAMS/M**3'
+      outtyp(ityp) = 'CONC'
+      if (depos) then
+         ityp = 2
+         chidep(1,ityp) = '  TO'
+         chidep(2,ityp) = 'TAL '
+         chidep(3,ityp) = 'DEPO'
+         chidep(4,ityp) = 'SITI'
+         chidep(5,ityp) = 'ON  '
+         chidep(6,ityp) = '    '
+         emifac(ityp) = 3600.0d0
+         emilbl(ityp) = 'GRAMS/SEC'
+         outlbl(ityp) = 'GRAMS/M**2'
+         perlbl(ityp) = 'GRAMS/M**2'
+         outtyp(ityp) = 'DEPOS'
+         if (ddep) then
+            ityp = 3
+            chidep(1,ityp) = '    '
+            chidep(2,ityp) = 'DRY '
+            chidep(3,ityp) = 'DEPO'
+            chidep(4,ityp) = 'SITI'
+            chidep(5,ityp) = 'ON  '
+            chidep(6,ityp) = '    '
+            emifac(ityp) = 3600.0d0
+            emilbl(ityp) = 'GRAMS/SEC'
+            outlbl(ityp) = 'GRAMS/M**2'
+            perlbl(ityp) = 'GRAMS/M**2'
+            outtyp(ityp) = 'DDEP'
+            if (wdep) then
+               ityp = 4
+               chidep(1,ityp) = '    '
+               chidep(2,ityp) = 'WET '
+               chidep(3,ityp) = 'DEPO'
+               chidep(4,ityp) = 'SITI'
+               chidep(5,ityp) = 'ON  '
+               chidep(6,ityp) = '    '
+               emifac(ityp) = 3600.0d0
+               emilbl(ityp) = 'GRAMS/SEC'
+               outlbl(ityp) = 'GRAMS/M**2'
+               perlbl(ityp) = 'GRAMS/M**2'
+               outtyp(ityp) = 'WDEP'
+            end if
+         else if (wdep) then
+            ityp = 3
+            chidep(1,ityp) = '    '
+            chidep(2,ityp) = 'WET '
+            chidep(3,ityp) = 'DEPO'
+            chidep(4,ityp) = 'SITI'
+            chidep(5,ityp) = 'ON  '
+            chidep(6,ityp) = '    '
+            emifac(ityp) = 3600.0d0
+            emilbl(ityp) = 'GRAMS/SEC'
+            outlbl(ityp) = 'GRAMS/M**2'
+            perlbl(ityp) = 'GRAMS/M**2'
+            outtyp(ityp) = 'WDEP'
+         end if
+      else if (ddep) then
+         ityp = 2
+         chidep(1,ityp) = '    '
+         chidep(2,ityp) = 'DRY '
+         chidep(3,ityp) = 'DEPO'
+         chidep(4,ityp) = 'SITI'
+         chidep(5,ityp) = 'ON  '
+         chidep(6,ityp) = '    '
+         emifac(ityp) = 3600.0d0
+         emilbl(ityp) = 'GRAMS/SEC'
+         outlbl(ityp) = 'GRAMS/M**2'
+         perlbl(ityp) = 'GRAMS/M**2'
+         outtyp(ityp) = 'DDEP'
+         if (wdep) then
+            ityp = 3
+            chidep(1,ityp) = '    '
+            chidep(2,ityp) = 'WET '
+            chidep(3,ityp) = 'DEPO'
+            chidep(4,ityp) = 'SITI'
+            chidep(5,ityp) = 'ON  '
+            chidep(6,ityp) = '    '
+            emifac(ityp) = 3600.0d0
+            emilbl(ityp) = 'GRAMS/SEC'
+            outlbl(ityp) = 'GRAMS/M**2'
+            perlbl(ityp) = 'GRAMS/M**2'
+            outtyp(ityp) = 'WDEP'
+         end if
+      else if (wdep) then
+         ityp = 2
+         chidep(1,ityp) = '    '
+         chidep(2,ityp) = 'WET '
+         chidep(3,ityp) = 'DEPO'
+         chidep(4,ityp) = 'SITI'
+         chidep(5,ityp) = 'ON  '
+         chidep(6,ityp) = '    '
+         emifac(ityp) = 3600.0d0
+         emilbl(ityp) = 'GRAMS/SEC'
+         outlbl(ityp) = 'GRAMS/M**2'
+         perlbl(ityp) = 'GRAMS/M**2'
+         outtyp(ityp) = 'WDEP'
+      end if
+   else if (depos) then
+      ityp = 1
+      chidep(1,ityp) = '  TO'
+      chidep(2,ityp) = 'TAL '
+      chidep(3,ityp) = 'DEPO'
+      chidep(4,ityp) = 'SITI'
+      chidep(5,ityp) = 'ON  '
+      chidep(6,ityp) = '    '
+      emifac(ityp) = 3600.0d0
+      emilbl(ityp) = 'GRAMS/SEC'
+      outlbl(ityp) = 'GRAMS/M**2'
+      perlbl(ityp) = 'GRAMS/M**2'
+      outtyp(ityp) = 'DEPOS'
+      if (ddep) then
+         ityp = 2
+         chidep(1,ityp) = '    '
+         chidep(2,ityp) = 'DRY '
+         chidep(3,ityp) = 'DEPO'
+         chidep(4,ityp) = 'SITI'
+         chidep(5,ityp) = 'ON  '
+         chidep(6,ityp) = '    '
+         emifac(ityp) = 3600.0d0
+         emilbl(ityp) = 'GRAMS/SEC'
+         outlbl(ityp) = 'GRAMS/M**2'
+         perlbl(ityp) = 'GRAMS/M**2'
+         outtyp(ityp) = 'DDEP'
+         if (wdep) then
+            ityp = 3
+            chidep(1,ityp) = '    '
+            chidep(2,ityp) = 'WET '
+            chidep(3,ityp) = 'DEPO'
+            chidep(4,ityp) = 'SITI'
+            chidep(5,ityp) = 'ON  '
+            chidep(6,ityp) = '    '
+            emifac(ityp) = 3600.0d0
+            emilbl(ityp) = 'GRAMS/SEC'
+            outlbl(ityp) = 'GRAMS/M**2'
+            perlbl(ityp) = 'GRAMS/M**2'
+            outtyp(ityp) = 'WDEP'
+         end if
+      else if (wdep) then
+         ityp = 2
+         chidep(1,ityp) = '    '
+         chidep(2,ityp) = 'WET '
+         chidep(3,ityp) = 'DEPO'
+         chidep(4,ityp) = 'SITI'
+         chidep(5,ityp) = 'ON  '
+         chidep(6,ityp) = '    '
+         emifac(ityp) = 3600.0d0
+         emilbl(ityp) = 'GRAMS/SEC'
+         outlbl(ityp) = 'GRAMS/M**2'
+         perlbl(ityp) = 'GRAMS/M**2'
+         outtyp(ityp) = 'WDEP'
+      end if
+   else if (ddep) then
+      ityp = 1
+      chidep(1,ityp) = '    '
+      chidep(2,ityp) = 'DRY '
+      chidep(3,ityp) = 'DEPO'
+      chidep(4,ityp) = 'SITI'
+      chidep(5,ityp) = 'ON  '
+      chidep(6,ityp) = '    '
+      emifac(ityp) = 3600.0d0
+      emilbl(ityp) = 'GRAMS/SEC'
+      outlbl(ityp) = 'GRAMS/M**2'
+      perlbl(ityp) = 'GRAMS/M**2'
+      outtyp(ityp) = 'DDEP'
+      if (wdep) then
+         ityp = 2
+         chidep(1,ityp) = '    '
+         chidep(2,ityp) = 'WET '
+         chidep(3,ityp) = 'DEPO'
+         chidep(4,ityp) = 'SITI'
+         chidep(5,ityp) = 'ON  '
+         chidep(6,ityp) = '    '
+         emifac(ityp) = 3600.0d0
+         emilbl(ityp) = 'GRAMS/SEC'
+         outlbl(ityp) = 'GRAMS/M**2'
+         perlbl(ityp) = 'GRAMS/M**2'
+         outtyp(ityp) = 'WDEP'
+      end if
+   else if (wdep) then
+      ityp = 1
+      chidep(1,ityp) = '    '
+      chidep(2,ityp) = 'WET '
+      chidep(3,ityp) = 'DEPO'
+      chidep(4,ityp) = 'SITI'
+      chidep(5,ityp) = 'ON  '
+      chidep(6,ityp) = '    '
+      emifac(ityp) = 3600.0d0
+      emilbl(ityp) = 'GRAMS/SEC'
+      outlbl(ityp) = 'GRAMS/M**2'
+      perlbl(ityp) = 'GRAMS/M**2'
+      outtyp(ityp) = 'WDEP'
+   end if
 
-   EMICON = 1.0D+06
+   emicon = 1.0d+06
 
 ! --- Modify PLTFRM, PSTFRM and MXDFRM if needed for more than one output type
 !     and for EXP format (note that FILE_FORMAT is set during PRESET).
 
-   IF (NUMTYP > 1 .and. FILE_FORMAT == 'FIX') THEN
-      IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
-         WRITE(PLTFRM,1009) NUMTYP+2
-1009     FORMAT('(',I1,'(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,A5,5X,',&
+   if (numtyp > 1 .and. file_format == 'FIX') then
+      if (pm25ave .or. no2ave .or. so2ave) then
+         write(pltfrm,1009) numtyp+2
+1009     format('(',i1,'(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,A5,5X,',&
          &'A8,2X,10(F13.5,2X,I8.8,2X:))')
-      ELSE
-         WRITE(PLTFRM,1019) NUMTYP+2
-1019     FORMAT('(',I1,'(1X,F13.5),3(1X,F8.2),3X,A5,2X,A8,2X,A5,5X,',&
+      else
+         write(pltfrm,1019) numtyp+2
+1019     format('(',i1,'(1X,F13.5),3(1X,F8.2),3X,A5,2X,A8,2X,A5,5X,',&
          &'A8,2X,I8)')
-      END IF
-      WRITE(PSTFRM,1029) NUMTYP+2
-1029  FORMAT('(',I1,'(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,I8.8,2X,',&
+      end if
+      write(pstfrm,1029) numtyp+2
+1029  format('(',i1,'(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,I8.8,2X,',&
       &'A8)')
-      WRITE(MXDFRM,1039) NUMTYP+2
-1039  FORMAT('(',I1,'(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,I4,2X,I3,',&
+      write(mxdfrm,1039) numtyp+2
+1039  format('(',i1,'(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,I4,2X,I3,',&
       &'2X,I8.8,2X,A8)')
-   ELSE IF (NUMTYP > 1 .and. FILE_FORMAT == 'EXP') THEN
-      IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
-         WRITE(PLTFRM,2009) NUMTYP
-2009     FORMAT('(2(1X,F13.5),',I1,'(1X,E13.6),3(1X,F8.2),2X,A6,2X,',&
+   else if (numtyp > 1 .and. file_format == 'EXP') then
+      if (pm25ave .or. no2ave .or. so2ave) then
+         write(pltfrm,2009) numtyp
+2009     format('(2(1X,F13.5),',i1,'(1X,E13.6),3(1X,F8.2),2X,A6,2X,',&
          &'A8,2X,A5,5X,A8,2X,10(E13.6,2X,I8.8,2X:))')
-      ELSE
-         WRITE(PLTFRM,2019) NUMTYP
-2019     FORMAT('(2(1X,F13.5),',I1,'(1X,E13.6),3(1X,F8.2),3X,A5,2X,',&
+      else
+         write(pltfrm,2019) numtyp
+2019     format('(2(1X,F13.5),',i1,'(1X,E13.6),3(1X,F8.2),3X,A5,2X,',&
          &'A8,2X,A5,5X,A8,2X,I8)')
-      END IF
-      WRITE(PSTFRM,2029) NUMTYP
-2029  FORMAT('(2(1X,F13.5),',I1,'(1X,E13.6),3(1X,F8.2),2X,A6,2X,A8,',&
+      end if
+      write(pstfrm,2029) numtyp
+2029  format('(2(1X,F13.5),',i1,'(1X,E13.6),3(1X,F8.2),2X,A6,2X,A8,',&
       &'2X,I8.8,2X,A8)')
-      WRITE(MXDFRM,2039) NUMTYP
-2039  FORMAT('(2(1X,F13.5),',I1,'(1X,E13.6),3(1X,F8.2),2X,A6,2X,A8,',&
+      write(mxdfrm,2039) numtyp
+2039  format('(2(1X,F13.5),',i1,'(1X,E13.6),3(1X,F8.2),2X,A6,2X,A8,',&
       &'2X,I4,2X,I3,2X,I8.8,2X,A8)')
-   END IF
+   end if
 
-   RETURN
-END SUBROUTINE MODOPT
+   return
+end subroutine modopt
 
 
-SUBROUTINE AVETIM
+subroutine avetim
 !***********************************************************************
 !                 AVETIM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2372,114 +2372,114 @@ SUBROUTINE AVETIM
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, K
-   REAL    :: AVENUM
-   CHARACTER (LEN = 8) :: KOPT
+   integer :: i, j, k
+   real    :: avenum
+   character (len = 8) :: kopt
 
 !     Variable Initializations
-   MODNAM = 'AVETIM'
+   modnam = 'AVETIM'
 
 !     Check for No Parameters
-   IF (IFC < 3) THEN
+   if (ifc < 3) then
 !        WRITE Error Message     ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+   end if
 
 !     First Check for Presence of PERIOD or ANNUAL Switch
-   DO 10 I = 3, IFC
-      KOPT = FIELD(I)
-      IF (KOPT == 'PERIOD') THEN
-         PERIOD = .TRUE.
-      ELSE IF (KOPT == 'ANNUAL') THEN
-         ANNUAL = .TRUE.
-      END IF
-10 CONTINUE
+   do 10 i = 3, ifc
+      kopt = field(i)
+      if (kopt == 'PERIOD') then
+         period = .true.
+      else if (kopt == 'ANNUAL') then
+         annual = .true.
+      end if
+10 continue
 
 ! --- Check for Both PERIOD and ANNUAL
-   IF (PERIOD .and. ANNUAL) THEN
+   if (period .and. annual) then
 !        Write Error Message; both PERIOD and ANNUAL specified
-      CALL ERRHDL(PATH,MODNAM,'E','294',KEYWRD)
-   ELSE IF (PERIOD .or. ANNUAL) THEN
+      call errhdl(path,modnam,'E','294',keywrd)
+   else if (period .or. annual) then
 !        Check for Too Many Averaging Periods
-      IF (IFC > NAVE+3) THEN
+      if (ifc > nave+3) then
 !           WRITE Error Message: Too Many Period Or Time Fields
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      END IF
-   ELSE
-      IF (IFC > NAVE+2) THEN
+         call errhdl(path,modnam,'E','202',keywrd)
+      end if
+   else
+      if (ifc > nave+2) then
 !           WRITE Error Message: Too Many Period Or Time Fields
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      END IF
-   END IF
+         call errhdl(path,modnam,'E','202',keywrd)
+      end if
+   end if
 
 !     Loop Through Fields Again, Filling KAVE Array for Short Term Averages
-   J = 0
-   DO 20 I = 3, IFC
-      KOPT = FIELD(I)
-      IF (KOPT /= 'PERIOD' .and. KOPT /= 'ANNUAL') THEN
-         IF (KOPT /= 'MONTH') THEN
-            CALL STONUM(KOPT,8,AVENUM,IMIT)
-            IF (IMIT /= 1) THEN
+   j = 0
+   do 20 i = 3, ifc
+      kopt = field(i)
+      if (kopt /= 'PERIOD' .and. kopt /= 'ANNUAL') then
+         if (kopt /= 'MONTH') then
+            call stonum(kopt,8,avenum,imit)
+            if (imit /= 1) then
 !                 Write Error Message:Invalid Numerical Field
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            END IF
+               call errhdl(path,modnam,'E','208',keywrd)
+            end if
 !              Check for Valid Averaging Period
-            IF ((MOD(24,NINT(AVENUM))==0 .and.&
-            &IMIT==1)) THEN
-               J = J + 1
-               IF (J <= NAVE) THEN
-                  KAVE(J) = NINT(AVENUM)
-                  WRITE(CHRAVE(J),'(I2,"-HR")') KAVE(J)
-                  NUMAVE = J
+            if ((mod(24,nint(avenum))==0 .and.&
+            &imit==1)) then
+               j = j + 1
+               if (j <= nave) then
+                  kave(j) = nint(avenum)
+                  write(chrave(j),'(I2,"-HR")') kave(j)
+                  numave = j
 !                    Check for Duplicate Averaging Periods
-                  DO 15 K = J-1, 1, -1
-                     IF (KAVE(J) == KAVE(K)) THEN
+                  do 15 k = j-1, 1, -1
+                     if (kave(j) == kave(k)) then
 !                          WRITE Error Message    ! Duplicate Averaging Period
-                        CALL ERRHDL(PATH,MODNAM,'E','211',KEYWRD)
-                     END IF
-15                CONTINUE
-               ELSE
+                        call errhdl(path,modnam,'E','211',keywrd)
+                     end if
+15                continue
+               else
 !                    WRITE Error Message   ! Too Many Short Term Averaging Periods
 !                    This shouldn't occur since limits are dynamically allocated
-                  WRITE(DUMMY,'(''NAVE='',I7)') NAVE
-                  CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-               END IF
-            ELSE
+                  write(dummy,'(''NAVE='',I7)') nave
+                  call errhdl(path,modnam,'E','290',dummy)
+               end if
+            else
 !                 WRITE Error Message      ! Invalid Averaging Period
-               CALL ERRHDL(PATH,MODNAM,'E','203','AVEPER')
-            END IF
-         ELSE
-            J = J + 1
-            IF (J <= NAVE) THEN
-               KAVE(J) = 720
-               MONTH = .TRUE.
-               CHRAVE(J) = 'MONTH'
-               NUMAVE = J
+               call errhdl(path,modnam,'E','203','AVEPER')
+            end if
+         else
+            j = j + 1
+            if (j <= nave) then
+               kave(j) = 720
+               month = .true.
+               chrave(j) = 'MONTH'
+               numave = j
 !                 Check for Duplicate Averaging Periods
-               DO K = J-1, 1, -1
-                  IF (KAVE(J) == KAVE(K)) THEN
+               do k = j-1, 1, -1
+                  if (kave(j) == kave(k)) then
 !                       WRITE Error Message    ! Duplicate Averaging Period
-                     CALL ERRHDL(PATH,MODNAM,'E','211',KEYWRD)
-                  END IF
-               END DO
-            ELSE
+                     call errhdl(path,modnam,'E','211',keywrd)
+                  end if
+               end do
+            else
 !                 WRITE Error Message   ! Too Many Short Term Averaging Periods
 !                 This shouldn't occur since limits are dynamically allocated
-               WRITE(DUMMY,'(''NAVE='',I7)') NAVE
-               CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-            END IF
-         END IF
-      END IF
-20 CONTINUE
+               write(dummy,'(''NAVE='',I7)') nave
+               call errhdl(path,modnam,'E','290',dummy)
+            end if
+         end if
+      end if
+20 continue
 
-   RETURN
-END SUBROUTINE AVETIM
+   return
+end subroutine avetim
 
-SUBROUTINE POLLID
+subroutine pollid
 !***********************************************************************
 !                 POLLID Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2497,96 +2497,96 @@ SUBROUTINE POLLID
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'POLLID'
+   modnam = 'POLLID'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC == 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc == 3) then
 !        Assign user input to POLLUT variable
-      POLLUT = FIELD(3)
-   ELSE IF (IFC == 4) THEN
+      pollut = field(3)
+   else if (ifc == 4) then
 ! ---    Check for POLLUT IDs associated with "special" processing;
 !        NO2 or SO2 or PM25 (including all PM25 variants)
-      IF (FIELD(3) == 'NO2'  .or. FIELD(3) == 'SO2' .or.&
-      &FIELD(3) == 'PM25' .or. FIELD(3) == 'PM-2.5' .or.&
-      &FIELD(3) == 'PM-25'.or. FIELD(3) == 'PM2.5') THEN
+      if (field(3) == 'NO2'  .or. field(3) == 'SO2' .or.&
+      &field(3) == 'PM25' .or. field(3) == 'PM-2.5' .or.&
+      &field(3) == 'PM-25'.or. field(3) == 'PM2.5') then
 ! ---       This POLLID allows optional input in field 4; assign POLLUT
-         POLLUT = FIELD(3)
-      ELSE
+         pollut = field(3)
+      else
 ! ---       User-specified POLLID doesn't allow for field 4; assign
 !           POLLUT but issue an error message
-         POLLUT = FIELD(3)
-         IF (FIELD(4) == 'H1H' .or. FIELD(4) == 'H2H' .or.&
-         &FIELD(4) == 'INC') THEN
+         pollut = field(3)
+         if (field(4) == 'H1H' .or. field(4) == 'H2H' .or.&
+         &field(4) == 'INC') then
 !              Error Message: 'H1H', 'H2H', and 'INC' processing not
 !              applicable to this POLLUT
-            WRITE(DUMMY,'(A,1X,A3)') POLLUT(1:LEN_TRIM(POLLUT)),&
-            &FIELD(4)(1:3)
-            CALL ERRHDL(PATH,MODNAM,'E','277',DUMMY)
+            write(dummy,'(A,1X,A3)') pollut(1:len_trim(pollut)),&
+            &field(4)(1:3)
+            call errhdl(path,modnam,'E','277',dummy)
 ! ---          Save FIELD(4) to include in summary of input options
-            NO2_FIELD4 = FIELD(4)(1:3)
-            GO TO 999
-         ELSE
+            no2_field4 = field(4)(1:3)
+            go to 999
+         else
 !              Error Message: Too Many Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-            GO TO 999
-         END IF
-      END IF
+            call errhdl(path,modnam,'E','202',keywrd)
+            go to 999
+         end if
+      end if
 !        Now check for options to disable "special" processing for
 !        these pollutants
-      IF (FIELD(4) == 'H1H' .or. FIELD(4) == 'H2H' .or.&
-      &FIELD(4) == 'INC') THEN
-         IF (POLLUT == 'NO2') THEN
-            L_NO_NO2AVE = .TRUE.
-            NO2_FIELD4 = FIELD(4)(1:3)
+      if (field(4) == 'H1H' .or. field(4) == 'H2H' .or.&
+      &field(4) == 'INC') then
+         if (pollut == 'NO2') then
+            l_no_no2ave = .true.
+            no2_field4 = field(4)(1:3)
 !              Issue Warning Message: user disabled special processing
-            WRITE(DUMMY,'(A,1X,A3)') POLLUT(1:LEN_TRIM(POLLUT)),&
-            &FIELD(4)(1:3)
-            CALL ERRHDL(PATH,MODNAM,'W','276',DUMMY)
-         ELSE IF (POLLUT == 'SO2') THEN
-            L_NO_SO2AVE = .TRUE.
-            SO2_FIELD4 = FIELD(4)(1:3)
-            WRITE(DUMMY,'(A,1X,A3)') POLLUT(1:LEN_TRIM(POLLUT)),&
-            &FIELD(4)(1:3)
+            write(dummy,'(A,1X,A3)') pollut(1:len_trim(pollut)),&
+            &field(4)(1:3)
+            call errhdl(path,modnam,'W','276',dummy)
+         else if (pollut == 'SO2') then
+            l_no_so2ave = .true.
+            so2_field4 = field(4)(1:3)
+            write(dummy,'(A,1X,A3)') pollut(1:len_trim(pollut)),&
+            &field(4)(1:3)
 !              Issue Warning Message: user disabled special processing
-            CALL ERRHDL(PATH,MODNAM,'W','276',DUMMY)
-         ELSE IF (POLLUT == 'PM25' .or. POLLUT == 'PM-2.5' .or.&
-         &POLLUT == 'PM-25'.or. POLLUT == 'PM2.5') THEN
-            L_NO_PM25AVE = .TRUE.
-            PM25_FIELD4 = FIELD(4)(1:3)
-            WRITE(DUMMY,'(A,1X,A3)') POLLUT(1:LEN_TRIM(POLLUT)),&
-            &FIELD(4)(1:3)
+            call errhdl(path,modnam,'W','276',dummy)
+         else if (pollut == 'PM25' .or. pollut == 'PM-2.5' .or.&
+         &pollut == 'PM-25'.or. pollut == 'PM2.5') then
+            l_no_pm25ave = .true.
+            pm25_field4 = field(4)(1:3)
+            write(dummy,'(A,1X,A3)') pollut(1:len_trim(pollut)),&
+            &field(4)(1:3)
 !              Issue Warning Message: user disabled special processing
-            CALL ERRHDL(PATH,MODNAM,'W','276',DUMMY)
-         ELSE
+            call errhdl(path,modnam,'W','276',dummy)
+         else
 !              Error Message: 'H1H', 'H2H', and 'INC' processing not
 !              applicable to this POLLUT
-            WRITE(DUMMY,'(A,1X,A3)') POLLUT(1:LEN_TRIM(POLLUT)),&
-            &FIELD(4)(1:3)
-            CALL ERRHDL(PATH,MODNAM,'E','277',DUMMY)
-            GO TO 999
-         END IF
-      END IF
-   ELSE
+            write(dummy,'(A,1X,A3)') pollut(1:len_trim(pollut)),&
+            &field(4)(1:3)
+            call errhdl(path,modnam,'E','277',dummy)
+            go to 999
+         end if
+      end if
+   else
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
-   POLLUT = FIELD(3)
+   pollut = field(3)
 
-999 RETURN
-END SUBROUTINE POLLID
+999 return
+end subroutine pollid
 
-SUBROUTINE EDECAY
+subroutine edecay
 !***********************************************************************
 !                 EDECAY Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2604,63 +2604,63 @@ SUBROUTINE EDECAY
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'EDECAY'
+   modnam = 'EDECAY'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc > 3) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Start To Get Decay Coef.
-   CALL STODBL(FIELD(3),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(3),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   end if
 
-   IF (KEYWRD == 'HALFLIFE') THEN
-      HAFLIF = DNUM
+   if (keywrd == 'HALFLIFE') then
+      haflif = dnum
 !        Calculate Decay Coef. by Halflife
-      DECOEF = 0.693D0/HAFLIF
-   ELSE IF (KEYWRD == 'DCAYCOEF') THEN
-      DECOEF = DNUM
-   END IF
+      decoef = 0.693d0/haflif
+   else if (keywrd == 'DCAYCOEF') then
+      decoef = dnum
+   end if
 
 ! --- Check for Urban Regulatory Default for SO2; use L_PRESET_URBAN rather then
 !     URBAN to allow flexibility in order of keywords
-   IF (DFAULT .and. L_PRESET_URBAN .and. POLLUT=='SO2') THEN
-      IF (DECOEF /= 4.81D-5) THEN
+   if (dfault .and. l_preset_urban .and. pollut=='SO2') then
+      if (decoef /= 4.81d-5) then
 !           WRITE Warning Message: Attempt to Override Regulatory Default
-         CALL ERRHDL(PATH,MODNAM,'W','206','DCAYCOEF')
-      END IF
-      DECOEF = 4.81D-5
-   ELSE IF (DFAULT) THEN
-      IF (DECOEF /= 0.0D0) THEN
+         call errhdl(path,modnam,'W','206','DCAYCOEF')
+      end if
+      decoef = 4.81d-5
+   else if (dfault) then
+      if (decoef /= 0.0d0) then
 !           WRITE Warning Message: Attempt to Override Regulatory Default
-         CALL ERRHDL(PATH,MODNAM,'W','206','DCAYCOEF')
-      END IF
-      DECOEF = 0.0D0
-   ELSE IF (.NOT. DFAULT .and. DECOEF /= 0.0D0) THEN
+         call errhdl(path,modnam,'W','206','DCAYCOEF')
+      end if
+      decoef = 0.0d0
+   else if (.not. dfault .and. decoef /= 0.0d0) then
 !        Set flag for use of non-DEFAULT option
-      L_NonDFAULT = .TRUE.
-   END IF
+      L_NonDFAULT = .true.
+   end if
 
-999 RETURN
-END SUBROUTINE EDECAY
+999 return
+end subroutine edecay
 
-SUBROUTINE RUNNOT
+subroutine runnot
 !***********************************************************************
 !                 RUNNOT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2682,34 +2682,34 @@ SUBROUTINE RUNNOT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'RUNNOT'
+   modnam = 'RUNNOT'
 
-   IF (IFC == 3) THEN
-      IF (FIELD(3) == 'RUN') THEN
-         RUN = .TRUE.
-      ELSE IF (FIELD(3) == 'NOT') THEN
-         RUN = .FALSE.
-      ELSE
+   if (ifc == 3) then
+      if (field(3) == 'RUN') then
+         run = .true.
+      else if (field(3) == 'NOT') then
+         run = .false.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',KEYWRD)
-      END IF
-   ELSE IF (IFC > 3) THEN
+         call errhdl(path,modnam,'E','203',keywrd)
+      end if
+   else if (ifc > 3) then
 !        WRITE Error Message     ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Error Message     ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+   end if
 
-   RETURN
-END SUBROUTINE RUNNOT
+   return
+end subroutine runnot
 
-SUBROUTINE FLAGDF
+subroutine flagdf
 !***********************************************************************
 !                 FLAGDF Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2732,44 +2732,44 @@ SUBROUTINE FLAGDF
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION :: ZFLG
+   double precision :: zflg
 ! Unused:      INTEGER :: I
 
 !     Variable Initializations
-   MODNAM = 'FLAGDF'
-   FLGPOL = .TRUE.
+   modnam = 'FLAGDF'
+   flgpol = .true.
 
-   IF (IFC == 3) THEN
-      CALL STODBL(FIELD(3),ILEN_FLD,ZFLG,IMIT)
-      IF (IMIT /= 1) THEN
+   if (ifc == 3) then
+      call stodbl(field(3),ilen_fld,zflg,imit)
+      if (imit /= 1) then
 !           Write Error Message:Invalid Numerical Field
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      END IF
-      IF (ZFLG >= 0.0D0 .and. IMIT == 1) THEN
-         AZFLAG(:) = ZFLG
-      ELSE IF (ZFLG < 0.0D0 .and. IMIT == 1) THEN
+         call errhdl(path,modnam,'E','208',keywrd)
+      end if
+      if (zflg >= 0.0d0 .and. imit == 1) then
+         azflag(:) = zflg
+      else if (zflg < 0.0d0 .and. imit == 1) then
 !            WRITE Error Message: Invalid Data. Negative value specified
-         CALL ERRHDL(PATH,MODNAM,'E','209','ZFLAG')
-      ELSE
+         call errhdl(path,modnam,'E','209','ZFLAG')
+      else
 !            WRITE Error Message: Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',KEYWRD)
-      END IF
-   ELSE IF (IFC > 3) THEN
+         call errhdl(path,modnam,'E','203',keywrd)
+      end if
+   else if (ifc > 3) then
 !        WRITE Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'W','205','ZFLAG=0.')
-   END IF
+      call errhdl(path,modnam,'W','205','ZFLAG=0.')
+   end if
 
-   RETURN
-END SUBROUTINE FLAGDF
+   return
+end subroutine flagdf
 
-SUBROUTINE EVNTFL
+subroutine evntfl
 !***********************************************************************
 !                 EVNTFL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2791,66 +2791,66 @@ SUBROUTINE EVNTFL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'EVNTFL'
+   modnam = 'EVNTFL'
 
-   IF (IFC == 3) THEN
-      EVENTS = .TRUE.
+   if (ifc == 3) then
+      events = .true.
 !        Retrieve Included Filename as Character Substring to Maintain Case
-      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         EVFILE = RUNST1(LOCB(3):LOCE(3))
-      ELSE
+         evfile = runst1(locb(3):loce(3))
+      else
 !           WRITE Error Message:  EVFILE Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         RETURN
-      END IF
-      EVPARM = 'DETAIL'
-   ELSE IF (IFC == 4) THEN
-      EVENTS  = .TRUE.
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+         return
+      end if
+      evparm = 'DETAIL'
+   else if (ifc == 4) then
+      events  = .true.
 !        Retrieve Included Filename as Character Substring to Maintain Case
-      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         EVFILE = RUNST1(LOCB(3):LOCE(3))
-      ELSE
+         evfile = runst1(locb(3):loce(3))
+      else
 !           WRITE Error Message:  EVFILE Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         RETURN
-      END IF
-      EVPARM = FIELD(4)
-   ELSE IF (IFC > 4) THEN
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+         return
+      end if
+      evparm = field(4)
+   else if (ifc > 4) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Warning Message         ! No Parameters - Use Default Name
-      CALL ERRHDL(PATH,MODNAM,'W','207',KEYWRD)
-      EVENTS = .TRUE.
-      EVFILE = 'EVENTS.INP'
-      EVPARM = 'DETAIL'
-   END IF
+      call errhdl(path,modnam,'W','207',keywrd)
+      events = .true.
+      evfile = 'EVENTS.INP'
+      evparm = 'DETAIL'
+   end if
 
 !     Check for Invalid EVPARM
-   IF (EVPARM /= 'SOCONT' .and. EVPARM /= 'DETAIL') THEN
+   if (evparm /= 'SOCONT' .and. evparm /= 'DETAIL') then
 !        WRITE Warning Message         ! Invalid Parameter - Use Default
-      CALL ERRHDL(PATH,MODNAM,'W','203','EVPARM')
-   END IF
+      call errhdl(path,modnam,'W','203','EVPARM')
+   end if
 
 !     Open The EVENT Input File
-   OPEN(UNIT=IEVUNT,FILE=EVFILE,STATUS='REPLACE',&
-   &FORM='FORMATTED')
+   open(unit=ievunt,file=evfile,status='REPLACE',&
+   &form='FORMATTED')
 
-   RETURN
-END SUBROUTINE EVNTFL
+   return
+end subroutine evntfl
 
-SUBROUTINE SAVEFL
+subroutine savefl
 !***********************************************************************
 !                 SAVEFL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2872,97 +2872,97 @@ SUBROUTINE SAVEFL
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'SAVEFL'
+   modnam = 'SAVEFL'
 
-   IF (MULTYR) THEN
+   if (multyr) then
 !        WRITE Error Message:  Conflicting Options RE-START and MULTYEAR
-      CALL ERRHDL(PATH,MODNAM,'E','150',KEYWRD)
-   ELSE IF (IFC == 3) THEN
-      RSTSAV = .TRUE.
+      call errhdl(path,modnam,'E','150',keywrd)
+   else if (ifc == 3) then
+      rstsav = .true.
 !        Retrieve Included Filename as Character Substring to Maintain Case
-      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         SAVFIL = RUNST1(LOCB(3):LOCE(3))
-      ELSE
+         savfil = runst1(locb(3):loce(3))
+      else
 !           WRITE Error Message:  SAVFIL Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         RETURN
-      END IF
-      SAVFL2 = SAVFIL
-      INCRST = 1
-   ELSE IF (IFC == 4) THEN
-      RSTSAV = .TRUE.
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+         return
+      end if
+      savfl2 = savfil
+      incrst = 1
+   else if (ifc == 4) then
+      rstsav = .true.
 !        Retrieve Included Filename as Character Substring to Maintain Case
-      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         SAVFIL = RUNST1(LOCB(3):LOCE(3))
-      ELSE
+         savfil = runst1(locb(3):loce(3))
+      else
 !           WRITE Error Message:  SAVFIL Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         RETURN
-      END IF
-      SAVFL2 = SAVFIL
-      CALL STONUM(FIELD(4),ILEN_FLD,FNUM,IMIT)
-      INCRST = NINT(FNUM)
-      IF (IMIT /= 1) THEN
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+         return
+      end if
+      savfl2 = savfil
+      call stonum(field(4),ilen_fld,fnum,imit)
+      incrst = nint(fnum)
+      if (imit /= 1) then
 !           Write Error Message:Invalid Numerical Field
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      END IF
-   ELSE IF (IFC == 5) THEN
-      RSTSAV = .TRUE.
+         call errhdl(path,modnam,'E','208',keywrd)
+      end if
+   else if (ifc == 5) then
+      rstsav = .true.
 !        Retrieve Included Filename as Character Substring to Maintain Case
-      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         SAVFIL = RUNST1(LOCB(3):LOCE(3))
-      ELSE
+         savfil = runst1(locb(3):loce(3))
+      else
 !           WRITE Error Message:  SAVFIL Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         RETURN
-      END IF
-      CALL STONUM(FIELD(4),ILEN_FLD,FNUM,IMIT)
-      INCRST = NINT(FNUM)
-      IF (IMIT /= 1) THEN
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+         return
+      end if
+      call stonum(field(4),ilen_fld,fnum,imit)
+      incrst = nint(fnum)
+      if (imit /= 1) then
 !           Write Error Message:Invalid Numerical Field
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','208',keywrd)
+      end if
 !        Retrieve Included Filename as Character Substring to Maintain Case
-      IF ((LOCE(5)-LOCB(5)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(5)-locb(5)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         SAVFL2 = RUNST1(LOCB(5):LOCE(5))
-      ELSE
+         savfl2 = runst1(locb(5):loce(5))
+      else
 !           WRITE Error Message:  SAVFL2 Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         RETURN
-      END IF
-   ELSE IF (IFC > 5) THEN
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+         return
+      end if
+   else if (ifc > 5) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Warning Message          ! No Parameters - Use Default Name
-      CALL ERRHDL(PATH,MODNAM,'W','207',KEYWRD)
-      RSTSAV = .TRUE.
-      SAVFIL = 'SAVE.FIL'
-      SAVFL2 = SAVFIL
-      INCRST = 1
-   END IF
+      call errhdl(path,modnam,'W','207',keywrd)
+      rstsav = .true.
+      savfil = 'SAVE.FIL'
+      savfl2 = savfil
+      incrst = 1
+   end if
 
-   RETURN
-END SUBROUTINE SAVEFL
+   return
+end subroutine savefl
 
-SUBROUTINE INITFL
+subroutine initfl
 !***********************************************************************
 !                 INITFL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2988,43 +2988,43 @@ SUBROUTINE INITFL
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'INITFL'
+   modnam = 'INITFL'
 
-   IF (MULTYR) THEN
+   if (multyr) then
 !        WRITE Error Message:  Conflicting Options RE-START and MULTYEAR
-      CALL ERRHDL(PATH,MODNAM,'E','150',KEYWRD)
-   ELSE IF (IFC == 3) THEN
-      RSTINP = .TRUE.
+      call errhdl(path,modnam,'E','150',keywrd)
+   else if (ifc == 3) then
+      rstinp = .true.
 !        Retrieve Included Filename as Character Substring to Maintain Case
-      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         INIFIL = RUNST1(LOCB(3):LOCE(3))
-      ELSE
+         inifil = runst1(locb(3):loce(3))
+      else
 !           WRITE Error Message:  INIFIL Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         RETURN
-      END IF
-   ELSE IF (IFC > 3) THEN
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+         return
+      end if
+   else if (ifc > 3) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Warning Message          ! No Parameters - Use Default Name
-      CALL ERRHDL(PATH,MODNAM,'W','207',KEYWRD)
-      RSTINP = .TRUE.
-      INIFIL = 'SAVE.FIL'
-   END IF
+      call errhdl(path,modnam,'W','207',keywrd)
+      rstinp = .true.
+      inifil = 'SAVE.FIL'
+   end if
 
-   RETURN
-END SUBROUTINE INITFL
+   return
+end subroutine initfl
 
-SUBROUTINE ERRFIL
+subroutine errfil
 !***********************************************************************
 !                 ERRFIL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3046,41 +3046,41 @@ SUBROUTINE ERRFIL
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'ERRFIL'
+   modnam = 'ERRFIL'
 
-   IF (IFC == 3) THEN
-      ERRLST = .TRUE.
+   if (ifc == 3) then
+      errlst = .true.
 !        Retrieve Included Filename as Character Substring to Maintain Case
-      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         MSGFIL = RUNST1(LOCB(3):LOCE(3))
-      ELSE
+         msgfil = runst1(locb(3):loce(3))
+      else
 !           WRITE Error Message:  MSGFIL Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         RETURN
-      END IF
-   ELSE IF (IFC > 3) THEN
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+         return
+      end if
+   else if (ifc > 3) then
 !*       WRITE Error Message                ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !*       WRITE Warning Message              ! No Parameters - Use Default Name
-      CALL ERRHDL(PATH,MODNAM,'W','207',KEYWRD)
-      ERRLST = .TRUE.
-      MSGFIL = 'ERRORS.LST'
-   END IF
+      call errhdl(path,modnam,'W','207',keywrd)
+      errlst = .true.
+      msgfil = 'ERRORS.LST'
+   end if
 !*#
 
-   RETURN
-END SUBROUTINE ERRFIL
+   return
+end subroutine errfil
 
-SUBROUTINE DEBOPT
+subroutine debopt
 !***********************************************************************
 !                 DEBOPT Module of AERMOD
 !
@@ -3133,897 +3133,897 @@ SUBROUTINE DEBOPT
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   USE RLINE_DATA, ONLY: NRLINES
+   use main1
+   use rline_data, only: nrlines
 !CRCO D095 - this has been added to bring NBLP into the logic. Should
 ! we move NBLP out of BUOYANT_LINE and into MAIN1 instead in modules.f?
-   USE BUOYANT_LINE
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12, KOPT*8
+   use buoyant_line
+   implicit none
+   character :: modnam*12, kopt*8
 !CRT  D063 Add Platform Downwash variable IPLATFM and initialize below
 !CRT  D113 Add Sidewash source variable ISW and initialize below
-   INTEGER :: I, IMOD, IMET, IAREA, IPRM, IPVM, IOLMD, IARM2, IDEP,&
-   &IGRSM, NOPTS, MAXFields, IPRM2, ITTRMD, ITTRM2,&
-   &IURBD, IBLP, IPLATFM, IRLINE, ISW,&
-   &IARCFT,&                          ! Added for Aircraft; UNC-IE
-   &IHBP ! Added for HBPDEBUG; JAN 2023
+   integer :: i, imod, imet, iarea, iprm, ipvm, iolmd, iarm2, idep,&
+   &igrsm, nopts, MAXFields, iprm2, ittrmd, ittrm2,&
+   &iurbd, iblp, iplatfm, irline, isw,&
+   &iarcft,&                          ! Added for Aircraft; UNC-IE
+   &ihbp ! Added for HBPDEBUG; JAN 2023
 
 !     Variable Initializations
-   MODNAM = 'DEBOPT'
+   modnam = 'DEBOPT'
 !     Initialize counters for number of debug options and field number
 !     associated with debugopts
-   IMOD  = 0
-   IMET  = 0
-   IAREA = 0
-   IPRM  = 0
-   IPVM  = 0
-   IOLMD = 0
-   IARM2  = 0
-   IDEP  = 0
-   IGRSM = 0
-   IPRM2 = 0
-   IPLATFM = 0
-   NOPTS = 0
+   imod  = 0
+   imet  = 0
+   iarea = 0
+   iprm  = 0
+   ipvm  = 0
+   iolmd = 0
+   iarm2  = 0
+   idep  = 0
+   igrsm = 0
+   iprm2 = 0
+   iplatfm = 0
+   nopts = 0
    MAXFields = 0
-   ITTRMD = 0
-   ITTRM2 = 0
-   IRLINE = 0
-   IURBD = 0
-   IBLP = 0
-   ISW = 0
-   IARCFT = 0                                 ! Added for Aircraft; UNC-IE
-   IHBP = 0 ! Added for HBP, JAN 2023
+   ittrmd = 0
+   ittrm2 = 0
+   irline = 0
+   iurbd = 0
+   iblp = 0
+   isw = 0
+   iarcft = 0                                 ! Added for Aircraft; UNC-IE
+   ihbp = 0 ! Added for HBP, JAN 2023
 
 !     Check for Too Few or Too Many Parameters
-   IF (IFC < 3) THEN
+   if (ifc < 3) then
 !        WRITE Error Message     ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-   ELSE IF (IFC > 13) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+   else if (ifc > 13) then
 !        WRITE Warning Message   ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+   end if
 
 ! --- First Check for Presence of Debug Switches;
 !     also save position to interpret optional
 !     filenames
-   DO I = 3, IFC
-      KOPT = FIELD(I)
-      IF (KOPT == 'MODEL') THEN
-         DEBUG = .TRUE.
-         NOPTS = NOPTS + 1
-         IMOD = I
-      ELSE IF (KOPT == 'METEOR') THEN
-         METEORDBG = .TRUE.
-         NOPTS = NOPTS + 1
-         IMET = I
-      ELSE IF (KOPT == 'AREA') THEN
+   do i = 3, ifc
+      kopt = field(i)
+      if (kopt == 'MODEL') then
+         debug = .true.
+         nopts = nopts + 1
+         imod = i
+      else if (kopt == 'METEOR') then
+         meteordbg = .true.
+         nopts = nopts + 1
+         imet = i
+      else if (kopt == 'AREA') then
 ! ---       Check to see if AREADBG option has already been assigned .T.;
 !           user may have entered both AREA and LINE
-         IF (.NOT. AREADBG) THEN
+         if (.not. areadbg) then
 ! ---          AREADBG option not already = .T.; assign all variables
-            AREADBG = .TRUE.
-            NOPTS = NOPTS + 1
-            IAREA = I
-         ELSE
+            areadbg = .true.
+            nopts = nopts + 1
+            iarea = i
+         else
 ! ---          AREADBG already assigned = .T.; user may have entered
 !              both AREA and LINE options; issue ERROR message
-            CALL ERRHDL(PATH,MODNAM,'E','194','AREADEBUG')
-            AREADBG = .FALSE.
-         END IF
-      ELSE IF (KOPT == 'LINE') THEN
+            call errhdl(path,modnam,'E','194','AREADEBUG')
+            areadbg = .false.
+         end if
+      else if (kopt == 'LINE') then
 ! ---       Check to see if AREADBG option has already been assigned .T.;
 !           user may have entered both AREA and LINE
-         IF (.NOT. AREADBG) THEN
+         if (.not. areadbg) then
 ! ---          AREADBG option not already = .T.; assign all variables
-            AREADBG = .TRUE.
-            NOPTS = NOPTS + 1
-            IAREA = I
-         ELSE
+            areadbg = .true.
+            nopts = nopts + 1
+            iarea = i
+         else
 ! ---          AREADBG already assigned = .T.; user may have entered
 !              both AREA and LINE options; issue ERROR message
-            CALL ERRHDL(PATH,MODNAM,'E','194','LINEDEBUG')
-            AREADBG = .FALSE.
-         END IF
-      ELSE IF (KOPT == 'PRIME') THEN
-         PRIMEDBG = .TRUE.
-         NOPTS = NOPTS + 1
-         IPRM = I
-      ELSE IF (KOPT == 'PVMRM') THEN
-         PVMRMDBG = .TRUE.
-         NOPTS = NOPTS + 1
-         IPVM = I
-      ELSE IF (KOPT == 'OLM') THEN
-         OLMDEBUG = .TRUE.
-         NOPTS = NOPTS + 1
-         IOLMD = I
-      ELSE IF (KOPT == 'ARM2') THEN
-         ARM2DEBUG = .TRUE.
-         NOPTS = NOPTS + 1
-         IARM2 = I
-      ELSE IF (KOPT == 'GRSM') THEN
-         GRSMDEBUG = .TRUE.
-         NOPTS = NOPTS + 1
-         IGRSM = I
-      ELSE IF (KOPT == 'DEPOS') THEN
-         DEPOSDBG = .TRUE.
-         NOPTS = NOPTS + 1
-         IDEP = I
+            call errhdl(path,modnam,'E','194','LINEDEBUG')
+            areadbg = .false.
+         end if
+      else if (kopt == 'PRIME') then
+         primedbg = .true.
+         nopts = nopts + 1
+         iprm = i
+      else if (kopt == 'PVMRM') then
+         pvmrmdbg = .true.
+         nopts = nopts + 1
+         ipvm = i
+      else if (kopt == 'OLM') then
+         olmdebug = .true.
+         nopts = nopts + 1
+         iolmd = i
+      else if (kopt == 'ARM2') then
+         arm2debug = .true.
+         nopts = nopts + 1
+         iarm2 = i
+      else if (kopt == 'GRSM') then
+         grsmdebug = .true.
+         nopts = nopts + 1
+         igrsm = i
+      else if (kopt == 'DEPOS') then
+         deposdbg = .true.
+         nopts = nopts + 1
+         idep = i
 !CRT     D063 Platform Downwash Debug
-      ELSE IF (KOPT == 'PLATFORM') THEN
-         PLATFMDBG = .TRUE.
-         NOPTS = NOPTS + 1
-         IPLATFM = I
-      ELSE IF (KOPT == 'AWMADW') THEN
-         AWMADWDBG   = .TRUE.
-         NOPTS = NOPTS + 1
-         IPRM2 = I
-      ELSE IF (KOPT == 'RLINE') THEN
-         RLINEDBG   = .TRUE.
-         NOPTS = NOPTS + 1
-         IRLINE = I
-      ELSE IF (KOPT == 'TTRM') THEN
-         TTRMDBG = .TRUE.
-         NOPTS = NOPTS + 1
-         ITTRMD = I
-      ELSE IF (KOPT == 'TTRM2') THEN
-         TTRM2DBG = .TRUE.
-         NOPTS = NOPTS + 1
-         ITTRM2 = I
-      ELSE IF (KOPT == 'URBANDB') THEN
-         URBDBUG = .TRUE.
-         NOPTS = NOPTS + 1
-         IURBD = I
-      ELSE IF (KOPT == 'BLPDBUG') THEN
-         BLPDBUG = .TRUE.
-         NOPTS = NOPTS + 1
-         IBLP = I
-      ELSE IF (KOPT == 'SWPOINT') THEN
-         SWDBG = .TRUE.
-         NOPTS = NOPTS + 1
-         ISW = I
+      else if (kopt == 'PLATFORM') then
+         platfmdbg = .true.
+         nopts = nopts + 1
+         iplatfm = i
+      else if (kopt == 'AWMADW') then
+         awmadwdbg   = .true.
+         nopts = nopts + 1
+         iprm2 = i
+      else if (kopt == 'RLINE') then
+         rlinedbg   = .true.
+         nopts = nopts + 1
+         irline = i
+      else if (kopt == 'TTRM') then
+         ttrmdbg = .true.
+         nopts = nopts + 1
+         ittrmd = i
+      else if (kopt == 'TTRM2') then
+         ttrm2dbg = .true.
+         nopts = nopts + 1
+         ittrm2 = i
+      else if (kopt == 'URBANDB') then
+         urbdbug = .true.
+         nopts = nopts + 1
+         iurbd = i
+      else if (kopt == 'BLPDBUG') then
+         blpdbug = .true.
+         nopts = nopts + 1
+         iblp = i
+      else if (kopt == 'SWPOINT') then
+         swdbg = .true.
+         nopts = nopts + 1
+         isw = i
 
 !** Added for Aircraft Plume Rise; UNC-IE
-      ELSE IF (KOPT == 'AIRCRAFT') THEN
-         ARCFTDEBUG = .TRUE.
-         NOPTS = NOPTS + 1
-         IARCFT = I
+      else if (kopt == 'AIRCRAFT') then
+         arcftdebug = .true.
+         nopts = nopts + 1
+         iarcft = i
 !** End Aircraft Plume Rise insert; April 2023
 
 ! Added for HBP JAN 2023
-      ELSE IF (KOPT == 'HBPDBG') THEN
-         HBPDBG = .TRUE.
-         NOPTS = NOPTS + 1
-         IHBP = I
+      else if (kopt == 'HBPDBG') then
+         hbpdbg = .true.
+         nopts = nopts + 1
+         ihbp = i
 ! End HBP add
 
-      END IF
-   END DO
+      end if
+   end do
 
 ! --- Determine maximum number of fields allowed based on number of
 !     options specified, assuming that user has specified filename
 !     for each option (except for DEPOS).
-   IF (NOPTS > 0) THEN
-      IF (.NOT.DEPOSDBG) THEN
-         MAXFields = 2 + NOPTS*2
-      ELSE
-         MAXFields = 2 + (NOPTS-1)*2 + 1
-      END IF
-   ELSE
+   if (nopts > 0) then
+      if (.not.deposdbg) then
+         MAXFields = 2 + nopts*2
+      else
+         MAXFields = 2 + (nopts-1)*2 + 1
+      end if
+   else
 !        No recognizable debug options specified, issue fatal error
-      WRITE(DUMMY,'(A:)') FIELD(3)(1:MIN(12,LEN_TRIM(FIELD(3))))
-      CALL ERRHDL(PATH,MODNAM,'E','203',DUMMY)
-      GO TO 999
-   END IF
+      write(dummy,'(A:)') field(3)(1:min(12,len_trim(field(3))))
+      call errhdl(path,modnam,'E','203',dummy)
+      go to 999
+   end if
 
 ! --- Check for debug options without associated model option being used
-   IF (PVMRMDBG .and. .NOT. PVMRM) THEN
+   if (pvmrmdbg .and. .not. pvmrm) then
 !        Write Error Message:  PVMRM debug without PVMRM option
-      CALL ERRHDL(PATH,MODNAM,'E','194','PVMRMDBG')
-   END IF
-   IF (OLMDEBUG .and. .NOT.OLM) THEN
+      call errhdl(path,modnam,'E','194','PVMRMDBG')
+   end if
+   if (olmdebug .and. .not.olm) then
 !        Write Error Message:  OLM debug without OLM option
-      CALL ERRHDL(PATH,MODNAM,'E','194','OLMDEBUG')
-   END IF
-   IF (ARM2DEBUG .and. .NOT.ARM2) THEN
+      call errhdl(path,modnam,'E','194','OLMDEBUG')
+   end if
+   if (arm2debug .and. .not.arm2) then
 !        Write Error Message:  ARM2 debug without ARM2 option
-      CALL ERRHDL(PATH,MODNAM,'E','194','ARM2DEBUG')
-   END IF
-   IF (GRSMDEBUG .and. .NOT.GRSM) THEN
+      call errhdl(path,modnam,'E','194','ARM2DEBUG')
+   end if
+   if (grsmdebug .and. .not.grsm) then
 !        Write Error Message:  GRSM debug without GRSM option
-      CALL ERRHDL(PATH,MODNAM,'E','194','GRSMDEBUG')
-   END IF
-   IF (TTRMDBG .and. .NOT. RUNTTRM) THEN
+      call errhdl(path,modnam,'E','194','GRSMDEBUG')
+   end if
+   if (ttrmdbg .and. .not. runttrm) then
 !        Write Error Message:  TTRM debug without TTRM option
-      CALL ERRHDL(PATH,MODNAM,'E','194','TTRMDEBUG')
-   END IF
-   IF (TTRM2DBG .and. .NOT. RUNTTRM2) THEN
+      call errhdl(path,modnam,'E','194','TTRMDEBUG')
+   end if
+   if (ttrm2dbg .and. .not. runttrm2) then
 !        Write Error Message:  TTRM2 debug without TTRM2 option
-      CALL ERRHDL(PATH,MODNAM,'E','194','TTRM2DEBUG')
-   END IF
+      call errhdl(path,modnam,'E','194','TTRM2DEBUG')
+   end if
 ! Added for HBP, added Jan 2023
-   IF (HBPDBG .and. .NOT. HBPLUME) THEN
+   if (hbpdbg .and. .not. hbplume) then
 !        Write Error Message:  HBPDBG debug without HBP option
-      CALL ERRHDL(PATH,MODNAM,'E','194','HBPDBG')
-   ENDIF
+      call errhdl(path,modnam,'E','194','HBPDBG')
+   endif
 ! End HBP add
-   IF (DEPOSDBG .and. .NOT.DEPOS .and. .NOT.DDEP .and.&
-   &.NOT.WDEP) THEN
+   if (deposdbg .and. .not.depos .and. .not.ddep .and.&
+   &.not.wdep) then
 !        Write Error Message:  DEPOS debug without deposition options
-      CALL ERRHDL(PATH,MODNAM,'E','194','DEPOSDBG')
-   END IF
-   IF (AREADBG .and. NAREA==0 .and. NCIRC==0 .and. NLINE==0&
-   &.and. NPIT==0) THEN
+      call errhdl(path,modnam,'E','194','DEPOSDBG')
+   end if
+   if (areadbg .and. narea==0 .and. ncirc==0 .and. nline==0&
+   &.and. npit==0) then
 !        Write Error Message:  AREA/LINE debug without any applicable
 !        sources
-      IF (FIELD(IAREA) == 'AREA') THEN
-         CALL ERRHDL(PATH,MODNAM,'E','194','AREADEBUG')
-      ELSE IF (FIELD(IAREA) == 'LINE') THEN
-         CALL ERRHDL(PATH,MODNAM,'E','194','LINEDEBUG')
-      END IF
-   END IF
+      if (field(iarea) == 'AREA') then
+         call errhdl(path,modnam,'E','194','AREADEBUG')
+      else if (field(iarea) == 'LINE') then
+         call errhdl(path,modnam,'E','194','LINEDEBUG')
+      end if
+   end if
 !CRCO D095 Added for urban debug 8/3/2021
-   IF (NURB == 0 .and. URBDBUG) THEN
+   if (nurb == 0 .and. urbdbug) then
 !        Write Error Message:  URBDBUG debug without applicable sources
-      CALL ERRHDL(PATH,MODNAM,'E','194','URBANDB')
-   END IF
+      call errhdl(path,modnam,'E','194','URBANDB')
+   end if
 !C END URBDBUG insert
-   IF (PRIMEDBG .and. NSEC==0) THEN
+   if (primedbg .and. nsec==0) then
 !        Write Error Message:  PRIME debug without any applicable sources
-      CALL ERRHDL(PATH,MODNAM,'E','194','PRIMEDBG')
-   END IF
+      call errhdl(path,modnam,'E','194','PRIMEDBG')
+   end if
 
-   IF (AWMADWDBG .and. NSEC==0) THEN
+   if (awmadwdbg .and. nsec==0) then
 !        Write Error Message:  AWMADW debug without any applicable sources
-      CALL ERRHDL(PATH,MODNAM,'E','194','AWMADWDBG')
-   END IF
+      call errhdl(path,modnam,'E','194','AWMADWDBG')
+   end if
 !CRCO D095 added for BLP debug 12/9/2021
-   IF (NBLP == 0 .and. BLPDBUG) THEN
+   if (nblp == 0 .and. blpdbug) then
 !        Write Error Message:  BLPDBUG debug without applicable sources
-      CALL ERRHDL(PATH,MODNAM,'E','194','BLPDBUG')
-   END IF
+      call errhdl(path,modnam,'E','194','BLPDBUG')
+   end if
 
-   IF (RLINEDBG .and. NRLINES==0) THEN
+   if (rlinedbg .and. nrlines==0) then
 !        Write Error Message:  RLINE debug without any applicable sources
-      CALL ERRHDL(PATH,MODNAM,'E','194','RLINEDBG')
-   END IF
+      call errhdl(path,modnam,'E','194','RLINEDBG')
+   end if
 
 !CRT     D063 Platform Downwash Debug
-   IF (PLATFMDBG .and. NPNT==0) THEN
+   if (platfmdbg .and. npnt==0) then
 !        Write Error Message:  PLATFORM debug without any applicable sources
-      CALL ERRHDL(PATH,MODNAM,'E','194','PLATFMDBG')
-   END IF
+      call errhdl(path,modnam,'E','194','PLATFMDBG')
+   end if
 
 !     CRT 3/25/02022 D113 Added for sidewash debug
-   IF (SWDBG .and. NSWP == 0) THEN
+   if (swdbg .and. nswp == 0) then
 !        Write Error Message:  SWDBG debug without any applicable sources
-      CALL ERRHDL(PATH,MODNAM,'E','194','SWDBG')
-   END IF
+      call errhdl(path,modnam,'E','194','SWDBG')
+   end if
 
 !** Added for Aircraft Plume Rise; UNC-IE
 !MGS Changed conditional to be consistant with debug conditionals above.
 !MSG (D151 - WSP 6/1/2023)
 !MGS      IF (ARCFTDEBUG .and. .NOT. NAFTSRC .GT. 0.0D0) THEN
-   IF (ARCFTDEBUG .and. NAFTSRC == 0) THEN
+   if (arcftdebug .and. naftsrc == 0) then
 !        Write Error Message:  ARCFT debug without Aircraft option
-      CALL ERRHDL(PATH,MODNAM,'E','194','ARCFTDEBUG')
-   END IF
+      call errhdl(path,modnam,'E','194','ARCFTDEBUG')
+   end if
 !** End Aircraft Plume Rise insert; April 2023
 
 ! --- Check for user-specified filenames, which should immediately
 !     follow the keyword option in the input file
-   IF (DEBUG) THEN
-      IF (IFC >= IMOD+1 .and.&
-      &FIELD(IMOD+1) /= 'METEOR' .and.&
-      &FIELD(IMOD+1) /= 'AREA' .and.&
-      &FIELD(IMOD+1) /= 'LINE' .and.&
-      &FIELD(IMOD+1) /= 'RLINE' .and.&
-      &FIELD(IMOD+1) /= 'PRIME' .and.&
-      &FIELD(IMOD+1) /= 'PVMRM' .and.&
-      &FIELD(IMOD+1) /= 'OLM' .and.&
-      &FIELD(IMOD+1) /= 'ARM2' .and.&
-      &FIELD(IMOD+1) /= 'GRSM' .and.&
-      &FIELD(IMOD+1) /= 'DEPOS'.and.&
-      &FIELD(IMOD+1) /= 'AWMADW' .and.&
-      &FIELD(IMOD+1) /= 'TTRM' .and.&
-      &FIELD(IMOD+1) /= 'TTRM2' .and.&
-      &FIELD(IMOD+1) /= 'PLATFORM' .and.&
-      &FIELD(IMOD+1) /= 'URBANDB' .and.&
-      &FIELD(IMOD+1) /= 'BLPDBUG' .and.&
-      &FIELD(IMOD+1) /= 'SWPOINT' .and.&
-      &FIELD(IMOD+1) /= 'AIRCRAFT' .and.&
-      &FIELD(IMOD+1) /= 'HBPDBG' ) THEN
+   if (debug) then
+      if (ifc >= imod+1 .and.&
+      &field(imod+1) /= 'METEOR' .and.&
+      &field(imod+1) /= 'AREA' .and.&
+      &field(imod+1) /= 'LINE' .and.&
+      &field(imod+1) /= 'RLINE' .and.&
+      &field(imod+1) /= 'PRIME' .and.&
+      &field(imod+1) /= 'PVMRM' .and.&
+      &field(imod+1) /= 'OLM' .and.&
+      &field(imod+1) /= 'ARM2' .and.&
+      &field(imod+1) /= 'GRSM' .and.&
+      &field(imod+1) /= 'DEPOS'.and.&
+      &field(imod+1) /= 'AWMADW' .and.&
+      &field(imod+1) /= 'TTRM' .and.&
+      &field(imod+1) /= 'TTRM2' .and.&
+      &field(imod+1) /= 'PLATFORM' .and.&
+      &field(imod+1) /= 'URBANDB' .and.&
+      &field(imod+1) /= 'BLPDBUG' .and.&
+      &field(imod+1) /= 'SWPOINT' .and.&
+      &field(imod+1) /= 'AIRCRAFT' .and.&
+      &field(imod+1) /= 'HBPDBG' ) then
 
 ! ---       Assign user-specified filename for the MODEL debug option
-         DBGFIL = RUNST1(LOCB(IMOD+1):LOCE(IMOD+1))
-      ELSE
+         dbgfil = runst1(locb(imod+1):loce(imod+1))
+      else
 ! ---       Assign default MODEL debug filename
-         DBGFIL = 'MODEL.DBG'
-      END IF
-   END IF
+         dbgfil = 'MODEL.DBG'
+      end if
+   end if
 
-   IF (METEORDBG) THEN
-      IF (IFC >= IMET+1 .and.&
-      &FIELD(IMET+1) /= 'MODEL' .and.&
-      &FIELD(IMET+1) /= 'AREA' .and.&
-      &FIELD(IMET+1) /= 'LINE' .and.&
-      &FIELD(IMET+1) /= 'RLINE' .and.&
-      &FIELD(IMET+1) /= 'PRIME' .and.&
-      &FIELD(IMET+1) /= 'PVMRM' .and.&
-      &FIELD(IMET+1) /= 'OLM' .and.&
-      &FIELD(IMET+1) /= 'ARM2' .and.&
-      &FIELD(IMET+1) /= 'GRSM' .and.&
-      &FIELD(IMET+1) /= 'DEPOS' .and.&
-      &FIELD(IMET+1) /= 'AWMADW' .and.&
-      &FIELD(IMET+1) /= 'TTRM' .and.&
-      &FIELD(IMET+1) /= 'TTRM2' .and.&
-      &FIELD(IMET+1) /= 'PLATFORM' .and.&
-      &FIELD(IMET+1) /= 'URBANDB' .and.&
-      &FIELD(IMET+1) /= 'BLPDBUG' .and.&
-      &FIELD(IMET+1) /= 'SWPOINT' .and.&
-      &FIELD(IMET+1) /= 'AIRCRAFT' .and.&
-      &FIELD(IMET+1) /= 'HBPDBG') THEN
+   if (meteordbg) then
+      if (ifc >= imet+1 .and.&
+      &field(imet+1) /= 'MODEL' .and.&
+      &field(imet+1) /= 'AREA' .and.&
+      &field(imet+1) /= 'LINE' .and.&
+      &field(imet+1) /= 'RLINE' .and.&
+      &field(imet+1) /= 'PRIME' .and.&
+      &field(imet+1) /= 'PVMRM' .and.&
+      &field(imet+1) /= 'OLM' .and.&
+      &field(imet+1) /= 'ARM2' .and.&
+      &field(imet+1) /= 'GRSM' .and.&
+      &field(imet+1) /= 'DEPOS' .and.&
+      &field(imet+1) /= 'AWMADW' .and.&
+      &field(imet+1) /= 'TTRM' .and.&
+      &field(imet+1) /= 'TTRM2' .and.&
+      &field(imet+1) /= 'PLATFORM' .and.&
+      &field(imet+1) /= 'URBANDB' .and.&
+      &field(imet+1) /= 'BLPDBUG' .and.&
+      &field(imet+1) /= 'SWPOINT' .and.&
+      &field(imet+1) /= 'AIRCRAFT' .and.&
+      &field(imet+1) /= 'HBPDBG') then
 
 ! ---       Assign user-specified filename for the METEOR debug option
-         DBMFIL = RUNST1(LOCB(IMET+1):LOCE(IMET+1))
-      ELSE
+         dbmfil = runst1(locb(imet+1):loce(imet+1))
+      else
 ! ---       Assign default METEOR debug filename
-         DBMFIL = 'METEOR.DBG'
-      END IF
-   END IF
+         dbmfil = 'METEOR.DBG'
+      end if
+   end if
 
-   IF (AREADBG) THEN
-      IF (IFC >= IAREA+1 .and.&
-      &FIELD(IAREA+1) /= 'MODEL' .and.&
-      &FIELD(IAREA+1) /= 'METEOR' .and.&
-      &FIELD(IAREA+1) /= 'RLINE' .and.&
-      &FIELD(IAREA+1) /= 'PRIME' .and.&
-      &FIELD(IAREA+1) /= 'PVMRM' .and.&
-      &FIELD(IAREA+1) /= 'OLM' .and.&
-      &FIELD(IAREA+1) /= 'ARM2' .and.&
-      &FIELD(IAREA+1) /= 'GRSM' .and.&
-      &FIELD(IAREA+1) /= 'DEPOS' .and.&
-      &FIELD(IAREA+1) /= 'AWMADW' .and.&
-      &FIELD(IAREA+1) /= 'TTRM' .and.&
-      &FIELD(IAREA+1) /= 'TTRM2' .and.&
-      &FIELD(IAREA+1) /= 'PLATFORM' .and.&
-      &FIELD(IAREA+1) /= 'URBANDB' .and.&
-      &FIELD(IAREA+1) /= 'BLPDBUG' .and.&
-      &FIELD(IAREA+1) /= 'SWPOINT'.and.&
-      &FIELD(IAREA+1) /= 'AIRCRAFT' .and.&
-      &FIELD(IAREA+1) /= 'HBPDBG') THEN
+   if (areadbg) then
+      if (ifc >= iarea+1 .and.&
+      &field(iarea+1) /= 'MODEL' .and.&
+      &field(iarea+1) /= 'METEOR' .and.&
+      &field(iarea+1) /= 'RLINE' .and.&
+      &field(iarea+1) /= 'PRIME' .and.&
+      &field(iarea+1) /= 'PVMRM' .and.&
+      &field(iarea+1) /= 'OLM' .and.&
+      &field(iarea+1) /= 'ARM2' .and.&
+      &field(iarea+1) /= 'GRSM' .and.&
+      &field(iarea+1) /= 'DEPOS' .and.&
+      &field(iarea+1) /= 'AWMADW' .and.&
+      &field(iarea+1) /= 'TTRM' .and.&
+      &field(iarea+1) /= 'TTRM2' .and.&
+      &field(iarea+1) /= 'PLATFORM' .and.&
+      &field(iarea+1) /= 'URBANDB' .and.&
+      &field(iarea+1) /= 'BLPDBUG' .and.&
+      &field(iarea+1) /= 'SWPOINT'.and.&
+      &field(iarea+1) /= 'AIRCRAFT' .and.&
+      &field(iarea+1) /= 'HBPDBG') then
 
 ! ---       Assign user-specified filename for the AREA debug option
-         DBAREAFIL = RUNST1(LOCB(IAREA+1):LOCE(IAREA+1))
-      ELSE
+         dbareafil = runst1(locb(iarea+1):loce(iarea+1))
+      else
 ! ---       Assign default AREA debug filename
-         DBAREAFIL = 'AREA.DBG'
-      END IF
-   END IF
+         dbareafil = 'AREA.DBG'
+      end if
+   end if
 
-   IF (PRIMEDBG) THEN
-      IF (IFC >= IPRM+1 .and.&
-      &FIELD(IPRM+1) /= 'MODEL' .and.&
-      &FIELD(IPRM+1) /= 'METEOR' .and.&
-      &FIELD(IPRM+1) /= 'AREA' .and.&
-      &FIELD(IPRM+1) /= 'LINE' .and.&
-      &FIELD(IPRM+1) /= 'RLINE' .and.&
-      &FIELD(IPRM+1) /= 'PVMRM' .and.&
-      &FIELD(IPRM+1) /= 'OLM' .and.&
-      &FIELD(IPRM+1) /= 'ARM2' .and.&
-      &FIELD(IPRM+1) /= 'GRSM' .and.&
-      &FIELD(IPRM+1) /= 'DEPOS' .and.&
-      &FIELD(IPRM+1) /= 'AWMADW' .and.&
-      &FIELD(IPRM+1) /= 'TTRM' .and.&
-      &FIELD(IPRM+1) /= 'TTRM2' .and.&
-      &FIELD(IPRM+1) /= 'PLATFORM' .and.&
-      &FIELD(IPRM+1) /= 'URBANDB' .and.&
-      &FIELD(IPRM+1) /= 'BLPDBUG' .and.&
-      &FIELD(IPRM+1) /= 'SWPOINT' .and.&
-      &FIELD(IPRM+1) /= 'AIRCRAFT' .and.&
-      &FIELD(IPRM+1) /= 'HBPDBG') THEN
+   if (primedbg) then
+      if (ifc >= iprm+1 .and.&
+      &field(iprm+1) /= 'MODEL' .and.&
+      &field(iprm+1) /= 'METEOR' .and.&
+      &field(iprm+1) /= 'AREA' .and.&
+      &field(iprm+1) /= 'LINE' .and.&
+      &field(iprm+1) /= 'RLINE' .and.&
+      &field(iprm+1) /= 'PVMRM' .and.&
+      &field(iprm+1) /= 'OLM' .and.&
+      &field(iprm+1) /= 'ARM2' .and.&
+      &field(iprm+1) /= 'GRSM' .and.&
+      &field(iprm+1) /= 'DEPOS' .and.&
+      &field(iprm+1) /= 'AWMADW' .and.&
+      &field(iprm+1) /= 'TTRM' .and.&
+      &field(iprm+1) /= 'TTRM2' .and.&
+      &field(iprm+1) /= 'PLATFORM' .and.&
+      &field(iprm+1) /= 'URBANDB' .and.&
+      &field(iprm+1) /= 'BLPDBUG' .and.&
+      &field(iprm+1) /= 'SWPOINT' .and.&
+      &field(iprm+1) /= 'AIRCRAFT' .and.&
+      &field(iprm+1) /= 'HBPDBG') then
 
 ! ---       Assign user-specified filename for the PRIME debug option
-         DBPRMFIL = RUNST1(LOCB(IPRM+1):LOCE(IPRM+1))
-      ELSE
+         dbprmfil = runst1(locb(iprm+1):loce(iprm+1))
+      else
 ! ---       Assign default PRIME debug filename
-         DBPRMFIL = 'PRIME.DBG'
-      END IF
-   END IF
+         dbprmfil = 'PRIME.DBG'
+      end if
+   end if
 
-   IF (PVMRMDBG) THEN
-      IF (IFC >= IPVM+1 .and.&
-      &FIELD(IPVM+1) /= 'MODEL' .and.&
-      &FIELD(IPVM+1) /= 'METEOR' .and.&
-      &FIELD(IPVM+1) /= 'AREA' .and.&
-      &FIELD(IPVM+1) /= 'LINE' .and.&
-      &FIELD(IPVM+1) /= 'RLINE' .and.&
-      &FIELD(IPVM+1) /= 'PRIME' .and.&
-      &FIELD(IPVM+1) /= 'OLM' .and.&
-      &FIELD(IPVM+1) /= 'ARM2' .and.&
-      &FIELD(IPVM+1) /= 'GRSM' .and.&
-      &FIELD(IPVM+1) /= 'DEPOS' .and.&
-      &FIELD(IPVM+1) /= 'AWMADW' .and.&
-      &FIELD(IPVM+1) /= 'TTRM' .and.&
-      &FIELD(IPVM+1) /= 'TTRM2'.and.&
-      &FIELD(IPVM+1) /= 'PLATFORM' .and.&
-      &FIELD(IPVM+1) /= 'URBANDB' .and.&
-      &FIELD(IPVM+1) /= 'BLPDBUG' .and.&
-      &FIELD(IPVM+1) /= 'SWPOINT'.and.&
-      &FIELD(IPVM+1) /= 'AIRCRAFT' .and.&
-      &FIELD(IPVM+1) /= 'HBPDBG') THEN
+   if (pvmrmdbg) then
+      if (ifc >= ipvm+1 .and.&
+      &field(ipvm+1) /= 'MODEL' .and.&
+      &field(ipvm+1) /= 'METEOR' .and.&
+      &field(ipvm+1) /= 'AREA' .and.&
+      &field(ipvm+1) /= 'LINE' .and.&
+      &field(ipvm+1) /= 'RLINE' .and.&
+      &field(ipvm+1) /= 'PRIME' .and.&
+      &field(ipvm+1) /= 'OLM' .and.&
+      &field(ipvm+1) /= 'ARM2' .and.&
+      &field(ipvm+1) /= 'GRSM' .and.&
+      &field(ipvm+1) /= 'DEPOS' .and.&
+      &field(ipvm+1) /= 'AWMADW' .and.&
+      &field(ipvm+1) /= 'TTRM' .and.&
+      &field(ipvm+1) /= 'TTRM2'.and.&
+      &field(ipvm+1) /= 'PLATFORM' .and.&
+      &field(ipvm+1) /= 'URBANDB' .and.&
+      &field(ipvm+1) /= 'BLPDBUG' .and.&
+      &field(ipvm+1) /= 'SWPOINT'.and.&
+      &field(ipvm+1) /= 'AIRCRAFT' .and.&
+      &field(ipvm+1) /= 'HBPDBG') then
 
 ! ---       Assign user-specified filename for the PVMRM debug option
-         DBPVFIL = RUNST1(LOCB(IPVM+1):LOCE(IPVM+1))
-      ELSE
+         dbpvfil = runst1(locb(ipvm+1):loce(ipvm+1))
+      else
 ! ---       Assign default PVMRM debug filename
-         IF (PVMRM) THEN
-            DBPVFIL = 'PVMRM.DBG'
-         END IF
-      END IF
+         if (pvmrm) then
+            dbpvfil = 'PVMRM.DBG'
+         end if
+      end if
 ! ---    Assign default filename for RELDISP debug file for PVMRM option
-      RDISPFIL = 'RelDisp.dbg'
-   END IF
+      rdispfil = 'RelDisp.dbg'
+   end if
 
-   IF (OLMDEBUG) THEN
-      IF (IFC >= IOLMD+1 .and.&
-      &FIELD(IOLMD+1) /= 'MODEL' .and.&
-      &FIELD(IOLMD+1) /= 'METEOR' .and.&
-      &FIELD(IOLMD+1) /= 'AREA' .and.&
-      &FIELD(IOLMD+1) /= 'LINE' .and.&
-      &FIELD(IOLMD+1) /= 'RLINE' .and.&
-      &FIELD(IOLMD+1) /= 'PRIME' .and.&
-      &FIELD(IOLMD+1) /= 'PVMRM' .and.&
-      &FIELD(IOLMD+1) /= 'ARM2' .and.&
-      &FIELD(IOLMD+1) /= 'GRSM' .and.&
-      &FIELD(IOLMD+1) /= 'DEPOS' .and.&
-      &FIELD(IOLMD+1) /= 'AWMADW' .and.&
-      &FIELD(IOLMD+1) /= 'TTRM' .and.&
-      &FIELD(IOLMD+1) /= 'TTRM2' .and.&
-      &FIELD(IOLMD+1) /= 'PLATFORM' .and.&
-      &FIELD(IOLMD+1) /= 'URBANDB' .and.&
-      &FIELD(IOLMD+1) /= 'BLPDBUG' .and.&
-      &FIELD(IOLMD+1) /= 'SWPOINT' .and.&
-      &FIELD(IOLMD+1) /= 'AIRCRAFT' .and.&
-      &FIELD(IOLMD+1) /= 'HBPDBG') THEN
+   if (olmdebug) then
+      if (ifc >= iolmd+1 .and.&
+      &field(iolmd+1) /= 'MODEL' .and.&
+      &field(iolmd+1) /= 'METEOR' .and.&
+      &field(iolmd+1) /= 'AREA' .and.&
+      &field(iolmd+1) /= 'LINE' .and.&
+      &field(iolmd+1) /= 'RLINE' .and.&
+      &field(iolmd+1) /= 'PRIME' .and.&
+      &field(iolmd+1) /= 'PVMRM' .and.&
+      &field(iolmd+1) /= 'ARM2' .and.&
+      &field(iolmd+1) /= 'GRSM' .and.&
+      &field(iolmd+1) /= 'DEPOS' .and.&
+      &field(iolmd+1) /= 'AWMADW' .and.&
+      &field(iolmd+1) /= 'TTRM' .and.&
+      &field(iolmd+1) /= 'TTRM2' .and.&
+      &field(iolmd+1) /= 'PLATFORM' .and.&
+      &field(iolmd+1) /= 'URBANDB' .and.&
+      &field(iolmd+1) /= 'BLPDBUG' .and.&
+      &field(iolmd+1) /= 'SWPOINT' .and.&
+      &field(iolmd+1) /= 'AIRCRAFT' .and.&
+      &field(iolmd+1) /= 'HBPDBG') then
 
 ! ---       Assign user-specified filename for the OLM debug option
-         DBOLMFIL = RUNST1(LOCB(IOLMD+1):LOCE(IOLMD+1))
-      ELSE
+         dbolmfil = runst1(locb(iolmd+1):loce(iolmd+1))
+      else
 ! ---       Assign default OLM debug filename
-         DBOLMFIL = 'OLM.DBG'
-      END IF
-   END IF
+         dbolmfil = 'OLM.DBG'
+      end if
+   end if
 
-   IF (ARM2DEBUG) THEN
-      IF (IFC >= IARM2+1 .and.&
-      &FIELD(IARM2+1) /= 'MODEL' .and.&
-      &FIELD(IARM2+1) /= 'METEOR' .and.&
-      &FIELD(IARM2+1) /= 'AREA' .and.&
-      &FIELD(IARM2+1) /= 'LINE' .and.&
-      &FIELD(IARM2+1) /= 'RLINE' .and.&
-      &FIELD(IARM2+1) /= 'PRIME' .and.&
-      &FIELD(IARM2+1) /= 'PVMRM' .and.&
-      &FIELD(IARM2+1) /= 'OLM' .and.&
-      &FIELD(IARM2+1) /= 'GRSM' .and.&
-      &FIELD(IARM2+1) /= 'DEPOS' .and.&
-      &FIELD(IARM2+1) /= 'AWMADW'.and.&
-      &FIELD(IARM2+1) /= 'TTRM' .and.&
-      &FIELD(IARM2+1) /= 'TTRM2' .and.&
-      &FIELD(IARM2+1) /= 'PLATFORM' .and.&
-      &FIELD(IARM2+1) /= 'URBANDB' .and.&
-      &FIELD(IARM2+1) /= 'BLPDBUG' .and.&
-      &FIELD(IARM2+1) /= 'SWPOINT' .and.&
-      &FIELD(IARM2+1) /= 'AIRCRAFT' .and.&
-      &FIELD(IARM2+1) /= 'HBPDBG') THEN
+   if (arm2debug) then
+      if (ifc >= iarm2+1 .and.&
+      &field(iarm2+1) /= 'MODEL' .and.&
+      &field(iarm2+1) /= 'METEOR' .and.&
+      &field(iarm2+1) /= 'AREA' .and.&
+      &field(iarm2+1) /= 'LINE' .and.&
+      &field(iarm2+1) /= 'RLINE' .and.&
+      &field(iarm2+1) /= 'PRIME' .and.&
+      &field(iarm2+1) /= 'PVMRM' .and.&
+      &field(iarm2+1) /= 'OLM' .and.&
+      &field(iarm2+1) /= 'GRSM' .and.&
+      &field(iarm2+1) /= 'DEPOS' .and.&
+      &field(iarm2+1) /= 'AWMADW'.and.&
+      &field(iarm2+1) /= 'TTRM' .and.&
+      &field(iarm2+1) /= 'TTRM2' .and.&
+      &field(iarm2+1) /= 'PLATFORM' .and.&
+      &field(iarm2+1) /= 'URBANDB' .and.&
+      &field(iarm2+1) /= 'BLPDBUG' .and.&
+      &field(iarm2+1) /= 'SWPOINT' .and.&
+      &field(iarm2+1) /= 'AIRCRAFT' .and.&
+      &field(iarm2+1) /= 'HBPDBG') then
 
 ! ---       Assign user-specified filename for the ARM2 debug option
-         DBARM2FIL = RUNST1(LOCB(IARM2+1):LOCE(IARM2+1))
-      ELSE
+         dbarm2fil = runst1(locb(iarm2+1):loce(iarm2+1))
+      else
 ! ---       Assign default ARM2 debug filename
-         DBARM2FIL = 'ARM2.DBG'
-      END IF
-   END IF
+         dbarm2fil = 'ARM2.DBG'
+      end if
+   end if
 
 !     CERC 11/30/20 Code for determining GRSM debug file name
-   IF (GRSMDEBUG) THEN
-      IF (IFC >= IGRSM+1 .and.&
-      &FIELD(IGRSM+1) /= 'MODEL' .and.&
-      &FIELD(IGRSM+1) /= 'METEOR' .and.&
-      &FIELD(IGRSM+1) /= 'AREA' .and.&
-      &FIELD(IGRSM+1) /= 'LINE' .and.&
-      &FIELD(IGRSM+1) /= 'RLINE' .and.&
-      &FIELD(IGRSM+1) /= 'PRIME' .and.&
-      &FIELD(IGRSM+1) /= 'OLM' .and.&
-      &FIELD(IGRSM+1) /= 'PVMRM' .and.&
-      &FIELD(IGRSM+1) /= 'ARM2' .and.&
-      &FIELD(IGRSM+1) /= 'DEPOS' .and.&
-      &FIELD(IGRSM+1) /= 'AWMADW' .and.&
-      &FIELD(IGRSM+1) /= 'TTRM' .and.&
-      &FIELD(IGRSM+1) /= 'TTRM2' .and.&
-      &FIELD(IGRSM+1) /= 'PLATFORM' .and.&
-      &FIELD(IGRSM+1) /= 'URBANDB' .and.&
-      &FIELD(IGRSM+1) /= 'BLPDBUG' .and.&
-      &FIELD(IGRSM+1) /= 'SWPOINT' .and.&
-      &FIELD(IGRSM+1) /= 'AIRCRAFT' .and.&
-      &FIELD(IGRSM+1) /= 'HBPDBG') THEN
+   if (grsmdebug) then
+      if (ifc >= igrsm+1 .and.&
+      &field(igrsm+1) /= 'MODEL' .and.&
+      &field(igrsm+1) /= 'METEOR' .and.&
+      &field(igrsm+1) /= 'AREA' .and.&
+      &field(igrsm+1) /= 'LINE' .and.&
+      &field(igrsm+1) /= 'RLINE' .and.&
+      &field(igrsm+1) /= 'PRIME' .and.&
+      &field(igrsm+1) /= 'OLM' .and.&
+      &field(igrsm+1) /= 'PVMRM' .and.&
+      &field(igrsm+1) /= 'ARM2' .and.&
+      &field(igrsm+1) /= 'DEPOS' .and.&
+      &field(igrsm+1) /= 'AWMADW' .and.&
+      &field(igrsm+1) /= 'TTRM' .and.&
+      &field(igrsm+1) /= 'TTRM2' .and.&
+      &field(igrsm+1) /= 'PLATFORM' .and.&
+      &field(igrsm+1) /= 'URBANDB' .and.&
+      &field(igrsm+1) /= 'BLPDBUG' .and.&
+      &field(igrsm+1) /= 'SWPOINT' .and.&
+      &field(igrsm+1) /= 'AIRCRAFT' .and.&
+      &field(igrsm+1) /= 'HBPDBG') then
 
 ! ---       Assign user-specified filename for the GRSM debug option
-         DBGRSMFIL = RUNST1(LOCB(IGRSM+1):LOCE(IGRSM+1))
-      ELSE
+         dbgrsmfil = runst1(locb(igrsm+1):loce(igrsm+1))
+      else
 ! ---       Assign default GRSM debug filename
-         DBGRSMFIL = 'GRSM.DBG'
-      END IF
-   END IF
+         dbgrsmfil = 'GRSM.DBG'
+      end if
+   end if
 
-   IF (AWMADWDBG) THEN
-      IF (IFC >= IPRM2+1 .and.&
-      &FIELD(IPRM2+1) /= 'MODEL' .and.&
-      &FIELD(IPRM2+1) /= 'METEOR' .and.&
-      &FIELD(IPRM2+1) /= 'AREA' .and.&
-      &FIELD(IPRM2+1) /= 'LINE' .and.&
-      &FIELD(IPRM2+1) /= 'RLINE' .and.&
-      &FIELD(IPRM2+1) /= 'PRIME' .and.&
-      &FIELD(IPRM2+1) /= 'PVMRM' .and.&
-      &FIELD(IPRM2+1) /= 'OLM' .and.&
-      &FIELD(IPRM2+1) /= 'ARM2' .and.&
-      &FIELD(IPRM2+1) /= 'PLATFORM' .and.&
-      &FIELD(IPRM2+1) /= 'GRSM' .and.&
-      &FIELD(IPRM2+1) /= 'TTRM' .and.&
-      &FIELD(IPRM2+1) /= 'TTRM2' .and.&
-      &FIELD(IPRM2+1) /= 'DEPOS' .and.&
-      &FIELD(IPRM2+1) /= 'URBANDB' .and.&
-      &FIELD(IPRM2+1) /= 'BLPDBUG' .and.&
-      &FIELD(IPRM2+1) /= 'SWPOINT' .and.&
-      &FIELD(IPRM2+1) /= 'AIRCRAFT' .and.&
-      &FIELD(IPRM2+1) /= 'HBPDBG') THEN
+   if (awmadwdbg) then
+      if (ifc >= iprm2+1 .and.&
+      &field(iprm2+1) /= 'MODEL' .and.&
+      &field(iprm2+1) /= 'METEOR' .and.&
+      &field(iprm2+1) /= 'AREA' .and.&
+      &field(iprm2+1) /= 'LINE' .and.&
+      &field(iprm2+1) /= 'RLINE' .and.&
+      &field(iprm2+1) /= 'PRIME' .and.&
+      &field(iprm2+1) /= 'PVMRM' .and.&
+      &field(iprm2+1) /= 'OLM' .and.&
+      &field(iprm2+1) /= 'ARM2' .and.&
+      &field(iprm2+1) /= 'PLATFORM' .and.&
+      &field(iprm2+1) /= 'GRSM' .and.&
+      &field(iprm2+1) /= 'TTRM' .and.&
+      &field(iprm2+1) /= 'TTRM2' .and.&
+      &field(iprm2+1) /= 'DEPOS' .and.&
+      &field(iprm2+1) /= 'URBANDB' .and.&
+      &field(iprm2+1) /= 'BLPDBUG' .and.&
+      &field(iprm2+1) /= 'SWPOINT' .and.&
+      &field(iprm2+1) /= 'AIRCRAFT' .and.&
+      &field(iprm2+1) /= 'HBPDBG') then
 
 ! ---       Assign user-specified filename for the PRIME debug option
-         DBAwmaDwFIL = RUNST1(LOCB(IPRM2+1):LOCE(IPRM2+1))
-      ELSE
+         DBAwmaDwFIL = runst1(locb(iprm2+1):loce(iprm2+1))
+      else
 ! ---       Assign default AWMADW debug filename
          DBAwmaDwFIL = 'AWMADW.DBG'
-      END IF
-   END IF
+      end if
+   end if
 
-   IF (RLINEDBG) THEN
-      IF (IFC >= IRLINE +1 .and.&
-      &FIELD(IRLINE+1) /= 'MODEL' .and.&
-      &FIELD(IRLINE+1) /= 'METEOR' .and.&
-      &FIELD(IRLINE+1) /= 'AREA' .and.&
-      &FIELD(IRLINE+1) /= 'LINE' .and.&
-      &FIELD(IRLINE+1) /= 'PRIME' .and.&
-      &FIELD(IRLINE+1) /= 'PVMRM' .and.&
-      &FIELD(IRLINE+1) /= 'OLM' .and.&
-      &FIELD(IRLINE+1) /= 'ARM2' .and.&
-      &FIELD(IRLINE+1) /= 'GRSM' .and.&
-      &FIELD(IRLINE+1) /= 'PLATFORM' .and.&
-      &FIELD(IRLINE+1) /= 'AWMADW' .and.&
-      &FIELD(IRLINE+1) /= 'TTRM' .and.&
-      &FIELD(IRLINE+1) /= 'TTRM2' .and.&
-      &FIELD(IRLINE+1) /= 'URBANDB'.and.&
-      &FIELD(IRLINE+1) /= 'DEPOS' .and.&
-      &FIELD(IRLINE+1) /= 'BLPDBUG' .and.&
-      &FIELD(IRLINE+1) /= 'SWPOINT' .and.&
-      &FIELD(IRLINE+1) /= 'AIRCRAFT' .and.&
-      &FIELD(IRLINE+1) /= 'HBPDBG') THEN
+   if (rlinedbg) then
+      if (ifc >= irline +1 .and.&
+      &field(irline+1) /= 'MODEL' .and.&
+      &field(irline+1) /= 'METEOR' .and.&
+      &field(irline+1) /= 'AREA' .and.&
+      &field(irline+1) /= 'LINE' .and.&
+      &field(irline+1) /= 'PRIME' .and.&
+      &field(irline+1) /= 'PVMRM' .and.&
+      &field(irline+1) /= 'OLM' .and.&
+      &field(irline+1) /= 'ARM2' .and.&
+      &field(irline+1) /= 'GRSM' .and.&
+      &field(irline+1) /= 'PLATFORM' .and.&
+      &field(irline+1) /= 'AWMADW' .and.&
+      &field(irline+1) /= 'TTRM' .and.&
+      &field(irline+1) /= 'TTRM2' .and.&
+      &field(irline+1) /= 'URBANDB'.and.&
+      &field(irline+1) /= 'DEPOS' .and.&
+      &field(irline+1) /= 'BLPDBUG' .and.&
+      &field(irline+1) /= 'SWPOINT' .and.&
+      &field(irline+1) /= 'AIRCRAFT' .and.&
+      &field(irline+1) /= 'HBPDBG') then
 
 ! ---       Assign user-specified filename for the RLINE debug option
-         RLINEDBGFIL = RUNST1(LOCB(IRLINE+1):LOCE(IRLINE+1))
+         rlinedbgfil = runst1(locb(irline+1):loce(irline+1))
 ! ---    Add filename for the RLINE gridded wind speed debug file Wood 10/10/22
-         RLINEDBGFIL_WS = RUNST1(LOCB(IRLINE+1):LOCE(IRLINE+1)-4)//&
+         rlinedbgfil_ws = runst1(locb(irline+1):loce(irline+1)-4)//&
          &"_GRIDWS"//&
-         &RUNST1(LOCE(IRLINE+1)-3:LOCE(IRLINE+1))
-      ELSE
+         &runst1(loce(irline+1)-3:loce(irline+1))
+      else
 ! ---       Assign default RLINE debug filename
-         RLINEDBGFIL = 'RLINE.DBG'
+         rlinedbgfil = 'RLINE.DBG'
 ! ---    Add filename for the RLINE gridded wind speed debug file Wood 10/10/22
 ! ---       Assign default RLINE Grid WS debug filename
-         RLINEDBGFIL_WS = 'RLINE_GRIDWS.DBG'
-      END IF
-   END IF
+         rlinedbgfil_ws = 'RLINE_GRIDWS.DBG'
+      end if
+   end if
 
 !CRT  D063 Platform Downwash Debug
-   IF (PLATFMDBG) THEN
-      IF (IFC >= IPLATFM+1 .and.&
-      &FIELD(IPLATFM+1) /= 'MODEL' .and.&
-      &FIELD(IPLATFM+1) /= 'METEOR' .and.&
-      &FIELD(IPLATFM+1) /= 'AREA' .and.&
-      &FIELD(IPLATFM+1) /= 'LINE' .and.&
-      &FIELD(IPLATFM+1) /= 'RLINE' .and.&
-      &FIELD(IPLATFM+1) /= 'PRIME' .and.&
-      &FIELD(IPLATFM+1) /= 'PVMRM' .and.&
-      &FIELD(IPLATFM+1) /= 'OLM' .and.&
-      &FIELD(IPLATFM+1) /= 'ARM2' .and.&
-      &FIELD(IPLATFM+1) /= 'DEPOS' .and.&
-      &FIELD(IPLATFM+1) /= 'GRSM' .and.&
-      &FIELD(IPLATFM+1) /= 'TTRM' .and.&
-      &FIELD(IPLATFM+1) /= 'TTRM2' .and.&
-      &FIELD(IPLATFM+1) /= 'URBANDB'.and.&
-      &FIELD(IPLATFM+1) /= 'AWMADW' .and.&
-      &FIELD(IPLATFM+1) /= 'SWPOINT'.and.&
-      &FIELD(IPLATFM+1) /= 'AIRCRAFT'.and.&
-      &FIELD(IPLATFM+1) /= 'HBPDBG') THEN
+   if (platfmdbg) then
+      if (ifc >= iplatfm+1 .and.&
+      &field(iplatfm+1) /= 'MODEL' .and.&
+      &field(iplatfm+1) /= 'METEOR' .and.&
+      &field(iplatfm+1) /= 'AREA' .and.&
+      &field(iplatfm+1) /= 'LINE' .and.&
+      &field(iplatfm+1) /= 'RLINE' .and.&
+      &field(iplatfm+1) /= 'PRIME' .and.&
+      &field(iplatfm+1) /= 'PVMRM' .and.&
+      &field(iplatfm+1) /= 'OLM' .and.&
+      &field(iplatfm+1) /= 'ARM2' .and.&
+      &field(iplatfm+1) /= 'DEPOS' .and.&
+      &field(iplatfm+1) /= 'GRSM' .and.&
+      &field(iplatfm+1) /= 'TTRM' .and.&
+      &field(iplatfm+1) /= 'TTRM2' .and.&
+      &field(iplatfm+1) /= 'URBANDB'.and.&
+      &field(iplatfm+1) /= 'AWMADW' .and.&
+      &field(iplatfm+1) /= 'SWPOINT'.and.&
+      &field(iplatfm+1) /= 'AIRCRAFT'.and.&
+      &field(iplatfm+1) /= 'HBPDBG') then
 
 ! ---       Assign user-specified filename for the PRIME debug option
-         PLATFMDBGFILE = RUNST1(LOCB(IPLATFM+1):LOCE(IPLATFM+1))
-      ELSE
+         platfmdbgfile = runst1(locb(iplatfm+1):loce(iplatfm+1))
+      else
 ! ---       Assign default PLATFORM debug filename
-         PLATFMDBGFILE = 'PLATFORM.DBG'
-      END IF
-   END IF
+         platfmdbgfile = 'PLATFORM.DBG'
+      end if
+   end if
 
 ! --- Now check for DEPOS option; since DEPOS debug filenames are
 !     hardwired, issue warning if user appears to have specified
 !     a filename
-   IF (DEPOSDBG) THEN
+   if (deposdbg) then
 !         JAT 05/08/2020 added from version 19191
 !         wet deposition parameters are written to debug file
 !         regardless if MODEL debug is chosen.  if model debug
 !         not chosen, file is fort.24.  change to DEPOS.DBG
 !         if dbgfil not named or next field is not MODEL
-      IF (TRIM(ADJUSTL(DBGFIL)) == '' .or. FIELD(IDEP+1) /=&
-      &'MODEL') DBGFIL='DEPOS.DBG'
-      IF (IFC >= IDEP+1 .and.&
-      &FIELD(IDEP+1) /= 'MODEL' .and.&
-      &FIELD(IDEP+1) /= 'METEOR' .and.&
-      &FIELD(IDEP+1) /= 'AREA' .and.&
-      &FIELD(IDEP+1) /= 'LINE' .and.&
-      &FIELD(IDEP+1) /= 'PRIME' .and.&
-      &FIELD(IDEP+1) /= 'PVMRM' .and.&
-      &FIELD(IDEP+1) /= 'ARM2' .and.&
-      &FIELD(IDEP+1) /= 'OLM' .and.&
-      &FIELD(IDEP+1) /= 'PLATFORM' .and.&
-      &FIELD(IDEP+1) /= 'GRSM' .and.&
-      &FIELD(IDEP+1) /= 'TTRM' .and.&
-      &FIELD(IDEP+1) /= 'AWMADW' .and.&
-      &FIELD(IDEP+1) /= 'TTRM2' .and.&
-      &FIELD(IDEP+1) /= 'RLINE' .and.&
-      &FIELD(IDEP+1) /= 'URBANDB' .and.&
-      &FIELD(IDEP+1) /= 'BLPDBUG' .and.&
-      &FIELD(IDEP+1) /= 'SWPOINT' .and.&
-      &FIELD(IDEP+1) /= 'AIRCRAFT' .and.&
-      &FIELD(IDEP+1) /= 'HBPDBG') THEN
+      if (trim(adjustl(dbgfil)) == '' .or. field(idep+1) /=&
+      &'MODEL') dbgfil='DEPOS.DBG'
+      if (ifc >= idep+1 .and.&
+      &field(idep+1) /= 'MODEL' .and.&
+      &field(idep+1) /= 'METEOR' .and.&
+      &field(idep+1) /= 'AREA' .and.&
+      &field(idep+1) /= 'LINE' .and.&
+      &field(idep+1) /= 'PRIME' .and.&
+      &field(idep+1) /= 'PVMRM' .and.&
+      &field(idep+1) /= 'ARM2' .and.&
+      &field(idep+1) /= 'OLM' .and.&
+      &field(idep+1) /= 'PLATFORM' .and.&
+      &field(idep+1) /= 'GRSM' .and.&
+      &field(idep+1) /= 'TTRM' .and.&
+      &field(idep+1) /= 'AWMADW' .and.&
+      &field(idep+1) /= 'TTRM2' .and.&
+      &field(idep+1) /= 'RLINE' .and.&
+      &field(idep+1) /= 'URBANDB' .and.&
+      &field(idep+1) /= 'BLPDBUG' .and.&
+      &field(idep+1) /= 'SWPOINT' .and.&
+      &field(idep+1) /= 'AIRCRAFT' .and.&
+      &field(idep+1) /= 'HBPDBG') then
 
 ! ---       Write warning message regarding DEPOS debug filenames
-         CALL ERRHDL(PATH,MODNAM,'W','203','DEPOSDBG')
-      END IF
-   END IF
+         call errhdl(path,modnam,'W','203','DEPOSDBG')
+      end if
+   end if
 
 !     Added for TTRM; AECOM
-   IF (TTRMDBG) THEN
-      IF (IFC >= ITTRMD+1 .and.&
-      &FIELD(ITTRMD+1) /= 'METEOR' .and.&
-      &FIELD(ITTRMD+1) /= 'MODEL' .and.&
-      &FIELD(ITTRMD+1) /= 'PRIME' .and.&
-      &FIELD(ITTRMD+1) /= 'PVMRM' .and.&
-      &FIELD(ITTRMD+1) /= 'OLM' .and.&
-      &FIELD(ITTRMD+1) /= 'ARM2' .and.&
-      &FIELD(ITTRMD+1) /= 'GRSM' .and.&
-      &FIELD(ITTRMD+1) /= 'AREA' .and.&
-      &FIELD(ITTRMD+1) /= 'LINE' .and.&
-      &FIELD(ITTRMD+1) /= 'AWMADW' .and.&
-      &FIELD(ITTRMD+1) /= 'RLINE' .and.&
-      &FIELD(ITTRMD+1) /= 'PLATFORM' .and.&
-      &FIELD(ITTRMD+1) /= 'DEPOS' .and.&
-      &FIELD(ITTRMD+1) /= 'TTRM2' .and.&
-      &FIELD(ITTRMD+1) /= 'DEPOS'.and.&
-      &FIELD(ITTRMD+1) /= 'URBANDB'.and.&
-      &FIELD(ITTRMD+1) /= 'BLPDBUG' .and.&
-      &FIELD(ITTRMD+1) /= 'SWPOINT' .and.&
-      &FIELD(ITTRMD+1) /= 'AIRCRAFT' .and.&
-      &FIELD(ITTRMD+1) /= 'HBPDBG') THEN
+   if (ttrmdbg) then
+      if (ifc >= ittrmd+1 .and.&
+      &field(ittrmd+1) /= 'METEOR' .and.&
+      &field(ittrmd+1) /= 'MODEL' .and.&
+      &field(ittrmd+1) /= 'PRIME' .and.&
+      &field(ittrmd+1) /= 'PVMRM' .and.&
+      &field(ittrmd+1) /= 'OLM' .and.&
+      &field(ittrmd+1) /= 'ARM2' .and.&
+      &field(ittrmd+1) /= 'GRSM' .and.&
+      &field(ittrmd+1) /= 'AREA' .and.&
+      &field(ittrmd+1) /= 'LINE' .and.&
+      &field(ittrmd+1) /= 'AWMADW' .and.&
+      &field(ittrmd+1) /= 'RLINE' .and.&
+      &field(ittrmd+1) /= 'PLATFORM' .and.&
+      &field(ittrmd+1) /= 'DEPOS' .and.&
+      &field(ittrmd+1) /= 'TTRM2' .and.&
+      &field(ittrmd+1) /= 'DEPOS'.and.&
+      &field(ittrmd+1) /= 'URBANDB'.and.&
+      &field(ittrmd+1) /= 'BLPDBUG' .and.&
+      &field(ittrmd+1) /= 'SWPOINT' .and.&
+      &field(ittrmd+1) /= 'AIRCRAFT' .and.&
+      &field(ittrmd+1) /= 'HBPDBG') then
 
 !      added for TTRM; AECOM
 ! ---       Assign user-specified filename for the TTRM debug option
-         TTRMFIL = RUNST1(LOCB(ITTRMD+1):LOCE(ITTRMD+1))
-      ELSE
+         ttrmfil = runst1(locb(ittrmd+1):loce(ittrmd+1))
+      else
 ! ---       Assign default Ozone Reaction Rate debug filename
-         TTRMFIL = 'TTRM_DEBUG.DBG'
-      END IF
-   END IF
+         ttrmfil = 'TTRM_DEBUG.DBG'
+      end if
+   end if
 !     End TTRM insert; Feb. 2021
 
 !     Open TTRM2 debug files; the filenames are hard-wired
-   IF (RUNTTRM2 .and. TTRM2DBG) THEN
-      OPEN(UNIT=TTRM2TMP(1),FILE='AFTER_TTRM.DBG',&
-      &ERR=779,STATUS='REPLACE')
+   if (runttrm2 .and. ttrm2dbg) then
+      open(unit=ttrm2tmp(1),file='AFTER_TTRM.DBG',&
+      &err=779,status='REPLACE')
 !       Assign 2nd TTRM2 debug file based on selected method
-      IF (ARM2) THEN
-         OPEN(UNIT=TTRM2TMP(2),FILE='AFTER_ARM2.DBG',ERR=780,&
-         &STATUS='REPLACE')
-      ELSEIF (OLM) THEN
-         OPEN(UNIT=TTRM2TMP(2),FILE='AFTER_OLM.DBG',ERR=780,&
-         &STATUS='REPLACE')
-      ELSE
-         OPEN(UNIT=TTRM2TMP(2),FILE='AFTER_PVMRM.DBG',ERR=780,&
-         &STATUS='REPLACE')
-      ENDIF
-      OPEN(UNIT=TTRM2TMP(3),FILE='TTRM2_MERGE.DBG',ERR=781,&
-      &STATUS='REPLACE')
+      if (arm2) then
+         open(unit=ttrm2tmp(2),file='AFTER_ARM2.DBG',err=780,&
+         &status='REPLACE')
+      elseif (olm) then
+         open(unit=ttrm2tmp(2),file='AFTER_OLM.DBG',err=780,&
+         &status='REPLACE')
+      else
+         open(unit=ttrm2tmp(2),file='AFTER_PVMRM.DBG',err=780,&
+         &status='REPLACE')
+      endif
+      open(unit=ttrm2tmp(3),file='TTRM2_MERGE.DBG',err=781,&
+      &status='REPLACE')
 !       Write headers for TTRM2 debug files
-      DO I = 1, 3
-         WRITE(TTRM2TMP(I),7005) VERSN, TITLE1(1:68),&
-         &RUNDAT, RUNTIM
-         WRITE(TTRM2TMP(I),7020)
-      ENDDO
-      GO TO 7799
-7005  FORMAT('* AERMOD (',A6,'): ',A68,5X,A8,4X,A8)
+      do i = 1, 3
+         write(ttrm2tmp(i),7005) versn, title1(1:68),&
+         &rundat, runtim
+         write(ttrm2tmp(i),7020)
+      enddo
+      go to 7799
+7005  format('* AERMOD (',a6,'): ',a68,5x,a8,4x,a8)
 
-7020  FORMAT('*        X             Y      AVERAGE CONC    ZELEV    ',&
+7020  format('*        X             Y      AVERAGE CONC    ZELEV    ',&
       &'ZHILL    ZFLAG    AVE     GRP       DATE     SRC ID   ',&
       &/,&
       &'* ____________  ____________  ____________   ______   _',&
       &'_____   ______  ______  ________  ________  ________  ')
 !        WRITE Error Message for Error Opening File
-779   WRITE(DUMMY,'("PSTFL",I4.4)') TTRM2TMP(1)
-      CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
-780   WRITE(DUMMY,'("PSTFL",I4.4)') TTRM2TMP(2)
-      CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
-781   WRITE(DUMMY,'("PSTFL",I4.4)') TTRM2TMP(3)
-      CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
-7799  CONTINUE
-   ENDIF
+779   write(dummy,'("PSTFL",I4.4)') ttrm2tmp(1)
+      call errhdl(path,modnam,'E','500',dummy)
+780   write(dummy,'("PSTFL",I4.4)') ttrm2tmp(2)
+      call errhdl(path,modnam,'E','500',dummy)
+781   write(dummy,'("PSTFL",I4.4)') ttrm2tmp(3)
+      call errhdl(path,modnam,'E','500',dummy)
+7799  continue
+   endif
 
 
 !RCO D095 Added for urban debug 8/3/2021
-   IF (URBDBUG) THEN
-      IF (IFC >= IURBD+1 .and.&
-      &FIELD(IURBD+1) /= 'METEOR' .and.&
-      &FIELD(IURBD+1) /= 'MODEL' .and.&
-      &FIELD(IURBD+1) /= 'AREA' .and.&
-      &FIELD(IURBD+1) /= 'LINE' .and.&
-      &FIELD(IURBD+1) /= 'PRIME' .and.&
-      &FIELD(IURBD+1) /= 'PVMRM' .and.&
-      &FIELD(IURBD+1) /= 'OLM' .and.&
-      &FIELD(IURBD+1) /= 'ARM2' .and.&
-      &FIELD(IURBD+1) /= 'GRSM' .and.&
-      &FIELD(IURBD+1) /= 'PLATFORM' .and.&
-      &FIELD(IURBD+1) /= 'DEPOS'.and.&
-      &FIELD(IURBD+1) /= 'AWMADW' .and.&
-      &FIELD(IURBD+1) /= 'TTRM' .and.&
-      &FIELD(IURBD+1) /= 'TTRM2' .and.&
-      &FIELD(IURBD+1) /= 'RLINE' .and.&
-      &FIELD(IURBD+1) /= 'BLPDBUG' .and.&
-      &FIELD(IURBD+1) /= 'SWPOINT' .and.&
-      &FIELD(IURBD+1) /= 'AIRCRAFT' .and.&
-      &FIELD(IURBD+1) /= 'HBPDBG') THEN
+   if (urbdbug) then
+      if (ifc >= iurbd+1 .and.&
+      &field(iurbd+1) /= 'METEOR' .and.&
+      &field(iurbd+1) /= 'MODEL' .and.&
+      &field(iurbd+1) /= 'AREA' .and.&
+      &field(iurbd+1) /= 'LINE' .and.&
+      &field(iurbd+1) /= 'PRIME' .and.&
+      &field(iurbd+1) /= 'PVMRM' .and.&
+      &field(iurbd+1) /= 'OLM' .and.&
+      &field(iurbd+1) /= 'ARM2' .and.&
+      &field(iurbd+1) /= 'GRSM' .and.&
+      &field(iurbd+1) /= 'PLATFORM' .and.&
+      &field(iurbd+1) /= 'DEPOS'.and.&
+      &field(iurbd+1) /= 'AWMADW' .and.&
+      &field(iurbd+1) /= 'TTRM' .and.&
+      &field(iurbd+1) /= 'TTRM2' .and.&
+      &field(iurbd+1) /= 'RLINE' .and.&
+      &field(iurbd+1) /= 'BLPDBUG' .and.&
+      &field(iurbd+1) /= 'SWPOINT' .and.&
+      &field(iurbd+1) /= 'AIRCRAFT' .and.&
+      &field(iurbd+1) /= 'HBPDBG') then
 
 ! ---       Assign user-specified filename for the URBDBUG debug option
-         URBFIL = RUNST1(LOCB(IURBD+1):LOCE(IURBD+1))
-         URBFIL1 = RUNST1(LOCB(IURBD+1):LOCE(IURBD+1)) // "1"
+         urbfil = runst1(locb(iurbd+1):loce(iurbd+1))
+         urbfil1 = runst1(locb(iurbd+1):loce(iurbd+1)) // "1"
 !RCO - D168 Debug files. Add output file for second urban debug
-         URBFIL2 = RUNST1(LOCB(IURBD+1):LOCE(IURBD+1)) // "2"
-      ELSE
+         urbfil2 = runst1(locb(iurbd+1):loce(iurbd+1)) // "2"
+      else
 ! ---       Assign default URBDBUG debug filename
-         URBFIL = 'URBDBUG.DBG'
-         URBFIL1 = 'URBDBUG1.DBG'
-         URBFIL2 = 'URBDBUG2.DBG'
-      END IF
-   END IF
+         urbfil = 'URBDBUG.DBG'
+         urbfil1 = 'URBDBUG1.DBG'
+         urbfil2 = 'URBDBUG2.DBG'
+      end if
+   end if
 ! End URBDBUG insert
 
 !     CRCO D095 BLP Debug
-   IF (BLPDBUG) THEN
-      IF (IFC >= IBLP+1 .and.&
-      &FIELD(IBLP+1) /= 'METEOR' .and.&
-      &FIELD(IBLP+1) /= 'MODEL' .and.&
-      &FIELD(IBLP+1) /= 'AREA' .and.&
-      &FIELD(IBLP+1) /= 'LINE' .and.&
-      &FIELD(IBLP+1) /= 'PRIME' .and.&
-      &FIELD(IBLP+1) /= 'PVMRM' .and.&
-      &FIELD(IBLP+1) /= 'OLM' .and.&
-      &FIELD(IBLP+1) /= 'ARM2' .and.&
-      &FIELD(IBLP+1) /= 'GRSM' .and.&
-      &FIELD(IBLP+1) /= 'PLATFORM' .and.&
-      &FIELD(IBLP+1) /= 'DEPOS'.and.&
-      &FIELD(IBLP+1) /= 'AWMADW' .and.&
-      &FIELD(IBLP+1) /= 'TTRM' .and.&
-      &FIELD(IBLP+1) /= 'TTRM2' .and.&
-      &FIELD(IBLP+1) /= 'RLINE' .and.&
-      &FIELD(IBLP+1) /= 'URBANDB' .and.&
-      &FIELD(IBLP+1) /= 'SWPOINT' .and.&
-      &FIELD(IBLP+1) /= 'AIRCRAFT' .and.&
-      &FIELD(IBLP+1) /= 'HBPDBG') THEN
+   if (blpdbug) then
+      if (ifc >= iblp+1 .and.&
+      &field(iblp+1) /= 'METEOR' .and.&
+      &field(iblp+1) /= 'MODEL' .and.&
+      &field(iblp+1) /= 'AREA' .and.&
+      &field(iblp+1) /= 'LINE' .and.&
+      &field(iblp+1) /= 'PRIME' .and.&
+      &field(iblp+1) /= 'PVMRM' .and.&
+      &field(iblp+1) /= 'OLM' .and.&
+      &field(iblp+1) /= 'ARM2' .and.&
+      &field(iblp+1) /= 'GRSM' .and.&
+      &field(iblp+1) /= 'PLATFORM' .and.&
+      &field(iblp+1) /= 'DEPOS'.and.&
+      &field(iblp+1) /= 'AWMADW' .and.&
+      &field(iblp+1) /= 'TTRM' .and.&
+      &field(iblp+1) /= 'TTRM2' .and.&
+      &field(iblp+1) /= 'RLINE' .and.&
+      &field(iblp+1) /= 'URBANDB' .and.&
+      &field(iblp+1) /= 'SWPOINT' .and.&
+      &field(iblp+1) /= 'AIRCRAFT' .and.&
+      &field(iblp+1) /= 'HBPDBG') then
 
 ! ---       Assign user-specified filename for the DISTANCE debug option
-         BLPFIL = RUNST1(LOCB(IBLP+1):LOCE(IBLP+1))
-      ELSE
+         blpfil = runst1(locb(iblp+1):loce(iblp+1))
+      else
 ! ---       Assign default BLPDBUG debug filename
-         BLPFIL = 'BLPDBUG.DBG'
-      END IF
-   END IF
+         blpfil = 'BLPDBUG.DBG'
+      end if
+   end if
 !     End BLPDBUG insert
 
 !     CRT, 3/25/2022 D113 Updated for SIDEWASH
-   IF (SWDBG) THEN
-      IF (IFC >= ISW+1 .and.&
-      &FIELD(ISW+1) /= 'METEOR' .and.&
-      &FIELD(ISW+1) /= 'MODEL' .and.&
-      &FIELD(ISW+1) /= 'PRIME' .and.&
-      &FIELD(ISW+1) /= 'PVMRM' .and.&
-      &FIELD(ISW+1) /= 'OLM' .and.&
-      &FIELD(ISW+1) /= 'ARM2' .and.&
-      &FIELD(ISW+1) /= 'GRSM' .and.&
-      &FIELD(ISW+1) /= 'AREA' .and.&
-      &FIELD(ISW+1) /= 'LINE' .and.&
-      &FIELD(ISW+1) /= 'AWMADW' .and.&
-      &FIELD(ISW+1) /= 'PLATFORM' .and.&
-      &FIELD(ISW+1) /= 'DEPOS' .and.&
-      &FIELD(ISW+1) /= 'TTRM' .and.&
-      &FIELD(ISW+1) /= 'TTRM2' .and.&
-      &FIELD(ISW+1) /= 'RLINE' .and.&
-      &FIELD(ISW+1) /= 'URBANDB'.and.&
-      &FIELD(ISW+1) /= 'AIRCRAFT' .and.&
-      &FIELD(ISW+1) /= 'HBPDBG') THEN
+   if (swdbg) then
+      if (ifc >= isw+1 .and.&
+      &field(isw+1) /= 'METEOR' .and.&
+      &field(isw+1) /= 'MODEL' .and.&
+      &field(isw+1) /= 'PRIME' .and.&
+      &field(isw+1) /= 'PVMRM' .and.&
+      &field(isw+1) /= 'OLM' .and.&
+      &field(isw+1) /= 'ARM2' .and.&
+      &field(isw+1) /= 'GRSM' .and.&
+      &field(isw+1) /= 'AREA' .and.&
+      &field(isw+1) /= 'LINE' .and.&
+      &field(isw+1) /= 'AWMADW' .and.&
+      &field(isw+1) /= 'PLATFORM' .and.&
+      &field(isw+1) /= 'DEPOS' .and.&
+      &field(isw+1) /= 'TTRM' .and.&
+      &field(isw+1) /= 'TTRM2' .and.&
+      &field(isw+1) /= 'RLINE' .and.&
+      &field(isw+1) /= 'URBANDB'.and.&
+      &field(isw+1) /= 'AIRCRAFT' .and.&
+      &field(isw+1) /= 'HBPDBG') then
 
 ! ---       Assign user-specified filename for the SIDEWASH debug option
-         SWFIL = RUNST1(LOCB(ISW+1):LOCE(ISW+1))
-      ELSE
+         swfil = runst1(locb(isw+1):loce(isw+1))
+      else
 ! ---       Assign default Sidewash source debug filename
-         SWFIL = 'SWPOINT.DBG'
-      END IF
-   END IF
+         swfil = 'SWPOINT.DBG'
+      end if
+   end if
 
 !**   Added for Aircraft Plume Rise; UNC-IE
-   IF (ARCFTDEBUG) THEN
-      IF (IFC >= IARCFT+1 .and.&
-      &FIELD(IARCFT+1) /= 'METEOR' .and.&
-      &FIELD(IARCFT+1) /= 'MODEL' .and.&
-      &FIELD(IARCFT+1) /= 'AREA' .and.&
-      &FIELD(IARCFT+1) /= 'LINE' .and.&
-      &FIELD(IARCFT+1) /= 'PRIME' .and.&
-      &FIELD(IARCFT+1) /= 'PVMRM' .and.&
-      &FIELD(IARCFT+1) /= 'OLM' .and.&
-      &FIELD(IARCFT+1) /= 'ARM2' .and.&
-      &FIELD(IARCFT+1) /= 'GRSM' .and.&
-      &FIELD(IARCFT+1) /= 'PLATFORM' .and.&
-      &FIELD(IARCFT+1) /= 'DEPOS'.and.&
-      &FIELD(IARCFT+1) /= 'AWMADW' .and.&
-      &FIELD(IARCFT+1) /= 'TTRM'.and.&
-      &FIELD(IARCFT+1) /= 'RLINE' .and.&
-      &FIELD(IARCFT+1) /= 'URBANDB'.and.&
-      &FIELD(IARCFT+1) /= 'BLPDBUG' .and.&
-      &FIELD(IARCFT+1) /= 'HBPDBG') THEN
+   if (arcftdebug) then
+      if (ifc >= iarcft+1 .and.&
+      &field(iarcft+1) /= 'METEOR' .and.&
+      &field(iarcft+1) /= 'MODEL' .and.&
+      &field(iarcft+1) /= 'AREA' .and.&
+      &field(iarcft+1) /= 'LINE' .and.&
+      &field(iarcft+1) /= 'PRIME' .and.&
+      &field(iarcft+1) /= 'PVMRM' .and.&
+      &field(iarcft+1) /= 'OLM' .and.&
+      &field(iarcft+1) /= 'ARM2' .and.&
+      &field(iarcft+1) /= 'GRSM' .and.&
+      &field(iarcft+1) /= 'PLATFORM' .and.&
+      &field(iarcft+1) /= 'DEPOS'.and.&
+      &field(iarcft+1) /= 'AWMADW' .and.&
+      &field(iarcft+1) /= 'TTRM'.and.&
+      &field(iarcft+1) /= 'RLINE' .and.&
+      &field(iarcft+1) /= 'URBANDB'.and.&
+      &field(iarcft+1) /= 'BLPDBUG' .and.&
+      &field(iarcft+1) /= 'HBPDBG') then
 ! ---       Assign user-specified filename for the AIRCRAFT debug option
-         DBARCFTFIL = RUNST1(LOCB(IARCFT+1):LOCE(IARCFT+1))
-      ELSE
+         dbarcftfil = runst1(locb(iarcft+1):loce(iarcft+1))
+      else
 ! ---       Assign default AIRCRAFT debug filename
-         DBARCFTFIL = 'AIRCRAFT.DBG'
-      END IF
-   END IF
+         dbarcftfil = 'AIRCRAFT.DBG'
+      end if
+   end if
 !**  End Aircraft Plume Rise insert; April 2023
 
 ! Added for HBP DEBUG, JAN 2023
-   IF (HBPDBG) THEN
-      IF (IFC >= IHBP+1 .and.&
-      &FIELD(IHBP+1) /= 'METEOR' .and.&
-      &FIELD(IHBP+1) /= 'MODEL' .and.&
-      &FIELD(IHBP+1) /= 'AREA' .and.&
-      &FIELD(IHBP+1) /= 'LINE' .and.&
-      &FIELD(IHBP+1) /= 'PRIME' .and.&
-      &FIELD(IHBP+1) /= 'PVMRM' .and.&
-      &FIELD(IHBP+1) /= 'OLM' .and.&
-      &FIELD(IHBP+1) /= 'ARM2' .and.&
-      &FIELD(IHBP+1) /= 'GRSM' .and.&
-      &FIELD(IHBP+1) /= 'PLATFORM' .and.&
-      &FIELD(IHBP+1) /= 'DEPOS'.and.&
-      &FIELD(IHBP+1) /= 'AWMADW' .and.&
-      &FIELD(IHBP+1) /= 'TTRM'.and.&
-      &FIELD(IHBP+1) /= 'TTRM2' .and.&
-      &FIELD(IHBP+1) /= 'RLINE' .and.&
-      &FIELD(IHBP+1) /= 'URBANDB' .and.&
-      &FIELD(IHBP+1) /= 'SWPOINT' .and.&
-      &FIELD(IHBP+1) /= 'BLPDBUG' .and.&
-      &FIELD(IHBP+1) /= 'URBANDB'.and.&
-      &FIELD(IHBP+1) /= 'AIRCRAFT') THEN
+   if (hbpdbg) then
+      if (ifc >= ihbp+1 .and.&
+      &field(ihbp+1) /= 'METEOR' .and.&
+      &field(ihbp+1) /= 'MODEL' .and.&
+      &field(ihbp+1) /= 'AREA' .and.&
+      &field(ihbp+1) /= 'LINE' .and.&
+      &field(ihbp+1) /= 'PRIME' .and.&
+      &field(ihbp+1) /= 'PVMRM' .and.&
+      &field(ihbp+1) /= 'OLM' .and.&
+      &field(ihbp+1) /= 'ARM2' .and.&
+      &field(ihbp+1) /= 'GRSM' .and.&
+      &field(ihbp+1) /= 'PLATFORM' .and.&
+      &field(ihbp+1) /= 'DEPOS'.and.&
+      &field(ihbp+1) /= 'AWMADW' .and.&
+      &field(ihbp+1) /= 'TTRM'.and.&
+      &field(ihbp+1) /= 'TTRM2' .and.&
+      &field(ihbp+1) /= 'RLINE' .and.&
+      &field(ihbp+1) /= 'URBANDB' .and.&
+      &field(ihbp+1) /= 'SWPOINT' .and.&
+      &field(ihbp+1) /= 'BLPDBUG' .and.&
+      &field(ihbp+1) /= 'URBANDB'.and.&
+      &field(ihbp+1) /= 'AIRCRAFT') then
 ! ---       Assign user-specified filename for the HBPBUG debug option
-         HBPFIL = RUNST1(LOCB(IHBP+1):LOCE(IHBP+1))
+         hbpfil = runst1(locb(ihbp+1):loce(ihbp+1))
 
-      ELSE
+      else
 ! ---       Assign default HBPDBG debug filename
-         HBPFIL = 'HBP_DEBUG.DBG'
-      END IF
-   END IF
+         hbpfil = 'HBP_DEBUG.DBG'
+      end if
+   end if
 ! End HBP DEBUG, JAN 2023
 
 ! --- Open MODEL, METEOR, AREA, PRIME and AWMADW debug files, if selected;
@@ -4033,154 +4033,154 @@ SUBROUTINE DEBOPT
 !     JAT 05/08/2020 ADD CODE TO OPEN IF DEBUG OR DEPOSDBG
 !     BECAUSE IT USES THE DEBUGFIL AS WELL
 !      IF (DEBUG) THEN
-   IF (DEBUG .or. DEPOSDBG) THEN
+   if (debug .or. deposdbg) then
 !        Open debug output file
-      DUMMY = 'DebugFile'
-      OPEN (UNIT=DBGUNT,FILE=DBGFIL,ERR=91,STATUS='REPLACE')
-   END IF
+      dummy = 'DebugFile'
+      open (unit=dbgunt,file=dbgfil,err=91,status='REPLACE')
+   end if
 
-   GOTO 101
+   goto 101
 
 !     WRITE Error Message:  Error Opening File
-91 CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
+91 call errhdl(path,modnam,'E','500',dummy)
 
-101 CONTINUE
+101 continue
 
-   IF (METEORDBG) THEN
+   if (meteordbg) then
 !        Open debug meteorology output file
-      DUMMY = 'DbgMetFile'
-      OPEN (UNIT=DBMUNT,FILE=DBMFIL,ERR=92,STATUS='REPLACE')
-   END IF
+      dummy = 'DbgMetFile'
+      open (unit=dbmunt,file=dbmfil,err=92,status='REPLACE')
+   end if
 
-   GOTO 102
+   goto 102
 
 !     WRITE Error Message:  Error Opening File
-92 CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
+92 call errhdl(path,modnam,'E','500',dummy)
 
-102 CONTINUE
+102 continue
 
-   IF (AREADBG) THEN
+   if (areadbg) then
 !        Open debug AREA output file
-      DUMMY = 'AreaDbgFile'
-      OPEN (UNIT=AREADBUNT,FILE=DBAREAFIL,ERR=93,STATUS='REPLACE')
-   END IF
+      dummy = 'AreaDbgFile'
+      open (unit=areadbunt,file=dbareafil,err=93,status='REPLACE')
+   end if
 
-   GOTO 103
+   goto 103
 
 !     WRITE Error Message:  Error Opening File
-93 CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
+93 call errhdl(path,modnam,'E','500',dummy)
 
-103 CONTINUE
+103 continue
 
-   IF (PRIMEDBG) THEN
+   if (primedbg) then
 !        Open debug PRIME output file
-      DUMMY = 'PrimeDbgFile'
-      OPEN (UNIT=PRMDBUNT,FILE=DBPRMFIL,ERR=94,STATUS='REPLACE')
-   END IF
+      dummy = 'PrimeDbgFile'
+      open (unit=prmdbunt,file=dbprmfil,err=94,status='REPLACE')
+   end if
 
-   GOTO 104
+   goto 104
 
 !     WRITE Error Message:  Error Opening File
-94 CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
+94 call errhdl(path,modnam,'E','500',dummy)
 
-104 CONTINUE
+104 continue
 
-   IF (AWMADWDBG) THEN
+   if (awmadwdbg) then
 !        Open debug AWMADW output file
-      DUMMY = 'AwmaDwDbgFile'
-      OPEN (UNIT=AwmaDwDBUNT,FILE=DBAwmaDwFIL,ERR=95,&
-      &STATUS='REPLACE')
-   END IF
+      dummy = 'AwmaDwDbgFile'
+      open (unit=AwmaDwDBUNT,file=DBAwmaDwFIL,err=95,&
+      &status='REPLACE')
+   end if
 
-   GOTO 105
+   goto 105
 
 !     WRITE Error Message:  Error Opening File
-95 CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
+95 call errhdl(path,modnam,'E','500',dummy)
 
-105 CONTINUE
+105 continue
 
 
-   IF (TTRMDBG) THEN
+   if (ttrmdbg) then
 !        Open TTRM output file
-      DUMMY = 'TTRMFIL'
-      OPEN (UNIT=TTRMUNT,FILE=TTRMFIL,ERR=96,STATUS='REPLACE')
-      WRITE(TTRMUNT,'(''TTRM Debug File'',51x,a8,/70x,a8)')&
+      dummy = 'TTRMFIL'
+      open (unit=ttrmunt,file=ttrmfil,err=96,status='REPLACE')
+      write(ttrmunt,'(''TTRM Debug File'',51x,a8,/70x,a8)')&
       &rundat, runtim
-   END IF
+   end if
 
-   GOTO 106
+   goto 106
 
 
 !     WRITE Error Message:  Error Opening File
-96 CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
+96 call errhdl(path,modnam,'E','500',dummy)
 
-106 CONTINUE
+106 continue
 
-   IF (RLINEDBG) THEN
+   if (rlinedbg) then
 !        Open RLINE DEBUG output file
-      DUMMY = 'RLINEFIL'
-      OPEN (UNIT=RLINEDBUNT,FILE=RLINEDBGFIL,ERR=97,&
-      &STATUS='REPLACE')
+      dummy = 'RLINEFIL'
+      open (unit=rlinedbunt,file=rlinedbgfil,err=97,&
+      &status='REPLACE')
 !       Write inital header Wood 10/10/22
-      WRITE(RLINEDBUNT,'(''RLINE Debug File'',1x,a8,5x,a8)')&
+      write(rlinedbunt,'(''RLINE Debug File'',1x,a8,5x,a8)')&
       &rundat, runtim
 !        Open second RLINE DEBUG output file for gridded wind speed Wood 10/10/22
-      DUMMY = 'RLINEFIL_WS'
-      OPEN (UNIT=RLINEDBUNT_WS,FILE=RLINEDBGFIL_WS,ERR=97,&
-      &STATUS='REPLACE')
-      WRITE(RLINEDBUNT_WS,'(''RLINE Gridded Wind Speed Debug File'',&
+      dummy = 'RLINEFIL_WS'
+      open (unit=rlinedbunt_ws,file=rlinedbgfil_ws,err=97,&
+      &status='REPLACE')
+      write(rlinedbunt_ws,'(''RLINE Gridded Wind Speed Debug File'',&
       &                          51x,a8,5x,a8)') rundat, runtim
-      WRITE(RLINEDBUNT_WS,2234)
-2234  FORMAT (3X,'YR',2X,'MO',2X,'DY',2X,'HR',3X,'HT_m',5x,'WS_m_s')
-   END IF
-   GOTO 107
+      write(rlinedbunt_ws,2234)
+2234  format (3x,'YR',2x,'MO',2x,'DY',2x,'HR',3x,'HT_m',5x,'WS_m_s')
+   end if
+   goto 107
 
 !     WRITE Error Message:  Error Opening File
-97 CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
+97 call errhdl(path,modnam,'E','500',dummy)
 
-107 CONTINUE
+107 continue
 
 !RCO D095 Added for urban debug 8/3/2021
 ! -- Open URBDBUG debug file, if selected;
-   IF (URBDBUG) THEN
+   if (urbdbug) then
 !        Open URBDBUG output file
-      DUMMY = 'URBFIL'
-      OPEN (UNIT=URBUNT,FILE=URBFIL,ERR=197,STATUS='REPLACE')
-      WRITE(URBUNT,'(''URBDBUG Debug File'',51x,a8,/70x,a8)')&
+      dummy = 'URBFIL'
+      open (unit=urbunt,file=urbfil,err=197,status='REPLACE')
+      write(urbunt,'(''URBDBUG Debug File'',51x,a8,/70x,a8)')&
       &rundat, runtim
 
-      DUMMY = 'URBFIL1'
-      OPEN (UNIT=URBUNT1,FILE=URBFIL1,ERR=197,STATUS='REPLACE')
-      WRITE(URBUNT1,'(''URBDBUG Debug File'',51x,a8,/70x,a8)')&
+      dummy = 'URBFIL1'
+      open (unit=urbunt1,file=urbfil1,err=197,status='REPLACE')
+      write(urbunt1,'(''URBDBUG Debug File'',51x,a8,/70x,a8)')&
       &rundat, runtim
 !RCO - D168 Debug files. Add output file for second urban debug
-      DUMMY = 'URBFIL2'
-      OPEN (UNIT=URBUNT2,FILE=URBFIL2,ERR=197,STATUS='REPLACE')
-      WRITE(URBUNT2,'(''URBDBUG Debug File'',51x,a8,/70x,a8)')&
+      dummy = 'URBFIL2'
+      open (unit=urbunt2,file=urbfil2,err=197,status='REPLACE')
+      write(urbunt2,'(''URBDBUG Debug File'',51x,a8,/70x,a8)')&
       &rundat, runtim
-   END IF
+   end if
 
-   GOTO 108
+   goto 108
 !     WRITE Error Message:  Error Opening File
-197 CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
-108 CONTINUE
+197 call errhdl(path,modnam,'E','500',dummy)
+108 continue
 !   end of URBDBUG insert
 
 
 !CRCO D095 BLP debug file
-   IF (BLPDBUG) THEN
+   if (blpdbug) then
 !        Open BLPDBUG output file
-      DUMMY = 'BLPFIL'
-      OPEN (UNIT=BLPUNT,FILE=BLPFIL,ERR=198,STATUS='REPLACE')
+      dummy = 'BLPFIL'
+      open (unit=blpunt,file=blpfil,err=198,status='REPLACE')
 !        D140 removed exisiting BLP header to match the formatting for the other debug files Wood 9/29/22
 !         WRITE(BLPUNT,'(''BLPDBUG Debug File'',51x,a8,/70x,a8)')
 !     &                                           rundat, runtim
-   END IF
+   end if
 
-   GOTO 109
+   goto 109
 !     WRITE Error Message:  Error Opening File
-198 CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
-109 CONTINUE
+198 call errhdl(path,modnam,'E','500',dummy)
+109 continue
 !   end of BLPDBUG insert
 
 !CRT 3/22/2021: File is checked and opened in aermod.f
@@ -4201,91 +4201,91 @@ SUBROUTINE DEBOPT
 ! 110  CONTINUE
 
 !CRT  D063 Platform Downwash Debug
-   IF (PLATFMDBG) THEN
+   if (platfmdbg) then
 !        Open debug PLATFORM output file
-      DUMMY = 'PLATFMDBGFILE'
-      OPEN (UNIT=PLATFMDBUNT,FILE=PLATFMDBGFILE,ERR=98,&
-      &STATUS='REPLACE')
-   END IF
+      dummy = 'PLATFMDBGFILE'
+      open (unit=platfmdbunt,file=platfmdbgfile,err=98,&
+      &status='REPLACE')
+   end if
 
-   GOTO 110
+   goto 110
 
 !     WRITE Error Message:  Error Opening File
-98 CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
+98 call errhdl(path,modnam,'E','500',dummy)
 
-110 CONTINUE
+110 continue
 
 !CRT  D113 Sidewash Debug, 3/25/2022
-   IF (SWDBG) THEN
+   if (swdbg) then
 !        Open debug Sidewash output file
-      DUMMY = 'SWFIL'
-      OPEN (UNIT=SWDBGUNT,FILE=SWFIL,ERR=99,&
-      &STATUS='REPLACE')
-   END IF
+      dummy = 'SWFIL'
+      open (unit=swdbgunt,file=swfil,err=99,&
+      &status='REPLACE')
+   end if
 
-   GOTO 111
+   goto 111
 
 !     WRITE Error Message:  Error Opening File
-99 CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
+99 call errhdl(path,modnam,'E','500',dummy)
 
-111 CONTINUE
+111 continue
 
 !** Added for Aircraft Plume Rise; UNC-IE
-   IF (ARCFTDEBUG) THEN
+   if (arcftdebug) then
 !       Open Aircraft output file
-      DUMMY = 'ARCFTFIL'
-      OPEN (UNIT=ARCFTDBG,FILE=DBARCFTFIL,ERR=97,STATUS='REPLACE')
+      dummy = 'ARCFTFIL'
+      open (unit=arcftdbg,file=dbarcftfil,err=97,status='REPLACE')
 !      Write the standard header information with AERMOD/AERMET
 !      versions, 1st title, and rundat/runtim to the debug output file
-      WRITE(ARCFTDBG,7028) VERSN, TITLE1(1:68), RUNDAT, RUNTIM
-7028  FORMAT('*** AERMOD - VERSION ',A6,' ***',52X,'*** ',A28,&
-      &' ***',2X,A8,/115X,' ***',2X,A8/)
+      write(arcftdbg,7028) versn, title1(1:68), rundat, runtim
+7028  format('*** AERMOD - VERSION ',a6,' ***',52x,'*** ',a28,&
+      &' ***',2x,a8,/115x,' ***',2x,a8/)
 
-      WRITE(ARCFTDBG,'(''*********************************************&
+      write(arcftdbg,'(''*********************************************&
       &   Aircraft Plume Rise - Debug File  *****************************&
       &******************'')')
 
-   END IF
-   GOTO 112
+   end if
+   goto 112
 !     WRITE Error Message:  Error Opening File
-100 CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
+100 call errhdl(path,modnam,'E','500',dummy)
 
-112 CONTINUE
+112 continue
 !** End Aircraft Plume Rise insert; April 2023
 
 ! Added for HBP debug, JAN 2023
-   IF (HBPDBG) THEN
+   if (hbpdbg) then
 !        Open HBP output file
-      DUMMY = 'HBPFIL'
-      OPEN (UNIT=HBPUNT,FILE=HBPFIL,ERR=797,STATUS='REPLACE')
-      WRITE(HBPUNT,'(''HBP Debug File'',51x,a8,/70x,a8)')&
+      dummy = 'HBPFIL'
+      open (unit=hbpunt,file=hbpfil,err=797,status='REPLACE')
+      write(hbpunt,'(''HBP Debug File'',51x,a8,/70x,a8)')&
       &rundat, runtim
-   END IF
+   end if
 
-   GOTO 7107
+   goto 7107
 
 !     WRITE Error Message:  Error Opening File
-797 CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
+797 call errhdl(path,modnam,'E','500',dummy)
 
-7107 CONTINUE
+7107 continue
 ! End HBP insert
 
-   IF (IFC > MAXFields) THEN
+   if (ifc > MAXFields) then
 !        Maximum number of fields exceeded, issue warning message,
 !        including up to 12 characters from last field
-      WRITE(DUMMY,'(A:)') FIELD(IFC)(1:MIN(12,LEN_TRIM(FIELD(IFC))))
-      CALL ERRHDL(PATH,MODNAM,'E','203',DUMMY)
-   END IF
+      write(dummy,'(A:)') field(ifc)(1:min(12,len_trim(field(ifc))))
+      call errhdl(path,modnam,'E','203',dummy)
+   end if
 
-   GO TO 999
+   go to 999
 
 !     WRITE Error Message:  Error Opening File
 ! Unused:  99   CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
 
-999 RETURN
-END SUBROUTINE DEBOPT
+999 return
+end subroutine debopt
 
-SUBROUTINE MYEAR
+subroutine myear
 !***********************************************************************
 !                 MYEAR Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4311,141 +4311,141 @@ SUBROUTINE MYEAR
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'MYEAR'
+   modnam = 'MYEAR'
 
-   IF (RSTSAV) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','150','SAVEFILE')
+   if (rstsav) then
+      call errhdl(path,modnam,'E','150','SAVEFILE')
 
-   ELSE IF (RSTINP) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','150','INITFILE')
+   else if (rstinp) then
+      call errhdl(path,modnam,'E','150','INITFILE')
 
-   ELSE IF (.NOT. (POLLUT == 'PM10' .or. POLLUT == 'PM-10' .or.&
-   &POLLUT == 'NO2'  .or. POLLUT == 'SO2'   .or.&
-   &POLLUT == 'LEAD' .or. POLLUT == 'OTHER' .or.&
-   &POLLUT == 'PM25' .or. POLLUT == 'PM-2.5'.or.&
-   &POLLUT == 'PM-25'.or. POLLUT == 'PM2.5') )THEN
+   else if (.not. (pollut == 'PM10' .or. pollut == 'PM-10' .or.&
+   &pollut == 'NO2'  .or. pollut == 'SO2'   .or.&
+   &pollut == 'LEAD' .or. pollut == 'OTHER' .or.&
+   &pollut == 'PM25' .or. pollut == 'PM-2.5'.or.&
+   &pollut == 'PM-25'.or. pollut == 'PM2.5') )then
 !        WRITE Error Message:  Conflicting Options MULTYEAR For Wrong POLLUT
-      CALL ERRHDL(PATH,MODNAM,'E','150',POLLUT)
+      call errhdl(path,modnam,'E','150',pollut)
 
-   ELSE IF (IFC >= 4 .and. FIELD(3) == 'H6H') THEN
+   else if (ifc >= 4 .and. field(3) == 'H6H') then
 ! ---    Write Warning Message:  The 'H6H' field is no longer required
 !        for the MULTYEAR keyword
-      CALL ERRHDL(PATH,MODNAM,'W','352','Keyword ')
-      IF (IFC == 4) THEN
-         MULTYR = .TRUE.
-         RSTSAV = .TRUE.
+      call errhdl(path,modnam,'W','352','Keyword ')
+      if (ifc == 4) then
+         multyr = .true.
+         rstsav = .true.
 !           Use Character Substring to Retrieve Filenames to Maintain Case
-         IF ((LOCE(4)-LOCB(4)) <= (ILEN_FLD - 1) ) THEN
+         if ((loce(4)-locb(4)) <= (ilen_fld - 1) ) then
 !              Retrieve Filename as Character Substring to Maintain Original Case
 !              Also Check for Filename Larger Than ILEN_FLD Characters
-            SAVFIL = RUNST1(LOCB(4):LOCE(4))
-         ELSE
+            savfil = runst1(locb(4):loce(4))
+         else
 !              WRITE Error Message:  SAVFIL Field is Too Long
-            WRITE(DUMMY,'(I8)') ILEN_FLD
-            CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-            RETURN
-         END IF
-         SAVFL2 = SAVFIL
+            write(dummy,'(I8)') ilen_fld
+            call errhdl(path,modnam,'E','291',dummy)
+            return
+         end if
+         savfl2 = savfil
 ! ---       Value of INCRST is Set to 365 or 366 in SUB. MECARD
-      ELSE IF (IFC == 5) THEN
-         MULTYR = .TRUE.
-         RSTSAV = .TRUE.
+      else if (ifc == 5) then
+         multyr = .true.
+         rstsav = .true.
 !           Use Character Substring to Retrieve Filenames to Maintain Case
-         IF ((LOCE(4)-LOCB(4)) <= (ILEN_FLD - 1) ) THEN
+         if ((loce(4)-locb(4)) <= (ilen_fld - 1) ) then
 !              Retrieve Filename as Character Substring to Maintain Original Case
 !              Also Check for Filename Larger Than ILEN_FLD Characters
-            SAVFIL = RUNST1(LOCB(4):LOCE(4))
-         ELSE
+            savfil = runst1(locb(4):loce(4))
+         else
 !              WRITE Error Message:  SAVFIL Field is Too Long
-            WRITE(DUMMY,'(I8)') ILEN_FLD
-            CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-            RETURN
-         END IF
-         SAVFL2 = SAVFIL
-         RSTINP = .TRUE.
+            write(dummy,'(I8)') ilen_fld
+            call errhdl(path,modnam,'E','291',dummy)
+            return
+         end if
+         savfl2 = savfil
+         rstinp = .true.
 !           Use Character Substring to Retrieve Filenames to Maintain Case
-         IF ((LOCE(5)-LOCB(5)) <= (ILEN_FLD - 1) ) THEN
+         if ((loce(5)-locb(5)) <= (ilen_fld - 1) ) then
 !              Retrieve Filename as Character Substring to Maintain Original Case
 !              Also Check for Filename Larger Than ILEN_FLD Characters
-            INIFIL = RUNST1(LOCB(5):LOCE(5))
-         ELSE
+            inifil = runst1(locb(5):loce(5))
+         else
 !              WRITE Error Message:  INIFIL Field is Too Long
-            WRITE(DUMMY,'(I8)') ILEN_FLD
-            CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-            RETURN
-         END IF
+            write(dummy,'(I8)') ilen_fld
+            call errhdl(path,modnam,'E','291',dummy)
+            return
+         end if
 ! ---       Value of INCRST is Set to 365 or 366 in SUB. MECARD
-      ELSE IF (IFC > 5) THEN
+      else if (ifc > 5) then
 !           WRITE Error Message           ! Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      END IF
-   ELSE IF (IFC >= 3 .and. FIELD(3) /= 'H6H') THEN
+         call errhdl(path,modnam,'E','202',keywrd)
+      end if
+   else if (ifc >= 3 .and. field(3) /= 'H6H') then
 ! ---    Process input parameters without the 'H6H' keyword
-      IF (IFC == 3) THEN
-         MULTYR = .TRUE.
-         RSTSAV = .TRUE.
+      if (ifc == 3) then
+         multyr = .true.
+         rstsav = .true.
 !           Use Character Substring to Retrieve Filenames to Maintain Case
-         IF ((LOCE(3)-LOCB(4)) <= (ILEN_FLD - 1) ) THEN
+         if ((loce(3)-locb(4)) <= (ilen_fld - 1) ) then
 !              Retrieve Filename as Character Substring to Maintain Original Case
 !              Also Check for Filename Larger Than ILEN_FLD Characters
-            SAVFIL = RUNST1(LOCB(3):LOCE(3))
-         ELSE
+            savfil = runst1(locb(3):loce(3))
+         else
 !              WRITE Error Message:  SAVFIL Field is Too Long
-            WRITE(DUMMY,'(I8)') ILEN_FLD
-            CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-            RETURN
-         END IF
-         SAVFL2 = SAVFIL
+            write(dummy,'(I8)') ilen_fld
+            call errhdl(path,modnam,'E','291',dummy)
+            return
+         end if
+         savfl2 = savfil
 ! ---       Value of INCRST is Set to 365 or 366 in SUB. MECARD
-      ELSE IF (IFC == 4) THEN
-         MULTYR = .TRUE.
-         RSTSAV = .TRUE.
+      else if (ifc == 4) then
+         multyr = .true.
+         rstsav = .true.
 !           Use Character Substring to Retrieve Filenames to Maintain Case
-         IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+         if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !              Retrieve Filename as Character Substring to Maintain Original Case
 !              Also Check for Filename Larger Than ILEN_FLD Characters
-            SAVFIL = RUNST1(LOCB(3):LOCE(3))
-         ELSE
+            savfil = runst1(locb(3):loce(3))
+         else
 !              WRITE Error Message:  SAVFIL Field is Too Long
-            WRITE(DUMMY,'(I8)') ILEN_FLD
-            CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-            RETURN
-         END IF
-         SAVFL2 = SAVFIL
-         RSTINP = .TRUE.
+            write(dummy,'(I8)') ilen_fld
+            call errhdl(path,modnam,'E','291',dummy)
+            return
+         end if
+         savfl2 = savfil
+         rstinp = .true.
 !           Use Character Substring to Retrieve Filenames to Maintain Case
-         IF ((LOCE(4)-LOCB(4)) <= (ILEN_FLD - 1) ) THEN
+         if ((loce(4)-locb(4)) <= (ilen_fld - 1) ) then
 !              Retrieve Filename as Character Substring to Maintain Original Case
 !              Also Check for Filename Larger Than ILEN_FLD Characters
-            INIFIL = RUNST1(LOCB(4):LOCE(4))
-         ELSE
+            inifil = runst1(locb(4):loce(4))
+         else
 !              WRITE Error Message:  INIFIL Field is Too Long
-            WRITE(DUMMY,'(I8)') ILEN_FLD
-            CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-            RETURN
-         END IF
+            write(dummy,'(I8)') ilen_fld
+            call errhdl(path,modnam,'E','291',dummy)
+            return
+         end if
 ! ---       Value of INCRST is Set to 365 or 366 in SUB. MECARD
-      ELSE IF (IFC > 4) THEN
+      else if (ifc > 4) then
 !           WRITE Error Message           ! Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      END IF
-   ELSE IF (IFC == 3 .and. FIELD(3) == 'H6H') THEN
+         call errhdl(path,modnam,'E','202',keywrd)
+      end if
+   else if (ifc == 3 .and. field(3) == 'H6H') then
 !        WRITE Error Message           ! Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-   ELSE IF (IFC < 3) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+   else if (ifc < 3) then
 !        WRITE Error Message           ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+   end if
 
-   RETURN
-END SUBROUTINE MYEAR
+   return
+end subroutine myear
 
-SUBROUTINE GDDEF
+subroutine gddef
 !***********************************************************************
 !                 GDDEF Module of AERMOD Model
 !
@@ -4463,71 +4463,71 @@ SUBROUTINE GDDEF
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'GDDEF'
+   modnam = 'GDDEF'
 
 !     Check the Number of Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 5) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 5) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 6) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 6) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Read Gas Dry Deposition Parameters
 !     Change Them To Numbers
 !     First Get Reactivity Value (fo)
-   CALL STODBL(FIELD(3),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(3),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   end if
 !     Assign The Field
-   Fo = DNUM
+   Fo = dnum
 
 !     Now Get Fraction of Maximum Green LAI for Seasonal Category 2
-   CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(4),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   end if
 !     Assign The Field
-   FSEAS2 = DNUM
+   fseas2 = dnum
 
 !     Now Get Fraction of Maximum Green LAI for Seasonal Category 5
-   CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(5),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   end if
 !     Assign The Field
-   FSEAS5 = DNUM
+   fseas5 = dnum
 
-   IF (IFC == 6) THEN
+   if (ifc == 6) then
 !        Get the Reference Species (Optional)
-      REFSPE = FIELD(6)
-   ELSE
-      REFSPE = '      '
-   END IF
+      refspe = field(6)
+   else
+      refspe = '      '
+   end if
 
-999 RETURN
-END SUBROUTINE GDDEF
+999 return
+end subroutine gddef
 
-SUBROUTINE GDSEAS
+subroutine gdseas
 !***********************************************************************
 !                 GDSEAS Module of AERMOD Model
 !
@@ -4545,60 +4545,60 @@ SUBROUTINE GDSEAS
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: I, J, ISEA_NDX
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: i, j, isea_ndx
 
 !     Variable Initializations
-   MODNAM = 'GDSEAS'
+   modnam = 'GDSEAS'
 
 !     Check the Number of Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 3) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 14) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 14) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
-   ISET = 0
-   DO I = 3, IFC
+   iset = 0
+   do i = 3, ifc
 !        Change Fields To Numbers
-      CALL STONUM(FIELD(I),ILEN_FLD,FNUM,IMIT)
+      call stonum(field(i),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT == -1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         CYCLE
-      END IF
-      DO J = 1, IMIT
-         ISET = ISET + 1
+      if (imit == -1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         cycle
+      end if
+      do j = 1, imit
+         iset = iset + 1
 !           Assign The Field
-         IF (ISET <= 12) THEN
-            ISEA_NDX = NINT(FNUM)
-            IF (ISEA_NDX >= 1 .and. ISEA_NDX <= 5) THEN
-               ISEAS_GD(ISET) = ISEA_NDX
-            ELSE
+         if (iset <= 12) then
+            isea_ndx = nint(fnum)
+            if (isea_ndx >= 1 .and. isea_ndx <= 5) then
+               iseas_gd(iset) = isea_ndx
+            else
 !                 WRITE Error Message    ! Season Index out-of-range
-               CALL ERRHDL(PATH,MODNAM,'E','380',KEYWRD)
-            END IF
-         ELSE
+               call errhdl(path,modnam,'E','380',keywrd)
+            end if
+         else
 !              WRITE Error Message    ! Too Many Months Input
-            CALL ERRHDL(PATH,MODNAM,'E','234',KEYWRD)
-         END IF
-      END DO
-   END DO
+            call errhdl(path,modnam,'E','234',keywrd)
+         end if
+      end do
+   end do
 
-999 RETURN
-END SUBROUTINE GDSEAS
+999 return
+end subroutine gdseas
 
-SUBROUTINE GVSUBD
+subroutine gvsubd
 !***********************************************************************
 !                 GVSUBD Module of AERMOD Model
 !
@@ -4616,58 +4616,58 @@ SUBROUTINE GVSUBD
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'GVSUBD'
+   modnam = 'GVSUBD'
 
 !     Check the Number of Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 3) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 3) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 3) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Read User-specified Dry Deposition Velocity
 !     Change Them To Numbers
-   CALL STODBL(FIELD(3),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(3),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   end if
 !     Assign The Field
-   USERVD = DNUM
+   uservd = dnum
 
 !     Perform range/validity check
-   IF (USERVD < 0.0D0) THEN
+   if (uservd < 0.0d0) then
 !        Write Error Message:  Negative deposition velocity
-      CALL ERRHDL(PATH,MODNAM,'E','209',' USERVD ')
-   ELSE IF (USERVD == 0.0D0) THEN
+      call errhdl(path,modnam,'E','209',' USERVD ')
+   else if (uservd == 0.0d0) then
 !        Write Error Message:  Deposition velocity = 0.0
-      CALL ERRHDL(PATH,MODNAM,'E','380','USERVD=0')
-   ELSE IF (USERVD > 0.05D0) THEN
+      call errhdl(path,modnam,'E','380','USERVD=0')
+   else if (uservd > 0.05d0) then
 !        Write Warning Message:  Large deposition velocity
-      CALL ERRHDL(PATH,MODNAM,'W','320',' USERVD ')
-   END IF
+      call errhdl(path,modnam,'W','320',' USERVD ')
+   end if
 
 !     Set Logical Variable for User-specified Deposition Velocity
-   LUSERVD = .TRUE.
+   luservd = .true.
 
-999 RETURN
-END SUBROUTINE GVSUBD
+999 return
+end subroutine gvsubd
 
-SUBROUTINE GDLAND
+subroutine gdland
 !***********************************************************************
 !                 GDLAND Module of AERMOD Model
 !
@@ -4686,60 +4686,60 @@ SUBROUTINE GDLAND
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: I, J, ILAND_NDX
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: i, j, iland_ndx
 
 !     Variable Initializations
-   MODNAM = 'GDLAND'
+   modnam = 'GDLAND'
 
 !     Check the Number of Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 3) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 38) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 38) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
-   ISET = 0
-   DO I = 3, IFC
+   iset = 0
+   do i = 3, ifc
 !        Change Fields To Numbers
-      CALL STONUM(FIELD(I),ILEN_FLD,FNUM,IMIT)
+      call stonum(field(i),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT == -1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         CYCLE
-      END IF
-      DO J = 1, IMIT
-         ISET = ISET + 1
+      if (imit == -1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         cycle
+      end if
+      do j = 1, imit
+         iset = iset + 1
 !           Assign The Field
-         IF (ISET <= 36) THEN
-            ILAND_NDX = NINT(FNUM)
-            IF (ILAND_NDX >= 1 .and. ILAND_NDX <= 9) THEN
-               ILAND_GD(ISET) = ILAND_NDX
-            ELSE
+         if (iset <= 36) then
+            iland_ndx = nint(fnum)
+            if (iland_ndx >= 1 .and. iland_ndx <= 9) then
+               iland_gd(iset) = iland_ndx
+            else
 !                 WRITE Error Message    ! Land Use Index out-of-range
-               CALL ERRHDL(PATH,MODNAM,'E','380',KEYWRD)
-            END IF
-         ELSE
+               call errhdl(path,modnam,'E','380',keywrd)
+            end if
+         else
 !              WRITE Error Message    ! Too Many Directions Input
-            CALL ERRHDL(PATH,MODNAM,'E','234',KEYWRD)
-         END IF
-      END DO
-   END DO
+            call errhdl(path,modnam,'E','234',keywrd)
+         end if
+      end do
+   end do
 
-999 RETURN
-END SUBROUTINE GDLAND
+999 return
+end subroutine gdland
 
-SUBROUTINE URBOPT
+subroutine urbopt
 !***********************************************************************
 !                 URBOPT Module of AERMOD Model
 !
@@ -4789,193 +4789,193 @@ SUBROUTINE URBOPT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   INTEGER :: I
-   CHARACTER :: MODNAM*12, TEMPID*8
+   use main1
+   implicit none
+   integer :: i
+   character :: modnam*12, tempid*8
 
 !     Variable Initializations
-   MODNAM = 'URBOPT'
+   modnam = 'URBOPT'
 
 !     Determine Whether There Are Too Few Or Too Many Parameter Fields
-   IF ((.NOT. L_MULTURB .and. IFC < 3) .or.&
-   &(L_MULTURB .and. IFC < 4)) THEN
+   if ((.not. l_multurb .and. ifc < 3) .or.&
+   &(l_multurb .and. ifc < 4)) then
 !        WRITE Error Message: Missing Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF ((.NOT. L_MULTURB .and. IFC > 5) .or.&
-   &(L_MULTURB .and. IFC > 6)) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if ((.not. l_multurb .and. ifc > 5) .or.&
+   &(l_multurb .and. ifc > 6)) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
-   IF (.NOT. L_URBAN_ALL .and. L_MULTURB) THEN
+   if (.not. l_urban_all .and. l_multurb) then
 !        READ in the Urban ID for multiple urban areas
-      IF ((LOCE(3)-LOCB(3)) <= 7) THEN
+      if ((loce(3)-locb(3)) <= 7) then
 !*          Retrieve Source ID Character Substring
-         TEMPID = FIELD(3)
-      ELSE
+         tempid = field(3)
+      else
 !*          WRITE Error Message:  Urban ID Field is Too Long
-         CALL ERRHDL(PATH,MODNAM,'E','219',FIELD(ISC)(1:12))
-         RECERR = .TRUE.
-         GO TO 999
-      END IF
-      DO I = 1, NUMURB
-         IF (TEMPID == URBID(I)) THEN
+         call errhdl(path,modnam,'E','219',field(isc)(1:12))
+         recerr = .true.
+         go to 999
+      end if
+      do i = 1, numurb
+         if (tempid == urbid(i)) then
 !              WRITE Error Message:  Urban ID already defined
-            CALL ERRHDL(PATH,MODNAM,'E','303',TEMPID)
+            call errhdl(path,modnam,'E','303',tempid)
 !              Exit to END
-            GO TO 999
-         END IF
-      END DO
+            go to 999
+         end if
+      end do
 
 !        New Urban ID Defined, Increment Counters
-      IURB = IURB + 1
-      IF (IURB > NURB) THEN
+      iurb = iurb + 1
+      if (iurb > nurb) then
 !           WRITE Error Message    ! Too Many Urban Areas Specified
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''NURB='',I7)') NURB
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
+         write(dummy,'(''NURB='',I7)') nurb
+         call errhdl(path,modnam,'E','290',dummy)
 !           Exit to END
-         GO TO 999
-      END IF
-      NUMURB = NUMURB + 1
-      URBID(IURB) = TEMPID
+         go to 999
+      end if
+      numurb = numurb + 1
+      urbid(iurb) = tempid
 
-      IF (IFC >= 4) THEN
-         CALL STODBL(FIELD(4),ILEN_FLD,URBPOP(IURB),IMIT)
-         IF (IMIT /= 1) THEN
+      if (ifc >= 4) then
+         call stodbl(field(4),ilen_fld,urbpop(iurb),imit)
+         if (imit /= 1) then
 !              Write Error Message:Invalid Numerical Field
-            CALL ERRHDL(PATH,MODNAM,'E','208','URB-POP')
-         ELSE IF (URBPOP(IURB) < 100.0D0) THEN
+            call errhdl(path,modnam,'E','208','URB-POP')
+         else if (urbpop(iurb) < 100.0d0) then
 ! ---          Urban population below about 90 will cause math error
 ! ---          Write Error Message:Invalid Value Specified
-            CALL ERRHDL(PATH,MODNAM,'E','203','URB-POP')
-         ELSE IF (URBPOP(IURB) < 21206.0D0) THEN
+            call errhdl(path,modnam,'E','203','URB-POP')
+         else if (urbpop(iurb) < 21206.0d0) then
 ! ---          Flag urban population below 21,206 as potentially out-of-range;
 !              this value corresponds with a population density of 750/sq-km
 !              across an area of 3km in radius, a criterion cited for urban
 !              classification in Section 7.2.3(d) of Appendix W.
-            CALL ERRHDL(PATH,MODNAM,'W','320','URB-POP')
-         END IF
-      END IF
+            call errhdl(path,modnam,'W','320','URB-POP')
+         end if
+      end if
 
-      IF (IFC >= 5) THEN
+      if (ifc >= 5) then
 !           Assign name of urban area (optional)
-         URBNAM(IURB) = FIELD(5)
-      END IF
+         urbnam(iurb) = field(5)
+      end if
 
-      IF (IFC == 6) THEN
+      if (ifc == 6) then
 !           Assign value of urban roughness length (optional)
-         CALL STODBL(FIELD(6),ILEN_FLD,URBZ0(IURB),IMIT)
-         IF (IMIT /= 1) THEN
+         call stodbl(field(6),ilen_fld,urbz0(iurb),imit)
+         if (imit /= 1) then
 !              Write Error Message:Invalid Numerical Field
-            CALL ERRHDL(PATH,MODNAM,'E','208','URBAN_Z0')
-         ELSE
-            IF (DFAULT .and. URBZ0(IURB) /= 1.0D0) THEN
+            call errhdl(path,modnam,'E','208','URBAN_Z0')
+         else
+            if (dfault .and. urbz0(iurb) /= 1.0d0) then
 !                 Write Warning Message: Non-default urban roughness length
-               CALL ERRHDL(PATH,MODNAM,'W','206','URBAN_Z0')
-               URBZ0(IURB) = 1.0D0
-            ELSE IF (.NOT. DFAULT .and. URBZ0(IURB) /= 1.0D0) THEN
+               call errhdl(path,modnam,'W','206','URBAN_Z0')
+               urbz0(iurb) = 1.0d0
+            else if (.not. dfault .and. urbz0(iurb) /= 1.0d0) then
 !                 Set flag for use of non-DEFAULT option
-               L_NonDFAULT = .TRUE.
-            END IF
-            IF (URBZ0(IURB) < 0.80D0) THEN
+               L_NonDFAULT = .true.
+            end if
+            if (urbz0(iurb) < 0.80d0) then
 !                 Write Warning Message: Urban roughness out of range
-               WRITE(DUMMY,'(F8.2)') URBZ0(IURB)
-               CALL ERRHDL(PATH,MODNAM,'W','353',DUMMY)
-            ELSE IF (URBZ0(IURB) > 1.50D0 .and.&
-            &URBZ0(IURB) < 5.0D0) THEN
+               write(dummy,'(F8.2)') urbz0(iurb)
+               call errhdl(path,modnam,'W','353',dummy)
+            else if (urbz0(iurb) > 1.50d0 .and.&
+            &urbz0(iurb) < 5.0d0) then
 !                 Write Warning Message: Urban roughness out of range
-               WRITE(DUMMY,'(F8.2)') URBZ0(IURB)
-               CALL ERRHDL(PATH,MODNAM,'W','353',DUMMY)
-            ELSE IF (URBZ0(IURB) >= 5.0D0) THEN
+               write(dummy,'(F8.2)') urbz0(iurb)
+               call errhdl(path,modnam,'W','353',dummy)
+            else if (urbz0(iurb) >= 5.0d0) then
 !                 Write Error Message: Urban roughness out of range
-               CALL ERRHDL(PATH,MODNAM,'E','380','URBAN Z0')
-            END IF
-         END IF
-      ELSE
-         URBZ0(IURB) = 1.0D0
-      END IF
+               call errhdl(path,modnam,'E','380','URBAN Z0')
+            end if
+         end if
+      else
+         urbz0(iurb) = 1.0d0
+      end if
 
-   ELSE IF (L_URBAN_ALL .and. L_MULTURB) THEN
+   else if (l_urban_all .and. l_multurb) then
 !        Write Error Message: URBANSRC ALL option with
 !        multiple URBAN areas
-      CALL ERRHDL(PATH,MODNAM,'E','279','URBANSRC ALL')
+      call errhdl(path,modnam,'E','279','URBANSRC ALL')
 
-   ELSE
+   else
 !        Single Urban Area - Process Inputs without URBAN ID
 
-      IURB = 1
+      iurb = 1
 
-      IF (IFC >= 3) THEN
-         CALL STODBL(FIELD(3),ILEN_FLD,URBPOP(IURB),IMIT)
-         IF (IMIT /= 1) THEN
+      if (ifc >= 3) then
+         call stodbl(field(3),ilen_fld,urbpop(iurb),imit)
+         if (imit /= 1) then
 !              Write Error Message:Invalid Numerical Field
-            CALL ERRHDL(PATH,MODNAM,'E','208','URB-POP')
-         ELSE IF (URBPOP(IURB) < 100.0D0) THEN
+            call errhdl(path,modnam,'E','208','URB-POP')
+         else if (urbpop(iurb) < 100.0d0) then
 ! ---          Urban population below about 90 will cause math error
 ! ---          Write Error Message:Invalid Value Specified
-            CALL ERRHDL(PATH,MODNAM,'E','203','URB-POP')
-         ELSE IF (URBPOP(IURB) < 21206.0D0) THEN
+            call errhdl(path,modnam,'E','203','URB-POP')
+         else if (urbpop(iurb) < 21206.0d0) then
 ! ---          Flag urban population below 21,206 as potentially out-of-range;
 !              this value corresponds with a population density of 750/sq-km
 !              across an area of 3km in radius, a criterion cited for urban
 !              classification in Section 7.2.3(d) of Appendix W.
-            CALL ERRHDL(PATH,MODNAM,'W','320','URB-POP')
-         END IF
-      END IF
+            call errhdl(path,modnam,'W','320','URB-POP')
+         end if
+      end if
 
-      IF (IFC >= 4) THEN
+      if (ifc >= 4) then
 !           Assign name of urban area (optional)
-         URBNAM(IURB) = FIELD(4)
-      END IF
+         urbnam(iurb) = field(4)
+      end if
 
-      IF (IFC == 5) THEN
+      if (ifc == 5) then
 !           Assign value of urban roughness length (optional)
-         CALL STODBL(FIELD(5),ILEN_FLD,URBZ0(IURB),IMIT)
-         IF (IMIT /= 1) THEN
+         call stodbl(field(5),ilen_fld,urbz0(iurb),imit)
+         if (imit /= 1) then
 !              Write Error Message:Invalid Numerical Field
-            CALL ERRHDL(PATH,MODNAM,'E','208','URBAN_Z0')
-         ELSE
-            IF (DFAULT .and. URBZ0(IURB) /= 1.0D0) THEN
+            call errhdl(path,modnam,'E','208','URBAN_Z0')
+         else
+            if (dfault .and. urbz0(iurb) /= 1.0d0) then
 !                 Write Warning Message: Non-default urban roughness length
-               CALL ERRHDL(PATH,MODNAM,'W','206','URBAN_Z0')
-               URBZ0(IURB) = 1.0D0
-            ELSE IF (.NOT. DFAULT .and. URBZ0(IURB) /= 1.0D0) THEN
+               call errhdl(path,modnam,'W','206','URBAN_Z0')
+               urbz0(iurb) = 1.0d0
+            else if (.not. dfault .and. urbz0(iurb) /= 1.0d0) then
 !                 Set flag for use of non-DEFAULT option
-               L_NonDFAULT = .TRUE.
-            END IF
-            IF (URBZ0(IURB) < 0.80D0) THEN
+               L_NonDFAULT = .true.
+            end if
+            if (urbz0(iurb) < 0.80d0) then
 !                 Write Warning Message: Urban roughness out of range
-               WRITE(DUMMY,'(F8.2)') URBZ0(IURB)
-               CALL ERRHDL(PATH,MODNAM,'W','353',DUMMY)
-            ELSE IF (URBZ0(IURB) > 1.50D0 .and.&
-            &URBZ0(IURB) < 5.0D0) THEN
+               write(dummy,'(F8.2)') urbz0(iurb)
+               call errhdl(path,modnam,'W','353',dummy)
+            else if (urbz0(iurb) > 1.50d0 .and.&
+            &urbz0(iurb) < 5.0d0) then
 !                 Write Warning Message: Urban roughness out of range
-               WRITE(DUMMY,'(F8.2)') URBZ0(IURB)
-               CALL ERRHDL(PATH,MODNAM,'W','353',DUMMY)
-            ELSE IF (URBZ0(IURB) >= 5.0D0) THEN
+               write(dummy,'(F8.2)') urbz0(iurb)
+               call errhdl(path,modnam,'W','353',dummy)
+            else if (urbz0(iurb) >= 5.0d0) then
 !                 Write Error Message: Urban roughness out of range
-               CALL ERRHDL(PATH,MODNAM,'E','380','URBAN Z0')
-            END IF
-         END IF
-      ELSE
-         URBZ0(IURB) = 1.0D0
-      END IF
+               call errhdl(path,modnam,'E','380','URBAN Z0')
+            end if
+         end if
+      else
+         urbz0(iurb) = 1.0d0
+      end if
 
-      NUMURB = 1
+      numurb = 1
 
-   END IF
+   end if
 
 !     Assign Logical for Urban Option
-   URBAN  = .TRUE.
+   urban  = .true.
 
-999 RETURN
-END SUBROUTINE URBOPT
+999 return
+end subroutine urbopt
 
-SUBROUTINE O3VAL
+subroutine o3val
 !***********************************************************************
 !                 O3VAL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4997,124 +4997,124 @@ SUBROUTINE O3VAL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 
-   INTEGER :: I
+   integer :: i
 
-   CHARACTER :: MODNAM*12
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'O3VAL'
+   modnam = 'O3VAL'
 
 ! --- Check The Number Of The Fields, accounting for sector-varying values
-   IF (.NOT.L_O3Sector) THEN
-      IF (IFC <= 2) THEN
+   if (.not.L_O3Sector) then
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC > 4) THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc > 4) then
 !           Error Message: Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','202',keywrd)
+         go to 999
+      end if
 ! ---    Check for SECT ID in field 3 in case O3SECTOR keyword was omitted
-      IF (FIELD(3)(1:4) == 'SECT') THEN
+      if (field(3)(1:4) == 'SECT') then
 !           Error Message: SECT ID without O3SECTOR keyword
-         CALL ERRHDL(PATH,MODNAM,'E','171',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','171',keywrd)
+         go to 999
+      end if
 ! ---    Assign sector ID to 1 since sector-varying values not being used;
 !        also set field index for the user-specified O3VALUES option and
 !        assign the option to O3FLAG variable
-      IO3SECT = 1
-      I = 3
-      L_O3VAL(IO3SECT) = .TRUE.
+      io3sect = 1
+      i = 3
+      l_o3val(io3sect) = .true.
 
-   ELSE
+   else
 ! ---    Process inputs based on O3SECTOR option
-      IF (IFC <= 2) THEN
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC == 4) THEN
-         IF (FIELD(3)(1:4) /= 'SECT') THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc == 4) then
+         if (field(3)(1:4) /= 'SECT') then
 !              Error Message: Invalid sector field
-            CALL ERRHDL(PATH,MODNAM,'E','203','O3SECTOR ID')
-            GO TO 999
-         ELSE
+            call errhdl(path,modnam,'E','203','O3SECTOR ID')
+            go to 999
+         else
 !              Error Message: No Numerical Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         END IF
-      ELSE IF (IFC > 5) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         end if
+      else if (ifc > 5) then
 !           Error Message: Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','202',keywrd)
+         go to 999
+      end if
 ! ---    Determine user-specified sector
-      IF (FIELD(3) == 'SECT1') THEN
-         IO3SECT = 1
-      ELSE IF (FIELD(3) == 'SECT2') THEN
-         IO3SECT = 2
-      ELSE IF (FIELD(3) == 'SECT3') THEN
-         IO3SECT = 3
-      ELSE IF (FIELD(3) == 'SECT4') THEN
-         IO3SECT = 4
-      ELSE IF (FIELD(3) == 'SECT5') THEN
-         IO3SECT = 5
-      ELSE IF (FIELD(3) == 'SECT6') THEN
-         IO3SECT = 6
-      ELSE
+      if (field(3) == 'SECT1') then
+         io3sect = 1
+      else if (field(3) == 'SECT2') then
+         io3sect = 2
+      else if (field(3) == 'SECT3') then
+         io3sect = 3
+      else if (field(3) == 'SECT4') then
+         io3sect = 4
+      else if (field(3) == 'SECT5') then
+         io3sect = 5
+      else if (field(3) == 'SECT6') then
+         io3sect = 6
+      else
 !           Error Message: Invalid sector definition
-         CALL ERRHDL(PATH,MODNAM,'E','203','O3SECTOR ID')
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','203','O3SECTOR ID')
+         go to 999
+      end if
 
 ! ---    Set field index for the user-specified Ozone Value
-      I = 4
-      L_O3VAL(IO3SECT) = .TRUE.
+      i = 4
+      l_o3val(io3sect) = .true.
 
-   END IF
+   end if
 
 !     Get Ozone Value, O3BACK, for applicable sector
-   CALL STODBL(FIELD(I),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(i),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   end if
 
 !     Assign value to O3BACK variable for this sector
-   O3BACK(IO3SECT) = DNUM
+   o3back(io3sect) = dnum
 
 !     Check for units of ozone value
-   IF (IFC == I+1) THEN
-      IF (FIELD(I+1)=='PPM' .or. FIELD(I+1)=='PPB' .or.&
-      &FIELD(I+1)=='UG/M3') THEN
-         O3VALUNITS = FIELD(I+1)
-      ELSE
+   if (ifc == i+1) then
+      if (field(i+1)=='PPM' .or. field(i+1)=='PPB' .or.&
+      &field(i+1)=='UG/M3') then
+         o3valunits = field(i+1)
+      else
 !           Write Error Message:  Invalid units for ozone value
-         CALL ERRHDL(PATH,MODNAM,'E','203',' O3UNITS')
-      END IF
-   END IF
+         call errhdl(path,modnam,'E','203',' O3UNITS')
+      end if
+   end if
 
-   IF (O3VALUNITS == 'PPB') THEN
-      O3BACK(IO3SECT) = O3BACK(IO3SECT) * O3_PPB
-   ELSE IF (O3VALUNITS == 'PPM') then
-      O3BACK(IO3SECT) = O3BACK(IO3SECT) * O3_PPM
-   END IF
+   if (o3valunits == 'PPB') then
+      o3back(io3sect) = o3back(io3sect) * o3_ppb
+   else if (o3valunits == 'PPM') then
+      o3back(io3sect) = o3back(io3sect) * o3_ppm
+   end if
 
 !     Check range of value
-   IF (O3BACK(IO3SECT) <= 0.0D0 .or.&
-   &O3BACK(IO3SECT) > 500.0D0)THEN
-      CALL ERRHDL(PATH,MODNAM,'W','320',' O3BACK ')
-   END IF
+   if (o3back(io3sect) <= 0.0d0 .or.&
+   &o3back(io3sect) > 500.0d0)then
+      call errhdl(path,modnam,'W','320',' O3BACK ')
+   end if
 
-999 RETURN
-END SUBROUTINE O3VAL
+999 return
+end subroutine o3val
 
-SUBROUTINE NOXVAL
+subroutine noxval
 !***********************************************************************
 !                 NOXVAL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -5133,123 +5133,123 @@ SUBROUTINE NOXVAL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 
-   INTEGER :: I
+   integer :: i
 
-   CHARACTER :: MODNAM*12
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'NOXVAL'
+   modnam = 'NOXVAL'
 
 ! --- Check The Number Of The Fields, accounting for sector-varying values
-   IF (.NOT.L_NOXSector) THEN
-      IF (IFC <= 2) THEN
+   if (.not.L_NOXSector) then
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC > 4) THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc > 4) then
 !           Error Message: Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','202',keywrd)
+         go to 999
+      end if
 ! ---    Check for SECT ID in field 3 in case NOXSECTR keyword was omitted
-      IF (FIELD(3)(1:4) == 'SECT') THEN
+      if (field(3)(1:4) == 'SECT') then
 !           Error Message: SECT ID without NOXSECTR keyword
-         CALL ERRHDL(PATH,MODNAM,'E','171',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','171',keywrd)
+         go to 999
+      end if
 ! ---    Assign sector ID to 1 since sector-varying values not being used;
 !        also set field index for the user-specified NOXVALUES option and
 !        assign the option to NOXFLAG variable
-      INOXSECT = 1
-      I = 3
-      L_NOXVALUE(INOXSECT) = .TRUE.
+      inoxsect = 1
+      i = 3
+      l_noxvalue(inoxsect) = .true.
 !
-   ELSE
+   else
 ! ---    Process inputs based on NOXSECTR option
-      IF (IFC <= 2) THEN
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC == 4) THEN
-         IF (FIELD(3)(1:4) /= 'SECT') THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc == 4) then
+         if (field(3)(1:4) /= 'SECT') then
 !              Error Message: Invalid sector field
-            CALL ERRHDL(PATH,MODNAM,'E','203','NOXSECTOR ID')
-            GO TO 999
-         ELSE
+            call errhdl(path,modnam,'E','203','NOXSECTOR ID')
+            go to 999
+         else
 !              Error Message: No Numerical Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         END IF
-      ELSE IF (IFC > 5) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         end if
+      else if (ifc > 5) then
 !           Error Message: Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','202',keywrd)
+         go to 999
+      end if
 ! ---    Determine user-specified sector
-      IF (FIELD(3) == 'SECT1') THEN
-         INOXSECT = 1
-      ELSE IF (FIELD(3) == 'SECT2') THEN
-         INOXSECT = 2
-      ELSE IF (FIELD(3) == 'SECT3') THEN
-         INOXSECT = 3
-      ELSE IF (FIELD(3) == 'SECT4') THEN
-         INOXSECT = 4
-      ELSE IF (FIELD(3) == 'SECT5') THEN
-         INOXSECT = 5
-      ELSE IF (FIELD(3) == 'SECT6') THEN
-         INOXSECT = 6
-      ELSE
+      if (field(3) == 'SECT1') then
+         inoxsect = 1
+      else if (field(3) == 'SECT2') then
+         inoxsect = 2
+      else if (field(3) == 'SECT3') then
+         inoxsect = 3
+      else if (field(3) == 'SECT4') then
+         inoxsect = 4
+      else if (field(3) == 'SECT5') then
+         inoxsect = 5
+      else if (field(3) == 'SECT6') then
+         inoxsect = 6
+      else
 !           Error Message: Invalid sector definition
-         CALL ERRHDL(PATH,MODNAM,'E','203','NOXSECTOR ID')
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','203','NOXSECTOR ID')
+         go to 999
+      end if
 
 ! ---    Set field index for the user-specified NOX Value
-      I = 4
-      L_NOXVALUE(INOXSECT) = .TRUE.
-   END IF
+      i = 4
+      l_noxvalue(inoxsect) = .true.
+   end if
 
 !     Get NOX Value, NOXBACK, for applicable sector
-   CALL STODBL(FIELD(I),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(i),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   end if
 
 !     Assign value to NOXBACK variable for this sector
-   NOXBACK(INOXSECT) = DNUM
+   noxback(inoxsect) = dnum
 
 !     Check for units of NOx value
-   IF (IFC == I+1) THEN
-      IF (FIELD(I+1)=='PPM' .or. FIELD(I+1)=='PPB' .or.&
-      &FIELD(I+1)=='UG/M3') THEN
-         NOXVALUNITS = FIELD(I+1)
-      ELSE
+   if (ifc == i+1) then
+      if (field(i+1)=='PPM' .or. field(i+1)=='PPB' .or.&
+      &field(i+1)=='UG/M3') then
+         noxvalunits = field(i+1)
+      else
 !           Write Error Message:  Invalid units for NOX value
-         CALL ERRHDL(PATH,MODNAM,'E','203',' NOXUNITS')
-      END IF
-   END IF
+         call errhdl(path,modnam,'E','203',' NOXUNITS')
+      end if
+   end if
 
    !Convert to UG/M3 using NO2 factors (NOx expressed as 'NOx as NO2')
-   IF (NOXVALUNITS == 'PPB') THEN
-      NOXBACK(INOXSECT) = NOXBACK(INOXSECT) / NO2_PPB
-   ELSE IF (NOXVALUNITS == 'PPM') then
-      NOXBACK(INOXSECT) = NOXBACK(INOXSECT) / NO2_PPM
-   END IF
+   if (noxvalunits == 'PPB') then
+      noxback(inoxsect) = noxback(inoxsect) / no2_ppb
+   else if (noxvalunits == 'PPM') then
+      noxback(inoxsect) = noxback(inoxsect) / no2_ppm
+   end if
 
 !     Check range of value
-   IF (NOXBACK(INOXSECT) <= 0.0D0) THEN
-      CALL ERRHDL(PATH,MODNAM,'W','320',' NOXBACK ')
-   END IF
+   if (noxback(inoxsect) <= 0.0d0) then
+      call errhdl(path,modnam,'W','320',' NOXBACK ')
+   end if
 
-999 RETURN
-END SUBROUTINE NOXVAL
+999 return
+end subroutine noxval
 
-SUBROUTINE O3FILE
+subroutine o3file
 !***********************************************************************
 !                 O3FILE Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -5279,207 +5279,207 @@ SUBROUTINE O3FILE
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, NumInt, NumReal
-   LOGICAL :: FOPEN
+   integer :: i, NumInt, NumReal
+   logical :: fopen
 
 !     Variable Initializations
-   MODNAM = 'O3FILE'
+   modnam = 'O3FILE'
    NumInt  = 0
    NumReal = 0
-   FOPEN   = .FALSE.
+   fopen   = .false.
 
 ! --- Check The Number Of The Fields, accounting for sector-varying values
-   IF (.NOT.L_O3Sector) THEN
-      IF (IFC <= 2) THEN
+   if (.not.L_O3Sector) then
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC < 3) THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc < 3) then
 !           Error Message: Not Enough Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC > 5) THEN
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      else if (ifc > 5) then
 !           Error Message: Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','202',keywrd)
+         go to 999
+      end if
 ! ---    Check for SECT ID in field 3 in case O3FILE keyword was omitted
-      IF (FIELD(3)(1:4) == 'SECT') THEN
+      if (field(3)(1:4) == 'SECT') then
 !           Error Message: SECT ID without O3SECTOR keyword
-         CALL ERRHDL(PATH,MODNAM,'E','171',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','171',keywrd)
+         go to 999
+      end if
 ! ---    Assign sector ID to 1 since sector-varying values not being used;
 !        also set field index for start of the user-specified options
-      IO3SECT = 1
-      I = 3
-   ELSE
-      IF (IFC <= 2) THEN
+      io3sect = 1
+      i = 3
+   else
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC < 4) THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc < 4) then
 !           Error Message: Not Enough Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC > 6) THEN
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      else if (ifc > 6) then
 !           Error Message: Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-         GO TO 999
-      END IF
-      IF (FIELD(3) == 'SECT1') THEN
-         IO3SECT = 1
-      ELSE IF (FIELD(3) == 'SECT2' .and. NUMO3Sects >= 2) THEN
-         IO3SECT = 2
-      ELSE IF (FIELD(3) == 'SECT3' .and. NUMO3Sects >= 3) THEN
-         IO3SECT = 3
-      ELSE IF (FIELD(3) == 'SECT4' .and. NUMO3Sects >= 4) THEN
-         IO3SECT = 4
-      ELSE IF (FIELD(3) == 'SECT5' .and. NUMO3Sects >= 5) THEN
-         IO3SECT = 5
-      ELSE IF (FIELD(3) == 'SECT6' .and. NUMO3Sects == 6) THEN
-         IO3SECT = 6
-      ELSE
+         call errhdl(path,modnam,'E','202',keywrd)
+         go to 999
+      end if
+      if (field(3) == 'SECT1') then
+         io3sect = 1
+      else if (field(3) == 'SECT2' .and. NUMO3Sects >= 2) then
+         io3sect = 2
+      else if (field(3) == 'SECT3' .and. NUMO3Sects >= 3) then
+         io3sect = 3
+      else if (field(3) == 'SECT4' .and. NUMO3Sects >= 4) then
+         io3sect = 4
+      else if (field(3) == 'SECT5' .and. NUMO3Sects >= 5) then
+         io3sect = 5
+      else if (field(3) == 'SECT6' .and. NUMO3Sects == 6) then
+         io3sect = 6
+      else
 !           Error Message: Invalid sector field
-         CALL ERRHDL(PATH,MODNAM,'E','203','O3SECTOR ID')
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','203','O3SECTOR ID')
+         go to 999
+      end if
 ! ---    Assign set field index for start of the user-specified options,
 !        accounting for sector IDs
-      I = 4
-   END IF
+      i = 4
+   end if
 
 !     Set logical flags for hourly ozone file(s)
-   L_O3Hourly        = .TRUE.
-   L_O3File(IO3SECT) = .TRUE.
+   L_O3Hourly        = .true.
+   L_O3File(io3sect) = .true.
 
 !     Retrieve Ozone Data Filename as Character Substring to Maintain Case
-   IF ((LOCE(I)-LOCB(I)) <= (ILEN_FLD - 1) ) THEN
+   if ((loce(i)-locb(i)) <= (ilen_fld - 1) ) then
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
-      OZONFL(IO3SECT) = RUNST1(LOCB(I):LOCE(I))
-   ELSE
+      ozonfl(io3sect) = runst1(locb(i):loce(i))
+   else
 !        WRITE Error Message:  OZONFL Field is Too Long
 !        Write error message and return
-      WRITE(DUMMY,'(I8)') ILEN_FLD
-      CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-      GO TO 999
-   END IF
+      write(dummy,'(I8)') ilen_fld
+      call errhdl(path,modnam,'E','291',dummy)
+      go to 999
+   end if
 
 !     Assign file unit for this O3 file and Open The Ozone Input File
 !     Open with ACTION='READ' to prevent overwrite and multiple access
-   IO3UNT(IO3SECT) = 1000 + IO3SECT
+   io3unt(io3sect) = 1000 + io3sect
 
 !     Open hourly Ozone File If Not Already Open
-   INQUIRE (FILE=OZONFL(IO3SECT),OPENED=FOPEN)
+   inquire (file=ozonfl(io3sect),opened=fopen)
 
-   IF (.NOT. FOPEN) THEN
+   if (.not. fopen) then
 !        Open Hourly Ozone Data File If Not Already Open
 !        Open with ACTION='READ' to prevent overwrite and allow multiple access
-      INQUIRE (UNIT=IO3UNT(IO3SECT),OPENED=FOPEN)
-      IF (.NOT. FOPEN) THEN
-         OPEN(UNIT=IO3UNT(IO3SECT),FILE=OZONFL(IO3SECT),STATUS='OLD',&
-         &ERR=998,ACTION='READ',FORM='FORMATTED')
+      inquire (unit=io3unt(io3sect),opened=fopen)
+      if (.not. fopen) then
+         open(unit=io3unt(io3sect),file=ozonfl(io3sect),status='OLD',&
+         &err=998,action='READ',form='FORMATTED')
 
-      ELSE
+      else
 !           Hourly Ozone File is Already Opened With Different Filename
-         CALL ERRHDL(PATH,MODNAM,'E','501',KEYWRD)
-         GO TO 999
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','501',keywrd)
+         go to 999
+      end if
+   else
 !        Hourly Ozone File is Already Opened With Different Filename
-      CALL ERRHDL(PATH,MODNAM,'E','501',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','501',keywrd)
+      go to 999
+   end if
 
 !     Check for optional units of ozone value
-   IF (I == 3 .and. IFC >= 4) THEN
-      IF (FIELD(4)=='PPM' .or. FIELD(4)=='PPB' .or.&
-      &FIELD(4)=='UG/M3') THEN
-         O3FILUNITS = FIELD(4)
-      ELSE
+   if (i == 3 .and. ifc >= 4) then
+      if (field(4)=='PPM' .or. field(4)=='PPB' .or.&
+      &field(4)=='UG/M3') then
+         o3filunits = field(4)
+      else
 !           Write Error Message:  Invalid units for ozone value
-         CALL ERRHDL(PATH,MODNAM,'E','203',' O3UNITS')
-      END IF
-   ELSE IF (I == 4 .and. IFC >= 5) THEN
-      IF (FIELD(5)=='PPM' .or. FIELD(5)=='PPB' .or.&
-      &FIELD(5)=='UG/M3') THEN
-         O3FILUNITS = FIELD(5)
-      ELSE
+         call errhdl(path,modnam,'E','203',' O3UNITS')
+      end if
+   else if (i == 4 .and. ifc >= 5) then
+      if (field(5)=='PPM' .or. field(5)=='PPB' .or.&
+      &field(5)=='UG/M3') then
+         o3filunits = field(5)
+      else
 !           Write Error Message:  Invalid units for ozone value
-         CALL ERRHDL(PATH,MODNAM,'E','203',' O3UNITS')
-      END IF
-   ELSE
-      O3FILUNITS = 'UG/M3'
-   END IF
+         call errhdl(path,modnam,'E','203',' O3UNITS')
+      end if
+   else
+      o3filunits = 'UG/M3'
+   end if
 
-   IF (IFC == I+2) THEN
+   if (ifc == i+2) then
 !        Check for Format String > ILEN_FLD PARAMETER
-      IF ((LOCE(I+2)-LOCB(I+2)) <= (ILEN_FLD - 1)) THEN
+      if ((loce(i+2)-locb(i+2)) <= (ilen_fld - 1)) then
 
 ! ---       First check for user input of "FREE" for the formaat,
 !           using FIELD array which has been converted to upper case
-         IF (FIELD(I+2) == 'FREE') THEN
-            O3FORM(IO3SECT) = 'FREE'
-         ELSE
+         if (field(i+2) == 'FREE') then
+            o3form(io3sect) = 'FREE'
+         else
 !              Retrieve Met Format as Char. Substring
-            O3FORM(IO3SECT) = RUNST1(LOCB(I+2):LOCE(I+2))
+            o3form(io3sect) = runst1(locb(i+2):loce(i+2))
 ! ---          Check for correct format specifiers for Ozone file;
 !              should be 4 integers for date variables and 1 real for
 !              ozone concentration; allow for 1 to 4 integers since
 !              format statement may include 4I2, and also allow for
 !              either F, E, or D format for the data variable.
-            DO I = 1, LEN_TRIM(O3FORM(IO3SECT))
-               IF (O3FORM(IO3SECT)(I:I)=='I' .or.&
-               &O3FORM(IO3SECT)(I:I)=='i') THEN
+            do i = 1, len_trim(o3form(io3sect))
+               if (o3form(io3sect)(i:i)=='I' .or.&
+               &o3form(io3sect)(i:i)=='i') then
                   NumInt  = NumInt  + 1
-               ELSE IF (O3FORM(IO3SECT)(I:I)=='F' .or.&
-               &O3FORM(IO3SECT)(I:I)=='f') THEN
+               else if (o3form(io3sect)(i:i)=='F' .or.&
+               &o3form(io3sect)(i:i)=='f') then
                   NumReal = NumReal + 1
-               ELSE IF (O3FORM(IO3SECT)(I:I)=='E' .or.&
-               &O3FORM(IO3SECT)(I:I)=='e') THEN
+               else if (o3form(io3sect)(i:i)=='E' .or.&
+               &o3form(io3sect)(i:i)=='e') then
                   NumReal = NumReal + 1
-               ELSE IF (O3FORM(IO3SECT)(I:I)=='D' .or.&
-               &O3FORM(IO3SECT)(I:I)=='d') THEN
+               else if (o3form(io3sect)(i:i)=='D' .or.&
+               &o3form(io3sect)(i:i)=='d') then
                   NumReal = NumReal + 1
-               END IF
-            END DO
-            IF (NumInt<1 .or. NumInt>4) THEN
+               end if
+            end do
+            if (NumInt<1 .or. NumInt>4) then
 !                 WRITE Warning Message:  Potential problem with O3FORM
-               WRITE(DUMMY,'(''NumInts= '',I3)') NumInt
-               CALL ERRHDL(PATH,MODNAM,'W','292',DUMMY)
-            END IF
-            IF (NumReal/=1) THEN
+               write(dummy,'(''NumInts= '',I3)') NumInt
+               call errhdl(path,modnam,'W','292',dummy)
+            end if
+            if (NumReal/=1) then
 !                 WRITE Warning Message:  Potential problem with O3FORM
-               WRITE(DUMMY,'(''NumReal= '',I3)') NumReal
-               CALL ERRHDL(PATH,MODNAM,'W','292',DUMMY)
-            END IF
-         END IF
-      ELSE
+               write(dummy,'(''NumReal= '',I3)') NumReal
+               call errhdl(path,modnam,'W','292',dummy)
+            end if
+         end if
+      else
 !           WRITE Error Message:  O3FORM Field is Too Long
-         WRITE(DUMMY,'(''LEN='',I6)') LOCE(5)-LOCB(5)
-         CALL ERRHDL(PATH,MODNAM,'E','292',DUMMY)
-      END IF
-   ELSE
+         write(dummy,'(''LEN='',I6)') loce(5)-locb(5)
+         call errhdl(path,modnam,'E','292',dummy)
+      end if
+   else
 ! ---    Use 'free' format as the default
-      O3FORM(IO3SECT) = 'FREE'
-   END IF
+      o3form(io3sect) = 'FREE'
+   end if
 
-   GO TO 999
+   go to 999
 
 !     Process Error Messages; error opening file, include file type and sector
-998 CONTINUE
-   WRITE(DUMMY,'("O3FILE SECT",I1)') IO3SECT
-   CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
+998 continue
+   write(dummy,'("O3FILE SECT",I1)') io3sect
+   call errhdl(path,modnam,'E','500',dummy)
 
-999 RETURN
-END SUBROUTINE O3FILE
+999 return
+end subroutine o3file
 
-SUBROUTINE NOXFILE
+subroutine noxfile
 !***********************************************************************
 !                 NOXFILE Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -5500,207 +5500,207 @@ SUBROUTINE NOXFILE
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, NumInt, NumReal
-   LOGICAL :: FOPEN
+   integer :: i, NumInt, NumReal
+   logical :: fopen
 
 !     Variable Initializations
-   MODNAM = 'NOXFILE'
+   modnam = 'NOXFILE'
    NumInt  = 0
    NumReal = 0
-   FOPEN   = .FALSE.
+   fopen   = .false.
 
 ! --- Check The Number Of The Fields, accounting for sector-varying values
-   IF (.NOT.L_NOxSector) THEN
-      IF (IFC <= 2) THEN
+   if (.not.L_NOxSector) then
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC < 3) THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc < 3) then
 !           Error Message: Not Enough Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC > 5) THEN
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      else if (ifc > 5) then
 !           Error Message: Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','202',keywrd)
+         go to 999
+      end if
 ! ---    Check for SECT ID in field 3 in case NOXFILE keyword was omitted
-      IF (FIELD(3)(1:4) == 'SECT') THEN
+      if (field(3)(1:4) == 'SECT') then
 !           Error Message: SECT ID without NOXSECTR keyword
-         CALL ERRHDL(PATH,MODNAM,'E','171',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','171',keywrd)
+         go to 999
+      end if
 ! ---    Assign sector ID to 1 since sector-varying values not being used;
 !        also set field index for start of the user-specified options
-      INOXSECT = 1
-      I = 3
-   ELSE
-      IF (IFC <= 2) THEN
+      inoxsect = 1
+      i = 3
+   else
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC < 4) THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc < 4) then
 !           Error Message: Not Enough Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC > 6) THEN
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      else if (ifc > 6) then
 !           Error Message: Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-         GO TO 999
-      END IF
-      IF (FIELD(3) == 'SECT1') THEN
-         INOXSECT = 1
-      ELSE IF (FIELD(3) == 'SECT2' .and. NUMNOxSects >= 2) THEN
-         INOXSECT = 2
-      ELSE IF (FIELD(3) == 'SECT3' .and. NUMNOxSects >= 3) THEN
-         INOXSECT = 3
-      ELSE IF (FIELD(3) == 'SECT4' .and. NUMNOxSects >= 4) THEN
-         INOXSECT = 4
-      ELSE IF (FIELD(3) == 'SECT5' .and. NUMNOxSects >= 5) THEN
-         INOXSECT = 5
-      ELSE IF (FIELD(3) == 'SECT6' .and. NUMNOxSects == 6) THEN
-         INOXSECT = 6
-      ELSE
+         call errhdl(path,modnam,'E','202',keywrd)
+         go to 999
+      end if
+      if (field(3) == 'SECT1') then
+         inoxsect = 1
+      else if (field(3) == 'SECT2' .and. NUMNOxSects >= 2) then
+         inoxsect = 2
+      else if (field(3) == 'SECT3' .and. NUMNOxSects >= 3) then
+         inoxsect = 3
+      else if (field(3) == 'SECT4' .and. NUMNOxSects >= 4) then
+         inoxsect = 4
+      else if (field(3) == 'SECT5' .and. NUMNOxSects >= 5) then
+         inoxsect = 5
+      else if (field(3) == 'SECT6' .and. NUMNOxSects == 6) then
+         inoxsect = 6
+      else
 !           Error Message: Invalid sector field
-         CALL ERRHDL(PATH,MODNAM,'E','203','NOXSECTR ID')
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','203','NOXSECTR ID')
+         go to 999
+      end if
 ! ---    Assign set field index for start of the user-specified options,
 !        accounting for sector IDs
-      I = 4
-   END IF
+      i = 4
+   end if
 
 !     Set logical flags for hourly NOx file(s)
-   L_NOxHourly        = .TRUE.
-   L_NOxFile(INOXSECT) = .TRUE.
+   L_NOxHourly        = .true.
+   L_NOxFile(inoxsect) = .true.
 
 !     Retrieve NOx Data Filename as Character Substring to Maintain Case
-   IF ((LOCE(I)-LOCB(I)) <= (ILEN_FLD - 1) ) THEN
+   if ((loce(i)-locb(i)) <= (ilen_fld - 1) ) then
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
-      NOXFL(INOXSECT) = RUNST1(LOCB(I):LOCE(I))
-   ELSE
+      noxfl(inoxsect) = runst1(locb(i):loce(i))
+   else
 !        WRITE Error Message:  NOXFL Field is Too Long
 !        Write error message and return
-      WRITE(DUMMY,'(I8)') ILEN_FLD
-      CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-      GO TO 999
-   END IF
+      write(dummy,'(I8)') ilen_fld
+      call errhdl(path,modnam,'E','291',dummy)
+      go to 999
+   end if
 
 !     Assign file unit for this NOx file and Open The NOx Input File
 !     Open with ACTION='READ' to prevent overwrite and multiple access
-   INOXUNT(INOXSECT) = 3000 + INOXSECT
+   inoxunt(inoxsect) = 3000 + inoxsect
 
 !     Open hourly NOx File If Not Already Open
-   INQUIRE (FILE=NOXFL(INOXSECT),OPENED=FOPEN)
+   inquire (file=noxfl(inoxsect),opened=fopen)
 
-   IF (.NOT. FOPEN) THEN
+   if (.not. fopen) then
 !        Open Hourly NOx Data File If Not Already Open
 !        Open with ACTION='READ' to prevent overwrite and allow multiple access
-      INQUIRE (UNIT=INOXUNT(INOXSECT),OPENED=FOPEN)
-      IF (.NOT. FOPEN) THEN
-         OPEN(UNIT=INOXUNT(INOXSECT),FILE=NOXFL(INOXSECT),&
-         &STATUS='OLD',ERR=998,ACTION='READ',FORM='FORMATTED')
+      inquire (unit=inoxunt(inoxsect),opened=fopen)
+      if (.not. fopen) then
+         open(unit=inoxunt(inoxsect),file=noxfl(inoxsect),&
+         &status='OLD',err=998,action='READ',form='FORMATTED')
 
-      ELSE
+      else
 !           Hourly NOx File is Already Opened With Different Filename
-         CALL ERRHDL(PATH,MODNAM,'E','501',KEYWRD)
-         GO TO 999
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','501',keywrd)
+         go to 999
+      end if
+   else
 !        Hourly NOx File is Already Opened With Different Filename
-      CALL ERRHDL(PATH,MODNAM,'E','501',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','501',keywrd)
+      go to 999
+   end if
 
 !     Check for optional units of NOx value
-   IF (I == 3 .and. IFC >= 4) THEN
-      IF (FIELD(4)=='PPM' .or. FIELD(4)=='PPB' .or.&
-      &FIELD(4)=='UG/M3') THEN
-         NOXFILUNITS = FIELD(4)
-      ELSE
+   if (i == 3 .and. ifc >= 4) then
+      if (field(4)=='PPM' .or. field(4)=='PPB' .or.&
+      &field(4)=='UG/M3') then
+         noxfilunits = field(4)
+      else
 !           Write Error Message:  Invalid units for NOx value
-         CALL ERRHDL(PATH,MODNAM,'E','203','NOXUNITS')
-      END IF
-   ELSE IF (I == 4 .and. IFC >= 5) THEN
-      IF (FIELD(5)=='PPM' .or. FIELD(5)=='PPB' .or.&
-      &FIELD(5)=='UG/M3') THEN
-         NOXFILUNITS = FIELD(5)
-      ELSE
+         call errhdl(path,modnam,'E','203','NOXUNITS')
+      end if
+   else if (i == 4 .and. ifc >= 5) then
+      if (field(5)=='PPM' .or. field(5)=='PPB' .or.&
+      &field(5)=='UG/M3') then
+         noxfilunits = field(5)
+      else
 !           Write Error Message:  Invalid units for NOx value
-         CALL ERRHDL(PATH,MODNAM,'E','203','NOXUNITS')
-      END IF
-   ELSE
-      NOXFILUNITS = 'UG/M3'
-   END IF
+         call errhdl(path,modnam,'E','203','NOXUNITS')
+      end if
+   else
+      noxfilunits = 'UG/M3'
+   end if
 
-   IF (IFC == I+2) THEN
+   if (ifc == i+2) then
 !        Check for Format String > ILEN_FLD PARAMETER
-      IF ((LOCE(I+2)-LOCB(I+2)) <= (ILEN_FLD - 1)) THEN
+      if ((loce(i+2)-locb(i+2)) <= (ilen_fld - 1)) then
 
 ! ---       First check for user input of "FREE" for the format,
 !           using FIELD array which has been converted to upper case
-         IF (FIELD(I+2) == 'FREE') THEN
-            NOXFORM(INOXSECT) = 'FREE'
-         ELSE
+         if (field(i+2) == 'FREE') then
+            noxform(inoxsect) = 'FREE'
+         else
 !              Retrieve Format as Char. Substring
-            NOXFORM(INOXSECT) = RUNST1(LOCB(I+2):LOCE(I+2))
+            noxform(inoxsect) = runst1(locb(i+2):loce(i+2))
 ! ---          Check for correct format specifiers for NOx file;
 !              should be 4 integers for date variables and 1 real for
 !              NOx concentration; allow for 1 to 4 integers since
 !              format statement may include 4I2, and also allow for
 !              either F, E, or D format for the data variable.
-            DO I = 1, LEN_TRIM(NOXFORM(INOXSECT))
-               IF (NOXFORM(INOXSECT)(I:I)=='I' .or.&
-               &NOXFORM(INOXSECT)(I:I)=='i') THEN
+            do i = 1, len_trim(noxform(inoxsect))
+               if (noxform(inoxsect)(i:i)=='I' .or.&
+               &noxform(inoxsect)(i:i)=='i') then
                   NumInt  = NumInt  + 1
-               ELSE IF (NOXFORM(INOXSECT)(I:I)=='F' .or.&
-               &NOXFORM(INOXSECT)(I:I)=='f') THEN
+               else if (noxform(inoxsect)(i:i)=='F' .or.&
+               &noxform(inoxsect)(i:i)=='f') then
                   NumReal = NumReal + 1
-               ELSE IF (NOXFORM(INOXSECT)(I:I)=='E' .or.&
-               &NOXFORM(INOXSECT)(I:I)=='e') THEN
+               else if (noxform(inoxsect)(i:i)=='E' .or.&
+               &noxform(inoxsect)(i:i)=='e') then
                   NumReal = NumReal + 1
-               ELSE IF (NOXFORM(INOXSECT)(I:I)=='D' .or.&
-               &NOXFORM(INOXSECT)(I:I)=='d') THEN
+               else if (noxform(inoxsect)(i:i)=='D' .or.&
+               &noxform(inoxsect)(i:i)=='d') then
                   NumReal = NumReal + 1
-               END IF
-            END DO
-            IF (NumInt<1 .or. NumInt>4) THEN
+               end if
+            end do
+            if (NumInt<1 .or. NumInt>4) then
 !                 WRITE Warning Message:  Potential problem with NOXFORM
-               WRITE(DUMMY,'(''NumInts= '',I3)') NumInt
-               CALL ERRHDL(PATH,MODNAM,'W','292',DUMMY)
-            END IF
-            IF (NumReal/=1) THEN
+               write(dummy,'(''NumInts= '',I3)') NumInt
+               call errhdl(path,modnam,'W','292',dummy)
+            end if
+            if (NumReal/=1) then
 !                 WRITE Warning Message:  Potential problem with NOXFORM
-               WRITE(DUMMY,'(''NumReal= '',I3)') NumReal
-               CALL ERRHDL(PATH,MODNAM,'W','292',DUMMY)
-            END IF
-         END IF
-      ELSE
+               write(dummy,'(''NumReal= '',I3)') NumReal
+               call errhdl(path,modnam,'W','292',dummy)
+            end if
+         end if
+      else
 !           WRITE Error Message:  NOXFORM Field is Too Long
-         WRITE(DUMMY,'(''LEN='',I6)') LOCE(5)-LOCB(5)
-         CALL ERRHDL(PATH,MODNAM,'E','292',DUMMY)
-      END IF
-   ELSE
+         write(dummy,'(''LEN='',I6)') loce(5)-locb(5)
+         call errhdl(path,modnam,'E','292',dummy)
+      end if
+   else
 ! ---    Use 'free' format as the default
-      NOXFORM(INOXSECT) = 'FREE'
-   END IF
+      noxform(inoxsect) = 'FREE'
+   end if
 
-   GO TO 999
+   go to 999
 
 !     Process Error Messages; error opening file, include file type and sector
-998 CONTINUE
-   WRITE(DUMMY,'("NOXFILE SCT",I1)') INOXSECT
-   CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
+998 continue
+   write(dummy,'("NOXFILE SCT",I1)') inoxsect
+   call errhdl(path,modnam,'E','500',dummy)
 
-999 RETURN
-END SUBROUTINE NOXFILE
+999 return
+end subroutine noxfile
 
-SUBROUTINE NO2EQ
+subroutine no2eq
 !***********************************************************************
 !                 NO2EQ Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -5719,45 +5719,45 @@ SUBROUTINE NO2EQ
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'NO2EQ'
+   modnam = 'NO2EQ'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc > 3) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Start To Get Ozone Value
-   CALL STODBL(FIELD(3),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(3),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   end if
 
 !     Assign value to NO2Equil variable
-   NO2Equil = DNUM
+   NO2Equil = dnum
 
 !     Check range of value
-   IF (NO2Equil < 0.10D0 .or. NO2Equil > 1.0D0) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','380','NO2Equil')
-   END IF
+   if (NO2Equil < 0.10d0 .or. NO2Equil > 1.0d0) then
+      call errhdl(path,modnam,'E','380','NO2Equil')
+   end if
 
-999 RETURN
-END SUBROUTINE NO2EQ
+999 return
+end subroutine no2eq
 
 
-SUBROUTINE NO2STK
+subroutine no2stk
 !***********************************************************************
 !                 NO2STK Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -5776,50 +5776,50 @@ SUBROUTINE NO2STK
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   INTEGER :: I
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   integer :: i
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'NO2STK'
+   modnam = 'NO2STK'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc > 3) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Start To Get Ozone Value
-   CALL STODBL(FIELD(3),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(3),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   end if
 
 !     Assign value to NO2Stack variable
-   NO2Stack = DNUM
+   NO2Stack = dnum
 
 !     Check range of value
-   IF (NO2Stack < 0.0D0 .or. NO2Stack > 1.0D0) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','380','NO2Stack')
-      GO TO 999
-   END IF
+   if (NO2Stack < 0.0d0 .or. NO2Stack > 1.0d0) then
+      call errhdl(path,modnam,'E','380','NO2Stack')
+      go to 999
+   end if
 
-   DO I = 1, NSRC
-      ANO2_RATIO(I) = NO2Stack
-   END DO
+   do i = 1, nsrc
+      ano2_ratio(i) = NO2Stack
+   end do
 
-999 RETURN
-END SUBROUTINE NO2STK
+999 return
+end subroutine no2stk
 
-SUBROUTINE ARM2_Ratios
+subroutine ARM2_Ratios
 !***********************************************************************
 !                 ARM2_Ratios Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -5838,56 +5838,56 @@ SUBROUTINE ARM2_Ratios
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'ARM2_Ratios'
+   modnam = 'ARM2_Ratios'
 
 !     Check The Number Of The Fields
-   IF (ARM2 .and. IFC < 4) THEN
+   if (arm2 .and. ifc < 4) then
 !        Error Message: Too Few Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   end if
 
 
 ! --- Get the minimum ARM2 ratio (ARM2_Min)
-   CALL STODBL(FIELD(3),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(3),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   ELSE
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   else
 !        Assign value to ARM2_Min
-      ARM2_Min = DNUM
-   END IF
+      ARM2_Min = dnum
+   end if
 
 !     Check range of value for ARM2_Min
 !     D157 WSP 3/28/23 Changed ARMRATIO restictions to match user's guide
 !     DFAULT ARMRATIO is 0.5 <= ARMRATIO <= 0.9
 !     NONDFAULT ARMRATIO is 0.0 < ARMRATIO <= 1.0
-   IF (ARM2_Min < 0.50D0 .and. ARM2_Min > 0.0D0) THEN
-      IF( DFAULT )THEN
-         CALL ERRHDL(PATH,MODNAM,'E','380',' ARM2Min')
-      ELSE
-         CALL ERRHDL(PATH,MODNAM,'W','737',' ARM2Min')
-      END IF
-   ELSE IF (ARM2_Min > 0.90D0 .and. ARM2_Min <= 1.0D0) THEN
-      IF( DFAULT )THEN
-         CALL ERRHDL(PATH,MODNAM,'E','380', ' ARM2Min')
-      ELSE
-         CALL ERRHDL(PATH,MODNAM,'W','737',' ARM2Min')
-      END IF
-   ELSE IF (ARM2_Min <= 0.0D0) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','380',' ARM2Min')
-   ELSE IF (ARM2_Min > 1.0D0) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','380',' ARM2Min')
+   if (ARM2_Min < 0.50d0 .and. ARM2_Min > 0.0d0) then
+      if( dfault )then
+         call errhdl(path,modnam,'E','380',' ARM2Min')
+      else
+         call errhdl(path,modnam,'W','737',' ARM2Min')
+      end if
+   else if (ARM2_Min > 0.90d0 .and. ARM2_Min <= 1.0d0) then
+      if( dfault )then
+         call errhdl(path,modnam,'E','380', ' ARM2Min')
+      else
+         call errhdl(path,modnam,'W','737',' ARM2Min')
+      end if
+   else if (ARM2_Min <= 0.0d0) then
+      call errhdl(path,modnam,'E','380',' ARM2Min')
+   else if (ARM2_Min > 1.0d0) then
+      call errhdl(path,modnam,'E','380',' ARM2Min')
 !     D157 CRT 5/31/2023 remove warning message if ARMRATIO is within default
 !      ELSE IF (ARM2_Min .GT. 0.50D0) THEN
 !         CALL ERRHDL(PATH,MODNAM,'W','736',' ARM2Min')
-   END IF
+   end if
 
 !C     Check range of value for ARM2_Min
 !      IF (ARM2_Min .LE. 0.0D0) THEN
@@ -5910,45 +5910,45 @@ SUBROUTINE ARM2_Ratios
 !      END IF
 
 ! --- Get the maximum ARM2 ratio (ARM2_Max)
-   CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(4),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   ELSE
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   else
 !        Assign value to ARM2_Max
-      ARM2_Max = DNUM
-   END IF
+      ARM2_Max = dnum
+   end if
 
 !     Check range of value for ARM2_Max
 !     D157 WSP 3/28/23 Changed ARMRATIO restictions to match user's guide
 !     DFAULT ARMRATIO is 0.5 <= ARMRATIO <= 0.9
 !     NONDFAULT ARMRATIO is 0.0 < ARMRATIO <= 1.0
-   IF (ARM2_Max < 0.50D0 .and. ARM2_Max > 0.0D0) THEN
-      IF( DFAULT )THEN
-         CALL ERRHDL(PATH,MODNAM,'E','380',' ARM2Max')
-      ELSE
-         CALL ERRHDL(PATH,MODNAM,'W','737',' ARM2Max')
-      END IF
-   ELSE IF (ARM2_Max > 0.90D0 .and. ARM2_Max <= 1.0D0) THEN
-      IF( DFAULT )THEN
-         CALL ERRHDL(PATH,MODNAM,'E','380',' ARM2Max')
-      ELSE
-         CALL ERRHDL(PATH,MODNAM,'W','737',' ARM2Max')
-      END IF
-   ELSE IF (ARM2_Max <= 0.0D0) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','380',' ARM2Max')
-   ELSE IF (ARM2_Max > 1.0D0) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','380',' ARM2Max')
+   if (ARM2_Max < 0.50d0 .and. ARM2_Max > 0.0d0) then
+      if( dfault )then
+         call errhdl(path,modnam,'E','380',' ARM2Max')
+      else
+         call errhdl(path,modnam,'W','737',' ARM2Max')
+      end if
+   else if (ARM2_Max > 0.90d0 .and. ARM2_Max <= 1.0d0) then
+      if( dfault )then
+         call errhdl(path,modnam,'E','380',' ARM2Max')
+      else
+         call errhdl(path,modnam,'W','737',' ARM2Max')
+      end if
+   else if (ARM2_Max <= 0.0d0) then
+      call errhdl(path,modnam,'E','380',' ARM2Max')
+   else if (ARM2_Max > 1.0d0) then
+      call errhdl(path,modnam,'E','380',' ARM2Max')
 !     D157 CRT 5/31/2023 remove warning message if ARMRATIO is within default
 !      ELSE IF (ARM2_Max .LT. 0.90D0) THEN
 !         CALL ERRHDL(PATH,MODNAM,'W','736',' ARM2Max')
-   END IF
+   end if
 !     D157 Check that ARMmax > ARMmin
-   IF (ARM2_Max < ARM2_Min) THEN
-      WRITE(DUMMY,'(''ARM2 Max<Min'')')
-      CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
-   END IF
+   if (ARM2_Max < ARM2_Min) then
+      write(dummy,'(''ARM2 Max<Min'')')
+      call errhdl(path,modnam,'E','380',dummy)
+   end if
 !C     Check range of value for ARM2_Max
 !      IF (ARM2_Max .LE. 0.0D0) THEN
 !         WRITE(DUMMY,'(''ARM2Max <= 0'')')
@@ -5969,10 +5969,10 @@ SUBROUTINE ARM2_Ratios
 !         END IF
 !      END IF
 
-999 RETURN
-END SUBROUTINE ARM2_Ratios
+999 return
+end subroutine ARM2_Ratios
 
-SUBROUTINE O3VALS
+subroutine o3vals
 !***********************************************************************
 !                 O3VALS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -5997,155 +5997,155 @@ SUBROUTINE O3VALS
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I
+   integer :: i
 ! Unused:      INTEGER :: IH, IL, ISDX, NNN
 ! Unused:      CHARACTER (LEN=12) :: LID, HID, LID1, LID2, HID1, HID2
 ! Unused:      CHARACTER (LEN=ILEN_FLD) :: SOID
 ! Unused:      LOGICAL FOUND, INGRP, RMARK
 
 !     Variable Initializations
-   MODNAM = 'O3VALS'
+   modnam = 'O3VALS'
 
 !     Check The Number Of The Fields, accounting for sector-varying values
-   IF (.NOT.L_O3Sector) THEN
-      IF (IFC <= 2) THEN
+   if (.not.L_O3Sector) then
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC == 3) THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc == 3) then
 !           Error Message: No Numerical Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC < 4) THEN
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      else if (ifc < 4) then
 !           Error Message: Not Enough Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      end if
 ! ---    Check for SECT ID in field 3 in case O3SECTOR keyword was omitted
-      IF (FIELD(3)(1:4) == 'SECT') THEN
+      if (field(3)(1:4) == 'SECT') then
 !           Error Message: SECT ID without O3SECTOR keyword
-         CALL ERRHDL(PATH,MODNAM,'E','171',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','171',keywrd)
+         go to 999
+      end if
 ! ---    Assign sector ID to 1 since sector-varying values not being used;
 !        also set field index for the user-specified O3VALUES option and
 !        assign the option to O3FLAG variable
-      IO3SECT = 1
-      I = 3
-      L_O3VALUES(IO3SECT) = .TRUE.
-      IF (IO3MAX(IO3SECT) >= 1 .and.&
-      &O3FLAG(IO3SECT) /= FIELD(I)) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','167',FIELD(I))
-      ELSE
-         O3FLAG(IO3SECT) = FIELD(I)
-      END IF
-   ELSE
+      io3sect = 1
+      i = 3
+      l_o3values(io3sect) = .true.
+      if (io3max(io3sect) >= 1 .and.&
+      &o3flag(io3sect) /= field(i)) then
+         call errhdl(path,modnam,'E','167',field(i))
+      else
+         o3flag(io3sect) = field(i)
+      end if
+   else
 ! ---    Process inputs based on O3SECTOR option
-      IF (IFC <= 2) THEN
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC == 4) THEN
-         IF (FIELD(3)(1:4) /= 'SECT') THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc == 4) then
+         if (field(3)(1:4) /= 'SECT') then
 !              Error Message: Invalid sector field
-            CALL ERRHDL(PATH,MODNAM,'E','203','O3SECTOR ID')
-            GO TO 999
-         ELSE
+            call errhdl(path,modnam,'E','203','O3SECTOR ID')
+            go to 999
+         else
 !              Error Message: No Numerical Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         END IF
-      ELSE IF (IFC < 5) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         end if
+      else if (ifc < 5) then
 !           Error Message: Not Enough Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      end if
 ! ---    Determine user-specified sector
-      IF (FIELD(3) == 'SECT1') THEN
-         IO3SECT = 1
-      ELSE IF (FIELD(3) == 'SECT2' .and. NUMO3Sects >= 2) THEN
-         IO3SECT = 2
-      ELSE IF (FIELD(3) == 'SECT3' .and. NUMO3Sects >= 3) THEN
-         IO3SECT = 3
-      ELSE IF (FIELD(3) == 'SECT4' .and. NUMO3Sects >= 4) THEN
-         IO3SECT = 4
-      ELSE IF (FIELD(3) == 'SECT5' .and. NUMO3Sects >= 5) THEN
-         IO3SECT = 5
-      ELSE IF (FIELD(3) == 'SECT6' .and. NUMO3Sects == 6) THEN
-         IO3SECT = 6
-      ELSE
+      if (field(3) == 'SECT1') then
+         io3sect = 1
+      else if (field(3) == 'SECT2' .and. NUMO3Sects >= 2) then
+         io3sect = 2
+      else if (field(3) == 'SECT3' .and. NUMO3Sects >= 3) then
+         io3sect = 3
+      else if (field(3) == 'SECT4' .and. NUMO3Sects >= 4) then
+         io3sect = 4
+      else if (field(3) == 'SECT5' .and. NUMO3Sects >= 5) then
+         io3sect = 5
+      else if (field(3) == 'SECT6' .and. NUMO3Sects == 6) then
+         io3sect = 6
+      else
 !           Error Message: Invalid sector field
-         CALL ERRHDL(PATH,MODNAM,'E','203','O3SECTOR ID')
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','203','O3SECTOR ID')
+         go to 999
+      end if
 ! ---    Set field index for the user-specified O3VALUES option and
 !        assign the option to O3FLAG variable
-      I = 4
-      L_O3VALUES(IO3SECT) = .TRUE.
-      IF (IO3MAX(IO3SECT) >= 1 .and.&
-      &O3FLAG(IO3SECT) /= FIELD(I)) THEN
-         IF (LEN_TRIM(FIELD(I)) > 6) THEN
-            WRITE(DUMMY,'(''SEC'',I1,1X,A)') IO3SECT,&
-            &FIELD(I)(1:LEN_TRIM(FIELD(I)))
-            CALL ERRHDL(PATH,MODNAM,'E','167',DUMMY)
-         ELSE
-            WRITE(DUMMY,'(''SECT'',I1,1X,A)') IO3SECT,&
-            &FIELD(I)(1:LEN_TRIM(FIELD(I)))
-            CALL ERRHDL(PATH,MODNAM,'E','167',DUMMY)
-         END IF
-      ELSE
-         O3FLAG(IO3SECT) = FIELD(I)
-      END IF
-   END IF
+      i = 4
+      l_o3values(io3sect) = .true.
+      if (io3max(io3sect) >= 1 .and.&
+      &o3flag(io3sect) /= field(i)) then
+         if (len_trim(field(i)) > 6) then
+            write(dummy,'(''SEC'',I1,1X,A)') io3sect,&
+            &field(i)(1:len_trim(field(i)))
+            call errhdl(path,modnam,'E','167',dummy)
+         else
+            write(dummy,'(''SECT'',I1,1X,A)') io3sect,&
+            &field(i)(1:len_trim(field(i)))
+            call errhdl(path,modnam,'E','167',dummy)
+         end if
+      else
+         o3flag(io3sect) = field(i)
+      end if
+   end if
 
 ! --- Assign number of ozone values based on O3FLAG option
-   IF (O3FLAG(IO3SECT) == 'ANNUAL') THEN
-      IO3MAX(IO3SECT) = 1
-   ELSE IF (O3FLAG(IO3SECT) == 'SEASON') THEN
-      IO3MAX(IO3SECT) = 4
-   ELSE IF (O3FLAG(IO3SECT) == 'MONTH') THEN
-      IO3MAX(IO3SECT) = 12
-   ELSE IF (O3FLAG(IO3SECT) == 'HROFDY') THEN
-      IO3MAX(IO3SECT) = 24
-   ELSE IF (O3FLAG(IO3SECT) == 'WSPEED') THEN
-      IO3MAX(IO3SECT) = 6
-   ELSE IF (O3FLAG(IO3SECT) == 'SEASHR') THEN
-      IO3MAX(IO3SECT) = 96
-   ELSE IF (O3FLAG(IO3SECT) == 'HRDOW') THEN
-      IO3MAX(IO3SECT) = 72
-      L_DayOfWeekOpts = .TRUE.
-   ELSE IF (O3FLAG(IO3SECT) == 'HRDOW7') THEN
-      IO3MAX(IO3SECT) = 168
-      L_DayOfWeekOpts = .TRUE.
-   ELSE IF (O3FLAG(IO3SECT) == 'SHRDOW') THEN
-      IO3MAX(IO3SECT) = 288
-      L_DayOfWeekOpts = .TRUE.
-   ELSE IF (O3FLAG(IO3SECT) == 'SHRDOW7') THEN
-      IO3MAX(IO3SECT) = 672
-      L_DayOfWeekOpts = .TRUE.
-   ELSE IF (O3FLAG(IO3SECT) == 'MHRDOW') THEN
-      IO3MAX(IO3SECT) = 864
-      L_DayOfWeekOpts = .TRUE.
-   ELSE IF (O3FLAG(IO3SECT) == 'MHRDOW7') THEN
-      IO3MAX(IO3SECT) = 2016
-      L_DayOfWeekOpts = .TRUE.
-   ELSE
+   if (o3flag(io3sect) == 'ANNUAL') then
+      io3max(io3sect) = 1
+   else if (o3flag(io3sect) == 'SEASON') then
+      io3max(io3sect) = 4
+   else if (o3flag(io3sect) == 'MONTH') then
+      io3max(io3sect) = 12
+   else if (o3flag(io3sect) == 'HROFDY') then
+      io3max(io3sect) = 24
+   else if (o3flag(io3sect) == 'WSPEED') then
+      io3max(io3sect) = 6
+   else if (o3flag(io3sect) == 'SEASHR') then
+      io3max(io3sect) = 96
+   else if (o3flag(io3sect) == 'HRDOW') then
+      io3max(io3sect) = 72
+      L_DayOfWeekOpts = .true.
+   else if (o3flag(io3sect) == 'HRDOW7') then
+      io3max(io3sect) = 168
+      L_DayOfWeekOpts = .true.
+   else if (o3flag(io3sect) == 'SHRDOW') then
+      io3max(io3sect) = 288
+      L_DayOfWeekOpts = .true.
+   else if (o3flag(io3sect) == 'SHRDOW7') then
+      io3max(io3sect) = 672
+      L_DayOfWeekOpts = .true.
+   else if (o3flag(io3sect) == 'MHRDOW') then
+      io3max(io3sect) = 864
+      L_DayOfWeekOpts = .true.
+   else if (o3flag(io3sect) == 'MHRDOW7') then
+      io3max(io3sect) = 2016
+      L_DayOfWeekOpts = .true.
+   else
 !        WRITE Error Message    ! Invalid O3FLAG Field Entered
-      CALL ERRHDL(PATH,MODNAM,'E','203','O3FLAG')
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','203','O3FLAG')
+      go to 999
+   end if
 
 ! --- Call subroutine O3FILL to fill the temporally-varying O3 data
-   CALL O3FILL
+   call o3fill
 
-999 RETURN
-END SUBROUTINE O3VALS
+999 return
+end subroutine o3vals
 
-SUBROUTINE NOXVALS
+subroutine noxvals
 !***********************************************************************
 !                 NOXVALS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6166,151 +6166,151 @@ SUBROUTINE NOXVALS
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I
+   integer :: i
 
 !     Variable Initializations
-   MODNAM = 'NOXVALS'
+   modnam = 'NOXVALS'
 
 !     Check The Number Of The Fields, accounting for sector-varying values
-   IF (.NOT.L_NOXSector) THEN
-      IF (IFC <= 2) THEN
+   if (.not.L_NOXSector) then
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC == 3) THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc == 3) then
 !           Error Message: No Numerical Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC < 4) THEN
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      else if (ifc < 4) then
 !           Error Message: Not Enough Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      end if
 ! ---    Check for SECT ID in field 3 in case NOXSECTR keyword was omitted
-      IF (FIELD(3)(1:4) == 'SECT') THEN
+      if (field(3)(1:4) == 'SECT') then
 !           Error Message: SECT ID without NOXSECTOR keyword
-         CALL ERRHDL(PATH,MODNAM,'E','171',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','171',keywrd)
+         go to 999
+      end if
 ! ---    Assign sector ID to 1 since sector-varying values not being used;
 !        also set field index for the user-specified NOX_VALS option and
 !        assign the option to NOXFLAG variable
-      INOXSECT = 1
-      I = 3
-      L_NOX_VALS(INOXSECT) = .TRUE.
-      IF (INOXMAX(INOXSECT) >= 1 .and.&
-      &NOXFLAG(INOXSECT) /= FIELD(I)) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','606',FIELD(I))
-      ELSE
-         NOXFLAG(INOXSECT) = FIELD(I)
-      END IF
-   ELSE
+      inoxsect = 1
+      i = 3
+      l_nox_vals(inoxsect) = .true.
+      if (inoxmax(inoxsect) >= 1 .and.&
+      &noxflag(inoxsect) /= field(i)) then
+         call errhdl(path,modnam,'E','606',field(i))
+      else
+         noxflag(inoxsect) = field(i)
+      end if
+   else
 ! ---    Process inputs based on NOXSECTOR option
-      IF (IFC <= 2) THEN
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC == 4) THEN
-         IF (FIELD(3)(1:4) /= 'SECT') THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc == 4) then
+         if (field(3)(1:4) /= 'SECT') then
 !              Error Message: Invalid sector field
-            CALL ERRHDL(PATH,MODNAM,'E','203','NOXSECTR ID')
-            GO TO 999
-         ELSE
+            call errhdl(path,modnam,'E','203','NOXSECTR ID')
+            go to 999
+         else
 !              Error Message: No Numerical Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         END IF
-      ELSE IF (IFC < 5) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         end if
+      else if (ifc < 5) then
 !           Error Message: Not Enough Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      end if
 ! ---    Determine user-specified sector
-      IF (FIELD(3) == 'SECT1') THEN
-         INOXSECT = 1
-      ELSE IF (FIELD(3) == 'SECT2' .and. NUMNOxSects >= 2) THEN
-         INOXSECT = 2
-      ELSE IF (FIELD(3) == 'SECT3' .and. NUMNOxSects >= 3) THEN
-         INOXSECT = 3
-      ELSE IF (FIELD(3) == 'SECT4' .and. NUMNOxSects >= 4) THEN
-         INOXSECT = 4
-      ELSE IF (FIELD(3) == 'SECT5' .and. NUMNOxSects >= 5) THEN
-         INOXSECT = 5
-      ELSE IF (FIELD(3) == 'SECT6' .and. NUMNOxSects == 6) THEN
-         INOXSECT = 6
-      ELSE
+      if (field(3) == 'SECT1') then
+         inoxsect = 1
+      else if (field(3) == 'SECT2' .and. NUMNOxSects >= 2) then
+         inoxsect = 2
+      else if (field(3) == 'SECT3' .and. NUMNOxSects >= 3) then
+         inoxsect = 3
+      else if (field(3) == 'SECT4' .and. NUMNOxSects >= 4) then
+         inoxsect = 4
+      else if (field(3) == 'SECT5' .and. NUMNOxSects >= 5) then
+         inoxsect = 5
+      else if (field(3) == 'SECT6' .and. NUMNOxSects == 6) then
+         inoxsect = 6
+      else
 !           Error Message: Invalid sector field
-         CALL ERRHDL(PATH,MODNAM,'E','203','NOXSECTR ID')
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','203','NOXSECTR ID')
+         go to 999
+      end if
 ! ---    Set field index for the user-specified NOX_VALS option and
 !        assign the option to NOXFLAG variable
-      I = 4
-      L_NOX_VALS(INOXSECT) = .TRUE.
-      IF (INOXMAX(INOXSECT) >= 1 .and.&
-      &NOXFLAG(INOXSECT) /= FIELD(I)) THEN
-         IF (LEN_TRIM(FIELD(I)) > 6) THEN
-            WRITE(DUMMY,'(''SEC'',I1,1X,A)') INOXSECT,&
-            &FIELD(I)(1:LEN_TRIM(FIELD(I)))
-            CALL ERRHDL(PATH,MODNAM,'E','606',DUMMY)
-         ELSE
-            WRITE(DUMMY,'(''SECT'',I1,1X,A)') INOXSECT,&
-            &FIELD(I)(1:LEN_TRIM(FIELD(I)))
-            CALL ERRHDL(PATH,MODNAM,'E','606',DUMMY)
-         END IF
-      ELSE
-         NOXFLAG(INOXSECT) = FIELD(I)
-      END IF
-   END IF
+      i = 4
+      l_nox_vals(inoxsect) = .true.
+      if (inoxmax(inoxsect) >= 1 .and.&
+      &noxflag(inoxsect) /= field(i)) then
+         if (len_trim(field(i)) > 6) then
+            write(dummy,'(''SEC'',I1,1X,A)') inoxsect,&
+            &field(i)(1:len_trim(field(i)))
+            call errhdl(path,modnam,'E','606',dummy)
+         else
+            write(dummy,'(''SECT'',I1,1X,A)') inoxsect,&
+            &field(i)(1:len_trim(field(i)))
+            call errhdl(path,modnam,'E','606',dummy)
+         end if
+      else
+         noxflag(inoxsect) = field(i)
+      end if
+   end if
 
 ! --- Assign number of NOx values based on NOXFLAG option
-   IF (NOXFLAG(INOXSECT) == 'ANNUAL') THEN
-      INOXMAX(INOXSECT) = 1
-   ELSE IF (NOXFLAG(INOXSECT) == 'SEASON') THEN
-      INOXMAX(INOXSECT) = 4
-   ELSE IF (NOXFLAG(INOXSECT) == 'MONTH') THEN
-      INOXMAX(INOXSECT) = 12
-   ELSE IF (NOXFLAG(INOXSECT) == 'HROFDY') THEN
-      INOXMAX(INOXSECT) = 24
-   ELSE IF (NOXFLAG(INOXSECT) == 'WSPEED') THEN
-      INOXMAX(INOXSECT) = 6
-   ELSE IF (NOXFLAG(INOXSECT) == 'SEASHR') THEN
-      INOXMAX(INOXSECT) = 96
-   ELSE IF (NOXFLAG(INOXSECT) == 'HRDOW') THEN
-      INOXMAX(INOXSECT) = 72
-      L_DayOfWeekOpts = .TRUE.
-   ELSE IF (NOXFLAG(INOXSECT) == 'HRDOW7') THEN
-      INOXMAX(INOXSECT) = 168
-      L_DayOfWeekOpts = .TRUE.
-   ELSE IF (NOXFLAG(INOXSECT) == 'SHRDOW') THEN
-      INOXMAX(INOXSECT) = 288
-      L_DayOfWeekOpts = .TRUE.
-   ELSE IF (NOXFLAG(INOXSECT) == 'SHRDOW7') THEN
-      INOXMAX(INOXSECT) = 672
-      L_DayOfWeekOpts = .TRUE.
-   ELSE IF (NOXFLAG(INOXSECT) == 'MHRDOW') THEN
-      INOXMAX(INOXSECT) = 864
-      L_DayOfWeekOpts = .TRUE.
-   ELSE IF (NOXFLAG(INOXSECT) == 'MHRDOW7') THEN
-      INOXMAX(INOXSECT) = 2016
-      L_DayOfWeekOpts = .TRUE.
-   ELSE
+   if (noxflag(inoxsect) == 'ANNUAL') then
+      inoxmax(inoxsect) = 1
+   else if (noxflag(inoxsect) == 'SEASON') then
+      inoxmax(inoxsect) = 4
+   else if (noxflag(inoxsect) == 'MONTH') then
+      inoxmax(inoxsect) = 12
+   else if (noxflag(inoxsect) == 'HROFDY') then
+      inoxmax(inoxsect) = 24
+   else if (noxflag(inoxsect) == 'WSPEED') then
+      inoxmax(inoxsect) = 6
+   else if (noxflag(inoxsect) == 'SEASHR') then
+      inoxmax(inoxsect) = 96
+   else if (noxflag(inoxsect) == 'HRDOW') then
+      inoxmax(inoxsect) = 72
+      L_DayOfWeekOpts = .true.
+   else if (noxflag(inoxsect) == 'HRDOW7') then
+      inoxmax(inoxsect) = 168
+      L_DayOfWeekOpts = .true.
+   else if (noxflag(inoxsect) == 'SHRDOW') then
+      inoxmax(inoxsect) = 288
+      L_DayOfWeekOpts = .true.
+   else if (noxflag(inoxsect) == 'SHRDOW7') then
+      inoxmax(inoxsect) = 672
+      L_DayOfWeekOpts = .true.
+   else if (noxflag(inoxsect) == 'MHRDOW') then
+      inoxmax(inoxsect) = 864
+      L_DayOfWeekOpts = .true.
+   else if (noxflag(inoxsect) == 'MHRDOW7') then
+      inoxmax(inoxsect) = 2016
+      L_DayOfWeekOpts = .true.
+   else
 !        WRITE Error Message    ! Invalid NOXFLAG Field Entered
-      CALL ERRHDL(PATH,MODNAM,'E','203','NOXFLG')
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','203','NOXFLG')
+      go to 999
+   end if
 
 ! --- Call subroutine NOXFILL to fill the temporally-varying NOX data
-   CALL NOXFILL
+   call noxfill
 
-999 RETURN
-END SUBROUTINE NOXVALS
+999 return
+end subroutine noxvals
 
-SUBROUTINE O3FILL
+subroutine o3fill
 !***********************************************************************
 !                 O3FILL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6328,65 +6328,65 @@ SUBROUTINE O3FILL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, K
+   integer :: i, j, k
 
 ! --- Variable Initializations
-   MODNAM = 'O3FILL'
+   modnam = 'O3FILL'
 
 ! --- Initialize counter for number of O3VALUES for this sector
-   ISET = IO3SET(IO3SECT)
+   iset = io3set(io3sect)
 
 ! --- Assign field number for start of data values based on whether
 !     sector-varying values are used
-   IF (L_O3Sector) THEN
-      I = 5
-   ELSE
-      I = 4
-   END IF
+   if (L_O3Sector) then
+      i = 5
+   else
+      i = 4
+   end if
 
-   DO K = I, IFC
+   do k = i, ifc
 !        Change Fields To Numbers
-      CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(k),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT == -1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         CYCLE
-      END IF
-      DO J = 1, IMIT
-         ISET = ISET + 1
+      if (imit == -1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         cycle
+      end if
+      do j = 1, imit
+         iset = iset + 1
 !           Assign The Field
-         IF (ISET <= IO3MAX(IO3SECT)) THEN
-            O3VARY(ISET,IO3SECT) = DNUM
-            IF (DNUM < 0.0D0) THEN
+         if (iset <= io3max(io3sect)) then
+            o3vary(iset,io3sect) = dnum
+            if (dnum < 0.0d0) then
 !                 WRITE Error Message:  Negative Value for O3VALUES
-               CALL ERRHDL(PATH,MODNAM,'E','209',KEYWRD)
-            END IF
-         ELSE
+               call errhdl(path,modnam,'E','209',keywrd)
+            end if
+         else
 !              WRITE Error Message    ! Too Many O3VALUES Input
-            IF (L_O3Sector) THEN
-               WRITE(DUMMY,'(''O3VALs SECT'',I1)') IO3SECT
-            ELSE
-               WRITE(DUMMY,'(''O3VALUES'')')
-            END IF
-            CALL ERRHDL(PATH,MODNAM,'E','231',DUMMY)
-            GO TO 99
-         END IF
-      END DO
-   END DO
+            if (L_O3Sector) then
+               write(dummy,'(''O3VALs SECT'',I1)') io3sect
+            else
+               write(dummy,'(''O3VALUES'')')
+            end if
+            call errhdl(path,modnam,'E','231',dummy)
+            go to 99
+         end if
+      end do
+   end do
 
-99 CONTINUE
+99 continue
 
 ! --- Save counter on number of values input so far for this sector
-   IO3SET(IO3SECT) = ISET
+   io3set(io3sect) = iset
 
-   RETURN
-END SUBROUTINE O3FILL
+   return
+end subroutine o3fill
 
-SUBROUTINE NOXFILL
+subroutine noxfill
 !***********************************************************************
 !                 NOXFILL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6404,65 +6404,65 @@ SUBROUTINE NOXFILL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, K
+   integer :: i, j, k
 
 ! --- Variable Initializations
-   MODNAM = 'NOXFILL'
+   modnam = 'NOXFILL'
 
 ! --- Initialize counter for number of NOX_VALS for this sector
-   ISET = INOXSET(INOXSECT)
+   iset = inoxset(inoxsect)
 
 ! --- Assign field number for start of data values based on whether
 !     sector-varying values are used
-   IF (L_NOxSector) THEN
-      I = 5
-   ELSE
-      I = 4
-   END IF
+   if (L_NOxSector) then
+      i = 5
+   else
+      i = 4
+   end if
 
-   DO K = I, IFC
+   do k = i, ifc
 !        Change Fields To Numbers
-      CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(k),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT == -1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         CYCLE
-      END IF
-      DO J = 1, IMIT
-         ISET = ISET + 1
+      if (imit == -1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         cycle
+      end if
+      do j = 1, imit
+         iset = iset + 1
 !           Assign The Field
-         IF (ISET <= INOXMAX(INOXSECT)) THEN
-            NOXVARY(ISET,INOXSECT) = DNUM
-            IF (DNUM < 0.0D0) THEN
+         if (iset <= inoxmax(inoxsect)) then
+            noxvary(iset,inoxsect) = dnum
+            if (dnum < 0.0d0) then
 !                 WRITE Error Message:  Negative Value for NOX_VALS
-               CALL ERRHDL(PATH,MODNAM,'E','209',KEYWRD)
-            END IF
-         ELSE
+               call errhdl(path,modnam,'E','209',keywrd)
+            end if
+         else
 !              WRITE Error Message    ! Too Many NOX_VALS Input
-            IF (L_NOxSector) THEN
-               WRITE(DUMMY,'(''NOXVAL SECT'',I1)') INOXSECT
-            ELSE
-               WRITE(DUMMY,'(''NOX_VALS'')')
-            END IF
-            CALL ERRHDL(PATH,MODNAM,'E','231',DUMMY)
-            GO TO 99
-         END IF
-      END DO
-   END DO
+            if (L_NOxSector) then
+               write(dummy,'(''NOXVAL SECT'',I1)') inoxsect
+            else
+               write(dummy,'(''NOX_VALS'')')
+            end if
+            call errhdl(path,modnam,'E','231',dummy)
+            go to 99
+         end if
+      end do
+   end do
 
-99 CONTINUE
+99 continue
 
 ! --- Save counter on number of values input so far for this sector
-   INOXSET(INOXSECT) = ISET
+   inoxset(inoxsect) = iset
 
-   RETURN
-END SUBROUTINE NOXFILL
+   return
+end subroutine noxfill
 
-SUBROUTINE OZON_UNIT
+subroutine ozon_unit
 !***********************************************************************
 !                 OZON_UNIT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6481,37 +6481,37 @@ SUBROUTINE OZON_UNIT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'OZON_UNIT'
+   modnam = 'OZON_UNIT'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc > 3) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Check for units of background values
-   IF (FIELD(3)=='PPM' .or. FIELD(3)=='PPB' .or.&
-   &FIELD(3)=='UG/M3') THEN
-      OzoneUnits = FIELD(3)
-   ELSE
+   if (field(3)=='PPM' .or. field(3)=='PPB' .or.&
+   &field(3)=='UG/M3') then
+      OzoneUnits = field(3)
+   else
 !        Write Error Message:  Invalid units for O3VALUES
-      CALL ERRHDL(PATH,MODNAM,'E','203','OzoneUnits')
-   END IF
+      call errhdl(path,modnam,'E','203','OzoneUnits')
+   end if
 
-999 RETURN
-END SUBROUTINE OZON_UNIT
+999 return
+end subroutine ozon_unit
 
-SUBROUTINE NOX_UNIT
+subroutine nox_unit
 !***********************************************************************
 !                 NOX_UNIT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6530,37 +6530,37 @@ SUBROUTINE NOX_UNIT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'NOX_UNIT'
+   modnam = 'NOX_UNIT'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc > 3) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Check for units of background values
-   IF (FIELD(3)=='PPM' .or. FIELD(3)=='PPB' .or.&
-   &FIELD(3)=='UG/M3') THEN
-      NOxUnits = FIELD(3)
-   ELSE
+   if (field(3)=='PPM' .or. field(3)=='PPB' .or.&
+   &field(3)=='UG/M3') then
+      NOxUnits = field(3)
+   else
 !        Write Error Message:  Invalid units for NOX_VALS
-      CALL ERRHDL(PATH,MODNAM,'E','203','NOxUnits')
-   END IF
+      call errhdl(path,modnam,'E','203','NOxUnits')
+   end if
 
-999 RETURN
-END SUBROUTINE NOX_UNIT
+999 return
+end subroutine nox_unit
 
-SUBROUTINE O3SECTOR
+subroutine o3sector
 !***********************************************************************
 !                 O3SECTOR Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6579,96 +6579,96 @@ SUBROUTINE O3SECTOR
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: I
-   LOGICAL :: L_BadData
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: i
+   logical :: L_BadData
 
 !     Variable Initializations
-   MODNAM = 'O3SECTOR'
-   L_BadData = .FALSE.
+   modnam = 'O3SECTOR'
+   L_BadData = .false.
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 4) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 4) then
 !        Error Message: Too Few Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 8) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 8) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 ! --- Set L_O3Sector logical variable
-   L_O3Sector = .TRUE.
+   L_O3Sector = .true.
 
-   DO I = 3, IFC
+   do i = 3, ifc
 !        Loop through fields for starting directions for each O3SECTOR
-      CALL STODBL(FIELD(I),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(i),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT == -1) THEN
-         WRITE(DUMMY,'("O3SECT",I1)') I-2
-         CALL ERRHDL(PATH,MODNAM,'E','208',DUMMY)
+      if (imit == -1) then
+         write(dummy,'("O3SECT",I1)') i-2
+         call errhdl(path,modnam,'E','208',dummy)
 !           Assign logical variable for bad data, but cycle through full record
-         L_BadData = .TRUE.
-         CYCLE
-      END IF
-      O3SECT(I-2) = DNUM
-      IF (O3SECT(I-2) < 0.0D0 .or. O3SECT(I-2) > 360.0D0) THEN
+         L_BadData = .true.
+         cycle
+      end if
+      o3sect(i-2) = dnum
+      if (o3sect(i-2) < 0.0d0 .or. o3sect(i-2) > 360.0d0) then
 !           Sector value out-of-range
-         IF (O3SECT(I-2) > 9999.0D0) THEN
-            WRITE(DUMMY,'("O3SECT>9999.")')
-         ELSE IF (O3SECT(I-2) < -999.0D0) THEN
-            WRITE(DUMMY,'("O3SECT<-999.")')
-         ELSE
-            WRITE(DUMMY,'("O3SECT=",F5.0)') O3SECT(I-2)
-         END IF
-         CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
-      END IF
-   END DO
+         if (o3sect(i-2) > 9999.0d0) then
+            write(dummy,'("O3SECT>9999.")')
+         else if (o3sect(i-2) < -999.0d0) then
+            write(dummy,'("O3SECT<-999.")')
+         else
+            write(dummy,'("O3SECT=",F5.0)') o3sect(i-2)
+         end if
+         call errhdl(path,modnam,'E','380',dummy)
+      end if
+   end do
 
 ! --- Check for presence of bad sector data
-   IF (L_BadData) GO TO 999
+   if (L_BadData) go to 999
 
 ! --- Assign variable for number of user-specified background O3 sectors
-   NUMO3Sects = IFC-2
+   NUMO3Sects = ifc-2
 
 ! --- Check O3SECTs for proper order and minimum sector widths
-   DO I = 1, NUMO3Sects-1
-      IF (O3SECT(I+1) < O3SECT(I) ) THEN
+   do i = 1, NUMO3Sects-1
+      if (o3sect(i+1) < o3sect(i) ) then
 !           Sector value out-of-order
-         WRITE(DUMMY,'("O3SECT",I1," < #",I1)') I+1, I
-         CALL ERRHDL(PATH,MODNAM,'E','222',DUMMY)
-      ELSE IF (O3SECT(I+1) < O3SECT(I)+30.0D0 ) THEN
+         write(dummy,'("O3SECT",I1," < #",I1)') i+1, i
+         call errhdl(path,modnam,'E','222',dummy)
+      else if (o3sect(i+1) < o3sect(i)+30.0d0 ) then
 !           Sector width < 30 degrees
-         WRITE(DUMMY,'("O3SECT",I1," < 30")') I+1
-         CALL ERRHDL(PATH,MODNAM,'E','227',DUMMY)
-      ELSE IF (O3SECT(I+1) < O3SECT(I)+60.0D0 ) THEN
+         write(dummy,'("O3SECT",I1," < 30")') i+1
+         call errhdl(path,modnam,'E','227',dummy)
+      else if (o3sect(i+1) < o3sect(i)+60.0d0 ) then
 !           Sector width < 60 degrees
-         WRITE(DUMMY,'("O3SECT",I1," < 60")') I+1
-         CALL ERRHDL(PATH,MODNAM,'W','227',DUMMY)
-      END IF
-   END DO
+         write(dummy,'("O3SECT",I1," < 60")') i+1
+         call errhdl(path,modnam,'W','227',dummy)
+      end if
+   end do
 ! --- Now check for width of last sector
-   IF ( (O3SECT(1)+360.0D0)-O3SECT(NUMO3Sects) < 30.0D0) THEN
+   if ( (o3sect(1)+360.0d0)-o3sect(NUMO3Sects) < 30.0d0) then
 !        Sector width < 30 degrees
-      WRITE(DUMMY,'("O3SECT",I1," < 30")') NUMO3Sects
-      CALL ERRHDL(PATH,MODNAM,'E','227',DUMMY)
-   ELSE IF ( (O3SECT(1)+360.0D0)-O3SECT(NUMO3Sects) < 60.0D0) THEN
+      write(dummy,'("O3SECT",I1," < 30")') NUMO3Sects
+      call errhdl(path,modnam,'E','227',dummy)
+   else if ( (o3sect(1)+360.0d0)-o3sect(NUMO3Sects) < 60.0d0) then
 !        Sector width < 60 degrees
-      WRITE(DUMMY,'("O3SECT",I1," < 60")') NUMO3Sects
-      CALL ERRHDL(PATH,MODNAM,'W','227',DUMMY)
-   END IF
+      write(dummy,'("O3SECT",I1," < 60")') NUMO3Sects
+      call errhdl(path,modnam,'W','227',dummy)
+   end if
 
-999 RETURN
-END SUBROUTINE O3SECTOR
+999 return
+end subroutine o3sector
 
-SUBROUTINE NOXSECTOR
+subroutine noxsector
 !***********************************************************************
 !                 NOXSECTOR Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6687,96 +6687,96 @@ SUBROUTINE NOXSECTOR
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: I
-   LOGICAL :: L_BadData
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: i
+   logical :: L_BadData
 
 !     Variable Initializations
-   MODNAM = 'NOXSECTOR'
-   L_BadData = .FALSE.
+   modnam = 'NOXSECTOR'
+   L_BadData = .false.
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 4) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 4) then
 !        Error Message: Too Few Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 8) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 8) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 ! --- Set L_NOXSector logical variable
-   L_NOxSector = .TRUE.
+   L_NOxSector = .true.
 
-   DO I = 3, IFC
+   do i = 3, ifc
 !        Loop through fields for starting directions for each NOXSECTOR
-      CALL STODBL(FIELD(I),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(i),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT == -1) THEN
-         WRITE(DUMMY,'("NOXSECT",I1)') I-2
-         CALL ERRHDL(PATH,MODNAM,'E','208',DUMMY)
+      if (imit == -1) then
+         write(dummy,'("NOXSECT",I1)') i-2
+         call errhdl(path,modnam,'E','208',dummy)
 !           Assign logical variable for bad data, but cycle through full record
-         L_BadData = .TRUE.
-         CYCLE
-      END IF
-      NOXSECT(I-2) = DNUM
-      IF(NOXSECT(I-2) < 0.0D0 .or. NOXSECT(I-2) > 360.0D0)THEN
+         L_BadData = .true.
+         cycle
+      end if
+      noxsect(i-2) = dnum
+      if(noxsect(i-2) < 0.0d0 .or. noxsect(i-2) > 360.0d0)then
 !           Sector value out-of-range
-         IF (NOXSECT(I-2) > 999.0D0) THEN
-            WRITE(DUMMY,'("NOXSECT>999.")')
-         ELSE IF (NOXSECT(I-2) < -99.0D0) THEN
-            WRITE(DUMMY,'("NOXSECT<-99.")')
-         ELSE
-            WRITE(DUMMY,'("NOXSECT=",F4.0)') NOXSECT(I-2)
-         END IF
-         CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
-      END IF
-   END DO
+         if (noxsect(i-2) > 999.0d0) then
+            write(dummy,'("NOXSECT>999.")')
+         else if (noxsect(i-2) < -99.0d0) then
+            write(dummy,'("NOXSECT<-99.")')
+         else
+            write(dummy,'("NOXSECT=",F4.0)') noxsect(i-2)
+         end if
+         call errhdl(path,modnam,'E','380',dummy)
+      end if
+   end do
 
 ! --- Check for presence of bad sector data
-   IF (L_BadData) GO TO 999
+   if (L_BadData) go to 999
 
 ! --- Assign variable for number of user-specified background NOX sectors
-   NUMNOxSects = IFC-2
+   NUMNOxSects = ifc-2
 
 ! --- Check NOxSECTs for proper order and minimum sector widths
-   DO I = 1, NUMNOXSects-1
-      IF (NOXSECT(I+1) < NOXSECT(I) ) THEN
+   do i = 1, NUMNOXSects-1
+      if (noxsect(i+1) < noxsect(i) ) then
 !           Sector value out-of-order
-         WRITE(DUMMY,'("NOXSCT",I1," < #",I1)') I+1, I
-         CALL ERRHDL(PATH,MODNAM,'E','222',DUMMY)
-      ELSE IF (NOXSECT(I+1) < NOXSECT(I)+30.0D0 ) THEN
+         write(dummy,'("NOXSCT",I1," < #",I1)') i+1, i
+         call errhdl(path,modnam,'E','222',dummy)
+      else if (noxsect(i+1) < noxsect(i)+30.0d0 ) then
 !           Sector width < 30 degrees
-         WRITE(DUMMY,'("NOXSCT",I1," < 30")') I+1
-         CALL ERRHDL(PATH,MODNAM,'E','227',DUMMY)
-      ELSE IF (NOXSECT(I+1) < NOXSECT(I)+60.0D0 ) THEN
+         write(dummy,'("NOXSCT",I1," < 30")') i+1
+         call errhdl(path,modnam,'E','227',dummy)
+      else if (noxsect(i+1) < noxsect(i)+60.0d0 ) then
 !           Sector width < 60 degrees
-         WRITE(DUMMY,'("NOXSCT",I1," < 60")') I+1
-         CALL ERRHDL(PATH,MODNAM,'W','227',DUMMY)
-      END IF
-   END DO
+         write(dummy,'("NOXSCT",I1," < 60")') i+1
+         call errhdl(path,modnam,'W','227',dummy)
+      end if
+   end do
 ! --- Now check for width of last sector
-   IF ( (NOXSECT(1)+360.0D0)-NOXSECT(NUMNOxSects) < 30.0D0) THEN
+   if ( (noxsect(1)+360.0d0)-noxsect(NUMNOxSects) < 30.0d0) then
 !        Sector width < 30 degrees
-      WRITE(DUMMY,'("NOXSCT",I1," < 30")') NUMNOxSects
-      CALL ERRHDL(PATH,MODNAM,'E','227',DUMMY)
-   ELSE IF ((NOXSECT(1)+360.0D0)-NOXSECT(NUMNOxSects)<60.0D0) THEN
+      write(dummy,'("NOXSCT",I1," < 30")') NUMNOxSects
+      call errhdl(path,modnam,'E','227',dummy)
+   else if ((noxsect(1)+360.0d0)-noxsect(NUMNOxSects)<60.0d0) then
 !        Sector width < 60 degrees
-      WRITE(DUMMY,'("NOXSCT",I1," < 60")') NUMNOxSects
-      CALL ERRHDL(PATH,MODNAM,'W','227',DUMMY)
-   END IF
+      write(dummy,'("NOXSCT",I1," < 60")') NUMNOxSects
+      call errhdl(path,modnam,'W','227',dummy)
+   end if
 
-999 RETURN
-END SUBROUTINE NOXSECTOR
+999 return
+end subroutine noxsector
 
-SUBROUTINE LOW_WND
+subroutine low_wnd
 !***********************************************************************
 !                 LOW_WND Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6795,211 +6795,211 @@ SUBROUTINE LOW_WND
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   LOGICAL  :: L_Error
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   logical  :: L_Error
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'LOW_WIND'
-   L_Error = .FALSE.
+   modnam = 'LOW_WIND'
+   L_Error = .false.
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 3) then
 !        Error Message: Too Few Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
 !     Wood 3/18/2022 D127 Increased number of parameters by one to allow for FRANMIN
 !CRT  4/11/2022 D131 Increased number of parameters by one to allow for PBAL FRAN option
-   ELSE IF (IFC > 9) THEN
+   else if (ifc > 9) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Get Minimum Sigma_V value, SVMIN
-   CALL STODBL(FIELD(3),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(3),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      L_Error = .TRUE.
-   ELSE
-      L_UserSVmin = .TRUE.
-      SVMIN = DNUM
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      L_Error = .true.
+   else
+      L_UserSVmin = .true.
+      svmin = dnum
+   end if
 
 !     Check for acceptable range for SVMIN
-   IF (.NOT. L_Error) THEN
-      IF (SVMIN < 0.01D0 .or. SVMIN > 1.001D0) THEN
-         WRITE(DUMMY,'("SVMIN=",F5.2)') SVMIN
-         CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
-         L_Error = .TRUE.
-      ELSE
+   if (.not. L_Error) then
+      if (svmin < 0.01d0 .or. svmin > 1.001d0) then
+         write(dummy,'("SVMIN=",F5.2)') svmin
+         call errhdl(path,modnam,'E','380',dummy)
+         L_Error = .true.
+      else
 !           Issue warning message with new SVMIN
-         WRITE(DUMMY,'(F6.4)') SVMIN
-         CALL ERRHDL(PATH,MODNAM,'W','111',DUMMY)
-      END IF
-   END IF
+         write(dummy,'(F6.4)') svmin
+         call errhdl(path,modnam,'W','111',dummy)
+      end if
+   end if
 
-   L_Error = .FALSE.
+   L_Error = .false.
 
-   IF (IFC >= 4) THEN
+   if (ifc >= 4) then
 !        Get Minimum wind speed value, WSMIN
-      CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(4),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         L_Error = .TRUE.
-      ELSE
-         L_UserWSmin = .TRUE.
-         WSMIN = DNUM
-      END IF
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         L_Error = .true.
+      else
+         L_UserWSmin = .true.
+         wsmin = dnum
+      end if
 !        Check for acceptable range for WSMIN
-      IF (.NOT. L_Error) THEN
-         IF (WSMIN < 0.01D0 .or. WSMIN > 1.001D0) THEN
-            WRITE(DUMMY,'("WSMIN=",F5.2)') WSMIN
-            CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
-         ELSE
+      if (.not. L_Error) then
+         if (wsmin < 0.01d0 .or. wsmin > 1.001d0) then
+            write(dummy,'("WSMIN=",F5.2)') wsmin
+            call errhdl(path,modnam,'E','380',dummy)
+         else
 !              Issue warning message with new WSMIN
-            WRITE(DUMMY,'(F6.4)') WSMIN
-            CALL ERRHDL(PATH,MODNAM,'W','112',DUMMY)
-         END IF
-      END IF
-   END IF
+            write(dummy,'(F6.4)') wsmin
+            call errhdl(path,modnam,'W','112',dummy)
+         end if
+      end if
+   end if
 
-   L_Error = .FALSE.
+   L_Error = .false.
 
-   IF (IFC >= 5) THEN
+   if (ifc >= 5) then
 !        Get maximum meander factor, FRANMAX
-      CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(5),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         L_Error = .TRUE.
-      ELSE
-         FRANMAX = DNUM
-         L_UserFRANmax = .TRUE.
-      END IF
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         L_Error = .true.
+      else
+         franmax = dnum
+         L_UserFRANmax = .true.
+      end if
 !        Check for acceptable range for FRANMAX
-      IF (.NOT. L_Error) THEN
-         IF (FRANMAX < 0.0D0 .or. FRANMAX > 1.0D0) THEN
-            WRITE(DUMMY,'("FRANMAX=",F4.2)') FRANMAX
-            CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
-         ELSE
+      if (.not. L_Error) then
+         if (franmax < 0.0d0 .or. franmax > 1.0d0) then
+            write(dummy,'("FRANMAX=",F4.2)') franmax
+            call errhdl(path,modnam,'E','380',dummy)
+         else
 !              Issue warning message with new FRANMAX
-            WRITE(DUMMY,'(F6.4)') FRANMAX
-            CALL ERRHDL(PATH,MODNAM,'W','113',DUMMY)
-         END IF
-      END IF
-   END IF
+            write(dummy,'(F6.4)') franmax
+            call errhdl(path,modnam,'W','113',dummy)
+         end if
+      end if
+   end if
 
 ! CRT 9/11/2020, D062 User Minimum Sigma W
-   IF (IFC >= 6) THEN
+   if (ifc >= 6) then
 !        Get minimum sigma w, SWMIN
-      CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(6),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         L_Error = .TRUE.
-      ELSE
-         L_UserSWmin = .TRUE.
-         SWMIN = DNUM
-      END IF
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         L_Error = .true.
+      else
+         L_UserSWmin = .true.
+         swmin = dnum
+      end if
 !        Check for acceptable range for SWMIN
-      IF (.NOT. L_Error) THEN
-         IF (SWMIN < 0.0D0 .or. SWMIN > 3.0D0) THEN
-            WRITE(DUMMY,'("SWMIN=",F4.2)') SWMIN
-            CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
-         ELSE
+      if (.not. L_Error) then
+         if (swmin < 0.0d0 .or. swmin > 3.0d0) then
+            write(dummy,'("SWMIN=",F4.2)') swmin
+            call errhdl(path,modnam,'E','380',dummy)
+         else
 !              Issue warning message with new SWMIN
-            WRITE(DUMMY,'(F6.4)') SWMIN
-            CALL ERRHDL(PATH,MODNAM,'W','127',DUMMY)
-         END IF
-      END IF
-   END IF
+            write(dummy,'(F6.4)') swmin
+            call errhdl(path,modnam,'W','127',dummy)
+         end if
+      end if
+   end if
 
 
 ! RCO 9/28/2020, D061 User BIGT
-   IF (IFC >= 7) THEN
+   if (ifc >= 7) then
 !        Get BIGT
-      CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(7),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         L_Error = .TRUE.
-      ELSE
-         L_UserBigT = .TRUE.
-         BIGT = DNUM
-      END IF
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         L_Error = .true.
+      else
+         L_UserBigT = .true.
+         bigt = dnum
+      end if
 !        Check for acceptable range for BIGT
-      IF (.NOT. L_Error) THEN
-         IF (BIGT < 0.5D0 .or. BIGT > 48.0D0) THEN
-            WRITE(DUMMY,'("BIGT=",F4.2)') BIGT
-            CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
-         ELSE
+      if (.not. L_Error) then
+         if (bigt < 0.5d0 .or. bigt > 48.0d0) then
+            write(dummy,'("BIGT=",F4.2)') bigt
+            call errhdl(path,modnam,'E','380',dummy)
+         else
 !              Issue warning message with new BIGT
-            WRITE(DUMMY,'(F6.2)') BIGT
-            CALL ERRHDL(PATH,MODNAM,'W','129',DUMMY)
-         END IF
-      END IF
-   END IF
+            write(dummy,'(F6.2)') bigt
+            call errhdl(path,modnam,'W','129',dummy)
+         end if
+      end if
+   end if
 
 !     Wood 3/18/22 D127 Added FRANMIN
-   IF (IFC >= 8) THEN
+   if (ifc >= 8) then
 !        Get maximum meander factor, FRANMIN
-      CALL STODBL(FIELD(8),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(8),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         L_Error = .TRUE.
-      ELSE
-         L_UserFRANmin = .TRUE.
-         FRANMIN = DNUM
-      END IF
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         L_Error = .true.
+      else
+         L_UserFRANmin = .true.
+         franmin = dnum
+      end if
 !        Check for acceptable range for FRANMIN and less than FRANMAX
-      IF (.NOT. L_Error) THEN
+      if (.not. L_Error) then
 !           FRANMIN cannot be < 0 or > 100
-         IF (FRANMIN < 0.0D0 .or. FRANMIN > 1.0D0) THEN
-            WRITE(DUMMY,'("FRANMIN=",F4.2)') FRANMIN
-            CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
+         if (franmin < 0.0d0 .or. franmin > 1.0d0) then
+            write(dummy,'("FRANMIN=",F4.2)') franmin
+            call errhdl(path,modnam,'E','380',dummy)
 !           FRANMIN cannot be > FRANMAX
-         ELSE IF (FRANMIN > FRANMAX) THEN
-            WRITE(DUMMY,'(F4.2," > ",F4.2)') FRANMIN, FRANMAX
-            CALL ERRHDL(PATH,MODNAM,'E','426',DUMMY)
+         else if (franmin > franmax) then
+            write(dummy,'(F4.2," > ",F4.2)') franmin, franmax
+            call errhdl(path,modnam,'E','426',dummy)
 !              Issue warning message with new FRANMIN
-            WRITE(DUMMY,'(F6.4)') FRANMIN
-            CALL ERRHDL(PATH,MODNAM,'W','117',DUMMY)
-         END IF
-      END IF
-   END IF
+            write(dummy,'(F6.4)') franmin
+            call errhdl(path,modnam,'W','117',dummy)
+         end if
+      end if
+   end if
 
 !CRT  4/11/2022, D131 FRAN Alpha Formulation - Momentum Balance (PBal)
-   IF (IFC >= 9) THEN
+   if (ifc >= 9) then
 !        Get PBal - momentum balance FRAN option
-      IF (FIELD(9) == 'PBAL' .or.&
-      &FIELD(9) == 'PBALANCE') THEN
-         L_PBal = .TRUE.
+      if (field(9) == 'PBAL' .or.&
+      &field(9) == 'PBALANCE') then
+         L_PBal = .true.
 !           Issue warning message with new BIGT
-         CALL ERRHDL(PATH,MODNAM,'W','128','')
-      ELSE
-         L_PBal = .FALSE.
+         call errhdl(path,modnam,'W','128','')
+      else
+         L_PBal = .false.
 
 ! ---       Write Error Message:Illegal Parameter Field
-         Dummy = FIELD(9)
-         CALL ERRHDL(PATH,MODNAM,'E','203',Dummy)
-         L_Error = .TRUE.
-      END IF
-   END IF
+         Dummy = field(9)
+         call errhdl(path,modnam,'E','203',Dummy)
+         L_Error = .true.
+      end if
+   end if
 
 
-999 RETURN
-END SUBROUTINE LOW_WND
+999 return
+end subroutine low_wnd
 
-SUBROUTINE AWMA_DOWNWASH
+subroutine awma_downwash
 !***********************************************************************
 !                PRIME_2 Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7026,12 +7026,12 @@ SUBROUTINE AWMA_DOWNWASH
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'AWMA_DOWNWASH'
+   modnam = 'AWMA_DOWNWASH'
 
 ! --- Initialize logical variables
 !     By default, all buildings are assumed to be rectangular
@@ -7042,467 +7042,467 @@ SUBROUTINE AWMA_DOWNWASH
 !     L_AWMADW indicates that the AWMADW keyword is being used in the
 !       control file
 
-   L_AWMADW       = .FALSE.
-   L_RECT_BLDG    = .TRUE.        ! Default is rectangular structures
-   L_STRMLN_BLDG  = .FALSE.
-   L_AWMA_Ueff  = .FALSE.
-   L_AWMA_UTurb = .FALSE.
-   L_AWMA_Entrain = .FALSE.
-   L_AWMA_UTurbHX = .FALSE.
+   l_awmadw       = .false.
+   l_rect_bldg    = .true.        ! Default is rectangular structures
+   l_strmln_bldg  = .false.
+   L_AWMA_Ueff  = .false.
+   L_AWMA_UTurb = .false.
+   L_AWMA_Entrain = .false.
+   L_AWMA_UTurbHX = .false.
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
 !CRT  CRT 2/2/2021: D059 Update max number of fields allowed for new options
 !CRT  Number increased from 5 to 7 for two newest options (AWMAUTurbHX and AWMAEntrain).
 !CRT  If both AWMAUTurb and AWMAUTurbHX are specified, warning message is output and
 !CRT  AWMAUTurbHX is used (overrides AWMAUTurb).
 !CRT      ELSE IF (IFC .GT. 5) THEN
-   ELSE IF (IFC > 7) THEN
+   else if (ifc > 7) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
-   L_AWMADW = .TRUE.
+   l_awmadw = .true.
 
-   IF (IFC == 3) THEN
+   if (ifc == 3) then
 ! ---    Only one parameter specified
-      IF (FIELD(3) == 'STREAMLINE' .or.&
-      &FIELD(3) == 'STREAMLINED') THEN
+      if (field(3) == 'STREAMLINE' .or.&
+      &field(3) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(3) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(3) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(3) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(3) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(3) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(3))
-      END IF
-   END IF
+         call errhdl(path,modnam,'E','203',field(3))
+      end if
+   end if
 
-   IF (IFC == 4) THEN
+   if (ifc == 4) then
 ! ---    Two parameters specified
-      IF (FIELD(3) == 'STREAMLINE' .or.&
-      &FIELD(3) == 'STREAMLINED') THEN
+      if (field(3) == 'STREAMLINE' .or.&
+      &field(3) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(3) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(3) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(3) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(3) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(3) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(3))
-      END IF
+         call errhdl(path,modnam,'E','203',field(3))
+      end if
 
-      IF (FIELD(4) == 'STREAMLINE' .or.&
-      &FIELD(4) == 'STREAMLINED') THEN
+      if (field(4) == 'STREAMLINE' .or.&
+      &field(4) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(4) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(4) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(4) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(4) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(4) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(4) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(4) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(4) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(4))
-      END IF
+         call errhdl(path,modnam,'E','203',field(4))
+      end if
 
 ! ---    Check for duplicate parameters
-      IF (FIELD(3) == FIELD(4)) THEN
+      if (field(3) == field(4)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
-   END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
+   end if
 
-   IF (IFC == 5) THEN
+   if (ifc == 5) then
 !        Three parameters specified
-      IF (FIELD(3) == 'STREAMLINE' .or.&
-      &FIELD(3) == 'STREAMLINED') THEN
+      if (field(3) == 'STREAMLINE' .or.&
+      &field(3) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(3) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(3) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(3) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(3) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(3) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(3))
-      END IF
+         call errhdl(path,modnam,'E','203',field(3))
+      end if
 
-      IF (FIELD(4) == 'STREAMLINE' .or.&
-      &FIELD(4) == 'STREAMLINED') THEN
+      if (field(4) == 'STREAMLINE' .or.&
+      &field(4) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(4) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(4) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(4) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(4) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(4) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(4) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(4) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(4) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(4))
-      END IF
+         call errhdl(path,modnam,'E','203',field(4))
+      end if
 
-      IF (FIELD(5) == 'STREAMLINE' .or.&
-      &FIELD(5) == 'STREAMLINED') THEN
+      if (field(5) == 'STREAMLINE' .or.&
+      &field(5) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(5) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(5) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(5) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(5) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(5) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(5) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(5) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(5) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(5))
-      END IF
+         call errhdl(path,modnam,'E','203',field(5))
+      end if
 
 ! ---    Check for duplicate parameters
-      IF (FIELD(3) == FIELD(4)) THEN
+      if (field(3) == field(4)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(3) == FIELD(5)) THEN
+      if (field(3) == field(5)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(4) == FIELD(5)) THEN
+      if (field(4) == field(5)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
-   ENDIF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
+   endif
 
 !CRT  2/2/2021: D059 - AWMA downwash alpha options AWMAEntrain and AWMAUTurbHX
 !RLP  Addition of options requires checking for 5 possible
 !CRT  Number of fields increased from 5 to 7 for two newest options
 !CRT  (AWMAUTurbHX and AWMAEntrain). If both AWMAUTurb and AWMAUTurbHX are
 !CRT  specified, warning message is output and AWMAUTurbHX is used.
-   IF (IFC == 6) THEN
+   if (ifc == 6) then
 
 !        Four parameters specified
-      IF (FIELD(3) == 'STREAMLINE' .or.&
-      &FIELD(3) == 'STREAMLINED') THEN
+      if (field(3) == 'STREAMLINE' .or.&
+      &field(3) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(3) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(3) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(3) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(3) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(3) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(3))
-      END IF
+         call errhdl(path,modnam,'E','203',field(3))
+      end if
 
-      IF (FIELD(4) == 'STREAMLINE' .or.&
-      &FIELD(4) == 'STREAMLINED') THEN
+      if (field(4) == 'STREAMLINE' .or.&
+      &field(4) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(4) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(4) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(4) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(4) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(4) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(4) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(4) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(4) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(4))
-      END IF
+         call errhdl(path,modnam,'E','203',field(4))
+      end if
 
-      IF (FIELD(5) == 'STREAMLINE' .or.&
-      &FIELD(5) == 'STREAMLINED') THEN
+      if (field(5) == 'STREAMLINE' .or.&
+      &field(5) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(5) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(5) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(5) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(5) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(5) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(5) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(5) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(5) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(5))
-      END IF
+         call errhdl(path,modnam,'E','203',field(5))
+      end if
 
-      IF (FIELD(6) == 'STREAMLINE' .or.&
-      &FIELD(6) == 'STREAMLINED') THEN
+      if (field(6) == 'STREAMLINE' .or.&
+      &field(6) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(6) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(6) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(6) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(6) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(6) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(6) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(6) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(6) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(5))
-      END IF
+         call errhdl(path,modnam,'E','203',field(5))
+      end if
 
 ! ---    Check for duplicate parameters
 !        Additional checks added with the addition of the AWMAEntrain
 !         downwash option
-      IF (FIELD(3) == FIELD(4)) THEN
+      if (field(3) == field(4)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(3) == FIELD(5)) THEN
+      if (field(3) == field(5)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(3) == FIELD(6)) THEN
+      if (field(3) == field(6)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(4) == FIELD(5)) THEN
+      if (field(4) == field(5)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(4) == FIELD(6)) THEN
+      if (field(4) == field(6)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(5) == FIELD(6)) THEN
+      if (field(5) == field(6)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-   ENDIF
+   endif
 
 !CRT  2/2/2021: D059 - AWMA downwash alpha options AWMAEntrain and AWMAUTurbHX
 !RLP  Addition of options requires checking for 5 possible
 !CRT  Number of fields increased from 5 to 7 for two newest options
 !CRT  (AWMAUTurbHX and AWMAEntrain). If both AWMAUTurb and AWMAUTurbHX are
 !CRT  specified, warning message is output and AWMAUTurbHX is used.
-   IF (IFC == 7) THEN
+   if (ifc == 7) then
 !        Five, i.e. all, parameters specified
-      IF (FIELD(3) == 'STREAMLINE' .or.&
-      &FIELD(3) == 'STREAMLINED') THEN
+      if (field(3) == 'STREAMLINE' .or.&
+      &field(3) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(3) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(3) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(3) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(3) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(3) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(3) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(3))
-      END IF
+         call errhdl(path,modnam,'E','203',field(3))
+      end if
 
-      IF (FIELD(4) == 'STREAMLINE' .or.&
-      &FIELD(4) == 'STREAMLINED') THEN
+      if (field(4) == 'STREAMLINE' .or.&
+      &field(4) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(4) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(4) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(4) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(4) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(4) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(4) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(4) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(4) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(4))
-      END IF
+         call errhdl(path,modnam,'E','203',field(4))
+      end if
 
-      IF (FIELD(5) == 'STREAMLINE' .or.&
-      &FIELD(5) == 'STREAMLINED') THEN
+      if (field(5) == 'STREAMLINE' .or.&
+      &field(5) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(5) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(5) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(5) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(5) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(5) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(5) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(5) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(5) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(5))
-      END IF
+         call errhdl(path,modnam,'E','203',field(5))
+      end if
 
-      IF (FIELD(6) == 'STREAMLINE' .or.&
-      &FIELD(6) == 'STREAMLINED') THEN
+      if (field(6) == 'STREAMLINE' .or.&
+      &field(6) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(6) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(6) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(6) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(6) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(6) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(6) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(6) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(6) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(5))
-      END IF
+         call errhdl(path,modnam,'E','203',field(5))
+      end if
 
-      IF (FIELD(7) == 'STREAMLINE' .or.&
-      &FIELD(7) == 'STREAMLINED') THEN
+      if (field(7) == 'STREAMLINE' .or.&
+      &field(7) == 'STREAMLINED') then
 ! ---       Process all structures as streamlined buildings
-         L_STRMLN_BLDG = .TRUE.
-         L_RECT_BLDG = .FALSE.
-      ELSE IF (FIELD(7) == 'AWMAUEFF') THEN
-         L_AWMA_Ueff = .TRUE.
-      ELSE IF (FIELD(7) == 'AWMAUTURB') THEN
-         L_AWMA_UTurb = .TRUE.
-      ELSE IF (FIELD(7) == 'AWMAENTRAIN') THEN
+         l_strmln_bldg = .true.
+         l_rect_bldg = .false.
+      else if (field(7) == 'AWMAUEFF') then
+         L_AWMA_Ueff = .true.
+      else if (field(7) == 'AWMAUTURB') then
+         L_AWMA_UTurb = .true.
+      else if (field(7) == 'AWMAENTRAIN') then
 !RLP        Change beta0 and betap from 0.60 t0 0.35
-         L_AWMA_Entrain = .TRUE.
-      ELSE IF (FIELD(7) == 'AWMAUTURBHX') THEN
+         L_AWMA_Entrain = .true.
+      else if (field(7) == 'AWMAUTURBHX') then
 !RLP        In WAKE_TURB, get plume rise from trajectory arrays
-         L_AWMA_UTurbHX = .TRUE.
-      ELSE
+         L_AWMA_UTurbHX = .true.
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(5))
-      END IF
+         call errhdl(path,modnam,'E','203',field(5))
+      end if
 
 ! ---    Check for duplicate parameters
 !        Additional checks added with the addition of the AWMAUturbHX
 !         downwash option
-      IF (FIELD(3) == FIELD(4)) THEN
+      if (field(3) == field(4)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(3) == FIELD(5)) THEN
+      if (field(3) == field(5)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(3) == FIELD(6)) THEN
+      if (field(3) == field(6)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(3) == FIELD(7)) THEN
+      if (field(3) == field(7)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(4) == FIELD(5)) THEN
+      if (field(4) == field(5)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(4) == FIELD(6)) THEN
+      if (field(4) == field(6)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(4) == FIELD(7)) THEN
+      if (field(4) == field(7)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(5) == FIELD(6)) THEN
+      if (field(5) == field(6)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(5) == FIELD(7)) THEN
+      if (field(5) == field(7)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(6) == FIELD(7)) THEN
+      if (field(6) == field(7)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-   ENDIF
+   endif
 
 !CRT  6/14/2019: STREAMLINE option requires AWMAUTURB
 !CRT  Issue error if STREAMLINE flag is TRUE and
@@ -7512,17 +7512,17 @@ SUBROUTINE AWMA_DOWNWASH
 !     CONFLICT WITH 125 (PATHS NOT FINISHED)
 !CRT  2/2/2021: STREAMLINE should also work with AWMAUTurbHX option
 !CRT  Update conditional statement to include L_AWMA_UTurbHX
-   IF (L_STRMLN_BLDG .and.&
-   &(.NOT. L_AWMA_UTurb .and. .NOT. L_AWMA_UTurbHX)) THEN
+   if (l_strmln_bldg .and.&
+   &(.not. L_AWMA_UTurb .and. .not. L_AWMA_UTurbHX)) then
 !        WRITE Error Message    ! AWMADWUTurb option required
 !         CALL ERRHDL(PATH,MODNAM,'E','125',KEYWRD)
-      CALL ERRHDL(PATH,MODNAM,'E','126',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','126',keywrd)
+   end if
 
-999 RETURN
-END SUBROUTINE AWMA_DOWNWASH
+999 return
+end subroutine awma_downwash
 
-SUBROUTINE ORD_DOWNWASH
+subroutine ord_downwash
 !***********************************************************************
 !              ORD_DOWNWASH Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7546,131 +7546,131 @@ SUBROUTINE ORD_DOWNWASH
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'PRIME_ORD'
+   modnam = 'PRIME_ORD'
 
-   L_ORDDW    = .FALSE.
-   L_ORD_Cav  = .FALSE.
-   L_ORD_Ueff = .FALSE.
-   L_ORD_Turb = .FALSE.
+   l_orddw    = .false.
+   L_ORD_Cav  = .false.
+   L_ORD_Ueff = .false.
+   L_ORD_Turb = .false.
 
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 5) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc > 5) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
-   L_ORDDW = .TRUE.
+   l_orddw = .true.
 
 ! --- Decode the parameters to use in the calculations
-   IF (IFC == 3) THEN
+   if (ifc == 3) then
 !        Only one parameter specified
-      IF (FIELD(3) == 'ORDCAV') THEN
-         L_ORD_Cav  = .TRUE.
-      ELSE IF (FIELD(3) == 'ORDUEFF') THEN
-         L_ORD_Ueff = .TRUE.
-      ELSE IF (FIELD(3) == 'ORDTURB') THEN
-         L_ORD_Turb = .TRUE.
-      ELSE
+      if (field(3) == 'ORDCAV') then
+         L_ORD_Cav  = .true.
+      else if (field(3) == 'ORDUEFF') then
+         L_ORD_Ueff = .true.
+      else if (field(3) == 'ORDTURB') then
+         L_ORD_Turb = .true.
+      else
 ! ---       WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(3))
-      END IF
-   END IF
+         call errhdl(path,modnam,'E','203',field(3))
+      end if
+   end if
 
-   IF (IFC == 4) THEN
+   if (ifc == 4) then
 !        Two parameters specified - check each
-      IF (FIELD(3) == 'ORDCAV') THEN
-         L_ORD_Cav  = .TRUE.
-      ELSE IF (FIELD(3) == 'ORDUEFF') THEN
-         L_ORD_Ueff = .TRUE.
-      ELSE IF (FIELD(3) == 'ORDTURB') THEN
-         L_ORD_Turb = .TRUE.
-      ELSE
+      if (field(3) == 'ORDCAV') then
+         L_ORD_Cav  = .true.
+      else if (field(3) == 'ORDUEFF') then
+         L_ORD_Ueff = .true.
+      else if (field(3) == 'ORDTURB') then
+         L_ORD_Turb = .true.
+      else
 ! ---       WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(3))
-      END IF
+         call errhdl(path,modnam,'E','203',field(3))
+      end if
 
-      IF (FIELD(4) == 'ORDCAV') THEN
-         L_ORD_Cav  = .TRUE.
-      ELSE IF (FIELD(4) == 'ORDUEFF') THEN
-         L_ORD_Ueff = .TRUE.
-      ELSE IF (FIELD(4) == 'ORDTURB') THEN
-         L_ORD_Turb = .TRUE.
-      ELSE
+      if (field(4) == 'ORDCAV') then
+         L_ORD_Cav  = .true.
+      else if (field(4) == 'ORDUEFF') then
+         L_ORD_Ueff = .true.
+      else if (field(4) == 'ORDTURB') then
+         L_ORD_Turb = .true.
+      else
 ! ---       WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(4))
-      END IF
+         call errhdl(path,modnam,'E','203',field(4))
+      end if
 
 ! ---    Check for duplicate parameters
-      IF (FIELD(3) == FIELD(4)) THEN
+      if (field(3) == field(4)) then
 !           WRITE Error Message    ! Duplicate Option on KEYWORD
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-   END IF
+   end if
 
-   IF (IFC == 5) THEN
+   if (ifc == 5) then
 !        All three parameters specified
-      IF (FIELD(3) == 'ORDCAV') THEN
-         L_ORD_Cav  = .TRUE.
-      ELSE IF (FIELD(3) == 'ORDUEFF') THEN
-         L_ORD_Ueff = .TRUE.
-      ELSE IF (FIELD(3) == 'ORDTURB') THEN
-         L_ORD_Turb = .TRUE.
-      ELSE
+      if (field(3) == 'ORDCAV') then
+         L_ORD_Cav  = .true.
+      else if (field(3) == 'ORDUEFF') then
+         L_ORD_Ueff = .true.
+      else if (field(3) == 'ORDTURB') then
+         L_ORD_Turb = .true.
+      else
 ! ---       WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(3))
-      END IF
+         call errhdl(path,modnam,'E','203',field(3))
+      end if
 
-      IF (FIELD(4) == 'ORDCAV') THEN
-         L_ORD_Cav  = .TRUE.
-      ELSE IF (FIELD(4) == 'ORDUEFF') THEN
-         L_ORD_Ueff = .TRUE.
-      ELSE IF (FIELD(4) == 'ORDTURB') THEN
-         L_ORD_Turb = .TRUE.
-      ELSE
+      if (field(4) == 'ORDCAV') then
+         L_ORD_Cav  = .true.
+      else if (field(4) == 'ORDUEFF') then
+         L_ORD_Ueff = .true.
+      else if (field(4) == 'ORDTURB') then
+         L_ORD_Turb = .true.
+      else
 ! ---       WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(4))
-      END IF
+         call errhdl(path,modnam,'E','203',field(4))
+      end if
 
-      IF (FIELD(5) == 'ORDCAV') THEN
-         L_ORD_Cav  = .TRUE.
-      ELSE IF (FIELD(5) == 'ORDUEFF') THEN
-         L_ORD_Ueff = .TRUE.
-      ELSE IF (FIELD(5) == 'ORDTURB') THEN
-         L_ORD_Turb = .TRUE.
-      ELSE
+      if (field(5) == 'ORDCAV') then
+         L_ORD_Cav  = .true.
+      else if (field(5) == 'ORDUEFF') then
+         L_ORD_Ueff = .true.
+      else if (field(5) == 'ORDTURB') then
+         L_ORD_Turb = .true.
+      else
 ! ---       WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(5))
-      END IF
+         call errhdl(path,modnam,'E','203',field(5))
+      end if
 
 ! ---    Check for duplicate parameters
-      IF (FIELD(3) == FIELD(4)) THEN
+      if (field(3) == field(4)) then
 !           WRITE Error Message    ! Duplicate Option
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(4) == FIELD(5)) THEN
+      if (field(4) == field(5)) then
 !           WRITE Error Message    ! Duplicate Option
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-      IF (FIELD(3) == FIELD(5)) THEN
+      if (field(3) == field(5)) then
 !           WRITE Error Message    ! Duplicate Option
-         CALL ERRHDL(PATH,MODNAM,'E','121',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','121',keywrd)
+      end if
 
-   END IF
+   end if
 
-999 RETURN
-END SUBROUTINE ORD_DOWNWASH
+999 return
+end subroutine ord_downwash

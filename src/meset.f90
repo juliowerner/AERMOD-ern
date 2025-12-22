@@ -1,4 +1,4 @@
-SUBROUTINE MECARD
+subroutine mecard
 !***********************************************************************
 !                 MECARD Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -37,275 +37,275 @@ SUBROUTINE MECARD
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, ND, NDYS
+   integer :: i, nd, ndys
 
 !     Variable Initializations
-   MODNAM = 'MECARD'
+   modnam = 'MECARD'
 
-   IF (KEYWRD == 'STARTING') THEN
+   if (keywrd == 'STARTING') then
 !        Set Status Switch
-      IMSTAT(1) = IMSTAT(1) + 1
-      IF (IMSTAT(1) /= 1) THEN
+      imstat(1) = imstat(1) + 1
+      if (imstat(1) /= 1) then
 !           WRITE Error Message: Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','135',keywrd)
+      end if
 
-   ELSE IF (KEYWRD == 'SURFFILE') THEN
+   else if (keywrd == 'SURFFILE') then
 !        Set Status Switch
-      IMSTAT(2) = IMSTAT(2) + 1
-      IF (IMSTAT(2) /= 1) THEN
+      imstat(2) = imstat(2) + 1
+      if (imstat(2) /= 1) then
 !           WRITE Error Message: Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Surface Meteorology File Information    ---   CALL SURFIL
-         CALL SURFIL
-      END IF
+         call surfil
+      end if
 
-   ELSE IF (KEYWRD == 'PROFFILE') THEN
+   else if (keywrd == 'PROFFILE') then
 !        Set Status Switch
-      IMSTAT(3) = IMSTAT(3) + 1
-      IF (IMSTAT(3) /= 1) THEN
+      imstat(3) = imstat(3) + 1
+      if (imstat(3) /= 1) then
 !           WRITE Error Message: Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Profile Meteorology File Information    ---   CALL PROFIL
-         CALL PROFIL
-      END IF
+         call profil
+      end if
 
-   ELSE IF (KEYWRD == 'SURFDATA') THEN
+   else if (keywrd == 'SURFDATA') then
 !        Set Status Switch
-      IMSTAT(4) = IMSTAT(4) + 1
-      IF (IMSTAT(4) /= 1) THEN
+      imstat(4) = imstat(4) + 1
+      if (imstat(4) /= 1) then
 !           WRITE Error Message: Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Surface Data Information                ---   CALL SFDATA
-         CALL SFDATA
-      END IF
+         call sfdata
+      end if
 
-   ELSE IF (KEYWRD == 'UAIRDATA') THEN
+   else if (keywrd == 'UAIRDATA') then
 !        Set Status Switch
-      IMSTAT(5) = IMSTAT(5) + 1
-      IF (IMSTAT(5) /= 1) THEN
+      imstat(5) = imstat(5) + 1
+      if (imstat(5) /= 1) then
 !           WRITE Error Message: Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Upper Air Data Information              ---   CALL UADATA
-         CALL UADATA
-      END IF
+         call uadata
+      end if
 
-   ELSE IF (.NOT.EVONLY .and. KEYWRD == 'STARTEND') THEN
+   else if (.not.evonly .and. keywrd == 'STARTEND') then
 !        Set Status Switch
-      IMSTAT(6) = IMSTAT(6) + 1
-      IF (SCIM) THEN
+      imstat(6) = imstat(6) + 1
+      if (scim) then
 !           Write out error message:  STARTEND cannot be used with SCIM option
-         CALL ERRHDL(PATH,MODNAM,'E','154',KEYWRD)
-      ELSE
-         IF (IMSTAT(6) /= 1) THEN
+         call errhdl(path,modnam,'E','154',keywrd)
+      else
+         if (imstat(6) /= 1) then
 !              WRITE Error Message: Non-repeatable Keyword
-            CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-         ELSE
+            call errhdl(path,modnam,'E','135',keywrd)
+         else
 !              Process Start and End Dates for Reading      ---   CALL STAEND
-            CALL STAEND
-         END IF
-      END IF
+            call staend
+         end if
+      end if
 
-   ELSE IF (.NOT.EVONLY .and. KEYWRD == 'DAYRANGE') THEN
+   else if (.not.evonly .and. keywrd == 'DAYRANGE') then
 !        Set Status Switch
-      IMSTAT(7) = IMSTAT(7) + 1
-      IF (SCIM) THEN
+      imstat(7) = imstat(7) + 1
+      if (scim) then
 !           Write out error message:  DAYRANGE cannot be used with SCIM option
-         CALL ERRHDL(PATH,MODNAM,'E','154',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','154',keywrd)
+      else
 !           Check for First Occurrence of DAYRANGE Card, and
 !           Reinitialize IPROC and IPROCL Arrays to 0's
-         IF (IMSTAT(7) == 1) THEN
-            IPROC(:)  = 0
-            IPROCL(:) = 0
-         END IF
+         if (imstat(7) == 1) then
+            iproc(:)  = 0
+            iprocl(:) = 0
+         end if
 !           Process Days and Day Ranges for Processing      ---   CALL DAYRNG
-         CALL DAYRNG
-      END IF
+         call dayrng
+      end if
 
-   ELSE IF (KEYWRD == 'WDROTATE') THEN
+   else if (keywrd == 'WDROTATE') then
 !        Set Status Switch
-      IMSTAT(8) = IMSTAT(8) + 1
-      IF (IMSTAT(8) /= 1) THEN
+      imstat(8) = imstat(8) + 1
+      if (imstat(8) /= 1) then
 !           WRITE Error Message: Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Wind Direction Correction Option        ---   CALL WDROTA
-         CALL WDROTA
-      END IF
+         call wdrota
+      end if
 
-   ELSE IF (KEYWRD == 'SITEDATA') THEN
+   else if (keywrd == 'SITEDATA') then
 !        Set Status Switch
-      IMSTAT(9) = IMSTAT(9) + 1
-      IF (IMSTAT(9) /= 1) THEN
+      imstat(9) = imstat(9) + 1
+      if (imstat(9) /= 1) then
 !           WRITE Error Message: Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process On-site Data Information                ---   CALL ONDATA
-         CALL ONDATA
-      END IF
+         call ondata
+      end if
 
-   ELSE IF (KEYWRD == 'PROFBASE') THEN
+   else if (keywrd == 'PROFBASE') then
 !        Set Status Switch
-      IMSTAT(10) = IMSTAT(10) + 1
-      IF (IMSTAT(10) /= 1) THEN
+      imstat(10) = imstat(10) + 1
+      if (imstat(10) /= 1) then
 !           WRITE Error Message: Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process On-site Data Information                ---   CALL PRBASE
-         CALL PRBASE
-      END IF
+         call prbase
+      end if
 
-   ELSE IF (KEYWRD == 'WINDCATS') THEN
+   else if (keywrd == 'WINDCATS') then
 !        Set Status Switch
-      IMSTAT(11) = IMSTAT(11) + 1
-      IF (IMSTAT(11) /= 1) THEN
+      imstat(11) = imstat(11) + 1
+      if (imstat(11) /= 1) then
 !           WRITE Error Message: Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Wind Speed Categories                   ---   CALL WSCATS
-         CALL WSCATS
-      END IF
+         call wscats
+      end if
 
-   ELSE IF (KEYWRD == 'SCIMBYHR' .and. SCIM) THEN
+   else if (keywrd == 'SCIMBYHR' .and. scim) then
 !        Set Status Switch
-      IMSTAT(12) = IMSTAT(12) + 1
-      IF (IMSTAT(12) /= 1) THEN
+      imstat(12) = imstat(12) + 1
+      if (imstat(12) /= 1) then
 !           WRITE Error Message: Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Wind Speed Categories                   ---   CALL SCIMIT
-         CALL SCIMIT
-      END IF
+         call scimit
+      end if
 
-   ELSE IF (KEYWRD == 'NUMYEARS') THEN
+   else if (keywrd == 'NUMYEARS') then
 !        Set Status Switch
-      IMSTAT(13) = IMSTAT(13) + 1
-      IF (IMSTAT(13) /= 1) THEN
+      imstat(13) = imstat(13) + 1
+      if (imstat(13) /= 1) then
 !           WRITE Error Message: Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process Number of Years for MAXDCONT arrays     ---  CALL NUMYR
-         CALL NUMYR
-      END IF
+         call numyr
+      end if
 
 !     JAT 1/29/21 ISSUE D070 TURBULENCE OPTIONS
 !     ADD CHECK FOR ONE OF THE TURBULENCE KEYWORDS
-   ELSE IF (KEYWRD == 'NOTURB  ' .or. KEYWRD == 'NOTURBST' .or.&
-   &KEYWRD == 'NOTURBCO' .or. KEYWRD == 'NOSA    ' .or.&
-   &KEYWRD == 'NOSW    ' .or. KEYWRD == 'NOSAST  ' .or.&
-   &KEYWRD == 'NOSWST  ' .or. KEYWRD == 'NOSACO  ' .or.&
-   &KEYWRD == 'NOSWCO  ') THEN
+   else if (keywrd == 'NOTURB  ' .or. keywrd == 'NOTURBST' .or.&
+   &keywrd == 'NOTURBCO' .or. keywrd == 'NOSA    ' .or.&
+   &keywrd == 'NOSW    ' .or. keywrd == 'NOSAST  ' .or.&
+   &keywrd == 'NOSWST  ' .or. keywrd == 'NOSACO  ' .or.&
+   &keywrd == 'NOSWCO  ') then
 !        Set Status Switch
-      IMSTAT(14) = IMSTAT(14) + 1
-      IF (IMSTAT(14) /= 1) THEN
+      imstat(14) = imstat(14) + 1
+      if (imstat(14) /= 1) then
 !           WRITE Error Message: Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process turbulence option     ---  CALL TURBOPTS
-         CALL TURBOPT
-      END IF
-   ELSE IF (KEYWRD == 'FINISHED') THEN
+         call turbopt
+      end if
+   else if (keywrd == 'FINISHED') then
 !        Set Status Switch
-      IMSTAT(50) = IMSTAT(50) + 1
-      IF (IMSTAT(50) /= 1) THEN
+      imstat(50) = imstat(50) + 1
+      if (imstat(50) /= 1) then
 !           WRITE Error Message: Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','135',keywrd)
+         go to 999
+      end if
 !        Write Error Messages for Missing Mandatory Keyword(s)
-      IF (IMSTAT(1) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','STARTING')
-      END IF
-      IF (IMSTAT(2) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','SURFFILE')
-      END IF
-      IF (IMSTAT(3) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','PROFFILE')
-      END IF
-      IF (IMSTAT(4) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','SURFDATA')
-      END IF
-      IF (IMSTAT(5) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','UAIRDATA')
-      END IF
-      IF (IMSTAT(10) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','PROFBASE')
-      END IF
-      IF (SCIM .and. IMSTAT(12) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','SCIMBYHR')
-      END IF
+      if (imstat(1) == 0) then
+         call errhdl(path,modnam,'E','130','STARTING')
+      end if
+      if (imstat(2) == 0) then
+         call errhdl(path,modnam,'E','130','SURFFILE')
+      end if
+      if (imstat(3) == 0) then
+         call errhdl(path,modnam,'E','130','PROFFILE')
+      end if
+      if (imstat(4) == 0) then
+         call errhdl(path,modnam,'E','130','SURFDATA')
+      end if
+      if (imstat(5) == 0) then
+         call errhdl(path,modnam,'E','130','UAIRDATA')
+      end if
+      if (imstat(10) == 0) then
+         call errhdl(path,modnam,'E','130','PROFBASE')
+      end if
+      if (scim .and. imstat(12) == 0) then
+         call errhdl(path,modnam,'E','130','SCIMBYHR')
+      end if
 
 !        OPEN Met Data File                                 ---   CALL MEOPEN
-      IF (IMSTAT(2) /= 0 .and. IMSTAT(3) /= 0) THEN
-         CALL MEOPEN
-      END IF
+      if (imstat(2) /= 0 .and. imstat(3) /= 0) then
+         call meopen
+      end if
 
 ! ---    Assign L_LeapYear variable
-      IF ((MOD(ISYEAR,4) /= 0) .or.&
-      &(MOD(ISYEAR,100) == 0 .and. MOD(ISYEAR,400) /= 0)) THEN
+      if ((mod(isyear,4) /= 0) .or.&
+      &(mod(isyear,100) == 0 .and. mod(isyear,400) /= 0)) then
 !           Not a Leap Year
-         L_LeapYear = .FALSE.
-      ELSE
+         L_LeapYear = .false.
+      else
 !           Leap Year
-         L_LeapYear = .TRUE.
-      END IF
+         L_LeapYear = .true.
+      end if
 
-      IF (MULTYR) THEN
+      if (multyr) then
 !           Set the Increment for Saving Results, INCRST, Based on
 !           ISYEAR, Surface Data Year, from SURFDATA Keyword
-         IF ((MOD(ISYEAR,4) /= 0) .or.&
-         &(MOD(ISYEAR,100)==0 .and. MOD(ISYEAR,400)/=0)) THEN
+         if ((mod(isyear,4) /= 0) .or.&
+         &(mod(isyear,100)==0 .and. mod(isyear,400)/=0)) then
 !              Not a Leap Year
-            INCRST = 365
-         ELSE
+            incrst = 365
+         else
 !              Leap Year
-            INCRST = 366
-         END IF
-      END IF
+            incrst = 366
+         end if
+      end if
 
 !        Determine Number of Hours to be Processed, NHOURS, For Use
 !        With the TOXXFILE Option - 9/29/92
-      IF ((MOD(ISYEAR,4) /= 0) .or.&
-      &(MOD(ISYEAR,100)==0 .and. MOD(ISYEAR,400)/=0)) THEN
+      if ((mod(isyear,4) /= 0) .or.&
+      &(mod(isyear,100)==0 .and. mod(isyear,400)/=0)) then
 !           Not a Leap Year
-         ND = 365
-      ELSE
+         nd = 365
+      else
 !           Leap Year
-         ND = 366
-      END IF
-      NDYS = 0
-      DO I = 1, ND
+         nd = 366
+      end if
+      ndys = 0
+      do i = 1, nd
 ! ---       Adjust for leap year vs. non-leap year
-         IF (ND == 365) THEN
-            IF (IPROC(I) == 1) THEN
-               NDYS = NDYS + 1
-            END IF
-         ELSE IF (ND == 366) THEN
-            IF (IPROCL(I) == 1) THEN
-               NDYS = NDYS + 1
-            END IF
-         END IF
-      END DO
-      NHOURS = NDYS * 24
+         if (nd == 365) then
+            if (iproc(i) == 1) then
+               ndys = ndys + 1
+            end if
+         else if (nd == 366) then
+            if (iprocl(i) == 1) then
+               ndys = ndys + 1
+            end if
+         end if
+      end do
+      nhours = ndys * 24
 
-   ELSE
+   else
 !        Write Error Message: Invalid Keyword for This Pathway
-      CALL ERRHDL(PATH,MODNAM,'E','110',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','110',keywrd)
+   end if
 
-999 RETURN
-END SUBROUTINE MECARD
+999 return
+end subroutine mecard
 
-SUBROUTINE SURFIL
+subroutine surfil
 !***********************************************************************
 !                 SURFIL Module of AERMOD
 !
@@ -332,51 +332,51 @@ SUBROUTINE SURFIL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'SURFIL'
+   modnam = 'SURFIL'
 
-   IF (IFC == 3) THEN
+   if (ifc == 3) then
 !        Retrieve Met Data Filename as Character Substring to Maintain Case
-      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         METINP = RUNST1(LOCB(3):LOCE(3))
-      ELSE
+         metinp = runst1(locb(3):loce(3))
+      else
 !           WRITE Error Message:  METINP Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-      END IF
-   ELSE IF (IFC == 4) THEN
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+      end if
+   else if (ifc == 4) then
 !        Retrieve Met Data Filename as Character Substring to Maintain Case
-      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         METINP = RUNST1(LOCB(3):LOCE(3))
-      ELSE
+         metinp = runst1(locb(3):loce(3))
+      else
 !           WRITE Error Message:  METINP Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-      END IF
-      IF (FIELD(4) /= 'FREE') THEN
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+      end if
+      if (field(4) /= 'FREE') then
 !           WRITE Warning Message         ! Format field no longer used
-         CALL ERRHDL(PATH,MODNAM,'W','293','format')
-      END IF
-   ELSE IF (IFC > 4) THEN
+         call errhdl(path,modnam,'W','293','format')
+      end if
+   else if (ifc > 4) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Error Message           ! No Parameters Specified
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+   end if
 
-   RETURN
-END SUBROUTINE SURFIL
+   return
+end subroutine surfil
 
-SUBROUTINE PROFIL
+subroutine profil
 !***********************************************************************
 !                 PROFIL Module of AERMOD
 !
@@ -406,51 +406,51 @@ SUBROUTINE PROFIL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'PROFIL'
+   modnam = 'PROFIL'
 
-   IF (IFC == 3) THEN
+   if (ifc == 3) then
 !        Retrieve Met Data Filename as Character Substring to Maintain Case
-      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         PROINP = RUNST1(LOCB(3):LOCE(3))
-      ELSE
+         proinp = runst1(locb(3):loce(3))
+      else
 !           WRITE Error Message:  PROINP Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-      END IF
-   ELSE IF (IFC == 4) THEN
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+      end if
+   else if (ifc == 4) then
 !        Retrieve Met Data Filename as Character Substring to Maintain Case
-      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         PROINP = RUNST1(LOCB(3):LOCE(3))
-      ELSE
+         proinp = runst1(locb(3):loce(3))
+      else
 !           WRITE Error Message:  PROINP Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-      END IF
-      IF (FIELD(4) /= 'FREE') THEN
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+      end if
+      if (field(4) /= 'FREE') then
 !           WRITE Warning Message         ! Format field no longer used
-         CALL ERRHDL(PATH,MODNAM,'W','293','format')
-      END IF
-   ELSE IF (IFC > 4) THEN
+         call errhdl(path,modnam,'W','293','format')
+      end if
+   else if (ifc > 4) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Error Message           ! No Parameters Specified
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+   end if
 
-   RETURN
-END SUBROUTINE PROFIL
+   return
+end subroutine profil
 
-SUBROUTINE SFDATA
+subroutine sfdata
 !***********************************************************************
 !                 SFDATA Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -478,50 +478,50 @@ SUBROUTINE SFDATA
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'SFDATA'
+   modnam = 'SFDATA'
 
-   IF (IFC == 2) THEN
+   if (ifc == 2) then
 !        WRITE Error Message           ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 4) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 4) then
 !        WRITE Error Message           ! Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 7) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 7) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
-   CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
+   call stonum(field(3),ilen_fld,fnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      IDSURF = 0
-      GO TO 199
-   END IF
-   IDSURF = NINT(FNUM)
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      idsurf = 0
+      go to 199
+   end if
+   idsurf = nint(fnum)
 
-199 CALL STONUM(FIELD(4),ILEN_FLD,FNUM,IMIT)
+199 call stonum(field(4),ilen_fld,fnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      ISYEAR = 0
-      GO TO 299
-   END IF
-   ISYEAR = NINT(FNUM)
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      isyear = 0
+      go to 299
+   end if
+   isyear = nint(fnum)
 
 !     D001 IF ISYEAR is 2-digits then call CENT_DATE to determine the Current Julian Day and Calculate Current Gregorian Date First Convert Year to 4-Digit Value
 !     Check for 2-digit Input and Convert ISYEAR to Four Digits
-   IF (ISYEAR <= 99) THEN
-      CALL CENT_DATE(ISYEAR,ISYEAR)
-   END IF
+   if (isyear <= 99) then
+      call cent_date(isyear,isyear)
+   end if
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C     Check for 2-digit Input and Convert ISYEAR to Four Digits
 !      IF (ISYEAR .GE. ISTRT_WIND .and. ISYEAR .LE. 99) THEN
@@ -530,29 +530,29 @@ SUBROUTINE SFDATA
 !         ISYEAR = (ISTRT_CENT+1)*100 + ISYEAR
 !      END IF
 
-299 IF (IFC >= 5) THEN
+299 if (ifc >= 5) then
 !        Retrieve Surface Data Station Name (Optional)
-      SFNAME = FIELD(5)
-   ELSE
-      SFNAME = 'UNKNOWN'
-   END IF
+      sfname = field(5)
+   else
+      sfname = 'UNKNOWN'
+   end if
 
-   IF (IFC == 7) THEN
+   if (ifc == 7) then
 !        Retrieve Coordinates for Surface Data Location (Optional)
-      CALL STODBL(FIELD(6),ILEN_FLD,SFX,IMIT)
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      END IF
-      CALL STODBL(FIELD(7),ILEN_FLD,SFY,IMIT)
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      END IF
-   END IF
+      call stodbl(field(6),ilen_fld,sfx,imit)
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+      end if
+      call stodbl(field(7),ilen_fld,sfy,imit)
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+      end if
+   end if
 
-999 RETURN
-END SUBROUTINE SFDATA
+999 return
+end subroutine sfdata
 
-SUBROUTINE UADATA
+subroutine uadata
 !***********************************************************************
 !                 UADATA Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -580,50 +580,50 @@ SUBROUTINE UADATA
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'UADATA'
+   modnam = 'UADATA'
 
-   IF (IFC == 2) THEN
+   if (ifc == 2) then
 !        WRITE Error Message           ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 4) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 4) then
 !        WRITE Error Message           ! Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 7) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 7) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
-   CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
+   call stonum(field(3),ilen_fld,fnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      IDUAIR = 0
-      GO TO 199
-   END IF
-   IDUAIR = NINT(FNUM)
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      iduair = 0
+      go to 199
+   end if
+   iduair = nint(fnum)
 
-199 CALL STONUM(FIELD(4),ILEN_FLD,FNUM,IMIT)
+199 call stonum(field(4),ilen_fld,fnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      IUYEAR = 0
-      GO TO 299
-   END IF
-   IUYEAR = NINT(FNUM)
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      iuyear = 0
+      go to 299
+   end if
+   iuyear = nint(fnum)
 
 !     D001 IF ISYEAR is 2-digits then call CENT_DATE to determine the Current Julian Day and Calculate Current Gregorian Date First Convert Year to 4-Digit Value
 !     Check for 2-digit Input and Convert IUYEAR to Four Digits
-   IF (IUYEAR <= 99) THEN
-      CALL CENT_DATE(IUYEAR,IUYEAR)
-   END IF
+   if (iuyear <= 99) then
+      call cent_date(iuyear,iuyear)
+   end if
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C     Convert IUYEAR to Four Digits
 !      IF (IUYEAR .GE. ISTRT_WIND .and. IUYEAR .LE. 99) THEN
@@ -632,29 +632,29 @@ SUBROUTINE UADATA
 !         IUYEAR = (ISTRT_CENT+1)*100 + IUYEAR
 !      END IF
 
-299 IF (IFC >= 5) THEN
+299 if (ifc >= 5) then
 !        Retrieve Surface Data Station Name (Optional)
-      UANAME = FIELD(5)
-   ELSE
-      UANAME = 'UNKNOWN'
-   END IF
+      uaname = field(5)
+   else
+      uaname = 'UNKNOWN'
+   end if
 
-   IF (IFC == 7) THEN
+   if (ifc == 7) then
 !        Retrieve Coordinates for Surface Data Location (Optional)
-      CALL STODBL(FIELD(6),ILEN_FLD,UAX,IMIT)
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      END IF
-      CALL STODBL(FIELD(7),ILEN_FLD,UAY,IMIT)
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      END IF
-   END IF
+      call stodbl(field(6),ilen_fld,uax,imit)
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+      end if
+      call stodbl(field(7),ilen_fld,uay,imit)
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+      end if
+   end if
 
-999 RETURN
-END SUBROUTINE UADATA
+999 return
+end subroutine uadata
 
-SUBROUTINE ONDATA
+subroutine ondata
 !***********************************************************************
 !                 ONDATA Module of AERMOD
 !
@@ -677,66 +677,66 @@ SUBROUTINE ONDATA
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'ONDATA'
+   modnam = 'ONDATA'
 
-   IF (IFC == 2) THEN
+   if (ifc == 2) then
 !        WRITE Error Message           ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 4) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 4) then
 !        WRITE Error Message           ! Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 7) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 7) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
-   CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
+   call stonum(field(3),ilen_fld,fnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 199
-   END IF
-   IDSITE = NINT(FNUM)
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 199
+   end if
+   idsite = nint(fnum)
 
-199 CALL STONUM(FIELD(4),ILEN_FLD,FNUM,IMIT)
+199 call stonum(field(4),ilen_fld,fnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 299
-   END IF
-   IOYEAR = NINT(FNUM)
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 299
+   end if
+   ioyear = nint(fnum)
 
-299 IF (IFC >= 5) THEN
+299 if (ifc >= 5) then
 !        Retrieve Surface Data Station Name (Optional)
-      ONNAME = FIELD(5)
-   ELSE
-      ONNAME = 'UNKNOWN'
-   END IF
+      onname = field(5)
+   else
+      onname = 'UNKNOWN'
+   end if
 
-   IF (IFC == 7) THEN
+   if (ifc == 7) then
 !        Retrieve Coordinates for Surface Data Location (Optional)
-      CALL STODBL(FIELD(6),ILEN_FLD,ONX,IMIT)
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      END IF
-      CALL STODBL(FIELD(7),ILEN_FLD,ONY,IMIT)
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      END IF
-   END IF
+      call stodbl(field(6),ilen_fld,onx,imit)
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+      end if
+      call stodbl(field(7),ilen_fld,ony,imit)
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+      end if
+   end if
 
-999 RETURN
-END SUBROUTINE ONDATA
+999 return
+end subroutine ondata
 
-SUBROUTINE PRBASE
+subroutine prbase
 !***********************************************************************
 !                 PRBASE Module of the AERMOD Model
 !
@@ -760,64 +760,64 @@ SUBROUTINE PRBASE
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'PRBASE'
+   modnam = 'PRBASE'
 
-   IF (IFC == 3 .or. IFC == 4) THEN
-      CALL STODBL(FIELD(3),ILEN_FLD,ZBASE,IMIT)
+   if (ifc == 3 .or. ifc == 4) then
+      call stodbl(field(3),ilen_fld,zbase,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 999
-      END IF
-      IF (IFC == 4 .and. FIELD(4) == 'FEET') THEN
-         ZBASE = 0.3048D0 * ZBASE
-      ELSE IF (IFC == 4 .and. FIELD(4) /= 'METERS') THEN
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 999
+      end if
+      if (ifc == 4 .and. field(4) == 'FEET') then
+         zbase = 0.3048d0 * zbase
+      else if (ifc == 4 .and. field(4) /= 'METERS') then
 !           WRITE Warning Message - Invalid ZRUNIT Parameter
-         CALL ERRHDL(PATH,MODNAM,'W','203','ZRUNIT')
-      END IF
-      IF (ZBASE < 0.0D0 .and. IMIT == 1) THEN
+         call errhdl(path,modnam,'W','203','ZRUNIT')
+      end if
+      if (zbase < 0.0d0 .and. imit == 1) then
 !           WRITE Warning Message - Possible Error In ZBASE
-         CALL ERRHDL(PATH,MODNAM,'W','340',KEYWRD)
-      END IF
-   ELSE IF (IFC > 4) THEN
+         call errhdl(path,modnam,'W','340',keywrd)
+      end if
+   else if (ifc > 4) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Error Message           ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+   end if
 
 !     Reinitialize AZS, AZELEV, and AZHILL arrays for FLAT terrain
-   IF (FLAT) THEN
-      IF (.NOT. FLATSRCS) THEN
+   if (flat) then
+      if (.not. flatsrcs) then
 !           Assign ZBASE to source elevation for all sources
-         AZS = ZBASE
-      ELSE
+         azs = zbase
+      else
 !           Assign ZBASE to source elevation only for FLAT sources
-         DO ISRC = 1, NUMSRC
-            IF (L_FLATSRC(ISRC)) THEN
-               AZS(ISRC) = ZBASE
-            END IF
-         END DO
-      END IF
-      IF (.NOT. FLATSRCS) THEN
+         do isrc = 1, numsrc
+            if (l_flatsrc(isrc)) then
+               azs(isrc) = zbase
+            end if
+         end do
+      end if
+      if (.not. flatsrcs) then
 !           Assign ZBASE to AZELEV and AZHILL for all receptors
-         DO IREC = 1, NUMREC
-            AZELEV(IREC) = ZBASE
-            AZHILL(IREC) = ZBASE
-         END DO
-      END IF
-   END IF
+         do irec = 1, numrec
+            azelev(irec) = zbase
+            azhill(irec) = zbase
+         end do
+      end if
+   end if
 
-999 RETURN
-END SUBROUTINE PRBASE
+999 return
+end subroutine prbase
 
-SUBROUTINE STAEND
+subroutine staend
 !***********************************************************************
 !                 STAEND Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -858,88 +858,88 @@ SUBROUTINE STAEND
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: IDYMAX(12)
+   integer :: idymax(12)
 
 !     Variable Initializations
-   DATA IDYMAX/31,29,31,30,31,30,31,31,30,31,30,31/
+   data idymax/31,29,31,30,31,30,31,31,30,31,30,31/
 
-   MODNAM = 'STAEND'
+   modnam = 'STAEND'
 
-   IF (IFC == 8) THEN
+   if (ifc == 8) then
 !        Process for YR, MD, DY
-      CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
+      call stonum(field(3),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 198
-      END IF
-      ISYR = NINT(FNUM)
-198   CALL STONUM(FIELD(4),ILEN_FLD,FNUM,IMIT)
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 198
+      end if
+      isyr = nint(fnum)
+198   call stonum(field(4),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 298
-      END IF
-      ISMN = NINT(FNUM)
-      IF (ISMN < 1 .or. ISMN > 12) THEN
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 298
+      end if
+      ismn = nint(fnum)
+      if (ismn < 1 .or. ismn > 12) then
 !           WRITE Error Message    ! Invalid Month
-         CALL ERRHDL(PATH,MODNAM,'E','203','MONTH')
-      END IF
-298   CALL STONUM(FIELD(5),ILEN_FLD,FNUM,IMIT)
+         call errhdl(path,modnam,'E','203','MONTH')
+      end if
+298   call stonum(field(5),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 398
-      END IF
-      ISDY = NINT(FNUM)
-      IF (ISMN >= 1 .and. ISMN <= 12) THEN
-         IF (ISDY < 1 .or. ISDY > IDYMAX(ISMN)) THEN
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 398
+      end if
+      isdy = nint(fnum)
+      if (ismn >= 1 .and. ismn <= 12) then
+         if (isdy < 1 .or. isdy > idymax(ismn)) then
 !              WRITE Error Message    ! Invalid Day
-            CALL ERRHDL(PATH,MODNAM,'E','203','DAY')
-         END IF
-      END IF
-398   CALL STONUM(FIELD(6),ILEN_FLD,FNUM,IMIT)
+            call errhdl(path,modnam,'E','203','DAY')
+         end if
+      end if
+398   call stonum(field(6),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 498
-      END IF
-      IEYR = NINT(FNUM)
-498   CALL STONUM(FIELD(7),ILEN_FLD,FNUM,IMIT)
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 498
+      end if
+      ieyr = nint(fnum)
+498   call stonum(field(7),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 598
-      END IF
-      IEMN = NINT(FNUM)
-      IF (IEMN < 1 .or. IEMN > 12) THEN
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 598
+      end if
+      iemn = nint(fnum)
+      if (iemn < 1 .or. iemn > 12) then
 !           WRITE Error Message    ! Invalid Month
-         CALL ERRHDL(PATH,MODNAM,'E','203','MONTH')
-      END IF
-598   CALL STONUM(FIELD(8),ILEN_FLD,FNUM,IMIT)
+         call errhdl(path,modnam,'E','203','MONTH')
+      end if
+598   call stonum(field(8),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 698
-      END IF
-      IEDY = NINT(FNUM)
-      IF (IEMN >= 1 .and. IEMN <= 12) THEN
-         IF (IEDY < 1 .or. IEDY > IDYMAX(IEMN)) THEN
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 698
+      end if
+      iedy = nint(fnum)
+      if (iemn >= 1 .and. iemn <= 12) then
+         if (iedy < 1 .or. iedy > idymax(iemn)) then
 !              WRITE Error Message    ! Invalid Day
-            CALL ERRHDL(PATH,MODNAM,'E','203','DAY')
-         END IF
-      END IF
-698   CONTINUE
+            call errhdl(path,modnam,'E','203','DAY')
+         end if
+      end if
+698   continue
 
 !     D001 IF ISYEAR is 2-digits then call CENT_DATE to determine the Current Julian Day and Calculate Current Gregorian Date First Convert Year to 4-Digit Value
 !     Check for 2-digit Input and Convert ISYR to Four Digits
-      IF (ISYR <= 99) THEN
-         CALL CENT_DATE(ISYR,ISYR)
-      END IF
+      if (isyr <= 99) then
+         call cent_date(isyr,isyr)
+      end if
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C        Convert ISYR and IEYR to Four Digits
 !         IF (ISYR .GE. ISTRT_WIND .and. ISYR .LE. 99) THEN
@@ -950,9 +950,9 @@ SUBROUTINE STAEND
 
 !     D001 IF ISYEAR is 2-digits then call CENT_DATE to determine the Current Julian Day and Calculate Current Gregorian Date First Convert Year to 4-Digit Value
 !     Check for 2-digit Input and Convert IEYR to Four Digits
-      IF (IEYR <= 99) THEN
-         CALL CENT_DATE(IEYR,IEYR)
-      END IF
+      if (ieyr <= 99) then
+         call cent_date(ieyr,ieyr)
+      end if
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !         IF (IEYR .GE. ISTRT_WIND .and. IEYR .LE. 99) THEN
 !            IEYR = ISTRT_CENT*100 + IEYR
@@ -961,119 +961,119 @@ SUBROUTINE STAEND
 !         END IF
 
 !        Calculate JULIAN Day for Start and End Dates
-      CALL JULIAN (ISYR,ISMN,ISDY,ISJDAY)
-      CALL JULIAN (IEYR,IEMN,IEDY,IEJDAY)
+      call julian (isyr,ismn,isdy,isjday)
+      call julian (ieyr,iemn,iedy,iejday)
 !        Use 1 for Start Hour and 24 for End Hour
-      ISHR = 1
-      IEHR = 24
+      ishr = 1
+      iehr = 24
 ! ---    Calculate 10-digit start date (ISDATE) and end date (IEDATE)
 !        including 4-digit year (for comparisons with FULLDATE)
-      IF (ISYR <= 2147) THEN
-         ISDATE = ISYR*1000000 + ISMN*10000 + ISDY*100 + ISHR
-      ELSE
-         CALL ERRHDL(PATH,MODNAM,'E','365',KEYWRD)
-         ISDATE = 2147123124
-      END IF
-      IF (IEYR <= 2147) THEN
-         IEDATE = IEYR*1000000 + IEMN*10000 + IEDY*100 + IEHR
-      ELSE
-         CALL ERRHDL(PATH,MODNAM,'E','365',KEYWRD)
-         IEDATE = 2147123124
-      END IF
+      if (isyr <= 2147) then
+         isdate = isyr*1000000 + ismn*10000 + isdy*100 + ishr
+      else
+         call errhdl(path,modnam,'E','365',keywrd)
+         isdate = 2147123124
+      end if
+      if (ieyr <= 2147) then
+         iedate = ieyr*1000000 + iemn*10000 + iedy*100 + iehr
+      else
+         call errhdl(path,modnam,'E','365',keywrd)
+         iedate = 2147123124
+      end if
 
-   ELSE IF (IFC == 10) THEN
+   else if (ifc == 10) then
 !        Process for YR, MD, DY, HR
-      CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
+      call stonum(field(3),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 199
-      END IF
-      ISYR = NINT(FNUM)
-199   CALL STONUM(FIELD(4),ILEN_FLD,FNUM,IMIT)
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 199
+      end if
+      isyr = nint(fnum)
+199   call stonum(field(4),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 299
-      END IF
-      ISMN = NINT(FNUM)
-      IF (ISMN < 1 .or. ISMN > 12) THEN
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 299
+      end if
+      ismn = nint(fnum)
+      if (ismn < 1 .or. ismn > 12) then
 !           WRITE Error Message    ! Invalid Month
-         CALL ERRHDL(PATH,MODNAM,'E','203','MONTH')
-      END IF
-299   CALL STONUM(FIELD(5),ILEN_FLD,FNUM,IMIT)
+         call errhdl(path,modnam,'E','203','MONTH')
+      end if
+299   call stonum(field(5),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 399
-      END IF
-      ISDY = NINT(FNUM)
-      IF (ISMN >= 1 .and. ISMN <= 12) THEN
-         IF (ISDY < 1 .or. ISDY > IDYMAX(ISMN)) THEN
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 399
+      end if
+      isdy = nint(fnum)
+      if (ismn >= 1 .and. ismn <= 12) then
+         if (isdy < 1 .or. isdy > idymax(ismn)) then
 !              WRITE Error Message    ! Invalid Day
-            CALL ERRHDL(PATH,MODNAM,'E','203','DAY')
-         END IF
-      END IF
-399   CALL STONUM(FIELD(6),ILEN_FLD,FNUM,IMIT)
+            call errhdl(path,modnam,'E','203','DAY')
+         end if
+      end if
+399   call stonum(field(6),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 499
-      END IF
-      ISHR = NINT(FNUM)
-      IF (ISHR < 1 .or. ISHR > 24) THEN
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 499
+      end if
+      ishr = nint(fnum)
+      if (ishr < 1 .or. ishr > 24) then
 !           WRITE Error Message    ! Invalid Hour
-         CALL ERRHDL(PATH,MODNAM,'E','203','HOUR')
-      END IF
-499   CALL STONUM(FIELD(7),ILEN_FLD,FNUM,IMIT)
+         call errhdl(path,modnam,'E','203','HOUR')
+      end if
+499   call stonum(field(7),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 599
-      END IF
-      IEYR = NINT(FNUM)
-599   CALL STONUM(FIELD(8),ILEN_FLD,FNUM,IMIT)
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 599
+      end if
+      ieyr = nint(fnum)
+599   call stonum(field(8),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 699
-      END IF
-      IEMN = NINT(FNUM)
-      IF (IEMN < 1 .or. IEMN > 12) THEN
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 699
+      end if
+      iemn = nint(fnum)
+      if (iemn < 1 .or. iemn > 12) then
 !           WRITE Error Message    ! Invalid Month
-         CALL ERRHDL(PATH,MODNAM,'E','203','MONTH')
-      END IF
-699   CALL STONUM(FIELD(9),ILEN_FLD,FNUM,IMIT)
+         call errhdl(path,modnam,'E','203','MONTH')
+      end if
+699   call stonum(field(9),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 799
-      END IF
-      IEDY = NINT(FNUM)
-      IF (IEMN >= 1 .and. IEMN <= 12) THEN
-         IF (IEDY < 1 .or. IEDY > IDYMAX(IEMN)) THEN
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 799
+      end if
+      iedy = nint(fnum)
+      if (iemn >= 1 .and. iemn <= 12) then
+         if (iedy < 1 .or. iedy > idymax(iemn)) then
 !              WRITE Error Message    ! Invalid Day
-            CALL ERRHDL(PATH,MODNAM,'E','203','DAY')
-         END IF
-      END IF
-799   CALL STONUM(FIELD(10),ILEN_FLD,FNUM,IMIT)
+            call errhdl(path,modnam,'E','203','DAY')
+         end if
+      end if
+799   call stonum(field(10),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 899
-      END IF
-      IEHR = NINT(FNUM)
-      IF (IEHR < 1 .or. IEHR > 24) THEN
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 899
+      end if
+      iehr = nint(fnum)
+      if (iehr < 1 .or. iehr > 24) then
 !           WRITE Error Message    ! Invalid Hour
-         CALL ERRHDL(PATH,MODNAM,'E','203','HOUR')
-      END IF
-899   CONTINUE
+         call errhdl(path,modnam,'E','203','HOUR')
+      end if
+899   continue
 
 !     D001 IF ISYEAR is 2-digits then call CENT_DATE to determine the Current Julian Day and Calculate Current Gregorian Date First Convert Year to 4-Digit Value
 !     Check for 2-digit Input and Convert ISYR to Four Digits
-      IF (ISYR <= 99) THEN
-         CALL CENT_DATE(ISYR,ISYR)
-      END IF
+      if (isyr <= 99) then
+         call cent_date(isyr,isyr)
+      end if
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C        Convert ISYR and IEYR to Four Digits
 !         IF (ISYR .GE. ISTRT_WIND .and. ISYR .LE. 99) THEN
@@ -1084,9 +1084,9 @@ SUBROUTINE STAEND
 
 !     D001 IF ISYEAR is 2-digits then call CENT_DATE to determine the Current Julian Day and Calculate Current Gregorian Date First Convert Year to 4-Digit Value
 !     Check for 2-digit Input and Convert IEYR to Four Digits
-      IF (IEYR <= 99) THEN
-         CALL CENT_DATE(IEYR,IEYR)
-      END IF
+      if (ieyr <= 99) then
+         call cent_date(ieyr,ieyr)
+      end if
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !         IF (IEYR .GE. ISTRT_WIND .and. IEYR .LE. 99) THEN
 !            IEYR = ISTRT_CENT*100 + IEYR
@@ -1095,98 +1095,98 @@ SUBROUTINE STAEND
 !         END IF
 
 !        Calculate JULIAN Day for Start and End Dates
-      CALL JULIAN (ISYR,ISMN,ISDY,ISJDAY)
-      CALL JULIAN (IEYR,IEMN,IEDY,IEJDAY)
+      call julian (isyr,ismn,isdy,isjday)
+      call julian (ieyr,iemn,iedy,iejday)
 !        Calculate 10-digit start date (ISDATE) and end date (IEDATE)
-      IF (ISYR <= 2147) THEN
-         ISDATE = ISYR*1000000 + ISMN*10000 + ISDY*100 + ISHR
-      ELSE
-         CALL ERRHDL(PATH,MODNAM,'E','365',KEYWRD)
-         ISDATE = 2147123124
-      END IF
-      IF (IEYR <= 2147) THEN
-         IEDATE = IEYR*1000000 + IEMN*10000 + IEDY*100 + IEHR
-      ELSE
-         CALL ERRHDL(PATH,MODNAM,'E','365',KEYWRD)
-         IEDATE = 2147123124
-      END IF
+      if (isyr <= 2147) then
+         isdate = isyr*1000000 + ismn*10000 + isdy*100 + ishr
+      else
+         call errhdl(path,modnam,'E','365',keywrd)
+         isdate = 2147123124
+      end if
+      if (ieyr <= 2147) then
+         iedate = ieyr*1000000 + iemn*10000 + iedy*100 + iehr
+      else
+         call errhdl(path,modnam,'E','365',keywrd)
+         iedate = 2147123124
+      end if
 
-   ELSE IF (IFC > 8) THEN
+   else if (ifc > 8) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
 
-   ELSE
+   else
 !        WRITE Error Message           ! Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   end if
 
 !     Determine MN, DY, and HR for end-of-the-year check.
 !     Subtract one from start hour to set end hour for the year of data
-   IF (ISHR > 1) THEN
-      IENDHOUR = ISHR - 1
-      IENDDY   = ISDY
-      IENDMN   = ISMN
-   ELSE
-      IENDHOUR = 24
-      IF (ISDY > 1) THEN
-         IENDDY = ISDY - 1
-         IENDMN = ISMN
-      ELSE
-         IENDMN = ISMN - 1
-         IF (IENDMN == 0) IENDMN = 12
-         IENDDY = IDYMAX(IENDMN)
-      END IF
-   END IF
+   if (ishr > 1) then
+      iendhour = ishr - 1
+      ienddy   = isdy
+      iendmn   = ismn
+   else
+      iendhour = 24
+      if (isdy > 1) then
+         ienddy = isdy - 1
+         iendmn = ismn
+      else
+         iendmn = ismn - 1
+         if (iendmn == 0) iendmn = 12
+         ienddy = idymax(iendmn)
+      end if
+   end if
 
 !     Check for End Year .LT. Start Year
-   IF (IEYR < ISYR) THEN
+   if (ieyr < isyr) then
 !        WRITE Error Message    ! Invalid End Year
-      CALL ERRHDL(PATH,MODNAM,'E','203','END YEAR')
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','203','END YEAR')
+      go to 999
+   end if
 
 !     Check for STARTEND period less than a complete year if
 !     ANNUAL average is specified
-   IF (ANNUAL .or. MULTYR .or. L_MAXDCONT) THEN
+   if (annual .or. multyr .or. l_maxdcont) then
 !        First check for End Year = Start Year,
 !        then for End Year = Start Year + 1, otherwise
 !        if End Year - Start Year > 1 no further checks needed
-      IF (IEYR == ISYR) THEN
+      if (ieyr == isyr) then
 !           End Year equals Start Year, therefore the
 !           Start Month, Start Day, Start Hour must be 01/01/01, and
 !           End Month, End Day, End Hour must be 12/31/24
-         IF (ISMN /=  1 .or. ISDY /=  1 .or. ISHR /=  1 .or.&
-         &IEMN /= 12 .or. IEDY /= 31 .or. IEHR /= 24) THEN
+         if (ismn /=  1 .or. isdy /=  1 .or. ishr /=  1 .or.&
+         &iemn /= 12 .or. iedy /= 31 .or. iehr /= 24) then
 !              WRITE Error Message    ! Incomplete Year for MULTYR or ANNUAL
-            CALL ERRHDL(PATH,MODNAM,'E','480',KEYWRD)
-         END IF
-      ELSE IF (IEYR - ISYR == 1) THEN
+            call errhdl(path,modnam,'E','480',keywrd)
+         end if
+      else if (ieyr - isyr == 1) then
 !           End Year is Start Year plus 1, therefore the
 !           End Month, End Day, End Hour must greater than or equal to
 !           Start Month, Start Day, Start Hour
-         IF (IEMN < IENDMN) THEN
+         if (iemn < iendmn) then
 !              WRITE Error Message    ! Incomplete Year for MULTYR or ANNUAL
-            CALL ERRHDL(PATH,MODNAM,'E','480',KEYWRD)
-         ELSE IF (IEMN == IENDMN) THEN
-            IF (IEDY < IENDDY) THEN
+            call errhdl(path,modnam,'E','480',keywrd)
+         else if (iemn == iendmn) then
+            if (iedy < ienddy) then
 !                 WRITE Error Message    ! Incomplete Year for MULTYR or ANNUAL
-               CALL ERRHDL(PATH,MODNAM,'E','480',KEYWRD)
-            ELSE IF (IEDY == IENDDY) THEN
-               IF (IEHR < IENDHOUR) THEN
+               call errhdl(path,modnam,'E','480',keywrd)
+            else if (iedy == ienddy) then
+               if (iehr < iendhour) then
 !                    WRITE Error Message ! Incomplete Year for MULTYR or ANNUAL
-                  CALL ERRHDL(PATH,MODNAM,'E','480',KEYWRD)
-               END IF
-            END IF
-         END IF
-      END IF
-   END IF
+                  call errhdl(path,modnam,'E','480',keywrd)
+               end if
+            end if
+         end if
+      end if
+   end if
 
-999 RETURN
-END SUBROUTINE STAEND
+999 return
+end subroutine staend
 
-SUBROUTINE DAYRNG
+subroutine dayrng
 !***********************************************************************
 !                 DAYRNG Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1215,294 +1215,294 @@ SUBROUTINE DAYRNG
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, K, IMN, IDY, IMN1, IDY1, IMN2, IDY2, JDAYB, JDAYE
-   CHARACTER :: BEGRNG*8, ENDRNG*8, CMN1*8, CDY1*8, CMN2*8, CDY2*8
-   CHARACTER :: BLNK08*8
-   LOGICAL :: RMARK, GMARK
+   integer :: i, k, imn, idy, imn1, idy1, imn2, idy2, jdayb, jdaye
+   character :: begrng*8, endrng*8, cmn1*8, cdy1*8, cmn2*8, cdy2*8
+   character :: blnk08*8
+   logical :: rmark, gmark
 
 !     Variable Initializations
-   DATA BLNK08/'        '/
+   data blnk08/'        '/
 
-   MODNAM = 'DAYRNG'
+   modnam = 'DAYRNG'
 
-   IF (IFC < 3) THEN
+   if (ifc < 3) then
 !        WRITE Error Message           ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-   ELSE
-      DO 40 I = 3, IFC
+      call errhdl(path,modnam,'E','200',keywrd)
+   else
+      do 40 i = 3, ifc
 !           First Check For Range Marker (-) And Gregorian Day Marker (/)
 !           Initialize Character Fields
-         BEGRNG = BLNK08
-         ENDRNG = BLNK08
-         CMN1 = BLNK08
-         CDY1 = BLNK08
-         CMN2 = BLNK08
-         CDY2 = BLNK08
-         CALL FSPLIT(PATH,KEYWRD,FIELD(I),ILEN_FLD,'-',RMARK,&
-         &BEGRNG,ENDRNG)
-         CALL FSPLIT(PATH,KEYWRD,BEGRNG,8,'/',GMARK,CMN1,CDY1)
-         IF (RMARK .and. GMARK) THEN
-            CALL FSPLIT(PATH,KEYWRD,ENDRNG,8,'/',GMARK,CMN2,CDY2)
-         END IF
+         begrng = blnk08
+         endrng = blnk08
+         cmn1 = blnk08
+         cdy1 = blnk08
+         cmn2 = blnk08
+         cdy2 = blnk08
+         call fsplit(path,keywrd,field(i),ilen_fld,'-',rmark,&
+         &begrng,endrng)
+         call fsplit(path,keywrd,begrng,8,'/',gmark,cmn1,cdy1)
+         if (rmark .and. gmark) then
+            call fsplit(path,keywrd,endrng,8,'/',gmark,cmn2,cdy2)
+         end if
 
-         IF (.NOT.RMARK .and. .NOT.GMARK) THEN
+         if (.not.rmark .and. .not.gmark) then
 !              Field Must Be a Single Julian Day
-            CALL STONUM(BEGRNG,8,FNUM,IMIT)
+            call stonum(begrng,8,fnum,imit)
 !              Check The Numerical Field
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               GO TO 40
-            ELSE
-               JDAY = NINT(FNUM)
-            END IF
-            IF (JDAY>=1 .and. JDAY<=366 .and. IMIT==1) THEN
-               IPROC(JDAY)  = 1
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               go to 40
+            else
+               jday = nint(fnum)
+            end if
+            if (jday>=1 .and. jday<=366 .and. imit==1) then
+               iproc(jday)  = 1
 !                 Also need IPROCL array for Leap Years
-               IPROCL(JDAY) = 1
-            ELSE
+               iprocl(jday) = 1
+            else
 !                 WRITE Error Message    ! Invalid Julian Day
-               CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
-            END IF
-            IF (JDAY<ISJDAY .or. JDAY>IEJDAY) THEN
+               call errhdl(path,modnam,'E','203','Juli Day')
+            end if
+            if (jday<isjday .or. jday>iejday) then
 !                 WRITE Warning Message  ! Julian Day Out-of-Range
-               WRITE(DUMMY,'(I8)') JDAY
-               CALL ERRHDL(PATH,MODNAM,'W','350',DUMMY)
-            END IF
+               write(dummy,'(I8)') jday
+               call errhdl(path,modnam,'W','350',dummy)
+            end if
 
-         ELSE IF (RMARK .and. .NOT.GMARK) THEN
+         else if (rmark .and. .not.gmark) then
 !              Field Must Be a Julian Day Range - Extract Beg & End
-            CALL STONUM(BEGRNG,8,FNUM,IMIT)
+            call stonum(begrng,8,fnum,imit)
 !              Check The Numerical Field
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               GO TO 40
-            ELSE
-               JDAYB = NINT(FNUM)
-            END IF
-            CALL STONUM(ENDRNG,8,FNUM,IMIT)
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               go to 40
+            else
+               jdayb = nint(fnum)
+            end if
+            call stonum(endrng,8,fnum,imit)
 !              Check The Numerical Field
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               GO TO 40
-            ELSE
-               JDAYE = NINT(FNUM)
-            END IF
-            IF ((JDAYB <= JDAYE) .and. (JDAYB >= 1) .and.&
-            &(JDAYE <= 366)) THEN
-               DO K = JDAYB, JDAYE
-                  IPROC(K)  = 1
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               go to 40
+            else
+               jdaye = nint(fnum)
+            end if
+            if ((jdayb <= jdaye) .and. (jdayb >= 1) .and.&
+            &(jdaye <= 366)) then
+               do k = jdayb, jdaye
+                  iproc(k)  = 1
 !                    Also need IPROCL array for Leap Years
-                  IPROCL(K) = 1
-               END DO
-            ELSE
+                  iprocl(k) = 1
+               end do
+            else
 !                 WRITE Error Message    ! Invalid Julian Day Range
-               CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
-            END IF
-            IF (JDAYB<ISJDAY .or. JDAYE>IEJDAY) THEN
+               call errhdl(path,modnam,'E','203','Juli Day')
+            end if
+            if (jdayb<isjday .or. jdaye>iejday) then
 !                 WRITE Warning Message  ! Julian Day Out-of-Range
-               WRITE(DUMMY,'(I3,"-",I3)') JDAYB, JDAYE
-               CALL ERRHDL(PATH,MODNAM,'W','350',DUMMY)
-            END IF
+               write(dummy,'(I3,"-",I3)') jdayb, jdaye
+               call errhdl(path,modnam,'W','350',dummy)
+            end if
 
-         ELSE IF (.NOT.RMARK .and. GMARK) THEN
+         else if (.not.rmark .and. gmark) then
 !              Field Must Be a Single Month/Day
-            CALL STONUM(CMN1,8,FNUM,IMIT)
+            call stonum(cmn1,8,fnum,imit)
 !              Check The Numerical Field
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               GO TO 40
-            ELSE
-               IMN = NINT(FNUM)
-            END IF
-            CALL STONUM(CDY1,8,FNUM,IMIT)
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               go to 40
+            else
+               imn = nint(fnum)
+            end if
+            call stonum(cdy1,8,fnum,imit)
 !              Check The Numerical Field
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               GO TO 40
-            ELSE
-               IDY = NINT(FNUM)
-            END IF
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               go to 40
+            else
+               idy = nint(fnum)
+            end if
 ! ---          Determine JULIAN Day Number; For Non-Leap Year First;
 !              Note that JDAY for MN/DY inputs will be assigned based on
 !              on the Year specified on the ME SURFFILE keyword. However,
 !              the IPROCL array used to identify which Julian day(s) to be
 !              processed for leap years will be assigned based on the MN/DY
 !              input by the user.
-            CALL JULIAN(ISYEAR,IMN,IDY,JDAY)
+            call julian(isyear,imn,idy,jday)
 
-            IF ( (MOD(ISYEAR,4) /= 0) .or.&
-            &(MOD(ISYEAR,100) == 0 .and.&
-            &MOD(ISYEAR,400) /= 0) ) THEN
+            if ( (mod(isyear,4) /= 0) .or.&
+            &(mod(isyear,100) == 0 .and.&
+            &mod(isyear,400) /= 0) ) then
 !                 Not a Leap Year; Get JULIAN day number for specified MN/DY
 ! ---             Assign specified MN/DY to IPROC array (used for non-leap years)
 !                 and IPROCL array (used for leap years)
-               IF (JDAY >= 1 .and. JDAY <= 365) THEN
-                  IPROC(JDAY) = 1
-                  IF (IMN > 2) THEN
-                     IPROCL(JDAY+1) = 1
-                  ELSE
-                     IPROCL(JDAY) = 1
-                  END IF
-               ELSE
+               if (jday >= 1 .and. jday <= 365) then
+                  iproc(jday) = 1
+                  if (imn > 2) then
+                     iprocl(jday+1) = 1
+                  else
+                     iprocl(jday) = 1
+                  end if
+               else
 !                    WRITE Error Message    ! Invalid Julian Day
-                  CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
-               END IF
+                  call errhdl(path,modnam,'E','203','Juli Day')
+               end if
 ! ---             Check for consistency with STARTEND inputs, if provided
-               IF (JDAY<ISJDAY .or. JDAY>IEJDAY) THEN
+               if (jday<isjday .or. jday>iejday) then
 !                    WRITE Warning Message  ! Julian Day Out-of-Range
-                  WRITE(DUMMY,'(I8)') JDAY
-                  CALL ERRHDL(PATH,MODNAM,'W','350',DUMMY)
-               END IF
+                  write(dummy,'(I8)') jday
+                  call errhdl(path,modnam,'W','350',dummy)
+               end if
 
-            ELSE
+            else
 ! ---             Determine JULIAN Day Number; For Leap Year
 ! ---             Assign specified MD/DY to IPROC array (used for non-leap years)
 !                 and IPROCL array (used for leap years)
-               IF (JDAY >= 1 .and. JDAY <= 366) THEN
-                  IPROCL(JDAY) = 1
-                  IF (IMN > 2) THEN
-                     IPROC(JDAY-1) = 1
-                  ELSE
-                     IPROC(JDAY)   = 1
-                  END IF
-               ELSE
+               if (jday >= 1 .and. jday <= 366) then
+                  iprocl(jday) = 1
+                  if (imn > 2) then
+                     iproc(jday-1) = 1
+                  else
+                     iproc(jday)   = 1
+                  end if
+               else
 !                    WRITE Error Message    ! Invalid Julian Day
-                  CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
-               END IF
+                  call errhdl(path,modnam,'E','203','Juli Day')
+               end if
 ! ---             Check for consistency with STARTEND inputs, if provided
-               IF (JDAY<ISJDAY .or. JDAY>IEJDAY) THEN
+               if (jday<isjday .or. jday>iejday) then
 !                    WRITE Warning Message  ! Julian Day Out-of-Range
-                  WRITE(DUMMY,'(I8)') JDAY
-                  CALL ERRHDL(PATH,MODNAM,'W','350',DUMMY)
-               END IF
-            END IF
+                  write(dummy,'(I8)') jday
+                  call errhdl(path,modnam,'W','350',dummy)
+               end if
+            end if
 
-         ELSE IF (RMARK .and. GMARK) THEN
+         else if (rmark .and. gmark) then
 !              Field Must Be a Greg. Date Range (MN/DY-MN/DY)
-            CALL STONUM(CMN1,8,FNUM,IMIT)
+            call stonum(cmn1,8,fnum,imit)
 !              Check The Numerical Field
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               GO TO 41
-            ELSE
-               IMN1 = NINT(FNUM)
-            END IF
-            CALL STONUM(CDY1,8,FNUM,IMIT)
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               go to 41
+            else
+               imn1 = nint(fnum)
+            end if
+            call stonum(cdy1,8,fnum,imit)
 !              Check The Numerical Field
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               GO TO 41
-            ELSE
-               IDY1 = NINT(FNUM)
-            END IF
-41          CALL STONUM(CMN2,8,FNUM,IMIT)
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               go to 41
+            else
+               idy1 = nint(fnum)
+            end if
+41          call stonum(cmn2,8,fnum,imit)
 !              Check The Numerical Field
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               GO TO 40
-            ELSE
-               IMN2 = NINT(FNUM)
-            END IF
-            CALL STONUM(CDY2,8,FNUM,IMIT)
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               go to 40
+            else
+               imn2 = nint(fnum)
+            end if
+            call stonum(cdy2,8,fnum,imit)
 !              Check The Numerical Field
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               GO TO 40
-            ELSE
-               IDY2 = NINT(FNUM)
-            END IF
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               go to 40
+            else
+               idy2 = nint(fnum)
+            end if
 
 ! ---          Determine JULIAN Day Number; For Non-Leap Year First
-            IF ( (MOD(ISYEAR,4) /= 0) .or.&
-            &(MOD(ISYEAR,100) == 0 .and.&
-            &MOD(ISYEAR,400) /= 0) ) THEN
+            if ( (mod(isyear,4) /= 0) .or.&
+            &(mod(isyear,100) == 0 .and.&
+            &mod(isyear,400) /= 0) ) then
 !                 Not a Leap Year; Get JULIAN day numbers for specified
 !                 Start MN/DY and End MN/DY, based on STARTEND
-               CALL JULIAN(ISYEAR,IMN1,IDY1,JDAYB)
-               CALL JULIAN(ISYEAR,IMN2,IDY2,JDAYE)
+               call julian(isyear,imn1,idy1,jdayb)
+               call julian(isyear,imn2,idy2,jdaye)
 
 ! ---             Assign specified MN/DY range to IPROC array (used for non-leap years)
 !                 and IPROCL array (used for leap years)
-               IF ((JDAYB <= JDAYE) .and. (JDAYB >= 1) .and.&
-               &(JDAYE <= 365)) THEN
+               if ((jdayb <= jdaye) .and. (jdayb >= 1) .and.&
+               &(jdaye <= 365)) then
 ! ---                Assign IPROC array for use with non-leap years
-                  DO K = JDAYB, JDAYE
-                     IPROC(K) = 1
-                  END DO
+                  do k = jdayb, jdaye
+                     iproc(k) = 1
+                  end do
 ! ---                Assign IPROCL array for use with leap years
-                  DO K = JDAYB, JDAYE
-                     IPROCL(K) = 1
-                  END DO
+                  do k = jdayb, jdaye
+                     iprocl(k) = 1
+                  end do
 ! ---                Assign IPROCL = 1 for last day if JDAYE = 365
-                  IF (JDAYE == 365) THEN
-                     IPROCL(366) = 1
-                  END IF
-               ELSE
+                  if (jdaye == 365) then
+                     iprocl(366) = 1
+                  end if
+               else
 !                    WRITE Error Message    ! Invalid Julian Day
-                  CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
-               END IF
+                  call errhdl(path,modnam,'E','203','Juli Day')
+               end if
 ! ---             Check for consistency with STARTEND inputs, if provided
 ! ---              D146 Changed conditional to reference JDAYB and JDAYE rather than JDAY WSP 10/18/22
-               IF (JDAYB<ISJDAY .or. JDAYE>IEJDAY) THEN
+               if (jdayb<isjday .or. jdaye>iejday) then
 !                  IF (JDAY.LT.ISJDAY .or. JDAY.GT.IEJDAY) THEN
 
 !                    WRITE Warning Message  ! Julian Day Out-of-Range
 !  ---               D146 Changed warning to reference JDAYE and JDAYB rather than JDAY WSP 10/18/22
-                  WRITE(DUMMY,'(I3,"-",I3)') JDAYB, JDAYE
+                  write(dummy,'(I3,"-",I3)') jdayb, jdaye
 !                     WRITE(DUMMY,'(I8)') JDAY
-                  CALL ERRHDL(PATH,MODNAM,'W','350',DUMMY)
-               END IF
+                  call errhdl(path,modnam,'W','350',dummy)
+               end if
 
-            ELSE
+            else
 ! ---             Determine JULIAN Day Number; For Leap Year
 !                 Get JULIAN day numbers for specified
 !                 Start MN/DY and End MN/DY
-               CALL JULIAN(ISYEAR,IMN1,IDY1,JDAYB)
-               CALL JULIAN(ISYEAR,IMN2,IDY2,JDAYE)
+               call julian(isyear,imn1,idy1,jdayb)
+               call julian(isyear,imn2,idy2,jdaye)
 ! ---             Assign specified MN/DY range to IPROC array (used for non-leap years)
 !                 and IPROCL array (used for leap years)
-               IF ((JDAYB <= JDAYE) .and. (JDAYB >= 1) .and.&
-               &(JDAYE <= 366)) THEN
-                  DO K = JDAYB, JDAYE
-                     IPROCL(K) = 1
-                  END DO
-                  DO K = JDAYB, JDAYE
-                     IF (K <= 59 ) THEN
-                        IPROC(K) = 1
-                     ELSE IF (K > 60) THEN
+               if ((jdayb <= jdaye) .and. (jdayb >= 1) .and.&
+               &(jdaye <= 366)) then
+                  do k = jdayb, jdaye
+                     iprocl(k) = 1
+                  end do
+                  do k = jdayb, jdaye
+                     if (k <= 59 ) then
+                        iproc(k) = 1
+                     else if (k > 60) then
 ! ---                      Adjust non-leapyear Jday array for March 1 - Dec 31
-                        IPROC(K-1) = 1
-                     END IF
-                  END DO
-               ELSE
+                        iproc(k-1) = 1
+                     end if
+                  end do
+               else
 !                    WRITE Error Message    ! Invalid Julian Day
-                  CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
-               END IF
+                  call errhdl(path,modnam,'E','203','Juli Day')
+               end if
 
-               IF (JDAYB<ISJDAY .or. JDAYE>IEJDAY) THEN
+               if (jdayb<isjday .or. jdaye>iejday) then
 !                    WRITE Warning Message  ! Julian Day Out-of-Range
-                  WRITE(DUMMY,'(I3,"-",I3)') JDAYB, JDAYE
-                  CALL ERRHDL(PATH,MODNAM,'W','350',DUMMY)
-               END IF
+                  write(dummy,'(I3,"-",I3)') jdayb, jdaye
+                  call errhdl(path,modnam,'W','350',dummy)
+               end if
 
-            END IF
+            end if
 
-         ELSE
+         else
 !               WRITE Error Message    ! Invalid Field
-            CALL ERRHDL(PATH,MODNAM,'E','203','DAYRANGE')
-         END IF
+            call errhdl(path,modnam,'E','203','DAYRANGE')
+         end if
 
-40    CONTINUE
-   END IF
+40    continue
+   end if
 
-   RETURN
-END SUBROUTINE DAYRNG
+   return
+end subroutine dayrng
 
-SUBROUTINE WDROTA
+subroutine wdrota
 !***********************************************************************
 !                 WDROTA Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1524,36 +1524,36 @@ SUBROUTINE WDROTA
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'WDROTA'
+   modnam = 'WDROTA'
 
-   ROTANG = 0.0D0
+   rotang = 0.0d0
 
-   IF (IFC == 3) THEN
-      CALL STODBL(FIELD(3),ILEN_FLD,ROTANG,IMIT)
-      IF (IMIT /= 1) THEN
+   if (ifc == 3) then
+      call stodbl(field(3),ilen_fld,rotang,imit)
+      if (imit /= 1) then
 !            WRITE Error Message  ! Invalid Numeric Field Encountered
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      ELSE IF (DABS(ROTANG) > 180.0D0) THEN
+         call errhdl(path,modnam,'E','208',keywrd)
+      else if (dabs(rotang) > 180.0d0) then
 !            WRITE Error Message       ! ROTANG Out of Range
-         CALL ERRHDL(PATH,MODNAM,'E','380','ROTANG')
-      END IF
-   ELSE IF (IFC > 3) THEN
+         call errhdl(path,modnam,'E','380','ROTANG')
+      end if
+   else if (ifc > 3) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Error Message           ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+   end if
 
-   RETURN
-END SUBROUTINE WDROTA
+   return
+end subroutine wdrota
 
-SUBROUTINE WSCATS
+subroutine wscats
 !***********************************************************************
 !                 WSCATS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1576,46 +1576,46 @@ SUBROUTINE WSCATS
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, IWS
+   integer :: i, iws
 
 !     Variable Initializations
-   MODNAM = 'WSCATS'
+   modnam = 'WSCATS'
 
-   IF (IFC == 7) THEN
+   if (ifc == 7) then
 !        Fill UCAT Array
-      DO I = 3, IFC
-         CALL STODBL(FIELD(I),ILEN_FLD,DNUM,IMIT)
-         IF (IMIT /= 1) THEN
+      do i = 3, ifc
+         call stodbl(field(i),ilen_fld,dnum,imit)
+         if (imit /= 1) then
 !              WRITE Error Message  ! Invalid Numeric Field Encountered
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE IF (DNUM < 1.0D0 .or. DNUM > 20.0D0) THEN
+            call errhdl(path,modnam,'E','208',keywrd)
+         else if (dnum < 1.0d0 .or. dnum > 20.0d0) then
 !              WRITE Error Message       ! UCAT Out of Range
-            CALL ERRHDL(PATH,MODNAM,'E','380','UCAT')
-         ELSE
-            IWS = I - 2
-            UCAT(IWS) = DNUM
-            IF (IWS>1 .and. UCAT(IWS)<=UCAT(IWS-1)) THEN
+            call errhdl(path,modnam,'E','380','UCAT')
+         else
+            iws = i - 2
+            ucat(iws) = dnum
+            if (iws>1 .and. ucat(iws)<=ucat(iws-1)) then
 !                 WRITE Error Message    ! Invalid UCAT Value, LE Previous
-               CALL ERRHDL(PATH,MODNAM,'E','203','UCAT')
-            END IF
-         END IF
-      END DO
-   ELSE IF (IFC > 7) THEN
+               call errhdl(path,modnam,'E','203','UCAT')
+            end if
+         end if
+      end do
+   else if (ifc > 7) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Error Message           ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+   end if
 
-   RETURN
-END SUBROUTINE WSCATS
+   return
+end subroutine wscats
 
-SUBROUTINE MEOPEN
+subroutine meopen
 !***********************************************************************
 !                 MEOPEN Module of the AERMOD Model
 !
@@ -1666,34 +1666,34 @@ SUBROUTINE MEOPEN
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: METVER, IOSI, ISSI, IUSI
-   integer :: LEVEL, JFLAG
-   LOGICAL :: FOPEN, MFOPEN, MPOPEN
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: metver, iosi, issi, iusi
+   integer :: level, jflag
+   logical :: fopen, mfopen, mpopen
 
 !     Set Parameters for AERMET Version Dates.
 !     Using data > MDATE1 or < MDATE2 causes a fatal error message.
-   INTEGER, PARAMETER :: MDATE1 = 90000,  MDATE2 = 12345
+   integer, parameter :: mdate1 = 90000,  mdate2 = 12345
 !     Using data < MDATE1, > MDATE2, and .NE. MDATE3 causes warning message.
-   INTEGER, PARAMETER :: MDATE3 = 14134
+   integer, parameter :: mdate3 = 14134
 
-   CHARACTER (LEN=6)   :: ASOSTHRESH
+   character (len=6)   :: asosthresh
 
-   CHARACTER (LEN=8)   :: CUSI, CSSI, COSI
+   character (len=8)   :: cusi, cssi, cosi
 ! Unused:      CHARACTER (LEN=6)   :: SPEC1, SPEC2, SPEC3
-   CHARACTER (LEN=256) :: BUFFER
+   character (len=256) :: buffer
 
 !     Variable Initializations
-   MODNAM = 'MEOPEN'
-   FOPEN  = .FALSE.
-   MFOPEN = .FALSE.
-   MPOPEN = .FALSE.
+   modnam = 'MEOPEN'
+   fopen  = .false.
+   mfopen = .false.
+   mpopen = .false.
 
 ! --- Initialize AERMOD version date (METVER) and ASOSTHRESH flag
-   METVER = 0
-   ASOSTHRESH = '      '
+   metver = 0
+   asosthresh = '      '
 
 !     File Unit Initialized in BLOCK DATA INIT
 !     File Format Set By Keyword "SURFFILE" on "ME" pathway
@@ -1702,33 +1702,33 @@ SUBROUTINE MEOPEN
 !     READ In the Station Numbers for Comparison to SETUP File
 
 !     Open SURFFILE Met File If Not Already Open
-   INQUIRE (FILE=METINP,OPENED=FOPEN)
+   inquire (file=metinp,opened=fopen)
 
-   IF (.NOT. FOPEN) THEN
+   if (.not. fopen) then
 !        Open SURFFILE Met File If Not Already Open
-      INQUIRE (UNIT=MFUNIT,OPENED=FOPEN)
-      IF (.NOT. FOPEN) THEN
+      inquire (unit=mfunit,opened=fopen)
+      if (.not. fopen) then
 !           Open with ACTION='READ' to prevent overwrite and allow multiple access
-         OPEN(UNIT=MFUNIT,FILE=METINP,STATUS='OLD',&
-         &ERR=998,ACTION='READ',FORM='FORMATTED')
-         MFOPEN = .TRUE.
+         open(unit=mfunit,file=metinp,status='OLD',&
+         &err=998,action='READ',form='FORMATTED')
+         mfopen = .true.
 
-      ELSE
-         MFOPEN = .FALSE.
+      else
+         mfopen = .false.
 !           SURFFILE Met File is Already Opened With Different Filename
-         CALL ERRHDL(PATH,MODNAM,'E','501','SURFFILE')
-      END IF
-   ELSE
-      MFOPEN = .TRUE.
-   END IF
+         call errhdl(path,modnam,'E','501','SURFFILE')
+      end if
+   else
+      mfopen = .true.
+   end if
 
-   GO TO 1000
+   go to 1000
 
 !     Write Out Error Message for File OPEN Error
-998 CALL ERRHDL(PATH,MODNAM,'E','500','SURFFILE')
+998 call errhdl(path,modnam,'E','500','SURFFILE')
 !     Skip READ if there is an error opening file
 
-1000 CONTINUE
+1000 continue
 
 ! --- Next OPEN the PROFFILE Met File
 !     File Format Set By Keyword "PROFFILE" on "ME" pathway
@@ -1736,364 +1736,364 @@ SUBROUTINE MEOPEN
 !     OPEN Profile Met Data File --- Formatted is the only option
 
 ! --- Initialize FOPEN to .FALSE.
-   FOPEN = .FALSE.
+   fopen = .false.
 
 !     Open PROFFILE Met File If Not Already Open
-   INQUIRE (FILE=PROINP,OPENED=FOPEN)
+   inquire (file=proinp,opened=fopen)
 
-   IF (.NOT. FOPEN) THEN
+   if (.not. fopen) then
 !        Open PROFFILE Met File If Not Already Open
-      INQUIRE (UNIT=MPUNIT,OPENED=FOPEN)
-      IF (.NOT. FOPEN) THEN
+      inquire (unit=mpunit,opened=fopen)
+      if (.not. fopen) then
 !           Open with ACTION='READ' to prevent overwrite and allow multiple access
-         OPEN(UNIT=MPUNIT,FILE=PROINP,STATUS='OLD',&
-         &ERR=999,ACTION='READ',FORM='FORMATTED')
-         MPOPEN = .TRUE.
+         open(unit=mpunit,file=proinp,status='OLD',&
+         &err=999,action='READ',form='FORMATTED')
+         mpopen = .true.
 
-      ELSE
-         MPOPEN = .FALSE.
+      else
+         mpopen = .false.
 !           PROFFILE Met File is Already Opened With Different Filename
-         CALL ERRHDL(PATH,MODNAM,'E','501','PROFFILE')
-      END IF
-   ELSE
-      MPOPEN = .TRUE.
-   END IF
+         call errhdl(path,modnam,'E','501','PROFFILE')
+      end if
+   else
+      mpopen = .true.
+   end if
 
-   GO TO 1001
+   go to 1001
 
 !     Write Out Error Message for File OPEN Error
-999 CALL ERRHDL(PATH,MODNAM,'E','500','PROFFILE')
-   MPOPEN = .FALSE.
+999 call errhdl(path,modnam,'E','500','PROFFILE')
+   mpopen = .false.
 
-1001 CONTINUE
+1001 continue
 
-   IF( .NOT.MFOPEN .and. .NOT.MPOPEN )THEN
-      GOTO 1003
-   ELSEIF( MFOPEN )THEN
-      CONTINUE
-   ENDIF
+   if( .not.mfopen .and. .not.mpopen )then
+      goto 1003
+   elseif( mfopen )then
+      continue
+   endif
 
 ! --- First read header record as character string to check for AERMET
 !     options, THRESH_1MIN, ADJ_U*, CCVR_Sub, and/or TEMP_SUb
 ! --- Assign SURFFILE to DUMMY variable for read error message
-   DUMMY = 'SURFFILE'
-   IF (MFOPEN) THEN
-      READ(MFUNIT,1200,ERR=99,IOSTAT=IOERRN) BUFFER
-1200  FORMAT(A256)
-      IF (IOERRN /= 0) GOTO 99 ! 16216 Added to check for empty file
-   ELSE
-      GO TO 1002
-   END IF
+   dummy = 'SURFFILE'
+   if (mfopen) then
+      read(mfunit,1200,err=99,iostat=ioerrn) buffer
+1200  format(a256)
+      if (ioerrn /= 0) goto 99 ! 16216 Added to check for empty file
+   else
+      go to 1002
+   end if
 
 ! --- First extract AERMET version date, C_METVER
-   IF( INDEX(BUFFER,'VERSION:') /= 0 )THEN
+   if( index(buffer,'VERSION:') /= 0 )then
 !        Extract AERMET version date
-      READ(BUFFER(INDEX(BUFFER,'VERSION:')+8:&
-      &INDEX(BUFFER,'VERSION:')+13),'(A6)')&
-      &C_METVER
-   ELSEIF( BUFFER(93:98) /= '      ' )THEN
+      read(buffer(index(buffer,'VERSION:')+8:&
+      &index(buffer,'VERSION:')+13),'(A6)')&
+      &c_metver
+   elseif( buffer(93:98) /= '      ' )then
 !        The 'VERSION:' keyword is missing so assign columns 93-98 to C_METVER
-      C_METVER = BUFFER(93:98)
-   ELSE
-      C_METVER = '      '
+      c_metver = buffer(93:98)
+   else
+      c_metver = '      '
 !        AERMET version not found in header record, issue fatal error message
-      CALL ERRHDL(PATH,MODNAM,'E','395','No Version')
-   ENDIF
+      call errhdl(path,modnam,'E','395','No Version')
+   endif
 
 ! --- Next check for THRESH_1MIN indicating that wind speed threshold was
 !     applied to 1-minute ASOS wind data
-   IF( INDEX(BUFFER,'THRESH_1MIN') /= 0 )THEN
+   if( index(buffer,'THRESH_1MIN') /= 0 )then
 !        Extract 1-min ASOS threshold value and write out Warning message
-      READ(BUFFER(INDEX(BUFFER,'=')+1:&
-      &INDEX(BUFFER,'m/s')),*)&
-      &ASOSTHRESH
-      CALL ERRHDL(PATH,MODNAM,'W','186',ASOSTHRESH)
-   ENDIF
+      read(buffer(index(buffer,'=')+1:&
+      &index(buffer,'m/s')),*)&
+      &asosthresh
+      call errhdl(path,modnam,'W','186',asosthresh)
+   endif
 
 ! --- Check for use of various met data processing options and issue
 !     message as appropriate
-   IF( INDEX(BUFFER,'ADJ_U*') /= 0 )THEN
+   if( index(buffer,'ADJ_U*') /= 0 )then
 !        Check for use of ADJ_U* option in AERMET
-      L_AdjUstar = .TRUE.
-      CALL ERRHDL(PATH,MODNAM,'W','187',' ')
+      L_AdjUstar = .true.
+      call errhdl(path,modnam,'W','187',' ')
 !        Assign keyword to MODOPS array
-      MODOPS(23) = 'ADJ_U*'
-   ENDIF
+      modops(23) = 'ADJ_U*'
+   endif
 
 !     JAT 1/14/21 ISSUE D077; ADD PROG AS WELL AS MMIF TO ACCOMODATE NEW AERMET
 !      IF( INDEX(BUFFER,'MMIF') .NE. 0 )THEN
-   IF( INDEX(BUFFER,'MMIF') /= 0 .or. INDEX(BUFFER,'PROG')&
-   &.NE. 0 )THEN
+   if( index(buffer,'MMIF') /= 0 .or. index(buffer,'PROG')&
+   &.ne. 0 )then
 !        Check for use of MMIF option in AERMET
-      L_MMIF_Data = .TRUE.
-      CALL ERRHDL(PATH,MODNAM,'W','182','  ')
+      L_MMIF_Data = .true.
+      call errhdl(path,modnam,'W','182','  ')
 !        Assign keyword to MODOPS array
-      MODOPS(24) = 'MMIF_Data'
+      modops(24) = 'MMIF_Data'
 !         IF( INDEX(BUFFER,'MMIF VERSION') .NE. 0 )THEN
-      IF( INDEX(BUFFER,'MMIF VERSION') /= 0 .or.&
-      &INDEX(BUFFER,'PROG VERSION') /= 0 )THEN
+      if( index(buffer,'MMIF VERSION') /= 0 .or.&
+      &index(buffer,'PROG VERSION') /= 0 )then
 !           Extract MMIF Version info to include in output file
-         IF( INDEX(BUFFER,'MMIF VERSION') /= 0) THEN
-            MMIF_Version = BUFFER( INDEX(BUFFER,'MMIF VERSION'):&
-            &INDEX(BUFFER,'MMIF VERSION')+28 ) ! CRT 1/11/2021 D077, 26 to 28
-         ELSE
-            MMIF_Version = BUFFER( INDEX(BUFFER,'PROG VERSION'):&
-            &INDEX(BUFFER,'PROG VERSION')+28 ) ! CRT 1/11/2021 D077, 26 to 28
-         ENDIF
-      ELSE
+         if( index(buffer,'MMIF VERSION') /= 0) then
+            MMIF_Version = buffer( index(buffer,'MMIF VERSION'):&
+            &index(buffer,'MMIF VERSION')+28 ) ! CRT 1/11/2021 D077, 26 to 28
+         else
+            MMIF_Version = buffer( index(buffer,'PROG VERSION'):&
+            &index(buffer,'PROG VERSION')+28 ) ! CRT 1/11/2021 D077, 26 to 28
+         endif
+      else
          MMIF_Version = ''
-      ENDIF
-   ENDIF
+      endif
+   endif
 
 !     CRT 8/9/2023 ISSUE D176; Add 'COARE' flag to accomodate COARE in AERMET
-   IF( INDEX(BUFFER,'COARE') /= 0 )THEN
+   if( index(buffer,'COARE') /= 0 )then
 !        Set COARE logical to true and MODOPS
-      L_COARE = .TRUE.
-      MODOPS(27) = 'COARE'
-      CALL ERRHDL(PATH,MODNAM,'W','422','  ')
+      l_coare = .true.
+      modops(27) = 'COARE'
+      call errhdl(path,modnam,'W','422','  ')
 !MGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (begin)
 !        COARE met requires beta flag
 !MGS         IF( .NOT. BETA )THEN
 !MGS            CALL ERRHDL(PATH,MODNAM,'E','199','COARE Met')
 !MGS         ENDIF
 !MGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (begin)
-   ENDIF
+   endif
 
-   IF( INDEX(BUFFER,'BULKRN') /= 0 )THEN
+   if( index(buffer,'BULKRN') /= 0 )then
 !        Check for use of BULKRN option in AERMET and assign logical variable;
 !        Note that BULKRN is NOT a BETA or non-DFAULT option, and message is
 !        issued for informational purposes
-      L_BULKRN = .TRUE.
+      l_bulkrn = .true.
 !        Assign keyword to MODOPS array, unless MMIF is also being used
 !        CRT 8/9/2023 ISSUE D176; Also cannot use BULKRN with COARE
 !        CRT8/11/2023 ISSUE D176: Modify MODOPS to 27 for BULKRN, also used for COARE
 !         IF( .NOT. L_MMIF_Data )THEN
-      IF( .NOT. L_COARE )THEN
-         MODOPS(27) = 'BULKRN'
-      ELSE
-         CALL ERRHDL(PATH,MODNAM,'E','423','  ')
-      ENDIF
+      if( .not. l_coare )then
+         modops(27) = 'BULKRN'
+      else
+         call errhdl(path,modnam,'E','423','  ')
+      endif
 ! ---    Check for use of MMIF data and adjust BULKRN message accordingly
-      IF( L_MMIF_Data )THEN
-         CALL ERRHDL(PATH,MODNAM,'W','181','with MMIF')
-      ELSE
-         CALL ERRHDL(PATH,MODNAM,'W','181','in AERMET')
-      ENDIF
-   ENDIF
+      if( L_MMIF_Data )then
+         call errhdl(path,modnam,'W','181','with MMIF')
+      else
+         call errhdl(path,modnam,'W','181','in AERMET')
+      endif
+   endif
 
-   IF( INDEX(BUFFER,'CCVR_Sub') /= 0 )THEN
+   if( index(buffer,'CCVR_Sub') /= 0 )then
 ! ---    Set logical flag indicating that CCVR_Sub option was used
-      L_CCVR_Sub = .TRUE.
-   ELSE
-      L_CCVR_Sub = .FALSE.
-   ENDIF
+      L_CCVR_Sub = .true.
+   else
+      L_CCVR_Sub = .false.
+   endif
 
-   IF( INDEX(BUFFER,'TEMP_Sub') /= 0 )THEN
+   if( index(buffer,'TEMP_Sub') /= 0 )then
 ! ---    Set logical flag indicating that TEMP_Sub option was used
-      L_TEMP_Sub = .TRUE.
-   ELSE
-      L_TEMP_Sub = .FALSE.
-   ENDIF
+      L_TEMP_Sub = .true.
+   else
+      L_TEMP_Sub = .false.
+   endif
 
 ! --- Read Lat/Lon from header record BUFFER
-   READ(BUFFER,1900,ERR=99,IOSTAT=IOERRN) ALAT, ALON
-1900 FORMAT(2A10)
+   read(buffer,1900,err=99,iostat=ioerrn) alat, alon
+1900 format(2a10)
 
 ! --- Now extract UA, SF, and OS station IDs from header record
-   IF( INDEX(BUFFER,'UA_ID:') > 0 )THEN
-      READ(BUFFER(INDEX(BUFFER,'UA_ID:')+7:&
-      &INDEX(BUFFER,'UA_ID:')+15),'(A)') CUSI
-   ELSE
-      CUSI = '        '
-   END IF
-   CALL STONUM(CUSI,8,FNUM,IMIT)
-   IF (IMIT == 1) THEN
-      IUSI = NINT(FNUM)
-   ELSE
-      IUSI = 0
-   END IF
+   if( index(buffer,'UA_ID:') > 0 )then
+      read(buffer(index(buffer,'UA_ID:')+7:&
+      &index(buffer,'UA_ID:')+15),'(A)') cusi
+   else
+      cusi = '        '
+   end if
+   call stonum(cusi,8,fnum,imit)
+   if (imit == 1) then
+      iusi = nint(fnum)
+   else
+      iusi = 0
+   end if
 
-   IF( INDEX(BUFFER,'SF_ID:') > 0 )THEN
-      READ(BUFFER(INDEX(BUFFER,'SF_ID:')+7:&
-      &INDEX(BUFFER,'SF_ID:')+15),'(A)') CSSI
-   ELSE
-      CSSI = '        '
-   END IF
-   CALL STONUM(CSSI,8,FNUM,IMIT)
-   IF (IMIT == 1) THEN
-      ISSI = NINT(FNUM)
-   ELSE
-      ISSI = 0
-   END IF
+   if( index(buffer,'SF_ID:') > 0 )then
+      read(buffer(index(buffer,'SF_ID:')+7:&
+      &index(buffer,'SF_ID:')+15),'(A)') cssi
+   else
+      cssi = '        '
+   end if
+   call stonum(cssi,8,fnum,imit)
+   if (imit == 1) then
+      issi = nint(fnum)
+   else
+      issi = 0
+   end if
 
-   IF( INDEX(BUFFER,'OS_ID:') > 0 )THEN
-      READ(BUFFER(INDEX(BUFFER,'OS_ID:')+7:&
-      &INDEX(BUFFER,'OS_ID:')+15),'(A)') COSI
-   ELSE
-      COSI = '        '
-   END IF
-   CALL STONUM(COSI,8,FNUM,IMIT)
-   IF (IMIT == 1) THEN
-      IOSI = NINT(FNUM)
-   ELSE
-      IOSI = 0
-   END IF
+   if( index(buffer,'OS_ID:') > 0 )then
+      read(buffer(index(buffer,'OS_ID:')+7:&
+      &index(buffer,'OS_ID:')+15),'(A)') cosi
+   else
+      cosi = '        '
+   end if
+   call stonum(cosi,8,fnum,imit)
+   if (imit == 1) then
+      iosi = nint(fnum)
+   else
+      iosi = 0
+   end if
 
 !     Check for valid version of meteorological data.
-   IF (SCREEN .and. C_METVER /= 'SCREEN') THEN
+   if (screen .and. c_metver /= 'SCREEN') then
 !        Check for use of screening meteorology under the SCREEN option
-      CALL ERRHDL(PATH,MODNAM,'W','397',C_METVER)
-   ELSE IF (.NOT.SCREEN .and. C_METVER == 'SCREEN') THEN
+      call errhdl(path,modnam,'W','397',c_metver)
+   else if (.not.screen .and. c_metver == 'SCREEN') then
 !        Check for use of screening meteorology without SCREEN option
-      CALL ERRHDL(PATH,MODNAM,'W','398','        ')
-   ELSE IF (.NOT.SCREEN) THEN
+      call errhdl(path,modnam,'W','398','        ')
+   else if (.not.screen) then
 !        Read integer Julian date from character field for comparison to
 !        acceptable AERMET version number.
-      READ(C_METVER,'(1X,I5)',ERR=109) METVER
-      IF (METVER>MDATE1 .or. METVER<MDATE2) THEN
+      read(c_metver,'(1X,I5)',err=109) metver
+      if (metver>mdate1 .or. metver<mdate2) then
 ! ---       Issue fatal error for use of invalid met version date
-         WRITE(DUMMY,'(2X,I5.5)') METVER
-         CALL ERRHDL(PATH,MODNAM,'E','395',DUMMY)
-      ELSE IF (METVER>=MDATE2 .and. METVER<MDATE3) THEN
+         write(dummy,'(2X,I5.5)') metver
+         call errhdl(path,modnam,'E','395',dummy)
+      else if (metver>=mdate2 .and. metver<mdate3) then
 ! ---       Issue warning message for use of "outdated" met version date
-         WRITE(DUMMY,'(2X,I5.5)') METVER
-         CALL ERRHDL(PATH,MODNAM,'W','396',DUMMY)
+         write(dummy,'(2X,I5.5)') metver
+         call errhdl(path,modnam,'W','396',dummy)
 ! ---       Set logical flag for use of "old" met data
-         L_OldMetVer = .TRUE.
-      END IF
+         L_OldMetVer = .true.
+      end if
 
-      GO TO 110
+      go to 110
 
-109   CONTINUE
+109   continue
 ! ---    Error reading METVER date as integer from C_METVER character string;
 !        issue warning message for "outdated" met version date; this allows for
 !        interim version "dates" for AERMET drafts, e.g., 13DFT
-      CALL ERRHDL(PATH,MODNAM,'W','396',C_METVER)
+      call errhdl(path,modnam,'W','396',c_metver)
 ! ---    Set logical flag for use of "old" met data
-      L_OldMetVer = .TRUE.
-   END IF
+      L_OldMetVer = .true.
+   end if
 
-110 CONTINUE
+110 continue
 
 ! --- Check Station IDs in SURFFILE for agreement with ME pathway;
 !     First check for blank fields in surface file header record
-   IF( LEN_TRIM(CSSI) == 0 .and. IDSURF /= 0 )THEN
+   if( len_trim(cssi) == 0 .and. idsurf /= 0 )then
 !        Write Warning Message:  SURFDATA ID missing;
-      CALL ERRHDL(PATH,MODNAM,'W','531','SURFDATA')
-   ELSEIF( ISSI /= IDSURF )THEN
+      call errhdl(path,modnam,'W','531','SURFDATA')
+   elseif( issi /= idsurf )then
 !        Write Warning Message:  SURFDATA id mismatch
-      CALL ERRHDL(PATH,MODNAM,'W','530','SURFDATA')
-   ENDIF
-   IF( LEN_TRIM(CUSI) == 0 .and. IDUAIR /= 0 )THEN
+      call errhdl(path,modnam,'W','530','SURFDATA')
+   endif
+   if( len_trim(cusi) == 0 .and. iduair /= 0 )then
 !        Write Warning Message:  UAIRDATA ID missing;
-      CALL ERRHDL(PATH,MODNAM,'W','531','UAIRDATA')
-   ELSEIF( IUSI /= IDUAIR )THEN
+      call errhdl(path,modnam,'W','531','UAIRDATA')
+   elseif( iusi /= iduair )then
 !        Write Warning Message:  UAIRDATA id mismatch
-      CALL ERRHDL(PATH,MODNAM,'W','530','UAIRDATA')
-   ENDIF
-   IF( IMSTAT(9) == 1 )THEN
-      IF( LEN_TRIM(COSI) == 0 .and. IDSITE /= 0 )THEN
+      call errhdl(path,modnam,'W','530','UAIRDATA')
+   endif
+   if( imstat(9) == 1 )then
+      if( len_trim(cosi) == 0 .and. idsite /= 0 )then
 !           Write Warning Message:  SITEDATA ID missing;
-         CALL ERRHDL(PATH,MODNAM,'W','531','SITEDATA')
-      ELSEIF( IOSI /= IDSITE )THEN
+         call errhdl(path,modnam,'W','531','SITEDATA')
+      elseif( iosi /= idsite )then
 !           Write Warning Message:  SITEDATA id mismatch
-         CALL ERRHDL(PATH,MODNAM,'W','530','SITEDATA')
-      END IF
-   ENDIF
+         call errhdl(path,modnam,'W','530','SITEDATA')
+      end if
+   endif
 
 !     Get the hemisphere and latitude (from the first record of the
 !     scalar file
-   CALL DCDLAT ()
+   call dcdlat ()
 
 ! --- Open and read first hour of PROFFILE in order to check for
 !     PROFFILE heights that may indicate use of prognostic met data
 
-1002 CONTINUE
+1002 continue
 
 ! --- Check for whether PROFFILE met file has been opened;
 !     otherwise, skip to end
-   IF( .NOT. MPOPEN ) GOTO 1003
+   if( .not. mpopen ) goto 1003
 
 !---- Initialize the profile data to missing;
 !     READ profile data based on free format
 !
-   CALL PFLINI ()
-   LEVEL = 1
-   JFLAG = 0
+   call pflini ()
+   level = 1
+   jflag = 0
 !     Read record from ASCII profile file using FREE format; compute
 !     sigma_V from sigma_A and wind speed
 
 ! --- Set 'DUMMY' variable = 'PROFFILE' for error handling
-   DUMMY = 'PROFFILE'
+   dummy = 'PROFFILE'
 
-   DO WHILE( JFLAG == 0 )
-      READ( MPUNIT, *, END=1000, ERR=99, IOSTAT=IOERRN ) KYEAR,&
-      &KMONTH, KDAY, KHOUR, PFLHT(LEVEL), JFLAG,&
-      &PFLWD(LEVEL), PFLWS(LEVEL), PFLTA(LEVEL),&
-      &PFLSA(LEVEL), PFLSW(LEVEL)
+   do while( jflag == 0 )
+      read( mpunit, *, end=1000, err=99, iostat=ioerrn ) kyear,&
+      &kmonth, kday, khour, pflht(level), jflag,&
+      &pflwd(level), pflws(level), pflta(level),&
+      &pflsa(level), pflsw(level)
 
 !        Convert the data to the required units
-      CALL PFLCNV (LEVEL)
+      call pflcnv (level)
 
 !        Set the number of profile levels to current index, store
 !        the 'top of profile' flag, and increment level if not at top
 !        Check that the level does not exceed the maximum allowable
-      NPLVLS = LEVEL
-      IFLAG(LEVEL) = JFLAG
+      nplvls = level
+      iflag(level) = jflag
 
 ! ---    Check for PFLHT > 999m, which could indicate use of
 !        MMIF or other gridded met data inputs
-      IF( PFLHT(LEVEL) > 999.0D0 .or. PFLHT(LEVEL) <= 0.0D0)THEN
-         IF( .NOT. L_MMIF_Data .and. .NOT. L_MMIF_Profile )THEN
+      if( pflht(level) > 999.0d0 .or. pflht(level) <= 0.0d0)then
+         if( .not. L_MMIF_Data .and. .not. L_MMIF_Profile )then
 ! ---          Issue warning message for PFLHT > 999m if MMIF data
 !              inputs were not specified; message(s) will only be
 !              generated for a single profile
-            WRITE(DUMMY,'(''LVL'',I2.2,1X,I5,''m'')') LEVEL,&
-            &NINT(PFLHT(LEVEL))
-            CALL ERRHDL(PATH,MODNAM,'W','184',DUMMY)
-            IF( JFLAG == 1 )THEN
+            write(dummy,'(''LVL'',I2.2,1X,I5,''m'')') level,&
+            &nint(pflht(level))
+            call errhdl(path,modnam,'W','184',dummy)
+            if( jflag == 1 )then
 ! ---             Top of profile has been flagged for PFLHT > 999m
 !                 Set L_MMIF_Profile flag to .TRUE. to turn off
 !                 additional warning messages
-               L_MMIF_Profile = .TRUE.
-            ENDIF
-         ENDIF
-      ENDIF
+               L_MMIF_Profile = .true.
+            endif
+         endif
+      endif
 
-      IF( JFLAG == 0 )THEN
-         LEVEL = LEVEL + 1
+      if( jflag == 0 )then
+         level = level + 1
 
-         IF( LEVEL > MXPLVL )THEN
-            IF( .NOT. PFLERR )THEN
+         if( level > mxplvl )then
+            if( .not. pflerr )then
 !                 WRITE Error Message: Number of profile levels
 !                                      exceeds maximum allowable
-               WRITE(DUMMY,'(I8)') MXPLVL
-               CALL ERRHDL(PATH,MODNAM,'E','465',DUMMY)
-               PFLERR = .TRUE.
-               RUNERR = .TRUE.
-            END IF
+               write(dummy,'(I8)') mxplvl
+               call errhdl(path,modnam,'E','465',dummy)
+               pflerr = .true.
+               runerr = .true.
+            end if
 
 !              Limit the number of levels to the maximum allowable
-            LEVEL = MXPLVL
-         END IF
+            level = mxplvl
+         end if
 
-      END IF
+      end if
 
-   END DO
+   end do
 
-   REWIND MPUNIT
+   rewind mpunit
 
-   GO TO 1003
+   go to 1003
 
 !     Write Out Error Message for File READ Error
-99 CALL ERRHDL(PATH,MODNAM,'E','510',DUMMY)
-   RETURN
+99 call errhdl(path,modnam,'E','510',dummy)
+   return
 
-1003 CONTINUE
+1003 continue
 
-END SUBROUTINE MEOPEN
+end subroutine meopen
 
-SUBROUTINE SCIMIT
+subroutine scimit
 !***********************************************************************
 !                 SCIMIT Module of AERMOD Model
 !
@@ -2119,144 +2119,144 @@ SUBROUTINE SCIMIT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, IMIT5, IMIT6
+   integer :: i, imit5, imit6
 
 !     Variable Initializations
-   MODNAM = 'SCIMIT'
-   IMIT5  = 1
-   IMIT6  = 1
+   modnam = 'SCIMIT'
+   imit5  = 1
+   imit6  = 1
 
-   IF (IFC == 4 .or. IFC == 6 .or. IFC == 8) THEN
-      CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
+   if (ifc == 4 .or. ifc == 6 .or. ifc == 8) then
+      call stonum(field(3),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
+      if (imit /= 1) then
 !           Issue error message: Invalid numeric field
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','208',keywrd)
+      else
 !           Assign value for SCIM starting hour
-         NREGSTART = NINT( FNUM )
-      END IF
-      IF (NREGSTART < 1 .or. NREGSTART > 24) THEN
+         nregstart = nint( fnum )
+      end if
+      if (nregstart < 1 .or. nregstart > 24) then
 !           WRITE Error Message        ! Start Hour out of range
-         CALL ERRHDL(PATH,MODNAM,'E','380','StartHr')
-      END IF
+         call errhdl(path,modnam,'E','380','StartHr')
+      end if
 
-      CALL STONUM(FIELD(4),ILEN_FLD,FNUM,IMIT)
+      call stonum(field(4),ilen_fld,fnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
+      if (imit /= 1) then
 !           Issue error message: Invalid numeric field
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','208',keywrd)
+      else
 !           Assign value for SCIM interval
-         NREGINT = NINT( FNUM )
-      END IF
-      IF (NREGINT < 1) THEN
+         nregint = nint( fnum )
+      end if
+      if (nregint < 1) then
 !           WRITE Error Message        ! NRegInt is out of range
-         CALL ERRHDL(PATH,MODNAM,'E','380','NRegInt')
-      END IF
+         call errhdl(path,modnam,'E','380','NRegInt')
+      end if
 
-      IF (IFC == 8) THEN
+      if (ifc == 8) then
 ! ---       Issue warning message:  Wet scimming not supported
-         CALL ERRHDL(PATH,MODNAM,'W','157',KEYWRD)
+         call errhdl(path,modnam,'W','157',keywrd)
 
 ! ---       Skip wet scimming inputs in fields 5 and 6
 
 !           Assume fields 7 and 8 are optional files for summary of
 !           SCIM'd met data.
-         SCIMOUT = .TRUE.
+         scimout = .true.
 !           Retrieve Sfc Met Data Filename as Character Substring to Maintain Case
-         IF ((LOCE(7)-LOCB(7)) <= (ILEN_FLD - 1) ) THEN
+         if ((loce(7)-locb(7)) <= (ilen_fld - 1) ) then
 !              Retrieve Filename as Character Substring to Maintain Original Case
 !              Also Check for Filename Larger Than ILEN_FLD Characters
-            SCIM_SFCFIL = RUNST1(LOCB(7):LOCE(7))
-            OPEN(UNIT=ISUNIT,FILE=SCIM_SFCFIL,STATUS='REPLACE')
-         ELSE
+            scim_sfcfil = runst1(locb(7):loce(7))
+            open(unit=isunit,file=scim_sfcfil,status='REPLACE')
+         else
 !              WRITE Error Message:  SCIM_SFCFIL Field is Too Long
-            WRITE(DUMMY,'(I8)') ILEN_FLD
-            CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         END IF
+            write(dummy,'(I8)') ilen_fld
+            call errhdl(path,modnam,'E','291',dummy)
+         end if
 !           Retrieve Pfl Met Data Filename as Character Substring to Maintain Case
-         IF ((LOCE(8)-LOCB(8)) <= (ILEN_FLD - 1) ) THEN
+         if ((loce(8)-locb(8)) <= (ilen_fld - 1) ) then
 !              Retrieve Filename as Character Substring to Maintain Original Case
 !              Also Check for Filename Larger Than ILEN_FLD Characters
-            SCIM_PROFIL = RUNST1(LOCB(8):LOCE(8))
-            OPEN(UNIT=IPUNIT,FILE=SCIM_PROFIL,STATUS='REPLACE')
-         ELSE
+            scim_profil = runst1(locb(8):loce(8))
+            open(unit=ipunit,file=scim_profil,status='REPLACE')
+         else
 !              WRITE Error Message:  SCIM_PROFIL Field is Too Long
-            WRITE(DUMMY,'(I8)') ILEN_FLD
-            CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         END IF
+            write(dummy,'(I8)') ilen_fld
+            call errhdl(path,modnam,'E','291',dummy)
+         end if
 
-      ELSE IF (IFC == 6) THEN
+      else if (ifc == 6) then
 ! ---       Check fields 5 and 6 for optional SCIM'd met data files or for
 !           unsupported wet scimming inputs.
 
 ! ---       Check the fields for non-numeric characters; if any are found,
 !           then assume that these are optional met data file names;
 !           otherwise, assume these are unsupported wet scimming inputs
-         DO I = LOCB(5), LOCE(5)
-            READ(RUNST1(I:I),'(I1)',ERR=99) IMIT5
-         END DO
-         DO I = LOCB(6), LOCE(6)
-            READ(RUNST1(I:I),'(I1)',ERR=99) IMIT6
-         END DO
+         do i = locb(5), loce(5)
+            read(runst1(i:i),'(I1)',err=99) imit5
+         end do
+         do i = locb(6), loce(6)
+            read(runst1(i:i),'(I1)',err=99) imit6
+         end do
 
 ! ---       Neither field 5 nor 6 has non-numeric characters,
 !           assume that these are unsupported wet scimming inputs.
 !           Issue warning message:  Wet scimming not supported
-         CALL ERRHDL(PATH,MODNAM,'W','157',KEYWRD)
+         call errhdl(path,modnam,'W','157',keywrd)
 
 ! ---       Done processing, return
-         RETURN
+         return
 
 ! ---       Non-numeric characters found in fields 5 and/or 6;
 !           assume these are file names
-99       CONTINUE
+99       continue
 
 ! ---       At least one field has non-numeric characters,
 !           assume that these are optional SCIM'd met data file names
-         SCIMOUT = .TRUE.
+         scimout = .true.
 !           Retrieve Sfc Met Data Filename as Character Substring to Maintain Case
-         IF ((LOCE(5)-LOCB(5)) <= (ILEN_FLD - 1) ) THEN
+         if ((loce(5)-locb(5)) <= (ilen_fld - 1) ) then
 !              Retrieve Filename as Character Substring to Maintain Original Case
 !              Also Check for Filename Larger Than ILEN_FLD Characters
-            SCIM_SFCFIL = RUNST1(LOCB(5):LOCE(5))
-            OPEN(UNIT=ISUNIT,FILE=SCIM_SFCFIL,STATUS='REPLACE')
-         ELSE
+            scim_sfcfil = runst1(locb(5):loce(5))
+            open(unit=isunit,file=scim_sfcfil,status='REPLACE')
+         else
 !              WRITE Error Message:  SCIM_SFCFIL Field is Too Long
-            WRITE(DUMMY,'(I8)') ILEN_FLD
-            CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         END IF
+            write(dummy,'(I8)') ilen_fld
+            call errhdl(path,modnam,'E','291',dummy)
+         end if
 !           Retrieve Pfl Met Data Filename as Character Substring to Maintain Case
-         IF ((LOCE(6)-LOCB(6)) <= (ILEN_FLD - 1) ) THEN
+         if ((loce(6)-locb(6)) <= (ilen_fld - 1) ) then
 !              Retrieve Filename as Character Substring to Maintain Original Case
 !              Also Check for Filename Larger Than ILEN_FLD Characters
-            SCIM_PROFIL = RUNST1(LOCB(6):LOCE(6))
-            OPEN(UNIT=IPUNIT,FILE=SCIM_PROFIL,STATUS='REPLACE')
-         ELSE
+            scim_profil = runst1(locb(6):loce(6))
+            open(unit=ipunit,file=scim_profil,status='REPLACE')
+         else
 !              WRITE Error Message:  SCIM_PROFIL Field is Too Long
-            WRITE(DUMMY,'(I8)') ILEN_FLD
-            CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         END IF
+            write(dummy,'(I8)') ilen_fld
+            call errhdl(path,modnam,'E','291',dummy)
+         end if
 
-      END IF
+      end if
 
-   ELSE IF (IFC > 8) THEN
+   else if (ifc > 8) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Error Message           ! Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','201',keywrd)
+   end if
 
-   RETURN
-END SUBROUTINE SCIMIT
+   return
+end subroutine scimit
 
-SUBROUTINE NUMYR
+subroutine numyr
 !***********************************************************************
 !                 NUMYR Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2280,37 +2280,37 @@ SUBROUTINE NUMYR
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'NUMYR'
+   modnam = 'NUMYR'
 
-   IF (IFC == 3) THEN
-      CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
-      IF (IMIT /= 1) THEN
+   if (ifc == 3) then
+      call stonum(field(3),ilen_fld,fnum,imit)
+      if (imit /= 1) then
 !           WRITE Error Message  ! Invalid Numeric Field Encountered
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      ELSE
-         NYEARS = NINT(FNUM)
-         IF ( ABS(FNUM-REAL(NYEARS)) > 1.0E-5 ) THEN
+         call errhdl(path,modnam,'E','208',keywrd)
+      else
+         nyears = nint(fnum)
+         if ( abs(fnum-real(nyears)) > 1.0e-5 ) then
 !              WRITE Error Message  ! Invalid Numeric Field, should be integer
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         END IF
-      END IF
-   ELSE IF (IFC > 3) THEN
+            call errhdl(path,modnam,'E','208',keywrd)
+         end if
+      end if
+   else if (ifc > 3) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Error Message           ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+   end if
 
-   RETURN
-END SUBROUTINE NUMYR
+   return
+end subroutine numyr
 
-SUBROUTINE TURBOPT
+subroutine turbopt
 !***********************************************************************
 !                 TURBOPT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2332,35 +2332,35 @@ SUBROUTINE TURBOPT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 !     LOOPING VARIABLE
-   INTEGER :: I
-   LOGICAL :: LFOUND
-   CHARACTER :: MODNAM*12
-   CHARACTER(LEN=8) :: KEYS(9)
+   integer :: i
+   logical :: lfound
+   character :: modnam*12
+   character(len=8) :: keys(9)
 
 !     Variable Initializations
-   MODNAM = 'TURBOPT'
+   modnam = 'TURBOPT'
 
-   DATA KEYS /'NOTURB  ','NOTURBST','NOTURBCO','NOSA    ',&
+   data keys /'NOTURB  ','NOTURBST','NOTURBCO','NOSA    ',&
    &'NOSW    ','NOSAST  ','NOSWST  ','NOSACO  ','NOSWCO  '/
 
 
-   I=1
-   LFOUND=.FALSE.
+   i=1
+   lfound=.false.
 !     LOOK FOR THE KEYWORD IN THE KEYS ARRAY AND SET THE APPROPRIATE VALUE OF TURBOPTS TO TRUE
-   DO WHILE( I <= 9 .and. .NOT. LFOUND)
-      IF (KEYWRD == KEYS(I)) THEN
-         LFOUND=.TRUE.
-         TURBOPTS(I)=.TRUE.
-      ELSE
-         I=I+1
-      ENDIF
-   ENDDO
+   do while( i <= 9 .and. .not. lfound)
+      if (keywrd == keys(i)) then
+         lfound=.true.
+         turbopts(i)=.true.
+      else
+         i=i+1
+      endif
+   enddo
 
 !     WRITE MESSAGE THAT AN OPTION CHOSEN
-   CALL ERRHDL(PATH,MODNAM,'I','443',KEYWRD)
+   call errhdl(path,modnam,'I','443',keywrd)
 
 !     1:  NOTURB (ignore sigma-theta and sigma-w for all hours)
 !     2:  NOTURBST (ignore sigma-theta and sigma-w for stable hours only (OBULEN > 0))
@@ -2375,15 +2375,15 @@ SUBROUTINE TURBOPT
 !     ONLY NOTURB AND NOTURBST CAN BE USED WITH THE DEFAULT KEYWORD
 !     IF ONE OF THE OTHERS ARE USED WITH DEFAULT, THEN ISSUE WARNING AND
 !     RESET TO FALSE
-   IF (I > 2 .and. DFAULT) THEN
-      CALL ERRHDL(PATH,MODNAM,'W','444',KEYWRD)
-      TURBOPTS(I)=.FALSE.
-   ENDIF
+   if (i > 2 .and. dfault) then
+      call errhdl(path,modnam,'W','444',keywrd)
+      turbopts(i)=.false.
+   endif
 
-   RETURN
-END SUBROUTINE TURBOPT
+   return
+end subroutine turbopt
 
-SUBROUTINE CENT_DATE(TwoDigitYear,FourDigitYear)
+subroutine cent_date(TwoDigitYear,FourDigitYear)
 !***********************************************************************
 !                 CENT_DATE Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2408,9 +2408,9 @@ SUBROUTINE CENT_DATE(TwoDigitYear,FourDigitYear)
 !
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1, ONLY: ISTRT_WIND, ISTRT_CENT
-   IMPLICIT NONE
-   INTEGER  :: TwoDigitYear, FourDigitYear
+   use main1, only: istrt_wind, istrt_cent
+   implicit none
+   integer  :: TwoDigitYear, FourDigitYear
 
 !      Assuming that TwoDigitYear is a two digit value for the year from the SFC file and ISTRT_WIND is
 !      a two digit value derived from the user input four digit year (or set to 00 is the
@@ -2418,27 +2418,27 @@ SUBROUTINE CENT_DATE(TwoDigitYear,FourDigitYear)
 
 !     Check that FourDigitYear is four digits not two digits
 !     IF FourDigitYear is two digits, save it as the two digit year
-   IF(FourDigitYear <= 99 .and. FourDigitYear /= 0) THEN
+   if(FourDigitYear <= 99 .and. FourDigitYear /= 0) then
       TwoDigitYear = FourDigitYear
-   END IF
+   end if
 
 !MGS   D181_Y2K_WSP: Corrected when the met years cross from 19xx over to 20xx (4/10/2024)
 !MGS      IF (TwoDigitYear .NE. ISTRT_WIND .and. TwoDigitYear .LE. 99) THEN
-   IF (TwoDigitYear > ISTRT_WIND .and. TwoDigitYear <= 99) THEN
-      FourDigitYear = ISTRT_CENT*100 + TwoDigitYear
+   if (TwoDigitYear > istrt_wind .and. TwoDigitYear <= 99) then
+      FourDigitYear = istrt_cent*100 + TwoDigitYear
 
-   ELSE IF (TwoDigitYear < ISTRT_WIND) THEN !CMGS Add 1 to the century (4/10/2024)
-      FourDigitYear = (ISTRT_CENT+1)*100 + TwoDigitYear  !CMGS Add 1 to the century (4/10/2024)
-   ELSE IF (TwoDigitYear > 99) THEN
+   else if (TwoDigitYear < istrt_wind) then !CMGS Add 1 to the century (4/10/2024)
+      FourDigitYear = (istrt_cent+1)*100 + TwoDigitYear  !CMGS Add 1 to the century (4/10/2024)
+   else if (TwoDigitYear > 99) then
 !         Input TwoDigitYear is a 4-digit:  Save to FourDigitYear and convert to 2-digit
       FourDigitYear   = TwoDigitYear
       TwoDigitYear = FourDigitYear - 100 * (FourDigitYear/100)
-   END IF
+   end if
 
-   RETURN
-END SUBROUTINE CENT_DATE
+   return
+end subroutine cent_date
 
-SUBROUTINE LONG_DATE(EightDigit,TenDigit,TwoDigit,OutputTwoDigit)
+subroutine long_date(EightDigit,TenDigit,TwoDigit,OutputTwoDigit)
 !***********************************************************************
 !                 LONG_DATE Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2461,23 +2461,23 @@ SUBROUTINE LONG_DATE(EightDigit,TenDigit,TwoDigit,OutputTwoDigit)
 !
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1, ONLY: ISTRT_WIND, ISTRT_CENT
-   IMPLICIT NONE
-   INTEGER  :: EightDigit, TenDigit, OutputTwoDigit,TwoDigit
+   use main1, only: istrt_wind, istrt_cent
+   implicit none
+   integer  :: EightDigit, TenDigit, OutputTwoDigit,TwoDigit
 
 !      Assuming that TwoDigitYear is a two digit value for the year from the SFC file and ISTRT_WIND is
 !      a two digit value derived from the user input four digit year (or set to 00 is the
 !      user input a two digit year in the INP file
 
-   IF (TwoDigit /= ISTRT_WIND .and. TwoDigit <= 99) THEN
-      OutputTwoDigit = ISTRT_CENT*100 + TwoDigit
-      TenDigit = ISTRT_CENT*100000000 + EightDigit
-   END IF
+   if (TwoDigit /= istrt_wind .and. TwoDigit <= 99) then
+      OutputTwoDigit = istrt_cent*100 + TwoDigit
+      TenDigit = istrt_cent*100000000 + EightDigit
+   end if
 
-   RETURN
-END SUBROUTINE LONG_DATE
+   return
+end subroutine long_date
 
-SUBROUTINE LONG_DATE_Opt2(EightDigit,TenDigit,TwoDigit)
+subroutine LONG_DATE_Opt2(EightDigit,TenDigit,TwoDigit)
 !***********************************************************************
 !                 LONG_DATE Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2499,17 +2499,17 @@ SUBROUTINE LONG_DATE_Opt2(EightDigit,TenDigit,TwoDigit)
 !
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1, ONLY: ISTRT_WIND, ISTRT_CENT
-   IMPLICIT NONE
-   INTEGER  :: EightDigit,TenDigit,TwoDigit
+   use main1, only: istrt_wind, istrt_cent
+   implicit none
+   integer  :: EightDigit,TenDigit,TwoDigit
 
 !      Assuming that TwoDigitYear is a two digit value for the year from the SFC file and ISTRT_WIND is
 !      a two digit value derived from the user input four digit year (or set to 00 is the
 !      user input a two digit year in the INP file
 
-   IF (TwoDigit /= ISTRT_WIND .and. TwoDigit <= 99) THEN
-      TenDigit = ISTRT_CENT*100000000 + EightDigit
-   END IF
+   if (TwoDigit /= istrt_wind .and. TwoDigit <= 99) then
+      TenDigit = istrt_cent*100000000 + EightDigit
+   end if
 
-   RETURN
-END SUBROUTINE LONG_DATE_Opt2
+   return
+end subroutine LONG_DATE_Opt2

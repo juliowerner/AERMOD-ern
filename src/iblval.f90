@@ -1,4 +1,4 @@
-SUBROUTINE IBLVAL (XARG)
+subroutine iblval (xarg)
 !=======================================================================
 !             IBLVAL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -48,503 +48,503 @@ SUBROUTINE IBLVAL (XARG)
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: NDXEFF, NDXBHI, NDXBLO, NDXALO
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: ndxeff, ndxbhi, ndxblo, ndxalo
 !     JAT 7/22/21 D065 SZOLD, SZ3OLD NOT USED
 !      DOUBLE PRECISION :: XARG, SZNEW, ZHI, ZLO, SZOLD, SZ3NEW, SZ3OLD,
-   DOUBLE PRECISION :: XARG, SZNEW, ZHI, ZLO, SZ3NEW,&
+   double precision :: xarg, sznew, zhi, zlo, sz3new,&
 !     JAT 7/22/21 DO65 SZDOLD NOT USED
 !     &                    SZDAVG, SZDNEW, SZDOLD
-   &SZDAVG, SZDNEW
+   &szdavg, szdnew
 
 !
 !---- Data dictionary
 !
 !---- Data initializations
-   MODNAM = 'IBLVAL'
+   modnam = 'IBLVAL'
 !
 !     *************************************************************
 !
 !  ****** FOR HIGHLY BUOYANT PLUME ****** added code JAN 2023--kja
 !  **  PPFN should be 1 when mixing height > top of penetrated plume
-   IF (HBPLUME) THEN
-      PPFN = 1.0D0
-   ENDIF
+   if (hbplume) then
+      ppfn = 1.0d0
+   endif
 !  *********************************added code end --kja
 !RWB  Initialize the effective parameters based on
 !RWB  values at plume height
-   IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
-      HTEFF = HE
-      CALL LOCATE(GRIDHT, 1, MXGLVL, HTEFF, NDXEFF)
-      CALL GINTRP( GRIDHT(NDXEFF), GRIDWS(NDXEFF),&
-      &GRIDHT(NDXEFF+1), GRIDWS(NDXEFF+1), HTEFF, UEFF)
-      CALL GINTRP( GRIDHT(NDXEFF), GRIDSV(NDXEFF),&
-      &GRIDHT(NDXEFF+1), GRIDSV(NDXEFF+1), HTEFF,SVEFF)
-      CALL GINTRP( GRIDHT(NDXEFF), GRIDSW(NDXEFF),&
-      &GRIDHT(NDXEFF+1), GRIDSW(NDXEFF+1), HTEFF,SWEFF)
-      CALL GINTRP( GRIDHT(NDXEFF), GRIDTG(NDXEFF),&
-      &GRIDHT(NDXEFF+1), GRIDTG(NDXEFF+1), HTEFF,TGEFF)
-      IF (PVMRM .or. GRSM) THEN
-         CALL GINTRP( GRIDHT(NDXEFF), GRIDEPS(NDXEFF),&
-         &GRIDHT(NDXEFF+1), GRIDEPS(NDXEFF+1),HTEFF,EPSEFF)
-      END IF
+   if( stable  .or.  (unstab .and. (hs >= zi) ) )then
+      hteff = he
+      call locate(gridht, 1, mxglvl, hteff, ndxeff)
+      call gintrp( gridht(ndxeff), gridws(ndxeff),&
+      &gridht(ndxeff+1), gridws(ndxeff+1), hteff, ueff)
+      call gintrp( gridht(ndxeff), gridsv(ndxeff),&
+      &gridht(ndxeff+1), gridsv(ndxeff+1), hteff,sveff)
+      call gintrp( gridht(ndxeff), gridsw(ndxeff),&
+      &gridht(ndxeff+1), gridsw(ndxeff+1), hteff,sweff)
+      call gintrp( gridht(ndxeff), gridtg(ndxeff),&
+      &gridht(ndxeff+1), gridtg(ndxeff+1), hteff,tgeff)
+      if (pvmrm .or. grsm) then
+         call gintrp( gridht(ndxeff), grideps(ndxeff),&
+         &gridht(ndxeff+1), grideps(ndxeff+1),hteff,epseff)
+      end if
 
 !RWB     Modify treatment of low wind/low turbulence cases.
 !RWB     R. Brode, PES, 8/15/96
-      SWEFF = MAX( SWEFF, SWMIN )
-      SVEFF = MAX( SVEFF, SVMIN, SVUMIN*UEFF )
-      IF( L_VECTORWS )THEN
-         UEFF  = DSQRT( UEFF*UEFF + 2.0D0*SVEFF*SVEFF )
-      ENDIF
-      UEFF  = MAX( UEFF, WSMIN )
+      sweff = max( sweff, swmin )
+      sveff = max( sveff, svmin, svumin*ueff )
+      if( l_vectorws )then
+         ueff  = dsqrt( ueff*ueff + 2.0d0*sveff*sveff )
+      endif
+      ueff  = max( ueff, wsmin )
 
 !RJP     Add temporary debugging statement here.
 
-      IF(DEBUG) THEN
-         WRITE(DBGUNT, 6014) UEFF, SVEFF, SWEFF
-6014     FORMAT(5X,'Initial effective parameters ',&
+      if(debug) then
+         write(dbgunt, 6014) ueff, sveff, sweff
+6014     format(5x,'Initial effective parameters ',&
          &'for the stable ',&
-         &'plume:',//,5x,'Ueff = ',F7.2,' m/s; ',&
-         &'SVeff = ',F7.2,&
-         &' m/s; SWeff = ',F7.2,' m/s.',/)
-      ENDIF
+         &'plume:',//,5x,'Ueff = ',f7.2,' m/s; ',&
+         &'SVeff = ',f7.2,&
+         &' m/s; SWeff = ',f7.2,' m/s.',/)
+      endif
 
-   ELSE IF (UNSTAB .and. (HS<ZI)) THEN
+   else if (unstab .and. (hs<zi)) then
 
 !        Direct and Indirect Source
 
-      IF (PPF < 1.0D0) THEN
+      if (ppf < 1.0d0) then
 
 !RWB        Initialize effective parameters based on vlues at the
 !RWB        plume centroid height (CENTER)
-         HTEFF = CENTER
-         CALL LOCATE(GRIDHT, 1, MXGLVL, HTEFF, NDXEFF)
-         CALL GINTRP( GRIDHT(NDXEFF), GRIDWS(NDXEFF),&
-         &GRIDHT(NDXEFF+1), GRIDWS(NDXEFF+1),HTEFF, UEFFD)
-         CALL GINTRP( GRIDHT(NDXEFF), GRIDSV(NDXEFF),&
-         &GRIDHT(NDXEFF+1), GRIDSV(NDXEFF+1),HTEFF,SVEFFD)
-         CALL GINTRP( GRIDHT(NDXEFF), GRIDSW(NDXEFF),&
-         &GRIDHT(NDXEFF+1), GRIDSW(NDXEFF+1),HTEFF,SWEFFD)
-         IF (PVMRM .or. GRSM) THEN
-            CALL GINTRP( GRIDHT(NDXEFF), GRIDEPS(NDXEFF),&
-            &GRIDHT(NDXEFF+1), GRIDEPS(NDXEFF+1),HTEFF,EPSEFFD)
-         END IF
+         hteff = center
+         call locate(gridht, 1, mxglvl, hteff, ndxeff)
+         call gintrp( gridht(ndxeff), gridws(ndxeff),&
+         &gridht(ndxeff+1), gridws(ndxeff+1),hteff, ueffd)
+         call gintrp( gridht(ndxeff), gridsv(ndxeff),&
+         &gridht(ndxeff+1), gridsv(ndxeff+1),hteff,sveffd)
+         call gintrp( gridht(ndxeff), gridsw(ndxeff),&
+         &gridht(ndxeff+1), gridsw(ndxeff+1),hteff,sweffd)
+         if (pvmrm .or. grsm) then
+            call gintrp( gridht(ndxeff), grideps(ndxeff),&
+            &gridht(ndxeff+1), grideps(ndxeff+1),hteff,epseffd)
+         end if
 
 !RWB        Modify treatment of low wind/low turbulence cases.
 !RWB        R. Brode, PES, 8/15/96
-         SWEFFD = MAX( SWEFFD, SWMIN )
-         SVEFFD = MAX( SVEFFD, SVMIN, SVUMIN*UEFFD )
-         IF( L_VECTORWS )THEN
-            UEFFD = DSQRT( UEFFD*UEFFD + 2.0D0*SVEFFD*SVEFFD )
-         ENDIF
-         UEFFD = MAX( UEFFD, WSMIN )
+         sweffd = max( sweffd, swmin )
+         sveffd = max( sveffd, svmin, svumin*ueffd )
+         if( l_vectorws )then
+            ueffd = dsqrt( ueffd*ueffd + 2.0d0*sveffd*sveffd )
+         endif
+         ueffd = max( ueffd, wsmin )
 
 !RJP        Add temporary debugging statement here.
 
-         IF(DEBUG) THEN
-            WRITE(DBGUNT, 6015) UEFFD, SVEFFD, SWEFFD
-6015        FORMAT(5X,'Initial effective parameters ',&
+         if(debug) then
+            write(dbgunt, 6015) ueffd, sveffd, sweffd
+6015        format(5x,'Initial effective parameters ',&
             &'for the direct convective ',&
-            &'plume:',//,5x,'UeffD = ',F7.2,' m/s; ',&
-            &'SVeffD = ',F7.2,&
-            &' m/s; SWeffD = ',F7.2,' m/s.',/)
-         ENDIF
+            &'plume:',//,5x,'UeffD = ',f7.2,' m/s; ',&
+            &'SVeffD = ',f7.2,&
+            &' m/s; SWeffD = ',f7.2,' m/s.',/)
+         endif
 
-      END IF
+      end if
 !RJP
 !RJP     Penetrated source
 !RJP
-      IF (PPF > 0.0D0) THEN
+      if (ppf > 0.0d0) then
 !  ****** FOR HIGHLY BUOYANT PLUME ****** added code JAN 2023--kja
 ! ** determine next hour mix height ZIN from mechanical and convective heights
-         IF (HBPLUME) THEN
-            IF(ZICONVN > 0.0D0 .and. ZIMECHN > 0.0D00) THEN
-               ZIN = MAX(ZICONVN,ZIMECHN)
-            ELSEIF( ZICONVN < 0.0D0 .and. ZIMECHN > 0.0D0) THEN
-               ZIN = ZIMECHN
-            ELSEIF( ZICONVN > 0.0D0 .and. ZIMECHN < 0.0D0) THEN
-               ZIN = ZICONVN
-            ELSE
-               ZIN = ZI
-            END IF
+         if (hbplume) then
+            if(ziconvn > 0.0d0 .and. zimechn > 0.0d00) then
+               zin = max(ziconvn,zimechn)
+            elseif( ziconvn < 0.0d0 .and. zimechn > 0.0d0) then
+               zin = zimechn
+            elseif( ziconvn > 0.0d0 .and. zimechn < 0.0d0) then
+               zin = ziconvn
+            else
+               zin = zi
+            end if
 ! ** Calculate average height between hours
-            ZIAVG = (ZI+ZIN)/2.0D0
-            IF(DEBUG) THEN
-               WRITE(DBGUNT,6019) ZICONVN, ZIMECHN, ZIN,ZIAVG, HE3
-6019           FORMAT(1X,'CONVN= ',F10.2,' MECHN= ',F10.2,' ZIN= ',F10.2,&
-               &'ZIAVG= ',F10.2,'HE3= ',F10.2)
-            ENDIF
-         ENDIF
+            ziavg = (zi+zin)/2.0d0
+            if(debug) then
+               write(dbgunt,6019) ziconvn, zimechn, zin,ziavg, he3
+6019           format(1x,'CONVN= ',f10.2,' MECHN= ',f10.2,' ZIN= ',f10.2,&
+               &'ZIAVG= ',f10.2,'HE3= ',f10.2)
+            endif
+         endif
 !  ******************************* added code end --kja
-         HTEFF = HE3
-         CALL LOCATE(GRIDHT, 1, MXGLVL, HTEFF, NDXEFF)
-         CALL GINTRP( GRIDHT(NDXEFF), GRIDWS(NDXEFF),&
-         &GRIDHT(NDXEFF+1), GRIDWS(NDXEFF+1), HTEFF, UEFF3)
-         CALL GINTRP( GRIDHT(NDXEFF), GRIDSV(NDXEFF),&
-         &GRIDHT(NDXEFF+1), GRIDSV(NDXEFF+1), HTEFF,SVEFF3)
-         CALL GINTRP( GRIDHT(NDXEFF), GRIDSW(NDXEFF),&
-         &GRIDHT(NDXEFF+1), GRIDSW(NDXEFF+1), HTEFF,SWEFF3)
-         CALL GINTRP( GRIDHT(NDXEFF), GRIDTG(NDXEFF),&
-         &GRIDHT(NDXEFF+1), GRIDTG(NDXEFF+1), HTEFF,TGEFF3)
-         IF (PVMRM .or. GRSM) THEN
-            CALL GINTRP( GRIDHT(NDXEFF), GRIDEPS(NDXEFF),&
-            &GRIDHT(NDXEFF+1), GRIDEPS(NDXEFF+1),HTEFF,EPSEFF3)
-         END IF
+         hteff = he3
+         call locate(gridht, 1, mxglvl, hteff, ndxeff)
+         call gintrp( gridht(ndxeff), gridws(ndxeff),&
+         &gridht(ndxeff+1), gridws(ndxeff+1), hteff, ueff3)
+         call gintrp( gridht(ndxeff), gridsv(ndxeff),&
+         &gridht(ndxeff+1), gridsv(ndxeff+1), hteff,sveff3)
+         call gintrp( gridht(ndxeff), gridsw(ndxeff),&
+         &gridht(ndxeff+1), gridsw(ndxeff+1), hteff,sweff3)
+         call gintrp( gridht(ndxeff), gridtg(ndxeff),&
+         &gridht(ndxeff+1), gridtg(ndxeff+1), hteff,tgeff3)
+         if (pvmrm .or. grsm) then
+            call gintrp( gridht(ndxeff), grideps(ndxeff),&
+            &gridht(ndxeff+1), grideps(ndxeff+1),hteff,epseff3)
+         end if
 
 !RWB        Modify treatment of low wind/low turbulence cases.
 !RWB        R. Brode, PES, 8/15/96
-         SWEFF3 = MAX( SWEFF3, SWMIN )
-         SVEFF3 = MAX( SVEFF3, SVMIN, SVUMIN*UEFF3 )
-         IF( L_VECTORWS )THEN
-            UEFF3 = DSQRT( UEFF3*UEFF3 + 2.0D0*SVEFF3*SVEFF3 )
-         ENDIF
-         UEFF3  = MAX( UEFF3, WSMIN )
+         sweff3 = max( sweff3, swmin )
+         sveff3 = max( sveff3, svmin, svumin*ueff3 )
+         if( l_vectorws )then
+            ueff3 = dsqrt( ueff3*ueff3 + 2.0d0*sveff3*sveff3 )
+         endif
+         ueff3  = max( ueff3, wsmin )
 
 !RJP        Add temporary debugging statement here.
 
-         IF(DEBUG) THEN
-            WRITE(DBGUNT, 6016) PPF, UEFF3,&
-            &SVEFF3, SWEFF3
-6016        FORMAT(5X,'Penetration fraction = ',f6.3,/,&
-            &5X,'Initial effective parameters ',&
+         if(debug) then
+            write(dbgunt, 6016) ppf, ueff3,&
+            &sveff3, sweff3
+6016        format(5x,'Penetration fraction = ',f6.3,/,&
+            &5x,'Initial effective parameters ',&
             &'for the penetrated ',&
-            &'plume:',//,5x,'Ueff3 = ',F7.2,' m/s; ',&
-            &'SVeff3 = ',F7.2,&
-            &' m/s; SWeff3 = ',F7.2,' m/s.',/)
-         END IF
-      END IF
+            &'plume:',//,5x,'Ueff3 = ',f7.2,' m/s; ',&
+            &'SVeff3 = ',f7.2,&
+            &' m/s; SWeff3 = ',f7.2,' m/s.',/)
+         end if
+      end if
 
-   END IF
+   end if
 
 !     End initialization.  Next compute averages across plume layer.
 
-   IF (SRCTYP(ISRC)(1:5) == 'POINT') THEN
+   if (srctyp(isrc)(1:5) == 'POINT') then
 !        Determine Dispersion Parameters              ---   CALL PDIS
-      CALL PDIS ( XARG )
-   ELSE IF (SRCTYP(ISRC) == 'VOLUME') THEN
+      call pdis ( xarg )
+   else if (srctyp(isrc) == 'VOLUME') then
 !        Determine Dispersion Parameters              ---   CALL VDIS
-      CALL VDIS ( XARG )
-   ELSE IF (SRCTYP(ISRC) == 'AREA' .or.&
-   &SRCTYP(ISRC) == 'AREAPOLY' .or.&
-   &SRCTYP(ISRC) == 'AREACIRC' .or.&
-   &SRCTYP(ISRC) == 'LINE' .or.&
-   &SRCTYP(ISRC) == 'OPENPIT') THEN
+      call vdis ( xarg )
+   else if (srctyp(isrc) == 'AREA' .or.&
+   &srctyp(isrc) == 'AREAPOLY' .or.&
+   &srctyp(isrc) == 'AREACIRC' .or.&
+   &srctyp(isrc) == 'LINE' .or.&
+   &srctyp(isrc) == 'OPENPIT') then
 !        Determine Vertical Dispersion Parameters     ---   CALL ADISZ
-      CALL ADISZ ( XARG )
-   END IF
+      call adisz ( xarg )
+   end if
 
-   IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
+   if( stable  .or.  (unstab .and. (hs >= zi) ) )then
 
-      SZNEW  = SZ
-      CENTER = HE
-      IF (CENTER <= 5.0D0 .and. ZRT <= 5.0D0) THEN
-         ZHI = 5.0D0
-         ZHI = MIN( ZHI, ZI )
-         ZLO = 0.0D0
-      ELSE IF (CENTER > ZRT) THEN
-         ZHI = CENTER
-         ZLO = MAX(CENTER - SZCOEF*SZNEW, ZRT)
-      ELSE
-         ZHI = MIN(CENTER + SZCOEF*SZNEW, ZRT)
-         ZLO = CENTER
-      END IF
+      sznew  = sz
+      center = he
+      if (center <= 5.0d0 .and. zrt <= 5.0d0) then
+         zhi = 5.0d0
+         zhi = min( zhi, zi )
+         zlo = 0.0d0
+      else if (center > zrt) then
+         zhi = center
+         zlo = max(center - szcoef*sznew, zrt)
+      else
+         zhi = min(center + szcoef*sznew, zrt)
+         zlo = center
+      end if
 
-      IF(DEBUG) THEN
-         IF( EVONLY )THEN
-            WRITE(DBGUNT, 6030) IEVENT, CENTER, SZNEW, ZRT,ZLO,ZHI
-6030        FORMAT(5X,'Stable plume calculation',&
-            &' for EVENT # ',I3,//,&
+      if(debug) then
+         if( evonly )then
+            write(dbgunt, 6030) ievent, center, sznew, zrt,zlo,zhi
+6030        format(5x,'Stable plume calculation',&
+            &' for EVENT # ',i3,//,&
             &5x,'Height of plume center of mass = ',f6.1,&
             &' m; Sigma-z estimate = ',f11.1,' m; ',&
             &'Receptor height = ',f6.1,' m; ',/,5x,'New ',&
             &'effective parameters are averaged between ',&
-            &f6.1,' and ',F6.1,' meters.',/)
-         ELSE
-            WRITE(DBGUNT, 6031) IREC, CENTER, SZNEW, ZRT,ZLO,ZHI
-6031        FORMAT(5X,'Stable plume calculation',&
-            &' for receptor # ',I3,//,&
+            &f6.1,' and ',f6.1,' meters.',/)
+         else
+            write(dbgunt, 6031) irec, center, sznew, zrt,zlo,zhi
+6031        format(5x,'Stable plume calculation',&
+            &' for receptor # ',i3,//,&
             &5x,'Height of plume center of mass = ',f6.1,&
             &' m; Sigma-z estimate = ',f11.1,' m; ',&
             &'Receptor height = ',f6.1,' m; ',/,5x,'New ',&
             &'effective parameters are averaged between ',&
-            &f6.1,' and ',F6.1,' meters.',/)
-         ENDIF
-      END IF
+            &f6.1,' and ',f6.1,' meters.',/)
+         endif
+      end if
 
-      CALL LOCATE(GRIDHT, 1, MXGLVL, ZHI, NDXBHI)
-      CALL LOCATE(GRIDHT, 1, MXGLVL, ZLO, NDXBLO)
-      NDXALO = NDXBLO + 1
-      CALL ANYAVG ( MXGLVL, GRIDHT, GRIDWS, ZLO,NDXALO,&
-      &ZHI,NDXBHI,UEFF )
-      CALL ANYAVG ( MXGLVL, GRIDHT, GRIDSV, ZLO,NDXALO,&
-      &ZHI,NDXBHI,SVEFF )
-      CALL ANYAVG ( MXGLVL, GRIDHT, GRIDSW, ZLO,NDXALO,&
-      &ZHI,NDXBHI,SWEFF )
-      CALL ANYAVG ( MXGLVL, GRIDHT, GRIDTG, ZLO,NDXALO,&
-      &ZHI,NDXBHI,TGEFF )
-      IF (PVMRM .or. GRSM) THEN
-         CALL ANYAVG ( MXGLVL, GRIDHT, GRIDEPS, ZLO,NDXALO,&
-         &ZHI,NDXBHI,EPSEFF )
-      END IF
+      call locate(gridht, 1, mxglvl, zhi, ndxbhi)
+      call locate(gridht, 1, mxglvl, zlo, ndxblo)
+      ndxalo = ndxblo + 1
+      call anyavg ( mxglvl, gridht, gridws, zlo,ndxalo,&
+      &zhi,ndxbhi,ueff )
+      call anyavg ( mxglvl, gridht, gridsv, zlo,ndxalo,&
+      &zhi,ndxbhi,sveff )
+      call anyavg ( mxglvl, gridht, gridsw, zlo,ndxalo,&
+      &zhi,ndxbhi,sweff )
+      call anyavg ( mxglvl, gridht, gridtg, zlo,ndxalo,&
+      &zhi,ndxbhi,tgeff )
+      if (pvmrm .or. grsm) then
+         call anyavg ( mxglvl, gridht, grideps, zlo,ndxalo,&
+         &zhi,ndxbhi,epseff )
+      end if
 !     JAT 7/22/21 D065 SZOLD NOT USED
 !         SZOLD = SZ
 
 !RWB     Modify treatment of low wind/low turbulence cases.
 !RWB     R. Brode, PES, 8/15/96
-      SWEFF = MAX( SWEFF, SWMIN )
-      SVEFF = MAX( SVEFF, SVMIN, SVUMIN*UEFF )
-      IF( L_VECTORWS )THEN
-         UEFF = DSQRT( UEFF*UEFF + 2.0D0*SVEFF*SVEFF )
-      ENDIF
-      UEFF = MAX( UEFF, WSMIN )
+      sweff = max( sweff, swmin )
+      sveff = max( sveff, svmin, svumin*ueff )
+      if( l_vectorws )then
+         ueff = dsqrt( ueff*ueff + 2.0d0*sveff*sveff )
+      endif
+      ueff = max( ueff, wsmin )
 
 !RJP     Add temporary debugging statement here.
 
-      IF(DEBUG) THEN
-         WRITE(DBGUNT, 6032) UEFF, SVEFF, SWEFF
-6032     FORMAT(5X,'Effective parameters for stable ',&
-         &'plume:',//,5x,'Ueff = ',F7.2,' m/s; ',&
-         &'SVeff = ',F7.2,&
-         &' m/s; SWeff = ',F7.2,' m/s.',/)
-      END IF
+      if(debug) then
+         write(dbgunt, 6032) ueff, sveff, sweff
+6032     format(5x,'Effective parameters for stable ',&
+         &'plume:',//,5x,'Ueff = ',f7.2,' m/s; ',&
+         &'SVeff = ',f7.2,&
+         &' m/s; SWeff = ',f7.2,' m/s.',/)
+      end if
 
-   ELSE IF (UNSTAB .and. (HS<ZI)) THEN
+   else if (unstab .and. (hs<zi)) then
 !RJP
 !RJP  Process effective values for direct and penetrated plumes
 !RJP
 !RJP  First, process the penetrated plume, then the direct plumes.
 !RJP
 
-      IF( PPF > 0.0D0 )THEN
+      if( ppf > 0.0d0 )then
 !  ********* FOR HIGHLY BUOYANT PLUME ********* added code JAN 2023--kja
 !  ** how much of penetrated plume still above ZIAVG
 !  ** assuming gaussian entrainment factor
-         IF (HBPLUME) THEN
-            HHTOP = HE3 + 2.15D0*SZ3  ! top of plume
-            HHBOT = MAX(HE3 - 2.15D0*SZ3,ZRT)  ! Bottom of plume
+         if (hbplume) then
+            hhtop = he3 + 2.15d0*sz3  ! top of plume
+            hhbot = max(he3 - 2.15d0*sz3,zrt)  ! Bottom of plume
 ! ** width of plume to 2.15 sigma-z - where conc. falls to 10% of centerline
-            PPWID = HHTOP - HHBOT
+            ppwid = hhtop - hhbot
 ! ** difference between top of plume and ZIAVG mixing height
-            HTOPDIF = HHTOP - ZIAVG
-            IF (HTOPDIF > 0.0D0) THEN  ! top of plume > mixing ht
+            htopdif = hhtop - ziavg
+            if (htopdif > 0.0d0) then  ! top of plume > mixing ht
 ! ** PPFN should be between 0 - 1
-               IF(HTOPDIF < PPWID) THEN ! mixing ht within plume
-                  IF(ZIAVG <= HE3) THEN
+               if(htopdif < ppwid) then ! mixing ht within plume
+                  if(ziavg <= he3) then
 ! ** PPFN from 0 to 0.5 - amount of penetrated plume entrained
 ! ** lower half of plume
-                     PPFN = 0.5D0*ERF((ZIAVG-HHBOT)/SZ3/DSQRT(2.0D0))
-                  ELSE
+                     ppfn = 0.5d0*erf((ziavg-hhbot)/sz3/dsqrt(2.0d0))
+                  else
 ! ** PPFN from 0.5 to 1.0 - amount of penetrated plume entrained
 ! ** more than half of plume entrained
-                     PPFN = 0.5D0*(1.0D0 +&
-                     &ERF((ZIAVG-HE3)/SZ3/DSQRT(2.0D0)))
-                  ENDIF
-               ELSE
+                     ppfn = 0.5d0*(1.0d0 +&
+                     &erf((ziavg-he3)/sz3/dsqrt(2.0d0)))
+                  endif
+               else
 ! ** whole penetrated plume is still above average mixing height
 ! ** no contribution from penetrated plume
-                  PPFN = 0.0D0
-               ENDIF
-            ELSE
+                  ppfn = 0.0d0
+               endif
+            else
 ! ** whole penetrated plume below below ZIAVG
-               PPFN = 1.0D0
-            END IF
-            SZ3DBG = SZ3
-         ENDIF
+               ppfn = 1.0d0
+            end if
+            sz3dbg = sz3
+         endif
 !  ***********************************************  added code end --kja
-         SZ3NEW = SZ3
+         sz3new = sz3
 
 !RWB        Change ZEFF to ZRT in following block. RWB 1/23/95
-         IF(HE3 > ZRT) THEN
-            ZHI = HE3
-            ZLO = MAX(HE3 - SZCOEF*SZ3NEW, ZRT)
-         ELSE
-            ZHI = MIN(HE3 + SZCOEF*SZ3NEW, ZRT)
-            ZLO = HE3
-         END IF
+         if(he3 > zrt) then
+            zhi = he3
+            zlo = max(he3 - szcoef*sz3new, zrt)
+         else
+            zhi = min(he3 + szcoef*sz3new, zrt)
+            zlo = he3
+         end if
 
 !RJP        Add temporary debugging statement here.
 
-         IF (DEBUG) THEN
-            IF( EVONLY )THEN
-               WRITE(DBGUNT, 6040) IEVENT, HE3, SZ3NEW,&
-               &ZRT,ZLO,ZHI
-6040           FORMAT(5X,'Penetrated plume calculation',&
-               &' for EVENT # ',I3,//,&
+         if (debug) then
+            if( evonly )then
+               write(dbgunt, 6040) ievent, he3, sz3new,&
+               &zrt,zlo,zhi
+6040           format(5x,'Penetrated plume calculation',&
+               &' for EVENT # ',i3,//,&
                &5x,'Height of plume center of mass = ',&
                &f6.1,' m; Sigma-z estimate = ',f11.1,' m; ',&
                &'Receptor height = ',f6.1,' m; ',/,5x,'New ',&
                &'effective parameters are averaged between ',&
-               &f6.1,' and ',F6.1,' meters.',/)
-            ELSE
-               WRITE(DBGUNT, 6041) IREC, HE3, SZ3NEW,&
-               &ZRT,ZLO,ZHI
-6041           FORMAT(5X,'Penetrated plume calculation',&
-               &' for receptor # ',I3,//,&
+               &f6.1,' and ',f6.1,' meters.',/)
+            else
+               write(dbgunt, 6041) irec, he3, sz3new,&
+               &zrt,zlo,zhi
+6041           format(5x,'Penetrated plume calculation',&
+               &' for receptor # ',i3,//,&
                &5x,'Height of plume center of mass = ',&
                &f6.1,' m; Sigma-z estimate = ',f11.1,' m; ',&
                &'Receptor height = ',f6.1,' m; ',/,5x,'New ',&
                &'effective parameters are averaged between ',&
-               &f6.1,' and ',F6.1,' meters.',/)
-            ENDIF
-         END IF
+               &f6.1,' and ',f6.1,' meters.',/)
+            endif
+         end if
 
-         CALL LOCATE(GRIDHT, 1, MXGLVL, ZHI, NDXBHI)
-         CALL LOCATE(GRIDHT, 1, MXGLVL, ZLO, NDXBLO)
-         NDXALO = NDXBLO + 1
-         CALL ANYAVG ( MXGLVL, GRIDHT, GRIDWS,ZLO,NDXALO,&
-         &ZHI,NDXBHI,UEFF3 )
-         CALL ANYAVG ( MXGLVL, GRIDHT, GRIDSV,ZLO,NDXALO,&
-         &ZHI,NDXBHI,SVEFF3 )
-         CALL ANYAVG ( MXGLVL, GRIDHT, GRIDSW,ZLO,NDXALO,&
-         &ZHI,NDXBHI,SWEFF3 )
-         CALL ANYAVG ( MXGLVL, GRIDHT, GRIDTG,ZLO,NDXALO,&
-         &ZHI,NDXBHI,TGEFF3 )
-         IF (PVMRM .or. GRSM) THEN
-            CALL ANYAVG ( MXGLVL, GRIDHT, GRIDEPS, ZLO,NDXALO,&
-            &ZHI,NDXBHI,EPSEFF3 )
-         END IF
+         call locate(gridht, 1, mxglvl, zhi, ndxbhi)
+         call locate(gridht, 1, mxglvl, zlo, ndxblo)
+         ndxalo = ndxblo + 1
+         call anyavg ( mxglvl, gridht, gridws,zlo,ndxalo,&
+         &zhi,ndxbhi,ueff3 )
+         call anyavg ( mxglvl, gridht, gridsv,zlo,ndxalo,&
+         &zhi,ndxbhi,sveff3 )
+         call anyavg ( mxglvl, gridht, gridsw,zlo,ndxalo,&
+         &zhi,ndxbhi,sweff3 )
+         call anyavg ( mxglvl, gridht, gridtg,zlo,ndxalo,&
+         &zhi,ndxbhi,tgeff3 )
+         if (pvmrm .or. grsm) then
+            call anyavg ( mxglvl, gridht, grideps, zlo,ndxalo,&
+            &zhi,ndxbhi,epseff3 )
+         end if
 !     JAT 7/22/21 D065 SZ3OLD NOT USED
 !            SZ3OLD = SZ3
 
 !RWB        Modify treatment of low wind/low turbulence cases.  R. Brode, PES,
 !RWB        8/15/96
-         SWEFF3 = MAX( SWEFF3, SWMIN )
-         SVEFF3 = MAX( SVEFF3, SVMIN, SVUMIN*UEFF3 )
-         IF( L_VECTORWS )THEN
-            UEFF3 = DSQRT( UEFF3*UEFF3 + 2.0D0*SVEFF3*SVEFF3 )
-         ENDIF
-         UEFF3  = MAX( UEFF3, WSMIN )
+         sweff3 = max( sweff3, swmin )
+         sveff3 = max( sveff3, svmin, svumin*ueff3 )
+         if( l_vectorws )then
+            ueff3 = dsqrt( ueff3*ueff3 + 2.0d0*sveff3*sveff3 )
+         endif
+         ueff3  = max( ueff3, wsmin )
 
 !RJP        Add temporary debugging statement here.
 
-         IF(DEBUG) THEN
-            WRITE(DBGUNT, 6042) UEFF3, SVEFF3, SWEFF3
-6042        FORMAT(5X,'Effective parameters for penetrated ',&
-            &'plume:',//,5x,'Ueff3 = ',F7.2,' m/s; ',&
-            &'SVeff3 = ',F7.2,&
-            &' m/s; SWeff3 = ',F7.2,' m/s.',/)
-         END IF
+         if(debug) then
+            write(dbgunt, 6042) ueff3, sveff3, sweff3
+6042        format(5x,'Effective parameters for penetrated ',&
+            &'plume:',//,5x,'Ueff3 = ',f7.2,' m/s; ',&
+            &'SVeff3 = ',f7.2,&
+            &' m/s; SWeff3 = ',f7.2,' m/s.',/)
+         end if
 
-      END IF
+      end if
 
-      IF (PPF < 1.0D0) THEN
+      if (ppf < 1.0d0) then
 
 !RJP        Process the direct plume components here. *************************
 
-         SZDAVG = 0.5D0 * (SZD1 + SZD2)
-         SZDNEW = SZDAVG
+         szdavg = 0.5d0 * (szd1 + szd2)
+         szdnew = szdavg
 
 !RWB        Change ZEFF to ZRT in following block. RWB 1/23/95
-         IF (CENTER <= 5.0D0 .and. ZRT <= 5.0D0) THEN
-            ZHI = MIN( 5.0D0, ZI )
-            ZHI = MIN( ZHI, ZI )
-            ZLO = 0.0D0
-         ELSE IF(CENTER > ZRT) THEN
+         if (center <= 5.0d0 .and. zrt <= 5.0d0) then
+            zhi = min( 5.0d0, zi )
+            zhi = min( zhi, zi )
+            zlo = 0.0d0
+         else if(center > zrt) then
 !RWB           Limit ZHI to be .LE. ZI
-            ZHI = MIN (CENTER, ZI)
-            ZLO = MAX (CENTER - SZCOEF*SZDNEW, ZRT)
-         ELSE
-            ZHI = MIN (CENTER + SZCOEF*SZDNEW, ZRT)
-            ZHI = MIN (ZHI, ZI)
-            ZLO = CENTER
-         ENDIF
+            zhi = min (center, zi)
+            zlo = max (center - szcoef*szdnew, zrt)
+         else
+            zhi = min (center + szcoef*szdnew, zrt)
+            zhi = min (zhi, zi)
+            zlo = center
+         endif
 
 !RJP        Add temporary debugging statement here.
 
-         IF(DEBUG) THEN
-            IF( EVONLY )THEN
-               WRITE(DBGUNT, 6050) IEVENT, CENTER,&
-               &SZDNEW, ZRT, ZLO, ZHI
-6050           FORMAT(5X,'Direct plume calculation',&
-               &' for EVENT # ',I3,//,&
+         if(debug) then
+            if( evonly )then
+               write(dbgunt, 6050) ievent, center,&
+               &szdnew, zrt, zlo, zhi
+6050           format(5x,'Direct plume calculation',&
+               &' for EVENT # ',i3,//,&
                &5x,'Height of plume center of mass = ',f6.1,&
                &' m; Sigma-z estimate = ',f11.1,' m; ',&
                &'Receptor height = ',f6.1,' m; ',/,5x,'New ',&
                &'effective parameters are averaged between ',&
-               &f6.1,' and ',F6.1,' meters.',/)
-            ELSE
-               WRITE(DBGUNT, 6051) IREC, CENTER,&
-               &SZDNEW, ZRT, ZLO, ZHI
-6051           FORMAT(5X,'Direct plume calculation',&
-               &' for receptor # ',I3,//,&
+               &f6.1,' and ',f6.1,' meters.',/)
+            else
+               write(dbgunt, 6051) irec, center,&
+               &szdnew, zrt, zlo, zhi
+6051           format(5x,'Direct plume calculation',&
+               &' for receptor # ',i3,//,&
                &5x,'Height of plume center of mass = ',f6.1,&
                &' m; Sigma-z estimate = ',f11.1,' m; ',&
                &'Receptor height = ',f6.1,' m; ',/,5x,'New ',&
                &'effective parameters are averaged between ',&
-               &f6.1,' and ',F6.1,' meters.',/)
-            ENDIF
-         END IF
+               &f6.1,' and ',f6.1,' meters.',/)
+            endif
+         end if
 
 !RWB        Check for ZHI .LE. ZLO, skip averages
-         IF (ZHI > ZLO) THEN
-            CALL LOCATE(GRIDHT, 1, MXGLVL, ZHI, NDXBHI)
-            CALL LOCATE(GRIDHT, 1, MXGLVL, ZLO, NDXBLO)
-            NDXALO = NDXBLO + 1
-            CALL ANYAVG ( MXGLVL, GRIDHT, GRIDWS, ZLO,&
-            &NDXALO,ZHI,NDXBHI,UEFFD )
-            CALL ANYAVG ( MXGLVL, GRIDHT, GRIDSV, ZLO,&
-            &NDXALO,ZHI,NDXBHI,SVEFFD )
-            CALL ANYAVG ( MXGLVL, GRIDHT, GRIDSW, ZLO,&
-            &NDXALO,ZHI,NDXBHI,SWEFFD )
-            IF (PVMRM .or. GRSM) THEN
-               CALL ANYAVG ( MXGLVL, GRIDHT, GRIDEPS, ZLO,&
-               &NDXALO,ZHI,NDXBHI,EPSEFFD )
-            END IF
-         ELSE
+         if (zhi > zlo) then
+            call locate(gridht, 1, mxglvl, zhi, ndxbhi)
+            call locate(gridht, 1, mxglvl, zlo, ndxblo)
+            ndxalo = ndxblo + 1
+            call anyavg ( mxglvl, gridht, gridws, zlo,&
+            &ndxalo,zhi,ndxbhi,ueffd )
+            call anyavg ( mxglvl, gridht, gridsv, zlo,&
+            &ndxalo,zhi,ndxbhi,sveffd )
+            call anyavg ( mxglvl, gridht, gridsw, zlo,&
+            &ndxalo,zhi,ndxbhi,sweffd )
+            if (pvmrm .or. grsm) then
+               call anyavg ( mxglvl, gridht, grideps, zlo,&
+               &ndxalo,zhi,ndxbhi,epseffd )
+            end if
+         else
 !RWB           Use values at ZI if ZHI .LE. ZLO
-            HTEFF = ZI
-            CALL LOCATE(GRIDHT, 1, MXGLVL, HTEFF, NDXEFF)
-            CALL GINTRP( GRIDHT(NDXEFF), GRIDWS(NDXEFF),&
-            &GRIDHT(NDXEFF+1), GRIDWS(NDXEFF+1), HTEFF, UEFFD)
-            CALL GINTRP( GRIDHT(NDXEFF), GRIDSV(NDXEFF),&
-            &GRIDHT(NDXEFF+1), GRIDSV(NDXEFF+1), HTEFF,SVEFFD)
-            CALL GINTRP( GRIDHT(NDXEFF), GRIDSW(NDXEFF),&
-            &GRIDHT(NDXEFF+1), GRIDSW(NDXEFF+1), HTEFF,SWEFFD)
-            IF (PVMRM .or. GRSM) THEN
-               CALL GINTRP( GRIDHT(NDXEFF), GRIDEPS(NDXEFF),&
-               &GRIDHT(NDXEFF+1), GRIDEPS(NDXEFF+1), HTEFF,EPSEFFD)
-            END IF
-         END IF
+            hteff = zi
+            call locate(gridht, 1, mxglvl, hteff, ndxeff)
+            call gintrp( gridht(ndxeff), gridws(ndxeff),&
+            &gridht(ndxeff+1), gridws(ndxeff+1), hteff, ueffd)
+            call gintrp( gridht(ndxeff), gridsv(ndxeff),&
+            &gridht(ndxeff+1), gridsv(ndxeff+1), hteff,sveffd)
+            call gintrp( gridht(ndxeff), gridsw(ndxeff),&
+            &gridht(ndxeff+1), gridsw(ndxeff+1), hteff,sweffd)
+            if (pvmrm .or. grsm) then
+               call gintrp( gridht(ndxeff), grideps(ndxeff),&
+               &gridht(ndxeff+1), grideps(ndxeff+1), hteff,epseffd)
+            end if
+         end if
 !     JAT 7/22/21 DO65 SZDOLD NOT USED
 !            SZDOLD = SZDAVG
 
 
 !RWB        Modify treatment of low wind/low turbulence cases.
 !RWB        R. Brode, PES, 8/15/96
-         SWEFFD = MAX( SWEFFD, SWMIN )
-         SVEFFD = MAX( SVEFFD, SVMIN, SVUMIN*UEFFD )
-         IF( L_VECTORWS )THEN
-            UEFFD = DSQRT( UEFFD*UEFFD + 2.0D0*SVEFFD*SVEFFD )
-         ENDIF
-         UEFFD  = MAX( UEFFD, WSMIN )
+         sweffd = max( sweffd, swmin )
+         sveffd = max( sveffd, svmin, svumin*ueffd )
+         if( l_vectorws )then
+            ueffd = dsqrt( ueffd*ueffd + 2.0d0*sveffd*sveffd )
+         endif
+         ueffd  = max( ueffd, wsmin )
 
 !RJP        Add temporary debugging statement here.
 
-         IF(DEBUG) THEN
-            WRITE(DBGUNT, 6052) UEFFD, SVEFFD, SWEFFD
-6052        FORMAT(5X,'Effective parameters for direct ',&
-            &'plume:',//,5x,'UeffD = ',F7.2,' m/s; ',&
-            &'SVeffD = ',F7.2,&
-            &' m/s; SWeffD = ',F7.2,' m/s.',/)
-         END IF
+         if(debug) then
+            write(dbgunt, 6052) ueffd, sveffd, sweffd
+6052        format(5x,'Effective parameters for direct ',&
+            &'plume:',//,5x,'UeffD = ',f7.2,' m/s; ',&
+            &'SVeffD = ',f7.2,&
+            &' m/s; SWeffD = ',f7.2,' m/s.',/)
+         end if
 
-      END IF
+      end if
 
-   END IF
+   end if
 
 !RWB  Set effective parameters for indirect source = direct source
-   IF (UNSTAB .and. HS<ZI) THEN
-      UEFFN  = UEFFD
-      SVEFFN = SVEFFD
-      SWEFFN = SWEFFD
-   END IF
+   if (unstab .and. hs<zi) then
+      ueffn  = ueffd
+      sveffn = sveffd
+      sweffn = sweffd
+   end if
 
-   RETURN
-END SUBROUTINE IBLVAL
+   return
+end subroutine iblval
 
-SUBROUTINE METINI
+subroutine metini
 !=======================================================================
 !             METINI Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -594,10 +594,10 @@ SUBROUTINE METINI
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: VALABV, VBELOW
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: valabv, vbelow
 !---- Declare SVS2 variable to save SVS before SVMIN adjustment for use
 !     in US adjustment under LowWind2 option
 !      DOUBLE PRECISION :: SVS2
@@ -606,7 +606,7 @@ SUBROUTINE METINI
 !
 !---- Data initializations
 !---- Data initializations
-   MODNAM = 'METINI'
+   modnam = 'METINI'
 !
 !.......................................................................
 !---- Compute the parameter values at stack height
@@ -616,78 +616,78 @@ SUBROUTINE METINI
 !CRFL  at stack height and at ZI/2.
 !CRFL
 
-   IF (NDXSTK(ISRC) >= 1) THEN
+   if (ndxstk(isrc) >= 1) then
 !----    Sigma_V at stack height
-      CALL GINTRP( GRIDHT(NDXSTK(ISRC)), GRIDSV(NDXSTK(ISRC)),&
-      &GRIDHT(NDXSTK(ISRC)+1), GRIDSV(NDXSTK(ISRC)+1),&
-      &HS, SVS )
+      call gintrp( gridht(ndxstk(isrc)), gridsv(ndxstk(isrc)),&
+      &gridht(ndxstk(isrc)+1), gridsv(ndxstk(isrc)+1),&
+      &hs, svs )
 
 !----    Sigma_W
-      CALL GINTRP( GRIDHT(NDXSTK(ISRC)), GRIDSW(NDXSTK(ISRC)),&
-      &GRIDHT(NDXSTK(ISRC)+1), GRIDSW(NDXSTK(ISRC)+1),&
-      &HS, SWS )
+      call gintrp( gridht(ndxstk(isrc)), gridsw(ndxstk(isrc)),&
+      &gridht(ndxstk(isrc)+1), gridsw(ndxstk(isrc)+1),&
+      &hs, sws )
 
 !----    Wind speed
-      CALL GINTRP( GRIDHT(NDXSTK(ISRC)), GRIDWS(NDXSTK(ISRC)),&
-      &GRIDHT(NDXSTK(ISRC)+1), GRIDWS(NDXSTK(ISRC)+1),&
-      &HS, US )
+      call gintrp( gridht(ndxstk(isrc)), gridws(ndxstk(isrc)),&
+      &gridht(ndxstk(isrc)+1), gridws(ndxstk(isrc)+1),&
+      &hs, us )
 
 !----    Wind direction
 !----    Check for 360 crossover and adjust if necessary
-      VALABV = GRIDWD(NDXSTK(ISRC)+1)
-      VBELOW = GRIDWD(NDXSTK(ISRC))
+      valabv = gridwd(ndxstk(isrc)+1)
+      vbelow = gridwd(ndxstk(isrc))
 
-      IF( (VALABV-VBELOW) < -180.0D0) THEN
-         VALABV = VALABV + 360.0D0
-      ELSE IF( (VALABV-VBELOW) > 180.0D0) THEN
-         VALABV = VALABV - 360.0D0
-      END IF
+      if( (valabv-vbelow) < -180.0d0) then
+         valabv = valabv + 360.0d0
+      else if( (valabv-vbelow) > 180.0d0) then
+         valabv = valabv - 360.0d0
+      end if
 
 !----    Assign Wind direction
-      IF (VBELOW == VALABV) THEN
-         WDIR = VBELOW
-      ELSE
+      if (vbelow == valabv) then
+         wdir = vbelow
+      else
 !----       Interpolate to HS
-         CALL GINTRP( GRIDHT(NDXSTK(ISRC)), VBELOW,&
-         &GRIDHT(NDXSTK(ISRC)+1), VALABV,&
-         &HS, WDIR )
-      END IF
+         call gintrp( gridht(ndxstk(isrc)), vbelow,&
+         &gridht(ndxstk(isrc)+1), valabv,&
+         &hs, wdir )
+      end if
 
 !        Check for WDIR > 360 or < 0
-      IF (WDIR > 360.0D0) THEN
-         WDIR = WDIR - 360.0D0
-      ELSE IF (WDIR <= 0.0D0) THEN
-         WDIR = WDIR + 360.0D0
-      END IF
+      if (wdir > 360.0d0) then
+         wdir = wdir - 360.0d0
+      else if (wdir <= 0.0d0) then
+         wdir = wdir + 360.0d0
+      end if
 !
 !----    Potential temperature gradient
-      CALL GINTRP( GRIDHT(NDXSTK(ISRC)), GRIDTG(NDXSTK(ISRC)),&
-      &GRIDHT(NDXSTK(ISRC)+1), GRIDTG(NDXSTK(ISRC)+1),&
-      &HS, TGS )
+      call gintrp( gridht(ndxstk(isrc)), gridtg(ndxstk(isrc)),&
+      &gridht(ndxstk(isrc)+1), gridtg(ndxstk(isrc)+1),&
+      &hs, tgs )
 
 !----    Potential temperature
-      CALL GINTRP( GRIDHT(NDXSTK(ISRC)), GRIDPT(NDXSTK(ISRC)),&
-      &GRIDHT(NDXSTK(ISRC)+1), GRIDPT(NDXSTK(ISRC)+1),&
-      &HS, PTS )
+      call gintrp( gridht(ndxstk(isrc)), gridpt(ndxstk(isrc)),&
+      &gridht(ndxstk(isrc)+1), gridpt(ndxstk(isrc)+1),&
+      &hs, pts )
 
-   ELSE
+   else
 !        Use GRID value for lowest level
-      SVS  = GRIDSV(1)
-      SWS  = GRIDSW(1)
-      US   = GRIDWS(1)
-      WDIR = GRIDWD(1)
-      TGS  = GRIDTG(1)
-      PTS  = GRIDPT(1)
-   END IF
+      svs  = gridsv(1)
+      sws  = gridsw(1)
+      us   = gridws(1)
+      wdir = gridwd(1)
+      tgs  = gridtg(1)
+      pts  = gridpt(1)
+   end if
 
 !RWB  Modify the treatment of low wind/low turbulence cases per 7/31/96
 !RWB  write-up by Steve Perry.  R. Brode, PES, 8/15/96
-   SWS = MAX( SWS, SWMIN )
-   SVS = MAX( SVS, SVMIN, SVUMIN*US )
-   IF( L_VECTORWS )THEN
-      US  = DSQRT( US*US + 2.0D0*SVS*SVS )
-   ENDIF
-   US  = MAX( US, WSMIN )
+   sws = max( sws, swmin )
+   svs = max( svs, svmin, svumin*us )
+   if( l_vectorws )then
+      us  = dsqrt( us*us + 2.0d0*svs*svs )
+   endif
+   us  = max( us, wsmin )
 
 !
 !---- If the wind for the hour is not calm or missing, then convert
@@ -695,21 +695,21 @@ SUBROUTINE METINI
 !     and determine nearest 10-degree sector.  Note, we shouldn't
 !     reach this point if CLMHR or MSGHR is .TRUE.
 !
-   IF( .NOT.CLMHR .and. .NOT.MSGHR )THEN
+   if( .not.clmhr .and. .not.msghr )then
 !
 !---->   wind direction = wind direction in degrees * DTORAD
 
-      WDSIN = DSIN(WDIR * DTORAD)
-      WDCOS = DCOS(WDIR * DTORAD)
+      wdsin = dsin(wdir * dtorad)
+      wdcos = dcos(wdir * dtorad)
 
-      AFV = WDIR - 180.0D0
-      IF (AFV < 0.0D0) THEN
-         AFV = AFV + 360.0D0
-      END IF
-      IFVSEC = IDINT (AFV*0.10D0 + 0.4999D0)
-      IF (IFVSEC == 0) IFVSEC = 36
+      afv = wdir - 180.0d0
+      if (afv < 0.0d0) then
+         afv = afv + 360.0d0
+      end if
+      ifvsec = idint (afv*0.10d0 + 0.4999d0)
+      if (ifvsec == 0) ifvsec = 36
 
-   END IF
+   end if
 
 !
 !     ------------------------------------------------------------
@@ -720,63 +720,63 @@ SUBROUTINE METINI
 !RJP
 !RJP  ASSIGN TGP AS TGS INITIALLY
 !RJP
-   TGP = TGS
+   tgp = tgs
 !
 
 !---- Calculate potential temperature at stack height, PTS, for plume
 !     rise calculations.  Compute stack height ambient temperature, TA.
 !     NOTE:  TA is no longer the temperature read in by METEXT from the
 !            scalar file
-   TA = PTS - GOVRCP * ( HS + ZBASE )
+   ta = pts - govrcp * ( hs + zbase )
 
 !---- Assign wind speed to use for plume rise, UP = US
-   UP = US
-   SVP = SVS       ! Added for ARISE; UNC-IE
-   SWP = SWS       ! Added for ARISE; UNC-IE
+   up = us
+   svp = svs       ! Added for ARISE; UNC-IE
+   swp = sws       ! Added for ARISE; UNC-IE
 !     Compute the Brunt-Vaisala frequency, BVF, at stack height for STABLE
 !     conditions or for UNSTAB releases above ZI.  Check for TGS < 0 first.
-   IF ( (TGS>0.0D0) .and.&
-   &(STABLE .or. (UNSTAB .and. HS>=ZI)) ) THEN
-      BVF = DSQRT( G * TGS / PTS )
-   ELSE
-      BVF = 1.0D-10
-   END IF
+   if ( (tgs>0.0d0) .and.&
+   &(stable .or. (unstab .and. hs>=zi)) ) then
+      bvf = dsqrt( g * tgs / pts )
+   else
+      bvf = 1.0d-10
+   end if
 
-   IF( BVF < 1.0D-10 )THEN
-      BVF =  1.0D-10
-   END IF
+   if( bvf < 1.0d-10 )then
+      bvf =  1.0d-10
+   end if
 
-   BVPRIM  = 0.7D0 * BVF
+   bvprim  = 0.7d0 * bvf
 
 !RJP  For downwash calculations, set temporarily assigned effective values
-   UEFF  = US
-   SVEFF = SVS
-   SWEFF = SWS
-   TGEFF = TGS
-   UEFFD  = US
-   SVEFFD = SVS
-   SWEFFD = SWS
+   ueff  = us
+   sveff = svs
+   sweff = sws
+   tgeff = tgs
+   ueffd  = us
+   sveffd = svs
+   sweffd = sws
 !RWB  Add effective parameters for indirect plume.  RWB, 12/8/94
-   UEFFN  = US
-   SVEFFN = SVS
-   SWEFFN = SWS
-   UEFF3  = US
-   SVEFF3 = SVS
-   SWEFF3 = SWS
-   TGEFF3 = TGS
+   ueffn  = us
+   sveffn = svs
+   sweffn = sws
+   ueff3  = us
+   sveff3 = svs
+   sweff3 = sws
+   tgeff3 = tgs
 
 !     Define temporary values of CENTER and SURFAC based on HS
-   CENTER = HS
-   IF( CENTER < 0.1D0*ZI )THEN
-      SURFAC = .TRUE.
-   ELSE
-      SURFAC = .FALSE.
-   END IF
+   center = hs
+   if( center < 0.1d0*zi )then
+      surfac = .true.
+   else
+      surfac = .false.
+   end if
 
-   RETURN
-END SUBROUTINE METINI
+   return
+end subroutine metini
 
-SUBROUTINE LOCATE ( PARRAY, LVLBLW, LVLABV, VALUE, NDXBLW )
+subroutine locate ( parray, lvlblw, lvlabv, value, ndxblw )
 !=======================================================================
 !             LOCATE Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -807,10 +807,10 @@ SUBROUTINE LOCATE ( PARRAY, LVLBLW, LVLABV, VALUE, NDXBLW )
 !
 !---- Variable declarations
 !
-   IMPLICIT NONE
+   implicit none
 
-   INTEGER   :: LVLABV, LVLBLW, NDXBLW, JL, JM, JU
-   DOUBLE PRECISION  :: PARRAY(LVLABV), VALUE
+   integer   :: lvlabv, lvlblw, ndxblw, jl, jm, ju
+   double precision  :: parray(lvlabv), value
 !
 !---- Data dictionary
 !     JL   lower bound temporary variable
@@ -818,31 +818,31 @@ SUBROUTINE LOCATE ( PARRAY, LVLBLW, LVLABV, VALUE, NDXBLW )
 !     JU   upper bound temporary variable
 !
 !----
-   JL = LVLBLW - 1
-   JU = LVLABV + 1
+   jl = lvlblw - 1
+   ju = lvlabv + 1
 
-   DO WHILE( (JU - JL) > 1 )
+   do while( (ju - jl) > 1 )
 
-      JM = (JU + JL) / 2
+      jm = (ju + jl) / 2
 
-      IF( VALUE >= PARRAY(JM) )THEN
-         JL = JM
-      ELSE
-         JU = JM
-      ENDIF
+      if( value >= parray(jm) )then
+         jl = jm
+      else
+         ju = jm
+      endif
 
-   ENDDO
+   enddo
 
-   NDXBLW = MIN( JL, LVLABV-1 )
+   ndxblw = min( jl, lvlabv-1 )
 
-   RETURN
-END SUBROUTINE LOCATE
+   return
+end subroutine locate
 
 
 !RJP  Add subroutine ANYAVG
 
-SUBROUTINE ANYAVG ( NLVLS,HTS,PARRAY,ZBOT,NDXABV,ZTOP,NDXBLW,&
-&VALAVG)
+subroutine anyavg ( nlvls,hts,parray,zbot,ndxabv,ztop,ndxblw,&
+&valavg)
 !***********************************************************************
 !             ANYAVG Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -885,18 +885,18 @@ SUBROUTINE ANYAVG ( NLVLS,HTS,PARRAY,ZBOT,NDXABV,ZTOP,NDXBLW,&
 !
 !---- Variable declarations
 !
-   IMPLICIT NONE
+   implicit none
 
-   INTEGER   :: I, NLVLS, NDXABV, NDXBLW
-   DOUBLE PRECISION  :: HTS(NLVLS), PARRAY(NLVLS), ZBOT, ZTOP,&
-   &SUM, VALAVG
-   DOUBLE PRECISION  :: VALBOT, VALTOP
+   integer   :: i, nlvls, ndxabv, ndxblw
+   double precision  :: hts(nlvls), parray(nlvls), zbot, ztop,&
+   &sum, valavg
+   double precision  :: valbot, valtop
 !
 !---- Data initializations
 !
 !.......................................................................
 !
-   SUM = 0.0D0
+   sum = 0.0d0
 !
 !     NDXABV is the profile index of the height just above ZBOT, and
 !     NDXBLW is the profile index of the height just below ZTOP.
@@ -908,57 +908,57 @@ SUBROUTINE ANYAVG ( NLVLS,HTS,PARRAY,ZBOT,NDXABV,ZTOP,NDXBLW,&
 !
 !     Check for minimum values of ZTOP and ZBOT.
 !
-   IF(ZBOT < 0.5D0) THEN
-      ZBOT = 0.5D0
-      NDXABV = 2
-   ENDIF
-   IF(ZTOP < 0.51D0) THEN
-      ZTOP = 0.51D0
-      NDXBLW = 2
-   ENDIF
+   if(zbot < 0.5d0) then
+      zbot = 0.5d0
+      ndxabv = 2
+   endif
+   if(ztop < 0.51d0) then
+      ztop = 0.51d0
+      ndxblw = 2
+   endif
 !
-   IF(NDXBLW < NDXABV) GO TO 300
-   IF(NDXBLW == NDXABV) GO TO 200
+   if(ndxblw < ndxabv) go to 300
+   if(ndxblw == ndxabv) go to 200
 !
 !     Sum using trapezoidal rule over intermediate profile layers.
 !
-   DO I = NDXABV+1, NDXBLW
-      SUM = SUM + (HTS(I) - HTS(I-1)) * 0.5D0 *&
-      &(PARRAY(I) + PARRAY(I-1))
-   END DO
+   do i = ndxabv+1, ndxblw
+      sum = sum + (hts(i) - hts(i-1)) * 0.5d0 *&
+      &(parray(i) + parray(i-1))
+   end do
 !
 !---- Finish the summation over partial layers at bottom (first), then
 !     the top.
 !
-200 CONTINUE
-   IF(NDXABV > 1) THEN
-      CALL GINTRP(HTS(NDXABV-1),PARRAY(NDXABV-1),HTS(NDXABV),&
-      &PARRAY(NDXABV),ZBOT,VALBOT)
-      SUM = SUM + (HTS(NDXABV) - ZBOT) * 0.5D0 *&
-      &(VALBOT + PARRAY(NDXABV) )
-   ELSE
-      SUM = SUM + (HTS(1) - ZBOT) * PARRAY(1)
-   ENDIF
+200 continue
+   if(ndxabv > 1) then
+      call gintrp(hts(ndxabv-1),parray(ndxabv-1),hts(ndxabv),&
+      &parray(ndxabv),zbot,valbot)
+      sum = sum + (hts(ndxabv) - zbot) * 0.5d0 *&
+      &(valbot + parray(ndxabv) )
+   else
+      sum = sum + (hts(1) - zbot) * parray(1)
+   endif
 
-   IF(NDXBLW < NLVLS) THEN
-      CALL GINTRP(HTS(NDXBLW),PARRAY(NDXBLW),HTS(NDXBLW+1),&
-      &PARRAY(NDXBLW+1),ZTOP,VALTOP)
-      SUM = SUM + (ZTOP - HTS(NDXBLW)) * 0.5D0 *&
-      &(VALTOP + PARRAY(NDXBLW) )
-   ELSE
-      SUM = SUM + (ZTOP - HTS(NLVLS)) * PARRAY(NLVLS)
-   ENDIF
+   if(ndxblw < nlvls) then
+      call gintrp(hts(ndxblw),parray(ndxblw),hts(ndxblw+1),&
+      &parray(ndxblw+1),ztop,valtop)
+      sum = sum + (ztop - hts(ndxblw)) * 0.5d0 *&
+      &(valtop + parray(ndxblw) )
+   else
+      sum = sum + (ztop - hts(nlvls)) * parray(nlvls)
+   endif
 !
 !     Take average
 !
-   VALAVG = SUM / (ZTOP - ZBOT)
-   GO TO 999
+   valavg = sum / (ztop - zbot)
+   go to 999
 !
 !     At 300, just take the interpolated value halfway between ZBOT
 !     and ZTOP, because both are within the same profile layer.
 !
-300 CALL GINTRP(HTS(NDXABV-1),PARRAY(NDXABV-1),HTS(NDXABV),&
-   &PARRAY(NDXABV),0.5D0*(ZBOT+ZTOP),VALAVG)
+300 call gintrp(hts(ndxabv-1),parray(ndxabv-1),hts(ndxabv),&
+   &parray(ndxabv),0.5d0*(zbot+ztop),valavg)
 !
-999 RETURN
-END SUBROUTINE ANYAVG
+999 return
+end subroutine anyavg

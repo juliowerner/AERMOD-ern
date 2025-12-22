@@ -1,4 +1,4 @@
-SUBROUTINE SOCARD
+subroutine socard
 !***********************************************************************
 !                 SOCARD Module of the AMS/EPA Regulatory Model - AERMOD
 ! ----------------------------------------------------------------------
@@ -57,507 +57,507 @@ SUBROUTINE SOCARD
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE RLINE_DATA, ONLY: RLMOVESCONV, L_RDEPRESS, L_RBARRIER
-   USE BUOYANT_LINE
+   use main1
+   use rline_data, only: rlmovesconv, l_rdepress, l_rbarrier
+   use buoyant_line
 
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, ILSAVE, LNUM, KK
+   integer :: i, j, ilsave, lnum, kk
 ! Unused INTEGER :: J
 
 !     Variable Initializations
-   MODNAM = 'SOCARD'
+   modnam = 'SOCARD'
 
-   IF (KEYWRD == 'STARTING') THEN
+   if (keywrd == 'STARTING') then
 !        Initialize Counters and Set Status Switch
-      ISRC = 0
-      IGRP = 0
-      NUMSRC = 0
-      NUMGRP = 0
-      NUMOLM = 0
-      NUMPSD = 0
-      NUMBLAVGINP = 0       ! # BL groups defined on BLPINPUT records - D41_Wood
-      NUMBLGRPS = 0         ! # BL groups defined by # of BLPINPUT records - D41_Wood
+      isrc = 0
+      igrp = 0
+      numsrc = 0
+      numgrp = 0
+      numolm = 0
+      numpsd = 0
+      numblavginp = 0       ! # BL groups defined on BLPINPUT records - D41_Wood
+      numblgrps = 0         ! # BL groups defined by # of BLPINPUT records - D41_Wood
 !        JAT 01/13/21 ISSUE D079
 !        ONLY INITIALIZE NBLINGRP IF ALLOCATED
 !        THIS CORRECTS A BUG INTRODUCED BY ISSUE D41
-      IF (ALLOCATED(NBLINGRP)) NBLINGRP = 0          ! # lines in each BL source/group - D41/Wood
+      if (allocated(nblingrp)) nblingrp = 0          ! # lines in each BL source/group - D41/Wood
 
 !        BL_Source_Limit_D088: Wood
-      IF (ALLOCATED(IGRP_BLP)) IGRP_BLP = 0          ! 'Flag' indicating which BL group a BL line is in - D088/Wood
+      if (allocated(igrp_blp)) igrp_blp = 0          ! 'Flag' indicating which BL group a BL line is in - D088/Wood
 !        BL_Source_Limit_D088: Wood
 
-      NUMCAP = 0
-      NUMHOR = 0
-      NURBSRC = 0
-      NAFTSRC = 0                                    ! Added for Aircraft; UNC-IE
-      NUMFLAT = 0
-      ISSTAT(1) = ISSTAT(1) + 1
-      IF (ISSTAT(1) /= 1) THEN
+      numcap = 0
+      numhor = 0
+      nurbsrc = 0
+      naftsrc = 0                                    ! Added for Aircraft; UNC-IE
+      numflat = 0
+      isstat(1) = isstat(1) + 1
+      if (isstat(1) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','135',keywrd)
+         go to 999
+      end if
 
 !        Initialize the buoyant line source variables
-      L_BLSOURCE = .FALSE.
+      l_blsource = .false.
 !        JAT 01/13/21 ISSUE D079
 !        ONLY INITIALIZE L_BLURBAN AND BL_NUMURB IF ALLOCATED
 !        THIS CORRECTS A BUG INTRODUCED BY ISSUE D41
-      IF (ALLOCATED(L_BLURBAN)) L_BLURBAN  = .FALSE.
-      IF (ALLOCATED(BL_NUMURB)) BL_NUMURB  = 0
+      if (allocated(l_blurban)) l_blurban  = .false.
+      if (allocated(bl_numurb)) bl_numurb  = 0
 
 !        Initialize the RDEPRESS and RBARRIER source logicals
-      L_RDEPRESS = .FALSE.
-      L_RBARRIER = .FALSE.
+      l_rdepress = .false.
+      l_rbarrier = .false.
 
 !        Flush The Working Array
-      IWRK2(:,:) = 0
-   ELSE IF (KEYWRD == 'LOCATION') THEN
+      iwrk2(:,:) = 0
+   else if (keywrd == 'LOCATION') then
 !        Set Status Switch
-      ISSTAT(2) = ISSTAT(2) + 1
+      isstat(2) = isstat(2) + 1
 !        Check for SRCGROUP or PSDGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
 !        Process Source Location                            ---   CALL SOLOCA
-      CALL SOLOCA
-   ELSE IF (KEYWRD == 'SRCPARAM') THEN
+      call soloca
+   else if (keywrd == 'SRCPARAM') then
 !        Set Status Switch
-      ISSTAT(3) = ISSTAT(3) + 1
+      isstat(3) = isstat(3) + 1
 !        Check for SRCGROUP or PSDGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
 !        Process Source Parameters                          ---   CALL SOPARM
-      CALL SOPARM
+      call soparm
 
 ! --- PRIME ---------------------------------
-   ELSE IF (KEYWRD == 'BUILDHGT' .or.&
-   &KEYWRD == 'BUILDWID' .or.&
-   &KEYWRD == 'BUILDLEN' .or.&
-   &KEYWRD == 'XBADJ   ' .or.&
-   &KEYWRD == 'YBADJ   ') THEN
+   else if (keywrd == 'BUILDHGT' .or.&
+   &keywrd == 'BUILDWID' .or.&
+   &keywrd == 'BUILDLEN' .or.&
+   &keywrd == 'XBADJ   ' .or.&
+   &keywrd == 'YBADJ   ') then
 ! -------------------------------------------
 
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
 !        Set Status Switch
-      IF (KEYWRD == 'BUILDHGT') THEN
-         ISSTAT(4) = ISSTAT(4) + 1
-      ELSE IF (KEYWRD == 'BUILDWID') THEN
-         ISSTAT(5) = ISSTAT(5) + 1
+      if (keywrd == 'BUILDHGT') then
+         isstat(4) = isstat(4) + 1
+      else if (keywrd == 'BUILDWID') then
+         isstat(5) = isstat(5) + 1
 
 ! --- PRIME -----------------------------------
-      ELSE IF (KEYWRD == 'BUILDLEN') THEN
-         ISSTAT(21) = ISSTAT(21) + 1
-      ELSE IF (KEYWRD == 'XBADJ   ') THEN
-         ISSTAT(22) = ISSTAT(22) + 1
-      ELSE IF (KEYWRD == 'YBADJ   ') THEN
-         ISSTAT(23) = ISSTAT(23) + 1
+      else if (keywrd == 'BUILDLEN') then
+         isstat(21) = isstat(21) + 1
+      else if (keywrd == 'XBADJ   ') then
+         isstat(22) = isstat(22) + 1
+      else if (keywrd == 'YBADJ   ') then
+         isstat(23) = isstat(23) + 1
 ! ---------------------------------------------
 
-      END IF
+      end if
 !        Process Direction-specific Building Dimensions     ---   CALL DSBLDG
-      CALL DSBLDG
+      call dsbldg
 
 ! --- PLATFORM --------------------------------
 !CRT  D063 Platform Downwash
 !     CRT, 1/18/2012: add keyword PLATFORM for platform downwash
 !     MGS, 10/2/2020: changed ISSTAT index to 47 from 42 (taken in v19191)
-   ELSE IF (KEYWRD == 'PLATFORM') THEN
+   else if (keywrd == 'PLATFORM') then
 
-      IF(.NOT. L_ALPHA) THEN
+      if(.not. l_alpha) then
 !           WRITE Error Message:  "Non-DFAULT ALPHA option required"
 !           for PLATFORM
-         CALL ERRHDL(PATH,MODNAM,'E','198',' PLATFORM ')
-      END IF
+         call errhdl(path,modnam,'E','198',' PLATFORM ')
+      end if
 
 !        Set Status Switch
-      ISSTAT(47) = ISSTAT(47) + 1
+      isstat(47) = isstat(47) + 1
 
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
 
 !           Process the PLATFM Card                      ---   CALL PLATFM
-      CALL PLATFM
+      call platfm
 ! ---------------------------------------------
 
-   ELSE IF (KEYWRD == 'EMISFACT') THEN
+   else if (keywrd == 'EMISFACT') then
 !        Set Status Switch
-      ISSTAT(7) = ISSTAT(7) + 1
+      isstat(7) = isstat(7) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
 !        Process Variable Emission Rate Factors             ---   CALL EMVARY
-      CALL EMVARY
-   ELSE IF (KEYWRD == 'EMISUNIT') THEN
+      call emvary
+   else if (keywrd == 'EMISUNIT') then
 !        Set Status Switch
-      ISSTAT(8) = ISSTAT(8) + 1
+      isstat(8) = isstat(8) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
-      IF (ISSTAT(8) /= 1) THEN
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
+      if (isstat(8) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE IF (NUMTYP == 1) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      else if (numtyp == 1) then
 !           Process Emission Rate Unit Conversion Factors   ---   CALL EMUNIT
-         CALL EMUNIT
-      ELSE
+         call emunit
+      else
 !           WRITE Error Message: EMISUNIT Keyword with more than 1 output type
-         CALL ERRHDL(PATH,MODNAM,'E','158',' ')
-      END IF
+         call errhdl(path,modnam,'E','158',' ')
+      end if
 !     Accept MOVES units (g/hr/link) for conversion to RLINE units, should follow LOCATION
-   ELSE IF (KEYWRD == 'RLEMCONV') THEN
+   else if (keywrd == 'RLEMCONV') then
 !        Set Status Switch
-      ISSTAT(12) = ISSTAT(12) + 1
+      isstat(12) = isstat(12) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
 !        Check that RLEMCONV is NOT repeated
-      IF (ISSTAT(12) /= 1) THEN
+      if (isstat(12) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
+         call errhdl(path,modnam,'E','135',keywrd)
 !MGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (begin)
 !MGS         ELSE IF(.NOT. BETA) THEN
 !           WRITE Error Message: "Non-DFAULT BETA option required" for RLINE source type
 !MGS            CALL ERRHDL(PATH,MODNAM,'E','199','RLEMCONV')
 !MGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (end)
 !        Check The Number Of The Fields
-      ELSE IF (IFC > 2) THEN
+      else if (ifc > 2) then
 !           WRITE Error Message: Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','202',keywrd)
+      else
 !           Set RLINE MOVES conversion switch to TRUE
-         RLMOVESCONV = .TRUE.
-      END IF
-   ELSE IF (KEYWRD == 'PARTDIAM' .or. KEYWRD == 'MASSFRAX' .or.&
-   &KEYWRD == 'PARTDENS') THEN
+         rlmovesconv = .true.
+      end if
+   else if (keywrd == 'PARTDIAM' .or. keywrd == 'MASSFRAX' .or.&
+   &keywrd == 'PARTDENS') then
 !        Set Status Switch
-      IF (KEYWRD == 'PARTDIAM') THEN
-         ISSTAT(9) = ISSTAT(9) + 1
-      ELSE IF (KEYWRD == 'MASSFRAX') THEN
-         ISSTAT(10) = ISSTAT(10) + 1
-      ELSE IF (KEYWRD == 'PARTDENS') THEN
-         ISSTAT(11) = ISSTAT(11) + 1
-      END IF
+      if (keywrd == 'PARTDIAM') then
+         isstat(9) = isstat(9) + 1
+      else if (keywrd == 'MASSFRAX') then
+         isstat(10) = isstat(10) + 1
+      else if (keywrd == 'PARTDENS') then
+         isstat(11) = isstat(11) + 1
+      end if
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
 !        Process Particle Deposition Parameters             ---   CALL PARTDEP
-      CALL PARTDEP
+      call partdep
 
-   ELSE IF (KEYWRD == 'ELEVUNIT') THEN
+   else if (keywrd == 'ELEVUNIT') then
 !        Set Status Switch
-      ISSTAT(15) = ISSTAT(15) + 1
+      isstat(15) = isstat(15) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
-      IF (ISSTAT(15) /= 1) THEN
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
+      if (isstat(15) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE IF (NUMSRC > 0) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      else if (numsrc > 0) then
 !           Write Error Message: ELEVUNIT must be first card after STARTING
-         CALL ERRHDL(PATH,MODNAM,'E','152','  SO')
-      ELSE
+         call errhdl(path,modnam,'E','152','  SO')
+      else
 !           Process Elevation Units for Source Elevations   ---   CALL SOELUN
-         CALL SOELUN
-      END IF
-   ELSE IF (KEYWRD == 'HOUREMIS') THEN
+         call soelun
+      end if
+   else if (keywrd == 'HOUREMIS') then
 !*       Set Status Switch
-      ISSTAT(16) = ISSTAT(16) + 1
+      isstat(16) = isstat(16) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
 !        Set HOURLY Flag
-      HOURLY = .TRUE.
+      hourly = .true.
 !*       Process Hourly Emissions                           ---   CALL HREMIS
-      CALL HREMIS
+      call hremis
 !*#
 
-   ELSE IF (KEYWRD == 'CONCUNIT') THEN
+   else if (keywrd == 'CONCUNIT') then
 !        Set Status Switch
-      ISSTAT(17) = ISSTAT(17) + 1
+      isstat(17) = isstat(17) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
-      IF (ISSTAT(17) /= 1) THEN
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
+      if (isstat(17) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      END IF
-      IF (ISSTAT(8) /= 0) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      end if
+      if (isstat(8) /= 0) then
 !           WRITE Error Message: Conflict with EMISUNIT
-         CALL ERRHDL(PATH,MODNAM,'E','159',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','159',keywrd)
+      else
 !           Process Emission Rate Unit Conversion Factors   ---   CALL COUNIT
-         CALL COUNIT
-      END IF
-   ELSE IF (KEYWRD == 'DEPOUNIT') THEN
+         call counit
+      end if
+   else if (keywrd == 'DEPOUNIT') then
 !        Set Status Switch
-      ISSTAT(18) = ISSTAT(18) + 1
+      isstat(18) = isstat(18) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
-      IF (ISSTAT(18) /= 1) THEN
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
+      if (isstat(18) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      END IF
-      IF (ISSTAT(8) /= 0) THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      end if
+      if (isstat(8) /= 0) then
 !           WRITE Error Message: Conflict with EMISUNIT
-         CALL ERRHDL(PATH,MODNAM,'E','159',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','159',keywrd)
+      else
 !           Process Emission Rate Unit Conversion Factors   ---   CALL DPUNIT
-         CALL DPUNIT
-      END IF
+         call dpunit
+      end if
 
-   ELSE IF (KEYWRD == 'AREAVERT') THEN
+   else if (keywrd == 'AREAVERT') then
 !        Set Status Switch
-      ISSTAT(19) = ISSTAT(19) + 1
+      isstat(19) = isstat(19) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
 !        Process Vertices for AREAPOLY Sources              ---   CALL ARVERT
-      CALL ARVERT
+      call arvert
 
-   ELSE IF (KEYWRD == 'INCLUDED') THEN
+   else if (keywrd == 'INCLUDED') then
 !        Set Status Switch
-      ISSTAT(20) = ISSTAT(20) + 1
+      isstat(20) = isstat(20) + 1
 !        Save ILINE as ISAVE
-      ILSAVE = ILINE
+      ilsave = iline
 !        Process the Included Receptor File                 ---   CALL INCLUD
-      CALL INCLUD
+      call includ
 !        Retrieve ILINE From ISAVE
-      ILINE = ILSAVE
+      iline = ilsave
 
-   ELSE IF (KEYWRD == 'SRCGROUP') THEN
+   else if (keywrd == 'SRCGROUP') then
 !        Set Status Switch
-      ISSTAT(24) = ISSTAT(24) + 1
+      isstat(24) = isstat(24) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT. PSDCREDIT) THEN
+      if (.not. psdcredit) then
 !           Process Source Groups                           ---   CALL SOGRP
-         CALL SOGRP
-      ELSE
+         call sogrp
+      else
 !           Write Error Message: SRCGROUP specified with PSDCREDIT option
-         CALL ERRHDL(PATH,MODNAM,'E','105',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','105',keywrd)
+      end if
 
-   ELSE IF (KEYWRD == 'GASDEPOS') THEN
+   else if (keywrd == 'GASDEPOS') then
 !     JAT 7/02/19 added from 18081
 !     given general lack of testing on gas deposition
 !     now making gas deposition an alpha option
 !     note other gas deposition keywords GDSEASON, GDLANUSE
 !     occur in the CO pathway and are also checked
-      IF (L_ALPHA) THEN
+      if (l_alpha) then
 !             Set Status Switch
-         ISSTAT(26) = ISSTAT(26) + 1
+         isstat(26) = isstat(26) + 1
 !             Check for SRCGROUP Card Out Of Order
-         IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-         ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-         END IF
-         IF (.NOT. LUSERVD) THEN
+         if (.not.psdcredit .and. isstat(24) /= 0) then
+            call errhdl(path,modnam,'E','140','SRCGROUP')
+         else if (psdcredit .and. isstat(34) /= 0) then
+            call errhdl(path,modnam,'E','140','PSDGROUP')
+         end if
+         if (.not. luservd) then
 !                 Process Gas Deposition Parameters               ---   CALL GASDEP
-            CALL GASDEP
-         ELSE
+            call gasdep
+         else
 !                 Write Error Message:  User-specified deposition velocity
-            CALL ERRHDL(PATH,MODNAM,'E','195',KEYWRD)
-         END IF
-      ELSE !issue error
-         CALL ERRHDL(PATH,MODNAM,'E','198','GASDEPOS')
-      ENDIF
-   ELSE IF (KEYWRD == 'METHOD_2') THEN
+            call errhdl(path,modnam,'E','195',keywrd)
+         end if
+      else !issue error
+         call errhdl(path,modnam,'E','198','GASDEPOS')
+      endif
+   else if (keywrd == 'METHOD_2') then
 !     JAT 6/25/19 added from 18081
 !     given changes to scavenging ratio calculations in subroutine
 !     scavrat for method 2, and general lack of testing on method 2
 !     now making method 2 an alpha option
-      IF (L_ALPHA) THEN
+      if (l_alpha) then
 !             Set Status Switch
-         ISSTAT(27) = ISSTAT(27) + 1
+         isstat(27) = isstat(27) + 1
 ! ---         Check for DFAULT option; METHOD_2 is considered non-DFAULT
-         IF (DFAULT) THEN
+         if (dfault) then
 !                 Write Error Message:  METHOD_2 w/ DFAULT Option
-            CALL ERRHDL(PATH,MODNAM,'E','197','METHOD_2') !shouldn't happen now JAT 6/25/19 but leave in
-         ELSE
+            call errhdl(path,modnam,'E','197','METHOD_2') !shouldn't happen now JAT 6/25/19 but leave in
+         else
 !                 Set flag for use of non-DEFAULT option
-            L_NonDFAULT = .TRUE.
+            L_NonDFAULT = .true.
 !                 Check for SRCGROUP Card Out Of Order
-            IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-            ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-            END IF
+            if (.not.psdcredit .and. isstat(24) /= 0) then
+               call errhdl(path,modnam,'E','140','SRCGROUP')
+            else if (psdcredit .and. isstat(34) /= 0) then
+               call errhdl(path,modnam,'E','140','PSDGROUP')
+            end if
 !                 Process Method 2 Deposition Parameters          ---   CALL METH_2
-            CALL METH_2
-         END IF
-      ELSE !issue error
-         CALL ERRHDL(PATH,MODNAM,'E','198','METHOD_2')
-      ENDIF
-   ELSE IF (KEYWRD == 'URBANSRC') THEN
+            call meth_2
+         end if
+      else !issue error
+         call errhdl(path,modnam,'E','198','METHOD_2')
+      endif
+   else if (keywrd == 'URBANSRC') then
 !        Set Status Switch
-      ISSTAT(28) = ISSTAT(28) + 1
+      isstat(28) = isstat(28) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
-      IF (URBAN) THEN
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
+      if (urban) then
 !           Process the Urban Source Card                   ---   CALL URBANS
-         CALL URBANS
-      ELSE
+         call urbans
+      else
 !           Write Error Message:  Urban source defined without URBANOPT card
-         CALL ERRHDL(PATH,MODNAM,'E','130','URBANOPT')
-      END IF
-   ELSE IF (KEYWRD == 'NO2RATIO') THEN
+         call errhdl(path,modnam,'E','130','URBANOPT')
+      end if
+   else if (keywrd == 'NO2RATIO') then
 !        Set Status Switch
-      ISSTAT(29) = ISSTAT(29) + 1
+      isstat(29) = isstat(29) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
-      IF (PVMRM .or. OLM&
-      &.or. RUNTTRM .or. GRSM) THEN
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
+      if (pvmrm .or. olm&
+      &.or. runttrm .or. grsm) then
 !           Process the NO2 Ratio Card                      ---   CALL NO2RAT
-         CALL NO2RAT
-      ELSE
+         call no2rat
+      else
 !           Write Error Message:  NO2RATIO specified without PVMRM, OLM or GRSM
-         CALL ERRHDL(PATH,MODNAM,'E','600',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','600',keywrd)
+      end if
 
-   ELSE IF (KEYWRD == 'OLMGROUP') THEN
+   else if (keywrd == 'OLMGROUP') then
 !        Set Status Switch
-      ISSTAT(30) = ISSTAT(30) + 1
+      isstat(30) = isstat(30) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
-      IF (OLM) THEN
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
+      if (olm) then
 !           Process the OLM Group Card                      ---   CALL OLMGRP
-         CALL OLMGRP
-      ELSE
+         call olmgrp
+      else
 !           Write Error Message:  OLMGROUP specified without OLM
-         CALL ERRHDL(PATH,MODNAM,'E','144',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','144',keywrd)
+      end if
 
-   ELSE IF (KEYWRD == 'PSDGROUP') THEN
+   else if (keywrd == 'PSDGROUP') then
 !        Set Status Switch
-      ISSTAT(34) = ISSTAT(34) + 1
+      isstat(34) = isstat(34) + 1
 !        Check for PSDGROUP Card Out Of Order
-      IF (PSDCREDIT) THEN
+      if (psdcredit) then
 !           Process the PSD Group Card                      ---   CALL PSDGRP
-         CALL PSDGRP
-      ELSE
+         call psdgrp
+      else
 !           Write Error Message: PSDGROUP specified without PSDCREDIT option
-         CALL ERRHDL(PATH,MODNAM,'E','146',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','146',keywrd)
+      end if
 
-   ELSE IF (KEYWRD == 'BACKGRND') THEN
+   else if (keywrd == 'BACKGRND') then
 !        Set Status Switch
-      ISSTAT(40) = ISSTAT(40) + 1
+      isstat(40) = isstat(40) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
 !        Process the BACKGRND Card                         ---   CALL BACK_GRND
-      CALL BACK_GRND
+      call back_grnd
 
-   ELSE IF (KEYWRD == 'BACKUNIT') THEN
+   else if (keywrd == 'BACKUNIT') then
 !        Set Status Switch
-      ISSTAT(41) = ISSTAT(41) + 1
+      isstat(41) = isstat(41) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
-      IF (ISSTAT(41) /= 1) THEN
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
+      if (isstat(41) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process the BACKUNIT Card                      ---   CALL BACK_UNIT
-         CALL BACK_UNIT
-      END IF
+         call back_unit
+      end if
 
-   ELSE IF (KEYWRD == 'BGSECTOR') THEN
+   else if (keywrd == 'BGSECTOR') then
 !        Set Status Switch
-      ISSTAT(42) = ISSTAT(42) + 1
-      IF (ISSTAT(42) /= 1) THEN
+      isstat(42) = isstat(42) + 1
+      if (isstat(42) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      else
 !           Process BGSECTOR keyword                       ---   CALL BGSECTOR
-         CALL BGSECTOR
-      END IF
+         call bgsector
+      end if
 
 !     Check for RLINE barrier input
-   ELSE IF (KEYWRD == 'RBARRIER') THEN
+   else if (keywrd == 'RBARRIER') then
 !         Added FLAT restriction in addition to the ALPHA restriction Wood 10/7
-      IF(L_ALPHA .and. FLAT) THEN
+      if(l_alpha .and. flat) then
 !           Set the RBARRIER logical to true
-         L_RBARRIER = .TRUE.
+         l_rbarrier = .true.
 !           Process RBARRIER keyword                        ---   CALL RLINEBAR_INPUTS
-         CALL RLINEBAR_INPUTS
-      ELSE
+         call rlinebar_inputs
+      else
 !           Add error message if FLAT is not included
-         IF (.NOT. FLAT) THEN
+         if (.not. flat) then
 ! ---                ERROR MESSAGE THAT BARRIER SOURCE REQUIRES 'FLAT' MODELOPT
-            CALL ERRHDL(PATH,MODNAM,'E','713','')
-         END IF
+            call errhdl(path,modnam,'E','713','')
+         end if
 !           Add if statement to only write error messge if the ALPHA option is not included
-         IF (.NOT. L_ALPHA) THEN
+         if (.not. l_alpha) then
 !               WRITE Error Message:  "Non-DFAULT ALPHA option required"
 !               for RBARRIER defining source configuration parameters
-            CALL ERRHDL(PATH,MODNAM,'E','198',' RBARRIER ')
-         END IF
-      END IF
+            call errhdl(path,modnam,'E','198',' RBARRIER ')
+         end if
+      end if
 !      Original portion
 !C     Check for RLINE barrier input
 !      ELSE IF (KEYWRD .EQ. 'RBARRIER') THEN
@@ -573,26 +573,26 @@ SUBROUTINE SOCARD
 !         END IF
 
 !     Check for RLINE depressed roadway input
-   ELSE IF (KEYWRD == 'RDEPRESS') THEN
+   else if (keywrd == 'RDEPRESS') then
 !         Added FLAT restriction in addition to the ALPHA restriction Wood 10/7
-      IF(L_ALPHA .and. FLAT) THEN
+      if(l_alpha .and. flat) then
 !           Set the RDEPRESS logical to true
-         L_RDEPRESS = .TRUE.
+         l_rdepress = .true.
 !           Process RDEPRESS keyword                        ---   CALL RLINEDPR_INPUTS
-         CALL RLINEDPR_INPUTS
-      ELSE
+         call rlinedpr_inputs
+      else
 !           Add error message if FLAT is not included
-         IF (.NOT. FLAT) THEN
+         if (.not. flat) then
 ! ---          ERROR MESSAGE THAT DEPRESSED SOURCE REQUIRES 'FLAT' MODELOPT
-            CALL ERRHDL(PATH,MODNAM,'E','713','')
-         END IF
+            call errhdl(path,modnam,'E','713','')
+         end if
 !           Add if statement to only write error messge if the ALPHA option is not included
-         IF (.NOT. L_ALPHA) THEN
+         if (.not. l_alpha) then
 !              WRITE Error Message:  "Non-DFAULT ALPHA option required"
 !              for RDEPRESS defining source configuration parameters
-            CALL ERRHDL(PATH,MODNAM,'E','198',' RDEPRESS ')
-         END IF
-      END IF
+            call errhdl(path,modnam,'E','198',' RDEPRESS ')
+         end if
+      end if
 !    Original portion
 !      ELSE IF (KEYWRD .EQ. 'RDEPRESS') THEN
 !         IF(L_ALPHA) THEN
@@ -607,205 +607,205 @@ SUBROUTINE SOCARD
 !         END IF
 !
 
-   ELSE IF (KEYWRD == 'BLPINPUT') THEN
+   else if (keywrd == 'BLPINPUT') then
 !        Multiple_BuoyLines_D041_Wood: start
 !        Removed code that did not allow for multiple BLPINPUT records
 
 !        Set Status Switch
-      ISSTAT(43) = ISSTAT(43) + 1
+      isstat(43) = isstat(43) + 1
 !        Multiple_BuoyLines_D041_Wood: end
 !        Subroutine name changed
 !        Process BLPINPUT keyword                           ---   CALL BL_AVGINP
-      CALL BL_AVGINP
+      call bl_avginp
 
-   ELSE IF (KEYWRD == 'BLPGROUP') THEN
+   else if (keywrd == 'BLPGROUP') then
 !        Set Status Switch
 ! Multiple_BuoyLines_D41_Wood
 !        Added routine to process BLPGRPOUP keyword(s); removed message that
 !        keyword was not active in version 19191
-      ISSTAT(44) = ISSTAT(44) + 1
+      isstat(44) = isstat(44) + 1
 !         IF (ISSTAT(44) .NE. 1) THEN
 !           WRITE Error Message:
 !            CALL ERRHDL(PATH,MODNAM,'W','385','combined')
 !         ELSE
 !           Process BL_INPUTS keyword                       ---   CALL BLPGRP
-      CALL BLPGRP
+      call blpgrp
 !         END IF
 !**  Added for Aircraft Plume Rise; UNC-IE
-   ELSE IF (KEYWRD == 'ARCFTSRC') THEN
+   else if (keywrd == 'ARCFTSRC') then
 !        Set Status Switch
-      ISSTAT(48) = ISSTAT(48) + 1
+      isstat(48) = isstat(48) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
 
-      IF(ARCFT) THEN
+      if(arcft) then
 !            Process the Aircraft Source Card  --- CALL AIRCRAFT
-         CALL AIRCRAFT
+         call aircraft
 !           check for HOURLY Flag means check for hourly emission file
 !           that is must for Aircraft Sources
-         IF (.NOT. HOURLY)THEN
+         if (.not. hourly)then
 !            WRITE Error Message for Hourly Emission File with Aircraft Sources
-            CALL ERRHDL(PATH,MODNAM,'E','823','HOUREMIS')
-         END IF
-      ELSE
+            call errhdl(path,modnam,'E','823','HOUREMIS')
+         end if
+      else
 !           Write Error Message; Aircraft Source Group defined without ARCFTOPT card
-         CALL ERRHDL(PATH,MODNAM,'E','821','ARCFTOPT')
-      END IF
+         call errhdl(path,modnam,'E','821','ARCFTOPT')
+      end if
 !**  End Aircraft Plume Rise insert; April 2023
 ! Added for HBP, JAN 2023
-   ELSE IF (KEYWRD == 'HBPSRCID') THEN
+   else if (keywrd == 'HBPSRCID') then
 !        Set Status Switch
-      ISSTAT(45) = ISSTAT(45) + 1
+      isstat(45) = isstat(45) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .and. ISSTAT(24) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .and. ISSTAT(34) /= 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
-      END IF
-      IF (HBPLUME) THEN
-         IF (L_ALPHA) THEN
+      if (.not.psdcredit .and. isstat(24) /= 0) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      else if (psdcredit .and. isstat(34) /= 0) then
+         call errhdl(path,modnam,'E','140','PSDGROUP')
+      end if
+      if (hbplume) then
+         if (l_alpha) then
 !             Process the HBP Source Card                   ---   CALL HBPSOURCE
-            CALL HBPSOURCE
-         ELSE
+            call hbpsource
+         else
 !           WRITE Error Message:  "Non-DFAULT ALPHA option required"
 !           for HBPSRC defining source configuration parameters
-            CALL ERRHDL(PATH,MODNAM,'E','198','HBPSRCID')
-         ENDIF
-      ELSE
+            call errhdl(path,modnam,'E','198','HBPSRCID')
+         endif
+      else
 !           Write Error Message:  HBP source defined without HBPLUME card
-         CALL ERRHDL(PATH,MODNAM,'E','130','HBPLUME')
-      END IF
+         call errhdl(path,modnam,'E','130','HBPLUME')
+      end if
 ! End HBP Insert
-   ELSE IF (KEYWRD == 'FINISHED') THEN
+   else if (keywrd == 'FINISHED') then
 !        Set Status Switch
-      ISSTAT(50) = ISSTAT(50) + 1
-      IF (ISSTAT(50) /= 1) THEN
+      isstat(50) = isstat(50) + 1
+      if (isstat(50) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      END IF
+         call errhdl(path,modnam,'E','135',keywrd)
+      end if
 
 !        Check to Insure That SRCGROUP or PSDGROUP Was The Last Functional Keyword
-      IF (PKEYWD /= 'SRCGROUP' .and. .NOT.PSDCREDIT) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      END IF
-      IF (PKEYWD /= 'PSDGROUP' .and. PSDCREDIT) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      END IF
+      if (pkeywd /= 'SRCGROUP' .and. .not.psdcredit) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      end if
+      if (pkeywd /= 'PSDGROUP' .and. psdcredit) then
+         call errhdl(path,modnam,'E','140','SRCGROUP')
+      end if
 
 !        Check for Missing Mandatory Keywords
-      IF (ISSTAT(1) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','STARTING')
-      END IF
-      IF (ISSTAT(2) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','LOCATION')
-      END IF
-      IF (ISSTAT(3) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','SRCPARAM')
-      END IF
-      IF (ISSTAT(24) == 0 .and. .NOT.PSDCREDIT) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','SRCGROUP')
-      END IF
-      IF (ISSTAT(34) == 0 .and. PSDCREDIT) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','PSDGROUP')
-      END IF
-      IF (ISSTAT(3) < ISSTAT(2)) THEN
+      if (isstat(1) == 0) then
+         call errhdl(path,modnam,'E','130','STARTING')
+      end if
+      if (isstat(2) == 0) then
+         call errhdl(path,modnam,'E','130','LOCATION')
+      end if
+      if (isstat(3) == 0) then
+         call errhdl(path,modnam,'E','130','SRCPARAM')
+      end if
+      if (isstat(24) == 0 .and. .not.psdcredit) then
+         call errhdl(path,modnam,'E','130','SRCGROUP')
+      end if
+      if (isstat(34) == 0 .and. psdcredit) then
+         call errhdl(path,modnam,'E','130','PSDGROUP')
+      end if
+      if (isstat(3) < isstat(2)) then
 !           Must Be Missing a SRCPARAM Card for One or More Sources
-         CALL ERRHDL(PATH,MODNAM,'E','130','SRCPARAM')
-      END IF
+         call errhdl(path,modnam,'E','130','SRCPARAM')
+      end if
 
 ! ---    Check for BACKUNIT keyword without BACKGRND keyword
-      IF (ISSTAT(40) == 0 .and. ISSTAT(41) > 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','193','SO BACKGRND')
-      END IF
+      if (isstat(40) == 0 .and. isstat(41) > 0) then
+         call errhdl(path,modnam,'E','193','SO BACKGRND')
+      end if
 
 ! ---    Check for number of source = 0
-      IF (NUMSRC == 0) THEN
+      if (numsrc == 0) then
 !           WRITE Error Message:  No Sources Input
-         CALL ERRHDL(PATH,MODNAM,'E','185','NUMSRC=0')
+         call errhdl(path,modnam,'E','185','NUMSRC=0')
 
-      ELSE
+      else
 ! ---       Check for non-DFAULT gas deposition options
-         IF (DFAULT .and. ISSTAT(26) > 0) THEN
+         if (dfault .and. isstat(26) > 0) then
 !              Write Error Message:  Gas Deposition Option w/ DFAULT Option
-            CALL ERRHDL(PATH,MODNAM,'E','196','GASDEPOS')
-         ELSE IF (ISSTAT(26) > 0) THEN
+            call errhdl(path,modnam,'E','196','GASDEPOS')
+         else if (isstat(26) > 0) then
 !              Set flag for use of non-DEFAULT option
-            L_NonDFAULT = .TRUE.
-         END IF
+            L_NonDFAULT = .true.
+         end if
 ! ---       Set logical flags for deposition options
-         IF (LUSERVD .or. (ICSTAT(18)>0 .and.&
-         &ICSTAT(20)>0 .and.&
-         &ISSTAT(26)>0)) THEN
+         if (luservd .or. (icstat(18)>0 .and.&
+         &icstat(20)>0 .and.&
+         &isstat(26)>0)) then
 ! ---          Gas dry deposition inputs specified
 !              GASDEPVD or GDSEASON, GDLANUSE & GASDEPOS
-            LDGAS = .TRUE.
-         END IF
-         IF (ISSTAT(26) > 0) THEN
+            ldgas = .true.
+         end if
+         if (isstat(26) > 0) then
 ! ---          Gas wet deposition inputs specified
-            LWGAS = .TRUE.
-         END IF
-         IF ((ISSTAT( 9)>0 .and. ISSTAT(10)>0 .and.&
-         &ISSTAT(11)>0) .or. ISSTAT(27)>0) THEN
+            lwgas = .true.
+         end if
+         if ((isstat( 9)>0 .and. isstat(10)>0 .and.&
+         &isstat(11)>0) .or. isstat(27)>0) then
 ! ---          Particle dry and wet deposition inputs specified
 !              PARTDIAM, MASSFRAX & PARTDENS or METHOD_2
-            LDPART = .TRUE.
-            LWPART = .TRUE.
-         END IF
-         IF (DRYDPLT .or. (.NOT.NODRYDPLT .and.&
-         &(LDGAS .or. LDPART))) THEN
+            ldpart = .true.
+            lwpart = .true.
+         end if
+         if (drydplt .or. (.not.nodrydplt .and.&
+         &(ldgas .or. ldpart))) then
 ! ---          Set dry depletion unless overridden by user
-            DDPLETE = .TRUE.
-         END IF
-         IF (WETDPLT .or. (.NOT.NOWETDPLT .and.&
-         &(LWGAS .or. LWPART))) THEN
+            ddplete = .true.
+         end if
+         if (wetdplt .or. (.not.nowetdplt .and.&
+         &(lwgas .or. lwpart))) then
 ! ---          Set wet depletion unless overridden by user
-            WDPLETE = .TRUE.
-         END IF
+            wdplete = .true.
+         end if
 
 ! ---       Check for incompatibilities with user-specified deposition velocity
 !           This condition may not be caught by check in subroutine COCARD
-         IF (LUSERVD .and. WDPLETE) THEN
+         if (luservd .and. wdplete) then
 !              Write Error Message: Wet deposition/depletion incompatible
 !              with GASDEPVD option
-            CALL ERRHDL(PATH,MODNAM,'E','243','GASDEPVD')
-         END IF
+            call errhdl(path,modnam,'E','243','GASDEPVD')
+         end if
 
 ! ---       Set model option header for dry depletion
-         IF (DDPLETE) THEN
-            IF (ARDPLETE) THEN
-               MODOPS(14) = 'AREADPLT'
-            ELSE IF (ROMBERG) THEN
-               MODOPS(14) = 'ROMBERG'
-            ELSE
-               MODOPS(14) = 'DRYDPLT'
-            END IF
-         ELSE IF (NODRYDPLT) THEN
-            MODOPS(14) = 'NODRYDPLT'
-         ELSE
-            MODOPS(14) = '         '
-         END IF
+         if (ddplete) then
+            if (ardplete) then
+               modops(14) = 'AREADPLT'
+            else if (romberg) then
+               modops(14) = 'ROMBERG'
+            else
+               modops(14) = 'DRYDPLT'
+            end if
+         else if (nodrydplt) then
+            modops(14) = 'NODRYDPLT'
+         else
+            modops(14) = '         '
+         end if
 ! ---       Set model option header for wet depletion
-         IF (WDPLETE) THEN
-            MODOPS(15) = 'WETDPLT'
-         ELSE IF (NODRYDPLT) THEN
-            MODOPS(15) = 'NOWETDPLT'
-         ELSE
-            MODOPS(15) = '         '
-         END IF
+         if (wdplete) then
+            modops(15) = 'WETDPLT'
+         else if (nodrydplt) then
+            modops(15) = 'NOWETDPLT'
+         else
+            modops(15) = '         '
+         end if
 ! ---       Check for error with inputs for dry deposition
-         IF ((DDPLETE .or. DEPOS .or. DDEP) .and.&
-         &(.NOT.LDGAS .and. .NOT.LDPART)) THEN
-            CALL ERRHDL('SO',MODNAM,'E','244','DRYDEP')
-         END IF
+         if ((ddplete .or. depos .or. ddep) .and.&
+         &(.not.ldgas .and. .not.ldpart)) then
+            call errhdl('SO',modnam,'E','244','DRYDEP')
+         end if
 ! ---       Check for error with inputs for wet deposition
-         IF ((WDPLETE .or. DEPOS .or. WDEP) .and.&
-         &(.NOT.LWGAS .and. .NOT.LWPART)) THEN
-            CALL ERRHDL('SO',MODNAM,'E','244','WETDEP')
-         END IF
+         if ((wdplete .or. depos .or. wdep) .and.&
+         &(.not.lwgas .and. .not.lwpart)) then
+            call errhdl('SO',modnam,'E','244','WETDEP')
+         end if
 
 !           All SO records processed and 'FINISHED' keyword encontered:
 !           Additional bouyant line processing continues here
@@ -821,9 +821,9 @@ SUBROUTINE SOCARD
 !           Code to process legacy input files prior to inclusion of
 !           BLPGROUP keyword;  individual lines are lumped into a BLPGROUP
 !           with the ID 'ALL'
-         LNUM = 0
-         IF (NBLTOTAL > 0) THEN
-            MODOPS(25) = 'BUOYLINE'
+         lnum = 0
+         if (nbltotal > 0) then
+            modops(25) = 'BUOYLINE'
 
 !              BLPINPUT_Checks_Missing_D091_Wood: start
 !              Due to the logic in subroutine SRCQA, AERMOD crashes if
@@ -831,7 +831,7 @@ SUBROUTINE SOCARD
 !              To maintain the logic in SRCQA, the logical L_BLSOURCE
 !              is set to TRUE here to indicate that at least one buoyant
 !              line source is present in the model run
-            L_BLSOURCE = .TRUE.
+            l_blsource = .true.
 
 !              If no BLPGROUP record was encountered, the control file
 !               may be a legacy file (from original implementation of
@@ -841,52 +841,52 @@ SUBROUTINE SOCARD
 !              The condition that NUMBLAVGINP be > 0 was added so
 !              NUMBLGRPS is not set to 1 when BLPINPUT record is missing
 
-            IF (NUMBLGRPS == 0 .and. NUMBLAVGINP > 0) THEN
+            if (numblgrps == 0 .and. numblavginp > 0) then
 !              BLPINPUT_Checks_Missing_D091_Wood: end
 
-               NUMBLGRPS = 1
+               numblgrps = 1
 !                  NBLINGRP(1) = NBLTOTAL
-               DO I = 1,NUMSRC
-                  IF (SRCTYP(I) == 'BUOYLINE') THEN
-                     IGRP_BLP(I,1) = 1
-                  END IF
-               END DO
-               BL_GRPID(1) = 'ALL'
-            END IF
+               do i = 1,numsrc
+                  if (srctyp(i) == 'BUOYLINE') then
+                     igrp_blp(i,1) = 1
+                  end if
+               end do
+               bl_grpid(1) = 'ALL'
+            end if
 ! Multiple_BuoyLines_D41_Wood - end
 
-            DO I = 1,NUMSRC
-               IF (SRCTYP(I) == 'BUOYLINE' ) THEN
-                  LNUM = LNUM + 1
-                  BLINEPARMS(LNUM)%ISRCNUM = I
-                  BLINEPARMS(LNUM)%SRCID  = SRCID(I)
-                  BLINEPARMS(LNUM)%XBEG   = AXS1(I)
-                  BLINEPARMS(LNUM)%YBEG   = AYS1(I)
-                  BLINEPARMS(LNUM)%XEND   = AXS2(I)
-                  BLINEPARMS(LNUM)%YEND   = AYS2(I)
-                  BLINEPARMS(LNUM)%ELEV   = AZS(I)
-                  BLINEPARMS(LNUM)%BLQS   = AQS(I)
-                  BLINEPARMS(LNUM)%BLHS   = AHS(I)
+            do i = 1,numsrc
+               if (srctyp(i) == 'BUOYLINE' ) then
+                  lnum = lnum + 1
+                  blineparms(lnum)%isrcnum = i
+                  blineparms(lnum)%srcid  = srcid(i)
+                  blineparms(lnum)%xbeg   = axs1(i)
+                  blineparms(lnum)%ybeg   = ays1(i)
+                  blineparms(lnum)%xend   = axs2(i)
+                  blineparms(lnum)%yend   = ays2(i)
+                  blineparms(lnum)%elev   = azs(i)
+                  blineparms(lnum)%blqs   = aqs(i)
+                  blineparms(lnum)%blhs   = ahs(i)
 
 ! Multiple_BuoyLines_D41_Wood - begin
 ! ---                The following tracks lines by BL groups
 !                     NUMBLGRPS = number of BLPGROUPS groups in
 !                     the input control file
-                  DO J = 1,NUMBLGRPS
-                     IF (IGRP_BLP(I,J) == 1) THEN
-                        BLINEPARMS(LNUM)%IBLPGRPNUM = J
-                        BLINEPARMS(LNUM)%BLPGRPNAME = BL_GRPID(J)
-                        NBLINGRP(J) = NBLINGRP(J) + 1
-                        EXIT
-                     END IF
-                  END DO
+                  do j = 1,numblgrps
+                     if (igrp_blp(i,j) == 1) then
+                        blineparms(lnum)%iblpgrpnum = j
+                        blineparms(lnum)%blpgrpname = bl_grpid(j)
+                        nblingrp(j) = nblingrp(j) + 1
+                        exit
+                     end if
+                  end do
 ! Multiple_BuoyLines_D41_Wood - end
 
 !     Will eventually need to address urban sources
 !                          BLINEPARMS(LNUM)%IURBSRCNUM = ??
 !                          BLINEPARMS(LNUM)%URBSRCNAME = ??
-               ENDIF
-            END DO
+               endif
+            end do
 
 !              A logical L_BLSOURCE was set to true when the keyword
 !               BLPINPUT was processed to indicate that there is a
@@ -902,59 +902,59 @@ SUBROUTINE SOCARD
 
 ! Multiple_BuoyLines_D41_Wood
 !              Translation and initial rotation performed by source group
-            DO KK = 1,NUMBLGRPS
-               CALL BL_ROTATE1 (KK)
-            END DO
-         END IF
+            do kk = 1,numblgrps
+               call bl_rotate1 (kk)
+            end do
+         end if
 
 ! ---       Quality Assure Source Parameter Inputs          ---   CALL SRCQA
-         CALL SRCQA
+         call srcqa
 
 ! ---       Check for consistency of deposition logical variables
 !           Check for CO GDSEASON Card if Gas Deposition is Calculated
-         IF (.NOT. LUSERVD .and. LDGAS .and. ICSTAT(18) == 0) THEN
+         if (.not. luservd .and. ldgas .and. icstat(18) == 0) then
 ! ---          Write Error Message:  Missing Mandatory Keyword
-            CALL ERRHDL('CO',MODNAM,'E','130','GDSEASON')
-         END IF
+            call errhdl('CO',modnam,'E','130','GDSEASON')
+         end if
 ! ---       Check for CO GDLANUSE Card if Gas Deposition is Calculated
-         IF (.NOT. LUSERVD .and. LDGAS .and. ICSTAT(20) == 0) THEN
+         if (.not. luservd .and. ldgas .and. icstat(20) == 0) then
 !              Write Error Message:  Missing Mandatory Keyword
-            CALL ERRHDL('CO',MODNAM,'E','130','GDLANUSE')
-         END IF
+            call errhdl('CO',modnam,'E','130','GDLANUSE')
+         end if
 ! ---       Check for SO GASDEPOS Card if Gas Depos is Calculated w/o LUSERVD
-         IF (.NOT. LUSERVD .and. LDGAS .and. ISSTAT(26) == 0) THEN
+         if (.not. luservd .and. ldgas .and. isstat(26) == 0) then
 !              Write Error Message:  Missing Mandatory Keyword
-            CALL ERRHDL('SO',MODNAM,'E','130','GASDEPOS')
-         END IF
+            call errhdl('SO',modnam,'E','130','GASDEPOS')
+         end if
 
 ! ---       Calculate settling velocity and related time-invariant
 !           deposition data                                 ---   CALL VDP1
-         IF (LDPART .or. LDGAS) THEN
-            CALL VDP1
-         END IF
+         if (ldpart .or. ldgas) then
+            call vdp1
+         end if
 
 ! ---       Reassign MODOPS(1) character for use of non-DFAULT options
 !           MODOPS(1) initially assigned in sub. COCARD, but source inputs
 !           may have changed value of L_NonDFAULT.
-         IF (DFAULT) THEN
-            MODOPS(1) = 'RegDFAULT'
-         ELSE IF (L_NonDFAULT) THEN
-            MODOPS(1) = 'NonDFAULT'
-         ELSE
-            MODOPS(1) = '         '
-         END IF
+         if (dfault) then
+            modops(1) = 'RegDFAULT'
+         else if (L_NonDFAULT) then
+            modops(1) = 'NonDFAULT'
+         else
+            modops(1) = '         '
+         end if
 
-      END IF
+      end if
 
-   ELSE
+   else
 !        Write Error Message: Invalid Keyword for This Pathway
-      CALL ERRHDL(PATH,MODNAM,'E','110',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','110',keywrd)
+   end if
 
-999 RETURN
-END SUBROUTINE SOCARD
+999 return
+end subroutine socard
 
-SUBROUTINE SRCQA
+subroutine srcqa
 !***********************************************************************
 !                 SRCQA Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1019,128 +1019,128 @@ SUBROUTINE SRCQA
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE BUOYANT_LINE
-   USE RLINE_DATA, only: NRLINES
+   use main1
+   use buoyant_line
+   use rline_data, only: nrlines
 
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   implicit none
+   character :: modnam*12
 
-   LOGICAL :: FOPEN
-   INTEGER :: I, J, N, ITOTSRC, ITOTGRP, NumBack, LNUM, KK
-   INTEGER :: ILSAVE, NERRCOUNT, LCOUNT
-   DOUBLE PRECISION :: ATOT
-   DOUBLE PRECISION :: SUMA, SUMX, SUMY, AREA
-   DOUBLE PRECISION :: BLXBEG, BLXEND
+   logical :: fopen
+   integer :: i, j, n, itotsrc, itotgrp, NumBack, lnum, kk
+   integer :: ilsave, nerrcount, lcount
+   double precision :: atot
+   double precision :: suma, sumx, sumy, area
+   double precision :: blxbeg, blxend
 
 !     Variable Initializations
-   MODNAM = 'SRCQA'
-   FOPEN  = .FALSE.
-   NERRCOUNT = 0
+   modnam = 'SRCQA'
+   fopen  = .false.
+   nerrcount = 0
 
 !     Begin Source LOOP
-   DO I = 1, NUMSRC
+   do i = 1, numsrc
 
 !        Check Source Array Limits for Too Few Values;
 !        (Too Many Checked In DSFILL and EFFILL)
-      IF (IWRK2(I,1) >0 .or. IWRK2(I,2) >0 .or.&
-      &IWRK2(I,11)>0 .or. IWRK2(I,12)>0 .or.&
-      &IWRK2(I,13)>0) THEN
+      if (iwrk2(i,1) >0 .or. iwrk2(i,2) >0 .or.&
+      &iwrk2(i,11)>0 .or. iwrk2(i,12)>0 .or.&
+      &iwrk2(i,13)>0) then
 
-         IF (IWRK2(I,1)<NSEC) THEN
+         if (iwrk2(i,1)<nsec) then
 !              WRITE Error Message:  Not Enough BUILDHGTs
-            CALL ERRHDL(PATH,MODNAM,'E','236',SRCID(I))
-         END IF
-         IF (IWRK2(I,2)<NSEC) THEN
+            call errhdl(path,modnam,'E','236',srcid(i))
+         end if
+         if (iwrk2(i,2)<nsec) then
 !              WRITE Error Message:  Not Enough BUILDWIDs
-            CALL ERRHDL(PATH,MODNAM,'E','237',SRCID(I))
-         END IF
+            call errhdl(path,modnam,'E','237',srcid(i))
+         end if
 
 ! --- PRIME -------------------------------------------------
-         IF (IWRK2(I,11)<NSEC) THEN
+         if (iwrk2(i,11)<nsec) then
 !              WRITE Error Message:  Not Enough BUILDLENs
-            CALL ERRHDL(PATH,MODNAM,'E','241',SRCID(I))
-         END IF
-         IF (IWRK2(I,12)<NSEC) THEN
+            call errhdl(path,modnam,'E','241',srcid(i))
+         end if
+         if (iwrk2(i,12)<nsec) then
 !              WRITE Error Message:  Not Enough XBADJs
-            CALL ERRHDL(PATH,MODNAM,'E','246',SRCID(I))
-         END IF
-         IF (IWRK2(I,13)<NSEC) THEN
+            call errhdl(path,modnam,'E','246',srcid(i))
+         end if
+         if (iwrk2(i,13)<nsec) then
 !              WRITE Error Message:  Not Enough YBADJs
-            CALL ERRHDL(PATH,MODNAM,'E','247',SRCID(I))
-         END IF
+            call errhdl(path,modnam,'E','247',srcid(i))
+         end if
 ! -----------------------------------------------------------
-      END IF
+      end if
 
 ! --- PRIME-PLATFORM DOWNWASH CONFLICT ----------------------
 !     CRT, 6/6/2012: D063 PRIME and PLATFORM downwash params
 !     cannot be specified for the same source
 
-      IF (OSPLAT(I) .and. IWRK2(I,1) > 0) THEN
+      if (osplat(i) .and. iwrk2(i,1) > 0) then
 
 !           WRITE Error Message:  Cannot be both PRIME and PLATFORM
-         CALL ERRHDL(PATH,MODNAM,'E','633',SRCID(I))
+         call errhdl(path,modnam,'E','633',srcid(i))
 
-      END IF
+      end if
 
 ! -----------------------------------------------------------
 
-      IF (QFLAG(I) /= ' ') THEN
-         IF (QFLAG(I)=='SEASON' .and. IWRK2(I,4)<4) THEN
+      if (qflag(i) /= ' ') then
+         if (qflag(i)=='SEASON' .and. iwrk2(i,4)<4) then
 !              WRITE Error Message: Not Enough QFACTs
-            CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF (QFLAG(I)=='MONTH' .and. IWRK2(I,4)<12) THEN
+            call errhdl(path,modnam,'E','239',srcid(i))
+         else if (qflag(i)=='MONTH' .and. iwrk2(i,4)<12) then
 !              WRITE Error Message: Not Enough QFACTs
-            CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I)=='HROFDY' .and. IWRK2(I,4)<24) THEN
+            call errhdl(path,modnam,'E','239',srcid(i))
+         else if(qflag(i)=='HROFDY' .and. iwrk2(i,4)<24) then
 !              WRITE Error Message: Not Enough QFACTs
-            CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF (QFLAG(I)=='WSPEED' .and. IWRK2(I,4)<6) THEN
+            call errhdl(path,modnam,'E','239',srcid(i))
+         else if (qflag(i)=='WSPEED' .and. iwrk2(i,4)<6) then
 !              WRITE Error Message: Not Enough QFACTs
-            CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I)=='SEASHR' .and. IWRK2(I,4)<96) THEN
+            call errhdl(path,modnam,'E','239',srcid(i))
+         else if(qflag(i)=='SEASHR' .and. iwrk2(i,4)<96) then
 !              WRITE Error Message: Not Enough QFACTs
-            CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I)=='HRDOW' .and. IWRK2(I,4)<72) THEN
+            call errhdl(path,modnam,'E','239',srcid(i))
+         else if(qflag(i)=='HRDOW' .and. iwrk2(i,4)<72) then
 !              WRITE Error Message: Not Enough QFACTs
-            CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I)=='HRDOW7' .and. IWRK2(I,4)<168) THEN
+            call errhdl(path,modnam,'E','239',srcid(i))
+         else if(qflag(i)=='HRDOW7' .and. iwrk2(i,4)<168) then
 !              WRITE Error Message: Not Enough QFACTs
-            CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I)=='SHRDOW' .and. IWRK2(I,4)<288) THEN
+            call errhdl(path,modnam,'E','239',srcid(i))
+         else if(qflag(i)=='SHRDOW' .and. iwrk2(i,4)<288) then
 !              WRITE Error Message: Not Enough QFACTs
-            CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I)=='SHRDOW7' .and. IWRK2(I,4)<672) THEN
+            call errhdl(path,modnam,'E','239',srcid(i))
+         else if(qflag(i)=='SHRDOW7' .and. iwrk2(i,4)<672) then
 !              WRITE Error Message: Not Enough QFACTs
-            CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I)=='MHRDOW' .and. IWRK2(I,4)<864) THEN
+            call errhdl(path,modnam,'E','239',srcid(i))
+         else if(qflag(i)=='MHRDOW' .and. iwrk2(i,4)<864) then
 !              WRITE Error Message: Not Enough QFACTs
-            CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I)=='MHRDOW7' .and. IWRK2(I,4)<2016) THEN
+            call errhdl(path,modnam,'E','239',srcid(i))
+         else if(qflag(i)=='MHRDOW7' .and. iwrk2(i,4)<2016) then
 !              WRITE Error Message: Not Enough QFACTs
-            CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I) == 'HOURLY') THEN
+            call errhdl(path,modnam,'E','239',srcid(i))
+         else if(qflag(i) == 'HOURLY') then
 !              Check for use of hourly-varying sigmas and release heights
 !              for VOLUME and AREA source types;
 !              Call HRQREAD subroutine for each source to set L_HRLYSIG flag;
 !              First save ILINE and reset to 1 to trigger L_HRLYSIG check
-            ILSAVE = ILINE
-            IQLINE = IQLINE + 1
-            ILINE  = 1
-            KURDAT = 0
+            ilsave = iline
+            iqline = iqline + 1
+            iline  = 1
+            kurdat = 0
 !MGS           Check for aircraft source type for reading/setting
 !              aircraft plume rise parameters.
 !MGS               CALL HRQREAD(I) !D151 - 6/5/2023
-            IF((AFTSRC(I) == 'Y')) THEN
+            if((aftsrc(i) == 'Y')) then
 !*               Retrieve AIRCRAFT Source Parameters for This Hour     ---   CALL AHRQREAD
-               CALL AHRQREAD(I)
-            ELSE
+               call ahrqread(i)
+            else
 !*               Retrieve Source Parameters for This Hour     ---   CALL HRQREAD
-               CALL HRQREAD(I)
-            END IF
-            ILINE  = ILSAVE
-         END IF
-      END IF
+               call hrqread(i)
+            end if
+            iline  = ilsave
+         end if
+      end if
 !MGS           END - Check for aircraft source type
 
 ! Multiple_BuoyLines_D41_Wood
@@ -1148,296 +1148,296 @@ SUBROUTINE SRCQA
 !         in the source QA
 
 !        Check Settling and Removal Parameters
-      IF (IWRK2(I,5)/=0 .or. IWRK2(I,6)/=0 .or.&
-      &IWRK2(I,7)/=0) THEN
+      if (iwrk2(i,5)/=0 .or. iwrk2(i,6)/=0 .or.&
+      &iwrk2(i,7)/=0) then
 !           Set Number of Particle Diameter Categories for This Source
-         INPD(I) = IWRK2(I,5)
+         inpd(i) = iwrk2(i,5)
 !           Check for Consistent Number of Categories for All Parameters
-         IF (IWRK2(I,5)/=IWRK2(I,6) .or.&
-         &IWRK2(I,5)/=IWRK2(I,7)) THEN
+         if (iwrk2(i,5)/=iwrk2(i,6) .or.&
+         &iwrk2(i,5)/=iwrk2(i,7)) then
 !              WRITE Error Message: PartDiam Categories Don't Match
-            CALL ERRHDL(PATH,MODNAM,'E','240',SRCID(I))
-         END IF
+            call errhdl(path,modnam,'E','240',srcid(i))
+         end if
 !           Check for Mass Fraction Summing to 1.0 (+/- 2%)
-         ATOT = 0.0D0
-         N = INPD(I)
-         IF (N <= NPDMAX) THEN
-            DO J = 1, N
-               ATOT = ATOT + APHI(J,I)
-            END DO
-            IF (ATOT < 0.98D0 .or. ATOT > 1.02D0) THEN
+         atot = 0.0d0
+         n = inpd(i)
+         if (n <= npdmax) then
+            do j = 1, n
+               atot = atot + aphi(j,i)
+            end do
+            if (atot < 0.98d0 .or. atot > 1.02d0) then
 !                 WRITE Error Message: Mass Fractions Don't Sum to 1.0
-               CALL ERRHDL(PATH,MODNAM,'W','330',SRCID(I))
-            END IF
-         ELSE
+               call errhdl(path,modnam,'W','330',srcid(i))
+            end if
+         else
 !              WRITE Error Message:  Too Many Settling/Removal Categories
 !              This shouldn't occur since limits are dynamically allocated
-            WRITE(DUMMY,'(''NPD= '',I7)') NPDMAX
-            CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-         END IF
-      END IF
+            write(dummy,'(''NPD= '',I7)') npdmax
+            call errhdl(path,modnam,'E','290',dummy)
+         end if
+      end if
 
 !        Screen for Conflicts with the Deposition Options
-      IF (INPD(I) == 0) THEN
+      if (inpd(i) == 0) then
 !           Check for NPD=0 and no gas deposition with the DEPOS, DDEP, or WDEP
-         IF ((DEPOS.or.DDEP.or.WDEP.or.DDPLETE.or.WDPLETE) .and.&
-         &.NOT. LUSERVD .and. SOGAS(I)=='N') THEN
+         if ((depos.or.ddep.or.wdep.or.ddplete.or.wdplete) .and.&
+         &.not. luservd .and. sogas(i)=='N') then
 !              WRITE Error Message for Lack of Particle Deposition Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','242',SRCID(I))
-         END IF
-      ELSE IF (INPD(I)>0 .and. SOGAS(I)=='Y') THEN
+            call errhdl(path,modnam,'E','242',srcid(i))
+         end if
+      else if (inpd(i)>0 .and. sogas(i)=='Y') then
 !           Check for NPD>0 and gas deposition for same source
 !           WRITE Error Message for source as both particle and gas
-         CALL ERRHDL(PATH,MODNAM,'E','289',SRCID(I))
-      END IF
+         call errhdl(path,modnam,'E','289',srcid(i))
+      end if
 
 !        Check Vertices and Determine Centroid for AREAPOLY Sources
-      IF (SRCTYP(I) == 'AREAPOLY') THEN
-         IF (IWRK2(I,10) < NVERTS(I) ) THEN
+      if (srctyp(i) == 'AREAPOLY') then
+         if (iwrk2(i,10) < nverts(i) ) then
 !              WRITE Error Message:  Not Enough Vertices Input For This Source?
-            CALL ERRHDL(PATH,MODNAM,'E','265',SRCID(I))
-         ELSE
+            call errhdl(path,modnam,'E','265',srcid(i))
+         else
 !              Repeat First Vertex as Last Vertex to Close Polygon
-            AXVERT(NVERTS(I)+1,I) = AXVERT(1,I)
-            AYVERT(NVERTS(I)+1,I) = AYVERT(1,I)
+            axvert(nverts(i)+1,i) = axvert(1,i)
+            ayvert(nverts(i)+1,i) = ayvert(1,i)
 
 !              Determine coordinates for centroid of polygon source;
 !              First calculate area of polygon
-            suma = 0.0D0
-            do j = 1, NVERTS(I)
-               suma = suma + (AXVERT(j,i)  *AYVERT(j+1,i) -&
-               &AXVERT(j+1,i)*AYVERT(j,i))
+            suma = 0.0d0
+            do j = 1, nverts(i)
+               suma = suma + (axvert(j,i)  *ayvert(j+1,i) -&
+               &axvert(j+1,i)*ayvert(j,i))
             end do
 
-            area = 0.5D0 * suma
+            area = 0.5d0 * suma
 
 !              Assign SQRT(DABS(area)) to AXINIT and AYINIT; equivalent values
 !              of AXINIT and AYINIT will be used to calculate area of polygon
-            AXINIT(I) = DSQRT( DABS(area) )
-            AYINIT(I) = DSQRT( DABS(area) )
+            axinit(i) = dsqrt( dabs(area) )
+            ayinit(i) = dsqrt( dabs(area) )
 
 !              Now determine coordinates of centroid
-            sumx = 0.0D0
-            sumy = 0.0D0
-            do j = 1, NVERTS(I)
-               sumx = sumx +(AXVERT(j,i)+AXVERT(j+1,i)) *&
-               &(AXVERT(j,i)*AYVERT(j+1,i) -&
-               &AXVERT(j+1,i)*AYVERT(j,i))
-               sumy = sumy +(AYVERT(j,i)+AYVERT(j+1,i)) *&
-               &(AXVERT(j,i)*AYVERT(j+1,i) -&
-               &AXVERT(j+1,i)*AYVERT(j,i))
+            sumx = 0.0d0
+            sumy = 0.0d0
+            do j = 1, nverts(i)
+               sumx = sumx +(axvert(j,i)+axvert(j+1,i)) *&
+               &(axvert(j,i)*ayvert(j+1,i) -&
+               &axvert(j+1,i)*ayvert(j,i))
+               sumy = sumy +(ayvert(j,i)+ayvert(j+1,i)) *&
+               &(axvert(j,i)*ayvert(j+1,i) -&
+               &axvert(j+1,i)*ayvert(j,i))
             end do
 
-            IF (DABS(area) < 0.0001D0) THEN
+            if (dabs(area) < 0.0001d0) then
 !                 WRITE Error Message:  Invalid shape for AREAPOLY source
-               CALL ERRHDL(PATH,MODNAM,'E','266',SRCID(I))
-               AXCNTR(I) = 0.0D0
-               AYCNTR(I) = 0.0D0
-            ELSE
+               call errhdl(path,modnam,'E','266',srcid(i))
+               axcntr(i) = 0.0d0
+               aycntr(i) = 0.0d0
+            else
 !                 Calculate coordinates of centroid
-               AXCNTR(I) = sumx/(6.0D0*area)
-               AYCNTR(I) = sumy/(6.0D0*area)
-            END IF
+               axcntr(i) = sumx/(6.0d0*area)
+               aycntr(i) = sumy/(6.0d0*area)
+            end if
 
-         END IF
-      END IF
+         end if
+      end if
 
 !        Check for urban sources
-      IF (URBSRC(I) == 'Y') THEN
-         NURBSRC = NURBSRC + 1
-      END IF
+      if (urbsrc(i) == 'Y') then
+         nurbsrc = nurbsrc + 1
+      end if
 !**  Added for Aircraft Plume Rise; UNC-IE
 !        Check for Aircraft sources
-      IF (AFTSRC(I) == 'Y') THEN
-         NAFTSRC = NAFTSRC + 1
-      END IF
+      if (aftsrc(i) == 'Y') then
+         naftsrc = naftsrc + 1
+      end if
 !**  End Aircraft Plume Rise insert; April 2023
 !        Check for capped and horizontal stack sources
-      IF (SRCTYP(I) == 'POINTCAP') THEN
-         NUMCAP = NUMCAP + 1
-      ELSE IF (SRCTYP(I) == 'POINTHOR') THEN
-         NUMHOR = NUMHOR + 1
-      END IF
+      if (srctyp(i) == 'POINTCAP') then
+         numcap = numcap + 1
+      else if (srctyp(i) == 'POINTHOR') then
+         numhor = numhor + 1
+      end if
 ! ---    Include count for all source types:
-      IF (SRCTYP(I)(1:5) == 'POINT') THEN
-         NUMPNT = NUMPNT + 1
-      ELSE IF (SRCTYP(I) == 'VOLUME') THEN
-         NUMVOL = NUMVOL + 1
-      ELSE IF (SRCTYP(I)(1:4) == 'AREA') THEN
-         NUMAREA = NUMAREA + 1
-      ELSE IF (SRCTYP(I) == 'LINE') THEN
-         NUMLINE = NUMLINE + 1
-      ELSE IF (SRCTYP(I) == 'OPENPIT') THEN
-         NUMPIT = NUMPIT + 1
-      ELSE IF (SRCTYP(I) == 'BUOYLINE') THEN
+      if (srctyp(i)(1:5) == 'POINT') then
+         numpnt = numpnt + 1
+      else if (srctyp(i) == 'VOLUME') then
+         numvol = numvol + 1
+      else if (srctyp(i)(1:4) == 'AREA') then
+         numarea = numarea + 1
+      else if (srctyp(i) == 'LINE') then
+         numline = numline + 1
+      else if (srctyp(i) == 'OPENPIT') then
+         numpit = numpit + 1
+      else if (srctyp(i) == 'BUOYLINE') then
 ! Multiple_BuoyLines_D41_Wood
 !           The counter for the total number of indivdual lines,
 !           NBLTOTAL, as well as the number of lines in each BL
 !           group, NBLINGRP array, now is determined in SOCARD
 
 !        Added for SIDEWASH point source
-      ELSE IF (SRCTYP(I) == 'SWPOINT') THEN
-         NUMSWP = NUMSWP + 1
-      END IF
+      else if (srctyp(i) == 'SWPOINT') then
+         numswp = numswp + 1
+      end if
 
 !        Identify the index of the level immediately below the top of the
 !        stack from the array of gridded heights; we are limiting the
 !        number of levels to search to 29 (= 600 m).  (Changed from 21
 !        by R. Brode, PES, 2/17/95)
 
-      CALL LOCATE( GRIDHT, 1, 29, AHS(I), NDXSTK(I) )
+      call locate( gridht, 1, 29, ahs(i), ndxstk(i) )
 
-   END DO
+   end do
 !     End Source LOOP
 
 !     D128: Warning message when AREAMNDR is used without an AREA Source present
-   IF (L_AREAMNDR .and. NUMAREA == 0) THEN
-      CALL ERRHDL(PATH,'RLINE','W','668','AREAMNDR')
-   END IF
+   if (l_areamndr .and. numarea == 0) then
+      call errhdl(path,'RLINE','W','668','AREAMNDR')
+   end if
 
 !     Check for open HOUREMIS file; if so, rewind file
-   IF (HOURLY) THEN
+   if (hourly) then
 !        Check for Hourly Emissions File
-      INQUIRE (UNIT=IHREMI,OPENED=FOPEN)
-      IF (FOPEN) THEN
-         REWIND IHREMI
-         IQLINE = 0
-      END IF
-   END IF
+      inquire (unit=ihremi,opened=fopen)
+      if (fopen) then
+         rewind ihremi
+         iqline = 0
+      end if
+   end if
 
-   IF (PSDCREDIT) THEN
+   if (psdcredit) then
 !RWB     Assign default "source groups" for PSDCREDIT applications:
 !RWB     first "source group" contains cumulative NAAQS calculation;
 !RWB     second "source group" contains PSD increment consumtion with credits.
-      NUMGRP = 2
-      GRPID(1) = 'NAAQS   '
-      GRPID(2) = 'PSDINC  '
+      numgrp = 2
+      grpid(1) = 'NAAQS   '
+      grpid(2) = 'PSDINC  '
 
 !        Check for source not included in any PSDGROUP
-      DO I = 1, NUMSRC
-         ITOTSRC = 0
-         DO J = 1, NUMPSD
-            IF (IGRP_PSD(I,J) == 1) THEN
-               ITOTSRC = ITOTSRC + 1
-            END IF
-         END DO
-         IF (ITOTSRC == 0) THEN
+      do i = 1, numsrc
+         itotsrc = 0
+         do j = 1, numpsd
+            if (igrp_psd(i,j) == 1) then
+               itotsrc = itotsrc + 1
+            end if
+         end do
+         if (itotsrc == 0) then
 !              Write Error Message:  Source not in PSDGROUP
-            CALL ERRHDL(PATH,MODNAM,'E','317',SRCID(I))
-         END IF
-      END DO
+            call errhdl(path,modnam,'E','317',srcid(i))
+         end if
+      end do
 
-   ELSE
+   else
 
 ! ---    Check for empty source groups and count how many groups
 !        include BACKGROUND
       NumBack = 0
-      DO J = 1, NUMGRP
-         ITOTSRC = 0
-         DO I = 1, NUMSRC
-            IF (IGROUP(I,J) == 1) THEN
-               ITOTSRC = ITOTSRC + 1
-            END IF
-         END DO
-         IF (GRP_BACK(J)) THEN
+      do j = 1, numgrp
+         itotsrc = 0
+         do i = 1, numsrc
+            if (igroup(i,j) == 1) then
+               itotsrc = itotsrc + 1
+            end if
+         end do
+         if (grp_back(j)) then
             NumBack = Numback + 1
-         END IF
-         IF (ITOTSRC == 0 .and. .NOT.GRP_BACK(J)) THEN
+         end if
+         if (itotsrc == 0 .and. .not.grp_back(j)) then
 !              Write Warning Message:  No Sources in SRCGROUP
-            CALL ERRHDL(PATH,MODNAM,'W','319',GRPID(J))
-         END IF
-      END DO
+            call errhdl(path,modnam,'W','319',grpid(j))
+         end if
+      end do
 
 ! ---    Issue warning if BACKGROUND is specified but not included with
 !        any source groups
-      IF (L_BACKGRND .and. NumBack == 0) THEN
+      if (l_backgrnd .and. NumBack == 0) then
 !           Write Warning Message:  BACKGROUND not in any SRCGROUP
-         CALL ERRHDL(PATH,MODNAM,'W','321',' ')
-      END IF
+         call errhdl(path,modnam,'W','321',' ')
+      end if
 
 !        Check for source not included in any source group
-      DO I = 1, NUMSRC
-         ITOTSRC = 0
-         DO J = 1, NUMGRP
-            IF (IGROUP(I,J) == 1) THEN
-               ITOTSRC = ITOTSRC + 1
-            END IF
-         END DO
-         IF (ITOTSRC == 0) THEN
+      do i = 1, numsrc
+         itotsrc = 0
+         do j = 1, numgrp
+            if (igroup(i,j) == 1) then
+               itotsrc = itotsrc + 1
+            end if
+         end do
+         if (itotsrc == 0) then
 !              Write Warning Message:  Source not in SRCGROUP
-            CALL ERRHDL(PATH,MODNAM,'W','316',SRCID(I))
-         END IF
-      END DO
+            call errhdl(path,modnam,'W','316',srcid(i))
+         end if
+      end do
 
-   END IF
+   end if
 
 ! Added for HBP, JAN. 2023
-   IF (HBPLUME .and. NHBP==0) THEN
+   if (hbplume .and. nhbp==0) then
 !        Write Error Message:  No HBP sources defined with HBP
-      CALL ERRHDL(PATH,MODNAM,'E','130','HBPSRCID')
-   END IF
+      call errhdl(path,modnam,'E','130','HBPSRCID')
+   end if
 ! End HBP insert
 
-   IF (URBAN .and. NURBSRC==0) THEN
+   if (urban .and. nurbsrc==0) then
 !        Write Error Message:  No urban sources defined with URBANOPT
-      CALL ERRHDL(PATH,MODNAM,'E','130','URBANSRC')
-   END IF
+      call errhdl(path,modnam,'E','130','URBANSRC')
+   end if
 
 !     Check for Urban Areas with No Sources;
 !     (single urban area checked based on missing URBANSRC card)
-   IF (NUMURB > 1) THEN
-      DO J = 1, NUMURB
-         ITOTSRC = 0
-         DO I = 1, NUMSRC
-            IF (IURBGRP(I,J) == 1) THEN
-               ITOTSRC = ITOTSRC + 1
-            END IF
-         END DO
-         IF (ITOTSRC == 0) THEN
+   if (numurb > 1) then
+      do j = 1, numurb
+         itotsrc = 0
+         do i = 1, numsrc
+            if (iurbgrp(i,j) == 1) then
+               itotsrc = itotsrc + 1
+            end if
+         end do
+         if (itotsrc == 0) then
 !              Write Error Message:  No Sources for Urban Area
-            CALL ERRHDL(PATH,MODNAM,'E','318',URBID(J))
-         END IF
-      END DO
-   END IF
+            call errhdl(path,modnam,'E','318',urbid(j))
+         end if
+      end do
+   end if
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   IF (ARCFT .and. NAFTSRC==0) THEN
+   if (arcft .and. naftsrc==0) then
 !        Write Error Message:  No Aircraft sources defined with ARCFTOPT
-      CALL ERRHDL(PATH,MODNAM,'E','822','ARCFTSRC')
-   END IF
+      call errhdl(path,modnam,'E','822','ARCFTSRC')
+   end if
 !**  End Aircraft Plume Rise insert, April 2023
 
 !     Check for source in more than one Urban Area
-   DO I = 1, NUMSRC
-      ITOTGRP = 0
-      DO J = 1, NUMURB
-         IF (IURBGRP(I,J) == 1) THEN
-            ITOTGRP = ITOTGRP + 1
-         END IF
-      END DO
-      IF (ITOTGRP > 1) THEN
+   do i = 1, numsrc
+      itotgrp = 0
+      do j = 1, numurb
+         if (iurbgrp(i,j) == 1) then
+            itotgrp = itotgrp + 1
+         end if
+      end do
+      if (itotgrp > 1) then
 !           Write Error Message:  Source in more than one Urban Area
-         CALL ERRHDL(PATH,MODNAM,'E','302',SRCID(I))
-      END IF
-   END DO
+         call errhdl(path,modnam,'E','302',srcid(i))
+      end if
+   end do
 
 !  Multiple_BuoyLines_D41_Wood
 !     QA for buoyant line sources: code moved to this point from earlier
 !      in this subroutine
 
-   IF (L_BLSOURCE) THEN
+   if (l_blsource) then
 !        There is at least one buoyant line in this model run
 
 !        A minimum release height of 2 meters has been established for
 !         the lines of buoyant line sources
-      DO LNUM = 1,NBLTOTAL
-         IF (BLINEPARMS(LNUM)%BLHS < 2.0D0) THEN
+      do lnum = 1,nbltotal
+         if (blineparms(lnum)%blhs < 2.0d0) then
 !              Apply a minimum release ht. of 2.0 m to the buoyant line
-            BLINEPARMS(LNUM)%BLHS = 2.0D0
-            WRITE(DUMMY,'(''line #'',I2)') LNUM
-            CALL ERRHDL(PATH,MODNAM,'W','472',DUMMY)
-         END IF
-      END DO
+            blineparms(lnum)%blhs = 2.0d0
+            write(dummy,'(''line #'',I2)') lnum
+            call errhdl(path,modnam,'W','472',dummy)
+         end if
+      end do
 
 
 !        Be sure the x-coordinates for each buoyant line are entered
@@ -1445,34 +1445,34 @@ SUBROUTINE SRCQA
 !         This check is on the UNTRANSLATED, UNROTATED coordinates
 !         entered on the and is not a function of BL source groups.
 
-      DO ILINE = 1,NBLTOTAL
+      do iline = 1,nbltotal
 
-         BLXBEG = BLINEPARMS(ILINE)%XBEG
-         BLXEND = BLINEPARMS(ILINE)%XEND
-         IF(BLXBEG > BLXEND) THEN
+         blxbeg = blineparms(iline)%xbeg
+         blxend = blineparms(iline)%xend
+         if(blxbeg > blxend) then
 !              Coordinates are entered in reverse order for this ILINE
-            NERRCOUNT = NERRCOUNT + 1
-         END IF
+            nerrcount = nerrcount + 1
+         end if
 
-      END DO
+      end do
 !
-      IF (NERRCOUNT > 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','388','BUOYLINE')
-      END IF
+      if (nerrcount > 0) then
+         call errhdl(path,modnam,'E','388','BUOYLINE')
+      end if
 
 !        BLPINPUT_Checks_Missing_D091_Wood: begin
 !        There is at least one individual buoyant line but no BLPINPUT
-      IF (NUMBLAVGINP == 0 .and. NBLTOTAL > 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','507','  ')
-      ENDIF
+      if (numblavginp == 0 .and. nbltotal > 0) then
+         call errhdl(path,modnam,'E','507','  ')
+      endif
 
 !        The number of BLPGROUPS allocated (via NBLGRP) does not equal
 !         the number of BL groups as defined by BLPINPUT records
 !         Recall that the groups are defined by the BLPINPUT record(s),
 !         which must appear before the BLPGROUP record(s)
-      IF (NUMBLGRPS /= NBLGRP) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','509','  ')
-      ENDIF
+      if (numblgrps /= nblgrp) then
+         call errhdl(path,modnam,'E','509','  ')
+      endif
 !        BLPINPUT_Checks_D091_Wood: end
 
 !     Multiple_BuoyLines_D41_Wood: Begin
@@ -1485,9 +1485,9 @@ SUBROUTINE SRCQA
 !         of BLPINPUT records if the IDs match; otherwise there is a
 !         mismatch between the two numbers
 
-      IF (NUMBLGRPS /= NUMBLAVGINP) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','503','  ')
-      ENDIF
+      if (numblgrps /= numblavginp) then
+         call errhdl(path,modnam,'E','503','  ')
+      endif
 
 !        The next check is dependent on the number of individual lines
 !         identified in each of the BLPGROUPs and the number specified
@@ -1511,9 +1511,9 @@ SUBROUTINE SRCQA
 !         is compiled with gfortran because the array is not intialized
 !         if there is no hourly emissions file and causes incorrect
 !         calculations in BLCALC
-      HRLYBLCOUNT(1:NUMBLGRPS) = 0
+      hrlyblcount(1:numblgrps) = 0
 
-      IF (L_BLHOURLY) THEN
+      if (l_blhourly) then
 !           L_BLHOURLY was set in subr.HREMIS
 !           Count the number of lines in each BL source group
 
@@ -1533,50 +1533,50 @@ SUBROUTINE SRCQA
 !              END IF
 !           END DO
 
-         DO LNUM = 1,NBLTOTAL
-            IF (QFLAG(BLINEPARMS(LNUM)%ISRCNUM)=='HOURLY') THEN
-               DO KK = 1, NUMBLGRPS
-                  IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
-                     HRLYBLCOUNT(KK) = HRLYBLCOUNT(KK) + 1
-                  END IF
-               END DO
-            END IF
-         END DO
+         do lnum = 1,nbltotal
+            if (qflag(blineparms(lnum)%isrcnum)=='HOURLY') then
+               do kk = 1, numblgrps
+                  if (blineparms(lnum)%iblpgrpnum == kk) then
+                     hrlyblcount(kk) = hrlyblcount(kk) + 1
+                  end if
+               end do
+            end if
+         end do
 
 !        Compare the number(s) obtained above for HRLYBLCOUNT to the
 !        number in each source group
-         DO KK = 1,NUMBLGRPS
-            IF (HRLYBLCOUNT(KK) > 0 .and.&
-            &NBLINGRP(KK) > 0) THEN
-               IF (HRLYBLCOUNT(KK) /= NBLINGRP(KK)) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','383',BL_GRPID(KK))
-               END IF
-            END IF
-         END DO
-      END IF
+         do kk = 1,numblgrps
+            if (hrlyblcount(kk) > 0 .and.&
+            &nblingrp(kk) > 0) then
+               if (hrlyblcount(kk) /= nblingrp(kk)) then
+                  call errhdl(path,modnam,'E','383',bl_grpid(kk))
+               end if
+            end if
+         end do
+      end if
 !     Multiple_BuoyLines_D41_Wood: End
 
 !        If one line of a buoyant line source group is declared urban,
 !         then all lines must be declared urban.  If not, generate an
 !         error message.
 !         The array L_BLURBAN is initialized as FALSE in subr.SOCARD
-      LCOUNT = 0
-      DO KK = 1,NUMBLGRPS
-         DO ILINE = 1,NBLINGRP(KK)
-            LCOUNT = LCOUNT + 1
-            IF (URBSRC(BLINEPARMS(LCOUNT)%ISRCNUM) == "Y") THEN
-               IF (.NOT. L_BLURBAN(KK)) L_BLURBAN(KK) = .TRUE.
-               BL_NUMURB(KK) = BL_NUMURB(KK) + 1
-            END IF
-         END DO
+      lcount = 0
+      do kk = 1,numblgrps
+         do iline = 1,nblingrp(kk)
+            lcount = lcount + 1
+            if (urbsrc(blineparms(lcount)%isrcnum) == "Y") then
+               if (.not. l_blurban(kk)) l_blurban(kk) = .true.
+               bl_numurb(kk) = bl_numurb(kk) + 1
+            end if
+         end do
 
-         IF ((L_BLURBAN(KK)) .and.&
-         &(BL_NUMURB(KK) /= NBLINGRP(KK))) THEN
+         if ((l_blurban(kk)) .and.&
+         &(bl_numurb(kk) /= nblingrp(kk))) then
 !               Write Error Message:  At least one but not all BL
 !                lines in the BL source group are declared as urban
-            CALL ERRHDL(PATH,MODNAM,'E','393',BL_GRPID(KK))
-         END IF
-      END DO
+            call errhdl(path,modnam,'E','393',bl_grpid(kk))
+         end if
+      end do
 
 !        CRO 3/28/2022 D132 Remove alpha requirement for BLINE (not sure it was working in 21112 anyway)
 !        Check to require ALPHA with Buoyant Line urban sources
@@ -1601,28 +1601,28 @@ SUBROUTINE SRCQA
 !         END IF
 
 !        Check BUOYLINE source is in one and only one BLPGROUP
-      IF (NUMBLGRPS > 0) THEN
+      if (numblgrps > 0) then
 !           At least one BLPGROUP record encountered
-         DO I = 1, NUMSRC
-            ITOTGRP = 0
-            IF (SRCTYP(I) == 'BUOYLINE') THEN
-               DO J = 1, NUMBLGRPS
-                  IF (IGRP_BLP(I,J) == 1) THEN
-                     ITOTGRP = ITOTGRP + 1
-                  END IF
-               END DO
-               IF (ITOTGRP > 1) THEN
+         do i = 1, numsrc
+            itotgrp = 0
+            if (srctyp(i) == 'BUOYLINE') then
+               do j = 1, numblgrps
+                  if (igrp_blp(i,j) == 1) then
+                     itotgrp = itotgrp + 1
+                  end if
+               end do
+               if (itotgrp > 1) then
 !                    Write Error Message:  BUOYLINE source in more than one BLPGROUP
-                  CALL ERRHDL(PATH,MODNAM,'E','257',SRCID(I))
-               END IF
-               IF (ITOTGRP == 0) THEN
+                  call errhdl(path,modnam,'E','257',srcid(i))
+               end if
+               if (itotgrp == 0) then
 !                    Write Error Message:  BUOYLINE source not in a BLPGROUP
-                  CALL ERRHDL(PATH,MODNAM,'E','258',SRCID(I))
-               END IF
-            END IF
-         END DO
-      END IF
-   END IF
+                  call errhdl(path,modnam,'E','258',srcid(i))
+               end if
+            end if
+         end do
+      end if
+   end if
 !     Multiple_BuoyLines_D41_Wood: End
 
 !     Multiple_BuoyLines_D41_Wood: Start
@@ -1630,285 +1630,285 @@ SUBROUTINE SRCQA
 !       BLPINPUT records matches the order of the individual sources
 !       on the SO LOCATION
 !       If there is only one group, no check is needed
-   IF (NUMBLGRPS > 1) THEN
-      DO LNUM = 2,NBLTOTAL
-         IF (BLINEPARMS(LNUM)%IBLPGRPNUM -&
-         &BLINEPARMS(LNUM-1)%IBLPGRPNUM < 0) THEN
-            WRITE(DUMMY,'(I2,'' and'',I2)')&
-            &BLINEPARMS(LNUM-1)%IBLPGRPNUM, BLINEPARMS(LNUM)%IBLPGRPNUM
-            CALL ERRHDL(PATH,MODNAM,'E','505',DUMMY)
-         END IF
-      END DO
-   END IF
+   if (numblgrps > 1) then
+      do lnum = 2,nbltotal
+         if (blineparms(lnum)%iblpgrpnum -&
+         &blineparms(lnum-1)%iblpgrpnum < 0) then
+            write(dummy,'(I2,'' and'',I2)')&
+            &blineparms(lnum-1)%iblpgrpnum, blineparms(lnum)%iblpgrpnum
+            call errhdl(path,modnam,'E','505',dummy)
+         end if
+      end do
+   end if
 !     Multiple_BuoyLines_D41_Wood: End
 
 !     Check for source in more than one OLMGROUP
-   DO I = 1, NUMSRC
-      ITOTGRP = 0
-      DO J = 1, NUMOLM
-         IF (IGRP_OLM(I,J) == 1) THEN
-            ITOTGRP = ITOTGRP + 1
-         END IF
-      END DO
-      IF (ITOTGRP > 1) THEN
+   do i = 1, numsrc
+      itotgrp = 0
+      do j = 1, numolm
+         if (igrp_olm(i,j) == 1) then
+            itotgrp = itotgrp + 1
+         end if
+      end do
+      if (itotgrp > 1) then
 !           Write Error Message:  Source in more than one OLMGROUP
-         CALL ERRHDL(PATH,MODNAM,'E','282',SRCID(I))
-      END IF
-   END DO
+         call errhdl(path,modnam,'E','282',srcid(i))
+      end if
+   end do
 
 
 !     Check that Deposition options are all FALSE when RLINE or BUOYLINE are present
-   IF(DEPOS .or. DDEP .or. WDEP) THEN
-      IF (NBLTOTAL > 0) THEN
+   if(depos .or. ddep .or. wdep) then
+      if (nbltotal > 0) then
 !              Write Error Message:Deposition (DEPOS, DDEP, WDEP) incompatible with
-         CALL ERRHDL(PATH,MODNAM,'E','251','BUOYLINE')
-      ELSE IF (NRLINES > 0) THEN
+         call errhdl(path,modnam,'E','251','BUOYLINE')
+      else if (nrlines > 0) then
 !              Write Error Message:Deposition (DEPOS, DDEP, WDEP) incompatible with
-         CALL ERRHDL(PATH,MODNAM,'E','251','RLINE/RLINEXT')
-      END IF
-   END IF
+         call errhdl(path,modnam,'E','251','RLINE/RLINEXT')
+      end if
+   end if
 
 !     Chack that SCREEN option is FALSE when RLINE, BUOYLINE, SWPOINT, AREA, and LINE sources are present
 !     D164 2/21/23 WSP
 !     D164 6/7/2023 CRT - MDT decided this should be a warning rather than an error. Updated 'E' to 'W'.
 !                         Update to separate if statments so a warning will be issued for each source type.
-   IF(SCREEN) THEN
-      IF (NBLTOTAL > 0) THEN
+   if(screen) then
+      if (nbltotal > 0) then
 !              Write Error Message:SCREEN incompatible with
 !              Write Warning Message:SCREEN incompatible with
 !            CALL ERRHDL(PATH,MODNAM,'E','731','BUOYLINE')
-         CALL ERRHDL(PATH,MODNAM,'W','731','BUOYLINE')
-      END IF
-      IF (NRLINES > 0) THEN
+         call errhdl(path,modnam,'W','731','BUOYLINE')
+      end if
+      if (nrlines > 0) then
 !              Write Error Message:SCREEN incompatible with
 !              Write Warning Message:SCREEN incompatible with
 !            CALL ERRHDL(PATH,MODNAM,'E','731','RLINE/RLINEXT')
-         CALL ERRHDL(PATH,MODNAM,'W','731','RLINE/RLINEXT')
-      END IF
-      IF (NSWP > 0) THEN
+         call errhdl(path,modnam,'W','731','RLINE/RLINEXT')
+      end if
+      if (nswp > 0) then
 !              Write Error Message:SCREEN incompatible with
 !              Write Warning Message:SCREEN incompatible with
 !            CALL ERRHDL(PATH,MODNAM,'E','731','SWPOINT')
-         CALL ERRHDL(PATH,MODNAM,'W','731','SWPOINT')
-      END IF
-      IF (NAREA > 0) THEN
+         call errhdl(path,modnam,'W','731','SWPOINT')
+      end if
+      if (narea > 0) then
 !              Write Error Message:SCREEN incompatible with
 !              Write Warning Message:SCREEN incompatible with
 !            CALL ERRHDL(PATH,MODNAM,'E','731','AREA')
-         CALL ERRHDL(PATH,MODNAM,'W','731','AREA')
-      END IF
-      IF (NPOLY > 0) THEN
+         call errhdl(path,modnam,'W','731','AREA')
+      end if
+      if (npoly > 0) then
 !              Write Error Message:SCREEN incompatible with
 !              Write Warning Message:SCREEN incompatible with
 !            CALL ERRHDL(PATH,MODNAM,'E','731','AREAPOLY')
-         CALL ERRHDL(PATH,MODNAM,'W','731','AREAPOLY')
-      END IF
-      IF (NCIRC > 0) THEN
+         call errhdl(path,modnam,'W','731','AREAPOLY')
+      end if
+      if (ncirc > 0) then
 !              Write Error Message:SCREEN incompatible with
 !              Write Warning Message:SCREEN incompatible with
 !            CALL ERRHDL(PATH,MODNAM,'E','731','AREACIRC')
-         CALL ERRHDL(PATH,MODNAM,'W','731','AREACIRC')
-      END IF
-      IF (NPIT > 0) THEN
+         call errhdl(path,modnam,'W','731','AREACIRC')
+      end if
+      if (npit > 0) then
 !              Write Error Message:SCREEN incompatible with
 !              Write Warning Message:SCREEN incompatible with
 !            CALL ERRHDL(PATH,MODNAM,'E','731','OPENPIT')
-         CALL ERRHDL(PATH,MODNAM,'W','731','OPENPIT')
-      END IF
-      IF (NLINE > 0) THEN
+         call errhdl(path,modnam,'W','731','OPENPIT')
+      end if
+      if (nline > 0) then
 !              Write Error Message:SCREEN incompatible with
 !              Write Warning Message:SCREEN incompatible with
 !            CALL ERRHDL(PATH,MODNAM,'E','731','LINE')
-         CALL ERRHDL(PATH,MODNAM,'W','731','LINE')
-      END IF
-   END IF
+         call errhdl(path,modnam,'W','731','LINE')
+      end if
+   end if
 
 
 !     Check for source in more than one PSDGROUP                        ! jop 9/30/06
-   IF (PSDCREDIT) THEN
-      DO I = 1, NUMSRC
-         ITOTGRP = 0
-         DO J = 1, NUMPSD
-            IF (IGRP_PSD(I,J) == 1) THEN
-               ITOTGRP = ITOTGRP + 1
-            END IF
-         END DO
-         IF (ITOTGRP > 1) THEN
+   if (psdcredit) then
+      do i = 1, numsrc
+         itotgrp = 0
+         do j = 1, numpsd
+            if (igrp_psd(i,j) == 1) then
+               itotgrp = itotgrp + 1
+            end if
+         end do
+         if (itotgrp > 1) then
 !              Write Error Message:  Source in more than one PSDGROUP
-            CALL ERRHDL(PATH,MODNAM,'E','286',SRCID(I))
-         END IF
-      END DO
-   END IF
+            call errhdl(path,modnam,'E','286',srcid(i))
+         end if
+      end do
+   end if
 
 ! --- Check for potential problems with inputs for NO2 options; first for OLM/PVMRM/GRSM/TTRM
-   IF (OLM .or. PVMRM .or. RUNTTRM .or. GRSM) THEN
+   if (olm .or. pvmrm .or. runttrm .or. grsm) then
 !        Check for negative emission rate with OLM, PVMRM or GRSM option.
 !        Negative emission for credit sources cannot be used for OLM, PVMRM and
 !        GRSM due to non-linear dependence of concentrations on emissions.
 !RWB     Draft BETA-test option for PSDCREDIT accounts for non-linear effects
 !RWB     on PSD increment calculations for PVMRM, but does not use negative
 !RWB     emission rates to identify PSD credit sources.
-      DO I = 1, NUMSRC
-         IF (AQS(I) < 0.0D0) THEN
+      do i = 1, numsrc
+         if (aqs(i) < 0.0d0) then
 !              Write Error Message:  Negative emission rate for OLM/PVMRM/GRSM
-            CALL ERRHDL(PATH,MODNAM,'E','338',SRCID(I))
-         END IF
-      END DO
+            call errhdl(path,modnam,'E','338',srcid(i))
+         end if
+      end do
 
 !        Check for negative in-stack NO2/NOx ratio with OLM, PVMRM or GRSM option.
 !        This indicates that user has not specified an in-stack ratio for
 !        a particular source.  This is an error since no default ratio has
 !        been determined for use with OLM, PVMRM or GRSM with the 1-hour NO2 NAAQS.
-      DO I = 1, NUMSRC
-         IF (ANO2_RATIO(I) < 0.0D0) THEN
+      do i = 1, numsrc
+         if (ano2_ratio(i) < 0.0d0) then
 !              Write Error Message:  No in-stack ratio specified for PVMRM/OLM/GRSM
-            CALL ERRHDL(PATH,MODNAM,'E','336',SRCID(I))
-         END IF
-      END DO
+            call errhdl(path,modnam,'E','336',srcid(i))
+         end if
+      end do
 
 ! --- Check for potential problems with inputs for NO2 options; ARM2
-   ELSE IF (ARM2) THEN
+   else if (arm2) then
 !        Check for SRCGROUP ALL, which is required for the ARM2 option
-      INDX_GRPALL = 0
-      DO I = 1, NUMGRP
-         IF (GRPID(I) == 'ALL') THEN
-            INDX_GRPALL = I
-            EXIT
-         END IF
-      END DO
-      IF (INDX_GRPALL == 0) THEN
+      indx_grpall = 0
+      do i = 1, numgrp
+         if (grpid(i) == 'ALL') then
+            indx_grpall = i
+            exit
+         end if
+      end do
+      if (indx_grpall == 0) then
 !           Issue fatal error message; Group ALL not found
-         IF (ARM2) THEN
-            CALL ERRHDL(PATH,MODNAM,'W','299','ARM2 Option')
-         END IF
-      END IF
-   END IF
+         if (arm2) then
+            call errhdl(path,modnam,'W','299','ARM2 Option')
+         end if
+      end if
+   end if
 
 ! --- Check for completeness of BACKGRND inputs
-   IF (L_BACKGRND) THEN
+   if (l_backgrnd) then
 ! ---    Check for correct number of temporally varying background concentrations
 !        for the BACKGRND keyword by sector.
-      IF (L_BGSector) THEN
-         DO I = 1, NUMBGSects
-            IF (.NOT. L_BGFile(I)) THEN
+      if (L_BGSector) then
+         do i = 1, NUMBGSects
+            if (.not. L_BGFile(i)) then
 !                 Check for no BACKGRND values for this sector w/o HOURLY BG
-               IF (.NOT. L_BGValues(I)) THEN
+               if (.not. L_BGValues(i)) then
 !                    WRITE Error Message: No BACKGRND values - Missing Sector
-                  WRITE(DUMMY,'(''No BG SECT'',I1,''!'')') I
-                  CALL ERRHDL(PATH,MODNAM,'E','238',DUMMY)
-               ELSE IF (IBKGRD(I) < IBGMAX(I)) THEN
+                  write(dummy,'(''No BG SECT'',I1,''!'')') i
+                  call errhdl(path,modnam,'E','238',dummy)
+               else if (ibkgrd(i) < ibgmax(i)) then
 !                    WRITE Error Message: Not Enough BACKGRND values
-                  IF (IBKGRD(I) < 100) THEN
-                     WRITE(DUMMY,'(''BGSECT'',I1,'' N='',I2)') I,&
-                     &IBKGRD(I)
-                  ELSE
-                     WRITE(DUMMY,'(''SECT'',I1,'' N='',I4)') I,&
-                     &IBKGRD(I)
-                  END IF
-                  CALL ERRHDL(PATH,MODNAM,'E','238',DUMMY)
-               END IF
-            ELSE IF (L_BGFile(I)) THEN
+                  if (ibkgrd(i) < 100) then
+                     write(dummy,'(''BGSECT'',I1,'' N='',I2)') i,&
+                     &ibkgrd(i)
+                  else
+                     write(dummy,'(''SECT'',I1,'' N='',I4)') i,&
+                     &ibkgrd(i)
+                  end if
+                  call errhdl(path,modnam,'E','238',dummy)
+               end if
+            else if (L_BGFile(i)) then
 !                 First check for HOURLY BG for this sector
-               IF (LEN_TRIM(BKGRND_File(I)) == 0) THEN
+               if (len_trim(BKGRND_File(i)) == 0) then
 !                    No HOURLY BG file available for this sector; check for complete BACKGRND values
-                  IF (.NOT. L_BGValues(I)) THEN
+                  if (.not. L_BGValues(i)) then
 !                       WRITE Error Message: No BACKGRND values for this sector
-                     WRITE(DUMMY,'(''No BG SECT'',I1,''!'')') I
-                     CALL ERRHDL(PATH,MODNAM,'E','238',DUMMY)
-                  ELSE IF (IBKGRD(I) < IBGMAX(I)) THEN
+                     write(dummy,'(''No BG SECT'',I1,''!'')') i
+                     call errhdl(path,modnam,'E','238',dummy)
+                  else if (ibkgrd(i) < ibgmax(i)) then
 !                       WRITE Error Message: Incomplete BACKGRND values for this sector
-                     IF (IBKGRD(I) < 100) THEN
-                        WRITE(DUMMY,'(''BGSECT'',I1,'' N='',I2)') I,&
-                        &IBKGRD(I)
-                     ELSE
-                        WRITE(DUMMY,'(''SECT'',I1,'' N='',I4)') I,&
-                        &IBKGRD(I)
-                     END IF
-                     CALL ERRHDL(PATH,MODNAM,'E','238',DUMMY)
-                  ELSE
+                     if (ibkgrd(i) < 100) then
+                        write(dummy,'(''BGSECT'',I1,'' N='',I2)') i,&
+                        &ibkgrd(i)
+                     else
+                        write(dummy,'(''SECT'',I1,'' N='',I4)') i,&
+                        &ibkgrd(i)
+                     end if
+                     call errhdl(path,modnam,'E','238',dummy)
+                  else
 !                       WRITE Warning Message: BGVALs but No HOURLY BG file available for this sector
-                     WRITE(DUMMY,'(''BGFILE SECT'',I1)') I
-                     CALL ERRHDL(PATH,MODNAM,'W','248',DUMMY)
-                  END IF
-               ELSE
+                     write(dummy,'(''BGFILE SECT'',I1)') i
+                     call errhdl(path,modnam,'W','248',dummy)
+                  end if
+               else
 !                    HOURLY BG file available for this sector; check for complete BACKGRND values
-                  IF (.NOT. L_BGValues(I)) THEN
+                  if (.not. L_BGValues(i)) then
 !                       WRITE Warning Message: No Varying BACKGRND but HOURLY avail for this Sector
-                     WRITE(DUMMY,'(''BGVALs SECT'',I1)') I
-                     CALL ERRHDL(PATH,MODNAM,'W','248',DUMMY)
-                  ELSE IF (IBKGRD(I) < IBGMAX(I)) THEN
+                     write(dummy,'(''BGVALs SECT'',I1)') i
+                     call errhdl(path,modnam,'W','248',dummy)
+                  else if (ibkgrd(i) < ibgmax(i)) then
 !                       WRITE Error Message: Not Enough BACKGRND values
-                     IF (IBKGRD(I) < 100) THEN
-                        WRITE(DUMMY,'(''BGSECT'',I1,'' N='',I2)') I,&
-                        &IBKGRD(I)
-                     ELSE
-                        WRITE(DUMMY,'(''SECT'',I1,'' N='',I4)') I,&
-                        &IBKGRD(I)
-                     END IF
-                     CALL ERRHDL(PATH,MODNAM,'E','238',DUMMY)
-                  END IF
-               END IF
-            END IF
-         END DO
-      ELSE  ! .NOT. L_BGSector
+                     if (ibkgrd(i) < 100) then
+                        write(dummy,'(''BGSECT'',I1,'' N='',I2)') i,&
+                        &ibkgrd(i)
+                     else
+                        write(dummy,'(''SECT'',I1,'' N='',I4)') i,&
+                        &ibkgrd(i)
+                     end if
+                     call errhdl(path,modnam,'E','238',dummy)
+                  end if
+               end if
+            end if
+         end do
+      else  ! .NOT. L_BGSector
 ! ---       No BGSECTORs; First check for No HOURLY BACKGRND values
 !           Set sector array index, I = 1
-         I = 1
-         IF (.NOT. L_BGFile(I)) THEN
+         i = 1
+         if (.not. L_BGFile(i)) then
 !              No HOURLY BGFILE, check for non-HOURLY BACKGRND
-            IF (.NOT. L_BGValues(I)) THEN
+            if (.not. L_BGValues(i)) then
 !                 WRITE Error Message: No BACKGRND values
-               WRITE(DUMMY,'(''No BGVALUES!'')')
-               CALL ERRHDL(PATH,MODNAM,'E','238',DUMMY)
-            ELSE IF (IBKGRD(I) < IBGMAX(I)) THEN
+               write(dummy,'(''No BGVALUES!'')')
+               call errhdl(path,modnam,'E','238',dummy)
+            else if (ibkgrd(i) < ibgmax(i)) then
 !                 WRITE Error Message: Not Enough BACKGRND values
-               WRITE(DUMMY,'(''NumVals='',I4)') IBKGRD(I)
-               CALL ERRHDL(PATH,MODNAM,'E','238',DUMMY)
-            END IF
-         ELSE IF (L_BGFile(I)) THEN
+               write(dummy,'(''NumVals='',I4)') ibkgrd(i)
+               call errhdl(path,modnam,'E','238',dummy)
+            end if
+         else if (L_BGFile(i)) then
 !              Check for HOURLY BGFILE for this sector
-            IF (LEN_TRIM(BKGRND_File(I)) == 0) THEN
+            if (len_trim(BKGRND_File(i)) == 0) then
 !                 No HOURLY BG file available; check for complete BACKGRND values
-               IF (.NOT. L_BGValues(I)) THEN
+               if (.not. L_BGValues(i)) then
 !                    WRITE Error Message: No BACKGRND values
-                  WRITE(DUMMY,'(''No BGVALUES!'')')
-                  CALL ERRHDL(PATH,MODNAM,'E','238',DUMMY)
-               ELSE IF (IBKGRD(1) < IBGMAX(I)) THEN
+                  write(dummy,'(''No BGVALUES!'')')
+                  call errhdl(path,modnam,'E','238',dummy)
+               else if (ibkgrd(1) < ibgmax(i)) then
 !                    WRITE Error Message: Incomplete BACKGRND values for this sector
-                  WRITE(DUMMY,'(''NumVals='',I4)') IBKGRD(I)
-                  CALL ERRHDL(PATH,MODNAM,'E','238',DUMMY)
-               END IF
-            ELSE
+                  write(dummy,'(''NumVals='',I4)') ibkgrd(i)
+                  call errhdl(path,modnam,'E','238',dummy)
+               end if
+            else
 !                 HOURLY BG file available; check for complete BACKGRND values
-               IF (.NOT. L_BGValues(I)) THEN
+               if (.not. L_BGValues(i)) then
 !                    WRITE Warning Message: HOURLY BG file but No BGVALs available for this sector
-                  WRITE(DUMMY,'(''BGVALs Msg'')')
-                  CALL ERRHDL(PATH,MODNAM,'W','248',DUMMY)
-               ELSE IF (IBKGRD(I) < IBGMAX(I)) THEN
+                  write(dummy,'(''BGVALs Msg'')')
+                  call errhdl(path,modnam,'W','248',dummy)
+               else if (ibkgrd(i) < ibgmax(i)) then
 !                    WRITE Error Message: Incomplete BACKGRND values for this sector
-                  WRITE(DUMMY,'(''NumVals='',I4)') IBKGRD(I)
-                  CALL ERRHDL(PATH,MODNAM,'E','238',DUMMY)
-               END IF
-            END IF
-         END IF
-      END IF
+                  write(dummy,'(''NumVals='',I4)') ibkgrd(i)
+                  call errhdl(path,modnam,'E','238',dummy)
+               end if
+            end if
+         end if
+      end if
 
 ! ---    Check for user-specified background units; apply default if needed
-      IF (ISSTAT(41) /= 1) THEN
-         IF (POLLUT == 'NO2' .or. POLLUT == 'SO2') THEN
+      if (isstat(41) /= 1) then
+         if (pollut == 'NO2' .or. pollut == 'SO2') then
             BackUnits = 'PPB'
-         ELSE IF (POLLUT == 'CO') THEN
+         else if (pollut == 'CO') then
             BackUnits = 'PPM'
-         ELSE
+         else
             BackUnits = 'UG/M3'
-         END IF
-      END IF
-   END IF
+         end if
+      end if
+   end if
 
-   RETURN
-END SUBROUTINE SRCQA
+   return
+end subroutine srcqa
 
-SUBROUTINE SOELUN
+subroutine soelun
 !***********************************************************************
 !                 SOELUN Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1931,34 +1931,34 @@ SUBROUTINE SOELUN
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'SOELUN'
+   modnam = 'SOELUN'
 
-   IF (IFC == 3) THEN
-      IF (FIELD(3) == 'METERS') THEN
-         SOELEV = 'METERS'
-      ELSE IF (FIELD(3) == 'FEET') THEN
-         SOELEV = 'FEET'
-      ELSE
+   if (ifc == 3) then
+      if (field(3) == 'METERS') then
+         soelev = 'METERS'
+      else if (field(3) == 'FEET') then
+         soelev = 'FEET'
+      else
 !           WRITE Error Message  ! Invalid Parameter
-         CALL ERRHDL(PATH,MODNAM,'E','203','SO_ELEV')
-      END IF
-   ELSE IF (IFC > 3) THEN
+         call errhdl(path,modnam,'E','203','SO_ELEV')
+      end if
+   else if (ifc > 3) then
 !        WRITE Error Message     ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Error Message     ! No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200','ElevUnit')
-   END IF
+      call errhdl(path,modnam,'E','200','ElevUnit')
+   end if
 
-   RETURN
-END SUBROUTINE SOELUN
+   return
+end subroutine soelun
 
-SUBROUTINE SOLOCA
+subroutine soloca
 !***********************************************************************
 !                 SOLOCA Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1994,230 +1994,230 @@ SUBROUTINE SOLOCA
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE RLINE_DATA, ONLY: RLSOURCE
-   USE BUOYANT_LINE
+   use main1
+   use rline_data, only: rlsource
+   use buoyant_line
 
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: INDEXS
-   CHARACTER (LEN=12) :: SOID
-   LOGICAL :: FOUND
+   integer :: indexs
+   character (len=12) :: soid
+   logical :: found
 
 !     Variable Initializations
-   FOUND  = .FALSE.
-   MODNAM = 'SOLOCA'
+   found  = .false.
+   modnam = 'SOLOCA'
 
 !     Check The Number Of The Fields
 !*--- Modified to handle LINE, BUOYLINE, and RLINE sources
-   IF (FIELD(4)=='LINE' .or. FIELD(4)=='BUOYLINE'&
-   &.or. FIELD(4)=='RLINE') THEN
-      IF (IFC <= 2) THEN
+   if (field(4)=='LINE' .or. field(4)=='BUOYLINE'&
+   &.or. field(4)=='RLINE') then
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC < 8) THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc < 8) then
 !           Error Message: Not Enough Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC > 9) THEN
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      else if (ifc > 9) then
 !           Error Message: Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','202',keywrd)
+         go to 999
+      end if
 !*--- Modified to handle RLINEXT sources
-   ELSE IF (FIELD(4)=='RLINEXT') THEN
-      IF (IFC <= 2) THEN
+   else if (field(4)=='RLINEXT') then
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC < 10) THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc < 10) then
 !           Error Message: Not Enough Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC > 11) THEN
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      else if (ifc > 11) then
 !           Error Message: Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-         GO TO 999
-      END IF
-   ELSE
-      IF (IFC <= 2) THEN
+         call errhdl(path,modnam,'E','202',keywrd)
+         go to 999
+      end if
+   else
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC < 6) THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc < 6) then
 !           Error Message: Not Enough Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC > 7) THEN
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      else if (ifc > 7) then
 !           Error Message: Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-         GO TO 999
-      END IF
-   END IF
+         call errhdl(path,modnam,'E','202',keywrd)
+         go to 999
+      end if
+   end if
 !*---
 
 !     Read In The Data Fields and Assign to Arrays
 !     Check for Previous Occurrence of This SRCID
 !*    First check for length of SRCID field (<=12)
-   IF ((LOCE(3)-LOCB(3)) <= 11) THEN
+   if ((loce(3)-locb(3)) <= 11) then
 !*       Retrieve Source ID Character Substring
-      SOID = FIELD(3)
+      soid = field(3)
 ! ---    Check for "reserved" source ID for 'BACKGROUND'
-      IF (SOID == 'BACKGROUND' .or. SOID == 'BACKGRND') THEN
+      if (soid == 'BACKGROUND' .or. soid == 'BACKGRND') then
 !*          WRITE Error Message:  Source ID Field is Too Long
-         CALL ERRHDL(PATH,MODNAM,'E','285',FIELD(3)(1:12))
-         GO TO 999
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','285',field(3)(1:12))
+         go to 999
+      end if
+   else
 !*       WRITE Error Message:  Source ID Field is Too Long
-      CALL ERRHDL(PATH,MODNAM,'E','230',FIELD(3)(1:12))
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','230',field(3)(1:12))
+      go to 999
+   end if
 
-   CALL SINDEX(SRCID,NSRC,SOID,INDEXS,FOUND)
+   call sindex(srcid,nsrc,soid,indexs,found)
 
-   IF (.NOT. FOUND) THEN
-      ISRC = ISRC + 1
-      IF (ISRC <= NSRC) THEN
-         SRCID(ISRC)  = FIELD(3)
-         SRCTYP(ISRC) = FIELD(4)
+   if (.not. found) then
+      isrc = isrc + 1
+      if (isrc <= nsrc) then
+         srcid(isrc)  = field(3)
+         srctyp(isrc) = field(4)
 
 ! ---       Allow for variations in the source type string
-         IF (SRCTYP(ISRC) == 'OPENPIT'  .or.&
-         &SRCTYP(ISRC) == 'OPEN_PIT' .or.&
-         &SRCTYP(ISRC) == 'OPEN-PIT') THEN
+         if (srctyp(isrc) == 'OPENPIT'  .or.&
+         &srctyp(isrc) == 'OPEN_PIT' .or.&
+         &srctyp(isrc) == 'OPEN-PIT') then
 ! ---           Assign as 'OPENPIT' for future references
-            SRCTYP(ISRC) = 'OPENPIT'
-         END IF
+            srctyp(isrc) = 'OPENPIT'
+         end if
 
 ! ---       Check for acceptable source types
-         IF (SRCTYP(ISRC)=='POINT' .or.&
-         &SRCTYP(ISRC)=='POINTCAP' .or.&
-         &SRCTYP(ISRC)=='POINTHOR' .or.&
-         &SRCTYP(ISRC)=='VOLUME' .or.&
-         &SRCTYP(ISRC)=='AREA' .or.&
-         &SRCTYP(ISRC)=='AREAPOLY' .or.&
-         &SRCTYP(ISRC)=='AREACIRC' .or.&
-         &SRCTYP(ISRC)=='LINE' .or.&
-         &SRCTYP(ISRC)=='RLINE' .or.&
-         &SRCTYP(ISRC)=='RLINEXT' .or.&
-         &SRCTYP(ISRC)=='BUOYLINE' .or.&
-         &SRCTYP(ISRC)=='OPENPIT' .or.&
-         &SRCTYP(ISRC)=='SWPOINT') THEN
+         if (srctyp(isrc)=='POINT' .or.&
+         &srctyp(isrc)=='POINTCAP' .or.&
+         &srctyp(isrc)=='POINTHOR' .or.&
+         &srctyp(isrc)=='VOLUME' .or.&
+         &srctyp(isrc)=='AREA' .or.&
+         &srctyp(isrc)=='AREAPOLY' .or.&
+         &srctyp(isrc)=='AREACIRC' .or.&
+         &srctyp(isrc)=='LINE' .or.&
+         &srctyp(isrc)=='RLINE' .or.&
+         &srctyp(isrc)=='RLINEXT' .or.&
+         &srctyp(isrc)=='BUOYLINE' .or.&
+         &srctyp(isrc)=='OPENPIT' .or.&
+         &srctyp(isrc)=='SWPOINT') then
 
 !*---          Modified to add handling of LINE, BUOYLINE source types
-            IF (SRCTYP(ISRC)=='LINE' .or.&
-            &SRCTYP(ISRC)=='BUOYLINE') THEN
-               CALL STODBL(FIELD(5), ILEN_FLD, AXS1(ISRC), IMIT)
+            if (srctyp(isrc)=='LINE' .or.&
+            &srctyp(isrc)=='BUOYLINE') then
+               call stodbl(field(5), ilen_fld, axs1(isrc), imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
-               CALL STODBL(FIELD(6), ILEN_FLD, AYS1(ISRC), IMIT)
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
+               call stodbl(field(6), ilen_fld, ays1(isrc), imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
 !                 Retrieve Source X2
-               CALL STODBL(FIELD(7), ILEN_FLD, AXS2(ISRC), IMIT)
+               call stodbl(field(7), ilen_fld, axs2(isrc), imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
 !                 Retrieve Source Y2
-               CALL STODBL(FIELD(8), ILEN_FLD, AYS2(ISRC), IMIT)
+               call stodbl(field(8), ilen_fld, ays2(isrc), imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
 !*---          Modified to add handling of RLINE source type
-            ELSE IF (SRCTYP(ISRC)=='RLINE') THEN
+            else if (srctyp(isrc)=='RLINE') then
 !                 Retrieve Source XSB
-               CALL STODBL(FIELD(5), ILEN_FLD, RLSOURCE(ISRC)%XSB,&
-               &IMIT)
+               call stodbl(field(5), ilen_fld, rlsource(isrc)%xsb,&
+               &imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
 !                 Retrieve Source YSB
-               CALL STODBL(FIELD(6), ILEN_FLD, RLSOURCE(ISRC)%YSB,&
-               &IMIT)
+               call stodbl(field(6), ilen_fld, rlsource(isrc)%ysb,&
+               &imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
 !                 Retrieve Source XSE
-               CALL STODBL(FIELD(7), ILEN_FLD, RLSOURCE(ISRC)%XSE,&
-               &IMIT)
+               call stodbl(field(7), ilen_fld, rlsource(isrc)%xse,&
+               &imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
 !                 Retrieve Source YSE
-               CALL STODBL(FIELD(8), ILEN_FLD, RLSOURCE(ISRC)%YSE,&
-               &IMIT)
+               call stodbl(field(8), ilen_fld, rlsource(isrc)%yse,&
+               &imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
 !*---          Modified to add handling of RLINEXT source type
-            ELSE IF (SRCTYP(ISRC)=='RLINEXT') THEN
+            else if (srctyp(isrc)=='RLINEXT') then
 !                 Retrieve Source XSB
-               CALL STODBL(FIELD(5), ILEN_FLD, RLSOURCE(ISRC)%XSB,&
-               &IMIT)
+               call stodbl(field(5), ilen_fld, rlsource(isrc)%xsb,&
+               &imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
 !                 Retrieve Source YSB
-               CALL STODBL(FIELD(6), ILEN_FLD, RLSOURCE(ISRC)%YSB,&
-               &IMIT)
+               call stodbl(field(6), ilen_fld, rlsource(isrc)%ysb,&
+               &imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
 !                 Retrieve Source ZSB
-               CALL STODBL(FIELD(7), ILEN_FLD, RLSOURCE(ISRC)%ZSB,&
-               &IMIT)
+               call stodbl(field(7), ilen_fld, rlsource(isrc)%zsb,&
+               &imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
 !                 Retrieve Source XSE
-               CALL STODBL(FIELD(8), ILEN_FLD, RLSOURCE(ISRC)%XSE,&
-               &IMIT)
+               call stodbl(field(8), ilen_fld, rlsource(isrc)%xse,&
+               &imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
 !                 Retrieve Source YSE
-               CALL STODBL(FIELD(9), ILEN_FLD, RLSOURCE(ISRC)%YSE,&
-               &IMIT)
+               call stodbl(field(9), ilen_fld, rlsource(isrc)%yse,&
+               &imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
 !                 Retrieve Source ZSE
-               CALL STODBL(FIELD(10), ILEN_FLD, RLSOURCE(ISRC)%ZSE,&
-               &IMIT)
+               call stodbl(field(10), ilen_fld, rlsource(isrc)%zse,&
+               &imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
-            ELSE
-               CALL STODBL(FIELD(5), ILEN_FLD, AXS(ISRC), IMIT)
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
+            else
+               call stodbl(field(5), ilen_fld, axs(isrc), imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
-               CALL STODBL(FIELD(6), ILEN_FLD, AYS(ISRC), IMIT)
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
+               call stodbl(field(6), ilen_fld, ays(isrc), imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               END IF
-            END IF
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+               end if
+            end if
 
 ! ---          Read elevation field for each source type
 ! ---
@@ -2225,40 +2225,40 @@ SUBROUTINE SOLOCA
 ! ---          Read elevation for LINE or BUOYLINE source
 !               IF (SRCTYP(ISRC).EQ.'LINE' .or.
 !     &             SRCTYP(ISRC).EQ.'BUOYLINE') THEN
-            IF (SRCTYP(ISRC)=='LINE' .or.&
-            &SRCTYP(ISRC)=='BUOYLINE' .or.&
-            &SRCTYP(ISRC)=='RLINE') THEN
-               IF (IFC == 8) THEN
+            if (srctyp(isrc)=='LINE' .or.&
+            &srctyp(isrc)=='BUOYLINE' .or.&
+            &srctyp(isrc)=='RLINE') then
+               if (ifc == 8) then
 !                    No Source Elevation Field - Default to 0.0
-                  AZS(ISRC) = 0.0D0
-                  IF (ELEV) THEN
+                  azs(isrc) = 0.0d0
+                  if (elev) then
 !                       Write Warning Message for No Source Elevation with ELEV
-                     CALL ERRHDL(PATH,MODNAM,'W','205','ZS = 0.0')
-                  END IF
-               ELSE IF (IFC == 9 .and. FLATSRCS .and.&
-               &FIELD(9)=='FLAT') THEN
+                     call errhdl(path,modnam,'W','205','ZS = 0.0')
+                  end if
+               else if (ifc == 9 .and. flatsrcs .and.&
+               &field(9)=='FLAT') then
 ! ---                Source has been identified as a terrain-following
 !                    source, to be simulated with 'FLAT' terrain option
-                  L_FLATSRC(ISRC) = .TRUE.
-                  NUMFLAT = NUMFLAT + 1
+                  l_flatsrc(isrc) = .true.
+                  numflat = numflat + 1
 ! ---                D167 Warning message about ZELEV and ZHILL inputs being ignored WSP 3/26/23
-                  CALL ERRHDL(PATH,MODNAM,'W','752',SOID)
-               ELSE IF (IFC == 9) THEN
+                  call errhdl(path,modnam,'W','752',soid)
+               else if (ifc == 9) then
 !                    Retrieve Source lower elevation
-                  CALL STODBL(FIELD(9), ILEN_FLD, AZS(ISRC), IMIT)
+                  call stodbl(field(9), ilen_fld, azs(isrc), imit)
 !                    Check The Numerical Field
-                  IF (IMIT /= 1) THEN
-                     CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-                  END IF
+                  if (imit /= 1) then
+                     call errhdl(path,modnam,'E','208',keywrd)
+                  end if
 ! ---                Check for missing source elevations, coded as -9999.0,
 !                    and convert from FEET to METERS if needed
-                  IF (AZS(ISRC) < -9998.99D0) THEN
+                  if (azs(isrc) < -9998.99d0) then
 !                       WRITE Error Message:  Source elevation is missing
-                     CALL ERRHDL(PATH,MODNAM,'E','249',SOID)
-                  ELSE IF (SOELEV == 'FEET') THEN
-                     AZS(ISRC) = AZS(ISRC) * 0.3048D0
-                  END IF
-               END IF
+                     call errhdl(path,modnam,'E','249',soid)
+                  else if (soelev == 'FEET') then
+                     azs(isrc) = azs(isrc) * 0.3048d0
+                  end if
+               end if
 !              Added RLINE source to IF-statment above with LINE and BL - Wood 7/6/2022
 ! ---          Read elevation for RLINE source
 !               ELSE IF (SRCTYP(ISRC).EQ.'RLINE') THEN
@@ -2306,7 +2306,7 @@ SUBROUTINE SOLOCA
 ! end        Deleted flat restriction for RLINE source Wood 6-14-22
 
 ! ---          Read elevation for RLINEXT source
-            ELSE IF (SRCTYP(ISRC)=='RLINEXT') THEN
+            else if (srctyp(isrc)=='RLINEXT') then
 
 ! begin        Deleted flat restriction for RLINEXT source Wood 6-14-22
 !                  IF(.NOT.FLAT) THEN
@@ -2346,109 +2346,109 @@ SUBROUTINE SOLOCA
 ! end        Deleted flat restriction for RLINEXT source Wood 6-14-22
 
 ! begin           RLINEXT source now has terrain, treat like other source - Wood 7/5/2022
-               IF (IFC == 10) THEN
+               if (ifc == 10) then
 !                    No Source Elevation Field - Default to 0.0
-                  AZS(ISRC) = 0.0D0
-                  IF (ELEV) THEN
+                  azs(isrc) = 0.0d0
+                  if (elev) then
 !                       Write Warning Message for No Source Elevation with ELEV
-                     CALL ERRHDL(PATH,MODNAM,'W','205','ZS = 0.0')
-                  END IF
-               ELSE IF (IFC == 11 .and. FLATSRCS .and.&
-               &FIELD(11)=='FLAT') THEN
+                     call errhdl(path,modnam,'W','205','ZS = 0.0')
+                  end if
+               else if (ifc == 11 .and. flatsrcs .and.&
+               &field(11)=='FLAT') then
 ! ---                Source has been identified as a terrain-following
 !                    source, to be simulated with 'FLAT' terrain option
-                  L_FLATSRC(ISRC) = .TRUE.
-                  NUMFLAT = NUMFLAT + 1
-                  AZS(ISRC) = 0.0D0
+                  l_flatsrc(isrc) = .true.
+                  numflat = numflat + 1
+                  azs(isrc) = 0.0d0
 ! ---                D167 Warning message about ZELEV and ZHILL inputs being ignored WSP 3/26/23
-                  CALL ERRHDL(PATH,MODNAM,'W','752',SOID)
+                  call errhdl(path,modnam,'W','752',soid)
 
-               ELSE IF (IFC == 11) THEN
+               else if (ifc == 11) then
 !                    Retrieve Source lower elevation
-                  CALL STODBL(FIELD(11), ILEN_FLD, AZS(ISRC), IMIT)
+                  call stodbl(field(11), ilen_fld, azs(isrc), imit)
 !                    Check The Numerical Field
-                  IF (IMIT /= 1) THEN
-                     CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-                  END IF
+                  if (imit /= 1) then
+                     call errhdl(path,modnam,'E','208',keywrd)
+                  end if
 ! ---                Check for missing source elevations, coded as -9999.0,
 !                    and convert from FEET to METERS if needed
-                  IF (AZS(ISRC) < -9998.99D0) THEN
+                  if (azs(isrc) < -9998.99d0) then
 !                       WRITE Error Message:  Source elevation is missing
-                     CALL ERRHDL(PATH,MODNAM,'E','249',SOID)
-                  ELSE IF (SOELEV == 'FEET') THEN
-                     AZS(ISRC) = AZS(ISRC) * 0.3048D0
-                  END IF
-               END IF
+                     call errhdl(path,modnam,'E','249',soid)
+                  else if (soelev == 'FEET') then
+                     azs(isrc) = azs(isrc) * 0.3048d0
+                  end if
+               end if
 ! end           RLINEXT source now has terrain, treat like other source - Wood 7/5/2022
 !                 END IF !check field of RLINEXT source
 
 ! ---          Read elevation for source types other than LINE, BUOYLINE, RLINE, or RLINEXT
-            ELSE
-               IF (IFC == 7 .and. FLATSRCS .and.&
-               &FIELD(7) == 'FLAT') THEN
+            else
+               if (ifc == 7 .and. flatsrcs .and.&
+               &field(7) == 'FLAT') then
 ! ---                Source has been identified as a terrain-following
 !                    source, to be simulated with 'FLAT' terrain option
-                  L_FLATSRC(ISRC) = .TRUE.
-                  NUMFLAT = NUMFLAT + 1
+                  l_flatsrc(isrc) = .true.
+                  numflat = numflat + 1
 ! ---                D167 Warning message about ZELEV and ZHILL inputs being ignored WSP 3/26/23
-                  CALL ERRHDL(PATH,MODNAM,'W','752',SOID)
-               ELSE IF (IFC == 7) THEN
+                  call errhdl(path,modnam,'W','752',soid)
+               else if (ifc == 7) then
 !                    Retrieve Source Elevation From Inputs
-                  CALL STODBL(FIELD(7), ILEN_FLD, AZS(ISRC), IMIT)
+                  call stodbl(field(7), ilen_fld, azs(isrc), imit)
 !                    Check The Numerical Field
-                  IF (IMIT /= 1) THEN
-                     CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-                  END IF
+                  if (imit /= 1) then
+                     call errhdl(path,modnam,'E','208',keywrd)
+                  end if
 ! ---                Check for missing source elevations, coded as -9999.0,
 !                    and convert from FEET to METERS if needed
-                  IF (AZS(ISRC) < -9998.99D0) THEN
+                  if (azs(isrc) < -9998.99d0) then
 !                       WRITE Error Message:  Source elevation is missing
-                     CALL ERRHDL(PATH,MODNAM,'E','249',SOID)
-                  ELSE IF (SOELEV == 'FEET') THEN
-                     AZS(ISRC) = AZS(ISRC) * 0.3048D0
-                  END IF
-               ELSE
+                     call errhdl(path,modnam,'E','249',soid)
+                  else if (soelev == 'FEET') then
+                     azs(isrc) = azs(isrc) * 0.3048d0
+                  end if
+               else
 !                    No Source Elevation Field - Default to 0.0
-                  AZS(ISRC) = 0.0D0
-                  IF (ELEV) THEN
+                  azs(isrc) = 0.0d0
+                  if (elev) then
 !                       Write Warning Message for No Source Elevation with ELEV
-                     CALL ERRHDL(PATH,MODNAM,'W','205','ZS = 0.0')
-                  END IF
-               END IF
-            END IF  ! End Read elevation field for each source type
+                     call errhdl(path,modnam,'W','205','ZS = 0.0')
+                  end if
+               end if
+            end if  ! End Read elevation field for each source type
 
-         ELSE
+         else
 !              Error Message: Invalid Source Type
-            CALL ERRHDL(PATH,MODNAM,'E','203','SRCTYP')
-            GO TO 999
-         END IF ! End Check for acceptable source types
+            call errhdl(path,modnam,'E','203','SRCTYP')
+            go to 999
+         end if ! End Check for acceptable source types
 
-         ISET = ISRC
-         NUMSRC = NUMSRC + 1
+         iset = isrc
+         numsrc = numsrc + 1
 
 ! Multiple_BuoyLines_D41_Wood
 ! ---       Determine the total number of BUOYLINE sources
 !           Variable name changed from NBLINES to NBLTOTAL
-         IF( SRCTYP(ISRC) == 'BUOYLINE' )THEN
-            NBLTOTAL = NBLTOTAL + 1
-         ENDIF
+         if( srctyp(isrc) == 'BUOYLINE' )then
+            nbltotal = nbltotal + 1
+         endif
 
-      ELSE
+      else
 !           This shouldn't occur since limits are dynamically allocated
 !           WRITE Error Message    ! Number of Sources Exceeds NSRC Parameter
-         WRITE(DUMMY,'(''NSRC='',I7)') NSRC
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-         GO TO 999
-      END IF
-   ELSE
+         write(dummy,'(''NSRC='',I7)') nsrc
+         call errhdl(path,modnam,'E','290',dummy)
+         go to 999
+      end if
+   else
 !        WRITE Error Message    ! Source Location Has Already Been Identified
-      CALL ERRHDL(PATH,MODNAM,'E','310',SOID)
-   END IF
+      call errhdl(path,modnam,'E','310',soid)
+   end if
 
-999 RETURN
-END SUBROUTINE SOLOCA
+999 return
+end subroutine soloca
 
-SUBROUTINE SOPARM
+subroutine soparm
 !***********************************************************************
 !                 SOPARM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2478,239 +2478,239 @@ SUBROUTINE SOPARM
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, ISDX
-   LOGICAL :: FOUND
-   DOUBLE PRECISION :: TEMP(IFMAX)
+   integer :: i, isdx
+   logical :: found
+   double precision :: temp(ifmax)
 
 !     Variable Initializations
-   FOUND  = .FALSE.
-   MODNAM = 'SOPARM'
-   TEMP   = 0.0D0
+   found  = .false.
+   modnam = 'SOPARM'
+   temp   = 0.0d0
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC == 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc == 3) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   end if
 
 !     Search For The Source ID Index
-   CALL SINDEX(SRCID,NSRC,FIELD(3),ISDX,FOUND)
+   call sindex(srcid,nsrc,field(3),isdx,found)
 
-   IF (FOUND) THEN
+   if (found) then
 !        Check for Previous SRCPARAM Card for This Source
-      IF (SOPCRD(ISDX) == 'Y') THEN
+      if (sopcrd(isdx) == 'Y') then
 !           WRITE Error Message: Duplicate SRCPARAM Card
-         CALL ERRHDL(PATH,MODNAM,'E','315',SRCID(ISDX))
-         GO TO 999
-      ELSE
-         SOPCRD(ISDX) = 'Y'
-      END IF
+         call errhdl(path,modnam,'E','315',srcid(isdx))
+         go to 999
+      else
+         sopcrd(isdx) = 'Y'
+      end if
 !        Assign The Parameter Arrays
-      DO I = 4, IFC
-         CALL STODBL(FIELD(I),ILEN_FLD,TEMP(I-3),IMIT)
+      do i = 4, ifc
+         call stodbl(field(i),ilen_fld,temp(i-3),imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            CYCLE
-         END IF
-      END DO
-      IF (SRCTYP(ISDX) == 'POINT' .or.&
-      &SRCTYP(ISDX) == 'POINTCAP' .or.&
-      &SRCTYP(ISDX) == 'POINTHOR') THEN
-         IF (IFC == 3) THEN
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            cycle
+         end if
+      end do
+      if (srctyp(isdx) == 'POINT' .or.&
+      &srctyp(isdx) == 'POINTCAP' .or.&
+      &srctyp(isdx) == 'POINTHOR') then
+         if (ifc == 3) then
 !              Error Message: No Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC < 8) THEN
+            call errhdl(path,modnam,'E','200',keywrd)
+            go to 999
+         else if (ifc < 8) then
 !              Error Message: Not Enough Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC > 8) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         else if (ifc > 8) then
 !              Error Message: Too Many Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-            GO TO 999
-         END IF
-         CALL PPARM(ISDX,TEMP)
-      ELSE IF (SRCTYP(ISDX) == 'VOLUME') THEN
-         IF (IFC == 3) THEN
+            call errhdl(path,modnam,'E','202',keywrd)
+            go to 999
+         end if
+         call pparm(isdx,temp)
+      else if (srctyp(isdx) == 'VOLUME') then
+         if (ifc == 3) then
 !              Error Message: No Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC < 7) THEN
+            call errhdl(path,modnam,'E','200',keywrd)
+            go to 999
+         else if (ifc < 7) then
 !              Error Message: Not Enough Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC > 7) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         else if (ifc > 7) then
 !              Error Message: Too Many Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-            GO TO 999
-         END IF
-         CALL VPARM(ISDX,TEMP)
-      ELSE IF (SRCTYP(ISDX) == 'AREA') THEN
-         IF (IFC == 3) THEN
+            call errhdl(path,modnam,'E','202',keywrd)
+            go to 999
+         end if
+         call vparm(isdx,temp)
+      else if (srctyp(isdx) == 'AREA') then
+         if (ifc == 3) then
 !              Error Message: No Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC < 6) THEN
+            call errhdl(path,modnam,'E','200',keywrd)
+            go to 999
+         else if (ifc < 6) then
 !              Error Message: Not Enough Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC > 9) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         else if (ifc > 9) then
 !              Error Message: Too Many Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-            GO TO 999
-         END IF
-         CALL APARM(ISDX,TEMP)
-      ELSE IF (SRCTYP(ISDX) == 'AREAPOLY') THEN
-         IF (IFC == 3) THEN
+            call errhdl(path,modnam,'E','202',keywrd)
+            go to 999
+         end if
+         call aparm(isdx,temp)
+      else if (srctyp(isdx) == 'AREAPOLY') then
+         if (ifc == 3) then
 !              Error Message: No Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC < 6) THEN
+            call errhdl(path,modnam,'E','200',keywrd)
+            go to 999
+         else if (ifc < 6) then
 !              Error Message: Not Enough Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC > 7) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         else if (ifc > 7) then
 !              Error Message: Too Many Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-            GO TO 999
-         END IF
-         CALL APPARM(ISDX,TEMP)
-      ELSE IF (SRCTYP(ISDX) == 'AREACIRC') THEN
-         IF (IFC == 3) THEN
+            call errhdl(path,modnam,'E','202',keywrd)
+            go to 999
+         end if
+         call apparm(isdx,temp)
+      else if (srctyp(isdx) == 'AREACIRC') then
+         if (ifc == 3) then
 !              Error Message: No Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC < 6) THEN
+            call errhdl(path,modnam,'E','200',keywrd)
+            go to 999
+         else if (ifc < 6) then
 !              Error Message: Not Enough Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC > 8) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         else if (ifc > 8) then
 !              Error Message: Too Many Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-            GO TO 999
-         END IF
-         CALL ACPARM(ISDX,TEMP)
+            call errhdl(path,modnam,'E','202',keywrd)
+            go to 999
+         end if
+         call acparm(isdx,temp)
 !*       Get Source Parameters for the OPENPIT source
-      ELSE IF (SRCTYP(ISDX) == 'OPENPIT') THEN
-         IF (IFC == 3) THEN
+      else if (srctyp(isdx) == 'OPENPIT') then
+         if (ifc == 3) then
 !              Error Message: No Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC < 8) THEN
+            call errhdl(path,modnam,'E','200',keywrd)
+            go to 999
+         else if (ifc < 8) then
 !              Error Message: Not Enough Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC > 9) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         else if (ifc > 9) then
 !              Error Message: Too Many Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-            GO TO 999
-         END IF
-         CALL OPARM(ISDX,TEMP)
+            call errhdl(path,modnam,'E','202',keywrd)
+            go to 999
+         end if
+         call oparm(isdx,temp)
 !---     Added to handle LINE source types
-      ELSE IF (SRCTYP(ISDX) == 'LINE') THEN
-         IF (IFC == 3) THEN
+      else if (srctyp(isdx) == 'LINE') then
+         if (ifc == 3) then
 !              Error Message: No Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC < 6) THEN
+            call errhdl(path,modnam,'E','200',keywrd)
+            go to 999
+         else if (ifc < 6) then
 !              Error Message: Not Enough Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC > 7) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         else if (ifc > 7) then
 !              Error Message: Too Many Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-            GO TO 999
-         END IF
-         CALL LPARM(ISDX,TEMP)
+            call errhdl(path,modnam,'E','202',keywrd)
+            go to 999
+         end if
+         call lparm(isdx,temp)
 !---     Added to handle RLINE source types
-      ELSE IF (SRCTYP(ISDX) == 'RLINE') THEN
-         IF (IFC == 3) THEN
+      else if (srctyp(isdx) == 'RLINE') then
+         if (ifc == 3) then
 !              Error Message: No Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC < 6) THEN
+            call errhdl(path,modnam,'E','200',keywrd)
+            go to 999
+         else if (ifc < 6) then
 !              Error Message: Not Enough Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC > 7) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         else if (ifc > 7) then
 !              Error Message: Too Many Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-            GO TO 999
-         END IF
-         CALL RLPARM(ISDX,TEMP)
+            call errhdl(path,modnam,'E','202',keywrd)
+            go to 999
+         end if
+         call rlparm(isdx,temp)
 !---     Get source parameters for the RLINEXT source type
-      ELSE IF (SRCTYP(ISDX) == 'RLINEXT') THEN
-         IF (IFC == 3) THEN
+      else if (srctyp(isdx) == 'RLINEXT') then
+         if (ifc == 3) then
 !              Error Message: No Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC < 7) THEN
+            call errhdl(path,modnam,'E','200',keywrd)
+            go to 999
+         else if (ifc < 7) then
 !              Error Message: Not Enough Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC > 7) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         else if (ifc > 7) then
 !              Error Message: Too Many Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-            GO TO 999
-         END IF
+            call errhdl(path,modnam,'E','202',keywrd)
+            go to 999
+         end if
 !           Process RLINE parameters                        ---   CALL RLPARM
-         CALL RLPARM(ISDX,TEMP)
+         call rlparm(isdx,temp)
 !---     Get source parameters for BUOYANT LINE source type
-      ELSE IF (SRCTYP(ISDX) == 'BUOYLINE') THEN
-         IF (IFC == 3) THEN
+      else if (srctyp(isdx) == 'BUOYLINE') then
+         if (ifc == 3) then
 !              Error Message: No Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC < 5) THEN
+            call errhdl(path,modnam,'E','200',keywrd)
+            go to 999
+         else if (ifc < 5) then
 !              Error Message: Not Enough Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC > 5) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         else if (ifc > 5) then
 !              Error Message: Too Many Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-            GO TO 999
-         END IF
-         CALL BLPARM(ISDX,TEMP)
+            call errhdl(path,modnam,'E','202',keywrd)
+            go to 999
+         end if
+         call blparm(isdx,temp)
 !        CRT 3/25/2022 D113 Updated for sidewash
-      ELSE IF (SRCTYP(ISDX) == 'SWPOINT') THEN
+      else if (srctyp(isdx) == 'SWPOINT') then
 !           Check for ALPHA option - required
-         IF (.NOT. L_ALPHA) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','198','SWPOINT')
-            GO TO 999
-         ELSE IF (IFC == 3) THEN
+         if (.not. l_alpha) then
+            call errhdl(path,modnam,'E','198','SWPOINT')
+            go to 999
+         else if (ifc == 3) then
 !              Error Message: No Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC < 9) THEN
+            call errhdl(path,modnam,'E','200',keywrd)
+            go to 999
+         else if (ifc < 9) then
 !              Error Message: Not Enough Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         ELSE IF (IFC > 9) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         else if (ifc > 9) then
 !              Error Message: Too Many Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-            GO TO 999
-         END IF
-         CALL SWPARM(ISDX,TEMP)
-      END IF
-   ELSE
+            call errhdl(path,modnam,'E','202',keywrd)
+            go to 999
+         end if
+         call swparm(isdx,temp)
+      end if
+   else
 !        WRITE Error Message: Source Location Has Not Been Identified Yet
-      CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','300',keywrd)
+   end if
 
-999 RETURN
-END SUBROUTINE SOPARM
+999 return
+end subroutine soparm
 
-SUBROUTINE PPARM(ISDX,TEMP)
+subroutine pparm(isdx,temp)
 !***********************************************************************
 !                 PPARM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2733,91 +2733,91 @@ SUBROUTINE PPARM(ISDX,TEMP)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ISDX
-   DOUBLE PRECISION :: TEMP(IFMAX)
+   integer :: isdx
+   double precision :: temp(ifmax)
 
 !     Variable Initializations
-   MODNAM = 'PPARM'
+   modnam = 'PPARM'
 
-   AQS(ISDX) = TEMP(1)
-   AHS(ISDX) = TEMP(2)
-   ATS(ISDX) = TEMP(3)
-   AVS(ISDX) = TEMP(4)
-   ADS(ISDX) = TEMP(5)
+   aqs(isdx) = temp(1)
+   ahs(isdx) = temp(2)
+   ats(isdx) = temp(3)
+   avs(isdx) = temp(4)
+   ads(isdx) = temp(5)
 
 !     Perform QA Error Checking on Source Parameters
 
-   IF (AQS(ISDX) == 0.0D0) THEN
+   if (aqs(isdx) == 0.0d0) then
 !        WRITE Warning Message:  Emission Rate Equals 0.0
-      CALL ERRHDL(PATH,MODNAM,'W','320',' QS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' QS ')
+   end if
 
-   IF (AHS(ISDX) < 0.0D0) THEN
+   if (ahs(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Release Height
-      CALL ERRHDL(PATH,MODNAM,'E','209',' HS ')
-   ELSE IF (AHS(ISDX) > 600.0D0) THEN
+      call errhdl(path,modnam,'E','209',' HS ')
+   else if (ahs(isdx) > 600.0d0) then
 !        WRITE Warning Message:  Large Release Height (> 600M)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' HS ')
-   ELSE IF (AHS(ISDX) > 3000.0D0) THEN
+      call errhdl(path,modnam,'W','320',' HS ')
+   else if (ahs(isdx) > 3000.0d0) then
 !        WRITE Error Message:  Large Release Height (> 3000M)
-      CALL ERRHDL(PATH,MODNAM,'E','324',SRCID(ISDX))
-   END IF
+      call errhdl(path,modnam,'E','324',srcid(isdx))
+   end if
 
-   IF (ATS(ISDX) == 0.0D0) THEN
+   if (ats(isdx) == 0.0d0) then
 !        Set Temperature to Small Negative Value for Ambient Releases
-      ATS(ISDX) = -1.0D-5
-   ELSE IF (ATS(ISDX) > 2000.0D0) THEN
+      ats(isdx) = -1.0d-5
+   else if (ats(isdx) > 2000.0d0) then
 !        WRITE Warning Message:  Exit Temp. > 2000K
-      CALL ERRHDL(PATH,MODNAM,'W','320',' TS ')
-   ELSE IF ((ATS(ISDX)>0.0D0) .and. (ATS(ISDX)<200.0D0)) THEN
+      call errhdl(path,modnam,'W','320',' TS ')
+   else if ((ats(isdx)>0.0d0) .and. (ats(isdx)<200.0d0)) then
 !*       Exit temp<200K (about -100F); Incorrect units may have been
 !*       used or ATS and AVS may have been switched;
 !*       WRITE Fatal Error Message
-      CALL ERRHDL(PATH,MODNAM,'E','320',' TS ')
-      RUNERR = .TRUE.
-   END IF
+      call errhdl(path,modnam,'E','320',' TS ')
+      runerr = .true.
+   end if
 
-   IF (AVS(ISDX) < 0.0D0) THEN
+   if (avs(isdx) < 0.0d0) then
 !        WRITE Warning Message:  Negative or Zero Exit Velocity
-      CALL ERRHDL(PATH,MODNAM,'W','325',SRCID(ISDX))
+      call errhdl(path,modnam,'W','325',srcid(isdx))
 !        Set to Small Value to Avoid Zero-divide and Underflow
-      AVS(ISDX) = 1.0D-5
-   ELSE IF (AVS(ISDX) < 1.0D-5) THEN
+      avs(isdx) = 1.0d-5
+   else if (avs(isdx) < 1.0d-5) then
 !        Set to Small Value to Avoid Zero-divide and Underflow
-      AVS(ISDX) = 1.0D-5
-   ELSE IF (AVS(ISDX) > 50.0D0) THEN
+      avs(isdx) = 1.0d-5
+   else if (avs(isdx) > 50.0d0) then
 !        WRITE Warning Message:  Exit Velocity > 50.0 m/s
-      CALL ERRHDL(PATH,MODNAM,'W','320',' VS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' VS ')
+   end if
 
-   IF (ADS(ISDX) < 0.0D0) THEN
+   if (ads(isdx) < 0.0d0) then
 !        WRITE Warning Message:  Negative Stack Diameter
-      CALL ERRHDL(PATH,MODNAM,'E','209',' DS ')
-   ELSE IF (ADS(ISDX) < 1.0D-5) THEN
+      call errhdl(path,modnam,'E','209',' DS ')
+   else if (ads(isdx) < 1.0d-5) then
 !        Set to Small Value to Avoid Zero-divide and Underflow
-      ADS(ISDX) = 1.0D-5
-   ELSE IF (ADS(ISDX) > 20.0D0) THEN
+      ads(isdx) = 1.0d-5
+   else if (ads(isdx) > 20.0d0) then
 !        WRITE Warning Message:  Large Stack Diameter (> 20m)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' DS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' DS ')
+   end if
 
 !     Assign default factor to adjust stack diameter for capped stack
 !     releases at 2.0 (i.e. cap doubles initial diameter of plume) for
 !     use in the PRIME algorithm for BETA-test draft option.
-   IF (SRCTYP(ISDX) == 'POINTCAP') THEN
-      ADSFACT(ISDX) = 2.0D0
-   ELSE
-      ADSFACT(ISDX) = 1.0D0
-   END IF
+   if (srctyp(isdx) == 'POINTCAP') then
+      adsfact(isdx) = 2.0d0
+   else
+      adsfact(isdx) = 1.0d0
+   end if
 
-   RETURN
-END SUBROUTINE PPARM
+   return
+end subroutine pparm
 
-SUBROUTINE VPARM(ISDX,TEMP)
+subroutine vparm(isdx,temp)
 !***********************************************************************
 !                 VPARM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2835,72 +2835,72 @@ SUBROUTINE VPARM(ISDX,TEMP)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ISDX
-   DOUBLE PRECISION :: TEMP(IFMAX)
+   integer :: isdx
+   double precision :: temp(ifmax)
 
 !     Variable Initializations
-   MODNAM = 'VPARM'
+   modnam = 'VPARM'
 
-   AQS(ISDX) = TEMP(1)
-   AHS(ISDX) = TEMP(2)
-   ASYINI(ISDX) = TEMP(3)
-   ASZINI(ISDX) = TEMP(4)
+   aqs(isdx) = temp(1)
+   ahs(isdx) = temp(2)
+   asyini(isdx) = temp(3)
+   aszini(isdx) = temp(4)
 
 !     Perform QA Error Checking on Source Parameters
 
-   IF (AQS(ISDX) == 0.0D0) THEN
+   if (aqs(isdx) == 0.0d0) then
 !        WRITE Warning Message:  Emission Rate Equals 0.0
-      CALL ERRHDL(PATH,MODNAM,'W','320',' QS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' QS ')
+   end if
 
 !MGS Removed warning when HS >100m for aircraft souces (D151 - WSP 5/25/2023)
-   IF (AHS(ISDX) < 0.0D0) THEN
+   if (ahs(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Release Height
-      CALL ERRHDL(PATH,MODNAM,'E','209',' HS ')
+      call errhdl(path,modnam,'E','209',' HS ')
 !MGS      ELSE IF (AHS(ISDX) .GT. 100.0D0) THEN
-   ELSE IF((AHS(ISDX) > 100.0D0) .and.&
-   &(.NOT. ARCFT)) THEN
+   else if((ahs(isdx) > 100.0d0) .and.&
+   &(.not. arcft)) then
 !        WRITE Warning Message:  Large Release Height (> 100M)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' HS ')
-   ELSE IF (AHS(ISDX) > 3000.0D0) THEN
+      call errhdl(path,modnam,'W','320',' HS ')
+   else if (ahs(isdx) > 3000.0d0) then
 !        WRITE Error Message:  Large Release Height (> 3000M)
-      CALL ERRHDL(PATH,MODNAM,'E','324',SRCID(ISDX))
-   END IF
+      call errhdl(path,modnam,'E','324',srcid(isdx))
+   end if
 
-   IF (ASYINI(ISDX) < 0.0D0) THEN
+   if (asyini(isdx) < 0.0d0) then
 !        WRITE Warning Message:  Negative Initial Lateral Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','209',' SYINIT ')
-   ELSE IF (ASYINI(ISDX) < 1.0D-5) THEN
+      call errhdl(path,modnam,'E','209',' SYINIT ')
+   else if (asyini(isdx) < 1.0d-5) then
 !        WRITE Warning Message:  Small Initial Lateral Parameter
-      CALL ERRHDL(PATH,MODNAM,'W','320',' SYINIT ')
+      call errhdl(path,modnam,'W','320',' SYINIT ')
 !        Set to Small Value to Avoid Zero-divide and Underflow
-      ASYINI(ISDX) = 1.0D-5
-   ELSE IF (ASYINI(ISDX) > 200.0D0) THEN
+      asyini(isdx) = 1.0d-5
+   else if (asyini(isdx) > 200.0d0) then
 !        WRITE Warning Message:  Large Initial Lateral Parameter (> 200m)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' SYINIT ')
-   END IF
+      call errhdl(path,modnam,'W','320',' SYINIT ')
+   end if
 
-   IF (ASZINI(ISDX) < 0.0D0) THEN
+   if (aszini(isdx) < 0.0d0) then
 !        WRITE Warning Message:  Negative Initial Vertical Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','209',' SZINIT ')
-   ELSE IF (ASZINI(ISDX) < 1.0D-5) THEN
+      call errhdl(path,modnam,'E','209',' SZINIT ')
+   else if (aszini(isdx) < 1.0d-5) then
 !        WRITE Warning Message:  Small Initial Lateral Parameter
-      CALL ERRHDL(PATH,MODNAM,'W','320',' SZINIT ')
+      call errhdl(path,modnam,'W','320',' SZINIT ')
 !        Set to Small Value to Avoid Zero-divide and Underflow
-      ASZINI(ISDX) = 1.0D-5
-   ELSE IF (ASZINI(ISDX) > 200.0D0) THEN
+      aszini(isdx) = 1.0d-5
+   else if (aszini(isdx) > 200.0d0) then
 !        WRITE Warning Message:  Large Initial Vertical Parameter (> 200m)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' SZINIT ')
-   END IF
+      call errhdl(path,modnam,'W','320',' SZINIT ')
+   end if
 
-   RETURN
-END SUBROUTINE VPARM
+   return
+end subroutine vparm
 
-SUBROUTINE APARM(ISDX,TEMP)
+subroutine aparm(isdx,temp)
 !***********************************************************************
 !                 APARM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2927,152 +2927,152 @@ SUBROUTINE APARM(ISDX,TEMP)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, ISDX
-   DOUBLE PRECISION :: TEMP(IFMAX)
+   integer :: i, isdx
+   double precision :: temp(ifmax)
 
 !     Variable Initializations
-   MODNAM = 'APARM'
+   modnam = 'APARM'
 
-   AQS(ISDX) = TEMP(1)
-   AHS(ISDX) = TEMP(2)
-   IF (IFC == 6) THEN
-      AXINIT(ISDX) = TEMP(3)
-      AYINIT(ISDX) = AXINIT(ISDX)
-      AANGLE(ISDX) = 0.0D0
-      ASZINI(ISDX) = 0.0D0
-   ELSE IF (IFC == 7) THEN
-      AXINIT(ISDX) = TEMP(3)
-      AYINIT(ISDX) = TEMP(4)
-      AANGLE(ISDX) = 0.0D0
-      ASZINI(ISDX) = 0.0D0
-   ELSE IF (IFC == 8) THEN
-      AXINIT(ISDX) = TEMP(3)
-      AYINIT(ISDX) = TEMP(4)
-      AANGLE(ISDX) = TEMP(5)
-      ASZINI(ISDX) = 0.0D0
-   ELSE IF (IFC == 9) THEN
-      AXINIT(ISDX) = TEMP(3)
-      AYINIT(ISDX) = TEMP(4)
-      AANGLE(ISDX) = TEMP(5)
-      ASZINI(ISDX) = TEMP(6)
-   END IF
+   aqs(isdx) = temp(1)
+   ahs(isdx) = temp(2)
+   if (ifc == 6) then
+      axinit(isdx) = temp(3)
+      ayinit(isdx) = axinit(isdx)
+      aangle(isdx) = 0.0d0
+      aszini(isdx) = 0.0d0
+   else if (ifc == 7) then
+      axinit(isdx) = temp(3)
+      ayinit(isdx) = temp(4)
+      aangle(isdx) = 0.0d0
+      aszini(isdx) = 0.0d0
+   else if (ifc == 8) then
+      axinit(isdx) = temp(3)
+      ayinit(isdx) = temp(4)
+      aangle(isdx) = temp(5)
+      aszini(isdx) = 0.0d0
+   else if (ifc == 9) then
+      axinit(isdx) = temp(3)
+      ayinit(isdx) = temp(4)
+      aangle(isdx) = temp(5)
+      aszini(isdx) = temp(6)
+   end if
 
 !     Perform QA Error Checking on Source Parameters
 
-   IF (AQS(ISDX) == 0.0D0) THEN
+   if (aqs(isdx) == 0.0d0) then
 !        WRITE Warning Message:  Emission Rate Equals 0.0
-      CALL ERRHDL(PATH,MODNAM,'W','320',' QS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' QS ')
+   end if
 
 !MGS Removed warning when HS >100m for aircraft souces (D151 - WSP 5/25/2023)
-   IF (AHS(ISDX) < 0.0D0) THEN
+   if (ahs(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Release Height
-      CALL ERRHDL(PATH,MODNAM,'E','209',' HS ')
+      call errhdl(path,modnam,'E','209',' HS ')
 !MGS      ELSE IF (AHS(ISDX) .GT. 100.0D0) THEN
-   ELSE IF ((AHS(ISDX) > 100.0D0) .and.&
-   &(.NOT. ARCFT)) THEN
+   else if ((ahs(isdx) > 100.0d0) .and.&
+   &(.not. arcft)) then
 !        WRITE Warning Message:  Large Release Height (> 100M)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' HS ')
-   ELSE IF (AHS(ISDX) > 3000.0D0) THEN
+      call errhdl(path,modnam,'W','320',' HS ')
+   else if (ahs(isdx) > 3000.0d0) then
 !        WRITE Error Message:  Large Release Height (> 3000M)
-      CALL ERRHDL(PATH,MODNAM,'E','324',SRCID(ISDX))
-   END IF
+      call errhdl(path,modnam,'E','324',srcid(isdx))
+   end if
 
-   IF (AXINIT(ISDX) < 0.0D0) THEN
+   if (axinit(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Area Size
-      CALL ERRHDL(PATH,MODNAM,'E','209',' XINIT ')
-   ELSE IF (AXINIT(ISDX) < 1.0D-5) THEN
+      call errhdl(path,modnam,'E','209',' XINIT ')
+   else if (axinit(isdx) < 1.0d-5) then
 !        WRITE Warning Message:  Small Source Area
-      CALL ERRHDL(PATH,MODNAM,'W','320',' XINIT ')
+      call errhdl(path,modnam,'W','320',' XINIT ')
 !        Set to Small Value to Avoid Zero-divide and Underflow
-      AXINIT(ISDX) = 1.0D-5
-   ELSE IF (AXINIT(ISDX) > 2000.0D0) THEN
+      axinit(isdx) = 1.0d-5
+   else if (axinit(isdx) > 2000.0d0) then
 !        WRITE Warning Message:  Large Source Area (> 2000m)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' XINIT ')
-   END IF
+      call errhdl(path,modnam,'W','320',' XINIT ')
+   end if
 
-   IF (AYINIT(ISDX) < 0.0D0) THEN
+   if (ayinit(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Area Size
-      CALL ERRHDL(PATH,MODNAM,'E','209',' YINIT ')
-   ELSE IF (AYINIT(ISDX) < 1.0D-5) THEN
+      call errhdl(path,modnam,'E','209',' YINIT ')
+   else if (ayinit(isdx) < 1.0d-5) then
 !        WRITE Warning Message:  Small Source Area
-      CALL ERRHDL(PATH,MODNAM,'W','320',' YINIT ')
+      call errhdl(path,modnam,'W','320',' YINIT ')
 !        Set to Small Value to Avoid Zero-divide and Underflow
-      AYINIT(ISDX) = 1.0D-5
-   ELSE IF (AYINIT(ISDX) > 2000.0D0) THEN
+      ayinit(isdx) = 1.0d-5
+   else if (ayinit(isdx) > 2000.0d0) then
 !        WRITE Warning Message:  Large Source Area (> 2000m)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' YINIT ')
-   END IF
+      call errhdl(path,modnam,'W','320',' YINIT ')
+   end if
 
-   IF (DABS(AANGLE(ISDX)) > 180.0D0 ) THEN
+   if (dabs(aangle(isdx)) > 180.0d0 ) then
 !        WRITE Warning Message:  Rotation Angle Larger Than 180 Degrees
-      CALL ERRHDL(PATH,MODNAM,'W','320',' ANGLE ')
-   END IF
+      call errhdl(path,modnam,'W','320',' ANGLE ')
+   end if
 
-   IF (ASZINI(ISDX) < 0.0D0) THEN
+   if (aszini(isdx) < 0.0d0) then
 !*       WRITE Warning Message:  Negative Initial Vertical Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','209',' SZINIT ')
-   ELSE IF (ASZINI(ISDX) < 1.0D-5) THEN
+      call errhdl(path,modnam,'E','209',' SZINIT ')
+   else if (aszini(isdx) < 1.0d-5) then
 !*       Set to Small Value to Avoid Zero-divide and Underflow
-      ASZINI(ISDX) = 1.0D-5
-   ELSE IF (ASZINI(ISDX) > 200.0D0) THEN
+      aszini(isdx) = 1.0d-5
+   else if (aszini(isdx) > 200.0d0) then
 !*       WRITE Warning Message:  Large Initial Vertical Parameter (> 200m)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' SZINIT ')
-   END IF
+      call errhdl(path,modnam,'W','320',' SZINIT ')
+   end if
 
 !     Check for aspect ratio (length/width) > 100
-   IF (AYINIT(ISDX)/AXINIT(ISDX) > 100.00001D0 .or.&
-   &AXINIT(ISDX)/AYINIT(ISDX) > 100.00001D0) THEN
+   if (ayinit(isdx)/axinit(isdx) > 100.00001d0 .or.&
+   &axinit(isdx)/ayinit(isdx) > 100.00001d0) then
 !        WRITE Warning Message: Aspect ratio > 100 for area source
-      CALL ERRHDL(PATH,MODNAM,'W','391',SRCID(ISDX))
-   END IF
+      call errhdl(path,modnam,'W','391',srcid(isdx))
+   end if
 
 !     Set Number of Vertices (4 for Rectangular Source)
-   NVERTS(ISDX) = 4
+   nverts(isdx) = 4
 
 !     Set Coordinates of Vertices for Rectangular Area (in Kilometers).
 !     Vertices Start with the "Southwest" Corner and Are Defined
 !     Clockwise.  The First Vertex is Repeated as the Last Vertex.
 
-   AXVERT(1,ISDX) = AXS(ISDX)
-   AYVERT(1,ISDX) = AYS(ISDX)
+   axvert(1,isdx) = axs(isdx)
+   ayvert(1,isdx) = ays(isdx)
 
-   AXVERT(2,ISDX) = AXVERT(1,ISDX) +&
-   &(AYINIT(ISDX)*DSIN(AANGLE(ISDX)*DTORAD))
-   AYVERT(2,ISDX) = AYVERT(1,ISDX) +&
-   &(AYINIT(ISDX)*DCOS(AANGLE(ISDX)*DTORAD))
+   axvert(2,isdx) = axvert(1,isdx) +&
+   &(ayinit(isdx)*dsin(aangle(isdx)*dtorad))
+   ayvert(2,isdx) = ayvert(1,isdx) +&
+   &(ayinit(isdx)*dcos(aangle(isdx)*dtorad))
 
-   AXVERT(3,ISDX) = AXVERT(2,ISDX) +&
-   &(AXINIT(ISDX)*DCOS(AANGLE(ISDX)*DTORAD))
-   AYVERT(3,ISDX) = AYVERT(2,ISDX) -&
-   &(AXINIT(ISDX)*DSIN(AANGLE(ISDX)*DTORAD))
+   axvert(3,isdx) = axvert(2,isdx) +&
+   &(axinit(isdx)*dcos(aangle(isdx)*dtorad))
+   ayvert(3,isdx) = ayvert(2,isdx) -&
+   &(axinit(isdx)*dsin(aangle(isdx)*dtorad))
 
-   AXVERT(4,ISDX) = AXVERT(3,ISDX) -&
-   &(AYINIT(ISDX)*DSIN(AANGLE(ISDX)*DTORAD))
-   AYVERT(4,ISDX) = AYVERT(3,ISDX) -&
-   &(AYINIT(ISDX)*DCOS(AANGLE(ISDX)*DTORAD))
+   axvert(4,isdx) = axvert(3,isdx) -&
+   &(ayinit(isdx)*dsin(aangle(isdx)*dtorad))
+   ayvert(4,isdx) = ayvert(3,isdx) -&
+   &(ayinit(isdx)*dcos(aangle(isdx)*dtorad))
 
-   AXVERT(5,ISDX) = AXS(ISDX)
-   AYVERT(5,ISDX) = AYS(ISDX)
+   axvert(5,isdx) = axs(isdx)
+   ayvert(5,isdx) = ays(isdx)
 
 !     Determine coordinates for center of rectangular source
-   AXCNTR(ISDX) = 0.0D0
-   AYCNTR(ISDX) = 0.0D0
-   DO I = 1, NVERTS(ISDX)
-      AXCNTR(ISDX) = AXCNTR(ISDX) + AXVERT(I,ISDX)
-      AYCNTR(ISDX) = AYCNTR(ISDX) + AYVERT(I,ISDX)
-   END DO
-   AXCNTR(ISDX) = AXCNTR(ISDX)/DBLE(NVERTS(ISDX))
-   AYCNTR(ISDX) = AYCNTR(ISDX)/DBLE(NVERTS(ISDX))
+   axcntr(isdx) = 0.0d0
+   aycntr(isdx) = 0.0d0
+   do i = 1, nverts(isdx)
+      axcntr(isdx) = axcntr(isdx) + axvert(i,isdx)
+      aycntr(isdx) = aycntr(isdx) + ayvert(i,isdx)
+   end do
+   axcntr(isdx) = axcntr(isdx)/dble(nverts(isdx))
+   aycntr(isdx) = aycntr(isdx)/dble(nverts(isdx))
 
-   RETURN
-END SUBROUTINE APARM
+   return
+end subroutine aparm
 
-SUBROUTINE APPARM(ISDX,TEMP)
+subroutine apparm(isdx,temp)
 !***********************************************************************
 !                 APPARM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3092,66 +3092,66 @@ SUBROUTINE APPARM(ISDX,TEMP)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ISDX
-   DOUBLE PRECISION :: TEMP(IFMAX)
+   integer :: isdx
+   double precision :: temp(ifmax)
 
 !     Variable Initializations
-   MODNAM = 'APPARM'
+   modnam = 'APPARM'
 
-   AQS(ISDX) = TEMP(1)
-   AHS(ISDX) = TEMP(2)
-   NVERTS(ISDX) = IDNINT(TEMP(3))
-   IF (IFC == 7) THEN
-      ASZINI(ISDX) = TEMP(4)
-   ELSE
-      ASZINI(ISDX) = 0.0D0
-   END IF
+   aqs(isdx) = temp(1)
+   ahs(isdx) = temp(2)
+   nverts(isdx) = idnint(temp(3))
+   if (ifc == 7) then
+      aszini(isdx) = temp(4)
+   else
+      aszini(isdx) = 0.0d0
+   end if
 
 !     Perform QA Error Checking on Source Parameters
 
-   IF (AQS(ISDX) == 0.0D0) THEN
+   if (aqs(isdx) == 0.0d0) then
 !        WRITE Warning Message:  Emission Rate Equals 0.0
-      CALL ERRHDL(PATH,MODNAM,'W','320',' QS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' QS ')
+   end if
 
-   IF (AHS(ISDX) < 0.0D0) THEN
+   if (ahs(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Release Height
-      CALL ERRHDL(PATH,MODNAM,'E','209',' HS ')
-   ELSE IF (AHS(ISDX) > 100.0D0) THEN
+      call errhdl(path,modnam,'E','209',' HS ')
+   else if (ahs(isdx) > 100.0d0) then
 !        WRITE Warning Message:  Large Release Height (> 100M)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' HS ')
-   ELSE IF (AHS(ISDX) > 3000.0D0) THEN
+      call errhdl(path,modnam,'W','320',' HS ')
+   else if (ahs(isdx) > 3000.0d0) then
 !        WRITE Error Message:  Large Release Height (> 3000M)
-      CALL ERRHDL(PATH,MODNAM,'E','324',SRCID(ISDX))
-   END IF
+      call errhdl(path,modnam,'E','324',srcid(isdx))
+   end if
 
-   IF (ASZINI(ISDX) < 0.0D0) THEN
+   if (aszini(isdx) < 0.0d0) then
 !*       WRITE Warning Message:  Negative Initial Vertical Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','209',' SZINIT ')
-   ELSE IF (ASZINI(ISDX) < 1.0D-5) THEN
+      call errhdl(path,modnam,'E','209',' SZINIT ')
+   else if (aszini(isdx) < 1.0d-5) then
 !*       Set to Small Value to Avoid Zero-divide and Underflow
-      ASZINI(ISDX) = 1.0D-5
-   ELSE IF (ASZINI(ISDX) > 200.0D0) THEN
+      aszini(isdx) = 1.0d-5
+   else if (aszini(isdx) > 200.0d0) then
 !*       WRITE Warning Message:  Large Initial Vertical Parameter (> 200m)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' SZINIT ')
-   END IF
+      call errhdl(path,modnam,'W','320',' SZINIT ')
+   end if
 
-   IF (NVERTS(ISDX) < 3) THEN
+   if (nverts(isdx) < 3) then
 !        WRITE Error Message:  Not Enough Vertices
-      CALL ERRHDL(PATH,MODNAM,'E','380',' NVERT ')
-   ELSE IF (NVERTS(ISDX) > NVMAX-8) THEN
+      call errhdl(path,modnam,'E','380',' NVERT ')
+   else if (nverts(isdx) > nvmax-8) then
 !        WRITE Error Message:  Too Many Vertices
-      CALL ERRHDL(PATH,MODNAM,'W','406',SRCID(ISDX))
-   END IF
+      call errhdl(path,modnam,'W','406',srcid(isdx))
+   end if
 
-   RETURN
-END SUBROUTINE APPARM
+   return
+end subroutine apparm
 
-SUBROUTINE ARVERT
+subroutine arvert
 !***********************************************************************
 !                 ARVERT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3169,81 +3169,81 @@ SUBROUTINE ARVERT
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: K, ISDX
-   DOUBLE PRECISION :: DNUMX, DNUMY
-   CHARACTER (LEN=12) :: SOID
-   LOGICAL :: FOUND
+   integer :: k, isdx
+   double precision :: dnumx, dnumy
+   character (len=12) :: soid
+   logical :: found
 
 !     Variable Initializations
-   FOUND  = .FALSE.
-   MODNAM = 'ARVERT'
+   found  = .false.
+   modnam = 'ARVERT'
 
 !     Get The Source ID, and Check for Previous Occurrence
 !     of This SRCID;
 !*    First check for length of SRCID field (<=12)
-   IF ((LOCE(3)-LOCB(3)) <= 11) THEN
+   if ((loce(3)-locb(3)) <= 11) then
 !*       Retrieve Source ID Character Substring
-      SOID = FIELD(3)
-   ELSE
+      soid = field(3)
+   else
 !*       WRITE Error Message:  Source ID Field is Too Long
-      CALL ERRHDL(PATH,MODNAM,'E','230',FIELD(3)(1:12))
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','230',field(3)(1:12))
+      go to 999
+   end if
 
 !     Search For The Index
-   CALL SINDEX(SRCID,NSRC,SOID,ISDX,FOUND)
-   IF (FOUND) THEN
-      ISET = IWRK2(ISDX,10)
-      DO K = 4, IFC-1, 2
+   call sindex(srcid,nsrc,soid,isdx,found)
+   if (found) then
+      iset = iwrk2(isdx,10)
+      do k = 4, ifc-1, 2
 !           Change Fields To Numbers
-         CALL STODBL(FIELD(K),ILEN_FLD,DNUMX,IMIT)
+         call stodbl(field(k),ilen_fld,dnumx,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            CYCLE
-         END IF
-         CALL STODBL(FIELD(K+1),ILEN_FLD,DNUMY,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            cycle
+         end if
+         call stodbl(field(k+1),ilen_fld,dnumy,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            CYCLE
-         END IF
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            cycle
+         end if
 
-         ISET = ISET + 1
-         IF (ISET == 1) THEN
+         iset = iset + 1
+         if (iset == 1) then
 !              Compare First Vertex to Source Location
-            IF (DNUMX /= AXS(ISDX)) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','262',SRCID(ISDX))
-            END IF
-            IF (DNUMY /= AYS(ISDX)) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','262',SRCID(ISDX))
-            END IF
-         END IF
+            if (dnumx /= axs(isdx)) then
+               call errhdl(path,modnam,'E','262',srcid(isdx))
+            end if
+            if (dnumy /= ays(isdx)) then
+               call errhdl(path,modnam,'E','262',srcid(isdx))
+            end if
+         end if
 
-         IF (ISET <= NVERTS(ISDX)+1) THEN
+         if (iset <= nverts(isdx)+1) then
 !              Assign The Field
-            AXVERT(ISET,ISDX) = DNUMX
-            AYVERT(ISET,ISDX) = DNUMY
-         ELSE
+            axvert(iset,isdx) = dnumx
+            ayvert(iset,isdx) = dnumy
+         else
 !              WRITE Error Message: Too Many Vertices For This Source
 !              (this should not happen since arrays are allocated at runtime0
-            CALL ERRHDL(PATH,MODNAM,'E','264',SRCID(ISDX))
-         END IF
-      END DO
-      IWRK2(ISDX,10) = ISET
-   ELSE
+            call errhdl(path,modnam,'E','264',srcid(isdx))
+         end if
+      end do
+      iwrk2(isdx,10) = iset
+   else
 !        WRITE Error Message     ! Source Location Has Not Been Identified
-      CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','300',keywrd)
+   end if
 
-999 RETURN
-END SUBROUTINE ARVERT
+999 return
+end subroutine arvert
 
-SUBROUTINE ACPARM(ISDX,TEMP)
+subroutine acparm(isdx,temp)
 !***********************************************************************
 !                 ACPARM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3261,91 +3261,91 @@ SUBROUTINE ACPARM(ISDX,TEMP)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ISDX
-   DOUBLE PRECISION :: TEMP(IFMAX)
+   integer :: isdx
+   double precision :: temp(ifmax)
 
 !     Variable Initializations
-   MODNAM = 'ACPARM'
+   modnam = 'ACPARM'
 
-   AQS(ISDX) = TEMP(1)
-   AHS(ISDX) = TEMP(2)
-   RADIUS(ISDX) = TEMP(3)
-   IF (IFC >= 7) THEN
+   aqs(isdx) = temp(1)
+   ahs(isdx) = temp(2)
+   radius(isdx) = temp(3)
+   if (ifc >= 7) then
 ! ---    Assign NVERTS for this source
-      NVERTS(ISDX) = IDNINT(TEMP(4))
-   ELSE
-      NVERTS(ISDX) = 20
-   END IF
-   IF (IFC == 8) THEN
-      ASZINI(ISDX) = TEMP(5)
-   ELSE
-      ASZINI(ISDX) = 0.0D0
-   END IF
+      nverts(isdx) = idnint(temp(4))
+   else
+      nverts(isdx) = 20
+   end if
+   if (ifc == 8) then
+      aszini(isdx) = temp(5)
+   else
+      aszini(isdx) = 0.0d0
+   end if
 
 !     Perform QA Error Checking on Source Parameters
 
-   IF (AQS(ISDX) == 0.0D0) THEN
+   if (aqs(isdx) == 0.0d0) then
 !        WRITE Warning Message:  Emission Rate Equals 0.0
-      CALL ERRHDL(PATH,MODNAM,'W','320',' QS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' QS ')
+   end if
 
-   IF (AHS(ISDX) < 0.0D0) THEN
+   if (ahs(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Release Height
-      CALL ERRHDL(PATH,MODNAM,'E','209',' HS ')
-   ELSE IF (AHS(ISDX) > 100.0D0) THEN
+      call errhdl(path,modnam,'E','209',' HS ')
+   else if (ahs(isdx) > 100.0d0) then
 !        WRITE Warning Message:  Large Release Height (> 100M)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' HS ')
-   ELSE IF (AHS(ISDX) > 3000.0D0) THEN
+      call errhdl(path,modnam,'W','320',' HS ')
+   else if (ahs(isdx) > 3000.0d0) then
 !        WRITE Error Message:  Large Release Height (> 3000M)
-      CALL ERRHDL(PATH,MODNAM,'E','324',SRCID(ISDX))
-   END IF
+      call errhdl(path,modnam,'E','324',srcid(isdx))
+   end if
 
-   IF (RADIUS(ISDX) < 0.0D0) THEN
+   if (radius(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Radius
-      CALL ERRHDL(PATH,MODNAM,'E','209',' RADIUS ')
-   ELSE IF (RADIUS(ISDX) <= 0.5D0) THEN
+      call errhdl(path,modnam,'E','209',' RADIUS ')
+   else if (radius(isdx) <= 0.5d0) then
 !        WRITE Error Message:  Invalid Value for Radius
-      CALL ERRHDL(PATH,MODNAM,'E','203',' RADIUS ')
-   ELSE IF (RADIUS(ISDX) > 10000.0D0) THEN
+      call errhdl(path,modnam,'E','203',' RADIUS ')
+   else if (radius(isdx) > 10000.0d0) then
 !        WRITE Warning Message:  Large Radius (> 10000M)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' RADIUS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' RADIUS ')
+   end if
 
-   IF (ASZINI(ISDX) < 0.0D0) THEN
+   if (aszini(isdx) < 0.0d0) then
 !*       WRITE Warning Message:  Negative Initial Vertical Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','209',' SZINIT ')
-   ELSE IF (ASZINI(ISDX) < 1.0D-5) THEN
+      call errhdl(path,modnam,'E','209',' SZINIT ')
+   else if (aszini(isdx) < 1.0d-5) then
 !*       Set to Small Value to Avoid Zero-divide and Underflow
-      ASZINI(ISDX) = 1.0D-5
-   ELSE IF (ASZINI(ISDX) > 200.0D0) THEN
+      aszini(isdx) = 1.0d-5
+   else if (aszini(isdx) > 200.0d0) then
 !*       WRITE Warning Message:  Large Initial Vertical Parameter (> 200m)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' SZINIT ')
-   END IF
+      call errhdl(path,modnam,'W','320',' SZINIT ')
+   end if
 
-   IF (NVERTS(ISDX) < 3) THEN
+   if (nverts(isdx) < 3) then
 !        WRITE Error Message:  Not Enough Vertices
-      CALL ERRHDL(PATH,MODNAM,'E','380',' NVERT ')
-      GO TO 999
-   ELSE IF (NVERTS(ISDX) > NVMAX+1) THEN
+      call errhdl(path,modnam,'E','380',' NVERT ')
+      go to 999
+   else if (nverts(isdx) > nvmax+1) then
 ! ---    Adjust NVMAX based on user-specified NVERTS
-      NVMAX = NVERTS(ISDX) + 1
-   END IF
+      nvmax = nverts(isdx) + 1
+   end if
 
 !     Setup Vertices for Circular Area
-   CALL GENCIR(ISDX)
+   call gencir(isdx)
 
 !     Set coordinates for center of circular source
-   AXCNTR(ISDX) = AXS(ISDX)
-   AYCNTR(ISDX) = AYS(ISDX)
+   axcntr(isdx) = axs(isdx)
+   aycntr(isdx) = ays(isdx)
 
-999 RETURN
-END SUBROUTINE ACPARM
+999 return
+end subroutine acparm
 
-SUBROUTINE GENCIR(ISDX)
+subroutine gencir(isdx)
 !***********************************************************************
 !                 GENCIR Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3368,46 +3368,46 @@ SUBROUTINE GENCIR(ISDX)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, ISDX, NSIDES
-   DOUBLE PRECISION :: ANG, ANGINC, AREA, TRIAREA, OPP, NEWRAD
+   integer :: i, isdx, nsides
+   double precision :: ang, anginc, area, triarea, opp, newrad
 
 !     Variable Initializations
-   MODNAM = 'GENCIR'
+   modnam = 'GENCIR'
 
-   NSIDES = NVERTS(ISDX)
-   ANGINC = 360.0D0/DBLE(NSIDES)
-   ANG = 0.0D0
+   nsides = nverts(isdx)
+   anginc = 360.0d0/dble(nsides)
+   ang = 0.0d0
 
 !     Calculate New Radius That Will Provide An Equal-Area Polygon
-   AREA = PI * RADIUS(ISDX) * RADIUS(ISDX)
-   TRIAREA = AREA/DBLE(NSIDES)
-   OPP = DSQRT(TRIAREA * DTAN(ANGINC/(2.0D0*RTODEG)) )
-   NEWRAD = OPP / (DSIN(ANGINC/(2.0D0*RTODEG)) )
+   area = pi * radius(isdx) * radius(isdx)
+   triarea = area/dble(nsides)
+   opp = dsqrt(triarea * dtan(anginc/(2.0d0*rtodeg)) )
+   newrad = opp / (dsin(anginc/(2.0d0*rtodeg)) )
 
 !     Generate Vertices for Circular Area of NSIDES
-   DO I = 1, NSIDES
-      IF (I /= 1) ANG = ANG+ANGINC
-      AXVERT(I,ISDX) = (NEWRAD * DSIN(ANG/RTODEG)) + AXS(ISDX)
-      AYVERT(I,ISDX) = (NEWRAD * DCOS(ANG/RTODEG)) + AYS(ISDX)
-   END DO
+   do i = 1, nsides
+      if (i /= 1) ang = ang+anginc
+      axvert(i,isdx) = (newrad * dsin(ang/rtodeg)) + axs(isdx)
+      ayvert(i,isdx) = (newrad * dcos(ang/rtodeg)) + ays(isdx)
+   end do
 
 !     Repeat First Vertex as Last Vertex to Close the AREACIRC source
-   AXVERT(NSIDES+1,ISDX) = AXVERT(1,ISDX)
-   AYVERT(NSIDES+1,ISDX) = AYVERT(1,ISDX)
+   axvert(nsides+1,isdx) = axvert(1,isdx)
+   ayvert(nsides+1,isdx) = ayvert(1,isdx)
 
 !     Assign SQRT(area) to AXINIT and AYINIT; equivalent values
 !     of AXINIT and AYINIT will be used to calculate area of source
-   AXINIT(ISDX) = DSQRT( area )
-   AYINIT(ISDX) = DSQRT( area )
+   axinit(isdx) = dsqrt( area )
+   ayinit(isdx) = dsqrt( area )
 
-   RETURN
-END SUBROUTINE GENCIR
+   return
+end subroutine gencir
 
-SUBROUTINE OPARM(ISDX,TEMP)
+subroutine oparm(isdx,temp)
 !***********************************************************************
 !                 OPARM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3430,151 +3430,151 @@ SUBROUTINE OPARM(ISDX,TEMP)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, ISDX
-   DOUBLE PRECISION :: TEMP(IFMAX), EFFDEP
+   integer :: i, isdx
+   double precision :: temp(ifmax), effdep
 
 !     Variable Initializations
-   MODNAM = 'OPARM'
+   modnam = 'OPARM'
 
-   AQS(ISDX) = TEMP(1)
-   AHS(ISDX) = TEMP(2)
-   AXINIT(ISDX) = TEMP(3)
-   AYINIT(ISDX) = TEMP(4)
-   AVOLUM(ISDX) = TEMP(5)
-   AANGLE(ISDX) = 0.0D0
-   IF (IFC == 9) THEN
-      AANGLE(ISDX) = TEMP(6)
-   END IF
+   aqs(isdx) = temp(1)
+   ahs(isdx) = temp(2)
+   axinit(isdx) = temp(3)
+   ayinit(isdx) = temp(4)
+   avolum(isdx) = temp(5)
+   aangle(isdx) = 0.0d0
+   if (ifc == 9) then
+      aangle(isdx) = temp(6)
+   end if
 
 !     Perform QA Error Checking on Source Parameters
 
-   IF (AQS(ISDX) == 0.0D0) THEN
+   if (aqs(isdx) == 0.0d0) then
 !        WRITE Warning Message:  Emission Rate Equals 0.0
-      CALL ERRHDL(PATH,MODNAM,'W','320',' QS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' QS ')
+   end if
 
-   IF (AHS(ISDX) < 0.0D0) THEN
+   if (ahs(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Release Height
-      CALL ERRHDL(PATH,MODNAM,'E','209',' HS ')
-   ELSE IF (AHS(ISDX) > 200.0D0) THEN
+      call errhdl(path,modnam,'E','209',' HS ')
+   else if (ahs(isdx) > 200.0d0) then
 !        WRITE Warning Message:  Large Release Height (> 200M)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' HS ')
-   ELSE IF (AHS(ISDX) > 3000.0D0) THEN
+      call errhdl(path,modnam,'W','320',' HS ')
+   else if (ahs(isdx) > 3000.0d0) then
 !        WRITE Error Message:  Large Release Height (> 3000M)
-      CALL ERRHDL(PATH,MODNAM,'E','324',SRCID(ISDX))
-   END IF
+      call errhdl(path,modnam,'E','324',srcid(isdx))
+   end if
 
-   IF (AXINIT(ISDX) < 0.0D0) THEN
+   if (axinit(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Area Size
-      CALL ERRHDL(PATH,MODNAM,'E','209',' XINIT ')
-   ELSE IF (AXINIT(ISDX) < 1.0D-5) THEN
+      call errhdl(path,modnam,'E','209',' XINIT ')
+   else if (axinit(isdx) < 1.0d-5) then
 !        WRITE Warning Message:  Small Source Area
-      CALL ERRHDL(PATH,MODNAM,'W','320',' XINIT ')
+      call errhdl(path,modnam,'W','320',' XINIT ')
 !        Set to Small Value to Avoid Zero-divide and Underflow
-      AXINIT(ISDX) = 1.0D-5
-   ELSE IF (AXINIT(ISDX) > 2000.0D0) THEN
+      axinit(isdx) = 1.0d-5
+   else if (axinit(isdx) > 2000.0d0) then
 !        WRITE Warning Message:  Large Source Area (> 2000m)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' XINIT ')
-   END IF
+      call errhdl(path,modnam,'W','320',' XINIT ')
+   end if
 
-   IF (AYINIT(ISDX) < 0.0D0) THEN
+   if (ayinit(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Area Size
-      CALL ERRHDL(PATH,MODNAM,'E','209',' YINIT ')
-   ELSE IF (AYINIT(ISDX) < 1.0D-5) THEN
+      call errhdl(path,modnam,'E','209',' YINIT ')
+   else if (ayinit(isdx) < 1.0d-5) then
 !        WRITE Warning Message:  Small Source Area
-      CALL ERRHDL(PATH,MODNAM,'W','320',' YINIT ')
+      call errhdl(path,modnam,'W','320',' YINIT ')
 !        Set to Small Value to Avoid Zero-divide and Underflow
-      AYINIT(ISDX) = 1.0D-5
-   ELSE IF (AYINIT(ISDX) > 2000.0D0) THEN
+      ayinit(isdx) = 1.0d-5
+   else if (ayinit(isdx) > 2000.0d0) then
 !        WRITE Warning Message:  Large Source Area (> 2000m)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' YINIT ')
-   END IF
+      call errhdl(path,modnam,'W','320',' YINIT ')
+   end if
 
-   IF (DABS(AANGLE(ISDX)) > 180.0D0 ) THEN
+   if (dabs(aangle(isdx)) > 180.0d0 ) then
 !        WRITE Warning Message:  Rotation Angle Larger Than 180 Degrees
-      CALL ERRHDL(PATH,MODNAM,'W','320',' ANGLE ')
-   END IF
+      call errhdl(path,modnam,'W','320',' ANGLE ')
+   end if
 
-   IF (AVOLUM(ISDX) <= 0.0D0) THEN
+   if (avolum(isdx) <= 0.0d0) then
 !        WRITE Error Message: Open-Pit Volume is less than
 !        or equal to zero
-      CALL ERRHDL(PATH,MODNAM,'E','209',' AVOLUM ')
-   END IF
+      call errhdl(path,modnam,'E','209',' AVOLUM ')
+   end if
 
 !     Check for aspect ratio (length/width) > 10
-   IF (AYINIT(ISDX)/AXINIT(ISDX) > 10.0D0 .or.&
-   &AXINIT(ISDX)/AYINIT(ISDX) > 10.0D0) THEN
+   if (ayinit(isdx)/axinit(isdx) > 10.0d0 .or.&
+   &axinit(isdx)/ayinit(isdx) > 10.0d0) then
 !        WRITE Warning Message: Aspect ratio > 10 for pit source
-      CALL ERRHDL(PATH,MODNAM,'W','392',SRCID(ISDX))
-   END IF
+      call errhdl(path,modnam,'W','392',srcid(isdx))
+   end if
 
 !     Check for Release Height > Effective Depth
-   EFFDEP = AVOLUM(ISDX)/(AXINIT(ISDX)*AYINIT(ISDX))
-   IF (AHS(ISDX) > EFFDEP) THEN
+   effdep = avolum(isdx)/(axinit(isdx)*ayinit(isdx))
+   if (ahs(isdx) > effdep) then
 !        WRITE Error Message: Release Height is greater than Effective Depth
-      CALL ERRHDL(PATH,MODNAM,'E','322',SRCID(ISDX))
-   END IF
+      call errhdl(path,modnam,'E','322',srcid(isdx))
+   end if
 
 !     Set Number of Vertices (4 for Rectangular Source)
-   NVERT = 4
+   nvert = 4
 
 !     Set Coordinates of Vertices for Rectangular Area (in Kilometers).
 !     Vertices Start with the "Southwest" Corner and Are Defined
 !     Clockwise.  The First Vertex is Repeated as the Last Vertex.
 
-   AXVERT(1,ISDX) = AXS(ISDX)
-   AYVERT(1,ISDX) = AYS(ISDX)
+   axvert(1,isdx) = axs(isdx)
+   ayvert(1,isdx) = ays(isdx)
 
-   AXVERT(2,ISDX) = AXVERT(1,ISDX) +&
-   &(AYINIT(ISDX)*DSIN(AANGLE(ISDX)*DTORAD))
-   AYVERT(2,ISDX) = AYVERT(1,ISDX) +&
-   &(AYINIT(ISDX)*DCOS(AANGLE(ISDX)*DTORAD))
+   axvert(2,isdx) = axvert(1,isdx) +&
+   &(ayinit(isdx)*dsin(aangle(isdx)*dtorad))
+   ayvert(2,isdx) = ayvert(1,isdx) +&
+   &(ayinit(isdx)*dcos(aangle(isdx)*dtorad))
 
-   AXVERT(3,ISDX) = AXVERT(2,ISDX) +&
-   &(AXINIT(ISDX)*DCOS(AANGLE(ISDX)*DTORAD))
-   AYVERT(3,ISDX) = AYVERT(2,ISDX) -&
-   &(AXINIT(ISDX)*DSIN(AANGLE(ISDX)*DTORAD))
+   axvert(3,isdx) = axvert(2,isdx) +&
+   &(axinit(isdx)*dcos(aangle(isdx)*dtorad))
+   ayvert(3,isdx) = ayvert(2,isdx) -&
+   &(axinit(isdx)*dsin(aangle(isdx)*dtorad))
 
-   AXVERT(4,ISDX) = AXVERT(3,ISDX) -&
-   &(AYINIT(ISDX)*DSIN(AANGLE(ISDX)*DTORAD))
-   AYVERT(4,ISDX) = AYVERT(3,ISDX) -&
-   &(AYINIT(ISDX)*DCOS(AANGLE(ISDX)*DTORAD))
+   axvert(4,isdx) = axvert(3,isdx) -&
+   &(ayinit(isdx)*dsin(aangle(isdx)*dtorad))
+   ayvert(4,isdx) = ayvert(3,isdx) -&
+   &(ayinit(isdx)*dcos(aangle(isdx)*dtorad))
 
-   AXVERT(5,ISDX) = AXS(ISDX)
-   AYVERT(5,ISDX) = AYS(ISDX)
+   axvert(5,isdx) = axs(isdx)
+   ayvert(5,isdx) = ays(isdx)
 
 !*    Determine the angle of long pit dimension with North
-   IF (AYINIT(ISDX) >= AXINIT(ISDX)) THEN
-      AALPHA(ISDX) = AANGLE(ISDX)
-   ELSE IF (AXINIT(ISDX) > AYINIT(ISDX)) THEN
-      AALPHA(ISDX) = AANGLE(ISDX) + 90.0D0
-   END IF
+   if (ayinit(isdx) >= axinit(isdx)) then
+      aalpha(isdx) = aangle(isdx)
+   else if (axinit(isdx) > ayinit(isdx)) then
+      aalpha(isdx) = aangle(isdx) + 90.0d0
+   end if
 
 !*    Calculate the effective pit depth
-   APDEFF(ISDX) = AVOLUM(ISDX) / (AXINIT(ISDX) * AYINIT(ISDX))
+   apdeff(isdx) = avolum(isdx) / (axinit(isdx) * ayinit(isdx))
 
 !*    Calculate Initial Sigma-Z
-   ASZINI(ISDX) = APDEFF(ISDX) / 4.3D0
+   aszini(isdx) = apdeff(isdx) / 4.3d0
 
 !     Determine coordinates for center of rectangular source
-   AXCNTR(ISDX) = 0.0D0
-   AYCNTR(ISDX) = 0.0D0
-   DO I = 1, NVERT
-      AXCNTR(ISDX) = AXCNTR(ISDX) + AXVERT(I,ISDX)
-      AYCNTR(ISDX) = AYCNTR(ISDX) + AYVERT(I,ISDX)
-   END DO
-   AXCNTR(ISDX) = AXCNTR(ISDX)/DBLE(NVERT)
-   AYCNTR(ISDX) = AYCNTR(ISDX)/DBLE(NVERT)
+   axcntr(isdx) = 0.0d0
+   aycntr(isdx) = 0.0d0
+   do i = 1, nvert
+      axcntr(isdx) = axcntr(isdx) + axvert(i,isdx)
+      aycntr(isdx) = aycntr(isdx) + ayvert(i,isdx)
+   end do
+   axcntr(isdx) = axcntr(isdx)/dble(nvert)
+   aycntr(isdx) = aycntr(isdx)/dble(nvert)
 
-   RETURN
-END SUBROUTINE OPARM
+   return
+end subroutine oparm
 
 !CRT  D063 Platform Downwash
-SUBROUTINE PLATFM
+subroutine platfm
 !***********************************************************************
 !                 PLATFM Subroutine - AERMOD
 !
@@ -3593,80 +3593,80 @@ SUBROUTINE PLATFM
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, ISDX
-   LOGICAL :: FOUND
-   DOUBLE PRECISION :: TEMP(IFMAX)
+   integer :: i, isdx
+   logical :: found
+   double precision :: temp(ifmax)
 
 !     Variable Initializations
-   FOUND  = .FALSE.
-   MODNAM = 'PLATFM'
-   TEMP   = 0.0D0
+   found  = .false.
+   modnam = 'PLATFM'
+   temp   = 0.0d0
 
 !     Check The Number Of The Fields
-   IF (IFC <= 4) THEN
+   if (ifc <= 4) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   end if
 
 !     Search For The Source ID Index
-   CALL SINDEX(SRCID,NSRC,FIELD(3),ISDX,FOUND)
+   call sindex(srcid,nsrc,field(3),isdx,found)
 
-   IF (FOUND) THEN
+   if (found) then
 
 !        Check for POINT, POINTHOR, POINTCAP source type
-      IF (SRCTYP(ISDX) /= 'POINT' .and.&
-      &SRCTYP(ISDX) /= 'POINTHOR' .and.&
-      &SRCTYP(ISDX) /= 'POINTCAP') THEN
+      if (srctyp(isdx) /= 'POINT' .and.&
+      &srctyp(isdx) /= 'POINTHOR' .and.&
+      &srctyp(isdx) /= 'POINTCAP') then
 !           WRITE Error Message: PLATFORM only applies to POINT,
 !           POINTHOR, and POINTCAP sources
-         CALL ERRHDL(PATH,MODNAM,'E','631',SRCID(ISDX))
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','631',srcid(isdx))
+         go to 999
+      end if
 
 !        Check for Previous PLATFORM Card for This Source
-      IF (SOPLAT(ISDX) == 'Y') THEN
+      if (soplat(isdx) == 'Y') then
 !           WRITE Error Message: Duplicate PLATFORM Keyword for source
-         CALL ERRHDL(PATH,MODNAM,'E','632',SRCID(ISDX))
-         GO TO 999
-      ELSE
-         SOPLAT(ISDX) = 'Y'
-      END IF
+         call errhdl(path,modnam,'E','632',srcid(isdx))
+         go to 999
+      else
+         soplat(isdx) = 'Y'
+      end if
 
 !        Assign The Parameter Arrays
-      DO I = 4, IFC
-         CALL STODBL(FIELD(I),ILEN_FLD,TEMP(I-3),IMIT)
+      do i = 4, ifc
+         call stodbl(field(i),ilen_fld,temp(i-3),imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            CYCLE
-         END IF
-      END DO
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            cycle
+         end if
+      end do
 !        Set platform parameters
-      PLATELV(ISDX) = TEMP(1)    ! Platform base elevation above sea-level
-      PLATHB(ISDX) = TEMP(2)     ! Platform building height above platform base elevation
-      PLATWB(ISDX) = TEMP(3)     ! Platform building width
+      platelv(isdx) = temp(1)    ! Platform base elevation above sea-level
+      plathb(isdx) = temp(2)     ! Platform building height above platform base elevation
+      platwb(isdx) = temp(3)     ! Platform building width
 
 !        Set platform flag to true only if building width and height are greater the 0.0 (0.001)
-      IF (PLATHB(ISDX) > 0.001D0 .and.&
-      &PLATWB(ISDX) > 0.001D0) THEN
-         OSPLAT(ISDX) = .TRUE.
-      END IF
+      if (plathb(isdx) > 0.001d0 .and.&
+      &platwb(isdx) > 0.001d0) then
+         osplat(isdx) = .true.
+      end if
 
-   ELSE
+   else
 !        WRITE Error Message    ! Source Location Has Not Been Identified Yet
-      CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','300',keywrd)
+   end if
 
-999 RETURN
-END SUBROUTINE PLATFM
+999 return
+end subroutine platfm
 
 
-SUBROUTINE LPARM(ISDX,TEMP)
+subroutine lparm(isdx,temp)
 !***********************************************************************
 !                 LPARM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3685,121 +3685,121 @@ SUBROUTINE LPARM(ISDX,TEMP)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   SAVE
-   INTEGER :: I, ISDX
-   DOUBLE PRECISION :: TEMP(IFMAX), XLEN, YLEN
+   save
+   integer :: i, isdx
+   double precision :: temp(ifmax), xlen, ylen
 ! Unused INTEGER :: J
 
 !     Variable Initializations
-   MODNAM = 'LPARM'
+   modnam = 'LPARM'
 
-   AQS(ISDX) = TEMP(1)
-   AHS(ISDX) = TEMP(2)
-   AWIDTH(ISDX) = TEMP(3)
-   IF (IFC == 7) THEN
-      ASZINI(ISDX) = TEMP(4)
-   ELSE
-      ASZINI(ISDX) = 0.0D0
-   END IF
+   aqs(isdx) = temp(1)
+   ahs(isdx) = temp(2)
+   awidth(isdx) = temp(3)
+   if (ifc == 7) then
+      aszini(isdx) = temp(4)
+   else
+      aszini(isdx) = 0.0d0
+   end if
 
 !     Perform QA Error Checking on Source Parameters
 
-   IF (AQS(ISDX) == 0.0D0) THEN
+   if (aqs(isdx) == 0.0d0) then
 !        WRITE Warning Message:  Emission Rate Equals 0.0
-      CALL ERRHDL(PATH,MODNAM,'W','320',' QS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' QS ')
+   end if
 
-   IF (AHS(ISDX) < 0.0D0) THEN
+   if (ahs(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Release Height
-      CALL ERRHDL(PATH,MODNAM,'E','209',' HS ')
-   ELSE IF (AHS(ISDX) > 100.0D0) THEN
+      call errhdl(path,modnam,'E','209',' HS ')
+   else if (ahs(isdx) > 100.0d0) then
 !        WRITE Warning Message:  Large Release Height (> 100M)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' HS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' HS ')
+   end if
 
 
-   IF (ASZINI(ISDX) < 0.0D0) THEN
+   if (aszini(isdx) < 0.0d0) then
 !*       WRITE Warning Message:  Negative Initial Vertical Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','209',' SZINIT ')
-   ELSE IF (ASZINI(ISDX) < 1.0E-5) THEN
+      call errhdl(path,modnam,'E','209',' SZINIT ')
+   else if (aszini(isdx) < 1.0e-5) then
 !*       Set to Small Value to Avoid Zero-divide and Underflow
-      ASZINI(ISDX) = 1.0D-5
-   ELSE IF (ASZINI(ISDX) > 200.0D0) THEN
+      aszini(isdx) = 1.0d-5
+   else if (aszini(isdx) > 200.0d0) then
 !*       WRITE Warning Message:  Large Initial Vertical Parameter (> 200m)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' SZINIT ')
-   END IF
+      call errhdl(path,modnam,'W','320',' SZINIT ')
+   end if
 
-   IF (AWIDTH(ISDX) < 1.0D0) THEN
+   if (awidth(isdx) < 1.0d0) then
 !        WRITE Warning Message:  Negative Width Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','320',' WIDTH ')
-   END IF
+      call errhdl(path,modnam,'E','320',' WIDTH ')
+   end if
 
-   XLEN = AXS2(ISDX) - AXS1(ISDX)
-   YLEN = AYS2(ISDX) - AYS1(ISDX)
+   xlen = axs2(isdx) - axs1(isdx)
+   ylen = ays2(isdx) - ays1(isdx)
 
 ! --- Use center of LINE source for "origin"
-   AXS(ISDX) = (AXS1(ISDX) + AXS2(ISDX))*0.5D0
-   AYS(ISDX) = (AYS1(ISDX) + AYS2(ISDX))*0.5D0
+   axs(isdx) = (axs1(isdx) + axs2(isdx))*0.5d0
+   ays(isdx) = (ays1(isdx) + ays2(isdx))*0.5d0
 
-   AXINIT(ISDX) = AWIDTH(ISDX)
-   AYINIT(ISDX) = DSQRT( XLEN**2 + YLEN**2 )
-   AANGLE(ISDX) = DATAN2(XLEN,YLEN) * RTODEG
+   axinit(isdx) = awidth(isdx)
+   ayinit(isdx) = dsqrt( xlen**2 + ylen**2 )
+   aangle(isdx) = datan2(xlen,ylen) * rtodeg
 
 !     Check for aspect ratio (length/width) > 100
-   IF (AYINIT(ISDX)/AXINIT(ISDX) > 100.00001D0 .or.&
-   &AXINIT(ISDX)/AYINIT(ISDX) > 100.00001D0) THEN
+   if (ayinit(isdx)/axinit(isdx) > 100.00001d0 .or.&
+   &axinit(isdx)/ayinit(isdx) > 100.00001d0) then
 !        WRITE Warning Message: Aspect ratio > 100 for line source
-      CALL ERRHDL(PATH,MODNAM,'W','390',SRCID(ISDX))
-   END IF
+      call errhdl(path,modnam,'W','390',srcid(isdx))
+   end if
 
 !     Set Number of Vertices (4 for Rectangular Source)
-   NVERTS(ISDX) = 4
+   nverts(isdx) = 4
 
 !     Set Coordinates of Vertices for Equivalent Rectangular Area.
 !     Vertices Start with the "Southwest" Corner and Are Defined
 !     Clockwise.  The First Vertex is Repeated as the Last Vertex.
 
-   AXVERT(1,ISDX) = AXS1(ISDX) -&
-   &(AXINIT(ISDX)/2.0D0)*DCOS(AANGLE(ISDX)*DTORAD)
-   AYVERT(1,ISDX) = AYS1(ISDX) +&
-   &(AXINIT(ISDX)/2.0D0)*DSIN(AANGLE(ISDX)*DTORAD)
+   axvert(1,isdx) = axs1(isdx) -&
+   &(axinit(isdx)/2.0d0)*dcos(aangle(isdx)*dtorad)
+   ayvert(1,isdx) = ays1(isdx) +&
+   &(axinit(isdx)/2.0d0)*dsin(aangle(isdx)*dtorad)
 
-   AXVERT(2,ISDX) = AXVERT(1,ISDX) +&
-   &(AYINIT(ISDX)*DSIN(AANGLE(ISDX)*DTORAD))
-   AYVERT(2,ISDX) = AYVERT(1,ISDX) +&
-   &(AYINIT(ISDX)*DCOS(AANGLE(ISDX)*DTORAD))
+   axvert(2,isdx) = axvert(1,isdx) +&
+   &(ayinit(isdx)*dsin(aangle(isdx)*dtorad))
+   ayvert(2,isdx) = ayvert(1,isdx) +&
+   &(ayinit(isdx)*dcos(aangle(isdx)*dtorad))
 
-   AXVERT(3,ISDX) = AXVERT(2,ISDX) +&
-   &(AXINIT(ISDX)*DCOS(AANGLE(ISDX)*DTORAD))
-   AYVERT(3,ISDX) = AYVERT(2,ISDX) -&
-   &(AXINIT(ISDX)*DSIN(AANGLE(ISDX)*DTORAD))
+   axvert(3,isdx) = axvert(2,isdx) +&
+   &(axinit(isdx)*dcos(aangle(isdx)*dtorad))
+   ayvert(3,isdx) = ayvert(2,isdx) -&
+   &(axinit(isdx)*dsin(aangle(isdx)*dtorad))
 
-   AXVERT(4,ISDX) = AXVERT(3,ISDX) -&
-   &(AYINIT(ISDX)*DSIN(AANGLE(ISDX)*DTORAD))
-   AYVERT(4,ISDX) = AYVERT(3,ISDX) -&
-   &(AYINIT(ISDX)*DCOS(AANGLE(ISDX)*DTORAD))
+   axvert(4,isdx) = axvert(3,isdx) -&
+   &(ayinit(isdx)*dsin(aangle(isdx)*dtorad))
+   ayvert(4,isdx) = ayvert(3,isdx) -&
+   &(ayinit(isdx)*dcos(aangle(isdx)*dtorad))
 
-   AXVERT(5,ISDX) = AXVERT(1,ISDX)
-   AYVERT(5,ISDX) = AYVERT(1,ISDX)
+   axvert(5,isdx) = axvert(1,isdx)
+   ayvert(5,isdx) = ayvert(1,isdx)
 
 !     Determine coordinates for center of rectangular source
-   AXCNTR(ISDX) = 0.0D0
-   AYCNTR(ISDX) = 0.0D0
-   DO I = 1, NVERTS(ISDX)
-      AXCNTR(ISDX) = AXCNTR(ISDX) + AXVERT(I,ISDX)
-      AYCNTR(ISDX) = AYCNTR(ISDX) + AYVERT(I,ISDX)
-   END DO
-   AXCNTR(ISDX) = AXCNTR(ISDX)/DBLE(NVERTS(ISDX))
-   AYCNTR(ISDX) = AYCNTR(ISDX)/DBLE(NVERTS(ISDX))
+   axcntr(isdx) = 0.0d0
+   aycntr(isdx) = 0.0d0
+   do i = 1, nverts(isdx)
+      axcntr(isdx) = axcntr(isdx) + axvert(i,isdx)
+      aycntr(isdx) = aycntr(isdx) + ayvert(i,isdx)
+   end do
+   axcntr(isdx) = axcntr(isdx)/dble(nverts(isdx))
+   aycntr(isdx) = aycntr(isdx)/dble(nverts(isdx))
 
-   RETURN
-END SUBROUTINE LPARM
+   return
+end subroutine lparm
 
-SUBROUTINE BLPARM(ISDX,TEMP)
+subroutine blparm(isdx,temp)
 !***********************************************************************
 !                 BLPARM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3818,45 +3818,45 @@ SUBROUTINE BLPARM(ISDX,TEMP)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ISDX
-   DOUBLE PRECISION :: TEMP(IFMAX)
+   integer :: isdx
+   double precision :: temp(ifmax)
 
 !     Variable Initializations
-   MODNAM = 'BLPARM'
+   modnam = 'BLPARM'
 
-   AQS(ISDX) = TEMP(1)                ! average emission release rate
-   AHS(ISDX) = TEMP(2)                ! average release height
+   aqs(isdx) = temp(1)                ! average emission release rate
+   ahs(isdx) = temp(2)                ! average release height
 
 !     Perform QA Error Checking on Source Parameters
 
-   IF (AQS(ISDX) == 0.0D0) THEN
+   if (aqs(isdx) == 0.0d0) then
 !        WRITE Warning Message:  Emission Rate Equals 0.0
-      CALL ERRHDL(PATH,MODNAM,'W','320',' QS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' QS ')
+   end if
 
-   IF (AHS(ISDX) < 0.0D0) THEN
+   if (ahs(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Release Height
-      CALL ERRHDL(PATH,MODNAM,'E','209',' HS ')
-   ELSE IF (AHS(ISDX) > 100.0D0) THEN
+      call errhdl(path,modnam,'E','209',' HS ')
+   else if (ahs(isdx) > 100.0d0) then
 !        WRITE Warning Message:  Large Release Height (> 100M)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' HS ')
-   ELSE IF (AHS(ISDX) > 3000.0D0) THEN
+      call errhdl(path,modnam,'W','320',' HS ')
+   else if (ahs(isdx) > 3000.0d0) then
 !        WRITE Error Message:  Large Release Height (> 3000M)
-      CALL ERRHDL(PATH,MODNAM,'E','324',SRCID(ISDX))
-   END IF
+      call errhdl(path,modnam,'E','324',srcid(isdx))
+   end if
 
 ! --- Use center of EACH BUOYANT LINE for "origin"
-   AXS(ISDX) = (AXS1(ISDX) + AXS2(ISDX))*0.5D0
-   AYS(ISDX) = (AYS1(ISDX) + AYS2(ISDX))*0.5D0
+   axs(isdx) = (axs1(isdx) + axs2(isdx))*0.5d0
+   ays(isdx) = (ays1(isdx) + ays2(isdx))*0.5d0
 
-   RETURN
-END SUBROUTINE BLPARM
+   return
+end subroutine blparm
 
-SUBROUTINE RLPARM(ISDX,TEMP)
+subroutine rlparm(isdx,temp)
 !***********************************************************************
 !                 RLPARM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3882,84 +3882,84 @@ SUBROUTINE RLPARM(ISDX,TEMP)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE RLINE_DATA, ONLY: RLSOURCE
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   use rline_data, only: rlsource
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ISDX
-   DOUBLE PRECISION :: TEMP(IFMAX)
+   integer :: isdx
+   double precision :: temp(ifmax)
 
 !     Variable Initializations
-   MODNAM = 'RLPARM'
+   modnam = 'RLPARM'
 
-   IF (SRCTYP(ISDX) == 'RLINE') THEN
-      RLSOURCE(ISDX)%QEMIS = TEMP(1)*TEMP(3)    ! emissions release rate Lnemis*Width
-      RLSOURCE(ISDX)%DCL = 0.0          ! offset distance from center line
-      RLSOURCE(ISDX)%ZSB = TEMP(2)      !set height of the source
-      RLSOURCE(ISDX)%ZSE = TEMP(2)      !set height of the source
-      IF (IFC == 7) THEN
-         RLSOURCE(ISDX)%INIT_SIGMAZ = TEMP(4)  ! initial vertical spread
-      ELSE
-         RLSOURCE(ISDX)%INIT_SIGMAZ = 0.0  ! initial vertical spread
-      END IF
-      RLSOURCE(ISDX)%WIDTH = TEMP(3)        ! width of roadway
-      RLSOURCE(ISDX)%HTWALL = 0.0D0         ! barrier 1 height
-      RLSOURCE(ISDX)%DCLWALL = 0.0D0        ! barrier 1 distance from center line
-      RLSOURCE(ISDX)%HTWALL2 = 0.0D0        ! barrier 2 height
-      RLSOURCE(ISDX)%DCLWALL2 = 0.0D0       ! barrier 2 distance from center line
-      RLSOURCE(ISDX)%DEPTH = 0.0D0          ! depth of depression
-      RLSOURCE(ISDX)%WTOP = 0.0D0           ! width of top of depression
-      RLSOURCE(ISDX)%WBOTTOM = 0.0D0        ! width of bottom of depression
-   END IF
+   if (srctyp(isdx) == 'RLINE') then
+      rlsource(isdx)%qemis = temp(1)*temp(3)    ! emissions release rate Lnemis*Width
+      rlsource(isdx)%dcl = 0.0          ! offset distance from center line
+      rlsource(isdx)%zsb = temp(2)      !set height of the source
+      rlsource(isdx)%zse = temp(2)      !set height of the source
+      if (ifc == 7) then
+         rlsource(isdx)%init_sigmaz = temp(4)  ! initial vertical spread
+      else
+         rlsource(isdx)%init_sigmaz = 0.0  ! initial vertical spread
+      end if
+      rlsource(isdx)%width = temp(3)        ! width of roadway
+      rlsource(isdx)%htwall = 0.0d0         ! barrier 1 height
+      rlsource(isdx)%dclwall = 0.0d0        ! barrier 1 distance from center line
+      rlsource(isdx)%htwall2 = 0.0d0        ! barrier 2 height
+      rlsource(isdx)%dclwall2 = 0.0d0       ! barrier 2 distance from center line
+      rlsource(isdx)%depth = 0.0d0          ! depth of depression
+      rlsource(isdx)%wtop = 0.0d0           ! width of top of depression
+      rlsource(isdx)%wbottom = 0.0d0        ! width of bottom of depression
+   end if
 
 
-   IF (SRCTYP(ISDX) == 'RLINEXT') THEN
-      RLSOURCE(ISDX)%QEMIS = TEMP(1)        ! emissions release rate
-      RLSOURCE(ISDX)%DCL = TEMP(2)          ! offset distance from center line
-      RLSOURCE(ISDX)%WIDTH = TEMP(3)        ! width of roadway
-      RLSOURCE(ISDX)%INIT_SIGMAZ = TEMP(4)  ! initial vertical spread
-      RLSOURCE(ISDX)%HTWALL = 0.0D0         ! barrier 1 height
-      RLSOURCE(ISDX)%DCLWALL = 0.0D0        ! barrier 1 distance from center line
-      RLSOURCE(ISDX)%HTWALL2 = 0.0D0        ! barrier 2 height
-      RLSOURCE(ISDX)%DCLWALL2 = 0.0D0       ! barrier 2 distance from center line
-      RLSOURCE(ISDX)%DEPTH = 0.0D0          ! depth of depression
-      RLSOURCE(ISDX)%WTOP = 0.0D0           ! width of top of depression
-      RLSOURCE(ISDX)%WBOTTOM = 0.0D0        ! width of bottom of depression
-   END IF
+   if (srctyp(isdx) == 'RLINEXT') then
+      rlsource(isdx)%qemis = temp(1)        ! emissions release rate
+      rlsource(isdx)%dcl = temp(2)          ! offset distance from center line
+      rlsource(isdx)%width = temp(3)        ! width of roadway
+      rlsource(isdx)%init_sigmaz = temp(4)  ! initial vertical spread
+      rlsource(isdx)%htwall = 0.0d0         ! barrier 1 height
+      rlsource(isdx)%dclwall = 0.0d0        ! barrier 1 distance from center line
+      rlsource(isdx)%htwall2 = 0.0d0        ! barrier 2 height
+      rlsource(isdx)%dclwall2 = 0.0d0       ! barrier 2 distance from center line
+      rlsource(isdx)%depth = 0.0d0          ! depth of depression
+      rlsource(isdx)%wtop = 0.0d0           ! width of top of depression
+      rlsource(isdx)%wbottom = 0.0d0        ! width of bottom of depression
+   end if
 !     Perform Error Checking on Source Parameters
-   IF (RLSOURCE(ISDX)%QEMIS < 0.0D0) THEN
+   if (rlsource(isdx)%qemis < 0.0d0) then
 !        WRITE Error Message: Negative Emission Rate
-      CALL ERRHDL(PATH,MODNAM,'E','209',' QS ')
-   ELSE IF (RLSOURCE(ISDX)%QEMIS == 0.0D0) THEN
+      call errhdl(path,modnam,'E','209',' QS ')
+   else if (rlsource(isdx)%qemis == 0.0d0) then
 !        WRITE Warning Message: Emission Rate Equals 0.0
-      CALL ERRHDL(PATH,MODNAM,'W','320',' QS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' QS ')
+   end if
 
-   IF (RLSOURCE(ISDX)%INIT_SIGMAZ < 0.0D0) THEN
+   if (rlsource(isdx)%init_sigmaz < 0.0d0) then
 !        WRITE Error Message:  Negative Initial Vertical Spread
-      CALL ERRHDL(PATH,MODNAM,'E','209',' INIT_SIGMAZ ')
-   ELSE IF (RLSOURCE(ISDX)%INIT_SIGMAZ > 42.0D0) THEN
+      call errhdl(path,modnam,'E','209',' INIT_SIGMAZ ')
+   else if (rlsource(isdx)%init_sigmaz > 42.0d0) then
 !        WRITE Warning Message:  Large Initial Vertical Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','320',' INIT_SIGMAZ ')
-   END IF
+      call errhdl(path,modnam,'E','320',' INIT_SIGMAZ ')
+   end if
 
-   IF (RLSOURCE(ISDX)%WIDTH < 0.0D0) THEN
+   if (rlsource(isdx)%width < 0.0d0) then
 !        WRITE Error Message:  Negative Roadway Width
-      CALL ERRHDL(PATH,MODNAM,'E','209',' WIDTH ')
-   ELSE IF (RLSOURCE(ISDX)%WIDTH == 0.0D0) THEN
+      call errhdl(path,modnam,'E','209',' WIDTH ')
+   else if (rlsource(isdx)%width == 0.0d0) then
 !        WRITE Error Message:  Width of Roadway Equals 0.0
-      CALL ERRHDL(PATH,MODNAM,'W','320',' WIDTH ')
-   ELSE IF (RLSOURCE(ISDX)%WIDTH > 30.0D0) THEN
+      call errhdl(path,modnam,'W','320',' WIDTH ')
+   else if (rlsource(isdx)%width > 30.0d0) then
 !        WRITE Warning Message:  Large Roadwidth (> 30m)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' WIDTH ')
-   END IF
+      call errhdl(path,modnam,'W','320',' WIDTH ')
+   end if
 
-   RETURN
-END SUBROUTINE RLPARM
+   return
+end subroutine rlparm
 
 !     Added for sidewash
-SUBROUTINE SWPARM(ISDX,TEMP)
+subroutine swparm(isdx,temp)
 !***********************************************************************
 !                 SWPARM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3977,68 +3977,68 @@ SUBROUTINE SWPARM(ISDX,TEMP)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ISDX
-   DOUBLE PRECISION :: TEMP(IFMAX)
+   integer :: isdx
+   double precision :: temp(ifmax)
 
 !     Variable Initializations
-   MODNAM = 'SWPARM'
+   modnam = 'SWPARM'
 
-   AQS(ISDX) = TEMP(1)
-   AHS(ISDX) = TEMP(2)
-   ABW(ISDX) = TEMP(3)
-   ABL(ISDX) = TEMP(4)
-   ABH(ISDX) = TEMP(5)
-   ABA(ISDX) = TEMP(6)
+   aqs(isdx) = temp(1)
+   ahs(isdx) = temp(2)
+   abw(isdx) = temp(3)
+   abl(isdx) = temp(4)
+   abh(isdx) = temp(5)
+   aba(isdx) = temp(6)
 
 !     Perform QA Error Checking on Source Parameters
 
-   IF (AQS(ISDX) == 0.0D0) THEN
+   if (aqs(isdx) == 0.0d0) then
 !        WRITE Warning Message:  Emission Rate Equals 0.0
-      CALL ERRHDL(PATH,MODNAM,'W','320',' QS ')
-   END IF
+      call errhdl(path,modnam,'W','320',' QS ')
+   end if
 
-   IF (AHS(ISDX) < 0.0D0) THEN
+   if (ahs(isdx) < 0.0d0) then
 !        WRITE Error Message:  Negative Release Height
-      CALL ERRHDL(PATH,MODNAM,'E','209',' HS ')
-   ELSE IF (AHS(ISDX) > 600.0D0) THEN
+      call errhdl(path,modnam,'E','209',' HS ')
+   else if (ahs(isdx) > 600.0d0) then
 !        WRITE Warning Message:  Large Release Height (> 600M)
-      CALL ERRHDL(PATH,MODNAM,'W','320',' HS ')
-   ELSE IF (AHS(ISDX) > 3000.0D0) THEN
+      call errhdl(path,modnam,'W','320',' HS ')
+   else if (ahs(isdx) > 3000.0d0) then
 !        WRITE Error Message:  Large Release Height (> 3000M)
-      CALL ERRHDL(PATH,MODNAM,'E','324',SRCID(ISDX))
-   END IF
+      call errhdl(path,modnam,'E','324',srcid(isdx))
+   end if
 
-   IF (ABW(ISDX) <= 0.0D0) THEN
+   if (abw(isdx) <= 0.0d0) then
 !        Set Building width 1.0 m for Zero or Negative Values
-      ABW(ISDX) = 1.0
-   END IF
+      abw(isdx) = 1.0
+   end if
 
-   IF (ABL(ISDX) <= 0.0D0) THEN
+   if (abl(isdx) <= 0.0d0) then
 !        Set Building width 1.0 m for Zero or Negative Values
-      ABL(ISDX) = 1.0
-   END IF
+      abl(isdx) = 1.0
+   end if
 
-   IF (ABH(ISDX) <= 0.0D0) THEN
+   if (abh(isdx) <= 0.0d0) then
 !        Set Building hieght 1.0 m for Zero or Negative Values
-      ABH(ISDX) = 1.0
-   END IF
+      abh(isdx) = 1.0
+   end if
 
-   IF (ABA(ISDX) < 0.0D0) THEN
+   if (aba(isdx) < 0.0d0) then
 !        Set Building width 1.0 m for Zero or Negative Values
-      ABA(ISDX) = ABA(ISDX) + 360.
-   ELSE IF (ABA(ISDX) > 360.) THEN
-      ABA(ISDX) = ABA(ISDX) - 360.
-   END IF
+      aba(isdx) = aba(isdx) + 360.
+   else if (aba(isdx) > 360.) then
+      aba(isdx) = aba(isdx) - 360.
+   end if
 
-   RETURN
-END SUBROUTINE SWPARM
+   return
+end subroutine swparm
 
 
-SUBROUTINE DSBLDG
+subroutine dsbldg
 !***********************************************************************
 !                 DSBLDG Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4056,75 +4056,75 @@ SUBROUTINE DSBLDG
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, IH, IL, ISDX
-   CHARACTER (LEN=12) :: LID, HID, LID1, LID2, HID1, HID2
-   CHARACTER (LEN=ILEN_FLD) :: SOID
-   LOGICAL :: FOUND, INGRP, RMARK
+   integer :: i, ih, il, isdx
+   character (len=12) :: lid, hid, lid1, lid2, hid1, hid2
+   character (len=ilen_fld) :: soid
+   logical :: found, ingrp, rmark
 
 !     Variable Initializations
-   FOUND  = .FALSE.
-   INGRP  = .FALSE.
-   MODNAM = 'DSBLDG'
+   found  = .false.
+   ingrp  = .false.
+   modnam = 'DSBLDG'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC == 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc == 3) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   end if
 
 !     Get The Source ID(s)
-   SOID = FIELD(3)
-   CALL FSPLIT(PATH,KEYWRD,SOID,ILEN_FLD,'-',RMARK,LID,HID)
+   soid = field(3)
+   call fsplit(path,keywrd,soid,ilen_fld,'-',rmark,lid,hid)
 
 !     Verify The Effective Srcid
-   IF (LID == HID) THEN
+   if (lid == hid) then
 !        Search For The Index
-      CALL SINDEX(SRCID,NSRC,SOID,ISDX,FOUND)
-      IF (FOUND) THEN
-         IF (SRCTYP(ISDX)(1:5) == 'POINT') THEN
+      call sindex(srcid,nsrc,soid,isdx,found)
+      if (found) then
+         if (srctyp(isdx)(1:5) == 'POINT') then
 !              Fill Array
-            CALL DSFILL(ISDX)
-         ELSE
+            call dsfill(isdx)
+         else
 !              WRITE Warning Message: Building Inputs for Non-POINT Source
-            CALL ERRHDL(PATH,MODNAM,'W','233',SRCID(ISDX))
-         END IF
-      ELSE
+            call errhdl(path,modnam,'W','233',srcid(isdx))
+         end if
+      else
 !           WRITE Error Message     ! Source Location Has Not Been Identified
-         CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','300',keywrd)
+      end if
+   else
 !        First Check Range for Upper Value < Lower Value
-      CALL SETIDG(LID,LID1,IL,LID2)
-      CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1<LID1) .or. (IH<IL) .or. (HID2<LID2)) THEN
+      call setidg(lid,lid1,il,lid2)
+      call setidg(hid,hid1,ih,hid2)
+      if ((hid1<lid1) .or. (ih<il) .or. (hid2<lid2)) then
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
-         CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-         GO TO 999
-      END IF
-      DO I = 1, NUMSRC
+         call errhdl(path,modnam,'E','203','SRCRANGE')
+         go to 999
+      end if
+      do i = 1, numsrc
 !           See Whether It's In The Group
-         CALL ASNGRP(SRCID(I),LID,HID,INGRP)
-         IF (INGRP .and. SRCTYP(I)(1:5)=='POINT') THEN
-            ISDX = I
+         call asngrp(srcid(i),lid,hid,ingrp)
+         if (ingrp .and. srctyp(i)(1:5)=='POINT') then
+            isdx = i
 !              Fill DS Array
-            CALL DSFILL(ISDX)
-         END IF
-      END DO
-   END IF
+            call dsfill(isdx)
+         end if
+      end do
+   end if
 
-999 RETURN
-END SUBROUTINE DSBLDG
+999 return
+end subroutine dsbldg
 
-SUBROUTINE DSFILL(ISDX)
+subroutine dsfill(isdx)
 !***********************************************************************
 !                 DSFILL Module of the AMS/EPA Regulatory Model - AERMOD
 ! ----------------------------------------------------------------------
@@ -4148,152 +4148,152 @@ SUBROUTINE DSFILL(ISDX)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: J, K, ISDX
+   integer :: j, k, isdx
 
 !     Variable Initializations
-   MODNAM = 'DSFILL'
+   modnam = 'DSFILL'
 
-   IF (KEYWRD == 'BUILDHGT') THEN
-      ISET = IWRK2(ISDX,1)
-      DO K = 4, IFC
+   if (keywrd == 'BUILDHGT') then
+      iset = iwrk2(isdx,1)
+      do k = 4, ifc
 !           Change Fields To Numbers
-         CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+         call stodbl(field(k),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT == -1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            CYCLE
-         END IF
-         DO J = 1, IMIT
-            ISET = ISET + 1
+         if (imit == -1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            cycle
+         end if
+         do j = 1, imit
+            iset = iset + 1
 !              Assign The Field
-            IF (ISET <= NSEC) THEN
-               ADSBH(ISET,ISDX) = DNUM
-               IF (DNUM < 0.0D0) THEN
+            if (iset <= nsec) then
+               adsbh(iset,isdx) = dnum
+               if (dnum < 0.0d0) then
 !                    WRITE Error Message:  Negative Value for ADSBH
-                  CALL ERRHDL(PATH,MODNAM,'E','209',KEYWRD)
-               END IF
-            ELSE
+                  call errhdl(path,modnam,'E','209',keywrd)
+               end if
+            else
 !                 WRITE Error Message    ! Too Many Sectors Input
-               CALL ERRHDL(PATH,MODNAM,'E','234',KEYWRD)
-            END IF
-         END DO
-      END DO
-      IWRK2(ISDX,1) = ISET
-   ELSE IF (KEYWRD == 'BUILDWID') THEN
-      ISET = IWRK2(ISDX,2)
-      DO K = 4, IFC
+               call errhdl(path,modnam,'E','234',keywrd)
+            end if
+         end do
+      end do
+      iwrk2(isdx,1) = iset
+   else if (keywrd == 'BUILDWID') then
+      iset = iwrk2(isdx,2)
+      do k = 4, ifc
 !           Change Fields To Numbers
-         CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+         call stodbl(field(k),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT == -1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            CYCLE
-         END IF
-         DO J = 1, IMIT
-            ISET = ISET + 1
+         if (imit == -1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            cycle
+         end if
+         do j = 1, imit
+            iset = iset + 1
 !              Assign The Field
-            IF (ISET <= NSEC) THEN
-               ADSBW(ISET,ISDX) = DNUM
-               IF (DNUM < 0.0D0) THEN
+            if (iset <= nsec) then
+               adsbw(iset,isdx) = dnum
+               if (dnum < 0.0d0) then
 !                    WRITE Error Message:  Negative Value for ADSBW
-                  CALL ERRHDL(PATH,MODNAM,'E','209',KEYWRD)
-               END IF
-            ELSE
+                  call errhdl(path,modnam,'E','209',keywrd)
+               end if
+            else
 !                 WRITE Error Message    ! Too Many Sectors Input
-               CALL ERRHDL(PATH,MODNAM,'E','234',KEYWRD)
-            END IF
-         END DO
-      END DO
-      IWRK2(ISDX,2) = ISET
+               call errhdl(path,modnam,'E','234',keywrd)
+            end if
+         end do
+      end do
+      iwrk2(isdx,2) = iset
 
 ! --- PRIME --------------------------------------------
 ! --- Fill building length information
-   ELSE IF (KEYWRD == 'BUILDLEN') THEN
-      ISET = IWRK2(ISDX,11)
-      DO K = 4, IFC
+   else if (keywrd == 'BUILDLEN') then
+      iset = iwrk2(isdx,11)
+      do k = 4, ifc
 !           Change Fields To Numbers
-         CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+         call stodbl(field(k),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT == -1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            CYCLE
-         END IF
-         DO J = 1, IMIT
-            ISET = ISET + 1
+         if (imit == -1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            cycle
+         end if
+         do j = 1, imit
+            iset = iset + 1
 !              Assign The Field
-            IF (ISET <= NSEC) THEN
-               ADSBL(ISET,ISDX) = DNUM
-               IF (DNUM < 0.0D0) THEN
+            if (iset <= nsec) then
+               adsbl(iset,isdx) = dnum
+               if (dnum < 0.0d0) then
 !                    WRITE Error Message:  Negative value for ADSBL
-                  CALL ERRHDL(PATH,MODNAM,'E','209',KEYWRD)
-               END IF
-            ELSE
+                  call errhdl(path,modnam,'E','209',keywrd)
+               end if
+            else
 !                 WRITE Error Message    ! Too Many Sectors Input
-               CALL ERRHDL(PATH,MODNAM,'E','234',KEYWRD)
-            END IF
-         END DO
-      END DO
-      IWRK2(ISDX,11) = ISET
+               call errhdl(path,modnam,'E','234',keywrd)
+            end if
+         end do
+      end do
+      iwrk2(isdx,11) = iset
 
 ! --- Fill building XBADJ information
-   ELSE IF (KEYWRD == 'XBADJ   ') THEN
-      ISET = IWRK2(ISDX,12)
-      DO K = 4, IFC
+   else if (keywrd == 'XBADJ   ') then
+      iset = iwrk2(isdx,12)
+      do k = 4, ifc
 !           Change Fields To Numbers
-         CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+         call stodbl(field(k),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT == -1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            CYCLE
-         END IF
-         DO J = 1, IMIT
-            ISET = ISET + 1
+         if (imit == -1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            cycle
+         end if
+         do j = 1, imit
+            iset = iset + 1
 !              Assign The Field
-            IF (ISET <= NSEC) THEN
-               ADSXADJ(ISET,ISDX) = DNUM
-            ELSE
+            if (iset <= nsec) then
+               adsxadj(iset,isdx) = dnum
+            else
 !                 WRITE Error Message    ! Too Many Sectors Input
-               CALL ERRHDL(PATH,MODNAM,'E','234',KEYWRD)
-            END IF
-         END DO
-      END DO
-      IWRK2(ISDX,12) = ISET
+               call errhdl(path,modnam,'E','234',keywrd)
+            end if
+         end do
+      end do
+      iwrk2(isdx,12) = iset
 
 ! --- Fill building YBADJ information
-   ELSE IF (KEYWRD == 'YBADJ   ') THEN
-      ISET = IWRK2(ISDX,13)
-      DO K = 4, IFC
+   else if (keywrd == 'YBADJ   ') then
+      iset = iwrk2(isdx,13)
+      do k = 4, ifc
 !           Change Fields To Numbers
-         CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+         call stodbl(field(k),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT == -1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            CYCLE
-         END IF
-         DO J = 1, IMIT
-            ISET = ISET + 1
+         if (imit == -1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            cycle
+         end if
+         do j = 1, imit
+            iset = iset + 1
 !              Assign The Field
-            IF (ISET <= NSEC) THEN
-               ADSYADJ(ISET,ISDX) = DNUM
-            ELSE
+            if (iset <= nsec) then
+               adsyadj(iset,isdx) = dnum
+            else
 !                 WRITE Error Message    ! Too Many Sectors Input
-               CALL ERRHDL(PATH,MODNAM,'E','234',KEYWRD)
-            END IF
-         END DO
-      END DO
-      IWRK2(ISDX,13) = ISET
+               call errhdl(path,modnam,'E','234',keywrd)
+            end if
+         end do
+      end do
+      iwrk2(isdx,13) = iset
 ! --------------------------------------------------------
 
-   END IF
+   end if
 
-   RETURN
-END SUBROUTINE DSFILL
+   return
+end subroutine dsfill
 
-SUBROUTINE EMVARY
+subroutine emvary
 !***********************************************************************
 !                 EMVARY Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4326,150 +4326,150 @@ SUBROUTINE EMVARY
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, IH, IL, ISDX, IQMAX
-   CHARACTER (LEN=12) :: LID, HID, LID1, LID2, HID1, HID2
-   CHARACTER (LEN=ILEN_FLD) :: SOID
-   LOGICAL :: FOUND, INGRP, RMARK
+   integer :: i, ih, il, isdx, iqmax
+   character (len=12) :: lid, hid, lid1, lid2, hid1, hid2
+   character (len=ilen_fld) :: soid
+   logical :: found, ingrp, rmark
 
 !     Variable Initializations
-   FOUND  = .FALSE.
-   INGRP  = .FALSE.
-   MODNAM = 'EMVARY'
+   found  = .false.
+   ingrp  = .false.
+   modnam = 'EMVARY'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC == 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc == 3) then
 !        Error Message: No Numerical Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 5) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc < 5) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   end if
 
 !     Get The Source ID(s)
-   SOID = FIELD(3)
-   CALL FSPLIT(PATH,KEYWRD,SOID,ILEN_FLD,'-',RMARK,LID,HID)
+   soid = field(3)
+   call fsplit(path,keywrd,soid,ilen_fld,'-',rmark,lid,hid)
 
 !     Verify The Effective Srcid
-   IF (LID == HID) THEN
+   if (lid == hid) then
 !        Search For The Index
-      CALL SINDEX(SRCID,NSRC,SOID,ISDX,FOUND)
-      IF (FOUND) THEN
-         QFLAG(ISDX) = FIELD(4)
-         IF (QFLAG(ISDX) == 'SEASON') THEN
-            IQMAX = 4
-         ELSE IF (QFLAG(ISDX) == 'MONTH') THEN
-            IQMAX = 12
-         ELSE IF (QFLAG(ISDX) == 'HROFDY') THEN
-            IQMAX = 24
-         ELSE IF (QFLAG(ISDX) == 'WSPEED') THEN
-            IQMAX = 6
-         ELSE IF (QFLAG(ISDX) == 'SEASHR') THEN
-            IQMAX = 96
-         ELSE IF (QFLAG(ISDX) == 'HRDOW') THEN
-            IQMAX = 72
-            L_DayOfWeekOpts = .TRUE.
-         ELSE IF (QFLAG(ISDX) == 'HRDOW7') THEN
-            IQMAX = 168
-            L_DayOfWeekOpts = .TRUE.
-         ELSE IF (QFLAG(ISDX) == 'SHRDOW') THEN
-            IQMAX = 288
-            L_DayOfWeekOpts = .TRUE.
-         ELSE IF (QFLAG(ISDX) == 'SHRDOW7') THEN
-            IQMAX = 672
-            L_DayOfWeekOpts = .TRUE.
-         ELSE IF (QFLAG(ISDX) == 'MHRDOW') THEN
-            IQMAX = 864
-            L_DayOfWeekOpts = .TRUE.
-         ELSE IF (QFLAG(ISDX) == 'MHRDOW7') THEN
-            IQMAX = 2016
-            L_DayOfWeekOpts = .TRUE.
-         ELSE
+      call sindex(srcid,nsrc,soid,isdx,found)
+      if (found) then
+         qflag(isdx) = field(4)
+         if (qflag(isdx) == 'SEASON') then
+            iqmax = 4
+         else if (qflag(isdx) == 'MONTH') then
+            iqmax = 12
+         else if (qflag(isdx) == 'HROFDY') then
+            iqmax = 24
+         else if (qflag(isdx) == 'WSPEED') then
+            iqmax = 6
+         else if (qflag(isdx) == 'SEASHR') then
+            iqmax = 96
+         else if (qflag(isdx) == 'HRDOW') then
+            iqmax = 72
+            L_DayOfWeekOpts = .true.
+         else if (qflag(isdx) == 'HRDOW7') then
+            iqmax = 168
+            L_DayOfWeekOpts = .true.
+         else if (qflag(isdx) == 'SHRDOW') then
+            iqmax = 288
+            L_DayOfWeekOpts = .true.
+         else if (qflag(isdx) == 'SHRDOW7') then
+            iqmax = 672
+            L_DayOfWeekOpts = .true.
+         else if (qflag(isdx) == 'MHRDOW') then
+            iqmax = 864
+            L_DayOfWeekOpts = .true.
+         else if (qflag(isdx) == 'MHRDOW7') then
+            iqmax = 2016
+            L_DayOfWeekOpts = .true.
+         else
 !              WRITE Error Message    ! Invalid QFLAG Field Entered
-            CALL ERRHDL(PATH,MODNAM,'E','203','QFLAG')
-         END IF
-         IF (IQMAX <= NQF) THEN
-            CALL EFFILL(ISDX,IQMAX)
-         ELSE
+            call errhdl(path,modnam,'E','203','QFLAG')
+         end if
+         if (iqmax <= nqf) then
+            call effill(isdx,iqmax)
+         else
 !              WRITE Error Message     ! NQF Parameter Not Large Enough
-            WRITE(DUMMY,'(''NQF ='',I6)') NQF
-            CALL ERRHDL(PATH,MODNAM,'E','260',DUMMY)
-         END IF
-      ELSE
+            write(dummy,'(''NQF ='',I6)') nqf
+            call errhdl(path,modnam,'E','260',dummy)
+         end if
+      else
 !           WRITE Error Message     ! Source Location Has Not Been Identified
-         CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','300',keywrd)
+      end if
+   else
 !        First Check Range for Upper Value < Lower Value
-      CALL SETIDG(LID,LID1,IL,LID2)
-      CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1<LID1) .or. (IH<IL) .or. (HID2<LID2)) THEN
+      call setidg(lid,lid1,il,lid2)
+      call setidg(hid,hid1,ih,hid2)
+      if ((hid1<lid1) .or. (ih<il) .or. (hid2<lid2)) then
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
-         CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-         GO TO 999
-      END IF
-      DO I = 1, NUMSRC
+         call errhdl(path,modnam,'E','203','SRCRANGE')
+         go to 999
+      end if
+      do i = 1, numsrc
 !           See Whether It's In The Group
-         CALL ASNGRP(SRCID(I),LID,HID,INGRP)
-         IF (INGRP) THEN
-            ISDX = I
-            QFLAG(ISDX) = FIELD(4)
-            IF (QFLAG(ISDX) == 'SEASON') THEN
-               IQMAX = 4
-            ELSE IF (QFLAG(ISDX) == 'MONTH') THEN
-               IQMAX = 12
-            ELSE IF (QFLAG(ISDX) == 'HROFDY') THEN
-               IQMAX = 24
-            ELSE IF (QFLAG(ISDX) == 'WSPEED') THEN
-               IQMAX = 6
-            ELSE IF (QFLAG(ISDX) == 'SEASHR') THEN
-               IQMAX = 96
-            ELSE IF (QFLAG(ISDX) == 'HRDOW') THEN
-               IQMAX = 72
-               L_DayOfWeekOpts = .TRUE.
-            ELSE IF (QFLAG(ISDX) == 'HRDOW7') THEN
-               IQMAX = 168
-               L_DayOfWeekOpts = .TRUE.
-            ELSE IF (QFLAG(ISDX) == 'SHRDOW') THEN
-               IQMAX = 288
-               L_DayOfWeekOpts = .TRUE.
-            ELSE IF (QFLAG(ISDX) == 'SHRDOW7') THEN
-               IQMAX = 672
-               L_DayOfWeekOpts = .TRUE.
-            ELSE IF (QFLAG(ISDX) == 'MHRDOW') THEN
-               IQMAX = 864
-               L_DayOfWeekOpts = .TRUE.
-            ELSE IF (QFLAG(ISDX) == 'MHRDOW7') THEN
-               IQMAX = 2016
-               L_DayOfWeekOpts = .TRUE.
-            ELSE
+         call asngrp(srcid(i),lid,hid,ingrp)
+         if (ingrp) then
+            isdx = i
+            qflag(isdx) = field(4)
+            if (qflag(isdx) == 'SEASON') then
+               iqmax = 4
+            else if (qflag(isdx) == 'MONTH') then
+               iqmax = 12
+            else if (qflag(isdx) == 'HROFDY') then
+               iqmax = 24
+            else if (qflag(isdx) == 'WSPEED') then
+               iqmax = 6
+            else if (qflag(isdx) == 'SEASHR') then
+               iqmax = 96
+            else if (qflag(isdx) == 'HRDOW') then
+               iqmax = 72
+               L_DayOfWeekOpts = .true.
+            else if (qflag(isdx) == 'HRDOW7') then
+               iqmax = 168
+               L_DayOfWeekOpts = .true.
+            else if (qflag(isdx) == 'SHRDOW') then
+               iqmax = 288
+               L_DayOfWeekOpts = .true.
+            else if (qflag(isdx) == 'SHRDOW7') then
+               iqmax = 672
+               L_DayOfWeekOpts = .true.
+            else if (qflag(isdx) == 'MHRDOW') then
+               iqmax = 864
+               L_DayOfWeekOpts = .true.
+            else if (qflag(isdx) == 'MHRDOW7') then
+               iqmax = 2016
+               L_DayOfWeekOpts = .true.
+            else
 !                 WRITE Error Message    ! Invalid QFLAG Field Entered
-               CALL ERRHDL(PATH,MODNAM,'E','203','QFLAG')
-            END IF
-            IF (IQMAX <= NQF) THEN
-               CALL EFFILL(ISDX,IQMAX)
-            ELSE
+               call errhdl(path,modnam,'E','203','QFLAG')
+            end if
+            if (iqmax <= nqf) then
+               call effill(isdx,iqmax)
+            else
 !                 WRITE Error Message    ! NQF Parameter Not Large Enough
-               WRITE(DUMMY,'(''NQF ='',I6)') NQF
-               CALL ERRHDL(PATH,MODNAM,'E','260',DUMMY)
-            END IF
-         END IF
-      END DO
-   END IF
+               write(dummy,'(''NQF ='',I6)') nqf
+               call errhdl(path,modnam,'E','260',dummy)
+            end if
+         end if
+      end do
+   end if
 
-999 RETURN
-END SUBROUTINE EMVARY
+999 return
+end subroutine emvary
 
-SUBROUTINE EFFILL(ISDX,IQMAX)
+subroutine effill(isdx,iqmax)
 !***********************************************************************
 !                 EFFILL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4487,54 +4487,54 @@ SUBROUTINE EFFILL(ISDX,IQMAX)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: J, K, ISDX, IQMAX
+   integer :: j, k, isdx, iqmax
 
 !     Variable Initializations
-   MODNAM = 'EFFILL'
+   modnam = 'EFFILL'
 
-   ISET = IWRK2(ISDX,4)
+   iset = iwrk2(isdx,4)
 
-   DO K = 5, IFC
+   do k = 5, ifc
 !        Change Fields To Numbers
-      CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(k),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT == -1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         CYCLE
-      END IF
-      DO J = 1, IMIT
-         ISET = ISET + 1
+      if (imit == -1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         cycle
+      end if
+      do j = 1, imit
+         iset = iset + 1
 !           Assign The Field
-         IF (ISET <= IQMAX) THEN
-            QFACT(ISET,ISDX) = DNUM
-            IF (DNUM < 0.0D0) THEN
+         if (iset <= iqmax) then
+            qfact(iset,isdx) = dnum
+            if (dnum < 0.0d0) then
 !                 WRITE Error Message:  Negative Value for QFACT
-               CALL ERRHDL(PATH,MODNAM,'E','209',KEYWRD)
-            END IF
-         ELSE
+               call errhdl(path,modnam,'E','209',keywrd)
+            end if
+         else
 !              WRITE Error Message    ! Too Many QFACT Values Input
-            IF (ISDX <= 999) THEN
-               WRITE(DUMMY,'(''QFACT Src'',I3.3)') ISDX
-            ELSE IF (ISDX <= 99999) THEN
-               WRITE(DUMMY,'(''QF Src'',I5.5)') ISDX
-            ELSE
-               WRITE(DUMMY,'(''QF Src>99999'')')
-            END IF
-            CALL ERRHDL(PATH,MODNAM,'E','231',DUMMY)
-         END IF
-      END DO
-   END DO
+            if (isdx <= 999) then
+               write(dummy,'(''QFACT Src'',I3.3)') isdx
+            else if (isdx <= 99999) then
+               write(dummy,'(''QF Src'',I5.5)') isdx
+            else
+               write(dummy,'(''QF Src>99999'')')
+            end if
+            call errhdl(path,modnam,'E','231',dummy)
+         end if
+      end do
+   end do
 
-   IWRK2(ISDX,4) = ISET
+   iwrk2(isdx,4) = iset
 
-   RETURN
-END SUBROUTINE EFFILL
+   return
+end subroutine effill
 
-SUBROUTINE EMUNIT
+subroutine emunit
 !***********************************************************************
 !                 EMUNIT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4552,49 +4552,49 @@ SUBROUTINE EMUNIT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'EMUNIT'
+   modnam = 'EMUNIT'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 5) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 5) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 5) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 5) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Fetch Each Field
-   CALL STODBL(FIELD(3),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(3),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   end if
 
-   EMIFAC(1) = DNUM
-   EMILBL(1) = FIELD(4)
-   OUTLBL(1) = FIELD(5)
-   IF (.NOT.CONC .and. ANNUAL) THEN
-      PERLBL(1) = RUNST1(LOCB(5):LOCE(5))//'/YR'
-   ELSE
-      PERLBL(1) = FIELD(5)
-   END IF
+   emifac(1) = dnum
+   emilbl(1) = field(4)
+   outlbl(1) = field(5)
+   if (.not.conc .and. annual) then
+      perlbl(1) = runst1(locb(5):loce(5))//'/YR'
+   else
+      perlbl(1) = field(5)
+   end if
 
-999 RETURN
-END SUBROUTINE EMUNIT
+999 return
+end subroutine emunit
 
-SUBROUTINE COUNIT
+subroutine counit
 !***********************************************************************
 !                 COUNIT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4613,45 +4613,45 @@ SUBROUTINE COUNIT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'COUNIT'
+   modnam = 'COUNIT'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 5) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 5) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 5) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 5) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Fetch Each Field
-   CALL STODBL(FIELD(3),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(3),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   end if
 
-   EMIFAC(1) = DNUM
-   EMILBL(1) = FIELD(4)
-   OUTLBL(1) = FIELD(5)
-   PERLBL(1) = FIELD(5)
+   emifac(1) = dnum
+   emilbl(1) = field(4)
+   outlbl(1) = field(5)
+   perlbl(1) = field(5)
 
-999 RETURN
-END SUBROUTINE COUNIT
+999 return
+end subroutine counit
 
-SUBROUTINE DPUNIT
+subroutine dpunit
 !***********************************************************************
 !                 DPUNIT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4670,66 +4670,66 @@ SUBROUTINE DPUNIT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I
+   integer :: i
 
 !     Variable Initializations
-   MODNAM = 'DPUNIT'
+   modnam = 'DPUNIT'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 5) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 5) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 5) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 5) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Fetch Each Field
-   CALL STODBL(FIELD(3),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(3),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   end if
 
-   IF (.NOT. CONC) THEN
-      DO I = 1, NTYP
-         EMIFAC(I) = DNUM
-         EMILBL(I) = FIELD(4)
-         OUTLBL(I) = FIELD(5)
-         IF (ANNUAL) THEN
-            PERLBL(I) = RUNST1(LOCB(5):LOCE(5))//'/YR'
-         ELSE
-            PERLBL(I) = FIELD(5)
-         END IF
-      END DO
-   ELSE
-      DO I = 2, NTYP
-         EMIFAC(I) = DNUM
-         EMILBL(I) = FIELD(4)
-         OUTLBL(I) = FIELD(5)
-         IF (ANNUAL) THEN
-            PERLBL(I) = RUNST1(LOCB(5):LOCE(5))//'/YR'
-         ELSE
-            PERLBL(I) = FIELD(5)
-         END IF
-      END DO
-   END IF
+   if (.not. conc) then
+      do i = 1, ntyp
+         emifac(i) = dnum
+         emilbl(i) = field(4)
+         outlbl(i) = field(5)
+         if (annual) then
+            perlbl(i) = runst1(locb(5):loce(5))//'/YR'
+         else
+            perlbl(i) = field(5)
+         end if
+      end do
+   else
+      do i = 2, ntyp
+         emifac(i) = dnum
+         emilbl(i) = field(4)
+         outlbl(i) = field(5)
+         if (annual) then
+            perlbl(i) = runst1(locb(5):loce(5))//'/YR'
+         else
+            perlbl(i) = field(5)
+         end if
+      end do
+   end if
 
-999 RETURN
-END SUBROUTINE DPUNIT
+999 return
+end subroutine dpunit
 
-SUBROUTINE PARTDEP
+subroutine partdep
 !***********************************************************************
 !                 PARTDEP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4752,40 +4752,40 @@ SUBROUTINE PARTDEP
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'PARTDEP'
+   modnam = 'PARTDEP'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC == 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc == 3) then
 !        Error Message: No Numerical Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   end if
 
 !     Process The Appropriate Settling & Removal Parameter
-   IF (KEYWRD == 'PARTDIAM') THEN
+   if (keywrd == 'PARTDIAM') then
 !        Process Particle Diameter Categories (PDIAM)       ---   CALL INPPDM
-      CALL INPPDM
-   ELSE IF (KEYWRD == 'MASSFRAX') THEN
+      call inppdm
+   else if (keywrd == 'MASSFRAX') then
 !        Process Mass Fractions (PHI)                       ---   CALL INPPHI
-      CALL INPPHI
-   ELSE IF (KEYWRD == 'PARTDENS') THEN
+      call inpphi
+   else if (keywrd == 'PARTDENS') then
 !        Process Particle Density (PDENS)                   ---   CALL INPPDN
-      CALL INPPDN
-   END IF
+      call inppdn
+   end if
 
-999 RETURN
-END SUBROUTINE PARTDEP
+999 return
+end subroutine partdep
 
-SUBROUTINE INPPDM
+subroutine inppdm
 !***********************************************************************
 !                 INPPDM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4806,121 +4806,121 @@ SUBROUTINE INPPDM
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, K, IH, IL, ISDX
-   CHARACTER (LEN=12) :: LID, HID, LID1, LID2, HID1, HID2
-   CHARACTER (LEN=ILEN_FLD) :: SOID
-   LOGICAL :: FOUND, INGRP, RMARK
+   integer :: i, k, ih, il, isdx
+   character (len=12) :: lid, hid, lid1, lid2, hid1, hid2
+   character (len=ilen_fld) :: soid
+   logical :: found, ingrp, rmark
 ! Unused INTEGER :: J
 
 !     Variable Initializations
-   FOUND  = .FALSE.
-   INGRP  = .FALSE.
-   MODNAM = 'INPPDM'
+   found  = .false.
+   ingrp  = .false.
+   modnam = 'INPPDM'
 
 !     Get The Source ID(s)
-   SOID = FIELD(3)
-   CALL FSPLIT(PATH,KEYWRD,SOID,ILEN_FLD,'-',RMARK,LID,HID)
+   soid = field(3)
+   call fsplit(path,keywrd,soid,ilen_fld,'-',rmark,lid,hid)
 
-   IF (LID == HID) THEN
+   if (lid == hid) then
 !        Search For The Index
-      CALL SINDEX(SRCID,NSRC,SOID,ISDX,FOUND)
-      IF (FOUND .and. .NOT.L_METHOD2(ISDX)) THEN
-         ISET = IWRK2(ISDX,5)
-         DO K = 4, IFC
+      call sindex(srcid,nsrc,soid,isdx,found)
+      if (found .and. .not.l_method2(isdx)) then
+         iset = iwrk2(isdx,5)
+         do k = 4, ifc
 !              Change It To Numbers
-            CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+            call stodbl(field(k),ilen_fld,dnum,imit)
 !              Check The Numerical Field
-            IF (IMIT == -1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               CYCLE
-            ELSE IF (IMIT > 1) THEN
+            if (imit == -1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               cycle
+            else if (imit > 1) then
 ! ---             Use of '*' for repeat input values is not meaningful
 !                 for particle diameters; Issue Error message
-               CALL ERRHDL(PATH,MODNAM,'E','288',KEYWRD)
-               CYCLE
-            ELSE IF (DNUM <= 0.001D0 .or. DNUM > 1000.0D0) THEN
+               call errhdl(path,modnam,'E','288',keywrd)
+               cycle
+            else if (dnum <= 0.001d0 .or. dnum > 1000.0d0) then
 !                 WRITE Error Message: Particle Diameter Out-of-Range
-               CALL ERRHDL(PATH,MODNAM,'E','335',SRCID(ISDX))
-            END IF
-            ISET = ISET + 1
-            IF (ISET <= NPDMAX) THEN
+               call errhdl(path,modnam,'E','335',srcid(isdx))
+            end if
+            iset = iset + 1
+            if (iset <= npdmax) then
 !                 Assign The Field
-               APDIAM(ISET,ISDX) = DNUM
-            ELSE
+               apdiam(iset,isdx) = dnum
+            else
 !                 WRITE Error Message: Too Many PartDiam Categories
 !                 This shouldn't occur since limits are dynamically allocated
-               WRITE(DUMMY,'(''NPD= '',I7)') NPDMAX
-               CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-            END IF
-         END DO
-         IWRK2(ISDX,5) = ISET
+               write(dummy,'(''NPD= '',I7)') npdmax
+               call errhdl(path,modnam,'E','290',dummy)
+            end if
+         end do
+         iwrk2(isdx,5) = iset
 
-      ELSE IF (FOUND .and. L_METHOD2(ISDX)) THEN
+      else if (found .and. l_method2(isdx)) then
 ! ---       Write Error Message     ! Source ID identified as Method 2
-         CALL ERRHDL(PATH,MODNAM,'E','386',SRCID(ISDX))
+         call errhdl(path,modnam,'E','386',srcid(isdx))
 
-      ELSE
+      else
 !           WRITE Error Message     ! Source Location Has Not Been Identified
-         CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','300',keywrd)
+      end if
+   else
 !        First Check Range for Upper Value < Lower Value
-      CALL SETIDG(LID,LID1,IL,LID2)
-      CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1<LID1) .or. (IH<IL) .or. (HID2<LID2)) THEN
+      call setidg(lid,lid1,il,lid2)
+      call setidg(hid,hid1,ih,hid2)
+      if ((hid1<lid1) .or. (ih<il) .or. (hid2<lid2)) then
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
-         CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-         GO TO 999
-      END IF
-      SOURCE_LOOP: DO I = 1, NUMSRC
+         call errhdl(path,modnam,'E','203','SRCRANGE')
+         go to 999
+      end if
+      source_loop: do i = 1, numsrc
 !           See Whether It's In The Group
-         CALL ASNGRP(SRCID(I),LID,HID,INGRP)
-         IF (INGRP .and. .NOT.L_METHOD2(I)) THEN
-            ISET = IWRK2(I,5)
-            DO K = 4, IFC
+         call asngrp(srcid(i),lid,hid,ingrp)
+         if (ingrp .and. .not.l_method2(i)) then
+            iset = iwrk2(i,5)
+            do k = 4, ifc
 !                 Get Numbers
-               CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+               call stodbl(field(k),ilen_fld,dnum,imit)
 !                 Check The Numerical Field
-               IF (IMIT == -1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-                  CYCLE SOURCE_LOOP
-               ELSE IF (IMIT > 1) THEN
+               if (imit == -1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+                  cycle source_loop
+               else if (imit > 1) then
 ! ---                Use of '*' for repeat input values is not meaningful
 !                    for particle diameters; Issue Error message
-                  CALL ERRHDL(PATH,MODNAM,'E','288',KEYWRD)
-                  CYCLE SOURCE_LOOP
-               ELSE IF (DNUM <= 0.001D0 .or. DNUM>1000.0D0) THEN
+                  call errhdl(path,modnam,'E','288',keywrd)
+                  cycle source_loop
+               else if (dnum <= 0.001d0 .or. dnum>1000.0d0) then
 !                    WRITE Error Message: Particle Diameter Out-of-Range
-                  CALL ERRHDL(PATH,MODNAM,'E','335',SRCID(I))
-               END IF
-               ISET = ISET + 1
-               IF (ISET <= NPDMAX) THEN
-                  APDIAM(ISET,I) = DNUM
-               ELSE
+                  call errhdl(path,modnam,'E','335',srcid(i))
+               end if
+               iset = iset + 1
+               if (iset <= npdmax) then
+                  apdiam(iset,i) = dnum
+               else
 !                    WRITE Error Message: Too Many PartDiam Categories
 !                    This shouldn't occur since limits are dynamically allocated
-                  WRITE(DUMMY,'(''NPD= '',I7)') NPDMAX
-                  CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-               END IF
-            END DO
-            IWRK2(I,5) = ISET
+                  write(dummy,'(''NPD= '',I7)') npdmax
+                  call errhdl(path,modnam,'E','290',dummy)
+               end if
+            end do
+            iwrk2(i,5) = iset
 
-         ELSE IF (INGRP .and. L_METHOD2(I)) THEN
+         else if (ingrp .and. l_method2(i)) then
 ! ---          Write Error Message     ! Source ID identified as Method 2
-            CALL ERRHDL(PATH,MODNAM,'E','386',SRCID(I))
+            call errhdl(path,modnam,'E','386',srcid(i))
 
-         END IF
-      END DO SOURCE_LOOP
-   END IF
+         end if
+      end do source_loop
+   end if
 
-999 RETURN
-END SUBROUTINE INPPDM
+999 return
+end subroutine inppdm
 
-SUBROUTINE INPPHI
+subroutine inpphi
 !***********************************************************************
 !                 INPPHI Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4939,106 +4939,106 @@ SUBROUTINE INPPHI
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, K, IH, IL, ISDX
-   CHARACTER (LEN=12) :: LID, HID, LID1, LID2, HID1, HID2
-   CHARACTER (LEN=ILEN_FLD) :: SOID
-   LOGICAL :: FOUND, INGRP, RMARK
+   integer :: i, j, k, ih, il, isdx
+   character (len=12) :: lid, hid, lid1, lid2, hid1, hid2
+   character (len=ilen_fld) :: soid
+   logical :: found, ingrp, rmark
 
 !     Variable Initializations
-   FOUND  = .FALSE.
-   INGRP  = .FALSE.
-   MODNAM = 'INPPHI'
+   found  = .false.
+   ingrp  = .false.
+   modnam = 'INPPHI'
 
 !     Get The Source ID(s)
-   SOID = FIELD(3)
-   CALL FSPLIT(PATH,KEYWRD,SOID,ILEN_FLD,'-',RMARK,LID,HID)
+   soid = field(3)
+   call fsplit(path,keywrd,soid,ilen_fld,'-',rmark,lid,hid)
 
-   IF (LID == HID) THEN
+   if (lid == hid) then
 !        Search For The Index
-      CALL SINDEX(SRCID,NSRC,SOID,ISDX,FOUND)
-      IF (FOUND) THEN
-         ISET = IWRK2(ISDX,6)
-         DO K = 4, IFC
+      call sindex(srcid,nsrc,soid,isdx,found)
+      if (found) then
+         iset = iwrk2(isdx,6)
+         do k = 4, ifc
 !              Change It To Numbers
-            CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+            call stodbl(field(k),ilen_fld,dnum,imit)
 !              Check The Numerical Field
-            IF (IMIT == -1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               CYCLE
-            END IF
-            IF (DNUM < 0.0D0 .or. DNUM > 1.0D0) THEN
+            if (imit == -1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               cycle
+            end if
+            if (dnum < 0.0d0 .or. dnum > 1.0d0) then
 !                 WRITE Error Message: Mass Fraction Out-of-Range
-               CALL ERRHDL(PATH,MODNAM,'E','332',SRCID(ISDX))
-            END IF
-            DO J = 1, IMIT
-               ISET = ISET + 1
-               IF (ISET <= NPDMAX) THEN
+               call errhdl(path,modnam,'E','332',srcid(isdx))
+            end if
+            do j = 1, imit
+               iset = iset + 1
+               if (iset <= npdmax) then
 !                    Assign The Field
-                  APHI(ISET,ISDX) = DNUM
-               ELSE
+                  aphi(iset,isdx) = dnum
+               else
 !                    WRITE Error Message: Too Many PartDiam Categories
 !                    This shouldn't occur since limits are dynamically allocated
-                  WRITE(DUMMY,'(''NPD= '',I7)') NPDMAX
-                  CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-               END IF
-            END DO
-         END DO
-         IWRK2(ISDX,6) = ISET
-      ELSE
+                  write(dummy,'(''NPD= '',I7)') npdmax
+                  call errhdl(path,modnam,'E','290',dummy)
+               end if
+            end do
+         end do
+         iwrk2(isdx,6) = iset
+      else
 !           WRITE Error Message     ! Source Location Has Not Been Identified
-         CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','300',keywrd)
+      end if
+   else
 !        First Check Range for Upper Value < Lower Value
-      CALL SETIDG(LID,LID1,IL,LID2)
-      CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1<LID1) .or. (IH<IL) .or. (HID2<LID2)) THEN
+      call setidg(lid,lid1,il,lid2)
+      call setidg(hid,hid1,ih,hid2)
+      if ((hid1<lid1) .or. (ih<il) .or. (hid2<lid2)) then
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
-         CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-         GO TO 999
-      END IF
-      SOURCE_LOOP: DO I = 1, NUMSRC
+         call errhdl(path,modnam,'E','203','SRCRANGE')
+         go to 999
+      end if
+      source_loop: do i = 1, numsrc
 !           See Whether It's In The Group
-         CALL ASNGRP(SRCID(I),LID,HID,INGRP)
-         IF (INGRP) THEN
-            ISET = IWRK2(I,6)
-            DO K = 4, IFC
+         call asngrp(srcid(i),lid,hid,ingrp)
+         if (ingrp) then
+            iset = iwrk2(i,6)
+            do k = 4, ifc
 !                 Get Numbers
-               CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+               call stodbl(field(k),ilen_fld,dnum,imit)
 !                 Check The Numerical Field
-               IF (IMIT == -1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-                  CYCLE SOURCE_LOOP
-               END IF
-               IF (DNUM < 0.0D0 .or. DNUM > 1.0D0) THEN
+               if (imit == -1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+                  cycle source_loop
+               end if
+               if (dnum < 0.0d0 .or. dnum > 1.0d0) then
 !                    WRITE Error Message: Mass Fraction Out-of-Range
-                  CALL ERRHDL(PATH,MODNAM,'E','332',SRCID(I))
-               END IF
-               DO J = 1, IMIT
-                  ISET = ISET + 1
-                  IF (ISET <= NPDMAX) THEN
-                     APHI(ISET,I) = DNUM
-                  ELSE
+                  call errhdl(path,modnam,'E','332',srcid(i))
+               end if
+               do j = 1, imit
+                  iset = iset + 1
+                  if (iset <= npdmax) then
+                     aphi(iset,i) = dnum
+                  else
 !                       WRITE Error Message: Too Many PartDiam Categories
 !                       This shouldn't occur since limits are dynamically allocated
-                     WRITE(DUMMY,'(''NPD= '',I7)') NPDMAX
-                     CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-                  END IF
-               END DO
-            END DO
-            IWRK2(I,6) = ISET
-         END IF
-      END DO SOURCE_LOOP
-   END IF
+                     write(dummy,'(''NPD= '',I7)') npdmax
+                     call errhdl(path,modnam,'E','290',dummy)
+                  end if
+               end do
+            end do
+            iwrk2(i,6) = iset
+         end if
+      end do source_loop
+   end if
 
-999 RETURN
-END SUBROUTINE INPPHI
+999 return
+end subroutine inpphi
 
-SUBROUTINE INPPDN
+subroutine inppdn
 !***********************************************************************
 !                 INPPDN Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -5059,112 +5059,112 @@ SUBROUTINE INPPDN
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, K, IH, IL, ISDX
-   CHARACTER (LEN=12) :: LID, HID, LID1, LID2, HID1, HID2
-   CHARACTER (LEN=ILEN_FLD) :: SOID
-   LOGICAL :: FOUND, INGRP, RMARK
+   integer :: i, j, k, ih, il, isdx
+   character (len=12) :: lid, hid, lid1, lid2, hid1, hid2
+   character (len=ilen_fld) :: soid
+   logical :: found, ingrp, rmark
 
 !     Variable Initializations
-   FOUND  = .FALSE.
-   INGRP  = .FALSE.
-   MODNAM = 'INPPDN'
+   found  = .false.
+   ingrp  = .false.
+   modnam = 'INPPDN'
 
 !     Get The Source ID(s)
-   SOID = FIELD(3)
-   CALL FSPLIT(PATH,KEYWRD,SOID,ILEN_FLD,'-',RMARK,LID,HID)
+   soid = field(3)
+   call fsplit(path,keywrd,soid,ilen_fld,'-',rmark,lid,hid)
 
-   IF (LID == HID) THEN
+   if (lid == hid) then
 !        Search For The Index
-      CALL SINDEX(SRCID,NSRC,SOID,ISDX,FOUND)
-      IF (FOUND) THEN
-         ISET = IWRK2(ISDX,7)
-         DO K = 4, IFC
+      call sindex(srcid,nsrc,soid,isdx,found)
+      if (found) then
+         iset = iwrk2(isdx,7)
+         do k = 4, ifc
 !              Change It To Numbers
-            CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+            call stodbl(field(k),ilen_fld,dnum,imit)
 !              Check The Numerical Field
-            IF (IMIT == -1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               CYCLE
-            END IF
-            IF (DNUM <= 0.0D0) THEN
+            if (imit == -1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               cycle
+            end if
+            if (dnum <= 0.0d0) then
 !                 WRITE Error Message: Particle Density Out-of-Range
-               CALL ERRHDL(PATH,MODNAM,'E','334',SRCID(ISDX))
-            ELSE IF (DNUM <= 0.1D0) THEN
+               call errhdl(path,modnam,'E','334',srcid(isdx))
+            else if (dnum <= 0.1d0) then
 !                 WRITE Warning Message: Particle Density may be Out-of-Range
-               CALL ERRHDL(PATH,MODNAM,'W','334',SRCID(ISDX))
-            END IF
-            DO J = 1, IMIT
-               ISET = ISET + 1
-               IF (ISET <= NPDMAX) THEN
+               call errhdl(path,modnam,'W','334',srcid(isdx))
+            end if
+            do j = 1, imit
+               iset = iset + 1
+               if (iset <= npdmax) then
 !                    Assign The Field
-                  APDENS(ISET,ISDX) = DNUM
-               ELSE
+                  apdens(iset,isdx) = dnum
+               else
 !                    WRITE Error Message: Too Many PartDiam Categories
 !                    This shouldn't occur since limits are dynamically allocated
-                  WRITE(DUMMY,'(''NPD= '',I7)') NPDMAX
-                  CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-               END IF
-            END DO
-         END DO
-         IWRK2(ISDX,7) = ISET
-      ELSE
+                  write(dummy,'(''NPD= '',I7)') npdmax
+                  call errhdl(path,modnam,'E','290',dummy)
+               end if
+            end do
+         end do
+         iwrk2(isdx,7) = iset
+      else
 !           WRITE Error Message     ! Source Location Has Not Been Identified
-         CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','300',keywrd)
+      end if
+   else
 !        First Check Range for Upper Value < Lower Value
-      CALL SETIDG(LID,LID1,IL,LID2)
-      CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1<LID1) .or. (IH<IL) .or. (HID2<LID2)) THEN
+      call setidg(lid,lid1,il,lid2)
+      call setidg(hid,hid1,ih,hid2)
+      if ((hid1<lid1) .or. (ih<il) .or. (hid2<lid2)) then
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
-         CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-         GO TO 999
-      END IF
-      SOURCE_LOOP: DO I = 1, NUMSRC
+         call errhdl(path,modnam,'E','203','SRCRANGE')
+         go to 999
+      end if
+      source_loop: do i = 1, numsrc
 !           See Whether It's In The Group
-         CALL ASNGRP(SRCID(I),LID,HID,INGRP)
-         IF (INGRP) THEN
-            ISET = IWRK2(I,7)
-            DO K = 4, IFC
+         call asngrp(srcid(i),lid,hid,ingrp)
+         if (ingrp) then
+            iset = iwrk2(i,7)
+            do k = 4, ifc
 !                 Get Numbers
-               CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+               call stodbl(field(k),ilen_fld,dnum,imit)
 !                 Check The Numerical Field
-               IF (IMIT /= 1) THEN
-                  CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-                  CYCLE SOURCE_LOOP
-               END IF
-               IF (DNUM <= 0.0D0) THEN
+               if (imit /= 1) then
+                  call errhdl(path,modnam,'E','208',keywrd)
+                  cycle source_loop
+               end if
+               if (dnum <= 0.0d0) then
 !                    WRITE Error Message: Particle Density Out-of-Range
-                  CALL ERRHDL(PATH,MODNAM,'E','334',SRCID(I))
-               ELSE IF (DNUM <= 0.1D0) THEN
+                  call errhdl(path,modnam,'E','334',srcid(i))
+               else if (dnum <= 0.1d0) then
 !                    WRITE Warning Message: Particle Density may be Out-of-Range
-                  CALL ERRHDL(PATH,MODNAM,'W','334',SRCID(I))
-               END IF
-               DO J = 1, IMIT
-                  ISET = ISET + 1
-                  IF (ISET <= NPDMAX) THEN
-                     APDENS(ISET,I) = DNUM
-                  ELSE
+                  call errhdl(path,modnam,'W','334',srcid(i))
+               end if
+               do j = 1, imit
+                  iset = iset + 1
+                  if (iset <= npdmax) then
+                     apdens(iset,i) = dnum
+                  else
 !                       WRITE Error Message: Too Many PartDiam Categories
 !                       This shouldn't occur since limits are dynamically allocated
-                     WRITE(DUMMY,'(''NPD= '',I7)') NPDMAX
-                     CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-                  END IF
-               END DO
-            END DO
-            IWRK2(I,7) = ISET
-         END IF
-      END DO SOURCE_LOOP
-   END IF
+                     write(dummy,'(''NPD= '',I7)') npdmax
+                     call errhdl(path,modnam,'E','290',dummy)
+                  end if
+               end do
+            end do
+            iwrk2(i,7) = iset
+         end if
+      end do source_loop
+   end if
 
-999 RETURN
-END SUBROUTINE INPPDN
+999 return
+end subroutine inppdn
 
-SUBROUTINE GASDEP
+subroutine gasdep
 !***********************************************************************
 !                 GASDEP Module of AERMOD Model
 !
@@ -5185,340 +5185,340 @@ SUBROUTINE GASDEP
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, IH, IL, ISDX
-   CHARACTER (LEN=12) :: LID, HID, LID1, LID2, HID1, HID2
-   CHARACTER (LEN=ILEN_FLD) :: SOID
-   LOGICAL :: FOUND, INGRP, RMARK, DLOOKUP
+   integer :: i, ih, il, isdx
+   character (len=12) :: lid, hid, lid1, lid2, hid1, hid2
+   character (len=ilen_fld) :: soid
+   logical :: found, ingrp, rmark, dlookup
 
 !     Variable Initializations
-   FOUND  = .FALSE.
-   INGRP  = .FALSE.
-   MODNAM = 'GASDEP'
-   DLOOKUP = .FALSE.
+   found  = .false.
+   ingrp  = .false.
+   modnam = 'GASDEP'
+   dlookup = .false.
 
 !     Check the Number of Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 7) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 7) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 7) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 7) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Get The Source ID(s)
-   SOID = FIELD(3)
-   CALL FSPLIT(PATH,KEYWRD,SOID,ILEN_FLD,'-',RMARK,LID,HID)
+   soid = field(3)
+   call fsplit(path,keywrd,soid,ilen_fld,'-',rmark,lid,hid)
 
-   IF (LID == HID) THEN
+   if (lid == hid) then
 !        Search For The Index
-      CALL SINDEX(SRCID,NSRC,SOID,ISDX,FOUND)
-      IF (FOUND) THEN
-         SOGAS(ISDX) = 'Y'
-         DLOOKUP=.FALSE.
+      call sindex(srcid,nsrc,soid,isdx,found)
+      if (found) then
+         sogas(isdx) = 'Y'
+         dlookup=.false.
 !           Read Dry Deposition Parameters
 !           Change Them To Numbers
 
 !           First Get Gas Diffusivity (cm^2/s)
-         CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
+         call stodbl(field(4),ilen_fld,dnum,imit)
 !           Check The Numerical Field
 !           MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-         IF ((POLLUT == 'HG0') .and. (DNUM == 0.0D0)) THEN
-            DNUM = 5.5D-02
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'HGII') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 4.5D-02
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'TCDD') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 5.196D-02
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'BAP') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 5.13D-02
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'SO2') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 1.112D-01
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'NO2') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 1.361D-01
-            DLOOKUP=.TRUE.
-         ELSE IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE IF (DNUM <= 0.0D0) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','380','PDIFF')
-         END IF
+         if ((pollut == 'HG0') .and. (dnum == 0.0d0)) then
+            dnum = 5.5d-02
+            dlookup=.true.
+         else if ((pollut == 'HGII') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 4.5d-02
+            dlookup=.true.
+         else if ((pollut == 'TCDD') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 5.196d-02
+            dlookup=.true.
+         else if ((pollut == 'BAP') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 5.13d-02
+            dlookup=.true.
+         else if ((pollut == 'SO2') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 1.112d-01
+            dlookup=.true.
+         else if ((pollut == 'NO2') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 1.361d-01
+            dlookup=.true.
+         else if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else if (dnum <= 0.0d0) then
+            call errhdl(path,modnam,'E','380','PDIFF')
+         end if
 !           Assign The Field
-         PDIFF(ISDX) = DNUM
+         pdiff(isdx) = dnum
 
 !PES ---    Next Get Diffusivity in Water (cm^2/s)
-         CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
+         call stodbl(field(5),ilen_fld,dnum,imit)
 !           Check The Numerical Field
 !           MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-         IF ((POLLUT == 'HG0') .and. (DNUM == 0.0D0)) THEN
-            DNUM = 6.4D-06
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'HGII') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 5.2D-06
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'TCDD') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 4.392D-06
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'BAP') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 4.44D-06
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'SO2') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 1.83D-05
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'NO2') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 1.4D-05
-            DLOOKUP=.TRUE.
-         ELSE IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE IF (DNUM <= 0.0D0) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','380','PDIFFW')
-         END IF
+         if ((pollut == 'HG0') .and. (dnum == 0.0d0)) then
+            dnum = 6.4d-06
+            dlookup=.true.
+         else if ((pollut == 'HGII') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 5.2d-06
+            dlookup=.true.
+         else if ((pollut == 'TCDD') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 4.392d-06
+            dlookup=.true.
+         else if ((pollut == 'BAP') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 4.44d-06
+            dlookup=.true.
+         else if ((pollut == 'SO2') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 1.83d-05
+            dlookup=.true.
+         else if ((pollut == 'NO2') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 1.4d-05
+            dlookup=.true.
+         else if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else if (dnum <= 0.0d0) then
+            call errhdl(path,modnam,'E','380','PDIFFW')
+         end if
 !           Assign The Field
-         PDIFFW(ISDX) = DNUM
+         pdiffw(isdx) = dnum
 
 !           Now Get Lipid Cuticle Resistence for Individual Leaves (RCLI)
-         CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
+         call stodbl(field(6),ilen_fld,dnum,imit)
 !           Check The Numerical Field
 !           MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-         IF ((POLLUT == 'HG0') .and. (DNUM == 0.0D0)) THEN
-            DNUM = 1.0D05
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'HGII') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 1.0D05
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'TCDD') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 9.67D0
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'BAP') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 4.41D-01
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'SO2') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 7.32D02
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'NO2') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 1.2D04
-            DLOOKUP=.TRUE.
-         ELSE IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE IF (DNUM <= 0.0D0) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','380','RCLI')
-         END IF
+         if ((pollut == 'HG0') .and. (dnum == 0.0d0)) then
+            dnum = 1.0d05
+            dlookup=.true.
+         else if ((pollut == 'HGII') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 1.0d05
+            dlookup=.true.
+         else if ((pollut == 'TCDD') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 9.67d0
+            dlookup=.true.
+         else if ((pollut == 'BAP') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 4.41d-01
+            dlookup=.true.
+         else if ((pollut == 'SO2') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 7.32d02
+            dlookup=.true.
+         else if ((pollut == 'NO2') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 1.2d04
+            dlookup=.true.
+         else if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else if (dnum <= 0.0d0) then
+            call errhdl(path,modnam,'E','380','RCLI')
+         end if
 !           Assign The Field
-         RCLI(ISDX) = DNUM
+         rcli(isdx) = dnum
 
 !           Get the Henry's Law Constant
-         CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
+         call stodbl(field(7),ilen_fld,dnum,imit)
 !           Check The Numerical Field
 !           MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-         IF ((POLLUT == 'HG0') .and. (DNUM == 0.0D0)) THEN
-            DNUM = 7.19D02
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'HGII') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 7.2D-05
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'TCDD') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 1.46D0
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'BAP') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 4.6D-02
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'SO2') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 7.2D01
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'NO2') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 8.444D03
-            DLOOKUP=.TRUE.
-         ELSE IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE IF (DNUM <= 0.0D0) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','380','HENRY')
-         END IF
+         if ((pollut == 'HG0') .and. (dnum == 0.0d0)) then
+            dnum = 7.19d02
+            dlookup=.true.
+         else if ((pollut == 'HGII') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 7.2d-05
+            dlookup=.true.
+         else if ((pollut == 'TCDD') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 1.46d0
+            dlookup=.true.
+         else if ((pollut == 'BAP') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 4.6d-02
+            dlookup=.true.
+         else if ((pollut == 'SO2') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 7.2d01
+            dlookup=.true.
+         else if ((pollut == 'NO2') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 8.444d03
+            dlookup=.true.
+         else if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         else if (dnum <= 0.0d0) then
+            call errhdl(path,modnam,'E','380','HENRY')
+         end if
 !           Assign The Field
-         HENRY(ISDX) = DNUM
+         henry(isdx) = dnum
 
 !           WRITE Warning Message:  Default deposition parameter used
-         IF (DLOOKUP .EQV. .TRUE.) THEN
-            CALL ERRHDL(PATH,MODNAM,'W','473',SRCID(ISDX))
-         END IF
+         if (dlookup .eqv. .true.) then
+            call errhdl(path,modnam,'W','473',srcid(isdx))
+         end if
 
-      ELSE
+      else
 !           WRITE Error Message     ! Source Location Has Not Been Identified
-         CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','300',keywrd)
+      end if
+   else
 !        First Check Range for Upper Value < Lower Value
-      CALL SETIDG(LID,LID1,IL,LID2)
-      CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1<LID1) .or. (IH<IL) .or. (HID2<LID2)) THEN
+      call setidg(lid,lid1,il,lid2)
+      call setidg(hid,hid1,ih,hid2)
+      if ((hid1<lid1) .or. (ih<il) .or. (hid2<lid2)) then
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
-         CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-         GO TO 999
-      END IF
-      DO I = 1, NUMSRC
+         call errhdl(path,modnam,'E','203','SRCRANGE')
+         go to 999
+      end if
+      do i = 1, numsrc
 !           See Whether It's In The Group
-         CALL ASNGRP(SRCID(I),LID,HID,INGRP)
-         IF (INGRP) THEN
-            ISDX = I
-            SOGAS(ISDX) = 'Y'
+         call asngrp(srcid(i),lid,hid,ingrp)
+         if (ingrp) then
+            isdx = i
+            sogas(isdx) = 'Y'
 !              Read Dry Deposition Parameters
 !              Change Them To Numbers
 
 !              First Get Gas Diffusivity
-            CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
+            call stodbl(field(4),ilen_fld,dnum,imit)
 !              Check The Numerical Field
 !              MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-            IF ((POLLUT == 'HG0') .and. (DNUM == 0.0D0)) THEN
-               DNUM = 5.5D-02
-            ELSE IF ((POLLUT == 'HGII') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 4.5D-02
-            ELSE IF ((POLLUT == 'TCDD') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 5.196D-02
-            ELSE IF ((POLLUT == 'BAP') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 5.13D-02
-            ELSE IF ((POLLUT == 'SO2') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 1.112D-01
-            ELSE IF ((POLLUT == 'NO2') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 1.361D-01
-            ELSE IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            ELSE IF (DNUM <= 0.0D0) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','380','PDIFF')
-            END IF
+            if ((pollut == 'HG0') .and. (dnum == 0.0d0)) then
+               dnum = 5.5d-02
+            else if ((pollut == 'HGII') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 4.5d-02
+            else if ((pollut == 'TCDD') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 5.196d-02
+            else if ((pollut == 'BAP') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 5.13d-02
+            else if ((pollut == 'SO2') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 1.112d-01
+            else if ((pollut == 'NO2') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 1.361d-01
+            else if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+            else if (dnum <= 0.0d0) then
+               call errhdl(path,modnam,'E','380','PDIFF')
+            end if
 !              Assign The Field
-            PDIFF(ISDX) = DNUM
+            pdiff(isdx) = dnum
 
 !PES ---       Next Get Diffusivity in Water (cm^2/s)
-            CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
+            call stodbl(field(5),ilen_fld,dnum,imit)
 !              Check The Numerical Field
 !              MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-            IF ((POLLUT == 'HG0') .and. (DNUM == 0.0D0)) THEN
-               DNUM = 6.4D-06
-            ELSE IF ((POLLUT == 'HGII') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 5.2D-06
-            ELSE IF ((POLLUT == 'TCDD') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 4.392D-06
-            ELSE IF ((POLLUT == 'BAP') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 4.44D-06
-            ELSE IF ((POLLUT == 'SO2') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 1.83D-05
-            ELSE IF ((POLLUT == 'NO2') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 1.4D-05
-            ELSE IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            ELSE IF (DNUM <= 0.0D0) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','380','PDIFFW')
-            END IF
+            if ((pollut == 'HG0') .and. (dnum == 0.0d0)) then
+               dnum = 6.4d-06
+            else if ((pollut == 'HGII') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 5.2d-06
+            else if ((pollut == 'TCDD') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 4.392d-06
+            else if ((pollut == 'BAP') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 4.44d-06
+            else if ((pollut == 'SO2') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 1.83d-05
+            else if ((pollut == 'NO2') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 1.4d-05
+            else if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+            else if (dnum <= 0.0d0) then
+               call errhdl(path,modnam,'E','380','PDIFFW')
+            end if
 !              Assign The Field
-            PDIFFW(ISDX) = DNUM
+            pdiffw(isdx) = dnum
 
 !              Now Get Lipid Cuticle Resistence for Individual Leaves (RCLI)
-            CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
+            call stodbl(field(6),ilen_fld,dnum,imit)
 !              Check The Numerical Field
 !              MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-            IF ((POLLUT == 'HG0') .and. (DNUM == 0.0D0)) THEN
-               DNUM = 1.0D05
-            ELSE IF ((POLLUT == 'HGII') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 1.0D05
-            ELSE IF ((POLLUT == 'TCDD') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 9.67D0
-            ELSE IF ((POLLUT == 'BAP') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 4.41D-01
-            ELSE IF ((POLLUT == 'SO2') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 7.32D02
-            ELSE IF ((POLLUT == 'NO2') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 1.2D04
-            ELSE IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            ELSE IF (DNUM <= 0.0D0) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','380','RCLI')
-            END IF
+            if ((pollut == 'HG0') .and. (dnum == 0.0d0)) then
+               dnum = 1.0d05
+            else if ((pollut == 'HGII') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 1.0d05
+            else if ((pollut == 'TCDD') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 9.67d0
+            else if ((pollut == 'BAP') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 4.41d-01
+            else if ((pollut == 'SO2') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 7.32d02
+            else if ((pollut == 'NO2') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 1.2d04
+            else if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+            else if (dnum <= 0.0d0) then
+               call errhdl(path,modnam,'E','380','RCLI')
+            end if
 !              Assign The Field
-            RCLI(ISDX) = DNUM
+            rcli(isdx) = dnum
 
 !              Get the Henry's Law Constant
-            CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
+            call stodbl(field(7),ilen_fld,dnum,imit)
 !              Check The Numerical Field
 !              MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-            IF ((POLLUT == 'HG0') .and. (DNUM == 0.0D0)) THEN
-               DNUM = 7.19D02
-            ELSE IF ((POLLUT == 'HGII') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 7.2D-05
-            ELSE IF ((POLLUT == 'TCDD') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 1.46D0
-            ELSE IF ((POLLUT == 'BAP') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 4.6D-02
-            ELSE IF ((POLLUT == 'SO2') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 7.2D01
-            ELSE IF ((POLLUT == 'NO2') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 8.444D03
-            ELSE IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            ELSE IF (DNUM <= 0.0D0) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','380','HENRY')
-            END IF
+            if ((pollut == 'HG0') .and. (dnum == 0.0d0)) then
+               dnum = 7.19d02
+            else if ((pollut == 'HGII') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 7.2d-05
+            else if ((pollut == 'TCDD') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 1.46d0
+            else if ((pollut == 'BAP') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 4.6d-02
+            else if ((pollut == 'SO2') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 7.2d01
+            else if ((pollut == 'NO2') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 8.444d03
+            else if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+            else if (dnum <= 0.0d0) then
+               call errhdl(path,modnam,'E','380','HENRY')
+            end if
 !              Assign The Field
-            HENRY(ISDX) = DNUM
+            henry(isdx) = dnum
 
-         END IF
-      END DO
-   END IF
+         end if
+      end do
+   end if
 
-999 RETURN
-END SUBROUTINE GASDEP
+999 return
+end subroutine gasdep
 
-SUBROUTINE METH_2
+subroutine meth_2
 !***********************************************************************
 !                 METH_2 Module of AERMOD Model
 !
@@ -5540,241 +5540,241 @@ SUBROUTINE METH_2
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, IH, IL, ISDX
-   CHARACTER (LEN=12) :: LID, HID, LID1, LID2, HID1, HID2
-   CHARACTER (LEN=ILEN_FLD) :: SOID
-   LOGICAL :: FOUND, INGRP, RMARK, DLOOKUP
+   integer :: i, ih, il, isdx
+   character (len=12) :: lid, hid, lid1, lid2, hid1, hid2
+   character (len=ilen_fld) :: soid
+   logical :: found, ingrp, rmark, dlookup
 
 !     Variable Initializations
-   FOUND  = .FALSE.
-   INGRP  = .FALSE.
-   MODNAM = 'METH_2'
-   DLOOKUP = .FALSE.
+   found  = .false.
+   ingrp  = .false.
+   modnam = 'METH_2'
+   dlookup = .false.
 
 !     Check the Number of Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 5) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 5) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 5) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 5) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Get The Source ID(s)
-   SOID = FIELD(3)
-   CALL FSPLIT(PATH,KEYWRD,SOID,ILEN_FLD,'-',RMARK,LID,HID)
+   soid = field(3)
+   call fsplit(path,keywrd,soid,ilen_fld,'-',rmark,lid,hid)
 
-   IF (LID == HID) THEN
+   if (lid == hid) then
 !        Search For The Index
-      CALL SINDEX(SRCID,NSRC,SOID,ISDX,FOUND)
-      IF (FOUND .and. .NOT.L_METHOD2(ISDX) .and.&
-      &IWRK2(ISDX,5)==0) THEN
-         L_METHOD2(ISDX) = .TRUE.
+      call sindex(srcid,nsrc,soid,isdx,found)
+      if (found .and. .not.l_method2(isdx) .and.&
+      &iwrk2(isdx,5)==0) then
+         l_method2(isdx) = .true.
 
-         DLOOKUP=.FALSE.
+         dlookup=.false.
 !           Read Dry Deposition Parameters
 !           Change Them To Numbers
 !           First Get Mass Fraction of Fine Particles (.lt. 2.5 microns)
-         CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
+         call stodbl(field(4),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            GO TO 999
-         END IF
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            go to 999
+         end if
 !           MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-         IF ((POLLUT == 'AR') .and. (DNUM == 0.0D0)) THEN
-            DNUM = 7.5D-01
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'CD') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 7.0D-01
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'PB') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 7.5D-01
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'HG') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 8.0D-01
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'POC') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 9.0D-01
-            DLOOKUP=.TRUE.
-         ELSE IF (DNUM < 0.0D0 .or. DNUM > 1.0D0) THEN
+         if ((pollut == 'AR') .and. (dnum == 0.0d0)) then
+            dnum = 7.5d-01
+            dlookup=.true.
+         else if ((pollut == 'CD') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 7.0d-01
+            dlookup=.true.
+         else if ((pollut == 'PB') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 7.5d-01
+            dlookup=.true.
+         else if ((pollut == 'HG') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 8.0d-01
+            dlookup=.true.
+         else if ((pollut == 'POC') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 9.0d-01
+            dlookup=.true.
+         else if (dnum < 0.0d0 .or. dnum > 1.0d0) then
 !              WRITE Error Message: Mass Fraction Out-of-Range
-            CALL ERRHDL(PATH,MODNAM,'E','332',SRCID(ISDX))
-         END IF
+            call errhdl(path,modnam,'E','332',srcid(isdx))
+         end if
 
 !           Assign The Field
-         FINEMASS(ISDX) = DNUM
+         finemass(isdx) = dnum
 
 !           Now Get Mass Mean Diameter
-         CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
+         call stodbl(field(5),ilen_fld,dnum,imit)
 !           Check The Numerical Field
 !           MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            GO TO 999
-         ELSE IF ((POLLUT == 'AR') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 5.0D-01
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'CD') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 6.0D-01
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'PB') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 5.0D-01
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'HG') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 4.0D-01
-            DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT == 'POC') .and.&
-         &(DNUM == 0.0D0)) THEN
-            DNUM = 1.0D-01
-            DLOOKUP=.TRUE.
-         END IF
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            go to 999
+         else if ((pollut == 'AR') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 5.0d-01
+            dlookup=.true.
+         else if ((pollut == 'CD') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 6.0d-01
+            dlookup=.true.
+         else if ((pollut == 'PB') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 5.0d-01
+            dlookup=.true.
+         else if ((pollut == 'HG') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 4.0d-01
+            dlookup=.true.
+         else if ((pollut == 'POC') .and.&
+         &(dnum == 0.0d0)) then
+            dnum = 1.0d-01
+            dlookup=.true.
+         end if
 !           Assign The Field
-         APDIAM(1,ISDX) = DNUM
+         apdiam(1,isdx) = dnum
 
 !           Set mass fraction and particle density
-         APHI(1,ISDX)   = 1.0D0
-         APDENS(1,ISDX) = 1.0D0
+         aphi(1,isdx)   = 1.0d0
+         apdens(1,isdx) = 1.0d0
 
 !           Set number of particle size categories to 1
-         INPD(ISDX) = 1
+         inpd(isdx) = 1
 
 !           WRITE Warning Message:  Default deposition parameter used
-         IF (DLOOKUP .EQV. .TRUE.) THEN
-            CALL ERRHDL(PATH,MODNAM,'W','473',SRCID(ISDX))
-         END IF
+         if (dlookup .eqv. .true.) then
+            call errhdl(path,modnam,'W','473',srcid(isdx))
+         end if
 
-      ELSE IF (FOUND .and. L_METHOD2(ISDX)) THEN
+      else if (found .and. l_method2(isdx)) then
 ! ---       Write Error Message     ! Source ID identified twice
-         CALL ERRHDL(PATH,MODNAM,'E','387',SRCID(ISDX))
+         call errhdl(path,modnam,'E','387',srcid(isdx))
 
-      ELSE IF (FOUND .and. IWRK2(ISDX,5) > 0) THEN
+      else if (found .and. iwrk2(isdx,5) > 0) then
 ! ---       Write Error Message     ! Source ID identified as Method 1
-         CALL ERRHDL(PATH,MODNAM,'E','386',SRCID(ISDX))
+         call errhdl(path,modnam,'E','386',srcid(isdx))
 
-      ELSE
+      else
 !           WRITE Error Message     ! Source Location Has Not Been Identified
-         CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','300',keywrd)
+      end if
+   else
 !        First Check Range for Upper Value < Lower Value
-      CALL SETIDG(LID,LID1,IL,LID2)
-      CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1<LID1) .or. (IH<IL) .or. (HID2<LID2)) THEN
+      call setidg(lid,lid1,il,lid2)
+      call setidg(hid,hid1,ih,hid2)
+      if ((hid1<lid1) .or. (ih<il) .or. (hid2<lid2)) then
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
-         CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-         GO TO 999
-      END IF
-      DO I = 1, NUMSRC
+         call errhdl(path,modnam,'E','203','SRCRANGE')
+         go to 999
+      end if
+      do i = 1, numsrc
 !           See Whether It's In The Group
-         CALL ASNGRP(SRCID(I),LID,HID,INGRP)
-         IF (INGRP) THEN
-            ISDX = I
-            IF (.NOT.L_METHOD2(ISDX) .and. IWRK2(ISDX,5) == 0) THEN
-               L_METHOD2(ISDX) = .TRUE.
-            ELSE IF (L_METHOD2(ISDX)) THEN
+         call asngrp(srcid(i),lid,hid,ingrp)
+         if (ingrp) then
+            isdx = i
+            if (.not.l_method2(isdx) .and. iwrk2(isdx,5) == 0) then
+               l_method2(isdx) = .true.
+            else if (l_method2(isdx)) then
 ! ---             Write Error Message     ! Source ID identified twice
-               CALL ERRHDL(PATH,MODNAM,'E','387',SRCID(ISDX))
-               CYCLE
-            ELSE IF (IWRK2(ISDX,5) > 0) THEN
+               call errhdl(path,modnam,'E','387',srcid(isdx))
+               cycle
+            else if (iwrk2(isdx,5) > 0) then
 ! ---             Write Error Message     ! Source ID identified as Method 1
-               CALL ERRHDL(PATH,MODNAM,'E','386',SRCID(ISDX))
-               CYCLE
-            END IF
+               call errhdl(path,modnam,'E','386',srcid(isdx))
+               cycle
+            end if
 !              Read Dry Deposition Parameters
 !              Change Them To Numbers
 !              First Get Mass Fraction of Fine Particles (.lt. 2.5 microns)
-            CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
+            call stodbl(field(4),ilen_fld,dnum,imit)
 !              Check The Numerical Field
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               GO TO 999
-            END IF
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               go to 999
+            end if
 !              MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-            IF (DNUM < 0.0D0 .or. DNUM > 1.0D0) THEN
+            if (dnum < 0.0d0 .or. dnum > 1.0d0) then
 !                 WRITE Error Message: Mass Fraction Out-of-Range
-               CALL ERRHDL(PATH,MODNAM,'E','332',SRCID(ISDX))
-            ELSE IF ((POLLUT == 'AR') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 7.5D-01
-            ELSE IF ((POLLUT == 'CD') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 7.0D-01
-            ELSE IF ((POLLUT == 'PB') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 7.5D-01
-            ELSE IF ((POLLUT == 'HG') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 8.0D-01
-            ELSE IF ((POLLUT == 'POC') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 9.0D-01
-            END IF
+               call errhdl(path,modnam,'E','332',srcid(isdx))
+            else if ((pollut == 'AR') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 7.5d-01
+            else if ((pollut == 'CD') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 7.0d-01
+            else if ((pollut == 'PB') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 7.5d-01
+            else if ((pollut == 'HG') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 8.0d-01
+            else if ((pollut == 'POC') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 9.0d-01
+            end if
 
 !              Assign The Field
 !              MW D068 10/30/2020 moved assignment of FINEMASS outside the IF statement above, consistant with the other assignments of APDIAM and FINEMASS in this section
-            FINEMASS(ISDX) = DNUM
+            finemass(isdx) = dnum
 
 
 !              Now Get Mass Mean Diameter
-            CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
+            call stodbl(field(5),ilen_fld,dnum,imit)
 !              Check The Numerical Field
 !              MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               GO TO 999
-            ELSE IF ((POLLUT == 'AR') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 5.0D-01
-            ELSE IF ((POLLUT == 'CD') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 6.0D-01
-            ELSE IF ((POLLUT == 'PB') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 5.0D-01
-            ELSE IF ((POLLUT == 'HG') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 4.0D-01
-            ELSE IF ((POLLUT == 'POC') .and.&
-            &(DNUM == 0.0D0)) THEN
-               DNUM = 1.0D-01
-            END IF
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               go to 999
+            else if ((pollut == 'AR') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 5.0d-01
+            else if ((pollut == 'CD') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 6.0d-01
+            else if ((pollut == 'PB') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 5.0d-01
+            else if ((pollut == 'HG') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 4.0d-01
+            else if ((pollut == 'POC') .and.&
+            &(dnum == 0.0d0)) then
+               dnum = 1.0d-01
+            end if
 !              Assign The Field
-            APDIAM(1,ISDX) = DNUM
+            apdiam(1,isdx) = dnum
 
 !              Set mass fraction and particle density
-            APHI(1,ISDX)   = 1.0D0
-            APDENS(1,ISDX) = 1.0D0
+            aphi(1,isdx)   = 1.0d0
+            apdens(1,isdx) = 1.0d0
 
 !              Set number of particle size categories to 1
-            INPD(ISDX) = 1
+            inpd(isdx) = 1
 
-         END IF
-      END DO
-   END IF
+         end if
+      end do
+   end if
 
-999 RETURN
-END SUBROUTINE METH_2
+999 return
+end subroutine meth_2
 
-SUBROUTINE SOGRP
+subroutine sogrp
 !***********************************************************************
 !                 SOGRP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -5793,187 +5793,187 @@ SUBROUTINE SOGRP
 !
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, K, IH, IL
-   CHARACTER (LEN=12) :: LOWID, HIGID, LID1, LID2, HID1, HID2, TEMPID
-   LOGICAL :: CONT, INGRP, RMARK, FOUND
+   integer :: i, k, ih, il
+   character (len=12) :: lowid, higid, lid1, lid2, hid1, hid2, tempid
+   logical :: cont, ingrp, rmark, found
 
 !     Variable Initializations
-   CONT   = .FALSE.
-   INGRP  = .FALSE.
-   FOUND  = .FALSE.
-   MODNAM = 'SOGRP'
+   cont   = .false.
+   ingrp  = .false.
+   found  = .false.
+   modnam = 'SOGRP'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC <= 3 .and. FIELD(3) /= 'ALL') THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc <= 3 .and. field(3) /= 'ALL') then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   end if
 
 !     READ in the Group ID and Check for Continuation Card
 !*    First check for length of GRPID field (<=8)
-   IF ((LOCE(3)-LOCB(3)) <= 7) THEN
+   if ((loce(3)-locb(3)) <= 7) then
 !*       Retrieve Temporary Group ID Character Substring
-      TEMPID = FIELD(3)
-      IF (NUMGRP == 0) THEN
+      tempid = field(3)
+      if (numgrp == 0) then
 ! ---       This is the first GRPID defined; set CONT = .F.
-         CONT = .FALSE.
-      ELSE
+         cont = .false.
+      else
 ! ---       This is not the first GRPID defined; check on whether
 !           this record is a continuation for the same GRPID
-         DO I = 1, NUMGRP
-            IF (TEMPID == GRPID(I)) THEN
-               CONT = .TRUE.
-               EXIT
-            END IF
-         END DO
-      END IF
-   ELSE
+         do i = 1, numgrp
+            if (tempid == grpid(i)) then
+               cont = .true.
+               exit
+            end if
+         end do
+      end if
+   else
 !*       WRITE Error Message:  Group ID Field is Too Long (>8)
-      CALL ERRHDL(PATH,MODNAM,'E','245',FIELD(3)(1:12))
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','245',field(3)(1:12))
+      go to 999
+   end if
 
 !     Increment Counters and Assign Group ID If Not a Continuation Card
-   IF (.NOT. CONT) THEN
+   if (.not. cont) then
 ! ---    This is not a continuation record so this is a new GRPID
-      IGRP = IGRP + 1
-      IF (IGRP > NGRP) THEN
+      igrp = igrp + 1
+      if (igrp > ngrp) then
 !           WRITE Error Message    ! Too Many Source Groups Specified
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''NGRP='',I7)') NGRP
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
+         write(dummy,'(''NGRP='',I7)') ngrp
+         call errhdl(path,modnam,'E','290',dummy)
 !           Exit to END
-         GO TO 999
-      END IF
-      NUMGRP = NUMGRP + 1
-      GRPID(IGRP) = TEMPID
-   END IF
+         go to 999
+      end if
+      numgrp = numgrp + 1
+      grpid(igrp) = tempid
+   end if
 
 !     Set Up The Source Group Array and Check for inclusion of BACKGROUND
-   IF (GRPID(IGRP) == 'ALL' .and. .NOT.CONT) THEN
+   if (grpid(igrp) == 'ALL' .and. .not.cont) then
 ! ---    SRCGROUP ALL has been specified; assign all sources to this group
-      DO I = 1, NUMSRC
-         IGROUP(I,IGRP) = 1
-      END DO
+      do i = 1, numsrc
+         igroup(i,igrp) = 1
+      end do
 ! ---    Include BACKGRND concentrations as specified by the user;
 !        Note the BACKGRND is NOT automatically included in source group ALL
-      IF (L_BACKGRND) THEN
-         IF (FIELD(4) == 'NOBACKGROUND' .or.&
-         &FIELD(4) == 'NOBACKGRND') THEN
+      if (l_backgrnd) then
+         if (field(4) == 'NOBACKGROUND' .or.&
+         &field(4) == 'NOBACKGRND') then
 ! ---          User specified to NOT include BACKGRND concentrations in group ALL
-            GRP_BACK(IGRP) = .FALSE.
+            grp_back(igrp) = .false.
 !              Write message indicating that BACKGRND is NOT included in group ALL
-            CALL ERRHDL(PATH,MODNAM,'W','298','NOBACKGROUND')
-         ELSE IF (FIELD(4) == 'BACKGROUND' .or.&
-         &FIELD(4) == 'BACKGRND') THEN
+            call errhdl(path,modnam,'W','298','NOBACKGROUND')
+         else if (field(4) == 'BACKGROUND' .or.&
+         &field(4) == 'BACKGRND') then
 ! ---          Include BACKGRND concentrations in group ALL
-            GRP_BACK(IGRP) = .TRUE.
+            grp_back(igrp) = .true.
 !              Write message indicating that BACKGRND IS included in group ALL
-            CALL ERRHDL(PATH,MODNAM,'W','298','BACKGROUND  ')
-         ELSE IF (LEN_TRIM(FIELD(4)) == 0) THEN
+            call errhdl(path,modnam,'W','298','BACKGROUND  ')
+         else if (len_trim(field(4)) == 0) then
 ! ---          No user-specified option, BACKGRND is NOT included in group ALL
-            GRP_BACK(IGRP) = .FALSE.
+            grp_back(igrp) = .false.
 !              Write message indicating that BACKGRND is NOT included in group ALL
-            CALL ERRHDL(PATH,MODNAM,'W','298','NOBACKGROUND')
-         END IF
-      ELSE
+            call errhdl(path,modnam,'W','298','NOBACKGROUND')
+         end if
+      else
 ! ---       No BACKGRND concentrations provided, set logical to FALSE
-         GRP_BACK(IGRP) = .FALSE.
+         grp_back(igrp) = .false.
 !           Check for BACKGRND or BACKGROUND with SrcGroup ALL, without
 !           background data provided
-         IF (IFC > 3) THEN
-            IF (FIELD(4) == 'BACKGROUND' .or.&
-            &FIELD(4) == 'BACKGRND') THEN
+         if (ifc > 3) then
+            if (field(4) == 'BACKGROUND' .or.&
+            &field(4) == 'BACKGRND') then
 ! ---             Write error message: BACKGRND specified for group ALL w/o BACKGRND keyword
-               CALL ERRHDL(PATH,MODNAM,'E','323',GRPID(IGRP))
-            ELSE
+               call errhdl(path,modnam,'E','323',grpid(igrp))
+            else
 ! ---             Write error message: Additional field included with SRCGROUP ALL
-               CALL ERRHDL(PATH,MODNAM,'E','203',KEYWRD)
-            END IF
-         END IF
-      END IF
-   ELSE
+               call errhdl(path,modnam,'E','203',keywrd)
+            end if
+         end if
+      end if
+   else
 !        Loop Through Fields
-      DO I = 4, IFC
+      do i = 4, ifc
 ! ---       First check for inclusion of BACKGROUND in SrcGroups
-         IF (L_BACKGRND) THEN
-            IF (FIELD(I) == 'BACKGROUND' .or.&
-            &FIELD(I) == 'BACKGRND') THEN
-               GRP_BACK(IGRP) = .TRUE.
+         if (l_backgrnd) then
+            if (field(i) == 'BACKGROUND' .or.&
+            &field(i) == 'BACKGRND') then
+               grp_back(igrp) = .true.
 ! ---             Cycle to next input field
-               CYCLE
-            END IF
-         ELSE IF (FIELD(I) == 'BACKGROUND' .or.&
-         &FIELD(I) == 'BACKGRND') THEN
+               cycle
+            end if
+         else if (field(i) == 'BACKGROUND' .or.&
+         &field(i) == 'BACKGRND') then
 ! ---          Write error message: BACKGRND specified w/o BACKGRND keyword
-            CALL ERRHDL(PATH,MODNAM,'E','323',GRPID(IGRP))
+            call errhdl(path,modnam,'E','323',grpid(igrp))
 ! ---          Cycle to next input field
-            CYCLE
-         END IF
+            cycle
+         end if
 
 ! ---       Check for whether individual source IDs included on the SrcGroup
 !           keyword have been defined.
-         IF (INDEX(FIELD(I),'-') == 0) THEN
+         if (index(field(i),'-') == 0) then
 ! ---          This field is specifying an individual SrcID;
 !              assign to SrcGrp as appropriate
-            FOUND = .FALSE.
-            DO K = 1, NUMSRC
-               IF (FIELD(I) == SRCID(K)) THEN
-                  FOUND = .TRUE.
+            found = .false.
+            do k = 1, numsrc
+               if (field(i) == srcid(k)) then
+                  found = .true.
 ! ---                Check for SRCID already assigned to current group
-                  IF (IGROUP(K,IGRP) > 0) THEN
-                     WRITE(DUMMY,'(''G'',I4.4,'' S'',I5.5)')&
-                     &MIN(IGRP,9999), MIN(K,99999)
+                  if (igroup(k,igrp) > 0) then
+                     write(dummy,'(''G'',I4.4,'' S'',I5.5)')&
+                     &min(igrp,9999), min(k,99999)
 
-                     CALL ERRHDL(PATH,MODNAM,'W','314',DUMMY)
-                  END IF
-                  IGROUP(K,IGRP) = 1
-                  EXIT
-               END IF
-            END DO
-            IF (.NOT. FOUND) THEN
+                     call errhdl(path,modnam,'W','314',dummy)
+                  end if
+                  igroup(k,igrp) = 1
+                  exit
+               end if
+            end do
+            if (.not. found) then
 !                 WRITE Error Message:  Specified Source ID not defined
-               CALL ERRHDL(PATH,MODNAM,'E','224',FIELD(I)(1:12))
-            END IF
-         ELSE
+               call errhdl(path,modnam,'E','224',field(i)(1:12))
+            end if
+         else
 ! ---          Input field includes a range of SrcIDs to include in SrcGroup
-            CALL FSPLIT(PATH,KEYWRD,FIELD(I),ILEN_FLD,'-',RMARK,&
-            &LOWID,HIGID)
+            call fsplit(path,keywrd,field(i),ilen_fld,'-',rmark,&
+            &lowid,higid)
 !              First Check Range for Upper Value < Lower Value
-            CALL SETIDG(LOWID,LID1,IL,LID2)
-            CALL SETIDG(HIGID,HID1,IH,HID2)
-            IF ((HID1<LID1) .or. (IH<IL) .or.&
-            &(HID2<LID2)) THEN
+            call setidg(lowid,lid1,il,lid2)
+            call setidg(higid,hid1,ih,hid2)
+            if ((hid1<lid1) .or. (ih<il) .or.&
+            &(hid2<lid2)) then
 ! ---             WRITE Error Message:  Invalid Range,  Upper < Lower
-               CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
+               call errhdl(path,modnam,'E','203','SRCRANGE')
 !                 Cycle to next input field
-               CYCLE
-            END IF
+               cycle
+            end if
 ! ---          Loop through sources and assign to SrcGroup as appropriate
 !              based on Source Range
-            DO K = 1, NUMSRC
-               CALL ASNGRP(SRCID(K),LOWID,HIGID,INGRP)
-               IF (INGRP) THEN
-                  IGROUP(K,IGRP) = 1
-               END IF
-            END DO
-         END IF
-      END DO
-   END IF
+            do k = 1, numsrc
+               call asngrp(srcid(k),lowid,higid,ingrp)
+               if (ingrp) then
+                  igroup(k,igrp) = 1
+               end if
+            end do
+         end if
+      end do
+   end if
 
-999 RETURN
-END SUBROUTINE SOGRP
+999 return
+end subroutine sogrp
 
-SUBROUTINE ASNGRP(INID,LOWID,HIGID,INGRP)
+subroutine asngrp(inid,lowid,higid,ingrp)
 !***********************************************************************
 !                 ASNGRP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -5991,36 +5991,36 @@ SUBROUTINE ASNGRP(INID,LOWID,HIGID,INGRP)
 !***********************************************************************
 !
 !     Variable Declarations
-   CHARACTER (LEN=12) :: LOWID, HIGID, INID, IID1, LID1, HID1,&
-   &IID2, LID2, HID2
+   character (len=12) :: lowid, higid, inid, iid1, lid1, hid1,&
+   &iid2, lid2, hid2
 !     JAT D065 8/9/21 PATH SET BUT NOT USED
 !      CHARACTER PATH*2, MODNAM*12
-   CHARACTER :: MODNAM*12
-   INTEGER :: IN, IL, IH
-   LOGICAL :: INGRP
+   character :: modnam*12
+   integer :: in, il, ih
+   logical :: ingrp
 
 !     Variable Initializations
-   MODNAM = 'ASNGRP'
+   modnam = 'ASNGRP'
 !     JAT D065 8/9/21 PATH SET BUT NOT USED
 !      PATH   = 'SO'
-   INGRP  = .FALSE.
+   ingrp  = .false.
 
 !     Extract The Character Field And Numerical Field
-   CALL SETIDG(INID,IID1,IN,IID2)
-   CALL SETIDG(LOWID,LID1,IL,LID2)
-   CALL SETIDG(HIGID,HID1,IH,HID2)
+   call setidg(inid,iid1,in,iid2)
+   call setidg(lowid,lid1,il,lid2)
+   call setidg(higid,hid1,ih,hid2)
 
 !     Do Comparisons of Character and Numeric Fields, All Must Satisfy Ranges
-   IF ((IID1>=LID1 .and. IID1<=HID1) .and.&
-   &(IN>=IL .and. IN<=IH) .and.&
-   &(IID2>=LID2 .and. IID2<=HID2)) THEN
-      INGRP = .TRUE.
-   END IF
+   if ((iid1>=lid1 .and. iid1<=hid1) .and.&
+   &(in>=il .and. in<=ih) .and.&
+   &(iid2>=lid2 .and. iid2<=hid2)) then
+      ingrp = .true.
+   end if
 
-   RETURN
-END SUBROUTINE ASNGRP
+   return
+end subroutine asngrp
 
-SUBROUTINE SETIDG(INID,IDCHR1,IDNUM,IDCHR2)
+subroutine setidg(inid,idchr1,idnum,idchr2)
 !***********************************************************************
 !                 SETIDG Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6051,82 +6051,82 @@ SUBROUTINE SETIDG(INID,IDCHR1,IDNUM,IDCHR2)
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, II, ISTR, IDNUM
-   CHARACTER (LEN=12) :: INID, IDCHR1, IDCHR2
-   CHARACTER (LEN= 1) :: CHKI
-   CHARACTER (LEN=ILEN_FLD) :: NUMID
-   LOGICAL :: HIT
+   integer :: i, ii, istr, idnum
+   character (len=12) :: inid, idchr1, idchr2
+   character (len= 1) :: chki
+   character (len=ilen_fld) :: numid
+   logical :: hit
 
 !     Variable Initializations
-   MODNAM = 'SETIDG'
-   I  = 12
-   II = 0
-   NUMID  = ' '
-   IDCHR1 = ' '
-   IDCHR2 = ' '
-   IDNUM  = 0
-   HIT    = .FALSE.
+   modnam = 'SETIDG'
+   i  = 12
+   ii = 0
+   numid  = ' '
+   idchr1 = ' '
+   idchr2 = ' '
+   idnum  = 0
+   hit    = .false.
 
 !     Find The Length of the Input Field, II (<= 12)
-   DO WHILE (.NOT.HIT .and. I>=1)
-      CHKI = INID(I:I)
-      IF (CHKI /= ' ') THEN
-         II = I
-         HIT = .TRUE.
-      END IF
-      I = I - 1
-   END DO
+   do while (.not.hit .and. i>=1)
+      chki = inid(i:i)
+      if (chki /= ' ') then
+         ii = i
+         hit = .true.
+      end if
+      i = i - 1
+   end do
 
 !     Divide the Input Id into 3 parts (char1, int, and char2)
-   I = 1
-   ISTR = I
-   CHKI = INID(I:I)
+   i = 1
+   istr = i
+   chki = inid(i:i)
 !     Get first character part
-   DO WHILE (CHKI < '0' .or. CHKI > '9')
-      IDCHR1 = INID(ISTR:I)
-      I = I + 1
-      IF (I > II) THEN
-         GO TO 20
-      ELSE
-         CHKI = INID(I:I)
-      END IF
-   END DO
+   do while (chki < '0' .or. chki > '9')
+      idchr1 = inid(istr:i)
+      i = i + 1
+      if (i > ii) then
+         go to 20
+      else
+         chki = inid(i:i)
+      end if
+   end do
 
 !     Get integer part
-   ISTR = I
-   DO WHILE (CHKI >= '0' .and. CHKI <= '9')
-      NUMID = INID(ISTR:I)
-      I = I + 1
-      IF (I > II) THEN
-         GO TO 20
-      ELSE
-         CHKI = INID(I:I)
-      END IF
-   END DO
+   istr = i
+   do while (chki >= '0' .and. chki <= '9')
+      numid = inid(istr:i)
+      i = i + 1
+      if (i > ii) then
+         go to 20
+      else
+         chki = inid(i:i)
+      end if
+   end do
 
 !     Get second character part
-   ISTR = I
-   DO WHILE (I <= II)
-      IDCHR2 = INID(ISTR:I)
-      I = I + 1
-      IF (I > II) THEN
-         GO TO 20
-      ELSE
-         CHKI = INID(I:I)
-      END IF
-   END DO
+   istr = i
+   do while (i <= ii)
+      idchr2 = inid(istr:i)
+      i = i + 1
+      if (i > ii) then
+         go to 20
+      else
+         chki = inid(i:i)
+      end if
+   end do
 
-20 CONTINUE
+20 continue
 
 !     Convert Numeric Part to Integer Variable
-   READ(NUMID,'(I8)') IDNUM
+   read(numid,'(I8)') idnum
 
-   RETURN
-END SUBROUTINE SETIDG
+   return
+end subroutine setidg
 
 !----------------------------------------------------------------------
 subroutine vdp1
@@ -6174,40 +6174,40 @@ subroutine vdp1
 ! --- VDP1 calls:      none
 !----------------------------------------------------------------------
 !
-   USE MAIN1
+   use main1
 
-   DOUBLE PRECISION, PARAMETER :: a1=1.257D0, a2=0.4D0, a3=0.55D0,&
-   &xmfp=6.5D-6,&
-   &vcon=1.81D-4, vair=0.15D0,&
-   &rhoair=1.2D-3
+   double precision, parameter :: a1=1.257d0, a2=0.4d0, a3=0.55d0,&
+   &xmfp=6.5d-6,&
+   &vcon=1.81d-4, vair=0.15d0,&
+   &rhoair=1.2d-3
 ! unused: xk=1.38D-16
 ! unused: gcgs=981.0D0, tair=293.15D0
-   DOUBLE PRECISION :: DIAMCM
-   INTEGER          :: I, J, N
+   double precision :: diamcm
+   integer          :: i, j, n
 !
 ! ***
-   if(DEBUG)then
-      write(DBGUNT,*)
-      write(DBGUNT,*)'SUBR. VDP1 -- INPUTS'
-      write(DBGUNT,*)
+   if(debug)then
+      write(dbgunt,*)
+      write(dbgunt,*)'SUBR. VDP1 -- INPUTS'
+      write(dbgunt,*)
       do i=1,numsrc
-         write(DBGUNT,*)'SOURCE          = ',i
-         write(DBGUNT,*)'INPD            = ',inpd(i)
+         write(dbgunt,*)'SOURCE          = ',i
+         write(dbgunt,*)'INPD            = ',inpd(i)
          if (inpd(i) > 0) then
-            write(DBGUNT,*)'APDIAM (um)     = ',(apdiam(n,i),n=1,inpd(i))
-            write(DBGUNT,*)'APHI            = ',(aphi(n,i),n=1,inpd(i))
-            write(DBGUNT,*)'APDENS(g/cm**3) = ',(apdens(n,i),n=1,inpd(i))
+            write(dbgunt,*)'APDIAM (um)     = ',(apdiam(n,i),n=1,inpd(i))
+            write(dbgunt,*)'APHI            = ',(aphi(n,i),n=1,inpd(i))
+            write(dbgunt,*)'APDENS(g/cm**3) = ',(apdens(n,i),n=1,inpd(i))
          end if
-         write(DBGUNT,*)
+         write(dbgunt,*)
       end do
    endif
 ! ***
 !
 ! --- Convert viscosity of air (at 20 deg C) from cm**2/s to m**2/s
-   vairms=1.0D-4*vair
+   vairms=1.0d-4*vair
 !
 ! --- Define phoretic effects term (m/s)
-   vdphor=0.0001D0
+   vdphor=0.0001d0
 !
 !
 ! --  LOOP over sources
@@ -6215,28 +6215,28 @@ subroutine vdp1
 !
       if(inpd(j) <= 0 .and. .not.luservd) then
 !
-         if (pdiff(j)/=0.0D0 .and. pdiffw(j)/=0.0D0&
-         &.and. rcli(j)/=0.0D0 .and. henry(j)/=0.0D0) then
+         if (pdiff(j)/=0.0d0 .and. pdiffw(j)/=0.0d0&
+         &.and. rcli(j)/=0.0d0 .and. henry(j)/=0.0d0) then
 ! ---          GAS DEPOSITION
 !
 ! ---          Convert Pollutant diffusivity (cm**2/s to m**2/s)
-            pdiff(j) =pdiff(j)*1.0D-4
-            pdiffw(j)=pdiffw(j)*1.0D-4
+            pdiff(j) =pdiff(j)*1.0d-4
+            pdiffw(j)=pdiffw(j)*1.0d-4
 !
 ! ---          Convert rcli resistance from s/cm to s/m
-            rcli(j)=rcli(j)*1.0D2
+            rcli(j)=rcli(j)*1.0d2
 !
 ! ***
             if(debug)then
-               write(DBGUNT,*)
-               write(DBGUNT,*)'SUBR. VDP1 -- OUTPUT for GASES'
-               write(DBGUNT,*)'PDIFF (m**2/s)  = ',&
+               write(dbgunt,*)
+               write(dbgunt,*)'SUBR. VDP1 -- OUTPUT for GASES'
+               write(dbgunt,*)'PDIFF (m**2/s)  = ',&
                &(pdiff(n),n=1,numsrc)
-               write(DBGUNT,*)'PDIFFW(m**2/s)  = ',&
+               write(dbgunt,*)'PDIFFW(m**2/s)  = ',&
                &(pdiffw(n),n=1,numsrc)
-               write(DBGUNT,*)'RCLI(s/m)       = ',&
+               write(dbgunt,*)'RCLI(s/m)       = ',&
                &(rcli(n),n=1,numsrc)
-               write(DBGUNT,*)'ZRDEP (m)       = ',zrdep
+               write(dbgunt,*)'ZRDEP (m)       = ',zrdep
             endif
 ! ***
          endif
@@ -6249,38 +6249,38 @@ subroutine vdp1
 !
          do i=1,inpd(j)
 ! ---          Slip correction factor
-            diamcm=1.0D-4*apdiam(i,j)
-            scf(i)=1.0D0+2.0D0*xmfp*&
-            &(a1+a2*DEXP(-a3*diamcm/xmfp))/diamcm
+            diamcm=1.0d-4*apdiam(i,j)
+            scf(i)=1.0d0+2.0d0*xmfp*&
+            &(a1+a2*dexp(-a3*diamcm/xmfp))/diamcm
 !
 ! ---          Gravitational settling velocity (m/s)
 ! ---          (rhoair is approx. density of air -- 1.2e-3 g/cm**3)
 !rwb           Use PARAMETER G = 9.80616 m/s^2 instead of gcgs = 981 cm/s^2
 !rwb           avgrav(i,j)=0.01*(apdens(i,j)-rhoair)*gcgs*diamcm**2
 ! ---          Set lower limit of 0.0 on density difference
-            avgrav(i,j)= MAX(0.0D0,(apdens(i,j)-rhoair))*G*diamcm**2&
-            &*scf(i)/(18.0D0*vcon)
+            avgrav(i,j)= max(0.0d0,(apdens(i,j)-rhoair))*g*diamcm**2&
+            &*scf(i)/(18.0d0*vcon)
 !
 ! ---          Stopping times
 !rwb           Use PARAMETER G = 9.80616 m/s^2 instead of gcgs = 981 cm/s^2
 !rwb           atstop(i,j)=avgrav(i,j)/(0.01*gcgs)
-            atstop(i,j)=avgrav(i,j)/G
+            atstop(i,j)=avgrav(i,j)/g
          end do
 ! ***
-         if(DEBUG)then
-            write(DBGUNT,*)
-            write(DBGUNT,*)'SUBR. VDP1 -- OUTPUT for PARTICLES'
-            write(DBGUNT,*)
+         if(debug)then
+            write(dbgunt,*)
+            write(dbgunt,*)'SUBR. VDP1 -- OUTPUT for PARTICLES'
+            write(dbgunt,*)
             do i=1,numsrc
-               write(DBGUNT,*)'SOURCE          = ',i
-               write(DBGUNT,*)'AVGRAV (m/s)    = ',&
+               write(dbgunt,*)'SOURCE          = ',i
+               write(dbgunt,*)'AVGRAV (m/s)    = ',&
                &(avgrav(n,i),n=1,inpd(i))
-               write(DBGUNT,*)'ATSTOP (s)      = ',&
+               write(dbgunt,*)'ATSTOP (s)      = ',&
                &(atstop(n,i),n=1,inpd(i))
-               write(DBGUNT,*)'VAIRMS (m**2/s) = ',vairms
-               write(DBGUNT,*)'ZRDEP (m)       = ',zrdep
-               write(DBGUNT,*)'VDPHOR (m/s)    = ',vdphor
-               write(DBGUNT,*)
+               write(dbgunt,*)'VAIRMS (m**2/s) = ',vairms
+               write(dbgunt,*)'ZRDEP (m)       = ',zrdep
+               write(dbgunt,*)'VDPHOR (m/s)    = ',vdphor
+               write(dbgunt,*)
             end do
          endif
 ! ***
@@ -6292,7 +6292,7 @@ subroutine vdp1
    return
 end subroutine vdp1
 
-SUBROUTINE HREMIS
+subroutine hremis
 !***********************************************************************
 !                 HREMIS Module of AERMOD
 !
@@ -6310,109 +6310,109 @@ SUBROUTINE HREMIS
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE BUOYANT_LINE, ONLY: L_BLHOURLY   ! Multiple_BuoyLines_D41_Wood
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   use buoyant_line, only: l_blhourly   ! Multiple_BuoyLines_D41_Wood
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, K, IH, IL
+   integer :: i, k, ih, il
 
-   LOGICAL :: FOPEN, INGRP
-   LOGICAL :: RMARK
+   logical :: fopen, ingrp
+   logical :: rmark
 
-   CHARACTER (LEN=12) :: LOWID, HIGID, LID1, LID2, HID1, HID2, TEMPID
+   character (len=12) :: lowid, higid, lid1, lid2, hid1, hid2, tempid
 
 !     Variable Initializations
-   MODNAM = 'HREMIS'
+   modnam = 'HREMIS'
 
-   FOPEN  = .FALSE.
+   fopen  = .false.
 
-   IF (IFC >= 4) THEN
+   if (ifc >= 4) then
 !        Retrieve Hourly Emissions Data Filename as Character Substring to
 !        Maintain Case
-      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         HRFILE = RUNST1(LOCB(3):LOCE(3))
-      ELSE
+         hrfile = runst1(locb(3):loce(3))
+      else
 !           WRITE Error Message:  HRFILE Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         GO TO 999
-      END IF
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+         go to 999
+      end if
 
 !        Open Hourly Emissions Data File If Not Already Open
-      INQUIRE (FILE=HRFILE,OPENED=FOPEN)
+      inquire (file=hrfile,opened=fopen)
 
-      IF (.NOT. FOPEN) THEN
+      if (.not. fopen) then
 !           Open Hourly Emissions Data File If Not Already Open
 !           Open with ACTION='READ' to prevent overwrite and allow multiple access
-         INQUIRE (UNIT=IHREMI,OPENED=FOPEN)
-         IF (.NOT. FOPEN) THEN
-            OPEN(UNIT=IHREMI,ERR=998,FILE=HRFILE,IOSTAT=IOERRN,&
-            &ACTION='READ',STATUS='OLD')
-         END IF
-      END IF
+         inquire (unit=ihremi,opened=fopen)
+         if (.not. fopen) then
+            open(unit=ihremi,err=998,file=hrfile,iostat=ioerrn,&
+            &action='READ',status='OLD')
+         end if
+      end if
 
-   ELSE
+   else
 !        WRITE Error Message         ! Not Enough Parameters Specified
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   end if
 
-   TEMPID = FIELD(4)
+   tempid = field(4)
 
 !     Set Up The Source Group Array
-   IF (TEMPID == 'ALL') THEN
-      DO K = 1, NUMSRC
-         QFLAG(K) = 'HOURLY'
+   if (tempid == 'ALL') then
+      do k = 1, numsrc
+         qflag(k) = 'HOURLY'
 
 !        Multiple_BuoyLines_D41_Wood: Begin
 !           Set the flag indicating that there is one
 !            (or more) buoyant line sources in the hourly emissions file
-         IF (SRCTYP(K) == 'BUOYLINE' .and. .NOT. L_BLHOURLY) THEN
-            L_BLHOURLY = .TRUE.
-         END IF
+         if (srctyp(k) == 'BUOYLINE' .and. .not. l_blhourly) then
+            l_blhourly = .true.
+         end if
 !        Multiple_BuoyLines_D41_Wood: End
 
-      END DO
-   ELSE
+      end do
+   else
 !        Loop Through Fields
-      DO I = 4, IFC
-         CALL FSPLIT(PATH,KEYWRD,FIELD(I),ILEN_FLD,'-',RMARK,&
-         &LOWID,HIGID)
+      do i = 4, ifc
+         call fsplit(path,keywrd,field(i),ilen_fld,'-',rmark,&
+         &lowid,higid)
 !           First Check Range for Upper Value < Lower Value
-         CALL SETIDG(LOWID,LID1,IL,LID2)
-         CALL SETIDG(HIGID,HID1,IH,HID2)
-         IF ((HID1<LID1) .or. (IH<IL) .or. (HID2<LID2)) THEN
+         call setidg(lowid,lid1,il,lid2)
+         call setidg(higid,hid1,ih,hid2)
+         if ((hid1<lid1) .or. (ih<il) .or. (hid2<lid2)) then
 !              WRITE Error Message:  Invalid Range,  Upper < Lower
-            CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-            CYCLE
-         END IF
-         DO K = 1, NUMSRC
-            CALL ASNGRP(SRCID(K),LOWID,HIGID,INGRP)
-            IF (INGRP) THEN
-               QFLAG(K) = 'HOURLY'
+            call errhdl(path,modnam,'E','203','SRCRANGE')
+            cycle
+         end if
+         do k = 1, numsrc
+            call asngrp(srcid(k),lowid,higid,ingrp)
+            if (ingrp) then
+               qflag(k) = 'HOURLY'
 !              Multiple_BuoyLines_D41_Wood: Begin
-               IF ((SRCTYP(K) == 'BUOYLINE' .and.&
-               &.NOT. L_BLHOURLY)) THEN
-                  L_BLHOURLY = .TRUE.
-               END IF
+               if ((srctyp(k) == 'BUOYLINE' .and.&
+               &.not. l_blhourly)) then
+                  l_blhourly = .true.
+               end if
 !              Multiple_BuoyLines_D41_Wood: End
-            END IF
-         END DO
-      END DO
-   END IF
+            end if
+         end do
+      end do
+   end if
 
-   GO TO 999
+   go to 999
 
 !     Process Error Messages
-998 CALL ERRHDL(PATH,MODNAM,'E','500',KEYWRD)
+998 call errhdl(path,modnam,'E','500',keywrd)
 
-999 RETURN
-END SUBROUTINE HREMIS
+999 return
+end subroutine hremis
 
-SUBROUTINE URBANS
+subroutine urbans
 !***********************************************************************
 !                 URBANS Module of AERMOD Model
 !
@@ -6438,104 +6438,104 @@ SUBROUTINE URBANS
 !
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   CHARACTER (LEN=12) :: LOWID, HIGID, LID1, LID2, HID1, HID2, TEMPID
-   INTEGER :: I, IL, IH, K, ISTR
-   LOGICAL :: INGRP, RMARK, FOUND
+   character (len=12) :: lowid, higid, lid1, lid2, hid1, hid2, tempid
+   integer :: i, il, ih, k, istr
+   logical :: ingrp, rmark, found
 
 !     Variable Initializations
-   MODNAM = 'URBANS'
-   FOUND = .FALSE.
+   modnam = 'URBANS'
+   found = .false.
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   end if
 
 !     Check for 'URBANSRC ALL' option identified in PRESET
-   IF (L_URBAN_ALL) THEN
-      IF (IFC == 3 .and. FIELD(3) == 'ALL') THEN
-         URBSRC(:) = 'Y'
-         IURBGRP(:,:) = 1
-         GO TO 999
-      ELSE
+   if (l_urban_all) then
+      if (ifc == 3 .and. field(3) == 'ALL') then
+         urbsrc(:) = 'Y'
+         iurbgrp(:,:) = 1
+         go to 999
+      else
 !           WRITE Error Message:  URBANSRC ALL
-         CALL ERRHDL(PATH,MODNAM,'E','279','URBANSRC ALL')
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','279','URBANSRC ALL')
+         go to 999
+      end if
 
-   ELSE IF (L_MULTURB) THEN
+   else if (l_multurb) then
 !        Multiple Urban Areas
 !        READ in the Group ID and Check for Continuation Card
-      TEMPID = FIELD(3)
-      DO I = 1, NUMURB
-         IF (TEMPID == URBID(I)) THEN
-            FOUND = .TRUE.
-            IURB = I
-         END IF
-      END DO
-      IF (.NOT. FOUND) THEN
+      tempid = field(3)
+      do i = 1, numurb
+         if (tempid == urbid(i)) then
+            found = .true.
+            iurb = i
+         end if
+      end do
+      if (.not. found) then
 !           WRITE Error Message:  Urban ID not defined
-         CALL ERRHDL(PATH,MODNAM,'E','301',TEMPID)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','301',tempid)
+         go to 999
+      end if
 
 !        Specify field index to start for Source IDs
-      ISTR = 4
+      istr = 4
 
-   ELSE
+   else
 !        Single Urban Area - No URBAN ID
-      IURB = 1
+      iurb = 1
 
 !        Specify field index to start for Source IDs
-      ISTR = 3
+      istr = 3
 
-   END IF
+   end if
 
 !     Loop Through Fields
-   DO I = ISTR, IFC
-      IF (INDEX(FIELD(I),'-') == 0) THEN
-         FOUND = .FALSE.
-         DO K = 1, NUMSRC
-            IF (SRCID(K) == FIELD(I)) THEN
-               FOUND = .TRUE.
-               URBSRC(K) = 'Y'
-               IURBGRP(K,IURB) = 1
-            END IF
-         END DO
-         IF (.NOT.FOUND) THEN
+   do i = istr, ifc
+      if (index(field(i),'-') == 0) then
+         found = .false.
+         do k = 1, numsrc
+            if (srcid(k) == field(i)) then
+               found = .true.
+               urbsrc(k) = 'Y'
+               iurbgrp(k,iurb) = 1
+            end if
+         end do
+         if (.not.found) then
 !              WRITE Error Message:  SRCID not found
-            CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-            CYCLE
-         END IF
+            call errhdl(path,modnam,'E','300',keywrd)
+            cycle
+         end if
 
-      ELSE
+      else
 
-         CALL FSPLIT(PATH,KEYWRD,FIELD(I),ILEN_FLD,'-',RMARK,LOWID,&
-         &HIGID)
+         call fsplit(path,keywrd,field(i),ilen_fld,'-',rmark,lowid,&
+         &higid)
 !           First Check Range for Upper Value < Lower Value
-         CALL SETIDG(LOWID,LID1,IL,LID2)
-         CALL SETIDG(HIGID,HID1,IH,HID2)
-         IF ((HID1<LID1) .or. (IH<IL) .or. (HID2<LID2)) THEN
+         call setidg(lowid,lid1,il,lid2)
+         call setidg(higid,hid1,ih,hid2)
+         if ((hid1<lid1) .or. (ih<il) .or. (hid2<lid2)) then
 !              WRITE Error Message:  Invalid Range,  Upper < Lower
-            CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-            CYCLE
-         END IF
-         DO K = 1, NUMSRC
-            CALL ASNGRP(SRCID(K),LOWID,HIGID,INGRP)
-            IF (INGRP) THEN
-               URBSRC(K) = 'Y'
-               IURBGRP(K,IURB) = 1
-            END IF
-         END DO
+            call errhdl(path,modnam,'E','203','SRCRANGE')
+            cycle
+         end if
+         do k = 1, numsrc
+            call asngrp(srcid(k),lowid,higid,ingrp)
+            if (ingrp) then
+               urbsrc(k) = 'Y'
+               iurbgrp(k,iurb) = 1
+            end if
+         end do
 
-      END IF
-   END DO
+      end if
+   end do
 
 !     CRO 3/28/2022 D132 Remove alpha requirement for RLINE (wasn't working in 21112 anyway)
 !     Added check to require ALPHA with RLINEXT or RLINE urban sources.
@@ -6549,10 +6549,10 @@ SUBROUTINE URBANS
 !        END IF
 !     END DO
 
-999 RETURN
-END SUBROUTINE URBANS
+999 return
+end subroutine urbans
 
-SUBROUTINE HBPSOURCE
+subroutine hbpsource
 !***********************************************************************
 !                 HBPSOURCE Module of AERMOD Model
 !
@@ -6571,99 +6571,99 @@ SUBROUTINE HBPSOURCE
 !
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   CHARACTER (LEN=12) :: LOWID, HIGID, LID1, LID2, HID1, HID2, TEMPID
-   INTEGER :: I, IL, IH, K, ISTR
-   LOGICAL :: INGRP, RMARK, FOUND
+   character (len=12) :: lowid, higid, lid1, lid2, hid1, hid2, tempid
+   integer :: i, il, ih, k, istr
+   logical :: ingrp, rmark, found
 
 !     Variable Initializations
-   MODNAM = 'HBPSOURCE'
-   FOUND = .FALSE.
+   modnam = 'HBPSOURCE'
+   found = .false.
 
 
 !     Check The Number Of The Fields
-   IF (IFC < 3) THEN
+   if (ifc < 3) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   end if
 
 !     Check for 'HBPSRCID ALL' option identified in PRESET
-   IF (L_HBP_ALL) THEN
-      IF (IFC == 3 .and. FIELD(3) == 'ALL') THEN
-         DO K = 1, NUMSRC
-            IF (SRCTYP(K)(1:5) == 'POINT') THEN
-               HBPSRC(K) = 'Y'
-               NHBP = NHBP + 1
-            ELSE
-               HBPSRC(K) = 'N'
+   if (l_hbp_all) then
+      if (ifc == 3 .and. field(3) == 'ALL') then
+         do k = 1, numsrc
+            if (srctyp(k)(1:5) == 'POINT') then
+               hbpsrc(k) = 'Y'
+               nhbp = nhbp + 1
+            else
+               hbpsrc(k) = 'N'
 !                    WRITE Informational Message:
 !                    HBP is only relevant to POINT-type sources
-               CALL ERRHDL(PATH,MODNAM,'I','740',SRCID(K))
-            ENDIF
-         ENDDO
-         GO TO 999
-      END IF
-   ELSE
+               call errhdl(path,modnam,'I','740',srcid(k))
+            endif
+         enddo
+         go to 999
+      end if
+   else
 !        Specify field index to start for Source IDs
-      ISTR = 3
-   END IF
+      istr = 3
+   end if
 
 !     Loop Through Fields
-   DO I = ISTR, IFC
-      IF (INDEX(FIELD(I),'-') == 0) THEN
-         FOUND = .FALSE.
-         DO K = 1, NUMSRC
-            IF (SRCID(K) == FIELD(I)) THEN
-               IF (SRCTYP(K)(1:5) == 'POINT') THEN
-                  FOUND = .TRUE.
-                  HBPSRC(K) = 'Y'
-                  NHBP = NHBP + 1
-               ELSE
-                  FOUND = .TRUE.
-                  HBPSRC(K) = 'N'
+   do i = istr, ifc
+      if (index(field(i),'-') == 0) then
+         found = .false.
+         do k = 1, numsrc
+            if (srcid(k) == field(i)) then
+               if (srctyp(k)(1:5) == 'POINT') then
+                  found = .true.
+                  hbpsrc(k) = 'Y'
+                  nhbp = nhbp + 1
+               else
+                  found = .true.
+                  hbpsrc(k) = 'N'
 !                        WRITE Informational Message:
 !                        HBP is only relevant to POINT-type sources
-                  CALL ERRHDL(PATH,MODNAM,'I','740',SRCID(K))
-               ENDIF
-            END IF
-         END DO
-         IF (.NOT.FOUND) THEN
+                  call errhdl(path,modnam,'I','740',srcid(k))
+               endif
+            end if
+         end do
+         if (.not.found) then
 !              WRITE Error Message:  SRCID not found
-            CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-            CYCLE
-         END IF
+            call errhdl(path,modnam,'E','300',keywrd)
+            cycle
+         end if
 
-      ELSE
+      else
 
-         CALL FSPLIT(PATH,KEYWRD,FIELD(I),ILEN_FLD,'-',RMARK,LOWID,&
-         &HIGID)
+         call fsplit(path,keywrd,field(i),ilen_fld,'-',rmark,lowid,&
+         &higid)
 !           First Check Range for Upper Value < Lower Value
-         CALL SETIDG(LOWID,LID1,IL,LID2)
-         CALL SETIDG(HIGID,HID1,IH,HID2)
-         IF ((HID1<LID1) .or. (IH<IL) .or. (HID2<LID2)) THEN
+         call setidg(lowid,lid1,il,lid2)
+         call setidg(higid,hid1,ih,hid2)
+         if ((hid1<lid1) .or. (ih<il) .or. (hid2<lid2)) then
 !              WRITE Error Message:  Invalid Range,  Upper < Lower
-            CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-            CYCLE
-         END IF
-         DO K = 1, NUMSRC
-            CALL ASNGRP(SRCID(K),LOWID,HIGID,INGRP)
-            IF (INGRP) THEN
-               HBPSRC(K) = 'Y'
-            END IF
-         END DO
+            call errhdl(path,modnam,'E','203','SRCRANGE')
+            cycle
+         end if
+         do k = 1, numsrc
+            call asngrp(srcid(k),lowid,higid,ingrp)
+            if (ingrp) then
+               hbpsrc(k) = 'Y'
+            end if
+         end do
 
-      END IF
-   END DO
+      end if
+   end do
 
-999 RETURN
-END SUBROUTINE HBPSOURCE
+999 return
+end subroutine hbpsource
 
 
-SUBROUTINE NO2RAT
+subroutine no2rat
 !***********************************************************************
 !                 NO2RAT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6682,94 +6682,94 @@ SUBROUTINE NO2RAT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, IH, IL, ISDX
-   CHARACTER (LEN=12) :: LID, HID, LID1, LID2, HID1, HID2
-   CHARACTER (LEN=ILEN_FLD) :: SOID
-   LOGICAL :: FOUND, INGRP, RMARK
+   integer :: i, ih, il, isdx
+   character (len=12) :: lid, hid, lid1, lid2, hid1, hid2
+   character (len=ilen_fld) :: soid
+   logical :: found, ingrp, rmark
 
 !     Variable Initializations
-   FOUND  = .FALSE.
-   INGRP  = .FALSE.
-   MODNAM = 'NO2RAT'
+   found  = .false.
+   ingrp  = .false.
+   modnam = 'NO2RAT'
 
 !     Check the Number of Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 4) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 4) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 4) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 4) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Get The Source ID(s)
-   SOID = FIELD(3)
-   CALL FSPLIT(PATH,KEYWRD,SOID,ILEN_FLD,'-',RMARK,LID,HID)
+   soid = field(3)
+   call fsplit(path,keywrd,soid,ilen_fld,'-',rmark,lid,hid)
 
-   IF (LID == HID) THEN
+   if (lid == hid) then
 !        Search For The Index
-      CALL SINDEX(SRCID,NSRC,SOID,ISDX,FOUND)
-      IF (FOUND) THEN
+      call sindex(srcid,nsrc,soid,isdx,found)
+      if (found) then
 !           Read NO2/NOX Ratio and Convert to Real
-         CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
+         call stodbl(field(4),ilen_fld,dnum,imit)
 !           Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            GO TO 999
-         END IF
-         IF (DNUM < 0.0D0 .or. DNUM > 1.0D0) THEN
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+            go to 999
+         end if
+         if (dnum < 0.0d0 .or. dnum > 1.0d0) then
 !              WRITE Error Message: NO2_Ratio Out-of-Range
-            CALL ERRHDL(PATH,MODNAM,'E','336',SRCID(ISDX))
-         END IF
+            call errhdl(path,modnam,'E','336',srcid(isdx))
+         end if
 !           Assign The Field
-         ANO2_RATIO(ISDX) = DNUM
-      ELSE
+         ano2_ratio(isdx) = dnum
+      else
 !           WRITE Error Message     ! Source Location Has Not Been Identified
-         CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','300',keywrd)
+      end if
+   else
 !        First Check Range for Upper Value < Lower Value
-      CALL SETIDG(LID,LID1,IL,LID2)
-      CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1<LID1) .or. (IH<IL) .or. (HID2<LID2)) THEN
+      call setidg(lid,lid1,il,lid2)
+      call setidg(hid,hid1,ih,hid2)
+      if ((hid1<lid1) .or. (ih<il) .or. (hid2<lid2)) then
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
-         CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-         GO TO 999
-      END IF
-      DO I = 1, NUMSRC
+         call errhdl(path,modnam,'E','203','SRCRANGE')
+         go to 999
+      end if
+      do i = 1, numsrc
 !           See Whether It's In The Group
-         CALL ASNGRP(SRCID(I),LID,HID,INGRP)
-         IF (INGRP) THEN
+         call asngrp(srcid(i),lid,hid,ingrp)
+         if (ingrp) then
 !              Read NO2/NOX Ratio and Convert to Real
-            CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
+            call stodbl(field(4),ilen_fld,dnum,imit)
 !              Check The Numerical Field
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-               GO TO 999
-            END IF
-            IF (DNUM < 0.0D0 .or. DNUM > 1.0D0) THEN
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+               go to 999
+            end if
+            if (dnum < 0.0d0 .or. dnum > 1.0d0) then
 !                 WRITE Error Message: NO2_Ratio Out-of-Range
-               CALL ERRHDL(PATH,MODNAM,'E','336',SRCID(I))
-            END IF
+               call errhdl(path,modnam,'E','336',srcid(i))
+            end if
 !              Assign The Field
-            ANO2_RATIO(I) = DNUM
-         END IF
-      END DO
-   END IF
+            ano2_ratio(i) = dnum
+         end if
+      end do
+   end if
 
-999 RETURN
-END SUBROUTINE NO2RAT
+999 return
+end subroutine no2rat
 
-SUBROUTINE OLMGRP
+subroutine olmgrp
 !***********************************************************************
 !                 OLMGRP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6788,141 +6788,141 @@ SUBROUTINE OLMGRP
 !
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, K, IH, IL
-   CHARACTER (LEN=12) :: LOWID, HIGID, LID1, LID2, HID1, HID2
-   CHARACTER (LEN= 8) :: TEMPID
-   LOGICAL :: CONT, INGRP, RMARK, FOUND
+   integer :: i, k, ih, il
+   character (len=12) :: lowid, higid, lid1, lid2, hid1, hid2
+   character (len= 8) :: tempid
+   logical :: cont, ingrp, rmark, found
 ! Unused INTEGER :: J
 
 !     Variable Initializations
-   CONT   = .FALSE.
-   INGRP  = .FALSE.
-   FOUND  = .FALSE.
-   MODNAM = 'OLMGRP'
+   cont   = .false.
+   ingrp  = .false.
+   found  = .false.
+   modnam = 'OLMGRP'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC <= 3 .and. FIELD(3) /= 'ALL') THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc <= 3 .and. field(3) /= 'ALL') then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   end if
 
 !     READ in the OLMGROUP ID and Check for Continuation Card
 !*    First check for length of OLMID field (<=8)
-   IF ((LOCE(3)-LOCB(3)) <= 7) THEN
+   if ((loce(3)-locb(3)) <= 7) then
 !*       Retrieve Temporary Group ID Character Substring
-      TEMPID = FIELD(3)
-      IF (NUMOLM == 0) THEN
-         CONT = .FALSE.
-      ELSE
+      tempid = field(3)
+      if (numolm == 0) then
+         cont = .false.
+      else
 ! ---       This is not the first OLMGroup defined; check on whether
 !           this record is a continuation for the same OLMGroup
-         DO I = 1, NUMOLM
-            IF (TEMPID == OLMID(I)) THEN
-               CONT = .TRUE.
-               EXIT
-            END IF
-         END DO
-      END IF
-   ELSE
+         do i = 1, numolm
+            if (tempid == olmid(i)) then
+               cont = .true.
+               exit
+            end if
+         end do
+      end if
+   else
 !*       WRITE Error Message:  OLMGroup ID Field is Too Long
-      CALL ERRHDL(PATH,MODNAM,'E','232',FIELD(3)(1:12))
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','232',field(3)(1:12))
+      go to 999
+   end if
 
 !     Increment Counters and Assign Group ID If Not a Continuation Card
-   IF (.NOT. CONT) THEN
+   if (.not. cont) then
 ! ---    This is not a continuation record so this is a new GRPID
-      IOLM = IOLM + 1
-      IF (IOLM > NOLM) THEN
+      iolm = iolm + 1
+      if (iolm > nolm) then
 !           WRITE Error Message    ! Too Many OLM Groups Specified
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''NOLM='',I7)') NOLM
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
+         write(dummy,'(''NOLM='',I7)') nolm
+         call errhdl(path,modnam,'E','290',dummy)
 !           Exit to END
-         GO TO 999
-      END IF
-      NUMOLM = NUMOLM + 1
-      OLMID(IOLM) = TEMPID
-   END IF
+         go to 999
+      end if
+      numolm = numolm + 1
+      olmid(iolm) = tempid
+   end if
 
 !     Set Up The OLM Group Array
-   IF (OLMID(IOLM) == 'ALL' .and. .NOT.CONT) THEN
+   if (olmid(iolm) == 'ALL' .and. .not.cont) then
 ! ---    Check for whether all sources have been defined yet,
 !        based on NSRC determined during PRESET vs. NUMSRC
 !        determined during normal SETUP.
-      IF (NUMSRC < NSRC) THEN
+      if (numsrc < nsrc) then
 !           Issue fatal error message; OLMGROUP ALL out of order
-         CALL ERRHDL(PATH,MODNAM,'E','140','OLMGROUP ALL')
-         GO TO 999
-      ELSE
+         call errhdl(path,modnam,'E','140','OLMGROUP ALL')
+         go to 999
+      else
 ! ---       OLMGROUP ALL has been specified; assign all sources to this OLMgroup
-         DO I = 1, NUMSRC
-            IGRP_OLM(I,IOLM) = 1
-            L_OLMGRP(I) = .TRUE.
-         END DO
-      END IF
-   ELSE
+         do i = 1, numsrc
+            igrp_olm(i,iolm) = 1
+            l_olmgrp(i) = .true.
+         end do
+      end if
+   else
 !        Loop Through Fields
-      DO I = 4, IFC
+      do i = 4, ifc
 ! ---       First check for whether individual source IDs included on the
 !           OLMGROUP keyword have been defined.
-         IF (INDEX(FIELD(I),'-') == 0) THEN
+         if (index(field(i),'-') == 0) then
 ! ---          This field is specifying an individual SrcID;
 !              assign to OLMGrp as appropriate
-            FOUND = .FALSE.
-            DO K = 1, NUMSRC
-               IF (FIELD(I) == SRCID(K)) THEN
-                  FOUND = .TRUE.
+            found = .false.
+            do k = 1, numsrc
+               if (field(i) == srcid(k)) then
+                  found = .true.
 ! ---                Assign logical indicating that this SRCID is in an OLMGRP
-                  L_OLMGRP(K) = .TRUE.
+                  l_olmgrp(k) = .true.
 ! ---                Assign flag indicating which OLMGRP this SRCID is included in
-                  IGRP_OLM(K,IOLM) = 1
-                  EXIT
-               END IF
-            END DO
-            IF (.NOT. FOUND) THEN
+                  igrp_olm(k,iolm) = 1
+                  exit
+               end if
+            end do
+            if (.not. found) then
 !                 WRITE Error Message:  Specified Source ID not defined
-               CALL ERRHDL(PATH,MODNAM,'E','225',FIELD(I)(1:12))
-            END IF
-         ELSE
+               call errhdl(path,modnam,'E','225',field(i)(1:12))
+            end if
+         else
 ! ---          Input field includes a range of SrcIDs to include in OLMGrp
-            CALL FSPLIT(PATH,KEYWRD,FIELD(I),ILEN_FLD,'-',RMARK,&
-            &LOWID,HIGID)
+            call fsplit(path,keywrd,field(i),ilen_fld,'-',rmark,&
+            &lowid,higid)
 !              First Check Range for Upper Value < Lower Value
-            CALL SETIDG(LOWID,LID1,IL,LID2)
-            CALL SETIDG(HIGID,HID1,IH,HID2)
-            IF ((HID1<LID1) .or. (IH<IL) .or.&
-            &(HID2<LID2)) THEN
+            call setidg(lowid,lid1,il,lid2)
+            call setidg(higid,hid1,ih,hid2)
+            if ((hid1<lid1) .or. (ih<il) .or.&
+            &(hid2<lid2)) then
 !                 WRITE Error Message:  Invalid Range,  Upper < Lower
-               CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-               CYCLE
-            END IF
-            DO K = 1, NUMSRC
-               CALL ASNGRP(SRCID(K),LOWID,HIGID,INGRP)
-               IF (INGRP) THEN
+               call errhdl(path,modnam,'E','203','SRCRANGE')
+               cycle
+            end if
+            do k = 1, numsrc
+               call asngrp(srcid(k),lowid,higid,ingrp)
+               if (ingrp) then
 ! ---                Assign logical indicating that this SRCID is in an OLMGRP
-                  L_OLMGRP(K) = .TRUE.
+                  l_olmgrp(k) = .true.
 ! ---                Assign flag indicating which OLMGRP this SRCID is included in
-                  IGRP_OLM(K,IOLM) = 1
-               END IF
-            END DO
-         END IF
-      END DO
-   END IF
+                  igrp_olm(k,iolm) = 1
+               end if
+            end do
+         end if
+      end do
+   end if
 
-999 RETURN
-END SUBROUTINE OLMGRP
+999 return
+end subroutine olmgrp
 
-SUBROUTINE PSDGRP
+subroutine psdgrp
 !***********************************************************************
 !                 PSDGRP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6942,149 +6942,149 @@ SUBROUTINE PSDGRP
 !
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, K, IH, IL
-   CHARACTER (LEN=12) :: LOWID, HIGID, LID1, LID2, HID1, HID2, TEMPID
-   LOGICAL :: CONT, INGRP, RMARK, FOUND
+   integer :: i, k, ih, il
+   character (len=12) :: lowid, higid, lid1, lid2, hid1, hid2, tempid
+   logical :: cont, ingrp, rmark, found
 
 !     Variable Initializations
-   CONT   = .FALSE.
-   INGRP  = .FALSE.
-   FOUND  = .FALSE.
-   MODNAM = 'PSDGRP'
+   cont   = .false.
+   ingrp  = .false.
+   found  = .false.
+   modnam = 'PSDGRP'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
 !        Note:  The ALL parameter is not valid for the PSDCREDIT option
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 4) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 4) then
 !        Error Message: Not Enough Parameters
 !        Note:  The ALL parameter is not valid for the PSDCREDIT option
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   end if
 
 !     READ in the PSDGROUP ID and Check for Continuation Card
 !*    First check for length of PSDID field (<=8)
-   IF ((LOCE(3)-LOCB(3)) <= 7) THEN
+   if ((loce(3)-locb(3)) <= 7) then
 !*       Retrieve Temporary Group ID Character Substring
-      TEMPID = FIELD(3)
-      IF (NUMPSD == 0) THEN
+      tempid = field(3)
+      if (numpsd == 0) then
 ! ---       This is the first PSDID defined; set CONT = .F.
-         CONT = .FALSE.
-      ELSE
+         cont = .false.
+      else
 ! ---       This is not the first PSDID defined; check on whether
 !           this record is a continuation for the same PSDID
-         DO I = 1, NUMPSD
-            IF (TEMPID == PSDID(I)) THEN
-               CONT = .TRUE.
-               EXIT
-            END IF
-         END DO
-      END IF
-   ELSE
+         do i = 1, numpsd
+            if (tempid == psdid(i)) then
+               cont = .true.
+               exit
+            end if
+         end do
+      end if
+   else
 !*       WRITE Error Message:  PSDGROUP ID Field is Too Long
-      CALL ERRHDL(PATH,MODNAM,'E','253',FIELD(3)(1:12))
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','253',field(3)(1:12))
+      go to 999
+   end if
 
 !     Increment Counters and Assign Group ID If Not a Continuation Card
-   IF (.NOT. CONT) THEN
+   if (.not. cont) then
 ! ---    This is not a continuation record so this is a new PSDID
-      IPSD = IPSD + 1
-      IF (IPSD > NPSD) THEN
+      ipsd = ipsd + 1
+      if (ipsd > npsd) then
 !           WRITE Error Message    ! Too Many PSD Groups Specified
 !           This shouldn't occur since limits are dynamically allocated
-         WRITE(DUMMY,'(''NPSD='',I7)') NPSD
-         CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
+         write(dummy,'(''NPSD='',I7)') npsd
+         call errhdl(path,modnam,'E','290',dummy)
 !           Exit to END
-         GO TO 999
-      END IF
-      NUMPSD = NUMPSD + 1
-      PSDID(IPSD) = TEMPID
-   END IF
+         go to 999
+      end if
+      numpsd = numpsd + 1
+      psdid(ipsd) = tempid
+   end if
 
 !     Set Up The Source Group Array and the PSD source type
 !       Only INCRCONS (increment consuming), RETRBASE (retired baseline),
 !       and NONRBASE (non-retired basleine) are allowable; any other
 !       PSD group name, including ALL, is not allowed
-   IF( PSDID(IPSD) == 'INCRCONS' .or.&
-   &PSDID(IPSD) == 'RETRBASE' .or.&
-   &PSDID(IPSD) == 'NONRBASE' )THEN
+   if( psdid(ipsd) == 'INCRCONS' .or.&
+   &psdid(ipsd) == 'RETRBASE' .or.&
+   &psdid(ipsd) == 'NONRBASE' )then
 
 !        Valid PSD Source Group; Loop Through Fields
-      DO I = 4, IFC
+      do i = 4, ifc
 ! ---       First check for whether individual source IDs included on the
 !           PSDGROUP keyword have been defined (based on no '-' in FIELD).
-         IF (INDEX(FIELD(I),'-') == 0) THEN
-            FOUND = .FALSE.
-            DO K = 1, NUMSRC
-               IF (FIELD(I) == SRCID(K)) THEN
-                  FOUND = .TRUE.
-                  IGRP_PSD(K,IPSD) = 1
+         if (index(field(i),'-') == 0) then
+            found = .false.
+            do k = 1, numsrc
+               if (field(i) == srcid(k)) then
+                  found = .true.
+                  igrp_psd(k,ipsd) = 1
 ! ---                Assign PSDSRCTYP flag to indicate the type of source
-                  IF( PSDID(IPSD) == 'INCRCONS' )THEN
-                     PSDSRCTYP(K) = 'IC'
-                  ELSE IF( PSDID(IPSD) == 'NONRBASE' )THEN
-                     PSDSRCTYP(K) = 'NB'
-                  ELSE IF( PSDID(IPSD) == 'RETRBASE' )THEN
-                     PSDSRCTYP(K) = 'RB'
-                  END IF
-               END IF
-            END DO
-            IF (.NOT. FOUND) THEN
+                  if( psdid(ipsd) == 'INCRCONS' )then
+                     psdsrctyp(k) = 'IC'
+                  else if( psdid(ipsd) == 'NONRBASE' )then
+                     psdsrctyp(k) = 'NB'
+                  else if( psdid(ipsd) == 'RETRBASE' )then
+                     psdsrctyp(k) = 'RB'
+                  end if
+               end if
+            end do
+            if (.not. found) then
 !                 WRITE Error Message:  Specified Source ID not defined
-               CALL ERRHDL(PATH,MODNAM,'E','226',FIELD(I)(1:12))
-            END IF
-         ELSE
+               call errhdl(path,modnam,'E','226',field(i)(1:12))
+            end if
+         else
 ! ---          Input field includes a range of SrcIDs to include in PSDGrp
-            CALL FSPLIT(PATH,KEYWRD,FIELD(I),ILEN_FLD,'-',RMARK,&
-            &LOWID,HIGID)
+            call fsplit(path,keywrd,field(i),ilen_fld,'-',rmark,&
+            &lowid,higid)
 !              First Check Range for Upper Value < Lower Value
-            CALL SETIDG(LOWID,LID1,IL,LID2)
-            CALL SETIDG(HIGID,HID1,IH,HID2)
-            IF ((HID1<LID1) .or. (IH<IL) .or.&
-            &(HID2<LID2)) THEN
+            call setidg(lowid,lid1,il,lid2)
+            call setidg(higid,hid1,ih,hid2)
+            if ((hid1<lid1) .or. (ih<il) .or.&
+            &(hid2<lid2)) then
 !                 WRITE Error Message:  Invalid Range,  Upper < Lower
-               CALL ERRHDL(PATH,MODNAM,'E','203','PSDRANGE')
+               call errhdl(path,modnam,'E','203','PSDRANGE')
 !                 Cycle to next input field
-               CYCLE
-            END IF
+               cycle
+            end if
 ! ---          Loop through sources and assign to PSDGroup as appropriate
 !              based on Source Range
-            DO K = 1, NUMSRC
-               CALL ASNGRP(SRCID(K),LOWID,HIGID,INGRP)
-               IF (INGRP) THEN
-                  IGRP_PSD(K,IPSD) = 1
-                  L_PSDGRP(K) = .TRUE.
+            do k = 1, numsrc
+               call asngrp(srcid(k),lowid,higid,ingrp)
+               if (ingrp) then
+                  igrp_psd(k,ipsd) = 1
+                  l_psdgrp(k) = .true.
 ! ---                Assign PSDSRCTYP flag to indicate the type of source
-                  IF( PSDID(IPSD) == 'INCRCONS' )THEN
-                     PSDSRCTYP(K) = 'IC'
-                  ELSE IF( PSDID(IPSD) == 'NONRBASE' )THEN
-                     PSDSRCTYP(K) = 'NB'
-                  ELSE IF( PSDID(IPSD) == 'RETRBASE' )THEN
-                     PSDSRCTYP(K) = 'RB'
-                  END IF
-               END IF
-            END DO
-         END IF
-      END DO
-   ELSE
+                  if( psdid(ipsd) == 'INCRCONS' )then
+                     psdsrctyp(k) = 'IC'
+                  else if( psdid(ipsd) == 'NONRBASE' )then
+                     psdsrctyp(k) = 'NB'
+                  else if( psdid(ipsd) == 'RETRBASE' )then
+                     psdsrctyp(k) = 'RB'
+                  end if
+               end if
+            end do
+         end if
+      end do
+   else
 !        Error Message: Not a valid PSD source group
-      CALL ERRHDL(PATH,MODNAM,'E','287',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','287',keywrd)
+      go to 999
+   end if
 
-999 RETURN
-END SUBROUTINE PSDGRP
+999 return
+end subroutine psdgrp
 
 ! Multiple_BuoyLines_D41_Wood
-SUBROUTINE BLPGRP
+subroutine blpgrp
 !***********************************************************************
 !                 BLPGRP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7103,47 +7103,47 @@ SUBROUTINE BLPGRP
 !
 
 !     Variable Declarations
-   USE MAIN1
-   USE BUOYANT_LINE
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   use buoyant_line
+   implicit none
+   character :: modnam*12
 
 ! JAT 06/22/21 D065
 ! REMOVE K AS UNUSED VARIABLE
 !      INTEGER :: I, K, IH, IL, IGRPNUM, JJ, KK
-   INTEGER :: I, IH, IL, JJ, KK
-   INTEGER, SAVE :: IGRPNUM
-   CHARACTER (LEN=12) :: LOWID, HIGID, LID1, LID2, HID1, HID2, TEMPID
-   LOGICAL :: CONT, INGRP, RMARK, FOUND, BLPAVGGRP_FOUND
+   integer :: i, ih, il, jj, kk
+   integer, save :: igrpnum
+   character (len=12) :: lowid, higid, lid1, lid2, hid1, hid2, tempid
+   logical :: cont, ingrp, rmark, found, blpavggrp_found
 
 !     Variable Initializations
 ! --- Flag indicating if the BLPGROUP record is a continuation record
-   CONT   = .FALSE.
+   cont   = .false.
 ! --- Flag indicating whether a source in a range of sources is in a BLPGROUP
-   INGRP  = .FALSE.
+   ingrp  = .false.
 ! --- Flag indicating if the SOURCE ID has been defined (SO LOCATION)
-   FOUND  = .FALSE.
+   found  = .false.
 ! --- Flag indicating if the BLPGROUP ID was defined on a BLPINPUT record
-   BLPAVGGRP_FOUND = .FALSE.
+   blpavggrp_found = .false.
 
-   MODNAM = 'BLPGRP'
+   modnam = 'BLPGRP'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC <= 3 .and. FIELD(3) /= 'ALL') THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc <= 3 .and. field(3) /= 'ALL') then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   end if
 
 !     READ in the BLPGROUP ID and Check for Continuation Card
 !*    First check for length of BLPID field (<=8)
-   IF ((LOCE(3)-LOCB(3)) <= 7) THEN
+   if ((loce(3)-locb(3)) <= 7) then
 !*       Retrieve Temporary Group ID Character Substring
-      TEMPID = FIELD(3)
+      tempid = field(3)
 !         BL_Source_Limit_D088: Wood
 !         Code deleted:
 !         In original implementation of BLPGROUP, but is redundant
@@ -7158,22 +7158,22 @@ SUBROUTINE BLPGRP
 !         ELSE
 !           BL_Source_Limit_D088: Wood
 ! ---       Check if this record is a continuation for the same BLPGROUP
-      DO I = 1, NUMBLGRPS
-         IF (TEMPID == BL_GRPID(I)) THEN
-            BLPAVGGRP_FOUND = .TRUE.                 ! BL_Source_Limit_D088: Wood
-            CONT = .TRUE.
-            EXIT
-         END IF
-      END DO
+      do i = 1, numblgrps
+         if (tempid == bl_grpid(i)) then
+            blpavggrp_found = .true.                 ! BL_Source_Limit_D088: Wood
+            cont = .true.
+            exit
+         end if
+      end do
 !         END IF   !NUMBLGRPS .EQ. 0
-   ELSE
+   else
 !*       WRITE Error Message:  BLPGROUP ID Field is Too Long
-      CALL ERRHDL(PATH,MODNAM,'E','245',FIELD(3)(1:12))
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','245',field(3)(1:12))
+      go to 999
+   end if
 
 !     Increment Counters and Assign Group ID If Not a Continuation Card
-   IF (.NOT. CONT) THEN
+   if (.not. cont) then
 ! ---    This is not a continuation record so this is a new BLPGROUP ID
 
 ! ---    Determine if this BLPGROUP ID has been defined by a BLPINPUT record
@@ -7187,15 +7187,15 @@ SUBROUTINE BLPGRP
 !               This error message will likely be accompanied by another
 !               error message that there is no BLPINPUT record for BLPGROUP ID
 
-      DO KK = 1,NUMBLAVGINP
-         IF (TEMPID == BLAVGINP_GRPID(KK)) THEN
-            IGRPNUM = KK
-            BLPAVGGRP_FOUND = .TRUE.
-            NUMBLGRPS = NUMBLGRPS + 1
-            BL_GRPID(IGRPNUM) = TEMPID
-            EXIT
-         END IF
-      END DO
+      do kk = 1,numblavginp
+         if (tempid == blavginp_grpid(kk)) then
+            igrpnum = kk
+            blpavggrp_found = .true.
+            numblgrps = numblgrps + 1
+            bl_grpid(igrpnum) = tempid
+            exit
+         end if
+      end do
 
 !        IF (IOLM .GT. NOLM) THEN
 !           WRITE Error Message    ! Too Many OLM Groups Specified
@@ -7206,91 +7206,91 @@ SUBROUTINE BLPGRP
 !           GO TO 999
 !        END IF
 !        NUMOLM = NUMOLM + 1      no NUMBLP equivalent in this routine
-   END IF
+   end if
 
-   IF (BLPAVGGRP_FOUND) THEN
+   if (blpavggrp_found) then
 ! ---    The BLP group ID, as defined on a BLPINPUT record, has been found
 
 !        Set Up The BLP Group Array
-      IF (BL_GRPID(IGRPNUM) == 'ALL' .and. .NOT.CONT) THEN
+      if (bl_grpid(igrpnum) == 'ALL' .and. .not.cont) then
 ! ---       BLPGROUP set to ALL
 !           Assign all sources to this BLPGROUP
-         DO KK = 1, NUMSRC
-            IF (SRCTYP(KK) == 'BUOYLINE') THEN
-               IGRP_BLP(KK,IGRPNUM) = 1
+         do kk = 1, numsrc
+            if (srctyp(kk) == 'BUOYLINE') then
+               igrp_blp(kk,igrpnum) = 1
 !                 L_BLPGRP(kk) = .TRUE.
-            ENDIF
-         END DO
-      ELSE
+            endif
+         end do
+      else
 !           BLPGROUP ID is not 'ALL' - loop through fields
-         DO JJ = 4, IFC
+         do jj = 4, ifc
 ! ---          First check for whether individual source IDs included on
 !              the BLPGROUP keyword have been defined.
-            IF (INDEX(FIELD(JJ),'-') == 0) THEN
+            if (index(field(jj),'-') == 0) then
 ! ---             This field is specifying an individual SrcID;
 !                 assign to BLPGROUP as appropriate
-               FOUND = .FALSE.
-               DO KK = 1, NUMSRC
-                  IF (FIELD(JJ) == SRCID(KK)) THEN
-                     IF (SRCTYP(KK) == 'BUOYLINE') THEN
-                        FOUND = .TRUE.
+               found = .false.
+               do kk = 1, numsrc
+                  if (field(jj) == srcid(kk)) then
+                     if (srctyp(kk) == 'BUOYLINE') then
+                        found = .true.
 ! ---                      Assign flag indicating which BLPGROUP this SRCID is included in
-                        IGRP_BLP(KK,IGRPNUM) = 1
+                        igrp_blp(kk,igrpnum) = 1
 ! ---                      Assign logical indicating that this SRCID is in a BLPGROUP
 !                           L_BLPGRP(kk) = .TRUE.
-                        EXIT
-                     ELSE                 ! non-BL line in a BLPGROUP
+                        exit
+                     else                 ! non-BL line in a BLPGROUP
 !                          WRITE Error Message:  Specified Source ID is not a BL
-                        CALL ERRHDL(PATH,MODNAM,'E','255',&
-                        &FIELD(JJ)(1:12))
-                     END IF
-                  END IF
-               END DO
-               IF (.NOT. FOUND) THEN
+                        call errhdl(path,modnam,'E','255',&
+                        &field(jj)(1:12))
+                     end if
+                  end if
+               end do
+               if (.not. found) then
 !                    WRITE Error Message:  Specified Source ID not defined
-                  CALL ERRHDL(PATH,MODNAM,'E','254',FIELD(JJ)(1:12))
-               END IF
-            ELSE
+                  call errhdl(path,modnam,'E','254',field(jj)(1:12))
+               end if
+            else
 ! ---             Input field includes a range of SrcIDs on BLPGROUP
-               CALL FSPLIT(PATH,KEYWRD,FIELD(JJ),ILEN_FLD,'-',&
-               &RMARK,LOWID,HIGID)
+               call fsplit(path,keywrd,field(jj),ilen_fld,'-',&
+               &rmark,lowid,higid)
 !                 First Check Range for Upper Value < Lower Value
-               CALL SETIDG(LOWID,LID1,IL,LID2)
-               CALL SETIDG(HIGID,HID1,IH,HID2)
-               IF ((HID1<LID1) .or. (IH<IL) .or.&
-               &(HID2<LID2)) THEN
+               call setidg(lowid,lid1,il,lid2)
+               call setidg(higid,hid1,ih,hid2)
+               if ((hid1<lid1) .or. (ih<il) .or.&
+               &(hid2<lid2)) then
 !                    WRITE Error Message:  Invalid Range,  Upper < Lower
-                  CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-                  CYCLE
-               END IF
+                  call errhdl(path,modnam,'E','203','SRCRANGE')
+                  cycle
+               end if
 
-               DO KK = 1, NUMSRC
-                  IF (SRCTYP(KK) == 'BUOYLINE') THEN
-                     CALL ASNGRP(SRCID(KK),LOWID,HIGID,INGRP)
-                     IF (INGRP) THEN
+               do kk = 1, numsrc
+                  if (srctyp(kk) == 'BUOYLINE') then
+                     call asngrp(srcid(kk),lowid,higid,ingrp)
+                     if (ingrp) then
 ! ---                      Assign flag indicating which BLPGROUP this SRCID
 !                          is included in
-                        IGRP_BLP(KK,IGRPNUM) = 1
+                        igrp_blp(kk,igrpnum) = 1
 ! ---                      Assign logical indicating that this SRCID is
 !                          in a BLPGROUP
 !                           L_BLPGRP(kk) = .TRUE.
-                     END IF
-                  END IF      ! SRCTYP = BUOYLINE
-               END DO         ! loop over sources
-            END IF            ! search for hyphen in BLPGROUP
-         END DO               ! loop through fields on BLPGROUP record
-      END IF                  ! BLPGROUP id ('ALL' or a group name)
-   ELSE
+                     end if
+                  end if      ! SRCTYP = BUOYLINE
+               end do         ! loop over sources
+            end if            ! search for hyphen in BLPGROUP
+         end do               ! loop through fields on BLPGROUP record
+      end if                  ! BLPGROUP id ('ALL' or a group name)
+   else
 ! ---    The BLP group ID, as defined on a BLPINPUT record, has NOT been found
 !          or there are no BLPINPUT records
-      WRITE(DUMMY,'(A12)') TEMPID
-      CALL ERRHDL(PATH,MODNAM,'E','502',DUMMY)
-   END IF
+      write(dummy,'(A12)') tempid
+      call errhdl(path,modnam,'E','502',dummy)
+   end if
 
-999 RETURN
-END SUBROUTINE BLPGRP
+999 return
+end subroutine blpgrp
 
-SUBROUTINE BACK_GRND
+subroutine back_grnd
 !***********************************************************************
 !                 BACK_GRND Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7319,327 +7319,327 @@ SUBROUTINE BACK_GRND
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J
-   INTEGER :: NumInt, NumReal
-   LOGICAL :: FOPEN
+   integer :: i, j
+   integer :: NumInt, NumReal
+   logical :: fopen
 ! Unused: CHARACTER (LEN=12) :: LID, LID1, LID2, HID, HID1, HID2
 ! Unused: CHARACTER (LEN=ILEN_FLD) :: SOID
 ! Unused: INTEGER :: IH, IL, ISDX
 ! Unused: LOGICAL INGRP, RMARK
 
 !     Variable Initializations
-   MODNAM = 'BACK_GRND'
+   modnam = 'BACK_GRND'
 
 ! --- Assign logical variable indicating that background concentrations
 !     are specified
-   L_BACKGRND = .TRUE.
-   FOPEN  = .FALSE.
+   l_backgrnd = .true.
+   fopen  = .false.
    NumInt  = 0
    NumReal = 0
 
 ! --- Check The Number Of The Fields, accounting for sector-varying values
-   IF (.NOT.L_BGSector) THEN
-      IF (IFC <= 2) THEN
+   if (.not.L_BGSector) then
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC == 3) THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc == 3) then
 !           Error Message: No Numerical Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC < 4) THEN
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      else if (ifc < 4) then
 !           Error Message: Not Enough Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      end if
 ! ---    Check for SECT ID in field 3 in case BGSECTOR keyword was omitted
-      IF (FIELD(3)(1:4) == 'SECT') THEN
+      if (field(3)(1:4) == 'SECT') then
 !           Error Message: SECT ID without BGSECTOR keyword
-         CALL ERRHDL(PATH,MODNAM,'E','171',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','171',keywrd)
+         go to 999
+      end if
 ! ---    Assign sector ID to 1 since sector-varying values not being used;
 !        also set field index for the user-specified BACKGRND option and
 !        assign the option to BFLAG variable
-      IBGSECT = 1
-      I = 3
+      ibgsect = 1
+      i = 3
 
 ! ---    Check for inconsistent non-HOURLY BACKGRND options for the same sector
-      IF (IBGMAX(IBGSECT) >= 1 .and.&
-      &BFLAG(IBGSECT) /= FIELD(I) .and.&
-      &FIELD(I) /= 'HOURLY') THEN
+      if (ibgmax(ibgsect) >= 1 .and.&
+      &bflag(ibgsect) /= field(i) .and.&
+      &field(i) /= 'HOURLY') then
 !           Issue error message for inconsistent options
-         CALL ERRHDL(PATH,MODNAM,'E','165',FIELD(I))
-      ELSE
+         call errhdl(path,modnam,'E','165',field(i))
+      else
 ! ---       Assign BACKGRND option to BFLAG for non-HOURLY data and assign
 !           logical variables; L_BGFile(BGSect) for hourly values by sector
 !           and L_BGHourly for hourly values in general
-         IF (FIELD(I) /= 'HOURLY') THEN
-            BFLAG(IBGSECT) = FIELD(I)
-            L_BGValues(IBGSECT) = .TRUE.
-         ELSE IF ( L_BGFile(IBGSECT) ) THEN
+         if (field(i) /= 'HOURLY') then
+            bflag(ibgsect) = field(i)
+            L_BGValues(ibgsect) = .true.
+         else if ( L_BGFile(ibgsect) ) then
 ! ---          HOURLY BG File already specified for this sector
 !              Issue error message for inconsistent options
-            WRITE(DUMMY,'(''BGSECT'',I1)') IBGSECT
-            CALL ERRHDL(PATH,MODNAM,'E','168',DUMMY)
-         ELSE
+            write(dummy,'(''BGSECT'',I1)') ibgsect
+            call errhdl(path,modnam,'E','168',dummy)
+         else
 !              Assign logical variables
-            L_BGHourly        = .TRUE.
-            L_BGFile(IBGSECT) = .TRUE.
-         END IF
-      END IF
+            L_BGHourly        = .true.
+            L_BGFile(ibgsect) = .true.
+         end if
+      end if
 
-   ELSE
+   else
 ! ---    Process BGSECTOR options
-      IF (IFC <= 2) THEN
+      if (ifc <= 2) then
 !           Error Message: No Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-         GO TO 999
-      ELSE IF (IFC == 4) THEN
-         IF (FIELD(3)(1:4) /= 'SECT') THEN
+         call errhdl(path,modnam,'E','200',keywrd)
+         go to 999
+      else if (ifc == 4) then
+         if (field(3)(1:4) /= 'SECT') then
 !              Error Message: Invalid sector field
-            CALL ERRHDL(PATH,MODNAM,'E','203','BGSECTOR ID')
-            GO TO 999
-         ELSE
+            call errhdl(path,modnam,'E','203','BGSECTOR ID')
+            go to 999
+         else
 !              Error Message: No Numerical Parameters
-            CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-            GO TO 999
-         END IF
-      ELSE IF (IFC < 5) THEN
+            call errhdl(path,modnam,'E','201',keywrd)
+            go to 999
+         end if
+      else if (ifc < 5) then
 !           Error Message: Not Enough Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      end if
 ! ---    Determine user-specified sector
-      IF (FIELD(3) == 'SECT1') THEN
-         IBGSECT = 1
-      ELSE IF (FIELD(3) == 'SECT2' .and. NUMBGSects >= 2) THEN
-         IBGSECT = 2
-      ELSE IF (FIELD(3) == 'SECT3' .and. NUMBGSects >= 3) THEN
-         IBGSECT = 3
-      ELSE IF (FIELD(3) == 'SECT4' .and. NUMBGSects >= 4) THEN
-         IBGSECT = 4
-      ELSE IF (FIELD(3) == 'SECT5' .and. NUMBGSects >= 5) THEN
-         IBGSECT = 5
-      ELSE IF (FIELD(3) == 'SECT6' .and. NUMBGSects == 6) THEN
-         IBGSECT = 6
-      ELSE
+      if (field(3) == 'SECT1') then
+         ibgsect = 1
+      else if (field(3) == 'SECT2' .and. NUMBGSects >= 2) then
+         ibgsect = 2
+      else if (field(3) == 'SECT3' .and. NUMBGSects >= 3) then
+         ibgsect = 3
+      else if (field(3) == 'SECT4' .and. NUMBGSects >= 4) then
+         ibgsect = 4
+      else if (field(3) == 'SECT5' .and. NUMBGSects >= 5) then
+         ibgsect = 5
+      else if (field(3) == 'SECT6' .and. NUMBGSects == 6) then
+         ibgsect = 6
+      else
 !           Error Message: Invalid sector field
-         CALL ERRHDL(PATH,MODNAM,'E','203','BGSECTOR ID')
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','203','BGSECTOR ID')
+         go to 999
+      end if
 ! ---    Set field index for the user-specified BACKGRND option and
 !        assign the option to BFLAG variable
-      I = 4
+      i = 4
 
 ! ---    Check for inconsistent non-HOURLY BACKGRND options for the same sector
-      IF (IBGMAX(IBGSECT) >= 1 .and.&
-      &BFLAG(IBGSECT) /= FIELD(I) .and.&
-      &FIELD(I) /= 'HOURLY') THEN
+      if (ibgmax(ibgsect) >= 1 .and.&
+      &bflag(ibgsect) /= field(i) .and.&
+      &field(i) /= 'HOURLY') then
 !           Issue error message for inconsistent options
-         IF (LEN_TRIM(FIELD(I)) > 6) THEN
-            WRITE(DUMMY,'(''SEC'',I1,1X,A:)') IBGSECT,&
-            &FIELD(I)(1:LEN_TRIM(FIELD(I)))
-            CALL ERRHDL(PATH,MODNAM,'E','165',DUMMY)
-         ELSE
-            WRITE(DUMMY,'(''SECT'',I1,1X,A:)') IBGSECT,&
-            &FIELD(I)(1:LEN_TRIM(FIELD(I)))
-            CALL ERRHDL(PATH,MODNAM,'E','165',DUMMY)
-         END IF
-      ELSE
+         if (len_trim(field(i)) > 6) then
+            write(dummy,'(''SEC'',I1,1X,A:)') ibgsect,&
+            &field(i)(1:len_trim(field(i)))
+            call errhdl(path,modnam,'E','165',dummy)
+         else
+            write(dummy,'(''SECT'',I1,1X,A:)') ibgsect,&
+            &field(i)(1:len_trim(field(i)))
+            call errhdl(path,modnam,'E','165',dummy)
+         end if
+      else
 ! ---       Assign BACKGRND option to BFLAG for non-HOURLY data and assign
 !           logical variables; L_BGFile(BGSect) for hourly values by sector
 !           and L_BGHourly for availability of hourly values in general
-         IF (FIELD(I) /= 'HOURLY') THEN
-            BFLAG(IBGSECT) = FIELD(I)
-            L_BGValues(IBGSECT) = .TRUE.
-         ELSE IF ( L_BGFile(IBGSECT) ) THEN
+         if (field(i) /= 'HOURLY') then
+            bflag(ibgsect) = field(i)
+            L_BGValues(ibgsect) = .true.
+         else if ( L_BGFile(ibgsect) ) then
 ! ---          HOURLY BG File already specified for this sector
 !              Issue error message for inconsistent options
-            WRITE(DUMMY,'(''BGSECT'',I1)') IBGSECT
-            CALL ERRHDL(PATH,MODNAM,'E','168',DUMMY)
-         ELSE
-            L_BGHourly        = .TRUE.
-            L_BGFile(IBGSECT) = .TRUE.
-         END IF
-      END IF
-   END IF
+            write(dummy,'(''BGSECT'',I1)') ibgsect
+            call errhdl(path,modnam,'E','168',dummy)
+         else
+            L_BGHourly        = .true.
+            L_BGFile(ibgsect) = .true.
+         end if
+      end if
+   end if
 
 ! --- First check for hourly background file
-   IF (L_BGFile(IBGSECT) .and. FIELD(I) == 'HOURLY') THEN
+   if (L_BGFile(ibgsect) .and. field(i) == 'HOURLY') then
 ! ---    Hourly background concentration option selected;
 
-      IF ((LOCE(I+1)-LOCB(I+1)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(i+1)-locb(i+1)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         BKGRND_File(IBGSECT) = RUNST1(LOCB(I+1):LOCE(I+1))
-      ELSE
+         BKGRND_File(ibgsect) = runst1(locb(i+1):loce(i+1))
+      else
 !           WRITE Error Message:  BKGRND_File Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         GO TO 999
-      END IF
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+         go to 999
+      end if
 
 ! ---    Assign file unit for this BKG file and Open The BACKGRND Input File
 !        Open with ACTION='READ' to prevent overwrite and multiple access
-      IBGUNT(IBGSECT) = 2000 + IBGSECT
+      ibgunt(ibgsect) = 2000 + ibgsect
 
 ! ---    Open Hourly Emissions Data File If Not Already Open,
 !        first check whether file is open by filename
-      INQUIRE (FILE=BKGRND_File(IBGSECT),OPENED=FOPEN)
+      inquire (file=BKGRND_File(ibgsect),opened=fopen)
 
-      IF (.NOT. FOPEN) THEN
+      if (.not. fopen) then
 ! ---       Open Hourly BACKGRND Data File If Not Already Open
 !           Open with ACTION='READ' to prevent overwrite and allow multiple access;
 !           First check for whether file is open by file unit
-         INQUIRE (UNIT=IBGUNT(IBGSECT),OPENED=FOPEN)
-         IF (.NOT. FOPEN) THEN
-            OPEN(UNIT=IBGUNT(IBGSECT),ERR=998,&
-            &FILE=BKGRND_File(IBGSECT),IOSTAT=IOERRN,&
-            &ACTION='READ',STATUS='OLD')
-         ELSE
+         inquire (unit=ibgunt(ibgsect),opened=fopen)
+         if (.not. fopen) then
+            open(unit=ibgunt(ibgsect),err=998,&
+            &file=BKGRND_File(ibgsect),iostat=ioerrn,&
+            &action='READ',status='OLD')
+         else
 !              Hourly BACKGRND File is Already Opened With Different Filename
-            CALL ERRHDL(PATH,MODNAM,'E','501',KEYWRD)
-            GO TO 999
-         END IF
-      ELSE
+            call errhdl(path,modnam,'E','501',keywrd)
+            go to 999
+         end if
+      else
 !           File with same name as Hourly BACKGRND file is already opened,
 !           possible conflict with another file type
-         CALL ERRHDL(PATH,MODNAM,'E','501',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','501',keywrd)
+         go to 999
+      end if
 
 ! ---    Check for optional hourly BACKGRND file format
-      IF (IFC == I+2) THEN
+      if (ifc == i+2) then
 !           Check for Format String > ILEN_FLD PARAMETER
-         IF ((LOCE(I+2)-LOCB(I+2)) <= (ILEN_FLD - 1)) THEN
+         if ((loce(i+2)-locb(i+2)) <= (ilen_fld - 1)) then
 !              Retrieve Met Format as Char. Substring
-            BGFORM(IBGSECT) = RUNST1(LOCB(I+2):LOCE(I+2))
+            bgform(ibgsect) = runst1(locb(i+2):loce(i+2))
 
 ! ---          First check for user input of "FREE" for the formaat,
 !              using FIELD array which has been converted to upper case
-            IF (FIELD(I+2) == 'FREE') THEN
-               BGFORM(IBGSECT) = 'FREE'
-            ELSE
+            if (field(i+2) == 'FREE') then
+               bgform(ibgsect) = 'FREE'
+            else
 ! ---             Check for correct format specifiers for BACKGRND file;
 !                 should be 4 integers for date variables and 1 real for
 !                 background concentration; allow for 1 to 4 integers since
 !                 format statement may include 4I2, and also allow for
 !                 either F, E, or D format for the data variable.
-               DO J = 1, LEN_TRIM(BGFORM(IBGSECT))
-                  IF (BGFORM(IBGSECT)(J:J)=='I' .or.&
-                  &BGFORM(IBGSECT)(J:J)=='i') THEN
+               do j = 1, len_trim(bgform(ibgsect))
+                  if (bgform(ibgsect)(j:j)=='I' .or.&
+                  &bgform(ibgsect)(j:j)=='i') then
                      NumInt  = NumInt  + 1
-                  ELSE IF (BGFORM(IBGSECT)(J:J)=='F' .or.&
-                  &BGFORM(IBGSECT)(J:J)=='f') THEN
+                  else if (bgform(ibgsect)(j:j)=='F' .or.&
+                  &bgform(ibgsect)(j:j)=='f') then
                      NumReal = NumReal + 1
-                  ELSE IF (BGFORM(IBGSECT)(J:J)=='E' .or.&
-                  &BGFORM(IBGSECT)(J:J)=='e') THEN
+                  else if (bgform(ibgsect)(j:j)=='E' .or.&
+                  &bgform(ibgsect)(j:j)=='e') then
                      NumReal = NumReal + 1
-                  ELSE IF (BGFORM(IBGSECT)(J:J)=='D' .or.&
-                  &BGFORM(IBGSECT)(J:J)=='d') THEN
+                  else if (bgform(ibgsect)(j:j)=='D' .or.&
+                  &bgform(ibgsect)(j:j)=='d') then
                      NumReal = NumReal + 1
-                  ELSE IF (BGFORM(IBGSECT)(J:J)=="'" .or.&
-                  &BGFORM(IBGSECT)(J:J)=='"' .or.&
-                  &BGFORM(IBGSECT)(J:J)=='-' .or.&
-                  &BGFORM(IBGSECT)(J:J)==';') THEN
+                  else if (bgform(ibgsect)(j:j)=="'" .or.&
+                  &bgform(ibgsect)(j:j)=='"' .or.&
+                  &bgform(ibgsect)(j:j)=='-' .or.&
+                  &bgform(ibgsect)(j:j)==';') then
 !                       Check for invalid characters in BGFORM and issue
 !                       Warning Message for dash, semicolon, single or
 !                       double quotes embedded within the FORMAT.
-                     WRITE(DUMMY,'(''InvalidChr '',A:)')&
-                     &BGFORM(IBGSECT)(J:J)
-                     CALL ERRHDL(PATH,MODNAM,'W','292',DUMMY)
-                  END IF
-               END DO
-               IF (NumInt<1 .or. NumInt>4) THEN
+                     write(dummy,'(''InvalidChr '',A:)')&
+                     &bgform(ibgsect)(j:j)
+                     call errhdl(path,modnam,'W','292',dummy)
+                  end if
+               end do
+               if (NumInt<1 .or. NumInt>4) then
 !                    WRITE Warning Message:  Potential problem with BGFORM
-                  WRITE(DUMMY,'(''NumInts= '',I3)') NumInt
-                  CALL ERRHDL(PATH,MODNAM,'W','292',DUMMY)
-               END IF
-               IF (NumReal/=1) THEN
+                  write(dummy,'(''NumInts= '',I3)') NumInt
+                  call errhdl(path,modnam,'W','292',dummy)
+               end if
+               if (NumReal/=1) then
 !                    WRITE Warning Message:  Potential problem with BGFORM
-                  WRITE(DUMMY,'(''NumReal= '',I3)') NumReal
-                  CALL ERRHDL(PATH,MODNAM,'W','292',DUMMY)
-               END IF
-            END IF
-         ELSE
+                  write(dummy,'(''NumReal= '',I3)') NumReal
+                  call errhdl(path,modnam,'W','292',dummy)
+               end if
+            end if
+         else
 !              WRITE Error Message:  BGFORM Field is Too Long
-            WRITE(DUMMY,'(''LEN='',I6)') LOCE(I+2)-LOCB(I+2)
-            CALL ERRHDL(PATH,MODNAM,'E','292',DUMMY)
-         END IF
-      ELSE IF (IFC == I+1) THEN
+            write(dummy,'(''LEN='',I6)') loce(i+2)-locb(i+2)
+            call errhdl(path,modnam,'E','292',dummy)
+         end if
+      else if (ifc == i+1) then
 ! ---       Use 'free' format as the default
-         BGFORM(IBGSECT) = 'FREE'
-      ELSE IF (IFC > I+2) THEN
+         bgform(ibgsect) = 'FREE'
+      else if (ifc > i+2) then
 ! ---       Error Message: Too Many Parameters
-         CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','202',keywrd)
+         go to 999
+      end if
 
-   ELSE
+   else
 ! ---    Using BACKGRND option varying by SEASON, HROFDY, etc.
 
 ! ---    Assign number of background values based on BFLAG option
-      IF (BFLAG(IBGSECT) == 'ANNUAL') THEN
-         IBGMAX(IBGSECT) = 1
-      ELSE IF (BFLAG(IBGSECT) == 'SEASON') THEN
-         IBGMAX(IBGSECT) = 4
-      ELSE IF (BFLAG(IBGSECT) == 'MONTH') THEN
-         IBGMAX(IBGSECT) = 12
-      ELSE IF (BFLAG(IBGSECT) == 'HROFDY') THEN
-         IBGMAX(IBGSECT) = 24
-      ELSE IF (BFLAG(IBGSECT) == 'WSPEED') THEN
-         IBGMAX(IBGSECT) = 6
-      ELSE IF (BFLAG(IBGSECT) == 'SEASHR') THEN
-         IBGMAX(IBGSECT) = 96
-      ELSE IF (BFLAG(IBGSECT) == 'HRDOW') THEN
-         IBGMAX(IBGSECT) = 72
-         L_DayOfWeekOpts = .TRUE.
-      ELSE IF (BFLAG(IBGSECT) == 'HRDOW7') THEN
-         IBGMAX(IBGSECT) = 168
-         L_DayOfWeekOpts = .TRUE.
-      ELSE IF (BFLAG(IBGSECT) == 'SHRDOW') THEN
-         IBGMAX(IBGSECT) = 288
-         L_DayOfWeekOpts = .TRUE.
-      ELSE IF (BFLAG(IBGSECT) == 'SHRDOW7') THEN
-         IBGMAX(IBGSECT) = 672
-         L_DayOfWeekOpts = .TRUE.
-      ELSE IF (BFLAG(IBGSECT) == 'MHRDOW') THEN
-         IBGMAX(IBGSECT) = 864
-         L_DayOfWeekOpts = .TRUE.
-      ELSE IF (BFLAG(IBGSECT) == 'MHRDOW7') THEN
-         IBGMAX(IBGSECT) = 2016
-         L_DayOfWeekOpts = .TRUE.
-      ELSE
+      if (bflag(ibgsect) == 'ANNUAL') then
+         ibgmax(ibgsect) = 1
+      else if (bflag(ibgsect) == 'SEASON') then
+         ibgmax(ibgsect) = 4
+      else if (bflag(ibgsect) == 'MONTH') then
+         ibgmax(ibgsect) = 12
+      else if (bflag(ibgsect) == 'HROFDY') then
+         ibgmax(ibgsect) = 24
+      else if (bflag(ibgsect) == 'WSPEED') then
+         ibgmax(ibgsect) = 6
+      else if (bflag(ibgsect) == 'SEASHR') then
+         ibgmax(ibgsect) = 96
+      else if (bflag(ibgsect) == 'HRDOW') then
+         ibgmax(ibgsect) = 72
+         L_DayOfWeekOpts = .true.
+      else if (bflag(ibgsect) == 'HRDOW7') then
+         ibgmax(ibgsect) = 168
+         L_DayOfWeekOpts = .true.
+      else if (bflag(ibgsect) == 'SHRDOW') then
+         ibgmax(ibgsect) = 288
+         L_DayOfWeekOpts = .true.
+      else if (bflag(ibgsect) == 'SHRDOW7') then
+         ibgmax(ibgsect) = 672
+         L_DayOfWeekOpts = .true.
+      else if (bflag(ibgsect) == 'MHRDOW') then
+         ibgmax(ibgsect) = 864
+         L_DayOfWeekOpts = .true.
+      else if (bflag(ibgsect) == 'MHRDOW7') then
+         ibgmax(ibgsect) = 2016
+         L_DayOfWeekOpts = .true.
+      else
 !           WRITE Error Message    ! Invalid BFLAG Field Entered
-         CALL ERRHDL(PATH,MODNAM,'E','203','BFLAG')
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','203','BFLAG')
+         go to 999
+      end if
 
 ! ---    Call BGFILL to fill BACKGRND value arrays
-      CALL BGFILL
+      call bgfill
 
-   END IF
+   end if
 
-   GO TO 999
+   go to 999
 
 !     Process Error Messages; error opening file, include file type and sector
-998 CONTINUE
-   IF (.NOT. L_BGSector) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','500','BG File')
-   ELSE
-      WRITE(DUMMY,'("BGFILE SECT",I1)') IBGSECT
-      CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
-   END IF
+998 continue
+   if (.not. L_BGSector) then
+      call errhdl(path,modnam,'E','500','BG File')
+   else
+      write(dummy,'("BGFILE SECT",I1)') ibgsect
+      call errhdl(path,modnam,'E','500',dummy)
+   end if
 
-999 RETURN
-END SUBROUTINE BACK_GRND
+999 return
+end subroutine back_grnd
 
-SUBROUTINE BGFILL
+subroutine bgfill
 !***********************************************************************
 !                 BGFILL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7657,65 +7657,65 @@ SUBROUTINE BGFILL
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, K
+   integer :: i, j, k
 
 !     Variable Initializations
-   MODNAM = 'BGFILL'
+   modnam = 'BGFILL'
 
 ! --- Initialize counter for number of BACKGRND values for this sector
-   ISET = IBKGRD(IBGSECT)
+   iset = ibkgrd(ibgsect)
 
 ! --- Assign field number for start of data values based on whether
 !     sector-varying values are used
-   IF (L_BGSector) THEN
-      I = 5
-   ELSE
-      I = 4
-   END IF
+   if (L_BGSector) then
+      i = 5
+   else
+      i = 4
+   end if
 
-   DO K = I, IFC
+   do k = i, ifc
 !        Change Fields To Numbers
-      CALL STODBL(FIELD(K),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(k),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT == -1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         CYCLE
-      END IF
-      DO J = 1, IMIT
-         ISET = ISET + 1
+      if (imit == -1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         cycle
+      end if
+      do j = 1, imit
+         iset = iset + 1
 !           Assign The Field
-         IF (ISET <= IBGMAX(IBGSECT)) THEN
-            BACKGRND(ISET,IBGSECT) = DNUM
-            IF (DNUM < 0.0D0) THEN
+         if (iset <= ibgmax(ibgsect)) then
+            backgrnd(iset,ibgsect) = dnum
+            if (dnum < 0.0d0) then
 !                 WRITE Error Message:  Negative Value for BACKGRND
-               CALL ERRHDL(PATH,MODNAM,'E','209',KEYWRD)
-            END IF
-         ELSE
+               call errhdl(path,modnam,'E','209',keywrd)
+            end if
+         else
 !              WRITE Error Message    ! Too Many BACKGRND Values Input
-            IF (L_BGSector) THEN
-               WRITE(DUMMY,'(''BCKGRD SECT'',I1)') IBGSECT
-            ELSE
-               WRITE(DUMMY,'(''BACKGRND'')')
-            END IF
-            CALL ERRHDL(PATH,MODNAM,'E','231',DUMMY)
-            GO TO 99
-         END IF
-      END DO
-   END DO
+            if (L_BGSector) then
+               write(dummy,'(''BCKGRD SECT'',I1)') ibgsect
+            else
+               write(dummy,'(''BACKGRND'')')
+            end if
+            call errhdl(path,modnam,'E','231',dummy)
+            go to 99
+         end if
+      end do
+   end do
 
-99 CONTINUE
+99 continue
 
 ! --- Save counter on number of values input so far for this sector
-   IBKGRD(IBGSECT) = ISET
+   ibkgrd(ibgsect) = iset
 
-   RETURN
-END SUBROUTINE BGFILL
+   return
+end subroutine bgfill
 
-SUBROUTINE BACK_UNIT
+subroutine back_unit
 !***********************************************************************
 !                 BACK_UNIT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7734,45 +7734,45 @@ SUBROUTINE BACK_UNIT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'BACK_UNIT'
+   modnam = 'BACK_UNIT'
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc > 3) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Check for units of background values
 
-   IF (FIELD(3)=='UG/M3') THEN
-      BackUnits = FIELD(3)
-   ELSE IF (FIELD(3)=='PPM' .or. FIELD(3)=='PPB') THEN
-      IF (POLLUT == 'NO2' .or. POLLUT == 'SO2'&
-      &.or. POLLUT == 'CO') THEN
+   if (field(3)=='UG/M3') then
+      BackUnits = field(3)
+   else if (field(3)=='PPM' .or. field(3)=='PPB') then
+      if (pollut == 'NO2' .or. pollut == 'SO2'&
+      &.or. pollut == 'CO') then
 !RCO D14 AERMOD will only convert background from ppb or ppm for
 !    SO2, NO2, or CO so do not let these units be specified
 !    unless using these pollutants.
-         BackUnits = FIELD(3)
-      ELSE
+         BackUnits = field(3)
+      else
 !           Write Error Message:  Invalid units for background values
-         CALL ERRHDL(PATH,MODNAM,'E','203','BackUnits')
-      END IF
-   END IF
+         call errhdl(path,modnam,'E','203','BackUnits')
+      end if
+   end if
 
-999 RETURN
-END SUBROUTINE BACK_UNIT
+999 return
+end subroutine back_unit
 
-SUBROUTINE BGSECTOR
+subroutine bgsector
 !***********************************************************************
 !                 BGSECTOR Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7792,96 +7792,96 @@ SUBROUTINE BGSECTOR
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: I
-   LOGICAL :: L_BadData
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: i
+   logical :: L_BadData
 
 !     Variable Initializations
-   MODNAM = 'BGSECTOR'
-   L_BadData = .FALSE.
+   modnam = 'BGSECTOR'
+   L_BadData = .false.
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 4) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 4) then
 !        Error Message: Too Few Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 8) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 8) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 ! --- Set L_BGSector logical variable
-   L_BGSector = .TRUE.
+   L_BGSector = .true.
 
-   DO I = 3, IFC
+   do i = 3, ifc
 !        Loop through fields for starting directions for each BGSECTOR
-      CALL STODBL(FIELD(I),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(i),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT == -1) THEN
-         WRITE(DUMMY,'("BGSECT",I1)') I-2
-         CALL ERRHDL(PATH,MODNAM,'E','208',DUMMY)
+      if (imit == -1) then
+         write(dummy,'("BGSECT",I1)') i-2
+         call errhdl(path,modnam,'E','208',dummy)
 !           Assign logical variable for bad data, but cycle through full record
-         L_BadData = .TRUE.
-         CYCLE
-      END IF
-      BGSECT(I-2) = DNUM
-      IF (BGSECT(I-2) < 0.0D0 .or. BGSECT(I-2) > 360.0D0) THEN
+         L_BadData = .true.
+         cycle
+      end if
+      bgsect(i-2) = dnum
+      if (bgsect(i-2) < 0.0d0 .or. bgsect(i-2) > 360.0d0) then
 !           Sector value out-of-range
-         IF (BGSECT(I-2) > 9999.0D0) THEN
-            WRITE(DUMMY,'("BGSECT>9999.")')
-         ELSE IF (BGSECT(I-2) < -999.0D0) THEN
-            WRITE(DUMMY,'("BGSECT<-999.")')
-         ELSE
-            WRITE(DUMMY,'("BGSECT=",F5.0)') BGSECT(I-2)
-         END IF
-         CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
-      END IF
-   END DO
+         if (bgsect(i-2) > 9999.0d0) then
+            write(dummy,'("BGSECT>9999.")')
+         else if (bgsect(i-2) < -999.0d0) then
+            write(dummy,'("BGSECT<-999.")')
+         else
+            write(dummy,'("BGSECT=",F5.0)') bgsect(i-2)
+         end if
+         call errhdl(path,modnam,'E','380',dummy)
+      end if
+   end do
 
 ! --- Check for presence of bad sector data
-   IF (L_BadData) GO TO 999
+   if (L_BadData) go to 999
 
 ! --- Assign variable for number of user-specified BACKGRND sectors
-   NUMBGSects = IFC-2
+   NUMBGSects = ifc-2
 
 ! --- Check BGSECTs for proper order and minimum sector widths
-   DO I = 1, NUMBGSects-1
-      IF (BGSECT(I+1) < BGSECT(I) ) THEN
+   do i = 1, NUMBGSects-1
+      if (bgsect(i+1) < bgsect(i) ) then
 !           Sector value out-of-order
-         WRITE(DUMMY,'("BGSECT",I1," < #",I1)') I+1, I
-         CALL ERRHDL(PATH,MODNAM,'E','222',DUMMY)
-      ELSE IF (BGSECT(I+1) < BGSECT(I)+30.0D0 ) THEN
+         write(dummy,'("BGSECT",I1," < #",I1)') i+1, i
+         call errhdl(path,modnam,'E','222',dummy)
+      else if (bgsect(i+1) < bgsect(i)+30.0d0 ) then
 !           Sector width < 30 degrees
-         WRITE(DUMMY,'("BGSECT",I1," < 30")') I+1
-         CALL ERRHDL(PATH,MODNAM,'E','227',DUMMY)
-      ELSE IF (BGSECT(I+1) < BGSECT(I)+60.0D0 ) THEN
+         write(dummy,'("BGSECT",I1," < 30")') i+1
+         call errhdl(path,modnam,'E','227',dummy)
+      else if (bgsect(i+1) < bgsect(i)+60.0d0 ) then
 !           Sector width < 60 degrees
-         WRITE(DUMMY,'("BGSECT",I1," < 60")') I+1
-         CALL ERRHDL(PATH,MODNAM,'W','227',DUMMY)
-      END IF
-   END DO
+         write(dummy,'("BGSECT",I1," < 60")') i+1
+         call errhdl(path,modnam,'W','227',dummy)
+      end if
+   end do
 ! --- Now check for width of last sector
-   IF ( (BGSECT(1)+360.0D0)-BGSECT(NUMBGSects) < 30.0D0) THEN
+   if ( (bgsect(1)+360.0d0)-bgsect(NUMBGSects) < 30.0d0) then
 !        Sector width < 30 degrees
-      WRITE(DUMMY,'("BGSECT",I1," < 30")') NUMBGSects
-      CALL ERRHDL(PATH,MODNAM,'E','227',DUMMY)
-   ELSE IF ( (BGSECT(1)+360.0D0)-BGSECT(NUMBGSects) < 60.0D0) THEN
+      write(dummy,'("BGSECT",I1," < 30")') NUMBGSects
+      call errhdl(path,modnam,'E','227',dummy)
+   else if ( (bgsect(1)+360.0d0)-bgsect(NUMBGSects) < 60.0d0) then
 !        Sector width < 60 degrees
-      WRITE(DUMMY,'("BGSECT",I1," < 60")') NUMBGSects
-      CALL ERRHDL(PATH,MODNAM,'W','227',DUMMY)
-   END IF
+      write(dummy,'("BGSECT",I1," < 60")') NUMBGSects
+      call errhdl(path,modnam,'W','227',dummy)
+   end if
 
-999 RETURN
-END SUBROUTINE BGSECTOR
+999 return
+end subroutine bgsector
 
-SUBROUTINE BL_AVGINP
+subroutine bl_avginp
 !***********************************************************************
 !              BL_INPUTS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7904,42 +7904,42 @@ SUBROUTINE BL_AVGINP
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE BUOYANT_LINE
+   use main1
+   use buoyant_line
 
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   CHARACTER (LEN=12) :: TEMPID                    ! Multiple_BuoyLines_D41_Wood
+   implicit none
+   character :: modnam*12
+   character (len=12) :: tempid                    ! Multiple_BuoyLines_D41_Wood
 ! JAT 06/22/21 D065
 ! REMOVE I AS UNUSED VARIABLE
 !      INTEGER :: I, ISDX, KK                       ! Multiple_BuoyLines_D41_Wood
-   INTEGER :: ISDX, KK
-   LOGICAL :: FOUND                             ! Multiple_BuoyLines_D41_Wood
+   integer :: isdx, kk
+   logical :: found                             ! Multiple_BuoyLines_D41_Wood
 
 !     Variable Initializations
-   MODNAM = 'BL_AVGINP'                         ! Multiple_BuoyLines_D41_Wood
+   modnam = 'BL_AVGINP'                         ! Multiple_BuoyLines_D41_Wood
 
 ! --- Check the number of fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 8) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 8) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 9) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 9) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 ! Multiple_BuoyLines_D41_Wood
 !     Modified to check if BLPINPUT record has (9 fields) or does not have
 !      (8 fileds) a BL group ID; parameter names changed to account for
 !      multiple buoyant line sources (groups)
 !
-   IF (IFC == 8) THEN
+   if (ifc == 8) then
 ! ---    BL group ID is not included on BLPINPUT card - assumption is
 !        that there is only one BL source in this model run and all the
 !        individual lines belong to that source
@@ -7950,163 +7950,163 @@ SUBROUTINE BL_AVGINP
 !         if true, this is an error since all lines are considered
 !         part of a single BL source when there are only 8 fields on a
 !         BLPINOUT record
-      IF (NUMBLAVGINP >= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-         GO TO 999
-      ELSE
+      if (numblavginp >= 1) then
+         call errhdl(path,modnam,'E','201',keywrd)
+         go to 999
+      else
 !           BLPINPUT_Check_D091_Wood: start
 !           If there is no BUOYLINE source type in the input file, then
 !           array BLAVGINP_GRPID is not allocated.
-         IF (NBLP == 0) THEN
+         if (nblp == 0) then
 !              There are no BOUYLINE sources but there is a BLPINPUT record;
 !              issue an error message and skip the remainder of the subroutine
-            CALL ERRHDL(PATH,MODNAM,'E','508','  ')
-            GO TO 999
-         ELSE
+            call errhdl(path,modnam,'E','508','  ')
+            go to 999
+         else
 ! ---          NUMBLAVGINP = 0 - this is the first BLPINPUT record processed
 !              and there is no group ID - set it to ALL;
-            NUMBLAVGINP = 1
-            BLAVGINP_GRPID(NUMBLAVGINP) = 'ALL'
-         END IF
+            numblavginp = 1
+            blavginp_grpid(numblavginp) = 'ALL'
+         end if
 !           BLPINPUT_Check_D091_Wood: end
-      END IF
+      end if
 
 !        Fetch Each Field
-      CALL STODBL(FIELD(3),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(3),ilen_fld,dnum,imit)
 !        Check The Numerical Field - Field 3 = average line length
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 999
-      END IF
-      BLAVGINP_LLEN(NUMBLAVGINP) = DNUM
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 999
+      end if
+      blavginp_llen(numblavginp) = dnum
 
-      CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(4),ilen_fld,dnum,imit)
 !        Check The Numerical Field  - Field 4 = average bldg height
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 999
-      END IF
-      BLAVGINP_BHGT(NUMBLAVGINP) = DNUM
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 999
+      end if
+      blavginp_bhgt(numblavginp) = dnum
 
-      CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(5),ilen_fld,dnum,imit)
 !        Check The Numerical Field - Field 5 = average bldg width
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 999
-      END IF
-      BLAVGINP_BWID(NUMBLAVGINP) = DNUM
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 999
+      end if
+      blavginp_bwid(numblavginp) = dnum
 
-      CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(6),ilen_fld,dnum,imit)
 !        Check The Numerical Field - Field 6 = average line width
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 999
-      END IF
-      BLAVGINP_LWID(NUMBLAVGINP) = DNUM
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 999
+      end if
+      blavginp_lwid(numblavginp) = dnum
 
-      CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(7),ilen_fld,dnum,imit)
 !        Check The Numerical Field - Field 7 = average bldg separation
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 999
-      END IF
-      BLAVGINP_BSEP(NUMBLAVGINP) = DNUM
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 999
+      end if
+      blavginp_bsep(numblavginp) = dnum
 
-      CALL STODBL(FIELD(8),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(8),ilen_fld,dnum,imit)
 !        Check The Numerical Field - Field 8 = average line source buoyancy
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 999
-      END IF
-      BLAVGINP_FPRM(NUMBLAVGINP) = DNUM
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 999
+      end if
+      blavginp_fprm(numblavginp) = dnum
 
-   ELSE IF (IFC == 9) THEN
+   else if (ifc == 9) then
 ! ---    A BLPINPUT ID is required to be in the 3rd field on the
 !          BLPINPUT record; store it in a temporary variable
-      TEMPID = FIELD(3)
+      tempid = field(3)
 
 ! ---    Check to see if this BLPINPUT ID has been defined - issue an
 !        error messsage if it has and stop processing the record;
 !        otherwise add the name to the BL group ID array
-      IF (NUMBLAVGINP > 0) THEN
-         DO KK = 1,NUMBLAVGINP
-            CALL SINDEX(BLAVGINP_GRPID,NUMBLAVGINP,&
-            &TEMPID,ISDX,FOUND)
-            IF (FOUND) THEN
+      if (numblavginp > 0) then
+         do kk = 1,numblavginp
+            call sindex(blavginp_grpid,numblavginp,&
+            &tempid,isdx,found)
+            if (found) then
 !                 This group ID has been seen before - all BL group IDs
 !                 must be unique for this keyword
-               CALL ERRHDL(PATH,MODNAM,'E','504',TEMPID)
-               GO TO 999
-            ELSE
+               call errhdl(path,modnam,'E','504',tempid)
+               go to 999
+            else
 !                 Add group ID to the BL group ID array
-               NUMBLAVGINP = NUMBLAVGINP + 1
-               BLAVGINP_GRPID(NUMBLAVGINP) = TEMPID
-            END IF
-            EXIT
-         END DO
-      ELSE
+               numblavginp = numblavginp + 1
+               blavginp_grpid(numblavginp) = tempid
+            end if
+            exit
+         end do
+      else
 !           First BLPINPOUT record and there is a BL group ID in field 3
-         NUMBLAVGINP = NUMBLAVGINP + 1
-         BLAVGINP_GRPID(NUMBLAVGINP) = TEMPID
-      END IF
+         numblavginp = numblavginp + 1
+         blavginp_grpid(numblavginp) = tempid
+      end if
 
-      CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(4),ilen_fld,dnum,imit)
 !        Check The Numerical Field - Field 4 = average line length
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 999
-      END IF
-      BLAVGINP_LLEN(NUMBLAVGINP) = DNUM
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 999
+      end if
+      blavginp_llen(numblavginp) = dnum
 
-      CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(5),ilen_fld,dnum,imit)
 !        Check The Numerical Field  - Field 5 = average bldg height
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 999
-      END IF
-      BLAVGINP_BHGT(NUMBLAVGINP) = DNUM
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 999
+      end if
+      blavginp_bhgt(numblavginp) = dnum
 
-      CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(6),ilen_fld,dnum,imit)
 !        Check The Numerical Field - Field 6 = average bldg width
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 999
-      END IF
-      BLAVGINP_BWID(NUMBLAVGINP) = DNUM
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 999
+      end if
+      blavginp_bwid(numblavginp) = dnum
 
-      CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(7),ilen_fld,dnum,imit)
 !        Check The Numerical Field - Field 7 = average line width
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 999
-      END IF
-      BLAVGINP_LWID(NUMBLAVGINP) = DNUM
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 999
+      end if
+      blavginp_lwid(numblavginp) = dnum
 
-      CALL STODBL(FIELD(8),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(8),ilen_fld,dnum,imit)
 !        Check The Numerical Field - Field 8 = average bldg separation
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 999
-      END IF
-      BLAVGINP_BSEP(NUMBLAVGINP) = DNUM
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 999
+      end if
+      blavginp_bsep(numblavginp) = dnum
 
-      CALL STODBL(FIELD(9),ILEN_FLD,DNUM,IMIT)
+      call stodbl(field(9),ilen_fld,dnum,imit)
 !        Check The Numerical Field - Field 9 = average line source buoyancy
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         GO TO 999
-      END IF
-      BLAVGINP_FPRM(NUMBLAVGINP) = DNUM
-   END IF
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+         go to 999
+      end if
+      blavginp_fprm(numblavginp) = dnum
+   end if
 
 !     Set the logical to true indicating that the model run has a buoyant
 !      line source
-   L_BLSOURCE = .TRUE.
+   l_blsource = .true.
 
-999 RETURN
-END SUBROUTINE BL_AVGINP
+999 return
+end subroutine bl_avginp
 
-SUBROUTINE BL_ROTATE1 (KK)
+subroutine bl_rotate1 (kk)
 !***********************************************************************
 !              B_ROTATE1 Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -8138,23 +8138,23 @@ SUBROUTINE BL_ROTATE1 (KK)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE BUOYANT_LINE
+   use main1
+   use buoyant_line
 
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   implicit none
+   character :: modnam*12
 
-   LOGICAL :: BL_YCOORD_CHK
+   logical :: bl_ycoord_chk
 
-   INTEGER :: IL, ILP, KK, IPLSTART
-   DOUBLE PRECISION :: DDX, DDY
-   DOUBLE PRECISION :: XOR2, YOR2, DDX2, DDY2, ANGRAD2, ANGDIFF
+   integer :: il, ilp, kk, iplstart
+   double precision :: ddx, ddy
+   double precision :: xor2, yor2, ddx2, ddy2, angrad2, angdiff
 
-   DOUBLE PRECISION :: XB1, XE1, YB1, YE1, YLBSAV, YLESAV
+   double precision :: xb1, xe1, yb1, ye1, ylbsav, ylesav
 
 !     Variable Initializations
-   MODNAM = 'BL_ROTATE1'
-   BL_YCOORD_CHK = .FALSE.
+   modnam = 'BL_ROTATE1'
+   bl_ycoord_chk = .false.
 
 ! Multiple_BuoyLines_D41_Wood
 !     Process buoyant lines by group (KK, a calling argument) to determine
@@ -8163,81 +8163,81 @@ SUBROUTINE BL_ROTATE1 (KK)
 !      some scalars converted to 1-D arrays (e.g., XOR, YOR)
 
 
-   DO_IL: DO IL = 1,NBLTOTAL
-      IF (BLINEPARMS(IL)%IBLPGRPNUM == KK) THEN
-         IPLSTART = IL + 1                              ! Wood_D32: for lines parallel check
+   do_il: do il = 1,nbltotal
+      if (blineparms(il)%iblpgrpnum == kk) then
+         iplstart = il + 1                              ! Wood_D32: for lines parallel check
 
 !           Compute parameters for initial rotation of sources and receptors
 !            Variables with an array index means it is used in other routines
-         XOR(KK) = BLINEPARMS(IL)%XBEG
-         YOR(KK) = BLINEPARMS(IL)%YBEG
-         DDX     = BLINEPARMS(IL)%XEND - XOR(KK)
-         DDY     = BLINEPARMS(IL)%YEND - YOR(KK)
+         xor(kk) = blineparms(il)%xbeg
+         yor(kk) = blineparms(il)%ybeg
+         ddx     = blineparms(il)%xend - xor(kk)
+         ddy     = blineparms(il)%yend - yor(kk)
 
 
-         ANGRAD(KK)  = DATAN2(DDY,DDX)                ! rotation angle for the lines
-         TCOR(KK)    = 90.0D0 + ANGRAD(KK) * RTODEG   ! TCOR will be used in BL_ROTATE2
-         SINTCOR(KK) = DSIN(ANGRAD(KK))               ! also used later
-         COSTCOR(KK) = DCOS(ANGRAD(KK))               ! also used later
+         angrad(kk)  = datan2(ddy,ddx)                ! rotation angle for the lines
+         tcor(kk)    = 90.0d0 + angrad(kk) * rtodeg   ! TCOR will be used in BL_ROTATE2
+         sintcor(kk) = dsin(angrad(kk))               ! also used later
+         costcor(kk) = dcos(angrad(kk))               ! also used later
 
 
 !           If the lines are oriented exactly north-south (90 degrees),
 !            the cosine is very very small (E-17), which causes AERMOD to
 !            generate results that do not match well with BLP.  Set COSTCOR
 !            to E-05 (approx. equal to 0.5 degrees)
-         IF (DABS(COSTCOR(KK)) < 1.0D-10) COSTCOR(KK) = 1.0D-05
+         if (dabs(costcor(kk)) < 1.0d-10) costcor(kk) = 1.0d-05
 
-         EXIT DO_IL
-      END IF
-   END DO DO_IL
+         exit do_il
+      end if
+   end do do_il
 
 
 ! --- Perform the translation and rotation for BL group KK (a calling argument)
-   DO IL = 1,NBLTOTAL
-      IF (BLINEPARMS(IL)%IBLPGRPNUM == KK) THEN
-         XB1 = BLINEPARMS(IL)%XBEG - XOR(KK)
-         XE1 = BLINEPARMS(IL)%XEND - XOR(KK)
-         YB1 = BLINEPARMS(IL)%YBEG - YOR(KK)
-         YE1 = BLINEPARMS(IL)%YEND - YOR(KK)
-         YB1 = -XB1*SINTCOR(KK) + YB1*COSTCOR(KK)
-         BLINEPARMS(IL)%YBEG_TR1 = YB1
+   do il = 1,nbltotal
+      if (blineparms(il)%iblpgrpnum == kk) then
+         xb1 = blineparms(il)%xbeg - xor(kk)
+         xe1 = blineparms(il)%xend - xor(kk)
+         yb1 = blineparms(il)%ybeg - yor(kk)
+         ye1 = blineparms(il)%yend - yor(kk)
+         yb1 = -xb1*sintcor(kk) + yb1*costcor(kk)
+         blineparms(il)%ybeg_tr1 = yb1
 
-         XB1 = (XB1+YB1*SINTCOR(KK))/COSTCOR(KK)
-         BLINEPARMS(IL)%XBEG_TR1 = XB1
+         xb1 = (xb1+yb1*sintcor(kk))/costcor(kk)
+         blineparms(il)%xbeg_tr1 = xb1
 
-         YE1 = -XE1*SINTCOR(KK) + YE1*COSTCOR(KK)
-         YS_SCS(IL) = YE1
-         BLINEPARMS(IL)%YEND_TR1 = YE1
+         ye1 = -xe1*sintcor(kk) + ye1*costcor(kk)
+         ys_scs(il) = ye1
+         blineparms(il)%yend_tr1 = ye1
 
-         XE1 = (XE1+YE1*SINTCOR(KK))/COSTCOR(KK)
-         BLINEPARMS(IL)%XEND_TR1 = XE1
-      END IF
-   END DO
+         xe1 = (xe1+ye1*sintcor(kk))/costcor(kk)
+         blineparms(il)%xend_tr1 = xe1
+      end if
+   end do
 
-   DO IL = 1, NBLTOTAL
+   do il = 1, nbltotal
 !        Verify line source coordinates for BL source group KK (a calling
 !          argument) are input correctly wrt to the y-axis
-      IF (BLINEPARMS(IL)%IBLPGRPNUM == KK) THEN
-         IF( .NOT. BL_YCOORD_CHK) THEN
-            YLBSAV = BLINEPARMS(IL)%YBEG_TR1
-            YLESAV = BLINEPARMS(IL)%YEND_TR1
-            BL_YCOORD_CHK = .TRUE.
+      if (blineparms(il)%iblpgrpnum == kk) then
+         if( .not. bl_ycoord_chk) then
+            ylbsav = blineparms(il)%ybeg_tr1
+            ylesav = blineparms(il)%yend_tr1
+            bl_ycoord_chk = .true.
 
-         ELSE
-            IF (BLINEPARMS(IL)%YBEG_TR1 > YLBSAV .and.&
-            &BLINEPARMS(IL)%YEND_TR1 > YLESAV) THEN
+         else
+            if (blineparms(il)%ybeg_tr1 > ylbsav .and.&
+            &blineparms(il)%yend_tr1 > ylesav) then
 !                 The pair of lines are in the correct 'order' -
 !                 save the coordinates and check the next pair
-               YLBSAV = BLINEPARMS(IL)%YBEG_TR1
-               YLESAV = BLINEPARMS(IL)%YEND_TR1
-            ELSE
-               CALL ERRHDL(PATH,MODNAM,'E','389',&
-               &BLINEPARMS(IL)%SRCID)
-            ENDIF
-         ENDIF
-      END IF
+               ylbsav = blineparms(il)%ybeg_tr1
+               ylesav = blineparms(il)%yend_tr1
+            else
+               call errhdl(path,modnam,'E','389',&
+               &blineparms(il)%srcid)
+            endif
+         endif
+      end if
 
-   END DO
+   end do
 
 ! BuoyantLine_CheckLinesParallel_D32 (Wood)
 !     Confirm that the individual lines within a buoyant line group/source
@@ -8246,28 +8246,28 @@ SUBROUTINE BL_ROTATE1 (KK)
 !     IPLSTART was determined above when determining the parameters for
 !       first rotation
 
-   DO ILP = IPLSTART, NBLTOTAL
-      IF (BLINEPARMS(ILP)%IBLPGRPNUM == KK) THEN
-         ANGRAD2 = 0.0D0
-         XOR2 = BLINEPARMS(ILP)%XBEG
-         YOR2 = BLINEPARMS(ILP)%YBEG
+   do ilp = iplstart, nbltotal
+      if (blineparms(ilp)%iblpgrpnum == kk) then
+         angrad2 = 0.0d0
+         xor2 = blineparms(ilp)%xbeg
+         yor2 = blineparms(ilp)%ybeg
 
-         DDX2 = BLINEPARMS(ILP)%XEND - XOR2
-         DDY2 = BLINEPARMS(ILP)%YEND - YOR2
-         ANGRAD2 = DATAN2(DDY2,DDX2)
-         ANGDIFF = DABS(ANGRAD(KK)-ANGRAD2) *&
-         &(180.0D0/(4.0D0*DATAN(1.0D0)))
-         IF (ANGDIFF > Parallel_Tol) THEN
-            CALL ERRHDL(PATH,MODNAM,'W','506',BLINEPARMS(ILP)%SRCID)
-         END IF
-      END IF
+         ddx2 = blineparms(ilp)%xend - xor2
+         ddy2 = blineparms(ilp)%yend - yor2
+         angrad2 = datan2(ddy2,ddx2)
+         angdiff = dabs(angrad(kk)-angrad2) *&
+         &(180.0d0/(4.0d0*datan(1.0d0)))
+         if (angdiff > Parallel_Tol) then
+            call errhdl(path,modnam,'W','506',blineparms(ilp)%srcid)
+         end if
+      end if
 
-   END DO
+   end do
 
-   RETURN
-END SUBROUTINE BL_ROTATE1
+   return
+end subroutine bl_rotate1
 
-SUBROUTINE RLINEBAR_INPUTS
+subroutine rlinebar_inputs
 !***********************************************************************
 !        RLINEBAR_INPUTS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -8293,94 +8293,94 @@ SUBROUTINE RLINEBAR_INPUTS
 !        CALLED FROM:   SOCARD
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   USE RLINE_DATA
+   use main1
+   use rline_data
 
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   implicit none
+   character :: modnam*12
 
-   INTEGER  :: INDEXS
-   CHARACTER (LEN=12)  :: SOID
-   LOGICAL  :: FOUND
+   integer  :: indexs
+   character (len=12)  :: soid
+   logical  :: found
 
 !     Variable Initializations
-   MODNAM = 'RLBAR_INP'
-   FOUND  = .FALSE.
+   modnam = 'RLBAR_INP'
+   found  = .false.
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 5) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 5) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC == 6) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc == 6) then
 !        Error Message: Invalid Parameter Specified
-      CALL ERRHDL(PATH,MODNAM,'E','203',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 7) THEN
+      call errhdl(path,modnam,'E','203',keywrd)
+      go to 999
+   else if (ifc > 7) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Retrieve Source ID Character Substring
-   SOID = FIELD(3)
+   soid = field(3)
 
 !     Match the ID to the SRCID array to get ISRC
-   CALL SINDEX(SRCID, NSRC, SOID, INDEXS, FOUND)
+   call sindex(srcid, nsrc, soid, indexs, found)
 
-   IF(FOUND) THEN
+   if(found) then
 !     Check that it is a RLINEXT source!
-      IF (SRCTYP(INDEXS) == 'RLINEXT') THEN
+      if (srctyp(indexs) == 'RLINEXT') then
 !        Fetch and check each of the numerical fields
-         CALL STODBL(FIELD(4), ILEN_FLD, RLSOURCE(INDEXS)%HTWALL, IMIT)
+         call stodbl(field(4), ilen_fld, rlsource(indexs)%htwall, imit)
 !        Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         END IF
-         CALL STODBL(FIELD(5), ILEN_FLD, RLSOURCE(INDEXS)%DCLWALL, IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         end if
+         call stodbl(field(5), ilen_fld, rlsource(indexs)%dclwall, imit)
 !        Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         END IF
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         end if
 !        Fetch and check numerical fields for second barrier
-         IF (IFC == 7) THEN
-            CALL STODBL(FIELD(6), ILEN_FLD, RLSOURCE(INDEXS)%HTWALL2,&
-            &IMIT)
+         if (ifc == 7) then
+            call stodbl(field(6), ilen_fld, rlsource(indexs)%htwall2,&
+            &imit)
 !          Check The Numerical Field
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            END IF
-            CALL STODBL(FIELD(7), ILEN_FLD, RLSOURCE(INDEXS)%DCLWALL2,&
-            &IMIT)
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+            end if
+            call stodbl(field(7), ilen_fld, rlsource(indexs)%dclwall2,&
+            &imit)
 !          Check The Numerical Field
-            IF (IMIT /= 1) THEN
-               CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-            END IF
-         END IF
-      ELSE
+            if (imit /= 1) then
+               call errhdl(path,modnam,'E','208',keywrd)
+            end if
+         end if
+      else
 !        WRITE Error Message: "Keyword not available for RLINE type:"
-         CALL ERRHDL(PATH,MODNAM,'E','278',KEYWRD)
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','278',keywrd)
+      end if
+   else
 !        WRITE Error Message: Source Location Has Not Been Identified
-      CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','300',keywrd)
+   end if
 
 !     ERROR handling for barrier parameters
-   IF ((RLSOURCE(INDEXS)%HTWALL< 0.0D0) .or.&
-   &(RLSOURCE(INDEXS)%HTWALL2< 0.0D0)) THEN
+   if ((rlsource(indexs)%htwall< 0.0d0) .or.&
+   &(rlsource(indexs)%htwall2< 0.0d0)) then
 !        WRITE Error Message:  Negative barrier height: HTWALL
-      CALL ERRHDL(PATH,MODNAM,'E','209',' HTWALL ')
-   ENDIF
+      call errhdl(path,modnam,'E','209',' HTWALL ')
+   endif
 
-999 RETURN
-END SUBROUTINE RLINEBAR_INPUTS
+999 return
+end subroutine rlinebar_inputs
 
-SUBROUTINE RLINEDPR_INPUTS
+subroutine rlinedpr_inputs
 !***********************************************************************
 !        RLINEDPR_INPUTS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -8401,90 +8401,90 @@ SUBROUTINE RLINEDPR_INPUTS
 !        CALLED FROM:   SOCARD
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   USE RLINE_DATA
+   use main1
+   use rline_data
 
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   implicit none
+   character :: modnam*12
 
-   INTEGER  :: INDEXS
-   CHARACTER (LEN=12)  :: SOID
-   LOGICAL  :: FOUND
+   integer  :: indexs
+   character (len=12)  :: soid
+   logical  :: found
 
 !     Variable Initializations
-   MODNAM = 'RLDPR_INP'
-   FOUND  = .FALSE.
+   modnam = 'RLDPR_INP'
+   found  = .false.
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 6) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 6) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 6) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 6) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Retrieve Source ID Character Substring
-   SOID = FIELD(3)
+   soid = field(3)
 
 !     Match the ID to the SRCID array to get ISRC
-   CALL SINDEX(SRCID, NSRC, SOID, INDEXS, FOUND)
+   call sindex(srcid, nsrc, soid, indexs, found)
 
-   IF(FOUND) THEN
-      IF(SRCTYP(INDEXS) == 'RLINEXT') THEN
+   if(found) then
+      if(srctyp(indexs) == 'RLINEXT') then
 !          Fetch and check each of the numerical fields
-         CALL STODBL(FIELD(4),ILEN_FLD,RLSOURCE(INDEXS)%DEPTH,IMIT)
+         call stodbl(field(4),ilen_fld,rlsource(indexs)%depth,imit)
 !          Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         END IF
-         CALL STODBL(FIELD(5),ILEN_FLD,RLSOURCE(INDEXS)%WTOP,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         end if
+         call stodbl(field(5),ilen_fld,rlsource(indexs)%wtop,imit)
 !          Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         END IF
-         CALL STODBL(FIELD(6),ILEN_FLD,RLSOURCE(INDEXS)%WBOTTOM,IMIT)
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         end if
+         call stodbl(field(6),ilen_fld,rlsource(indexs)%wbottom,imit)
 !          Check The Numerical Field
-         IF (IMIT /= 1) THEN
-            CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         END IF
-      ELSE
+         if (imit /= 1) then
+            call errhdl(path,modnam,'E','208',keywrd)
+         end if
+      else
 !          WRITE Error Message: "Keyword only available for RLINEXT source type:"
-         CALL ERRHDL(PATH,MODNAM,'E','278',KEYWRD)
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','278',keywrd)
+      end if
+   else
 !        WRITE Error Message: Source Location Has Not Been Identified
-      CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','300',keywrd)
+   end if
 
 !     ERROR handling for barrier and depressed roadway parameters
-   IF (RLSOURCE(INDEXS)%DEPTH> 0.0D0) THEN
+   if (rlsource(indexs)%depth> 0.0d0) then
 !        WRITE Error Message:  Depth of depression is positive (should be negative)
-      CALL ERRHDL(PATH,MODNAM,'E','320',' DEPTH ')
-   ENDIF
+      call errhdl(path,modnam,'E','320',' DEPTH ')
+   endif
 
-   IF (RLSOURCE(INDEXS)%WTOP< 0.0D0) THEN
+   if (rlsource(indexs)%wtop< 0.0d0) then
 !        WRITE Error Message:  WTOP is negative (should be positive)
-      CALL ERRHDL(PATH,MODNAM,'E','320',' WTOP ')
-   ENDIF
+      call errhdl(path,modnam,'E','320',' WTOP ')
+   endif
 
-   IF (RLSOURCE(INDEXS)%WBOTTOM < 0.0D0 .or.&
-   &RLSOURCE(INDEXS)%WBOTTOM > RLSOURCE(INDEXS)%WTOP) THEN
+   if (rlsource(indexs)%wbottom < 0.0d0 .or.&
+   &rlsource(indexs)%wbottom > rlsource(indexs)%wtop) then
 !        WRITE Error Message:  WBOTTOM is negative or is greater than WTOP
-      CALL ERRHDL(PATH,MODNAM,'E','320',' WBOTTOM ')
-   ENDIF
+      call errhdl(path,modnam,'E','320',' WBOTTOM ')
+   endif
 
 
-999 RETURN
-END SUBROUTINE RLINEDPR_INPUTS
+999 return
+end subroutine rlinedpr_inputs
 
-SUBROUTINE AIRCRAFT
+subroutine aircraft
 !***********************************************************************
 !                AIRCRAFT  Module of AERMOD Model
 !
@@ -8503,77 +8503,77 @@ SUBROUTINE AIRCRAFT
 !
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   CHARACTER (LEN=12) :: LOWID, HIGID, LID1, LID2, HID1, HID2, TEMPID
-   INTEGER :: I, IL, IH, K, ISTR
-   LOGICAL :: INGRP, RMARK, FOUND
+   character (len=12) :: lowid, higid, lid1, lid2, hid1, hid2, tempid
+   integer :: i, il, ih, k, istr
+   logical :: ingrp, rmark, found
 
 !     Variable Initializations
-   MODNAM = 'AIRCRAFT'
-   FOUND = .FALSE.
+   modnam = 'AIRCRAFT'
+   found = .false.
 
 !     Check The Number Of The Fields
-   IF (IFC <= 2) THEN
+   if (ifc <= 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   end if
 
 !     Check for 'ARCFTSRC ALL' option identified in PRESET
-   IF (L_ARCFT_ALL) THEN
-      IF (IFC == 3 .and. FIELD(3) == 'ALL') THEN
-         AFTSRC(:) = 'Y'
-         GO TO 999
-      ELSE
+   if (l_arcft_all) then
+      if (ifc == 3 .and. field(3) == 'ALL') then
+         aftsrc(:) = 'Y'
+         go to 999
+      else
 !           WRITE Error Message:  ARCFTSRC ALL
-         CALL ERRHDL(PATH,MODNAM,'E','279','ARCFTSRC ALL')
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','279','ARCFTSRC ALL')
+         go to 999
+      end if
 
-   ELSE
+   else
 !        Specify field index to start for Source IDs
-      ISTR = 3
+      istr = 3
 
-   END IF
+   end if
 
 !     Loop Through Fields
-   DO I = ISTR, IFC
-      IF (INDEX(FIELD(I),'-') == 0) THEN
-         FOUND = .FALSE.
-         DO K = 1, NUMSRC
-            IF (SRCID(K) == FIELD(I)) THEN
-               FOUND = .TRUE.
-               AFTSRC(K) = 'Y'
-            END IF
-         END DO
-         IF (.NOT.FOUND) THEN
+   do i = istr, ifc
+      if (index(field(i),'-') == 0) then
+         found = .false.
+         do k = 1, numsrc
+            if (srcid(k) == field(i)) then
+               found = .true.
+               aftsrc(k) = 'Y'
+            end if
+         end do
+         if (.not.found) then
 !              WRITE Error Message:  SRCID not found
-            CALL ERRHDL(PATH,MODNAM,'E','300',KEYWRD)
-            CYCLE
-         END IF
-      ELSE
+            call errhdl(path,modnam,'E','300',keywrd)
+            cycle
+         end if
+      else
 
-         CALL FSPLIT(PATH,KEYWRD,FIELD(I),ILEN_FLD,'-',RMARK,LOWID,&
-         &HIGID)
+         call fsplit(path,keywrd,field(i),ilen_fld,'-',rmark,lowid,&
+         &higid)
 !           First Check Range for Upper Value < Lower Value
-         CALL SETIDG(LOWID,LID1,IL,LID2)
-         CALL SETIDG(HIGID,HID1,IH,HID2)
-         IF ((HID1<LID1) .or. (IH<IL) .or. (HID2<LID2)) THEN
+         call setidg(lowid,lid1,il,lid2)
+         call setidg(higid,hid1,ih,hid2)
+         if ((hid1<lid1) .or. (ih<il) .or. (hid2<lid2)) then
 !              WRITE Error Message:  Invalid Range,  Upper < Lower
-            CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
-            CYCLE
-         END IF
-         DO K = 1, NUMSRC
-            CALL ASNGRP(SRCID(K),LOWID,HIGID,INGRP)
-            IF (INGRP) THEN
-               AFTSRC(K) = 'Y'
-            END IF
-         END DO
-      END IF
-   END DO
+            call errhdl(path,modnam,'E','203','SRCRANGE')
+            cycle
+         end if
+         do k = 1, numsrc
+            call asngrp(srcid(k),lowid,higid,ingrp)
+            if (ingrp) then
+               aftsrc(k) = 'Y'
+            end if
+         end do
+      end if
+   end do
 
-999 RETURN
-END SUBROUTINE AIRCRAFT
+999 return
+end subroutine aircraft

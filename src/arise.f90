@@ -1,4 +1,4 @@
-SUBROUTINE AFLUXES
+subroutine afluxes
 !***********************************************************************
 !      AFLUXES Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -39,15 +39,15 @@ SUBROUTINE AFLUXES
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 !     Local Variables:
 
 !      DOUBLE PRECISION  :: MFUEL, VAA, THRUST, MAIR, AFR, BYPR, RPWR
-   DOUBLE PRECISION  :: MAIR, VE, VAVG
-   DOUBLE PRECISION  :: VEMAX, THRSTMX
-   DOUBLE PRECISION  :: QEE, TE, RHOE, ETAT, PWST, RPWRW
+   double precision  :: mair, ve, vavg
+   double precision  :: vemax, thrstmx
+   double precision  :: qee, te, rhoe, etat, pwst, rpwrw
 
 !     Fixed VALUES
 !      DOUBLE PRECISION, PARAMETER  ::
@@ -55,63 +55,63 @@ SUBROUTINE AFLUXES
 !     &                     HFUEL = 4.3D+7, CPA = 1003.0D0
 
 !     Variable Initializations
-   MODNAM = 'AFLUXES'
+   modnam = 'AFLUXES'
 
-   PI = 4.0D0 * DATAN(1.0D0)
+   pi = 4.0d0 * datan(1.0d0)
 
 !     For Turbofan and Turbojet Engines
-   IF(BYPR > 0.0D0) THEN
+   if(bypr > 0.0d0) then
 !     Check for Positive Fuel burn rate and Thrust
-      IF (MFUEL > 0.0D0 .and. THRUST > 0.0D0) THEN
-         MAIR = MFUEL * AFR * (1.D0 + BYPR)                             ! Total Mass Flow (Equation 22)
-         VE   = VAA + (THRUST / MAIR)                                   ! Exhaust Velocity (Equation 24)
-         TE   = (HFUEL*MFUEL/MAIR-((VE*VE)-(VAA*VAA))/2.0D0)/CPA + TA   ! Exhaust Temperature (By substituting eqns 22 and 27 in eqn 21)
-         QEE  = MAIR * CPA * (TE - TA)                                  ! Thermal Power/Heat Rejection (Equation 27)
-      ELSE
-         TE   = 1.0D-10
-         QEE  = 1.0D-10
-      END IF
+      if (mfuel > 0.0d0 .and. thrust > 0.0d0) then
+         mair = mfuel * afr * (1.d0 + bypr)                             ! Total Mass Flow (Equation 22)
+         ve   = vaa + (thrust / mair)                                   ! Exhaust Velocity (Equation 24)
+         te   = (hfuel*mfuel/mair-((ve*ve)-(vaa*vaa))/2.0d0)/cpa + ta   ! Exhaust Temperature (By substituting eqns 22 and 27 in eqn 21)
+         qee  = mair * cpa * (te - ta)                                  ! Thermal Power/Heat Rejection (Equation 27)
+      else
+         te   = 1.0d-10
+         qee  = 1.0d-10
+      end if
 !     For Non-Turbofan/Turbojet Engines or Shaft-based Engines,
 !     Turboprop, Turboshaft, Piston, and Helicopter
 !     PWST is based on Table 4 of Wayson et al.(2009)
-   ELSE IF (BYPR == -999.D0) THEN
-      IF (AFR == 106.D0) THEN
-         PWST = 0.07D0                                               ! Idle/Taxi
-      ELSE IF (AFR == 83.D0) THEN
-         PWST = 0.30D0                                               ! Approach/Landing
-      ELSE IF (AFR == 51.D0) THEN
-         PWST = 0.85D0                                               ! Climb-out
-      ELSE
-         PWST = 1.0D0                                                ! Take-Off
-      END IF
+   else if (bypr == -999.d0) then
+      if (afr == 106.d0) then
+         pwst = 0.07d0                                               ! Idle/Taxi
+      else if (afr == 83.d0) then
+         pwst = 0.30d0                                               ! Approach/Landing
+      else if (afr == 51.d0) then
+         pwst = 0.85d0                                               ! Climb-out
+      else
+         pwst = 1.0d0                                                ! Take-Off
+      end if
 !     kilo-Watt to Watt Conversion for Rated Power
-      RPWRW = 1000.0D0*RPWR
+      rpwrw = 1000.0d0*rpwr
 
-      ETAT = ( PWST * RPWRW ) / ( MFUEL * HFUEL )                   ! Thermal Efficiency (Equation 30)
-      QEE =  MFUEL * HFUEL * (1.D0 - ETAT)                          ! Thermal Power (Equation 31)
-      TE = TA + (((1.D0 - ETAT) * HFUEL) / (AFR * CPA))             ! Exhaust Temperature (Equation 32)
-   ELSE
-      TE  = 1.0D-10
-      QEE  = 1.0D-10
-   END IF
+      etat = ( pwst * rpwrw ) / ( mfuel * hfuel )                   ! Thermal Efficiency (Equation 30)
+      qee =  mfuel * hfuel * (1.d0 - etat)                          ! Thermal Power (Equation 31)
+      te = ta + (((1.d0 - etat) * hfuel) / (afr * cpa))             ! Exhaust Temperature (Equation 32)
+   else
+      te  = 1.0d-10
+      qee  = 1.0d-10
+   end if
 
-   IF (TE == 1.0D-10) THEN
-      RHOE = 1.0D-10
-   ELSE
-      RHOE = PAA / (RAA * TE)                                        ! Exhaust Density (Equation 26 or 33)
-   END IF
+   if (te == 1.0d-10) then
+      rhoe = 1.0d-10
+   else
+      rhoe = paa / (raa * te)                                        ! Exhaust Density (Equation 26 or 33)
+   end if
 
-   IF (QEE < 0.0D0 .or. QEE == 1.0D-10) THEN
-      FB = 1.0D-10
-   ELSE
-      FB = G * QEE / (PI * RHOE * CPA * TA)                          ! Buoyancy Flux (Equation 5 or 25)
-   END IF
+   if (qee < 0.0d0 .or. qee == 1.0d-10) then
+      fb = 1.0d-10
+   else
+      fb = g * qee / (pi * rhoe * cpa * ta)                          ! Buoyancy Flux (Equation 5 or 25)
+   end if
 
-   RETURN
-END SUBROUTINE AFLUXES
+   return
+end subroutine afluxes
 
 
-SUBROUTINE MOMENTUM_PLUMERISE (XARG)
+subroutine momentum_plumerise (xarg)
 !***********************************************************************
 !      AIRCRAFT_MOMENTUM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -147,14 +147,14 @@ SUBROUTINE MOMENTUM_PLUMERISE (XARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*20
+   use main1
+   implicit none
+   character :: modnam*20
 !     Local Variables:
 
-   DOUBLE PRECISION  :: RHOA, RMAX, XARG, XPMAX, XMAXX
-   DOUBLE PRECISION  :: RP01, RP02, XP, SRCANGLEU
-   DOUBLE PRECISION  :: VEMAX, THRSTMX, RATT,UEFFA,SVEFFA
+   double precision  :: rhoa, rmax, xarg, xpmax, xmaxx
+   double precision  :: rp01, rp02, xp, srcangleu
+   double precision  :: vemax, thrstmx, ratt,ueffa,sveffa
 
 !     Fixed VALUES
 !      DOUBLE PRECISION, PARAMETER  ::
@@ -164,84 +164,84 @@ SUBROUTINE MOMENTUM_PLUMERISE (XARG)
 
 
 !     Variable Initializations
-   MODNAM = 'MOMENTUM_PLUMERISE'
+   modnam = 'MOMENTUM_PLUMERISE'
 
 !     Set initial effective parameters
-   UEFFA  = UP
-   SVEFFA = SVP
+   ueffa  = up
+   sveffa = svp
 
-   RP0 = 0.0D0                                                       ! Initialize the Maximum Plume Radius
-   HPM = 0.0D0                                                       ! Initialize the Momentum Plume Rise
-   HDISP = 0.0D0                                                     ! Initialize the Momentum Plume Rise for Airborne Sources
+   rp0 = 0.0d0                                                       ! Initialize the Maximum Plume Radius
+   hpm = 0.0d0                                                       ! Initialize the Momentum Plume Rise
+   hdisp = 0.0d0                                                     ! Initialize the Momentum Plume Rise for Airborne Sources
 
 !     For turbofan engines
-   IF (BYPR > 0.0D0) THEN
+   if (bypr > 0.0d0) then
 !      Check for positive thrust
-      IF (THRUST > 0.0D0) THEN
+      if (thrust > 0.0d0) then
 !      Calculation of maximum values of exhaust velocity and thrust to
 !      avoid inconsistency between thrust and fuel burn rate
-         VEMAX   = SQRT(2.0D0*HFUEL/(AFR*(1.D0+BYPR))+(VAA*VAA))        ! Maximum Exhaust Velocity
-         THRSTMX = MFUEL*AFR*(1.D0+BYPR)*(VEMAX-VAA)                    ! Maximum Thrust
+         vemax   = sqrt(2.0d0*hfuel/(afr*(1.d0+bypr))+(vaa*vaa))        ! Maximum Exhaust Velocity
+         thrstmx = mfuel*afr*(1.d0+bypr)*(vemax-vaa)                    ! Maximum Thrust
 
-         RATT = THRUST/THRSTMX                                          ! Thrust Ratio
+         ratt = thrust/thrstmx                                          ! Thrust Ratio
 
 !     For inconsistent thrust and fuel burn values
-         IF (RATT > 1.0D0 ) THEN
-            THRUST = THRSTMX
-         ELSE
-            THRUST = THRUST
-         END IF
+         if (ratt > 1.0d0 ) then
+            thrust = thrstmx
+         else
+            thrust = thrust
+         end if
 
-         RHOA  = PAA / (RAA * TA)                                       ! Air Density
-         RMAX  = SQRT(THRUST/(PI*RHOA*((VAA+UEFFA)+SVEFFA)*SVEFFA))     ! Maximum Plume Radius (Equation 11)
-         XMAXX = (ABS(RMAX - R00)) / ALPHAM                             ! Distance for RMAX (Equation 13)
+         rhoa  = paa / (raa * ta)                                       ! Air Density
+         rmax  = sqrt(thrust/(pi*rhoa*((vaa+ueffa)+sveffa)*sveffa))     ! Maximum Plume Radius (Equation 11)
+         xmaxx = (abs(rmax - r00)) / alpham                             ! Distance for RMAX (Equation 13)
 
-         IF ( XARG <= XMAXX) THEN
-            RP0 = R00 + (ALPHAM * XARG/2.0D0)                          ! Final Plume Radius (Equation 15)
-            HPM = R00 + (ALPHAM * XARG)                                ! Momentum Plume Rise (Equation 12)
-         ELSE
-            RP01 = (XMAXX / XARG) * (R00 + (ALPHAM * XMAXX/2.0D0))
-            RP02 = RMAX * (1.0D0 - (XMAXX/XARG))
-            RP0 = RP01 + RP02                                          ! Final Plume Radius (Equation 15)
-            HPM = RMAX                                                 ! Momentum Plume Rise (Equation 12)
-         END IF
+         if ( xarg <= xmaxx) then
+            rp0 = r00 + (alpham * xarg/2.0d0)                          ! Final Plume Radius (Equation 15)
+            hpm = r00 + (alpham * xarg)                                ! Momentum Plume Rise (Equation 12)
+         else
+            rp01 = (xmaxx / xarg) * (r00 + (alpham * xmaxx/2.0d0))
+            rp02 = rmax * (1.0d0 - (xmaxx/xarg))
+            rp0 = rp01 + rp02                                          ! Final Plume Radius (Equation 15)
+            hpm = rmax                                                 ! Momentum Plume Rise (Equation 12)
+         end if
 
 !        For Airborne Sources, calculate plume displacement using
 !        source angle and xpmax
-         IF (HS > 12.0D0) THEN
-            XPMAX = (RP0 - R00) / ALPHAM
+         if (hs > 12.0d0) then
+            xpmax = (rp0 - r00) / alpham
 !           Set the minimum value for the source angle
-            IF (SRCANGLE == 0.0D0) THEN
-               SRCANGLEU = 0.01
-            ELSE
-               SRCANGLEU = SRCANGLE
-            END IF
-            HDISP = XPMAX * SIN(SRCANGLEU*PI/180.0D0)
-         END IF
+            if (srcangle == 0.0d0) then
+               srcangleu = 0.01
+            else
+               srcangleu = srcangle
+            end if
+            hdisp = xpmax * sin(srcangleu*pi/180.0d0)
+         end if
 
 !      For zero thrust values in Turbofan Engines
-      ELSE
+      else
 
-         RP0 = R00
-         HPM = 1.0D-10
+         rp0 = r00
+         hpm = 1.0d-10
 
-      END IF
+      end if
 
 !     For Shaft-based/non-turbofan engines, we assume that momentum
 !     induced by Shaft-based/non-turbofan engines is almost negligible
-   ELSE
+   else
 
-      RP0 = R00
-      HPM   = 1.0D-10
+      rp0 = r00
+      hpm   = 1.0d-10
 
-   END IF
-
-
-   RETURN
-END SUBROUTINE MOMENTUM_PLUMERISE
+   end if
 
 
-SUBROUTINE ADISTF
+   return
+end subroutine momentum_plumerise
+
+
+subroutine adistf
 !***********************************************************************
 !                 ADISTF Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -265,163 +265,163 @@ SUBROUTINE ADISTF
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION :: XLN, DELHNN, XMAXN
-   DOUBLE PRECISION :: DHFSAV       ! save original DHFAER for URBSTAB cases
-   DOUBLE PRECISION :: BVZI2
-   DOUBLE PRECISION :: XMAXI, ATMAX
+   double precision :: xln, delhnn, xmaxn
+   double precision :: dhfsav       ! save original DHFAER for URBSTAB cases
+   double precision :: bvzi2
+   double precision :: xmaxi, atmax
 
 !     External Functions:
-   DOUBLE PRECISION, EXTERNAL  :: BISEC_TMAX
+   double precision, external  :: bisec_tmax
 
 !     Variable Initializations
-   MODNAM = 'ADISTF'
+   modnam = 'ADISTF'
 
 
 !     For turbofan and non-turbofan/shaft-based engines having greater
 !     than 1.0D-10 buoyancy flux
-   IF ( FB > 1.0D-10 ) THEN
+   if ( fb > 1.0d-10 ) then
 
-      IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
+      if( stable  .or.  (unstab .and. (hs >= zi) ) )then
 !        Compute the distance to final rise, XMAX;
 !        The negative sign appears on the FB term to ensure that the
 !        resulting angle is between 0 and PI (i.e., positive)
 
-         XMAX = UP * 4.0D0 * DATAN(1.0D0)/ BVPRIM
+         xmax = up * 4.0d0 * datan(1.0d0)/ bvprim
 !        Call the momentum plume rise code for RP0             --- CALL MOMENTUM_PLUMERISE
-         CALL MOMENTUM_PLUMERISE (XMAX)
+         call momentum_plumerise (xmax)
 
 !        Compute the final stable plume rise, DHF, from Eqn. 3-113 of MFD
-         DHFAER = ((RP0/BETA1)**3.0D0 + (6.0D0/(BETA1**(2.0D0)))*&
-         &FB*((4.0D0*DATAN(1.0D0)/BVF)**2.0D0)/(UP+VAA))**(THIRD)-&
-         &(RP0/BETA1)
+         dhfaer = ((rp0/beta1)**3.0d0 + (6.0d0/(beta1**(2.0d0)))*&
+         &fb*((4.0d0*datan(1.0d0)/bvf)**2.0d0)/(up+vaa))**(third)-&
+         &(rp0/beta1)
 
-         XLN = FB/((UP+VAA)*USTAR*USTAR)
-         DELHNN = 1.2D0*XLN**0.6D0 * (HSP + 1.2D0*XLN)**0.4D0
-         DHFAER = MIN( DHFAER, DELHNN )
+         xln = fb/((up+vaa)*ustar*ustar)
+         delhnn = 1.2d0*xln**0.6d0 * (hsp + 1.2d0*xln)**0.4d0
+         dhfaer = min( dhfaer, delhnn )
 
 !        Compute Neutral/Unstable Final Rise
 
-         XMAXN = ((1.0D0/BETA1)**2.0D0)*&
-         &((FB*UP/(UP+VAA))/(SWP**3.0D0))
+         xmaxn = ((1.0d0/beta1)**2.0d0)*&
+         &((fb*up/(up+vaa))/(swp**3.0d0))
 
-         CALL CBLPRD(XMAXN)
-         DHFAER = MIN( DHFAER, DHP1 )
+         call cblprd(xmaxn)
+         dhfaer = min( dhfaer, dhp1 )
 
 !        Apply calm, stable rise limit
-         DHFAER = MIN( DHFAER, 4.0D0 * FB**0.25D0 / (BVF*BVF)**0.375D0 )
+         dhfaer = min( dhfaer, 4.0d0 * fb**0.25d0 / (bvf*bvf)**0.375d0 )
 
 ! ---    Save "original" DHFAER for URBSTAB cases
-         DHFSAV = DHFAER
+         dhfsav = dhfaer
 
 !        For urban stable boundary layers, limit plume rise to 1.25*ZI - HSP
-         IF (URBSTAB) THEN
+         if (urbstab) then
 ! ---       "New fomulation" for v15181 to account for "partial penetration" of plume
 !           above the urban "stable" mixing height, similar to approach used for
 !           convective conditions
-            IF( HSP+DHFAER >= ZI )THEN
+            if( hsp+dhfaer >= zi )then
 ! ---          Stack height + plume rise is .GE. ZI; use pseudo-penetrated plume
 !              approach for URBAN SBL cases
 
 !              Compute the square of the Brunt-Vaisala frequency at ZI, BVZI2
 
-               BVZI2 = (G / PTATZI) * 0.005D0
+               bvzi2 = (g / ptatzi) * 0.005d0
 
 !              Compute the value of PsubS, Eq. 26b in the 2nd reference
-               PSUBS = FB /((UP+VAA)*BVZI2*(ZI-HSP)*(ZI-HSP)*(ZI-HSP))
+               psubs = fb /((up+vaa)*bvzi2*(zi-hsp)*(zi-hsp)*(zi-hsp))
 
 !              Compute the ratio of delta(Hsub_e)/delta(Hsub_h), HEDHH
 !              (Eq. 25 in the 2nd ref.
 !              NOTE: 17.576 = (2.6)**3 and 0.296296 is (2/3)**3
-               HEDHH = (17.576D0 * PSUBS + 0.296296D0) ** THIRD
+               hedhh = (17.576d0 * psubs + 0.296296d0) ** third
 
 !              Check the value of HEDHH and compute the plume penetration, P
-               IF( HEDHH < (2.0D0*THIRD) )THEN
-                  PPF = 0.0D0
+               if( hedhh < (2.0d0*third) )then
+                  ppf = 0.0d0
 
-               ELSE IF( HEDHH > 2.0D0 )THEN
-                  PPF = 1.0D0
+               else if( hedhh > 2.0d0 )then
+                  ppf = 1.0d0
 
-               ELSE
-                  PPF = 1.5D0 - (1.0D0 / HEDHH)
+               else
+                  ppf = 1.5d0 - (1.0d0 / hedhh)
 
-               END IF
+               end if
 
 ! ---          Include calculation of penetrated plume rise and height
-               IF( PPF > 0.0D0 )THEN
+               if( ppf > 0.0d0 )then
 
 !                 Compute the plume height for the penetrated source
 !                 (See Eq. 8 in the reference for Source 3)
-                  IF (PPF == 1.0D0) THEN
-                     DHFAER = HEDHH * (ZI-HSP)
-                  ELSE
-                     DHFAER = 0.75D0 * (ZI-HSP) * HEDHH + 0.5D0*(ZI-HSP)
-                  END IF
+                  if (ppf == 1.0d0) then
+                     dhfaer = hedhh * (zi-hsp)
+                  else
+                     dhfaer = 0.75d0 * (zi-hsp) * hedhh + 0.5d0*(zi-hsp)
+                  end if
 
-               ELSE
+               else
 ! ---             Use "original" DHFAER value
-                  DHFAER = DHFSAV
+                  dhfaer = dhfsav
 
-               END IF
+               end if
 
-            END IF
-         END IF
+            end if
+         end if
 
-      ELSE
+      else
 !        Unstable plume
 
-         XMAXI = ((1.0D0/BETA1)**2.0D0)*&
-         &((FB*UP/(UP+VAA))/(SWP**3.0D0))
+         xmaxi = ((1.0d0/beta1)**2.0d0)*&
+         &((fb*up/(up+vaa))/(swp**3.0d0))
 
 !        Call the momentum plume rise code for RP0             --- CALL MOMENTUM_PLUMERISE
-         CALL MOMENTUM_PLUMERISE (XMAXI)
+         call momentum_plumerise (xmaxi)
 
 !        Calculation of ATMAX using the BISECTION_TMAX function
-         ATMAX = BISEC_TMAX(FB,VAA,RP0,UP,SWP)
+         atmax = bisec_tmax(fb,vaa,rp0,up,swp)
 
-         XMAX  = UP * ATMAX
+         xmax  = up * atmax
 
 !        Call the momentum plume rise code for RP0             --- CALL MOMENTUM_PLUMERISE
-         CALL MOMENTUM_PLUMERISE (XMAX)
+         call momentum_plumerise (xmax)
 
-         IF (HS <= 12.0D0) THEN
+         if (hs <= 12.0d0) then
 
 !       Calculation of DHP is based on the equation 6 of Pandey et al. (2023)
-            DHP1 = ((RP0/BETA1)**3.0D0 + (1.5D0/BETA1**(2.0D0))*&
-            &FB*((ATMAX)**2.0D0)/(UP+VAA))**(THIRD)- RP0/BETA1
+            dhp1 = ((rp0/beta1)**3.0d0 + (1.5d0/beta1**(2.0d0))*&
+            &fb*((atmax)**2.0d0)/(up+vaa))**(third)- rp0/beta1
 
-            DHFAER = DHP1
-         ELSE
-            DHFAER = 1.85D0 * (FB/(SWP*SWP*(UP+VAA)))
-         END IF
+            dhfaer = dhp1
+         else
+            dhfaer = 1.85d0 * (fb/(swp*swp*(up+vaa)))
+         end if
 
-      END IF
+      end if
 !     Turbofan Engines (having zero thrust) and Shaft-based Engines
 !     (having negligible or zero buoyancy flux)
-   ELSE
-      XMAX  = 0.0D0
-      DHFAER = 1.0D-10
-   END IF
+   else
+      xmax  = 0.0d0
+      dhfaer = 1.0d-10
+   end if
 
 !     Check the Aircraft Debug Option to print the debug file
-   IF(ARCFTDEBUG) THEN
+   if(arcftdebug) then
 
-      WRITE(ARCFTDBG,*) '===========================================',&
+      write(arcftdbg,*) '===========================================',&
       &'=============================================================',&
       &'========================'
-      WRITE (ARCFTDBG,*)'SOURCE TYPE:  ',SRCTYP(ISRC),&
-      &'    SOURCE ID:  ',SRCID(ISRC)  ,'      SOURCE NO.:  ',ISRC
-      WRITE (ARCFTDBG,7130) KURDAT
+      write (arcftdbg,*)'SOURCE TYPE:  ',srctyp(isrc),&
+      &'    SOURCE ID:  ',srcid(isrc)  ,'      SOURCE NO.:  ',isrc
+      write (arcftdbg,7130) kurdat
 
-      WRITE (ARCFTDBG,7135) MFUEL, THRUST, VAA, AFR, BYPR,&
-      &RPWR, SRCANGLE, FB, XMAX, DHFAER, RP0, HPM,&
-      &HDISP
+      write (arcftdbg,7135) mfuel, thrust, vaa, afr, bypr,&
+      &rpwr, srcangle, fb, xmax, dhfaer, rp0, hpm,&
+      &hdisp
 
-7130  FORMAT(' YR/MN/DY/HR:  ', I8,&
-      &//,2X,'<----------------------------------- SOURCE INFORMATION',&
+7130  format(' YR/MN/DY/HR:  ', i8,&
+      &//,2x,'<----------------------------------- SOURCE INFORMATION',&
       &' ----------------------------------->',/,&
       &'  MFUEL    THRUST     VAA     AFR     BYPR',&
       &'      RPWR      SRCANGLE    FB      XMAX     DHFAER    RP0',&
@@ -429,17 +429,17 @@ SUBROUTINE ADISTF
       &' (KG/S)     (N)      (M/S)    (#)     (#)',&
       &'      (kW)      (degree)   (M4/S3)    (M)      (M)',&
       &'      (M)     (M)       (M)',/)
-7135  FORMAT(1X,F5.2,2X,F10.1,1X,F7.2,3X,F5.1,2X,F7.2,2X,F10.1,3X,F6.2,&
-      &2X,F9.1,1X,F8.2,1X,F8.1,2X,F5.1,4X,F5.1,4X,F5.1)
+7135  format(1x,f5.2,2x,f10.1,1x,f7.2,3x,f5.1,2x,f7.2,2x,f10.1,3x,f6.2,&
+      &2x,f9.1,1x,f8.2,1x,f8.1,2x,f5.1,4x,f5.1,4x,f5.1)
 
 
-   END IF
+   end if
 
 
-   RETURN
-END SUBROUTINE ADISTF
+   return
+end subroutine adistf
 
-DOUBLE PRECISION FUNCTION BISEC_TMAX(FBB,VAB,RP00,AUEFFFF,SWEFFAA)
+double precision function bisec_tmax(fbb,vab,rp00,aueffff,sweffaa)
 !***********************************************************************
 !        COMPUTE_TMAX Function of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -465,76 +465,76 @@ DOUBLE PRECISION FUNCTION BISEC_TMAX(FBB,VAB,RP00,AUEFFFF,SWEFFAA)
 !***********************************************************************
 !     Variable Declarations
 !      USE MAIN1
-   IMPLICIT NONE
+   implicit none
 
-   DOUBLE PRECISION  :: ATMAX, RP00
-   DOUBLE PRECISION  :: A, B, C, FBB, VAB
-   DOUBLE PRECISION  :: XM, X1, X2, FRIGHT,&
-   &XRIGHT, XLEFT, DELX, XMID,&
-   &FMID, AUEFFFF, SWEFFAA
+   double precision  :: atmax, rp00
+   double precision  :: a, b, c, fbb, vab
+   double precision  :: xm, x1, x2, fright,&
+   &xright, xleft, delx, xmid,&
+   &fmid, aueffff, sweffaa
 
-   INTEGER :: I, AAAITER, NSTEPS
+   integer :: i, aaaiter, nsteps
 !     Fixed Values
-   DOUBLE PRECISION, PARAMETER  :: ERRLIMIT = 1.0E-04, BETA1 = 0.60D0
+   double precision, parameter  :: errlimit = 1.0e-04, beta1 = 0.60d0
 
-   NSTEPS = ANINT(DLOG(1.0D0/ERRLIMIT))
+   nsteps = anint(dlog(1.0d0/errlimit))
 
-   XM = ((2.0D0/3.0D0/BETA1)**2.0D0)*&
-   &((FBB/(AUEFFFF+VAB))/(SWEFFAA**3.0D0))        ! Equation 17
+   xm = ((2.0d0/3.0d0/beta1)**2.0d0)*&
+   &((fbb/(aueffff+vab))/(sweffaa**3.0d0))        ! Equation 17
 
-   X1 = XM/2.0
+   x1 = xm/2.0
 
-   X2 = 2.0*XM
+   x2 = 2.0*xm
 
-   A = (FBB/(AUEFFFF+VAB)/BETA1)**(2.0D0)
+   a = (fbb/(aueffff+vab)/beta1)**(2.0d0)
 
-   B = (RP00/BETA1)**3.0D0
+   b = (rp00/beta1)**3.0d0
 
-   C = (B + A*1.5D0*X2**2.0D0)
+   c = (b + a*1.5d0*x2**2.0d0)
 
-   FRIGHT = A*X2 - SWEFFAA*C**(2.0D0/3.0D0)
+   fright = a*x2 - sweffaa*c**(2.0d0/3.0d0)
 
-   IF (FRIGHT > 0.0D0) THEN
+   if (fright > 0.0d0) then
 
-      XRIGHT = X2
-      XLEFT  = X1
+      xright = x2
+      xleft  = x1
 
-   ELSE
+   else
 
-      XRIGHT = X1
+      xright = x1
 
-      XLEFT  = X2
+      xleft  = x2
 
-   END IF
+   end if
 
-   DO I = 1, NSTEPS
+   do i = 1, nsteps
 
-      DELX = XRIGHT - XLEFT
+      delx = xright - xleft
 
-      XMID = XLEFT + 0.5D0*DELX
+      xmid = xleft + 0.5d0*delx
 
-      C = (B + A*1.5D0*XMID**2.0D0)
+      c = (b + a*1.5d0*xmid**2.0d0)
 
-      FMID = A*XMID - SWEFFAA*C**(2.0D0/3.0D0)
+      fmid = a*xmid - sweffaa*c**(2.0d0/3.0d0)
 
-      IF (FMID > 0.0D0) THEN
+      if (fmid > 0.0d0) then
 
-         XRIGHT = XMID
+         xright = xmid
 
-      ELSE
+      else
 
-         XLEFT = XMID
+         xleft = xmid
 
-      END IF
+      end if
 
-   END DO
+   end do
 
-   ATMAX = XMID
+   atmax = xmid
 
-END FUNCTION BISEC_TMAX
+end function bisec_tmax
 
 
-SUBROUTINE ADELTAH ( XARG )
+subroutine adeltah ( xarg )
 !***********************************************************************
 !             ADELTAH Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -569,26 +569,26 @@ SUBROUTINE ADELTAH ( XARG )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 
-   CHARACTER :: MODNAM*12
-   INTEGER :: KITER, NDXZPL
-   DOUBLE PRECISION :: XARG, XMAXTMP, XRISE, ZPLM, DHPOLD,&
-   &SVPM, SWPM, UPM, TGPM, PTPM, PTP
+   character :: modnam*12
+   integer :: kiter, ndxzpl
+   double precision :: xarg, xmaxtmp, xrise, zplm, dhpold,&
+   &svpm, swpm, upm, tgpm, ptpm, ptp
 
 !     Variable Initializations
-   MODNAM = 'ADELTAH'
+   modnam = 'ADELTAH'
 
 
-   IF( (STABLE  .or.  (UNSTAB  .and.  (HS >= ZI)))  .and.&
-   &(XARG >= XMAX) )THEN
+   if( (stable  .or.  (unstab  .and.  (hs >= zi)))  .and.&
+   &(xarg >= xmax) )then
 !        Use final stable plume rise (DHF) calculated in DISTF (DHP)
 !        at XMAX
-      DHP = DHFAER
+      dhp = dhfaer
 
-   ELSE IF( (STABLE  .or. (UNSTAB  .and.  (HS >= ZI))) .and.&
-   &(XARG < XMAX) ) THEN
+   else if( (stable  .or. (unstab  .and.  (hs >= zi))) .and.&
+   &(xarg < xmax) ) then
 !----    Compute stable plume rise for the distance XARG   --- CALL ASBLRIS
 !        Use iterative approach to plume rise calculations.
 !        First compute temporary distance to "final rise" based on current
@@ -597,136 +597,136 @@ SUBROUTINE ADELTAH ( XARG )
 !        SUB. ASBLRIS for distances beyond the value of XMAX computed
 !----    iteratively outside the receptor loop in SUB. ADISTF.
 
-      XMAXTMP = UP * 4.0D0 * DATAN(1.0D0)/ BVPRIM
-      XRISE   = MIN( XARG, XMAXTMP )
-      CALL ASBLRIS ( XRISE )
-      KITER = 0
+      xmaxtmp = up * 4.0d0 * datan(1.0d0)/ bvprim
+      xrise   = min( xarg, xmaxtmp )
+      call asblris ( xrise )
+      kiter = 0
 
-50    ZPLM = HSP + 0.5D0 * DHP
-      DHPOLD = DHP
+50    zplm = hsp + 0.5d0 * dhp
+      dhpold = dhp
 
 !----    Locate index below ZPLM
 
-      CALL LOCATE(GRIDHT, 1, MXGLVL, ZPLM, NDXZPL)
+      call locate(gridht, 1, mxglvl, zplm, ndxzpl)
 
 !----    Get Wind speed at ZPLM; replace UP, SVP, SWP.  Also, replace TGP,
 !        vertical potential temperature gradient, if stable.
 
-      CALL GINTRP( GRIDHT(NDXZPL), GRIDSV(NDXZPL),&
-      &GRIDHT(NDXZPL+1), GRIDSV(NDXZPL+1), ZPLM, SVPM )
-      CALL GINTRP( GRIDHT(NDXZPL), GRIDSW(NDXZPL),&
-      &GRIDHT(NDXZPL+1), GRIDSW(NDXZPL+1),&
-      &ZPLM, SWPM )
+      call gintrp( gridht(ndxzpl), gridsv(ndxzpl),&
+      &gridht(ndxzpl+1), gridsv(ndxzpl+1), zplm, svpm )
+      call gintrp( gridht(ndxzpl), gridsw(ndxzpl),&
+      &gridht(ndxzpl+1), gridsw(ndxzpl+1),&
+      &zplm, swpm )
 
-      CALL GINTRP( GRIDHT(NDXZPL), GRIDWS(NDXZPL),&
-      &GRIDHT(NDXZPL+1), GRIDWS(NDXZPL+1), ZPLM, UPM )
+      call gintrp( gridht(ndxzpl), gridws(ndxzpl),&
+      &gridht(ndxzpl+1), gridws(ndxzpl+1), zplm, upm )
 
-      SVPM = MAX( SVPM, SVMIN, SVUMIN*UPM )
-      SWPM = MAX( SWPM, SWMIN )
+      svpm = max( svpm, svmin, svumin*upm )
+      swpm = max( swpm, swmin )
 
-      IF( L_VECTORWS )THEN
-         UPM = DSQRT( UPM*UPM + 2.0D0*SVPM*SVPM )
-      ENDIF
-      UPM  = MAX( UPM, WSMIN )
+      if( l_vectorws )then
+         upm = dsqrt( upm*upm + 2.0d0*svpm*svpm )
+      endif
+      upm  = max( upm, wsmin )
 
 !RWB     Use average of stack top and midpoint wind speeds and others.
-      UP = 0.5D0 * (US + UPM)
-      SVP = 0.5D0 * (SVS + SVPM)
-      SWP = 0.5D0 * (SWS + SWPM)
+      up = 0.5d0 * (us + upm)
+      svp = 0.5d0 * (svs + svpm)
+      swp = 0.5d0 * (sws + swpm)
 
-      CALL GINTRP( GRIDHT(NDXZPL), GRIDTG(NDXZPL),&
-      &GRIDHT(NDXZPL+1), GRIDTG(NDXZPL+1), ZPLM, TGPM )
-      CALL GINTRP( GRIDHT(NDXZPL), GRIDPT(NDXZPL),&
-      &GRIDHT(NDXZPL+1), GRIDPT(NDXZPL+1), ZPLM, PTPM )
+      call gintrp( gridht(ndxzpl), gridtg(ndxzpl),&
+      &gridht(ndxzpl+1), gridtg(ndxzpl+1), zplm, tgpm )
+      call gintrp( gridht(ndxzpl), gridpt(ndxzpl),&
+      &gridht(ndxzpl+1), gridpt(ndxzpl+1), zplm, ptpm )
 !RWB     Use average of stack top and midpoint temperature gradients.
-      TGP = 0.5D0 * (TGS + TGPM)
-      PTP = 0.5D0 * (PTS + PTPM)
-      BVF = DSQRT( G * TGP / PTP)
-      IF(BVF < 1.0D-10) BVF = 1.0D-10
-      BVPRIM  = 0.7D0 * BVF
+      tgp = 0.5d0 * (tgs + tgpm)
+      ptp = 0.5d0 * (pts + ptpm)
+      bvf = dsqrt( g * tgp / ptp)
+      if(bvf < 1.0d-10) bvf = 1.0d-10
+      bvprim  = 0.7d0 * bvf
 
 !        Repeat calculation of temporary distance to "final rise" using
 !        current values of UP and BVPRIM.
-      XMAXTMP = UP * 4.0D0 * DATAN(1.0D0)/ BVPRIM
-      XRISE   = MIN( XARG, XMAXTMP )
-      CALL ASBLRIS ( XRISE )
+      xmaxtmp = up * 4.0d0 * datan(1.0d0)/ bvprim
+      xrise   = min( xarg, xmaxtmp )
+      call asblris ( xrise )
 
-      KITER = KITER + 1
+      kiter = kiter + 1
 
 !RJP     Add temporary debugging statements
 
-      IF(ARCFTDEBUG) THEN
-         WRITE(ARCFTDBG,6001) KITER,DHPOLD, DHP, ZPLM, UP,TGP
-6001     FORMAT(/,5X,'OPTH2 ITER. #',I1,': OLD DELH = ',&
-         &F6.1,' M; NEW DELH = ',F6.1,' M; MET LEVEL = ',&
-         &F6.1,' M; NEW Upl = ',F5.2,' M/S; NEW DTHDZ = ',&
-         &F7.4,' K/M')
-      ENDIF
+      if(arcftdebug) then
+         write(arcftdbg,6001) kiter,dhpold, dhp, zplm, up,tgp
+6001     format(/,5x,'OPTH2 ITER. #',i1,': OLD DELH = ',&
+         &f6.1,' M; NEW DELH = ',f6.1,' M; MET LEVEL = ',&
+         &f6.1,' M; NEW Upl = ',f5.2,' M/S; NEW DTHDZ = ',&
+         &f7.4,' K/M')
+      endif
 
 !        Check for convergence
-      IF(DHP>0.0D0 .and. DABS((DHPOLD-DHP)/DHP)<0.001D0 .and.&
-      &KITER >= 5)THEN
-         IF( DHP <= 1.0D-5 )THEN
-            DHP = 1.0D-5
-         ENDIF
-         GO TO 60
-      ELSEIF(KITER < 10)THEN
-         GO TO 50
-      ENDIF
+      if(dhp>0.0d0 .and. dabs((dhpold-dhp)/dhp)<0.001d0 .and.&
+      &kiter >= 5)then
+         if( dhp <= 1.0d-5 )then
+            dhp = 1.0d-5
+         endif
+         go to 60
+      elseif(kiter < 10)then
+         go to 50
+      endif
 
-      IF(KITER >= 5) THEN
-         DHP = 0.5D0 * (DHP + DHPOLD)
-         IF(ARCFTDEBUG) WRITE(ARCFTDBG,6002) DHP
-6002     FORMAT(/,5X,'OPTH2 ITERATION FAILED TO CONVERGE; PLUME',&
-         &' RISE SET AT ',F6.1,' METERS.',/)
-         GO TO 60
-      ELSE
-         GO TO 50
-      ENDIF
+      if(kiter >= 5) then
+         dhp = 0.5d0 * (dhp + dhpold)
+         if(arcftdebug) write(arcftdbg,6002) dhp
+6002     format(/,5x,'OPTH2 ITERATION FAILED TO CONVERGE; PLUME',&
+         &' RISE SET AT ',f6.1,' METERS.',/)
+         go to 60
+      else
+         go to 50
+      endif
 
-60    CONTINUE
+60    continue
 
 !RWB     After completing iteration, reset UP, SVP, SWP and TGP to stack top
 !RWB     values for subsequent distance-dependent plume rise calcs.
-      UP  = US
-      SVP = SVS
-      SWP = SWS
-      TGP = TGS
-      PTP = PTS
-      BVF = DSQRT( G * TGP / PTP )
-      IF(BVF < 1.0D-10) BVF = 1.0D-10
-      BVPRIM  = 0.7D0 * BVF
+      up  = us
+      svp = svs
+      swp = sws
+      tgp = tgs
+      ptp = pts
+      bvf = dsqrt( g * tgp / ptp )
+      if(bvf < 1.0d-10) bvf = 1.0d-10
+      bvprim  = 0.7d0 * bvf
 !crfl-3/6/95 Make sure SBL rise is not greater than CBL rise.
-      CALL ACBLPRD(XARG)
-      DHP = MIN(DHP,DHP1)
-      DHP = MIN(DHP,DHFAER)
+      call acblprd(xarg)
+      dhp = min(dhp,dhp1)
+      dhp = min(dhp,dhfaer)
 
-   ELSEIF( UNSTAB )THEN
+   elseif( unstab )then
 !        (i.e., for UNSTABle cases, with HS < ZI)
 
 !        Compute  plume rise for the direct plume          --- CALL ACBLPRD
-      CALL ACBLPRD ( XARG )
+      call acblprd ( xarg )
 
 !        Compute  plume rise for the indirect plume        --- CALL ACBLPRN
-      CALL ACBLPRN ( XARG )
+      call acblprn ( xarg )
 
-      IF( PPF > 0.0D0 )THEN
+      if( ppf > 0.0d0 )then
 !           Compute plume rise for the penetrated plume    --- CALL ACBLPR3
-         CALL ACBLPR3
+         call acblpr3
 
-      ELSE
+      else
 !           No plume penetration - plume rise is zero for this source
-         DHP3 = 0.0D0
+         dhp3 = 0.0d0
 
-      ENDIF
+      endif
 
-   ENDIF
+   endif
 
-   RETURN
-END SUBROUTINE ADELTAH
+   return
+end subroutine adeltah
 
 
-SUBROUTINE ASBLRIS ( XARG )
+subroutine asblris ( xarg )
 !***********************************************************************
 !             ASBLRIS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -763,58 +763,58 @@ SUBROUTINE ASBLRIS ( XARG )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: XARG, TERMA, TERMC, TERMD, TERME
-   DOUBLE PRECISION :: XLN, DELHNN
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: xarg, terma, termc, termd, terme
+   double precision :: xln, delhnn
 
 !     Variable Initializations
-   MODNAM = 'ASBLRIS'
+   modnam = 'ASBLRIS'
 
 !     Call MOMENTUM_PLUMERISE to calculate the RP0 (plume radius) and
 !     (HPM) horizontal momentum-induced plume rise
 
-   CALL MOMENTUM_PLUMERISE (XARG)                                   ! CALL MOMENTUM_PLUMERISE
+   call momentum_plumerise (xarg)                                   ! CALL MOMENTUM_PLUMERISE
 
 !     For turbofan and non-turbofan/shaft-based engines
-   IF (BYPR > 0.0D0 .or. BYPR == -999.0D0 .and.&
-   &FB > 1.0D-10) THEN
+   if (bypr > 0.0d0 .or. bypr == -999.0d0 .and.&
+   &fb > 1.0d-10) then
 
 !       Calculation of DHP is based on the equation 6 of Pandey et al. (2023)
-      DHP = ((RP0/BETA1)**3.0D0 + (1.5D0/BETA1**(2.0D0))*&
-      &FB*((XARG/UP)**2.0D0)/(VAA+UP))**(THIRD)- RP0/BETA1 +&
-      &HPM                                                   ! Momentum Plume Rise
+      dhp = ((rp0/beta1)**3.0d0 + (1.5d0/beta1**(2.0d0))*&
+      &fb*((xarg/up)**2.0d0)/(vaa+up))**(third)- rp0/beta1 +&
+      &hpm                                                   ! Momentum Plume Rise
 
 ! ---   Apply lower limit on stable plume rise based on Equation 98
 !       of the MFD
 
-      XLN = FB/((UP+VAA)*USTAR*USTAR)
-      DELHNN = 1.2D0*XLN**0.6D0 * (HSP + 1.2D0*XLN)**0.4D0
+      xln = fb/((up+vaa)*ustar*ustar)
+      delhnn = 1.2d0*xln**0.6d0 * (hsp + 1.2d0*xln)**0.4d0
 
-      DHP = MIN( DHP, DHFAER, DELHNN )
-      DHP = MIN(DHP, ABS(ZI-HS))
+      dhp = min( dhp, dhfaer, delhnn )
+      dhp = min(dhp, abs(zi-hs))
 
 !      Turbofan Engines (having zero thrust) and Shaft-based Engines
 !      (having negligible or zero buoyancy flux), in that case total plume rise
 !      equal to momentum plume rise only)
-   ELSE
+   else
 
-      DHP = HPM
-      DHP = MIN(DHP, ABS(ZI-HS))
+      dhp = hpm
+      dhp = min(dhp, abs(zi-hs))
 
-   END IF
+   end if
 
 !     For Airborne Aircraft Sources
-   IF (HS > 12) THEN
-      DHP = MIN(DHP, ABS(ZI-HS))
-      DHP = MAX(HPM,(DHP-HDISP))
-   END IF
+   if (hs > 12) then
+      dhp = min(dhp, abs(zi-hs))
+      dhp = max(hpm,(dhp-hdisp))
+   end if
 
-   RETURN
-END SUBROUTINE ASBLRIS
+   return
+end subroutine asblris
 
-SUBROUTINE ACBLPRD ( XARG )
+subroutine acblprd ( xarg )
 !***********************************************************************
 !             ACBLPRD Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -848,52 +848,52 @@ SUBROUTINE ACBLPRD ( XARG )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: XARG
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: xarg
 
 !     Variable Initializations
-   MODNAM = 'ACBLPRD'
+   modnam = 'ACBLPRD'
 
 !     Call MOMENTUM_PLUMERISE to calculate the RP0 (plume radius) and
 !     (HPM) horizontal momentum-induced plume rise
 
-   CALL MOMENTUM_PLUMERISE (XARG)                                   ! CALL MOMENTUM_PLUMERISE
+   call momentum_plumerise (xarg)                                   ! CALL MOMENTUM_PLUMERISE
 
 !     For turbofan and non-turbofan/shaft-based engines
-   IF (BYPR > 0.0D0 .or. BYPR == -999.0D0 .and.&
-   &FB > 1.0D-10) THEN
+   if (bypr > 0.0d0 .or. bypr == -999.0d0 .and.&
+   &fb > 1.0d-10) then
 
 !      Calculation of DHP is based on the equation 6 of Pandey et al. (2023)
-      DHP1 = ((RP0/BETA1)**3.0D0 + (1.5D0/BETA1**(2.0D0))*&
-      &FB*((XARG/UP)**2.0D0)/(VAA+UP))**(THIRD)- RP0/BETA1 +&
-      &HPM                                                    ! Momentum Plume Rise
+      dhp1 = ((rp0/beta1)**3.0d0 + (1.5d0/beta1**(2.0d0))*&
+      &fb*((xarg/up)**2.0d0)/(vaa+up))**(third)- rp0/beta1 +&
+      &hpm                                                    ! Momentum Plume Rise
 
-      DHP1 = MIN(DHP1, ABS(ZI-HS))
+      dhp1 = min(dhp1, abs(zi-hs))
 
 !      Turbofan Engines (having zero thrust) and Shaft-based Engines
 !      (having negligible or zero buoyancy flux), in that case total plume rise
 !      equal to momentum plume rise only)
-   ELSE
+   else
 
-      DHP1 = HPM
-      DHP1 = MIN(DHP1, ABS(ZI-HS))
+      dhp1 = hpm
+      dhp1 = min(dhp1, abs(zi-hs))
 
-   END IF
+   end if
 
 !     For Airborne Aircraft Sources
-   IF (HS > 12) THEN
+   if (hs > 12) then
 
-      DHP1 = MIN(DHP1, ABS(ZI-HS))
-      DHP1 = MAX(HPM,(DHP1-HDISP))
+      dhp1 = min(dhp1, abs(zi-hs))
+      dhp1 = max(hpm,(dhp1-hdisp))
 
-   END IF
+   end if
 
-   RETURN
-END SUBROUTINE ACBLPRD
+   return
+end subroutine acblprd
 
-SUBROUTINE ACBLPRN ( XARG )
+subroutine acblprn ( xarg )
 !***********************************************************************
 !             ACBLPRN Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -929,24 +929,24 @@ SUBROUTINE ACBLPRN ( XARG )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: XARG, RSUBH, RYRZ, DELHI
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: xarg, rsubh, ryrz, delhi
 
 !     Variable Initializations
-   MODNAM = 'ACBLPRN'
+   modnam = 'ACBLPRN'
 
-   RSUBH = BETA2 * (ZI - HSP)
-   RYRZ  = RSUBH * RSUBH + 0.25D0*ASUBE*(LAMDAY**1.5D0) *&
-   &WSTAR*WSTAR*XARG*XARG/(UP*UP)
-   DELHI = DSQRT((2.D0*FB*ZI)/(ALPHAR*(UP+VAA)*RYRZ))*(XARG/UP)
-   DHP2  = DELHI
+   rsubh = beta2 * (zi - hsp)
+   ryrz  = rsubh * rsubh + 0.25d0*asube*(lamday**1.5d0) *&
+   &wstar*wstar*xarg*xarg/(up*up)
+   delhi = dsqrt((2.d0*fb*zi)/(alphar*(up+vaa)*ryrz))*(xarg/up)
+   dhp2  = delhi
 
-   RETURN
-END SUBROUTINE ACBLPRN
+   return
+end subroutine acblprn
 
-SUBROUTINE ACBLPR3
+subroutine acblpr3
 !***********************************************************************
 !             ACBLPR3 Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -976,24 +976,24 @@ SUBROUTINE ACBLPR3
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'CBLPR3'
+   modnam = 'CBLPR3'
 
 !     The plume rise for the penetrated source is delta(Hsub_3), given
 !     by Eq. 9 in Jeff Weil's 9/1/93 document.  The variable HEDHH is
 !     delta(Hsub_e)/delta(Hsub_h), calculated from Eq. 26a of Jeff Weil's
 !     8/17/93 document, where delta(Hsub_h) is ZI-HS.
 
-   IF (PPF == 1.0D0) THEN
-      DHP3 = HEDHH * (ZI-HSP)
-   ELSE
-      DHP3 = 0.75D0 * (ZI-HSP) * HEDHH + 0.5D0 * (ZI-HSP)
-   END IF
+   if (ppf == 1.0d0) then
+      dhp3 = hedhh * (zi-hsp)
+   else
+      dhp3 = 0.75d0 * (zi-hsp) * hedhh + 0.5d0 * (zi-hsp)
+   end if
 
-   RETURN
+   return
 
-END SUBROUTINE ACBLPR3
+end subroutine acblpr3

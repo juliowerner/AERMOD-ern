@@ -1,4 +1,4 @@
-SUBROUTINE SIGY( XARG )
+subroutine sigy( xarg )
 !***********************************************************************
 !             SIGY Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -38,55 +38,55 @@ SUBROUTINE SIGY( XARG )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION, PARAMETER :: EXPON = 1.0D0
-   DOUBLE PRECISION :: XARG, SVOVRU, TYEFF,&
-   &XNODIM, DENOMI, BETALPH, TYEFF3
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision, parameter :: expon = 1.0d0
+   double precision :: xarg, svovru, tyeff,&
+   &xnodim, denomi, betalph, tyeff3
 
 !     Variable Initializations
-   MODNAM = 'SIGY'
+   modnam = 'SIGY'
 
-   IF( STABLE .or. (UNSTAB .and. (HS >= ZI)) )THEN
+   if( stable .or. (unstab .and. (hs >= zi)) )then
 !        The atmosphere is stable or the release is above the CBL mixing ht.
 !        Calculate SV/U, but not less than PARAMETER, SVUMIN = 0.05
-      SVOVRU = MAX (SVUMIN, SVEFF/UEFF)
-      TYEFF  = (ZIMECH/(156.0D0*SVEFF)) * (MAX(HE, 0.46D0)/0.46D0)
-      SYAMB  = (SVOVRU * XARG)/(1.0D0+XARG/(2.0D0*UEFF*TYEFF))**0.3D0
+      svovru = max (svumin, sveff/ueff)
+      tyeff  = (zimech/(156.0d0*sveff)) * (max(he, 0.46d0)/0.46d0)
+      syamb  = (svovru * xarg)/(1.0d0+xarg/(2.0d0*ueff*tyeff))**0.3d0
 
-   ELSEIF( UNSTAB )then
+   elseif( unstab )then
 !        The atmosphere is unstable and the release is below the CBL mixing ht.
 !        Calculate SV/U, but not less than PARAMETER, SVUMIN = 0.05
-      SVOVRU = MAX (SVUMIN, SVEFFD/UEFFD)
-      XNODIM = SVOVRU * XARG / ZI
-      DENOMI  = MAX (HS, 0.46D0)
+      svovru = max (svumin, sveffd/ueffd)
+      xnodim = svovru * xarg / zi
+      denomi  = max (hs, 0.46d0)
 ! ---    BETALPH= MAX( 78.0D0*(0.46D0/DENOMI)**EXPON , 0.7D0)
 ! ---             recode without EXPON, since EXPON=1
-      BETALPH= MAX( 78.0D0*(0.46D0/DENOMI), 0.7D0)
-      SYAMB  = (SVOVRU * XARG) / (1.0D0+BETALPH*XNODIM)**0.3D0
+      betalph= max( 78.0d0*(0.46d0/denomi), 0.7d0)
+      syamb  = (svovru * xarg) / (1.0d0+betalph*xnodim)**0.3d0
 
 !        Assign ambient value for indirect source = direct source
-      SYAN   = SYAMB
+      syan   = syamb
 
 !        Calculate the ambient sigma_Y for a penetrated plume, SYA3
-      IF( PPF > 0.0D0 )THEN
+      if( ppf > 0.0d0 )then
 !           Calculate SV/U, but not less than PARAMETER, SVUMIN = 0.05
-         SVOVRU = MAX (SVUMIN, SVEFF3/UEFF3)
-         TYEFF3 = (ZIMECH/(156.0D0*SVEFF3))*(MAX(HE3,0.46D0)/0.46D0)
-         SYA3   = (SVOVRU*XARG)/&
-         &(1.0D0+XARG/(2.0D0*UEFF3*TYEFF3))**0.3D0
+         svovru = max (svumin, sveff3/ueff3)
+         tyeff3 = (zimech/(156.0d0*sveff3))*(max(he3,0.46d0)/0.46d0)
+         sya3   = (svovru*xarg)/&
+         &(1.0d0+xarg/(2.0d0*ueff3*tyeff3))**0.3d0
 
-      ELSE
-         SYA3 = 0.0D0
-      ENDIF
+      else
+         sya3 = 0.0d0
+      endif
 
-   ENDIF
+   endif
 
-   RETURN
-END SUBROUTINE SIGY
+   return
+end subroutine sigy
 
-SUBROUTINE SIGZ( XARG )
+subroutine sigz( xarg )
 !***********************************************************************
 !             SIGZ Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -124,63 +124,63 @@ SUBROUTINE SIGZ( XARG )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   INTEGER :: NDXZHE
-   DOUBLE PRECISION :: XARG, TTRAVL, PTP, BVFRQ, ZTMP, SIGF, ALPHAB
+   use main1
+   implicit none
+   character :: modnam*12
+   integer :: ndxzhe
+   double precision :: xarg, ttravl, ptp, bvfrq, ztmp, sigf, alphab
 
 !     TTRAVL  = Travel time
 
 !     Variable Initializations
-   MODNAM = 'SIGZ'
+   modnam = 'SIGZ'
 
-   IF( STABLE .or. (UNSTAB .and. HS >= ZI) )THEN
+   if( stable .or. (unstab .and. hs >= zi) )then
 !        The atmosphere is stable or the release was above the CBL mixing ht.
 !        See Eq. 1 of the document by Venkatram referenced above.
 
-      TTRAVL = XARG / UEFF
+      ttravl = xarg / ueff
 
 !----    Apply Sigma-Z formulation from CTDMPLUS
 !----    Locate index below HE, and retrieve potential temperature at HE
 
-      CALL LOCATE(GRIDHT, 1, MXGLVL, HE, NDXZHE)
+      call locate(gridht, 1, mxglvl, he, ndxzhe)
 
-      CALL GINTRP( GRIDHT(NDXZHE), GRIDPT(NDXZHE),&
-      &GRIDHT(NDXZHE+1), GRIDPT(NDXZHE+1), HE, PTP )
+      call gintrp( gridht(ndxzhe), gridpt(ndxzhe),&
+      &gridht(ndxzhe+1), gridpt(ndxzhe+1), he, ptp )
 
-      IF (TGEFF > 0.0D0) THEN
-         BVFRQ = DSQRT( G * TGEFF / PTP )
-      ELSE
-         BVFRQ = 1.0D-10
-      END IF
+      if (tgeff > 0.0d0) then
+         bvfrq = dsqrt( g * tgeff / ptp )
+      else
+         bvfrq = 1.0d-10
+      end if
 
-      IF(BVFRQ < 1.0D-10) BVFRQ = 1.0D-10
+      if(bvfrq < 1.0d-10) bvfrq = 1.0d-10
 
 !        Set height for calculating sigma-z, ZTMP
-      ZTMP = MAX( HS, HE, 1.0D-4 )
+      ztmp = max( hs, he, 1.0d-4 )
 
-      IF (URBSTAB) THEN
+      if (urbstab) then
 !           Set BVF term to zero for urban stable boundary layer
-         SZAMB = SWEFF * TTRAVL / DSQRT( 1.0D0 + SWEFF*TTRAVL *&
-         &( 1.0D0/(0.72D0*ZTMP) ) )
+         szamb = sweff * ttravl / dsqrt( 1.0d0 + sweff*ttravl *&
+         &( 1.0d0/(0.72d0*ztmp) ) )
 
-      ELSE
-         SZAMB = SWEFF * TTRAVL / DSQRT( 1.0D0 + SWEFF*TTRAVL *&
-         &( 1.0D0/(0.72D0*ZTMP) + BVFRQ/(0.54D0*SWEFF) ) )
-      END IF
+      else
+         szamb = sweff * ttravl / dsqrt( 1.0d0 + sweff*ttravl *&
+         &( 1.0d0/(0.72d0*ztmp) + bvfrq/(0.54d0*sweff) ) )
+      end if
 
-      IF (HE < ZI) THEN
-         CALL SZSFCL (XARG)
+      if (he < zi) then
+         call szsfcl (xarg)
 
-         SIGF = MIN ( HE/ZI, 1.0D0)
-         SZAS = (1.0D0 - SIGF) * SZSURF + SIGF * SZAMB
-      ELSE
-         SZAS = SZAMB
-      END IF
+         sigf = min ( he/zi, 1.0d0)
+         szas = (1.0d0 - sigf) * szsurf + sigf * szamb
+      else
+         szas = szamb
+      end if
 
 
-   ELSEIF( UNSTAB )THEN
+   elseif( unstab )then
 !        The atmosphere is unstable and the release is below the mixing ht.
 !        See Eqs. 5c and 24a of the document by Weil referenced above
 !        SZAD1 = ambient sigma_Z for the direct plume updraft
@@ -188,50 +188,50 @@ SUBROUTINE SIGZ( XARG )
 !        SZAN1 = ambient sigma_Z for the indirect plume updraft
 !        SZAN2 = ambient sigma_Z for the indirect plume downdraft
 
-      IF (PPF < 1.0D0) THEN
-         IF (.NOT.SURFAC) THEN
-            ALPHAB = 1.0D0
-         ELSE
-            ALPHAB = 0.6D0 + 0.4D0*(CENTER/(0.1D0*ZI))
-         END IF
+      if (ppf < 1.0d0) then
+         if (.not.surfac) then
+            alphab = 1.0d0
+         else
+            alphab = 0.6d0 + 0.4d0*(center/(0.1d0*zi))
+         end if
 
-         SZAD1 = ALPHAB * BSUB1 * WSTAR * XARG / UEFFD
-         SZAD2 = ALPHAB * BSUB2 * WSTAR * XARG / UEFFD
+         szad1 = alphab * bsub1 * wstar * xarg / ueffd
+         szad2 = alphab * bsub2 * wstar * xarg / ueffd
 
-         CALL SZSFCL (XARG)
+         call szsfcl (xarg)
 
-         SZAD1 = DSQRT( SZAD1*SZAD1 + SZSURF*SZSURF )
-         SZAD2 = DSQRT( SZAD2*SZAD2 + SZSURF*SZSURF )
+         szad1 = dsqrt( szad1*szad1 + szsurf*szsurf )
+         szad2 = dsqrt( szad2*szad2 + szsurf*szsurf )
 
-      ELSE
-         SZAD1 = 1.0D0
-         SZAD2 = 1.0D0
+      else
+         szad1 = 1.0d0
+         szad2 = 1.0d0
 
-      END IF
+      end if
 
-      SZAN1 = SZAD1
-      SZAN2 = SZAD2
+      szan1 = szad1
+      szan2 = szad2
 
 !        Calculate the ambient sigma_Z for a penetrated plume, SZA3
-      IF( PPF > 0.0D0 )THEN
+      if( ppf > 0.0d0 )then
 
-         TTRAVL = XARG / UEFF3
+         ttravl = xarg / ueff3
 
 !----       Apply Sigma-Z formulation from CTDMPLUS
 !----       Set BVF term to zero for penetrated plume
-         SZA3 = SWEFF3 * TTRAVL / DSQRT( 1.0D0 + SWEFF3*TTRAVL *&
-         &( 1.0D0/(0.72D0*HE3) ) )
+         sza3 = sweff3 * ttravl / dsqrt( 1.0d0 + sweff3*ttravl *&
+         &( 1.0d0/(0.72d0*he3) ) )
 
-      ELSE
-         SZA3 = 0.0D0
-      ENDIF
+      else
+         sza3 = 0.0d0
+      endif
 
-   ENDIF
+   endif
 
-   RETURN
-END SUBROUTINE SIGZ
+   return
+end subroutine sigz
 
-SUBROUTINE BID
+subroutine bid
 !***********************************************************************
 !             BID Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -260,53 +260,53 @@ SUBROUTINE BID
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'BID'
+   modnam = 'BID'
 
 !     Calculate the buoyancy-induced contribution, which will be added
 !     to the other contributions in RMSSIG
 
-   IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
+   if( stable  .or.  (unstab .and. (hs >= zi) ) )then
 
-      SZB = BETA2 * DHP / RTOF2
+      szb = beta2 * dhp / rtof2
 
-      SYB = SZB
+      syb = szb
 
-      SZBD = 0.0D0
-      SZBN = 0.0D0
-      SYB3 = 0.0D0
-      SZB3 = 0.0D0
+      szbd = 0.0d0
+      szbn = 0.0d0
+      syb3 = 0.0d0
+      szb3 = 0.0d0
 
-   ELSEIF( UNSTAB )THEN
+   elseif( unstab )then
 
 !        Direct source contribution
-      SZBD = BETA2 * DHP1 / RTOF2
+      szbd = beta2 * dhp1 / rtof2
 
 !        Set SZBN = SZBD.
-      SZBN = SZBD
+      szbn = szbd
 
 !        The penetrated source contribution
-      IF( PPF > 0.0D0 )THEN
-         SZB3 = BETA2 * PPF * DHP3 / RTOF2
+      if( ppf > 0.0d0 )then
+         szb3 = beta2 * ppf * dhp3 / rtof2
 
-      ELSE
-         SZB3 = 0.0D0
+      else
+         szb3 = 0.0d0
 
-      ENDIF
+      endif
 
-      SYB  = SZBD
-      SYB3 = SZB3
+      syb  = szbd
+      syb3 = szb3
 
-   ENDIF
+   endif
 
-   RETURN
-END SUBROUTINE BID
+   return
+end subroutine bid
 
-SUBROUTINE SZSFCL (XARG)
+subroutine szsfcl (xarg)
 !***********************************************************************
 !             SZSFCL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -339,41 +339,41 @@ SUBROUTINE SZSFCL (XARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: XARG
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: xarg
 
 !     Variable Initializations
-   MODNAM = 'SZSFCL'
+   modnam = 'SZSFCL'
 
 ! NOTE --->  BSUBC = 0.5 is set in a PARAMETER stmt in MODULE MAIN1
 
 !---- Calculate the surface layer contribution, which will be added
 !     to the other contributions in RMSSIG, from Eqn 31a
 
-   IF (UNSTAB .and. SURFAC) THEN
+   if (unstab .and. surfac) then
 
-      SZSURF = BSUBC * ( 1.0D0 - 10.0D0 * (CENTER / ZI)) *&
-      &(USTAR / UEFFD)*(USTAR / UEFFD)  *&
-      &(XARG * XARG / DABS( OBULEN ))
+      szsurf = bsubc * ( 1.0d0 - 10.0d0 * (center / zi)) *&
+      &(ustar / ueffd)*(ustar / ueffd)  *&
+      &(xarg * xarg / dabs( obulen ))
 
-   ELSEIF (STABLE) THEN
+   elseif (stable) then
 ! ---    Always apply SZSURF for STABLE
 
-      SZSURF = (RTOF2/RTOFPI) * USTAR * (XARG/UEFF) *&
-      &(1.0D0 + 0.7D0*XARG/OBULEN)**(-1.0D0*THIRD)
+      szsurf = (rtof2/rtofpi) * ustar * (xarg/ueff) *&
+      &(1.0d0 + 0.7d0*xarg/obulen)**(-1.0d0*third)
 
-   ELSE
+   else
 
-      SZSURF = 0.0D0
+      szsurf = 0.0d0
 
-   ENDIF
+   endif
 
-   RETURN
-END SUBROUTINE SZSFCL
+   return
+end subroutine szsfcl
 
-SUBROUTINE RMSSIG
+subroutine rmssig
 !***********************************************************************
 !             RMSSIG Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -404,12 +404,12 @@ SUBROUTINE RMSSIG
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'RMSSIG'
+   modnam = 'RMSSIG'
 
 !---- Calculate the root-mean-square sigma values
 
@@ -422,118 +422,118 @@ SUBROUTINE RMSSIG
 !     7/8/2021, MGS: Added debug statements to test/explore platform influence
 !     on total sigmaY & sigmaZ.
 
-   IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
+   if( stable  .or.  (unstab .and. (hs >= zi) ) )then
 !----    The atmosphere is stable or the atmosphere is unstable and the
 !        release is above the mixing height
 
-      SY = DSQRT( SYB*SYB + SYAMB*SYAMB + VSIGY*VSIGY&
-      &+ PLATSY*PLATSY )
+      sy = dsqrt( syb*syb + syamb*syamb + vsigy*vsigy&
+      &+ platsy*platsy )
 
-      SZ = DSQRT( SZB*SZB + SZAS*SZAS + VSIGZ*VSIGZ&
-      &+ PLATSZ*PLATSZ )
+      sz = dsqrt( szb*szb + szas*szas + vsigz*vsigz&
+      &+ platsz*platsz )
 
-      SYN  = 0.0D0
-      SZD1 = 0.0D0
-      SZD2 = 0.0D0
-      SZN1 = 0.0D0
-      SZN2 = 0.0D0
+      syn  = 0.0d0
+      szd1 = 0.0d0
+      szd2 = 0.0d0
+      szn1 = 0.0d0
+      szn2 = 0.0d0
 
-      SY3  = 0.0D0
-      SZ3  = 0.0D0
+      sy3  = 0.0d0
+      sz3  = 0.0d0
 
 !CRT     D063 Platform Downwash Debug
-      IF (PLATFMDBG .and. OSPLAT(ISRC) .and.&
-      &(PLATSY > 0.0D0 .or. PLATSZ > 0.0D0)) THEN
-         WRITE(PLATFMDBUNT,'(A, 3(2X, A, F7.3))')&
+      if (platfmdbg .and. osplat(isrc) .and.&
+      &(platsy > 0.0d0 .or. platsz > 0.0d0)) then
+         write(platfmdbunt,'(A, 3(2X, A, F7.3))')&
          &'sigmas.f/RMSSIG (STABLE): ',&
-         &'PLATSY=', PLATSY,&
-         &'SY = ', DSQRT( SYB*SYB + SYAMB*SYAMB + VSIGY*VSIGY),&
-         &'SY_tot = ', SY
-         WRITE(PLATFMDBUNT,'(A, 3(2X, A, F8.3))')&
+         &'PLATSY=', platsy,&
+         &'SY = ', dsqrt( syb*syb + syamb*syamb + vsigy*vsigy),&
+         &'SY_tot = ', sy
+         write(platfmdbunt,'(A, 3(2X, A, F8.3))')&
          &'sigmas.f/RMSSIG (STABLE): ',&
-         &'PLATSZ=', PLATSZ,&
-         &'SZ = ', DSQRT( SZB*SZB + SZAS*SZAS + VSIGZ*VSIGZ),&
-         &'SZ_tot = ', SZ
-      END IF
+         &'PLATSZ=', platsz,&
+         &'SZ = ', dsqrt( szb*szb + szas*szas + vsigz*vsigz),&
+         &'SZ_tot = ', sz
+      end if
 
-   ELSEIF( UNSTAB )THEN
+   elseif( unstab )then
 !----    The atmosphere is unstable and the release is below the mixing ht.
 !CRT     D063 Platform Downwash Sigmas
-      SY   = DSQRT( SYB*SYB + SYAMB*SYAMB + VSIGY*VSIGY&
-      &+ max(PLATSYD1,PLATSYD2)*max(PLATSYD1,PLATSYD2) )
-      SYN  = DSQRT( SYB*SYB + SYAN*SYAN + VSYN*VSYN&
-      &+ max(PLATSYN1,PLATSYN2)*max(PLATSYN1,PLATSYN2) )
-      SZD1 = DSQRT( SZBD*SZBD + SZAD1*SZAD1 + VSZD1*VSZD1&
-      &+ PLATSZD1*PLATSZD1 )
-      SZD2 = DSQRT( SZBD*SZBD + SZAD2*SZAD2 + VSZD2*VSZD2&
-      &+ PLATSZD2*PLATSZD2 )
-      SZN1 = DSQRT( SZBN*SZBN + SZAN1*SZAN1 + VSZN1*VSZN1&
-      &+ PLATSZN1*PLATSZN1 )
-      SZN2 = DSQRT( SZBN*SZBN + SZAN2*SZAN2 + VSZN2*VSZN2&
-      &+ PLATSZN2*PLATSZN2 )
+      sy   = dsqrt( syb*syb + syamb*syamb + vsigy*vsigy&
+      &+ max(platsyd1,platsyd2)*max(platsyd1,platsyd2) )
+      syn  = dsqrt( syb*syb + syan*syan + vsyn*vsyn&
+      &+ max(platsyn1,platsyn2)*max(platsyn1,platsyn2) )
+      szd1 = dsqrt( szbd*szbd + szad1*szad1 + vszd1*vszd1&
+      &+ platszd1*platszd1 )
+      szd2 = dsqrt( szbd*szbd + szad2*szad2 + vszd2*vszd2&
+      &+ platszd2*platszd2 )
+      szn1 = dsqrt( szbn*szbn + szan1*szan1 + vszn1*vszn1&
+      &+ platszn1*platszn1 )
+      szn2 = dsqrt( szbn*szbn + szan2*szan2 + vszn2*vszn2&
+      &+ platszn2*platszn2 )
 
-      IF( PPF > 0.0D0 )THEN
-         SY3 = DSQRT( SYB3*SYB3 + SYA3*SYA3&
-         &+ PLATSYP*PLATSYP )
-         SZ3 = DSQRT( SZB3*SZB3 + SZA3*SZA3&
-         &+ PLATSZP*PLATSZP )
+      if( ppf > 0.0d0 )then
+         sy3 = dsqrt( syb3*syb3 + sya3*sya3&
+         &+ platsyp*platsyp )
+         sz3 = dsqrt( szb3*szb3 + sza3*sza3&
+         &+ platszp*platszp )
 
-      ELSE
-         SY3 = 0.0D0
-         SZ3 = 0.0D0
+      else
+         sy3 = 0.0d0
+         sz3 = 0.0d0
 
-      ENDIF
+      endif
 
 !CRT     D063 Platform Downwash Debug
-      IF (PLATFMDBG .and. OSPLAT(ISRC)) THEN
-         IF (PLATSYD1 > 0.0D0 .or. PLATSYD2 > 0.0D0) THEN
-            WRITE(PLATFMDBUNT,'(A, 4(2X, A, F8.3))')&
+      if (platfmdbg .and. osplat(isrc)) then
+         if (platsyd1 > 0.0d0 .or. platsyd2 > 0.0d0) then
+            write(platfmdbunt,'(A, 4(2X, A, F8.3))')&
             &'sigmas.f/RMSSIG (UNSTABLE - Direct Plume): ',&
-            &'PLATSYD1=', PLATSYD1,&
-            &'PLATSYD2=', PLATSYD2,&
-            &'SY= ', DSQRT( SYB*SYB + SYAMB*SYAMB + VSIGY*VSIGY),&
-            &'SY_tot = ', DSQRT( SYB*SYB + SYAMB*SYAMB + VSIGY*VSIGY&
-            &+ max(PLATSYD1,PLATSYD2)*max(PLATSYD1,PLATSYD2))
-         END IF
+            &'PLATSYD1=', platsyd1,&
+            &'PLATSYD2=', platsyd2,&
+            &'SY= ', dsqrt( syb*syb + syamb*syamb + vsigy*vsigy),&
+            &'SY_tot = ', dsqrt( syb*syb + syamb*syamb + vsigy*vsigy&
+            &+ max(platsyd1,platsyd2)*max(platsyd1,platsyd2))
+         end if
 
-         IF (PLATSYN1 > 0.0D0 .or. PLATSYN2 > 0.0D0) THEN
-            WRITE(PLATFMDBUNT,'(A, 4(2X, A, 2X, F7.3))')&
+         if (platsyn1 > 0.0d0 .or. platsyn2 > 0.0d0) then
+            write(platfmdbunt,'(A, 4(2X, A, 2X, F7.3))')&
             &'sigmas.f/RMSSIG (UNSTABLE - Indirect Plume): ',&
-            &'PLATSYN1=', PLATSYN1,&
-            &'PLATSYN2=', PLATSYN2,&
-            &'SYN =', DSQRT( SYB*SYB + SYAN*SYAN + VSYN*VSYN),&
-            &'SYN_tot =', DSQRT( SYB*SYB + SYAN*SYAN + VSYN*VSYN&
-            &+ max(PLATSYN1,PLATSYN2)*max(PLATSYN1,PLATSYN2))
-         END IF
+            &'PLATSYN1=', platsyn1,&
+            &'PLATSYN2=', platsyn2,&
+            &'SYN =', dsqrt( syb*syb + syan*syan + vsyn*vsyn),&
+            &'SYN_tot =', dsqrt( syb*syb + syan*syan + vsyn*vsyn&
+            &+ max(platsyn1,platsyn2)*max(platsyn1,platsyn2))
+         end if
 
-         IF (PLATSZD1 > 0.0D0 .or. PLATSZD2 > 0.0D0) THEN
-            WRITE(PLATFMDBUNT,'(A, 6(2X, A, 2X, F7.3))')&
+         if (platszd1 > 0.0d0 .or. platszd2 > 0.0d0) then
+            write(platfmdbunt,'(A, 6(2X, A, 2X, F7.3))')&
             &'sigmas.f/RMSSIG (UNSTABLE - Direct Plume): ',&
-            &'PLATSZD1=',PLATSZD1,&
-            &'SZD1 =', DSQRT( SZBD*SZBD + SZAD1*SZAD1 + VSZD1*VSZD1),&
-            &'SZD1_tot =', DSQRT( SZBD*SZBD + SZAD1*SZAD1 + VSZD1*VSZD1&
-            &+ PLATSZD1*PLATSZD1),&
-            &'PLATSZD2=',PLATSZD2,&
-            &'SZD2 =', DSQRT( SZBD*SZBD + SZAD2*SZAD2 + VSZD2*VSZD2),&
-            &'SZD2_tot =', DSQRT( SZBD*SZBD + SZAD2*SZAD2 + VSZD2*VSZD2&
-            &+ PLATSZD2*PLATSZD2)
-         END IF
+            &'PLATSZD1=',platszd1,&
+            &'SZD1 =', dsqrt( szbd*szbd + szad1*szad1 + vszd1*vszd1),&
+            &'SZD1_tot =', dsqrt( szbd*szbd + szad1*szad1 + vszd1*vszd1&
+            &+ platszd1*platszd1),&
+            &'PLATSZD2=',platszd2,&
+            &'SZD2 =', dsqrt( szbd*szbd + szad2*szad2 + vszd2*vszd2),&
+            &'SZD2_tot =', dsqrt( szbd*szbd + szad2*szad2 + vszd2*vszd2&
+            &+ platszd2*platszd2)
+         end if
 
-         IF (PLATSZN1 > 0.0D0 .or. PLATSZN2 > 0.0D0) THEN
-            WRITE(PLATFMDBUNT,'(A, 6(2X, A, 2X, F7.3))')&
+         if (platszn1 > 0.0d0 .or. platszn2 > 0.0d0) then
+            write(platfmdbunt,'(A, 6(2X, A, 2X, F7.3))')&
             &'sigmas.f/RMSSIG (UNSTABLE - Indirect Plume): ',&
-            &'PLATSZN1=',PLATSZN1,&
-            &'SZN1 =', DSQRT( SZBN*SZBN + SZAN1*SZAN1 + VSZN1*VSZN1),&
-            &'SZN1_tot =', DSQRT( SZBN*SZBN + SZAN1*SZAN1 + VSZN1*VSZN1&
-            &+ PLATSZN1*PLATSZN1),&
-            &'PLATSZN2=',PLATSZN2,&
-            &'SZN2 =', DSQRT( SZBN*SZBN + SZAN2*SZAN2 + VSZN2*VSZN2),&
-            &'SZN2_tot =', DSQRT( SZBN*SZBN + SZAN2*SZAN2 + VSZN2*VSZN2&
-            &+ PLATSZN2*PLATSZN2)
-         END IF
-      END IF
+            &'PLATSZN1=',platszn1,&
+            &'SZN1 =', dsqrt( szbn*szbn + szan1*szan1 + vszn1*vszn1),&
+            &'SZN1_tot =', dsqrt( szbn*szbn + szan1*szan1 + vszn1*vszn1&
+            &+ platszn1*platszn1),&
+            &'PLATSZN2=',platszn2,&
+            &'SZN2 =', dsqrt( szbn*szbn + szan2*szan2 + vszn2*vszn2),&
+            &'SZN2_tot =', dsqrt( szbn*szbn + szan2*szan2 + vszn2*vszn2&
+            &+ platszn2*platszn2)
+         end if
+      end if
 
-   ENDIF
+   endif
 
-   RETURN
-END SUBROUTINE RMSSIG
+   return
+end subroutine rmssig

@@ -1,4 +1,4 @@
-SUBROUTINE CALC
+subroutine calc
 !***********************************************************************
 !             CALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -38,71 +38,71 @@ SUBROUTINE CALC
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE BUOYANT_LINE, ONLY: NUMBLGRPS, BL_UREF
-   USE RLINE_DATA, ONLY: RLPROCESSED
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   INTEGER  :: KK
-   LOGICAL  :: BLPROCESSED
+   use main1
+   use buoyant_line, only: numblgrps, bl_uref
+   use rline_data, only: rlprocessed
+   implicit none
+   character modnam*12
+   integer  :: kk
+   logical  :: blprocessed
 
 !     Variable Initializations
-   MODNAM = 'CALC'
-   PATH = 'CN'
+   modnam = 'CALC'
+   path = 'CN'
 
 !    Added for TTRM; AECOM
 !    Initialize array for TTRM calculations
-   IF (RUNTTRM) THEN
-      TTRMOUT(:,:,:) = 0.0D0
-   ENDIF
+   if (runttrm) then
+      ttrmout(:,:,:) = 0.0d0
+   endif
 !    End TTRM insert; Feb. 2021
 
 ! --- Set the bouyant line source flag to false to indicate that no
 !      lines have been processed for this hour since all lines are
 !      processed together
-   BLPROCESSED = .FALSE.
+   blprocessed = .false.
 
 ! --- Set the RLINE source flag to false to indicate that no
 !      RLINES have been processed for this hour since rotation of
 !      receptors only occurs for first source.
-   RLPROCESSED = .FALSE.
+   rlprocessed = .false.
 
 !     Assing METHDR = .TRUE. to print source&receptor-independent
 !     meteorology debug information to METEORDBG debug output file.
-   METHDR = .TRUE.
+   methdr = .true.
 
 !     Begin Source LOOP
-   SOURCE_LOOP: DO ISRC = 1, NUMSRC
-      IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
+   source_loop: do isrc = 1, numsrc
+      if (srctyp(isrc)(1:5) .eq. 'POINT') then
 !           Calculate Point Source Values                   ---   CALL PCALC
-         CALL PCALC
+         call pcalc
 
-      ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME') THEN
+      else if (srctyp(isrc) .eq. 'VOLUME') then
 !           Calculate Volume Source Values                  ---   CALL VCALC
-         CALL VCALC
+         call vcalc
 
-      ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA') THEN
+      else if (srctyp(isrc)(1:4) .eq. 'AREA') then
 !           Calculate AREA/AREAPOLY/AREACIRC Source Values  ---   CALL ACALC
-         CALL ACALC
+         call acalc
 
-      ELSE IF (SRCTYP(ISRC) .EQ. 'OPENPIT') THEN
+      else if (srctyp(isrc) .eq. 'OPENPIT') then
 !           Calculate OpenPit Source Values                 ---   CALL OCALC
-         CALL OCALC
+         call ocalc
 
 ! ---    Added option to process LINE source, using AREA source calc routines
-      ELSE IF (SRCTYP(ISRC) .EQ. 'LINE') THEN
+      else if (srctyp(isrc) .eq. 'LINE') then
 !           Calculate LINE Source Values                    ---   CALL ACALC
-         CALL ACALC
+         call acalc
 
 ! ---    Added option to process RLINE source
-      ELSE IF ((SRCTYP(ISRC) .EQ. 'RLINE') .or.&
-      &(SRCTYP(ISRC) .EQ. 'RLINEXT')) THEN
+      else if ((srctyp(isrc) .eq. 'RLINE') .or.&
+      &(srctyp(isrc) .eq. 'RLINEXT')) then
 !           Calculate RLINE Source Values                   ---   CALL RLCALC
-         CALL RLCALC
-         RLPROCESSED = .TRUE.
+         call rlcalc
+         rlprocessed = .true.
 
-      ELSE IF (SRCTYP(ISRC) .EQ. 'BUOYLINE' .and.&
-      &(.NOT. BLPROCESSED)) THEN
+      else if (srctyp(isrc) .eq. 'BUOYLINE' .and.&
+      &(.not. blprocessed)) then
 
 ! Multiple_BuoyLines_D41_Wood
 !           The original BLP used meteorology from the met processor CRSTER.
@@ -110,14 +110,14 @@ SUBROUTINE CALC
 !           reference wind speed used in the calculations below to be a minimum
 !           of 1.0 m/s.  Use the local variable BL_UREF.  Keep the reference
 !           wind speed height as UREFHT.
-         IF (UREF .GE. 1.0D0) THEN
-            BL_UREF = UREF
-         ELSE
-            BL_UREF = 1.0D0
+         if (uref .ge. 1.0d0) then
+            bl_uref = uref
+         else
+            bl_uref = 1.0d0
 !             WRITE Message              ! Ref ht wind speed less than minimum
-            WRITE(DUMMY,'(''on '',I8.8)') KURDAT
-            CALL ERRHDL(PATH,MODNAM,'W','471',DUMMY)
-         END IF
+            write(dummy,'(''on '',I8.8)') kurdat
+            call errhdl(path,modnam,'W','471',dummy)
+         end if
 
 ! ---       Calculate Bouyant Line Source Values            ---   CALL BL_CALC
 !           BLPROCESSED lets AERMOD know that all lines associated with
@@ -126,38 +126,38 @@ SUBROUTINE CALC
 
 ! Multiple_BuoyLines_D41_Wood
 
-         DO KK = 1,NUMBLGRPS
-            CALL BL_CALC(KK)
-         END DO
-         BLPROCESSED = .TRUE.
+         do kk = 1,numblgrps
+            call bl_calc(kk)
+         end do
+         blprocessed = .true.
 
 !        Added for Sidewash
-      ELSE IF (SRCTYP(ISRC) .EQ. 'SWPOINT') THEN
+      else if (srctyp(isrc) .eq. 'SWPOINT') then
 !           Calculate SIDEWASH Source Values                    ---   CALL SWCALC
-         CALL SWCALC
-      END IF
+         call swcalc
+      end if
 
 !        Check for runtime error (RUNERR) before continuing loop
-      IF (RUNERR) EXIT
+      if (runerr) exit
 
-   END DO SOURCE_LOOP
+   end do source_loop
 !     End Source LOOP
 
-   IF (L_BACKGRND .and. .NOT.ARM2 .and.&
-   &.NOT.OLM .and. .NOT.GRSM .and.&
-   &.NOT.RUNTTRM .and. .NOT.PVMRM) THEN
+   if (l_backgrnd .and. .not.arm2 .and.&
+   &.not.olm .and. .not.grsm .and.&
+   &.not.runttrm .and. .not.pvmrm) then
 ! ---    User-specified background concentrations are included;
 !        add to modeled concentrations by source group, unless
 !        NO2 options are specified, which are handled separately
-      DO IGRP = 1, NUMGRP
-         CALL SUMBACK
-      END DO
-   END IF
+      do igrp = 1, numgrp
+         call sumback
+      end do
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE PCALC
+subroutine pcalc
 !***********************************************************************
 !             PCALC Module of the AMS/EPA Regulatory Model - AERMOD
 ! ----------------------------------------------------------------------
@@ -269,114 +269,114 @@ SUBROUTINE PCALC
 !
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   INTEGER :: I, KITER, NDXZMID, NDXZPL
-   INTEGER :: NDXBH
-   DOUBLE PRECISION :: HSPRIM, ZPLM, DHFOLD, SVPM, UPM, TGPM,&
-   &PTPM, PTP, ZMID
-   DOUBLE PRECISION :: VALABV, VBELOW
-   DOUBLE PRECISION :: USTACK, UBLDG, XBREC, YBREC
-   DOUBLE PRECISION :: AERPLM(NUMTYP), AERPAN(NUMTYP), FRAN, FRAN3
-   DOUBLE PRECISION :: VSEQ
+   use main1
+   implicit none
+   character modnam*12
+   integer :: i, kiter, ndxzmid, ndxzpl
+   integer :: ndxbh
+   double precision :: hsprim, zplm, dhfold, svpm, upm, tgpm,&
+   &ptpm, ptp, zmid
+   double precision :: valabv, vbelow
+   double precision :: ustack, ubldg, xbrec, ybrec
+   double precision :: aerplm(numtyp), aerpan(numtyp), fran, fran3
+   double precision :: vseq
 !   Added for TTRM; AECOM
 !      DOUBLE PRECISION :: DEFF, DEFF3, DEFFD
-   DOUBLE PRECISION :: CHIN, CHID
+   double precision :: chin, chid
 !   End TTRM insert; Feb. 2021
-   LOGICAL :: L_PLUME
+   logical :: l_plume
 
    logical :: ldbhr
 
 !MGS  Michelle G. Snyder 8/5/2021 D063 Variables needed for platform downwash
-   DOUBLE PRECISION :: DUM, PLATSZ0, RZ0
+   double precision :: dum, platsz0, rz0
 
 
 !     Variable Initializations
-   MODNAM = 'PCALC'
+   modnam = 'PCALC'
 
 !     Initialize __VAL arrays (1:NUMTYP)
-   HRVAL(:)   = 0.0D0
-   AERVAL(:)  = 0.0D0
-   AERPLM(:)  = 0.0D0
-   AERPAN(:)  = 0.0D0
-   PRMVAL(:)  = 0.0D0
-   IF( ALLOCATED(CHI) ) CHI(:,ISRC,:) = 0.0D0
-   IF(GRSM)THEN
-      CHI_TTRAVPLM = 0.0D0
-      CHI_TTRAVPAN = 0.0D0
-      CHI_TTRAVAER = 0.0D0
-      CHI_TTRAVPRM = 0.0D0
-      CHI_TTRAVCHM(:,ISRC) = 0.0D0
-      BLDFAC(:,ISRC) = 0.0D0
-      PRMVAL_Src1 = 0.0D0
-   END IF
+   hrval(:)   = 0.0d0
+   aerval(:)  = 0.0d0
+   aerplm(:)  = 0.0d0
+   aerpan(:)  = 0.0d0
+   prmval(:)  = 0.0d0
+   if( allocated(chi) ) chi(:,isrc,:) = 0.0d0
+   if(grsm)then
+      chi_ttravplm = 0.0d0
+      chi_ttravpan = 0.0d0
+      chi_ttravaer = 0.0d0
+      chi_ttravprm = 0.0d0
+      chi_ttravchm(:,isrc) = 0.0d0
+      bldfac(:,isrc) = 0.0d0
+      PRMVAL_Src1 = 0.0d0
+   end if
 
 ! --- Initialize FRAN and FRAN3
-   FRAN  = 0.0D0
-   FRAN3 = 0.0D0
+   fran  = 0.0d0
+   fran3 = 0.0d0
 
-   IF (AWMADWDBG) THEN
-      WRITE(AWMADWDBUNT,*) '========================================'
-      WRITE(AWMADWDBUNT,*) ' PCALC: YYMMDDHH ',KURDAT,&
+   if (awmadwdbg) then
+      write(awmadwdbunt,*) '========================================'
+      write(awmadwdbunt,*) ' PCALC: YYMMDDHH ',kurdat,&
       &'  Source  ',srcid(isrc)
-   END IF
+   end if
 
 !     Set the Source Variables for This Source              ---   CALL SETSRC
-   CALL SETSRC
+   call setsrc
 
 !     Apply Variable Emission Rate Factors                  ---   CALL EMFACT
-   CALL EMFACT(QS)
+   call emfact(qs)
 
-   IF (QTK .NE. 0.0D0) THEN
+   if (qtk .ne. 0.0d0) then
 
 !        Set Mixing Height and Profiles for Urban Option if Needed
-      IF (URBSRC(ISRC) .EQ. 'Y') THEN
+      if (urbsrc(isrc) .eq. 'Y') then
 !           Find Urban Area Index for This Source
-         DO I = 1, NUMURB
-            IF (IURBGRP(ISRC,I) .EQ. 1) THEN
-               IURB = I
-               EXIT
-            END IF
-         END DO
-         IF (STABLE .or. L_MorningTrans(IURB)) THEN
-            URBSTAB = .TRUE.
-            ZI = MAX( ZIURB(IURB), ZIMECH )
-            GRIDSV = GRDSVU(1:MXGLVL,IURB)
-            GRIDSW = GRDSWU(1:MXGLVL,IURB)
-            GRIDTG = GRDTGU(1:MXGLVL,IURB)
-            GRIDPT = GRDPTU(1:MXGLVL,IURB)
-            OBULEN = URBOBULEN(IURB)
-            USTAR  = URBUSTR(IURB)
-         ELSE
-            URBSTAB = .FALSE.
-            ZI = ZIRUR
-            GRIDSV = GRDSVR
-            GRIDSW = GRDSWR
-            GRIDTG = GRDTGR
-            GRIDPT = GRDPTR
-            OBULEN = RUROBULEN
-            USTAR  = RURUSTR
-         END IF
-      ELSE IF (URBAN .and. URBSRC(ISRC) .EQ. 'N') THEN
-         URBSTAB = .FALSE.
-         ZI = ZIRUR
-         GRIDSV = GRDSVR
-         GRIDSW = GRDSWR
-         GRIDTG = GRDTGR
-         GRIDPT = GRDPTR
-         OBULEN = RUROBULEN
-         USTAR  = RURUSTR
-      ELSE
+         do i = 1, numurb
+            if (iurbgrp(isrc,i) .eq. 1) then
+               iurb = i
+               exit
+            end if
+         end do
+         if (stable .or. L_MorningTrans(iurb)) then
+            urbstab = .true.
+            zi = max( ziurb(iurb), zimech )
+            gridsv = grdsvu(1:mxglvl,iurb)
+            gridsw = grdswu(1:mxglvl,iurb)
+            gridtg = grdtgu(1:mxglvl,iurb)
+            gridpt = grdptu(1:mxglvl,iurb)
+            obulen = urbobulen(iurb)
+            ustar  = urbustr(iurb)
+         else
+            urbstab = .false.
+            zi = zirur
+            gridsv = grdsvr
+            gridsw = grdswr
+            gridtg = grdtgr
+            gridpt = grdptr
+            obulen = rurobulen
+            ustar  = rurustr
+         end if
+      else if (urban .and. urbsrc(isrc) .eq. 'N') then
+         urbstab = .false.
+         zi = zirur
+         gridsv = grdsvr
+         gridsw = grdswr
+         gridtg = grdtgr
+         gridpt = grdptr
+         obulen = rurobulen
+         ustar  = rurustr
+      else
 ! ---       Rural
-         URBSTAB = .FALSE.
-      END IF
+         urbstab = .false.
+      end if
 
 !        Calculate the initial meteorological variables     ---   CALL METINI
-      CALL METINI
+      call metini
 
 !        Calculate Buoyancy and Momentum Fluxes             ---   CALL FLUXES
-      CALL FLUXES(VSEQ)
+      call fluxes(vseq)
 
 !        Set Wake and Building Type Switches                ---   CALL WAKFLG
 ! ---    NOTE:  WAKFLG sets building dimensions based on wind
@@ -386,147 +386,147 @@ SUBROUTINE PCALC
 !        If source is subject to platform downwash, set
 !        WAKE to false.  Only call WAKFLG if source is not
 !        subject to platform downwash.
-      IF (OSPLAT(ISRC)) THEN
-         WAKE = .FALSE.
-      ELSE
-         CALL WAKFLG
-      END IF
+      if (osplat(isrc)) then
+         wake = .false.
+      else
+         call wakflg
+      end if
 
 !        Define temporary values of CENTER and SURFAC based on HS
-      CENTER = HS
-      IF( CENTER .LT. 0.1D0*ZI )THEN
-         SURFAC = .TRUE.
-      ELSE
-         SURFAC = .FALSE.
-      END IF
+      center = hs
+      if( center .lt. 0.1d0*zi )then
+         surfac = .true.
+      else
+         surfac = .false.
+      end if
 
 ! ---    Check for stack-tip downwash option and adjust if necessary, but
 !        first check for POINTCAP option to avoid NOSTD overriding POINTCAP
-      IF (SRCTYP(ISRC) .EQ. 'POINTCAP') THEN
+      if (srctyp(isrc) .eq. 'POINTCAP') then
 !           Apply stack-tip downwash for capped stacks with VS = 0.001m/s
-         HSP = HSPRIM ( US, VSEQ, HS, DS )
-      ELSE IF (SRCTYP(ISRC) .EQ. 'POINTHOR') THEN
+         hsp = hsprim ( us, vseq, hs, ds )
+      else if (srctyp(isrc) .eq. 'POINTHOR') then
 !           Do not apply stack-tip downwash for horizontal releases
-         HSP = HS
-      ELSE IF( NOSTD )THEN
+         hsp = hs
+      else if( nostd )then
 !           No stack-tip downwash, no adjustments necessary
-         HSP = HS
-      ELSE
+         hsp = hs
+      else
 !           Make adjustments for stack-tip downwash
-         HSP = HSPRIM ( US, VS, HS, DS )
-      END IF
+         hsp = hsprim ( us, vs, hs, ds )
+      end if
 
 !        Calculate Distance to Final Rise                   ---   CALL DISTF
-      CALL DISTF
+      call distf
 
 !        Calculate the plume penetration factor             ---   CALL PENFCT
-      CALL PENFCT
+      call penfct
 
 
-      IF(DEBUG) THEN
-         WRITE(DBGUNT,6000) DHFAER, UP, TGS
-6000     FORMAT(/,5X,'INITIAL PLUME RISE ESTIMATE:  DELH = ',&
-         &F6.1,' M; Uplume = ',F5.2,' M/S; DTHDZ = ',&
-         &F7.4,' DEG K/M')
-      END IF
+      if(debug) then
+         write(dbgunt,6000) dhfaer, up, tgs
+6000     format(/,5x,'INITIAL PLUME RISE ESTIMATE:  DELH = ',&
+         &f6.1,' M; Uplume = ',f5.2,' M/S; DTHDZ = ',&
+         &f7.4,' DEG K/M')
+      end if
 
-      IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+      if (stable .or. (unstab.and.(hs.ge.zi))) then
 !           Use iterative approach to stable plume rise calculations
-         KITER = 0
-50       ZPLM = HSP + 0.5D0 * DHFAER
-         DHFOLD = DHFAER
+         kiter = 0
+50       zplm = hsp + 0.5d0 * dhfaer
+         dhfold = dhfaer
 
 !----       Locate index below ZPLM
 
-         CALL LOCATE(GRIDHT, 1, MXGLVL, ZPLM, NDXZPL)
+         call locate(gridht, 1, mxglvl, zplm, ndxzpl)
 
 !----       Get Wind speed at ZPLM; replace UP.  Also, replace TGP,
 !           vertical potential temperature gradient, if stable.
 
-         CALL GINTRP( GRIDHT(NDXZPL), GRIDSV(NDXZPL),&
-         &GRIDHT(NDXZPL+1), GRIDSV(NDXZPL+1), ZPLM, SVPM )
-         CALL GINTRP( GRIDHT(NDXZPL), GRIDWS(NDXZPL),&
-         &GRIDHT(NDXZPL+1), GRIDWS(NDXZPL+1), ZPLM, UPM )
-         SVPM = MAX( SVPM, SVMIN, SVUMIN*UPM )
-         IF( L_VECTORWS )THEN
-            UPM = DSQRT( UPM*UPM + 2.0D0*SVPM*SVPM )
-         ENDIF
+         call gintrp( gridht(ndxzpl), gridsv(ndxzpl),&
+         &gridht(ndxzpl+1), gridsv(ndxzpl+1), zplm, svpm )
+         call gintrp( gridht(ndxzpl), gridws(ndxzpl),&
+         &gridht(ndxzpl+1), gridws(ndxzpl+1), zplm, upm )
+         svpm = max( svpm, svmin, svumin*upm )
+         if( l_vectorws )then
+            upm = dsqrt( upm*upm + 2.0d0*svpm*svpm )
+         endif
 
-         UPM  = MAX( UPM, WSMIN )
+         upm  = max( upm, wsmin )
 
 
 !RWB        Use average of stack top and midpoint wind speeds.
-         UP = 0.5D0 * (US + UPM)
+         up = 0.5d0 * (us + upm)
 
-         CALL GINTRP( GRIDHT(NDXZPL), GRIDTG(NDXZPL),&
-         &GRIDHT(NDXZPL+1), GRIDTG(NDXZPL+1), ZPLM, TGPM )
-         CALL GINTRP( GRIDHT(NDXZPL), GRIDPT(NDXZPL),&
-         &GRIDHT(NDXZPL+1), GRIDPT(NDXZPL+1), ZPLM, PTPM )
+         call gintrp( gridht(ndxzpl), gridtg(ndxzpl),&
+         &gridht(ndxzpl+1), gridtg(ndxzpl+1), zplm, tgpm )
+         call gintrp( gridht(ndxzpl), gridpt(ndxzpl),&
+         &gridht(ndxzpl+1), gridpt(ndxzpl+1), zplm, ptpm )
 !RWB        Use average of stack top and midpoint temperature gradients.
-         TGP = 0.5D0 * (TGS + TGPM)
-         PTP = 0.5D0 * (PTS + PTPM)
-         BVF = DSQRT( G * TGP / PTP )
-         IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
-         BVPRIM  = 0.7D0 * BVF
+         tgp = 0.5d0 * (tgs + tgpm)
+         ptp = 0.5d0 * (pts + ptpm)
+         bvf = dsqrt( g * tgp / ptp )
+         if(bvf .lt. 1.0d-10) bvf = 1.0d-10
+         bvprim  = 0.7d0 * bvf
 
-         CALL DISTF
+         call distf
 
-         KITER = KITER + 1
+         kiter = kiter + 1
 
 !RJP        Add temporary debugging statements
 
-         IF(DEBUG) THEN
-            WRITE(DBGUNT,6001) KITER,DHFOLD, DHFAER, ZPLM, UP,TGP
-6001        FORMAT(/,5X,'OPTH2 ITER. #',I1,': OLD DELH = ',&
-            &F6.1,' M; NEW DELH = ',F6.1,' M; MET LEVEL = ',&
-            &F6.1,' M; NEW Upl = ',F5.2,' M/S; NEW DTHDZ = ',&
-            &F7.4,' K/M')
-         END IF
+         if(debug) then
+            write(dbgunt,6001) kiter,dhfold, dhfaer, zplm, up,tgp
+6001        format(/,5x,'OPTH2 ITER. #',i1,': OLD DELH = ',&
+            &f6.1,' M; NEW DELH = ',f6.1,' M; MET LEVEL = ',&
+            &f6.1,' M; NEW Upl = ',f5.2,' M/S; NEW DTHDZ = ',&
+            &f7.4,' K/M')
+         end if
 
 !           Check for convergence
-         IF(DABS((DHFOLD - DHFAER)/DHFAER) .LT. 0.01D0) GO TO 60
+         if(dabs((dhfold - dhfaer)/dhfaer) .lt. 0.01d0) go to 60
 
-         IF(KITER .GE. 5) THEN
-            DHFAER = 0.5D0 * (DHFAER + DHFOLD)
-            IF(DEBUG) WRITE(DBGUNT,6002) DHFAER
-6002        FORMAT(/,5X,'PLUME RISE ITERATION FAILED TO CONVERGE; ',&
-            &' PLUME RISE SET AT ',F6.1,' METERS.',/)
-            GO TO 60
-         ELSE
-            GO TO 50
-         END IF
+         if(kiter .ge. 5) then
+            dhfaer = 0.5d0 * (dhfaer + dhfold)
+            if(debug) write(dbgunt,6002) dhfaer
+6002        format(/,5x,'PLUME RISE ITERATION FAILED TO CONVERGE; ',&
+            &' PLUME RISE SET AT ',f6.1,' METERS.',/)
+            go to 60
+         else
+            go to 50
+         end if
 
-60       CONTINUE
+60       continue
 
 !RWB        After completing iteration, reset UP and TGP to stack top
 !RWB        values for subsequent distance-dependent plume rise calcs.
-         UP = US
-         TGP = TGS
-         PTP = PTS
-         BVF = DSQRT( G * TGP / PTP )
-         IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
-         BVPRIM  = 0.7D0 * BVF
-      END IF
+         up = us
+         tgp = tgs
+         ptp = pts
+         bvf = dsqrt( g * tgp / ptp )
+         if(bvf .lt. 1.0d-10) bvf = 1.0d-10
+         bvprim  = 0.7d0 * bvf
+      end if
 
 !        Initialize PRM_FSTREC Logical Switch for First Receptor of Loop;
-      PRM_FSTREC = .TRUE.
+      prm_fstrec = .true.
 
 !        Initialize 'ARC' Arrays for EVALFILE Output        ---   CALL EVLINI
-      IF (EVAL(ISRC)) THEN
-         CALL EVLINI
-      END IF
+      if (eval(isrc)) then
+         call evlini
+      end if
 
-      ZMIDMX = 0.5D0 * ZI
+      zmidmx = 0.5d0 * zi
 
 !RJP     Add temporary debugging statement.
 
-      IF( DEBUG) THEN
-         WRITE(DBGUNT,6010) KURDAT, ZMIDMX
-6010     FORMAT(/,72('*'),//,5X,'YR/MN/DY/HR: ',I8,//,&
-         &5X,'Height assigned to midpoint of ',&
+      if( debug) then
+         write(dbgunt,6010) kurdat, zmidmx
+6010     format(/,72('*'),//,5x,'YR/MN/DY/HR: ',i8,//,&
+         &5x,'Height assigned to midpoint of ',&
          &'well-mixed layer for effective parameters = ',&
-         &F6.1,' meters.',/)
-      END IF
+         &f6.1,' meters.',/)
+      end if
 !RJP
 !RJP     Calculate distance to uniformly mixed plume within the
 !RJP     boundary layer (XMIXED) after Turner's Workbook (1970), page 7:
@@ -538,141 +538,141 @@ SUBROUTINE PCALC
 !RJP     First, get refined estimate of final rise and distance to final
 !RJP     rise if downwash conditions prevail.
 !RJP
-      XFINAL = XMAX
-      DHCRIT = DHFAER
-      XMIXED = ZI * UAVG / SWAVG
-      IF (UNSTAB .and. HS.LT.ZI) THEN
+      xfinal = xmax
+      dhcrit = dhfaer
+      xmixed = zi * uavg / swavg
+      if (unstab .and. hs.lt.zi) then
 !           Check for XMIXED smaller than 1.25*XFINAL
-         IF (XMIXED .LT. 1.25D0*XFINAL) THEN
-            XFINAL = 0.8D0 * XMIXED
-            CALL CBLPRD (XFINAL)
-            DHCRIT = DHP1
-         END IF
-      END IF
+         if (xmixed .lt. 1.25d0*xfinal) then
+            xfinal = 0.8d0 * xmixed
+            call cblprd (xfinal)
+            dhcrit = dhp1
+         end if
+      end if
 
 
 ! ---    Initialize PDF parameters for use in calculating ZSUBP
-      IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-         CALL PDF
-      END IF
+      if( unstab  .and.  (hs .lt. zi) ) then
+         call pdf
+      end if
 !        Set Dry Deposition Variables for this Source
-      IF (LUSERVD .and. LDGAS .and. NPD.EQ.0) THEN
+      if (luservd .and. ldgas .and. npd.eq.0) then
 !           Assign user-specified gas dry deposition velocity (GASDEPVD option)
-         VDEPG = USERVD
-      ELSE IF (LDPART .or. (.NOT.LUSERVD .and. LDGAS .and.&
-      &NPD.EQ.0)) THEN
+         vdepg = uservd
+      else if (ldpart .or. (.not.luservd .and. ldgas .and.&
+      &npd.eq.0)) then
 !           Calculate Deposition Velocities for this Source    ---   CALL VDP
-         CALL VDP
-      END IF
-      IF (LWPART .or. LWGAS) THEN
+         call vdp
+      end if
+      if (lwpart .or. lwgas) then
 !PES        Set value of ZSUBP = MAX( ZI, TOP OF PLUME ), where
 !PES        TOP OF PLUME is defined as plume height (HE) plus 2.15*SZ,
 !PES        evaluated at a distance of 20 kilometers downwind.
 !PES        Apply minimum value of 500m and maximum value of 10,000m.
-         CALL HEFF (20000.0D0)
-         IF( STABLE .or. (UNSTAB .and. HS .GE. ZI) )THEN
-            HE = HSP + DHCRIT
-            CALL SIGZ(20000.0D0)
-            ZSUBP = MAX( 500.0D0, ZI, HE + SZCOEF*SZAS )
-         ELSE IF (UNSTAB) THEN
-            HED1 = HSP + DHCRIT
-            IF (PPF .GT. 0.0D0) THEN
-               CALL CBLPR3
-            END IF
-            CALL SIGZ(20000.0D0)
+         call heff (20000.0d0)
+         if( stable .or. (unstab .and. hs .ge. zi) )then
+            he = hsp + dhcrit
+            call sigz(20000.0d0)
+            zsubp = max( 500.0d0, zi, he + szcoef*szas )
+         else if (unstab) then
+            hed1 = hsp + dhcrit
+            if (ppf .gt. 0.0d0) then
+               call cblpr3
+            end if
+            call sigz(20000.0d0)
 
-            IF (PPF .EQ. 0.0D0) THEN
-               ZSUBP=MAX( 500.0D0, ZI, HED1 + SZCOEF*(SZAD1+SZAD2)/&
-               &2.0D0 )
-            ELSE IF (PPF .EQ. 1.0D0) THEN
-               ZSUBP=MAX( 500.0D0, ZI, HE3 + SZCOEF*SZA3)
-            ELSE
-               ZSUBP=MAX( 500.0D0, ZI, PPF*(HE3+SZCOEF*SZA3) +&
-               &(1.0D0-PPF)*(HED1 + SZCOEF*(SZAD1+SZAD2)/2.0D0) )
-            END IF
-         END IF
-         ZSUBP = MIN( 10000.0D0, ZSUBP )
+            if (ppf .eq. 0.0d0) then
+               zsubp=max( 500.0d0, zi, hed1 + szcoef*(szad1+szad2)/&
+               &2.0d0 )
+            else if (ppf .eq. 1.0d0) then
+               zsubp=max( 500.0d0, zi, he3 + szcoef*sza3)
+            else
+               zsubp=max( 500.0d0, zi, ppf*(he3+szcoef*sza3) +&
+               &(1.0d0-ppf)*(hed1 + szcoef*(szad1+szad2)/2.0d0) )
+            end if
+         end if
+         zsubp = min( 10000.0d0, zsubp )
 !           Calculate Scavenging Ratios for this Source           ---   CALL SCAVRAT
-         CALL SCAVRAT
-      END IF
+         call scavrat
+      end if
 
 !RWB     Determine transport wind direction using midpoint between
 !RWB     stack height and "final" plume height.  R. Brode, PES, 1/22/98
 !----    Define ZMID=midpoint between stack height and "final" plume height
-      ZMID = MIN( 4000.0D0, (HS + 0.5D0*DHFAER) )
+      zmid = min( 4000.0d0, (hs + 0.5d0*dhfaer) )
 
 !----    Locate index below ZMID
-      CALL LOCATE(GRIDHT, 1, MXGLVL, ZMID, NDXZMID)
+      call locate(gridht, 1, mxglvl, zmid, ndxzmid)
 
 !----    Extract WD for grid levels above and below ZMID
-      VALABV = GRIDWD(NDXZMID+1)
-      VBELOW = GRIDWD(NDXZMID)
+      valabv = gridwd(ndxzmid+1)
+      vbelow = gridwd(ndxzmid)
 
 !----    Check for 360 crossover and adjust if necessary
-      IF( (VALABV-VBELOW) .LT. -180.0D0) THEN
-         VALABV = VALABV + 360.0D0
-      ELSE IF( (VALABV-VBELOW) .GT. 180.0D0) THEN
-         VALABV = VALABV - 360.0D0
-      END IF
+      if( (valabv-vbelow) .lt. -180.0d0) then
+         valabv = valabv + 360.0d0
+      else if( (valabv-vbelow) .gt. 180.0d0) then
+         valabv = valabv - 360.0d0
+      end if
 
 !----    Assign Wind direction
-      IF (VBELOW .EQ. VALABV) THEN
-         WDIR = VBELOW
-      ELSE
+      if (vbelow .eq. valabv) then
+         wdir = vbelow
+      else
 !----       Interpolate to ZMID
-         CALL GINTRP( GRIDHT(NDXZMID), VBELOW,&
-         &GRIDHT(NDXZMID+1), VALABV,&
-         &ZMID, WDIR )
-      END IF
+         call gintrp( gridht(ndxzmid), vbelow,&
+         &gridht(ndxzmid+1), valabv,&
+         &zmid, wdir )
+      end if
 
 !        Check for WDIR > 360 or < 0
-      IF (WDIR .GT. 360.0D0) THEN
-         WDIR = WDIR - 360.0D0
-      ELSE IF (WDIR .LE. 0.0D0) THEN
-         WDIR = WDIR + 360.0D0
-      END IF
+      if (wdir .gt. 360.0d0) then
+         wdir = wdir - 360.0d0
+      else if (wdir .le. 0.0d0) then
+         wdir = wdir + 360.0d0
+      end if
 !
 !----    Convert direction to radians, compute sine and cosine of direction,
 !        and determine nearest 10-degree sector.
 !
 !---->   wind direction = wind direction in degrees * DTORAD
 
-      WDSIN = DSIN(WDIR * DTORAD)
-      WDCOS = DCOS(WDIR * DTORAD)
+      wdsin = dsin(wdir * dtorad)
+      wdcos = dcos(wdir * dtorad)
 
 ! ---    Save WDSIN and WSCOS for later use by PVMRM/GRSM option
-      AWDSIN(ISRC) = WDSIN
-      AWDCOS(ISRC) = WDCOS
+      awdsin(isrc) = wdsin
+      awdcos(isrc) = wdcos
 
-      AFV = WDIR - 180.0D0
-      IF (AFV .LT. 0.0D0) THEN
-         AFV = AFV + 360.0D0
-      END IF
-      AAFV(ISRC) = AFV       ! save flowvector for this source
+      afv = wdir - 180.0d0
+      if (afv .lt. 0.0d0) then
+         afv = afv + 360.0d0
+      end if
+      aafv(isrc) = afv       ! save flowvector for this source
       ! for use in MAXDCONT processing
-      IFVSEC = IDINT (AFV*0.10D0 + 0.4999D0)
-      IF (IFVSEC .EQ. 0) IFVSEC = 36
+      ifvsec = idint (afv*0.10d0 + 0.4999d0)
+      if (ifvsec .eq. 0) ifvsec = 36
 
 !
 ! --- PRIME ---------------------------------------------------------
 ! ---    Setup computations for numerical plume rise algorithm
 ! ---    and building wake analysis
-      if(WAKE) then
+      if(wake) then
 ! ---       Store selected data in new variables for future reference
          ustack=us
 
 ! ---       Compute wind speed at top of building           ---   CALL WSADJ
 ! ---       Locate index below building height
-         CALL LOCATE(GRIDHT, 1, MXGLVL, DSBH, NDXBH)
+         call locate(gridht, 1, mxglvl, dsbh, ndxbh)
 
-         CALL GINTRP( GRIDHT(NDXBH), GRIDWS(NDXBH),&
-         &GRIDHT(NDXBH+1), GRIDWS(NDXBH+1), DSBH, UBLDG )
+         call gintrp( gridht(ndxbh), gridws(ndxbh),&
+         &gridht(ndxbh+1), gridws(ndxbh+1), dsbh, ubldg )
 
 ! ---       Refresh /WAKEDAT/ variables                     ---   CALL WAKE_INI
-         ldbhr=PRIMEDBG
+         ldbhr=primedbg
 ! ---       Note that logical RURAL has no impact on calculations
          rural = .true.
-         call WAKE_INI(kurdat,ldbhr,PRMDBUNT,rural,dsbh,dsbw,dsbl,&
+         call wake_ini(kurdat,ldbhr,prmdbunt,rural,dsbh,dsbw,dsbl,&
          &xadj,yadj,ubldg,ustack)
       end if
 ! ------------------------------------------------------------
@@ -684,51 +684,51 @@ SUBROUTINE PCALC
 !   Michelle G. Snyder, Wood 7/29/2021
 
 !CRT   D063
-      IF (OSPLAT(ISRC)) THEN
-         AC = 0.0D0
-         BC = 0.0D0
-         PLATSZ0 = 0.0D0
-         DUM = 0.0D0
-         IF ((PLATWB(ISRC) > 0.0D0) .and. (PLATHB(ISRC) > 0.0D0)) THEN
-            CALL PLAT_DOWNWASH (2.2D0*PLATHB(ISRC),&
-            &PLATHB(ISRC)+0.0D0, PLATWB(ISRC), 0.0D0,&
-            &PLATSZ0, DUM)
-            RZ0 = PLATSZ0/DSQRT(2.0D0 / PI)
-            AC = 10.0D0/3.0D0 * RZ0
-            BC = 25.0D0/3.0D0 * RZ0 * RZ0
-         END IF
+      if (osplat(isrc)) then
+         ac = 0.0d0
+         bc = 0.0d0
+         platsz0 = 0.0d0
+         dum = 0.0d0
+         if ((platwb(isrc) > 0.0d0) .and. (plathb(isrc) > 0.0d0)) then
+            call plat_downwash (2.2d0*plathb(isrc),&
+            &plathb(isrc)+0.0d0, platwb(isrc), 0.0d0,&
+            &platsz0, dum)
+            rz0 = platsz0/dsqrt(2.0d0 / pi)
+            ac = 10.0d0/3.0d0 * rz0
+            bc = 25.0d0/3.0d0 * rz0 * rz0
+         end if
 
-         IF (PLATFMDBG) THEN
-            WRITE(PLATFMDBUNT,'(A,1(A, 2X, I6), 6(A, 2X, F8.2))')&
+         if (platfmdbg) then
+            write(platfmdbunt,'(A,1(A, 2X, I6), 6(A, 2X, F8.2))')&
             &'calc1.f/PCALC: ',&
-            &' ISRC = ', ISRC,&
-            &' PLATWB(ISRC) = ', PLATWB(ISRC),&
-            &' PLATHB(ISRC) = ', PLATHB(ISRC),&
-            &' PLATSZ0 = ', PLATSZ0,&
-            &' RZ0 = ', RZ0,&
-            &' AC = ', AC,&
-            &' BC = ', BC
-         END IF
+            &' ISRC = ', isrc,&
+            &' PLATWB(ISRC) = ', platwb(isrc),&
+            &' PLATHB(ISRC) = ', plathb(isrc),&
+            &' PLATSZ0 = ', platsz0,&
+            &' RZ0 = ', rz0,&
+            &' AC = ', ac,&
+            &' BC = ', bc
+         end if
 
-      END IF
+      end if
 ! ---- PLATFORM DOWNWASH ADDITIONS (END) -------------------
 
 !RJP     Add temporary debugging statement.
 
-      IF(DEBUG) THEN
+      if(debug) then
 ! ---       Include "effective" wind direction here
-         WRITE(DBGUNT, 6011) DHCRIT, XFINAL, XMIXED, AFV
-6011     FORMAT(5X,'For effective parameter calculations: ',&
-         &'"Final" plume rise = ',G14.6, ' m; Distance to final ',&
-         &'rise = ',G14.6,' m',/,5x,'Distance to well-mixed ',&
-         &'state = ',G14.6,' m;',/,5x,'"Effective" flow vector = ',&
-         &F6.2)
+         write(dbgunt, 6011) dhcrit, xfinal, xmixed, afv
+6011     format(5x,'For effective parameter calculations: ',&
+         &'"Final" plume rise = ',g14.6, ' m; Distance to final ',&
+         &'rise = ',g14.6,' m',/,5x,'Distance to well-mixed ',&
+         &'state = ',g14.6,' m;',/,5x,'"Effective" flow vector = ',&
+         &f6.2)
 !RJP
 !RJP        Make call to PSRDEB
 !RJP
-         CALL PSRDEB
+         call psrdeb
 
-      END IF
+      end if
 !
 !        Begin Receptor LOOP *******************************************
 !CRFL
@@ -740,199 +740,199 @@ SUBROUTINE PCALC
 !CRFL
 !CRWB    METHDR assignment statement moved to SUB. CALC.  12/28/05, R.W. Brode.
 
-      RECEPTOR_LOOP: DO IREC = 1, NUMREC
+      receptor_loop: do irec = 1, numrec
 !CRT        D063 Platform Downwash Debug
-         IF (PLATFMDBG .and. OSPLAT(ISRC)) THEN
-            WRITE(PLATFMDBUNT,'(A, A, I4, 3(2X, A, I4), A)')&
+         if (platfmdbg .and. osplat(isrc)) then
+            write(platfmdbunt,'(A, A, I4, 3(2X, A, I4), A)')&
             &'-------------',&
-            &'JDAY= ', JDAY,&
-            &'IHOUR = ', IHOUR,&
-            &'ISRC= ', ISRC,&
-            &'IREC= ', IREC,&
+            &'JDAY= ', jday,&
+            &'IHOUR = ', ihour,&
+            &'ISRC= ', isrc,&
+            &'IREC= ', irec,&
             &'-------------'
-         END IF
+         end if
 
 
 !           Calculate Down and Crosswind Distances          ---   CALL XYDIST
-         IF (AWMADWDBG) THEN
-            WRITE(AWMADWDBUNT,*) '  Receptor  ', irec
-         END IF
+         if (awmadwdbg) then
+            write(awmadwdbunt,*) '  Receptor  ', irec
+         end if
 
-         IF (EVONLY) THEN
-            CALL XYDIST(IEVENT)
-         ELSE
-            CALL XYDIST(IREC)
-         END IF
+         if (evonly) then
+            call xydist(ievent)
+         else
+            call xydist(irec)
+         end if
 
 ! ---       First check for receptor exceeding minimum distance (1m) or
 !           maximum distance (80km for FASTALL or 1.0D20 otherwise).
-         IF (DISTR .LT. 0.99D0 .or. DISTR .GT. MAXDIST) THEN
+         if (distr .lt. 0.99d0 .or. distr .gt. maxdist) then
 !              Receptor distance exceeds the minimum or maximum distance;
 !              assign 0.0 to applicable arrays, and cycle to next receptor
-            HRVAL(:)  = 0.0D0
-            AERPLM(:) = 0.0D0
-            AERPAN(:) = 0.0D0
-            PRMVAL(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerplm(:) = 0.0d0
+            aerpan(:) = 0.0d0
+            prmval(:) = 0.0d0
 
-            IF (PVMRM .or. OLM .or. ARM2 .or.&
-            &RUNTTRM .or. GRSM) THEN
+            if (pvmrm .or. olm .or. arm2 .or.&
+            &runttrm .or. grsm) then
 ! ---             Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                 cycling to the next receptor to avoid
 !                 persisting value from previous hour.
-               CHI(IREC,ISRC,:) = 0.0D0
-               IF(GRSM)THEN
-                  CHI_TTRAVPLM = 0.0D0
-                  CHI_TTRAVPAN = 0.0D0
-                  CHI_TTRAVAER = 0.0D0
-                  CHI_TTRAVPRM = 0.0D0
-                  CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
-                  BLDFAC(IREC,ISRC) = 0.0D0
-                  PRMVAL_Src1 = 0.0D0
-               END IF
-               IF (PVMRM .or. GRSM) THEN
-                  HECNTR(IREC,ISRC)  = 0.0D0
-                  UEFFS(IREC,ISRC)   = 0.0D0
-                  EPSEF(IREC,ISRC)   = 0.0D0
-                  PPFACT(IREC,ISRC)  = 0.0D0
-                  HECNTR3(IREC,ISRC) = 0.0D0
-                  UEFF3S(IREC,ISRC)  = 0.0D0
-                  EPSEF3(IREC,ISRC)  = 0.0D0
-                  FOPTS(IREC,ISRC)   = 0.0D0
-               END IF
-            END IF
+               chi(irec,isrc,:) = 0.0d0
+               if(grsm)then
+                  chi_ttravplm = 0.0d0
+                  chi_ttravpan = 0.0d0
+                  chi_ttravaer = 0.0d0
+                  chi_ttravprm = 0.0d0
+                  chi_ttravchm(irec,isrc) = 0.0d0
+                  bldfac(irec,isrc) = 0.0d0
+                  PRMVAL_Src1 = 0.0d0
+               end if
+               if (pvmrm .or. grsm) then
+                  hecntr(irec,isrc)  = 0.0d0
+                  ueffs(irec,isrc)   = 0.0d0
+                  epsef(irec,isrc)   = 0.0d0
+                  ppfact(irec,isrc)  = 0.0d0
+                  hecntr3(irec,isrc) = 0.0d0
+                  ueff3s(irec,isrc)  = 0.0d0
+                  epsef3(irec,isrc)  = 0.0d0
+                  fopts(irec,isrc)   = 0.0d0
+               end if
+            end if
 ! ---          Cycle to next receptor
-            CYCLE RECEPTOR_LOOP
-         END IF
+            cycle receptor_loop
+         end if
 
 ! ---       Calculate AERMOD Concentration Without Downwash, AERVAL
 ! ---       First calculate coherent plume component using downwind distance
-         L_PLUME = .TRUE.
+         l_plume = .true.
 ! ---       Assign XDIST for use in dry depletion (FUNCTION F2INT)
-         XDIST = X
+         xdist = x
 
 ! ---       CALL AERCALC to calculate concentrations without downwash;
 !           downwash is handled later in PRMCALC, if applicable
-         CALL AERCALC( X, L_PLUME, AERPLM )
+         call aercalc( x, l_plume, aerplm )
 
 ! ---       CERC 11/30/20 Calculate the conc*travel time for the Gaussian plume
-         IF(GRSM)THEN
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-               UCHM=UEFF
-            ELSE
-               UCHM=UEFFD
-            END IF
-            IF (UCHM/=0) THEN
-               CHI_TTRAVPLM=MAX(0.0D0,AERPLM(1)*X/UCHM) !Don't allow negative conc*travel times
-            ELSE
+         if(grsm)then
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
+               uchm=ueff
+            else
+               uchm=ueffd
+            end if
+            if (uchm/=0) then
+               chi_ttravplm=max(0.0d0,aerplm(1)*x/uchm) !Don't allow negative conc*travel times
+            else
                !Error - no travel time if UCHM is zero
-               CALL ERRHDL(PATH, MODNAM, 'E','601','GRSM')
-               RUNERR=.TRUE.
-               RETURN
-            END IF
-         END IF
+               call errhdl(path, modnam, 'E','601','GRSM')
+               runerr=.true.
+               return
+            end if
+         end if
 
-         IF (L_EFFSIGY) THEN
+         if (l_effsigy) then
 ! ---          No "pancake" calculation for non-DFAULT FASTALL option (EFFSIGY),
 !              assign AERPLM to AERVAL and set FRAN and AERPAN to 0.0
-            AERVAL = AERPLM
-            AERPAN = 0.0D0
-            FRAN   = 0.0D0
+            aerval = aerplm
+            aerpan = 0.0d0
+            fran   = 0.0d0
 ! ---          In this case travel time is just the conc*travel time in the Gaussian plume
-            IF(GRSM)THEN
-               CHI_TTRAVPAN=0.0D0
-               CHI_TTRAVAER=CHI_TTRAVPLM
-            END IF
+            if(grsm)then
+               chi_ttravpan=0.0d0
+               chi_ttravaer=chi_ttravplm
+            end if
 
-         ELSE
+         else
 
 ! ---          Next calculate random "pancake" component using radial distance
-            L_PLUME = .FALSE.
+            l_plume = .false.
 ! ---          Assign XDIST for use in dry depletion (FUNCTION F2INT)
-            XDIST = DISTR
+            xdist = distr
 ! ---          Call AERCALC to get random "pancake" component, AERPAN
-            CALL AERCALC( DISTR, L_PLUME, AERPAN )
+            call aercalc( distr, l_plume, aerpan )
 
 ! ---          CERC 11/30/20 Calculate the conc*travel time for the "pancake" component
-            IF(GRSM)THEN
-               IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-                  UCHM=UEFF
-               ELSE
-                  UCHM=UEFFD
-               END IF
-               IF (UCHM/=0) THEN
-                  CHI_TTRAVPAN=MAX(0.0D0,AERPAN(1)*XDIST/UCHM) !Don't allow negative conc*travel time
-               ELSE
+            if(grsm)then
+               if (stable .or. (unstab.and.(hs.ge.zi))) then
+                  uchm=ueff
+               else
+                  uchm=ueffd
+               end if
+               if (uchm/=0) then
+                  chi_ttravpan=max(0.0d0,aerpan(1)*xdist/uchm) !Don't allow negative conc*travel time
+               else
                   !Error - no travel time if UCHM is zero
-                  CALL ERRHDL(PATH, MODNAM, 'E','601','GRSM')
-                  RUNERR=.TRUE.
-                  RETURN
-               END IF
-            END IF
+                  call errhdl(path, modnam, 'E','601','GRSM')
+                  runerr=.true.
+                  return
+               end if
+            end if
 
 ! ---          Calculate fraction of random kinetic energy to total kinetic energy.
 !              Note that these effective parameters are based on the radial dist.
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-               CALL MEANDR( UEFF, SVEFF, FRAN )
-            ELSE IF (UNSTAB) THEN
-               CALL MEANDR( UEFFD, SVEFFD, FRAN )
-               IF (PPF .GT. 0.0D0) THEN
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
+               call meandr( ueff, sveff, fran )
+            else if (unstab) then
+               call meandr( ueffd, sveffd, fran )
+               if (ppf .gt. 0.0d0) then
 !                    For penetrated source calculate weighted average of
 !                    direct/indirect plume component and penetrated component
-                  CALL MEANDR( UEFF3, SVEFF3, FRAN3 )
-                  FRAN = PPF*FRAN3 + (1.0D0-PPF)*FRAN
-               END IF
-            END IF
+                  call meandr( ueff3, sveff3, fran3 )
+                  fran = ppf*fran3 + (1.0d0-ppf)*fran
+               end if
+            end if
 
 ! Added for TTRM; AECOM
-            IF (RUNTTRM .and. UNSTAB) THEN
+            if (runttrm .and. unstab) then
 !CRFL
 !CRFL    Revised emission rate terms:  for CHID & CHIN, to QTK*(1-PPF),
 !CRFL    and for CHI3 to QTK*PPF.  Ref:  P.D.F. Model for Dispersion in
 !CRFL    the Convective Boundary Layer, J.C. Weil, 6/27/94.  Changed
 !CRFL    7/19/94, R.F. Lee.
 !CRFL
-               CHID = (QTK*EMIFAC(1) * (1.0D0-PPF) / UEFFD) * (FSUBYD*FSUBZD)
-               CHIN = (QTK*EMIFAC(1) * (1.0D0-PPF) / UEFFN) * (FSUBYN*FSUBZN)
-            END IF
+               chid = (qtk*emifac(1) * (1.0d0-ppf) / ueffd) * (fsubyd*fsubzd)
+               chin = (qtk*emifac(1) * (1.0d0-ppf) / ueffn) * (fsubyn*fsubzn)
+            end if
 
-            IF (RUNTTRM) THEN
-               TTRMOUT(IREC,ISRC,12) = UEFF
-               TTRMOUT(IREC,ISRC,13) = UEFFD
-               TTRMOUT(IREC,ISRC,14) = UEFF3
-               TTRMOUT(IREC,ISRC,15) = FRAN
-               TTRMOUT(IREC,ISRC,16) = PPF
+            if (runttrm) then
+               ttrmout(irec,isrc,12) = ueff
+               ttrmout(irec,isrc,13) = ueffd
+               ttrmout(irec,isrc,14) = ueff3
+               ttrmout(irec,isrc,15) = fran
+               ttrmout(irec,isrc,16) = ppf
 ! GAMFACT is saved to TTRMOUT(IREC,ISRC,17) below
-               TTRMOUT(IREC,ISRC,18) = CHIN
-               TTRMOUT(IREC,ISRC,19) = CHID
-            END IF
+               ttrmout(irec,isrc,18) = chin
+               ttrmout(irec,isrc,19) = chid
+            end if
 ! End TTRM insert; Feb. 2021
 
 ! ---          Combine "random" and "coherent" plume contributions
-            AERVAL = FRAN*AERPAN + (1.0D0-FRAN)*AERPLM
+            aerval = fran*aerpan + (1.0d0-fran)*aerplm
 
 ! ---          CERC 11/30/20 Calculate the conc*travel time for the combined plume
-            IF(GRSM)THEN
-               CHI_TTRAVAER=FRAN*CHI_TTRAVPAN +&
-               &(1.0D0-FRAN)*CHI_TTRAVPLM
-            END IF
+            if(grsm)then
+               chi_ttravaer=fran*chi_ttravpan +&
+               &(1.0d0-fran)*chi_ttravplm
+            end if
 
-         END IF
+         end if
 
 !           ENSR STATEMENT
-         IF(DEBUG) THEN
-            DO ITYP = 1, NUMTYP
-               WRITE(DBGUNT,10) AERPAN(ITYP), AERPLM(ITYP), FRAN,&
-               &AERVAL(ITYP)
-10             FORMAT(/,'AERVAL(ITYP) = FRAN*AERPAN(ITYP) + (1.-FRAN)',&
+         if(debug) then
+            do ityp = 1, numtyp
+               write(dbgunt,10) aerpan(ityp), aerplm(ityp), fran,&
+               &aerval(ityp)
+10             format(/,'AERVAL(ITYP) = FRAN*AERPAN(ITYP) + (1.-FRAN)',&
                &'*AERPLM(ITYP)',//,&
                &'PANCAKE/MEANDER COMPONENT, AERPAN(ITYP) = ',&
-               &G16.8,/,'COHERENT PLUME COMPONENT,  AERPLM(ITYP) = ',&
-               &G16.8,/,'MEANDER FACTOR, FRAN = ',&
-               &G16.8,/,'RESULTANT CONC, AERVAL(ITYP) = ',G16.8,//)
-            END DO
-         END IF
+               &g16.8,/,'COHERENT PLUME COMPONENT,  AERPLM(ITYP) = ',&
+               &g16.8,/,'MEANDER FACTOR, FRAN = ',&
+               &g16.8,/,'RESULTANT CONC, AERVAL(ITYP) = ',g16.8,//)
+            end do
+         end if
 
-         IF (WAKE .and. (STABLE .or. HS.LE.ZI)) THEN
+         if (wake .and. (stable .or. hs.le.zi)) then
 ! ---          Apply wake effects - note that wake effects are not applied
 !              for stack heights > ZI.
 ! ---          Calculate receptor coordinates relative to upwind face of bldg.:
@@ -942,264 +942,264 @@ SUBROUTINE PCALC
             xbrec=x-xadj
             ybrec=y-yadj
 
-            XDIST = X
+            xdist = x
 ! ---          Calculate PRIME Downwash Concentration, PRMVAL
-            CALL PRMCALC ( XBREC, YBREC )
+            call prmcalc ( xbrec, ybrec )
 ! ---          Check for runtime error (RUNERR) before continuing
-            IF (RUNERR) RETURN
+            if (runerr) return
 
 ! ---          CERC 11/30/20 Calculate conc*travel time when buildings effects included
-            IF(GRSM)THEN
-               IF (UEFF/=0) THEN
-                  CHI_TTRAVPRM=MAX(0.0D0,PRMVAL(1)*XDIST/UEFF) !Don't allow negative conc*travel time
-               ELSE
+            if(grsm)then
+               if (ueff/=0) then
+                  chi_ttravprm=max(0.0d0,prmval(1)*xdist/ueff) !Don't allow negative conc*travel time
+               else
                   !Error - no travel time if UEFF is zero
-                  CALL ERRHDL(PATH, MODNAM, 'E','601','GRSM')
-                  RUNERR=.TRUE.
-                  RETURN
-               END IF
-            END IF
+                  call errhdl(path, modnam, 'E','601','GRSM')
+                  runerr=.true.
+                  return
+               end if
+            end if
 
 ! ---          Calculate Gamma weighting factor, GAMFACT
-            CALL GAMCALC ( XBREC, YBREC )
+            call gamcalc ( xbrec, ybrec )
 
 ! ---          Calculate hourly concentration from PRIME and AERMOD values (1:NUMTYP)
-            HRVAL =  GAMFACT  * PRMVAL + (1.0D0-GAMFACT) * AERVAL
+            hrval =  gamfact  * prmval + (1.0d0-gamfact) * aerval
 
 !              CERC 11/30/20
 ! ---          Calculate conc*travel time from PRIME and AERMOD values
-            IF(GRSM)THEN
-               CHI_TTRAVCHM(IREC,ISRC) = GAMFACT*CHI_TTRAVPRM +&
-               &(1.0D0-GAMFACT)*CHI_TTRAVAER
-               IF(HRVAL(1) > 0.0D0)THEN
-                  BLDFAC(IREC,ISRC) =&
-                  &GAMFACT*(PRMVAL(1)-PRMVAL_Src1)/HRVAL(1)
-               ENDIF
-            END IF
-
-            if (PRIMEDBG) then
-               DO ITYP = 1, NUMTYP
-                  write(PRMDBUNT,*) ' '
-                  write(PRMDBUNT,*) 'YR/MN/DY/HR:     ',kurdat,&
-                  &' ISRC: ',isrc,&
-                  &' IREC: ',irec
-                  write(PRMDBUNT,*)
-                  write(PRMDBUNT,*) ' GAMFACT = ',GAMFACT
-                  write(PRMDBUNT,*) ' AERVAL  = ',AERVAL(ITYP)
-                  write(PRMDBUNT,*) ' PRMVAL  = ',PRMVAL(ITYP)
-                  write(PRMDBUNT,*) ' HRVAL   = ',HRVAL(ITYP)
-                  write(PRMDBUNT,*) ' '
-               END DO
+            if(grsm)then
+               chi_ttravchm(irec,isrc) = gamfact*chi_ttravprm +&
+               &(1.0d0-gamfact)*chi_ttravaer
+               if(hrval(1) > 0.0d0)then
+                  bldfac(irec,isrc) =&
+                  &gamfact*(prmval(1)-PRMVAL_Src1)/hrval(1)
+               endif
             end if
 
-         ELSE
+            if (primedbg) then
+               do ityp = 1, numtyp
+                  write(prmdbunt,*) ' '
+                  write(prmdbunt,*) 'YR/MN/DY/HR:     ',kurdat,&
+                  &' ISRC: ',isrc,&
+                  &' IREC: ',irec
+                  write(prmdbunt,*)
+                  write(prmdbunt,*) ' GAMFACT = ',gamfact
+                  write(prmdbunt,*) ' AERVAL  = ',aerval(ityp)
+                  write(prmdbunt,*) ' PRMVAL  = ',prmval(ityp)
+                  write(prmdbunt,*) ' HRVAL   = ',hrval(ityp)
+                  write(prmdbunt,*) ' '
+               end do
+            end if
+
+         else
 ! ---          No WAKE effects or HS > ZI, set GAMFACT to 0.0 and use AERVAL only.
-            GAMFACT = 0.0D0
+            gamfact = 0.0d0
 ! ---          Calculate hourly concentration from PRIME and AERMOD values (1:NUMTYP)
-            HRVAL  = AERVAL
-            PRMVAL = 0.0D0
+            hrval  = aerval
+            prmval = 0.0d0
 ! ---          CERC 11/30/20 Calculate conc*travel time (no buildings)
-            IF(GRSM)THEN
-               CHI_TTRAVCHM(IREC,ISRC) = CHI_TTRAVAER
-            END IF
-         END IF
+            if(grsm)then
+               chi_ttravchm(irec,isrc) = chi_ttravaer
+            end if
+         end if
 ! Added for HBPDEBUG; JAN 2023
 ! Write out results to debug file
-         IF (HBPLUME .and. HBPDBG) THEN
-            IF(PPFN .LT. 1)THEN
-               WRITE(HBPUNT,7717) KURDAT,IREC,SRCID(isrc),ZICONV,ZIMECH,&
-               &ZICONVN,ZIMECHN,ZIAVG,HE3,SZ3DBG,HHTOP,&
-               &HHBOT,HTOPDIF,ZRT,PPF,PPFN,HRVAL!,
+         if (hbplume .and. hbpdbg) then
+            if(ppfn .lt. 1)then
+               write(hbpunt,7717) kurdat,irec,srcid(isrc),ziconv,zimech,&
+               &ziconvn,zimechn,ziavg,he3,sz3dbg,hhtop,&
+               &hhbot,htopdif,zrt,ppf,ppfn,hrval!,
 !     &                           NOHBP_HRVAL
-            ELSE
-               WRITE(HBPUNT,7817) KURDAT,IREC,SRCID(isrc),ZICONV,ZIMECH,&
-               &ZICONVN,ZIMECHN,ZRT,PPF,PPFN,HRVAL
-            ENDIF
-7717        FORMAT(1x,I8.8,',',I6,',',A12,6(',',F8.2),',',F7.3,',',&
-            &4(F8.2,','),F7.3,',',F7.3,',',F14.6)
-7817        FORMAT(1x,I8.8,',',I6,',',A12,4(',',F8.2),6(',-999.0'),',',&
-            &F8.2,',',F7.3,',',F7.3,',',F14.6)
-         ENDIF
+            else
+               write(hbpunt,7817) kurdat,irec,srcid(isrc),ziconv,zimech,&
+               &ziconvn,zimechn,zrt,ppf,ppfn,hrval
+            endif
+7717        format(1x,i8.8,',',i6,',',a12,6(',',f8.2),',',f7.3,',',&
+            &4(f8.2,','),f7.3,',',f7.3,',',f14.6)
+7817        format(1x,i8.8,',',i6,',',a12,4(',',f8.2),6(',-999.0'),',',&
+            &f8.2,',',f7.3,',',f7.3,',',f14.6)
+         endif
 ! End HBPDEBUG insert
 !     Added for TTRM; AECOM
-         IF (RUNTTRM) THEN
-            TTRMOUT(IREC,ISRC,10) = X
-            TTRMOUT(IREC,ISRC,11) = DISTR
-            TTRMOUT(IREC,ISRC,20) = Y
-            TTRMOUT(IREC,ISRC,17) = GAMFACT
-            TTRMOUT(IREC,ISRC,22) = AERVAL(1)
-            TTRMOUT(IREC,ISRC,23) = PRMVAL(1)
+         if (runttrm) then
+            ttrmout(irec,isrc,10) = x
+            ttrmout(irec,isrc,11) = distr
+            ttrmout(irec,isrc,20) = y
+            ttrmout(irec,isrc,17) = gamfact
+            ttrmout(irec,isrc,22) = aerval(1)
+            ttrmout(irec,isrc,23) = prmval(1)
 !              TTRMOUT(IREC,ISRC,24) = UEFFe ! Effective wind speed for downwash (saved in PRM_PCHI)
-         END IF
+         end if
 !     End TTRM insert; Feb. 2021
 
-         IF (PVMRM) THEN
+         if (pvmrm) then
 ! ---          Store data by source and receptor for PVMRM option
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-               HECNTR(IREC,ISRC) = HE
-               UEFFS(IREC,ISRC)  = UEFF
-               EPSEF(IREC,ISRC)  = EPSEFF
-            ELSE
-               HECNTR(IREC,ISRC) = CENTER
-               UEFFS(IREC,ISRC)  = UEFFD
-               EPSEF(IREC,ISRC)  = EPSEFFD
-            END IF
-            IF (PPF .GT. 0.0D0) THEN
-               PPFACT(IREC,ISRC)  = PPF
-               HECNTR3(IREC,ISRC) = HE3
-               UEFF3S(IREC,ISRC)  = UEFF3
-               EPSEF3(IREC,ISRC)  = EPSEFF3
-            ELSE
-               PPFACT(IREC,ISRC)  = 0.0D0
-               HECNTR3(IREC,ISRC) = 0.0D0
-               UEFF3S(IREC,ISRC)  = 0.0D0
-               EPSEF3(IREC,ISRC)  = 0.0D0
-            END IF
-            FOPTS(IREC,ISRC) = FOPT
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
+               hecntr(irec,isrc) = he
+               ueffs(irec,isrc)  = ueff
+               epsef(irec,isrc)  = epseff
+            else
+               hecntr(irec,isrc) = center
+               ueffs(irec,isrc)  = ueffd
+               epsef(irec,isrc)  = epseffd
+            end if
+            if (ppf .gt. 0.0d0) then
+               ppfact(irec,isrc)  = ppf
+               hecntr3(irec,isrc) = he3
+               ueff3s(irec,isrc)  = ueff3
+               epsef3(irec,isrc)  = epseff3
+            else
+               ppfact(irec,isrc)  = 0.0d0
+               hecntr3(irec,isrc) = 0.0d0
+               ueff3s(irec,isrc)  = 0.0d0
+               epsef3(irec,isrc)  = 0.0d0
+            end if
+            fopts(irec,isrc) = fopt
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL   = 0.0D0
-            AERVAL  = 0.0D0
-            AERPLM  = 0.0D0
-            AERPAN  = 0.0D0
-            PRMVAL  = 0.0D0
+            hrval   = 0.0d0
+            aerval  = 0.0d0
+            aerplm  = 0.0d0
+            aerpan  = 0.0d0
+            prmval  = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 
-         ELSE IF (OLM) THEN
+         else if (olm) then
 ! ---          Store conc by source and receptor for OLM option
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL   = 0.0D0
-            AERVAL  = 0.0D0
-            AERPLM  = 0.0D0
-            AERPAN  = 0.0D0
-            PRMVAL  = 0.0D0
+            hrval   = 0.0d0
+            aerval  = 0.0d0
+            aerplm  = 0.0d0
+            aerpan  = 0.0d0
+            prmval  = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 !     Added for TTRM; AECOM
-         ELSE IF (RUNTTRM) THEN
+         else if (runttrm) then
 ! ---          Store conc by source and receptor for TTRM option
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL   = 0.0D0
-            AERVAL  = 0.0D0
-            AERPLM  = 0.0D0
-            AERPAN  = 0.0D0
-            PRMVAL  = 0.0D0
+            hrval   = 0.0d0
+            aerval  = 0.0d0
+            aerplm  = 0.0d0
+            aerpan  = 0.0d0
+            prmval  = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 !    End TTRM insert; Feb. 2021
 
-         ELSE IF (ARM2) THEN
+         else if (arm2) then
 ! ---          Store conc by source and receptor for ARM2 options
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL   = 0.0D0
-            AERVAL  = 0.0D0
-            AERPLM  = 0.0D0
-            AERPAN  = 0.0D0
-            PRMVAL  = 0.0D0
+            hrval   = 0.0d0
+            aerval  = 0.0d0
+            aerplm  = 0.0d0
+            aerpan  = 0.0d0
+            prmval  = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 
 !           CERC 11/30/20
-         ELSE IF (GRSM) THEN
+         else if (grsm) then
 ! ---          Store conc by source and receptor for GRSM options
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-               HECNTR(IREC,ISRC) = HE
-               UEFFS(IREC,ISRC)  = UEFF
-               EPSEF(IREC,ISRC)  = EPSEFF
-            ELSE
-               HECNTR(IREC,ISRC) = CENTER
-               UEFFS(IREC,ISRC)  = UEFFD
-               EPSEF(IREC,ISRC)  = EPSEFFD
-            END IF
-            IF (PPF .GT. 0.0D0) THEN
-               PPFACT(IREC,ISRC)  = PPF
-               HECNTR3(IREC,ISRC) = HE3
-               UEFF3S(IREC,ISRC)  = UEFF3
-               EPSEF3(IREC,ISRC)  = EPSEFF3
-            ELSE
-               PPFACT(IREC,ISRC)  = 0.0D0
-               HECNTR3(IREC,ISRC) = 0.0D0
-               UEFF3S(IREC,ISRC)  = 0.0D0
-               EPSEF3(IREC,ISRC)  = 0.0D0
-            END IF
-            FOPTS(IREC,ISRC) = FOPT
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
+               hecntr(irec,isrc) = he
+               ueffs(irec,isrc)  = ueff
+               epsef(irec,isrc)  = epseff
+            else
+               hecntr(irec,isrc) = center
+               ueffs(irec,isrc)  = ueffd
+               epsef(irec,isrc)  = epseffd
+            end if
+            if (ppf .gt. 0.0d0) then
+               ppfact(irec,isrc)  = ppf
+               hecntr3(irec,isrc) = he3
+               ueff3s(irec,isrc)  = ueff3
+               epsef3(irec,isrc)  = epseff3
+            else
+               ppfact(irec,isrc)  = 0.0d0
+               hecntr3(irec,isrc) = 0.0d0
+               ueff3s(irec,isrc)  = 0.0d0
+               epsef3(irec,isrc)  = 0.0d0
+            end if
+            fopts(irec,isrc) = fopt
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL   = 0.0D0
-            AERVAL  = 0.0D0
-            AERPLM  = 0.0D0
-            AERPAN  = 0.0D0
-            PRMVAL  = 0.0D0
+            hrval   = 0.0d0
+            aerval  = 0.0d0
+            aerplm  = 0.0d0
+            aerpan  = 0.0d0
+            prmval  = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 
-         END IF
+         end if
 
 !           Sum HRVAL to AVEVAL and ANNVAL Arrays  ---   CALL SUMVAL
 !           As noted just above, the calls to EV_SUMVAL and SUMVAL
 !           are skipped for a PVMRM, OLM, ARM2 or GRSM run; the
 !           summing is performed for these options in the
 !           respective routines
-         IF (EVONLY) THEN
-            CALL EV_SUMVAL
-         ELSE
-            DO IGRP = 1, NUMGRP
-               CALL SUMVAL
-            END DO
-         END IF
+         if (evonly) then
+            call ev_sumval
+         else
+            do igrp = 1, numgrp
+               call sumval
+            end do
+         end if
 
-         IF (EVAL(ISRC)) THEN
+         if (eval(isrc)) then
 !              Check ARC centerline values for EVALFILE
 !              output                              ---   CALL EVALCK
-            CALL EVALCK
-         END IF
+            call evalck
+         end if
 
 !           Initialize __VAL arrays (1:NUMTYP)
-         HRVAL   = 0.0D0
-         AERVAL  = 0.0D0
-         AERPLM  = 0.0D0
-         AERPAN  = 0.0D0
-         PRMVAL  = 0.0D0
+         hrval   = 0.0d0
+         aerval  = 0.0d0
+         aerplm  = 0.0d0
+         aerpan  = 0.0d0
+         prmval  = 0.0d0
 
-      END DO RECEPTOR_LOOP
+      end do receptor_loop
 !        End Receptor LOOP
 
 !        Output 'ARC' Values for EVALFILE                   ---   CALL EVALFL
-      IF (EVAL(ISRC)) THEN
-         CALL EVALFL
-      END IF
+      if (eval(isrc)) then
+         call evalfl
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
+subroutine aercalc( xarg, l_plume, aerout )
 !***********************************************************************
 !             AERCALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1233,113 +1233,113 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
 !
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   INTEGER :: J
-   DOUBLE PRECISION :: AEROUT(NUMTYP), AERTMP(NUMTYP), FYOUT, XARG,&
-   &ADJ, FRAN, FRAN3
-   LOGICAL :: L_PLUME
+   use main1
+   implicit none
+   character modnam*12
+   integer :: j
+   double precision :: aerout(numtyp), aertmp(numtyp), fyout, xarg,&
+   &adj, fran, fran3
+   logical :: l_plume
 ! Unused:       INTEGER :: NDXZMID
 ! Unused:       DOUBLE PRECISION :: ZMID, VALABV, VBELOW
 
 !MGS  Wood 8/5/2021 D063 Added to make plume rise adjustment due to PLATFORM
 !MGS  External Functions:
-   DOUBLE PRECISION, EXTERNAL  :: PLAT_GRADPLUMADJ
+   double precision, external  :: plat_gradplumadj
 
 !     Variable Initializations
-   MODNAM = 'AERCALC'
+   modnam = 'AERCALC'
 
 !     Initialize AEROUT(NUMTYP) and AERTMP(NUMTYP) arrays
-   AEROUT(:) = 0.0D0
-   AERTMP(:) = 0.0D0
+   aerout(:) = 0.0d0
+   aertmp(:) = 0.0d0
 
 ! --- Initialize FRAN and FRAN3
-   FRAN  = 0.0D0
-   FRAN3 = 0.0D0
+   fran  = 0.0d0
+   fran3 = 0.0d0
 
-   IF (XARG .LT. 1.0D0) THEN
+   if (xarg .lt. 1.0d0) then
 !        Receptor is too close to source for calculation
 !        or upwind of source for coherent plume component
-      AEROUT(:) = 0.0D0
-      RETURN
+      aerout(:) = 0.0d0
+      return
 
-   END IF
+   end if
 
 !     Determine Deposition Correction Factors
-   IF (NPD .EQ. 0 .and. (LDGAS .or. LWGAS)) THEN
-      CALL PDEPG (XARG)
-   ELSE
-      DQCORG = 1.0D0
-      WQCORG = 1.0D0
-   END IF
-   IF (NPD .GT. 0 .and. (LDPART .or. LWPART)) THEN
-      CALL PDEP (XARG)
-   ELSE IF (NPD .GT. 0) THEN
+   if (npd .eq. 0 .and. (ldgas .or. lwgas)) then
+      call pdepg (xarg)
+   else
+      dqcorg = 1.0d0
+      wqcorg = 1.0d0
+   end if
+   if (npd .gt. 0 .and. (ldpart .or. lwpart)) then
+      call pdep (xarg)
+   else if (npd .gt. 0) then
 !        Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
-      DQCOR = 1.0D0
-      WQCOR = 1.0D0
-   END IF
+      dqcor = 1.0d0
+      wqcor = 1.0d0
+   end if
 
 !     Set initial effective parameters
-   UEFF  = US
-   SVEFF = SVS
-   SWEFF = SWS
-   TGEFF = TGS
-   IF ( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-      UEFFD  = US
-      SVEFFD = SVS
-      SWEFFD = SWS
-      UEFFN  = US
-      SVEFFN = SVS
-      SWEFFN = SWS
-      UEFF3  = US
-      SVEFF3 = SVS
-      SWEFF3 = SWS
-      TGEFF3 = TGS
-   END IF
+   ueff  = us
+   sveff = svs
+   sweff = sws
+   tgeff = tgs
+   if ( unstab  .and.  (hs .lt. zi) ) then
+      ueffd  = us
+      sveffd = svs
+      sweffd = sws
+      ueffn  = us
+      sveffn = svs
+      sweffn = sws
+      ueff3  = us
+      sveff3 = svs
+      sweff3 = sws
+      tgeff3 = tgs
+   end if
 
 !RJP  Add temporary debugging statement here.
 
 !     ENSR ENHANCEMENT OF WRITE STATEMENT TO IDENTIFY COMPONENT CONCENTRATION
-   IF(DEBUG) THEN
-      WRITE(DBGUNT, 6014) SRCID(ISRC)
-6014  FORMAT(//,'SRCID: ', A8)
-      IF(L_PLUME)THEN
-         WRITE(DBGUNT, 6015) UEFF, SVEFF, SWEFF
-6015     FORMAT(//,'COHERENT PLUME COMPONENT',/,5X,&
+   if(debug) then
+      write(dbgunt, 6014) srcid(isrc)
+6014  format(//,'SRCID: ', a8)
+      if(l_plume)then
+         write(dbgunt, 6015) ueff, sveff, sweff
+6015     format(//,'COHERENT PLUME COMPONENT',/,5x,&
          &'Initial effective parameters for ',&
          &'stable or direct convective ',&
-         &'plume:',//,5x,'Ueff = ',F7.2,' m/s; ',&
-         &'SVeff = ',F7.2,&
-         &' m/s; SWeff = ',F7.2,' m/s.',/)
-      ELSE
-         WRITE(DBGUNT, 6016) UEFF, SVEFF, SWEFF
-6016     FORMAT(//,'MEANDER COMPONENT',/,5X,&
+         &'plume:',//,5x,'Ueff = ',f7.2,' m/s; ',&
+         &'SVeff = ',f7.2,&
+         &' m/s; SWeff = ',f7.2,' m/s.',/)
+      else
+         write(dbgunt, 6016) ueff, sveff, sweff
+6016     format(//,'MEANDER COMPONENT',/,5x,&
          &'Initial effective parameters for ',&
          &'stable or direct convective ',&
-         &'plume:',//,5x,'Ueff = ',F7.2,' m/s; ',&
-         &'SVeff = ',F7.2,&
-         &' m/s; SWeff = ',F7.2,' m/s.',/)
-      END IF
-   END IF
+         &'plume:',//,5x,'Ueff = ',f7.2,' m/s; ',&
+         &'SVeff = ',f7.2,&
+         &' m/s; SWeff = ',f7.2,' m/s.',/)
+      end if
+   end if
 
 !     Define plume centroid height (CENTER) for use in
 !     inhomogeneity calculations
-   CALL CENTROID ( XARG )
+   call centroid ( xarg )
 
 !     Calculate the plume rise                     ---   CALL DELTAH
-   CALL DELTAH ( XARG )
+   call deltah ( xarg )
 
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                     ---   CALL PDF
-   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-      CALL PDF
-   END IF
+   if( unstab  .and.  (hs .lt. zi) ) then
+      call pdf
+   end if
 
 !     Determine Effective Plume Height             ---   CALL HEFF
-   CALL HEFF ( XARG )
+   call heff ( xarg )
 ! ----------------------------------------------------------------------
 ! ---------- BEGIN PLATFORM DOWNWASH PLUME RISE ADJUSTMENT -------------
 ! ----------------------------------------------------------------------
@@ -1349,17 +1349,17 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
 !        PLAT_DOWNWASH, and PLAT_CUBIC (all contained in calc1.f).
 !        Michelle G. Snyder, WOOD, 8/5/2021
 !CRT     D063
-   IF (OSPLAT(ISRC) .and. (XARG > 0.0D0)) THEN
-      IF (STABLE) THEN
-         DHP = DHP - PLAT_GRADPLUMADJ( XARG )
-      ELSE !modify direct plume downdraft (DHP1) only
-         DHP1 = DHP1 - PLAT_GRADPLUMADJ( XARG )
-      END IF
+   if (osplat(isrc) .and. (xarg > 0.0d0)) then
+      if (stable) then
+         dhp = dhp - plat_gradplumadj( xarg )
+      else !modify direct plume downdraft (DHP1) only
+         dhp1 = dhp1 - plat_gradplumadj( xarg )
+      end if
 
 !           Get new effective heights based on adjusted plume rise from platform
-      CALL HEFF ( XARG )
+      call heff ( xarg )
 
-   END IF
+   end if
 
 ! ----------------------------------------------------------------------
 ! --------- END OF PLATFORM DOWNWASH PLUME RISE ADJUSTMENT -------------
@@ -1368,209 +1368,209 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
 
 !     Compute effective parameters using an
 !     average through plume layer
-   CALL IBLVAL ( XARG )
+   call iblval ( xarg )
 
 !     Call PDF & HEFF again for final CBL plume heights
-   IF (UNSTAB .and. (HS.LT.ZI) ) THEN
-      CALL PDF
-      CALL HEFF ( XARG )
-   END IF
+   if (unstab .and. (hs.lt.zi) ) then
+      call pdf
+      call heff ( xarg )
+   end if
 
 !     Determine Dispersion Parameters              ---   CALL PDIS
-   CALL PDIS ( XARG )
+   call pdis ( xarg )
 
 !     Calculate the 'y-term' contribution to
 !     dispersion, FSUBY
-   IF (L_PLUME) THEN
-      IF (L_EFFSIGY) THEN
+   if (l_plume) then
+      if (l_effsigy) then
 ! ---       Calculate fraction of random kinetic energy to total kinetic energy
 !           for FASTALL option to optimize meander using effective sigma-y.
 !           Note that these effective parameters are based on the downwind distance,
 !           rather than the radial distance used in the standard meander approach
-         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-            CALL MEANDR( UEFF, SVEFF, FRAN )
-         ELSE IF (UNSTAB) THEN
-            CALL MEANDR( UEFFD, SVEFFD, FRAN )
-            IF (PPF .GT. 0.0D0) THEN
+         if (stable .or. (unstab.and.(hs.ge.zi))) then
+            call meandr( ueff, sveff, fran )
+         else if (unstab) then
+            call meandr( ueffd, sveffd, fran )
+            if (ppf .gt. 0.0d0) then
 !                 For penetrated source calculate weighted average of
 !                 direct/indirect plume component and penetrated component
-               CALL MEANDR( UEFF3, SVEFF3, FRAN3 )
-               FRAN = PPF*FRAN3 + (1.0D0-PPF)*FRAN
-            END IF
-         END IF
+               call meandr( ueff3, sveff3, fran3 )
+               fran = ppf*fran3 + (1.0d0-ppf)*fran
+            end if
+         end if
 
 !           Calculate effective sigma-y for non-DFAULT FASTALL option (L_EFFSIGY)
-         SYEFF = 1.0D0/((FRAN/(SRT2PI*XARG)) + (1.0D0-FRAN)/SY)
-         IF (L_EFFSIGY) THEN
-            IF (DABS(Y) .GT. NUMSYEFF*SYEFF) THEN
+         syeff = 1.0d0/((fran/(srt2pi*xarg)) + (1.0d0-fran)/sy)
+         if (l_effsigy) then
+            if (dabs(y) .gt. numsyeff*syeff) then
 !                 Plume is more than 4 sigmas off centerline, skip calculation
-               FYOUT = 0.0D0
-            ELSE
+               fyout = 0.0d0
+            else
 !                 Calculate FSUBY for coherent plume        ---   CALL FYPLM
-               CALL FYPLM(SYEFF,FYOUT)
-            END IF
-         ELSE
-            IF (X.LT.1.0D0 .or. DABS(Y) .GT. NUMSYEFF*SYEFF) THEN
+               call fyplm(syeff,fyout)
+            end if
+         else
+            if (x.lt.1.0d0 .or. dabs(y) .gt. numsyeff*syeff) then
 !                 Receptor is upwind of source or more than 4 sigmas off
 !                 ceenterline, skip calculation
-               FYOUT = 0.0D0
-            ELSE
+               fyout = 0.0d0
+            else
 !                 Calculate FSUBY for coherent plume        ---   CALL FYPLM
-               CALL FYPLM(SYEFF,FYOUT)
-            END IF
-         END IF
+               call fyplm(syeff,fyout)
+            end if
+         end if
 
-      ELSE
+      else
 !           Calculate FSUBY for coherent plume        ---   CALL FYPLM
-         CALL FYPLM(SY,FYOUT)
+         call fyplm(sy,fyout)
 
-      END IF
+      end if
 
-   ELSE
+   else
 !        Calculate FSUBY for random component      ---   CALL FYPAN
-      CALL FYPAN(FYOUT)
+      call fypan(fyout)
 
-   END IF
+   end if
 
-   FSUBY  = FYOUT
-   FSUBYD = FSUBY
-   FSUBYN = FSUBYD
+   fsuby  = fyout
+   fsubyd = fsuby
+   fsubyn = fsubyd
 
 !     Calculate the 'y-term' contribution to dispersion
 !     for the penetrated plume, FSUBY3
-   IF( UNSTAB  .and.  (HS .LT. ZI)  .and. (PPF .GT. 0.0D0) )THEN
+   if( unstab  .and.  (hs .lt. zi)  .and. (ppf .gt. 0.0d0) )then
 !        Compute meander fraction of horizontal distribution function
 !        from Venky's memo of 6/24/98.
-      IF (L_PLUME) THEN
-         IF (L_EFFSIGY) THEN
+      if (l_plume) then
+         if (l_effsigy) then
 ! ---          Calculate fraction of random kinetic energy to total kinetic energy
 !              for FASTALL option to optimize meander using effective sigma-y.
 !              Note that these effective parameters are based on the downwind distance,
 !              rather than the radial distance used in the standard meander approach
-            SYEFF = 1.0D0/((FRAN/(SRT2PI*XARG)) + (1.0D0-FRAN)/SY3)
+            syeff = 1.0d0/((fran/(srt2pi*xarg)) + (1.0d0-fran)/sy3)
 
-            IF (DABS(Y) .GT. NUMSYEFF*SYEFF) THEN
+            if (dabs(y) .gt. numsyeff*syeff) then
 !                 Plume is more than 4 sigmas off centerline, skip calculation
-               FYOUT = 0.0D0
-            ELSE
+               fyout = 0.0d0
+            else
 !                 Calculate FSUBY for coherent plume        ---   CALL FYPLM
-               CALL FYPLM(SYEFF,FYOUT)
-            END IF
+               call fyplm(syeff,fyout)
+            end if
 
-         ELSE
+         else
 !              Calculate FSUBY for coherent plume        ---   CALL FYPLM
-            CALL FYPLM(SY3,FYOUT)
-         END IF
-      ELSE
+            call fyplm(sy3,fyout)
+         end if
+      else
 !           Calculate FSUBY for random component   ---   CALL FYPAN
-         CALL FYPAN(FYOUT)
-      END IF
+         call fypan(fyout)
+      end if
 
-      FSUBY3 = FYOUT
-   ELSE
-      FSUBY3 = 0.0D0
-   END IF
+      fsuby3 = fyout
+   else
+      fsuby3 = 0.0d0
+   end if
 
 !     Check for zero "y-terms"; if zero then skip calculations
 !     and go to next receptor.
-   IF( FSUBY.EQ.0.0D0 .and. FSUBY3.EQ.0.0D0 )THEN
+   if( fsuby.eq.0.0d0 .and. fsuby3.eq.0.0d0 )then
 !        Set AEROUT(NUMTYP) array to 0.0
-      AEROUT(:) = 0.0D0
+      aerout(:) = 0.0d0
 
-   ELSE
+   else
 
-      IF (NPD .EQ. 0) THEN
+      if (npd .eq. 0) then
 !           Perform calculations for gases
 !           Assign plume tilt, HV = 0.0
-         HV = 0.0D0
+         hv = 0.0d0
 
-         ADJ = DQCORG * WQCORG
+         adj = dqcorg * wqcorg
 
-         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+         if (stable .or. (unstab.and.(hs.ge.zi))) then
 !              Calculate height of the "effective reflecting surface"
-            CALL REFL_HT (HE, XARG, SZB, 0.0D0, HSBL)
-         ELSEIF ( UNSTAB ) THEN
-            HSBL = 0.0D0
-         END IF
+            call refl_ht (he, xarg, szb, 0.0d0, hsbl)
+         elseif ( unstab ) then
+            hsbl = 0.0d0
+         end if
 
-         IF (UNSTAB .and. (HS.LT.ZI) .and. (PPF.GT.0.0D0)) THEN
+         if (unstab .and. (hs.lt.zi) .and. (ppf.gt.0.0d0)) then
 !              Calculate height of the "effective reflecting surface"
-            CALL REFL_HT (HE3, XARG, SZB3, 0.0D0, HPEN)
-         ELSE
-            HPEN = 0.0D0
-         END IF
+            call refl_ht (he3, xarg, szb3, 0.0d0, hpen)
+         else
+            hpen = 0.0d0
+         end if
 
 !           Determine the CRITical Dividing Streamline---   CALL CRITDS
-         CALL CRITDS (HE)
+         call critds (he)
 
 !           Calculate the fraction of plume below
 !           HCRIT, PHEE                               ---   CALL PFRACT
-         CALL PFRACT (HE)
+         call pfract (he)
 
 !           Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-         CALL FTERM
+         call fterm
 
 !           Calculate AERMOD Concentration     ---   CALL AER_PCHI
-         CALL AER_PCHI( XARG, ADJ, VDEPG, 0, AEROUT(:) )
+         call aer_pchi( xarg, adj, vdepg, 0, aerout(:) )
 
-      ELSE
+      else
 !           Perform calculations for particles, loop through particle sizes
 
 !           Begin loop over particle sizes
-         DO J = 1, NPD
+         do j = 1, npd
 
 !              Calculate Plume Tilt Due to Settling, HV
-            HV = (XARG/US) * VGRAV(J)
+            hv = (xarg/us) * vgrav(j)
 
 !              Adjust Jth contribution by mass fraction and source
 !              depletion
-            ADJ = PHI(J) * DQCOR(J) * WQCOR(J)
+            adj = phi(j) * dqcor(j) * wqcor(j)
 
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
 !                 Calculate height of the "effective reflecting surface"
 !                 Calculate Settled Plume Height(s), HESETL
-               HESETL = MAX( 0.0D0, HE - HV )
-               CALL REFL_HT (HESETL, XARG, SZB, 0.0D0, HSBL)
-            ELSEIF ( UNSTAB ) THEN
-               HESETL = MAX( 0.0D0, 0.5D0*(HED1+HED2) - HV )
-               HSBL = 0.0D0
-            END IF
+               hesetl = max( 0.0d0, he - hv )
+               call refl_ht (hesetl, xarg, szb, 0.0d0, hsbl)
+            elseif ( unstab ) then
+               hesetl = max( 0.0d0, 0.5d0*(hed1+hed2) - hv )
+               hsbl = 0.0d0
+            end if
 
-            IF (UNSTAB .and. (HS.LT.ZI) .and. (PPF.GT.0.0D0)) THEN
+            if (unstab .and. (hs.lt.zi) .and. (ppf.gt.0.0d0)) then
 !                 Calculate height of the "effective reflecting surface"
 !                 Calculate Settled Plume Height(s), HE3SETL
-               HE3SETL = MAX( 0.0D0, HE3 - HV )
-               CALL REFL_HT (HE3SETL, XARG, SZB3, 0.0D0, HPEN)
-               HPEN = MAX( HPEN, ZI )
-            ELSE
-               HPEN = 0.0D0
-            END IF
+               he3setl = max( 0.0d0, he3 - hv )
+               call refl_ht (he3setl, xarg, szb3, 0.0d0, hpen)
+               hpen = max( hpen, zi )
+            else
+               hpen = 0.0d0
+            end if
 
 !              Determine the CRITical Dividing Streamline---   CALL CRITDS
-            CALL CRITDS (HESETL)
+            call critds (hesetl)
 
 !              Calculate the fraction of plume below
 !              HCRIT, PHEE                               ---   CALL PFRACT
-            CALL PFRACT (HESETL)
+            call pfract (hesetl)
 
 !              Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-            CALL FTERM
+            call fterm
 
 !              Calculate AERMOD Concentration            ---   CALL AER_PCHI
-            CALL AER_PCHI( XARG, ADJ, VDEP(J), J, AERTMP(:) )
-            AEROUT(:) = AEROUT(:) + AERTMP(:)
+            call aer_pchi( xarg, adj, vdep(j), j, aertmp(:) )
+            aerout(:) = aerout(:) + aertmp(:)
 
-         END DO
+         end do
 !           End loop over particle sizes
 
-      END IF
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE PRMCALC (XBREC, YBREC)
+subroutine prmcalc (xbrec, ybrec)
 !***********************************************************************
 !             PRMCALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1604,41 +1604,41 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
 !
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
+   use main1
 
 !     The following are for AWMA ALPHA option
-   use PRIME_WAKEDAT, only: hb
+   use prime_wakedat, only: hb
    use PRM2_wakedat, only:  Zeff_PRM2, u30, sv30, sw30,&
    &Ueff_save, SWeff_save, SVeff_save
 
-   IMPLICIT NONE
+   implicit none
 
-   CHARACTER MODNAM*12
-   INTEGER :: IPOSITN, N1, N2, IS, J
-   DOUBLE PRECISION :: ADJ
-   DOUBLE PRECISION :: DHPOUT, SYOUT, SZOUT, FYOUT
-   DOUBLE PRECISION :: XBREC, YBREC, FQCAV, SYCAV,&
-   &SZCAV
-   DOUBLE PRECISION :: ZHI, ZLO
+   character modnam*12
+   integer :: ipositn, n1, n2, is, j
+   double precision :: adj
+   double precision :: dhpout, syout, szout, fyout
+   double precision :: xbrec, ybrec, fqcav, sycav,&
+   &szcav
+   double precision :: zhi, zlo
 
 !     The following two lines are for AWMA ALPHA option
-   DOUBLE PRECISION :: BetaJ
+   double precision :: BetaJ
    double precision :: z30hi, z30lo
 
-   INTEGER :: NDXBHI, NDXBLO, NDXALO
+   integer :: ndxbhi, ndxblo, ndxalo
 ! --- Declare local PRIME arrays for "3-source" data
-   DOUBLE PRECISION :: q2(3),y2(3),sy2(3),z2(3),h2(3),sz2(3),qc2(3),&
+   double precision :: q2(3),y2(3),sy2(3),z2(3),h2(3),sz2(3),qc2(3),&
    &qtksav,ppfsav
 
-   logical :: L_INWAKE
+   logical :: l_inwake
 
 !     Variable Initializations
-   MODNAM = 'PRMCALC'
-   PRMVAL = 0.0D0
-   IF(GRSM) PRMVAL_Src1 = 0.0D0
-   Ueff_save  = 0.0D0
-   SWeff_save = 0.0D0
-   SVeff_save = 0.0D0
+   modnam = 'PRMCALC'
+   prmval = 0.0d0
+   if(grsm) PRMVAL_Src1 = 0.0d0
+   Ueff_save  = 0.0d0
+   SWeff_save = 0.0d0
+   SVeff_save = 0.0d0
 
 ! --- PRIME ---------------------------------------------------------
 ! --- Calculate where receptor is relative to near-wake cavity
@@ -1647,84 +1647,84 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
 ! --- Note:  xbrec is downwind dist. of receptor from upwind
 !     bldg face; ybrec is crosswind dist. of receptor from
 !     center of upwind bldg. face                  ---  CALL POSITION
-   call POSITION(xbrec,ybrec,zflag,ipositn)
+   call position(xbrec,ybrec,zflag,ipositn)
 
-   if(ipositn.EQ.4 .and. X.LE.0.0D0) then
+   if(ipositn.eq.4 .and. x.le.0.0d0) then
 ! ---    Receptor is upwind of sources and is not within
 ! ---    a building wake - use AERMOD calculation
 ! ---    Set PRMVAL(NUMTYP) array = AERVAL(NUMTYP) array
-      PRMVAL = AERVAL
-      IF(GRSM) PRMVAL_Src1 = AERVAL(1)
+      prmval = aerval
+      if(grsm) PRMVAL_Src1 = aerval(1)
 
-   elseif(ipositn.NE.2 .and. distr .LT. 0.99D0) then
+   elseif(ipositn.ne.2 .and. distr .lt. 0.99d0) then
 ! ---    Receptor Too Close to Source for Calculation and is not
 ! ---    within a building near-wake (cavity) - use AERMOD calculation
 ! ---    Set PRMVAL(NUMTYP) array = AERVAL(NUMTYP) array
-      PRMVAL = AERVAL
-      IF(GRSM) PRMVAL_Src1 = AERVAL(1)
+      prmval = aerval
+      if(grsm) PRMVAL_Src1 = aerval(1)
 ! -------------------------------------------------------------
 
-   ELSE IF (.NOT. WAKE) THEN
+   else if (.not. wake) then
 ! ---    No wake effects for this source for this hour - use AERMOD calculation
 ! ---    Set PRMVAL(NUMTYP) array = AERVAL(NUMTYP) array
-      PRMVAL = AERVAL
-      IF(GRSM) PRMVAL_Src1 = AERVAL(1)
+      prmval = aerval
+      if(grsm) PRMVAL_Src1 = aerval(1)
 
-   ELSE
+   else
 ! ---    Calculate PRIME concentration with downwash
 
 ! ---    Calculate effective parameters to define ambient turbulence intensities,
 !        as averages across layer from ground to top of wake (as calculated at
 !        a downwind distance of 15R).
-      ZHI = 1.2D0*RSCALE * (15.0D0 +&
-      &(DSBH/(1.2D0*RSCALE))**3)**THIRD
-      IF (UNSTAB) THEN
-         ZHI = MIN( ZHI, ZI )
-      END IF
-      ZLO = 0.0D0
+      zhi = 1.2d0*rscale * (15.0d0 +&
+      &(dsbh/(1.2d0*rscale))**3)**third
+      if (unstab) then
+         zhi = min( zhi, zi )
+      end if
+      zlo = 0.0d0
 
 ! --- AWMA version D20350
-      IF (L_AWMA_UTurb .or. L_AWMA_UTurbHX) THEN
+      if (L_AWMA_UTurb .or. L_AWMA_UTurbHX) then
 !---        The values of ZHI and ZLO in the regulatory version of
 !           AERMOD are replaced with the values below for AWMADWNW option
-         BetaJ = 1.0D0/3.0D0 + US/VS
-         Zeff_PRM2 = 0.9D0 * (FM * US/USTAR)**0.5D0 / (US * BetaJ)
-         Zeff_PRM2 = Zeff_PRM2 + HS
-         Zeff_PRM2 =  max(Zeff_PRM2,HB,5.0D0)
+         BetaJ = 1.0d0/3.0d0 + us/vs
+         Zeff_PRM2 = 0.9d0 * (fm * us/ustar)**0.5d0 / (us * BetaJ)
+         Zeff_PRM2 = Zeff_PRM2 + hs
+         Zeff_PRM2 =  max(Zeff_PRM2,hb,5.0d0)
 
-         ZHI = Zeff_PRM2 + 5.0D0
-         ZLO = Zeff_PRM2 - 5.0D0
-      ENDIF
+         zhi = Zeff_PRM2 + 5.0d0
+         zlo = Zeff_PRM2 - 5.0d0
+      endif
 
 ! ---    Compute average values between ZLO and ZHI
-      CALL LOCATE(GRIDHT, 1, MXGLVL, ZHI, NDXBHI)
-      CALL LOCATE(GRIDHT, 1, MXGLVL, ZLO, NDXBLO)
+      call locate(gridht, 1, mxglvl, zhi, ndxbhi)
+      call locate(gridht, 1, mxglvl, zlo, ndxblo)
 
-      NDXALO = NDXBLO + 1
-      CALL ANYAVG ( MXGLVL, GRIDHT, GRIDWS, ZLO,NDXALO,&
-      &ZHI,NDXBHI,UEFF )
+      ndxalo = ndxblo + 1
+      call anyavg ( mxglvl, gridht, gridws, zlo,ndxalo,&
+      &zhi,ndxbhi,ueff )
 
-      CALL ANYAVG ( MXGLVL, GRIDHT, GRIDSV, ZLO,NDXALO,&
-      &ZHI,NDXBHI,SVEFF )
+      call anyavg ( mxglvl, gridht, gridsv, zlo,ndxalo,&
+      &zhi,ndxbhi,sveff )
 
-      CALL ANYAVG ( MXGLVL, GRIDHT, GRIDSW, ZLO,NDXALO,&
-      &ZHI,NDXBHI,SWEFF )
+      call anyavg ( mxglvl, gridht, gridsw, zlo,ndxalo,&
+      &zhi,ndxbhi,sweff )
 
-      CALL ANYAVG ( MXGLVL, GRIDHT, GRIDTG, ZLO,NDXALO,&
-      &ZHI, NDXBHI, TGEFF )
+      call anyavg ( mxglvl, gridht, gridtg, zlo,ndxalo,&
+      &zhi, ndxbhi, tgeff )
 
 ! ---    AWMA version D20350
 !        If the AWMA enhanced downwash options are applied,
 !          save the effective parameters so they can be restored later
 !
-      IF (L_AWMA_UTurbHX) THEN
+      if (L_AWMA_UTurbHX) then
          Ueff_save  = Ueff
          SWeff_save = SWeff
          SVeff_save = SVeff
-      END IF
+      end if
 
 ! ---    AWMA version D20350
-      IF (L_AWMA_UTurb  .or. L_AWMA_UTurbHX) THEN
+      if (L_AWMA_UTurb  .or. L_AWMA_UTurbHX) then
 !---        Additional calculations for AWMADW -
 !              "effective" parameters (at 30m) for use in wake_u_turb
 !           Note: alternate algorithm to extract 30m value directly may
@@ -1733,12 +1733,12 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
 !                 centered on 30m. Does this reliably work?
          z30lo = 28.d0
          z30hi = 32.d0
-         CALL LOCATE(GRIDHT, 1, MXGLVL, Z30lo, NDXBLO)
-         CALL LOCATE(GRIDHT, 1, MXGLVL, z30hi, NDXBHI)
+         call locate(gridht, 1, mxglvl, Z30lo, ndxblo)
+         call locate(gridht, 1, mxglvl, z30hi, ndxbhi)
 
 !           Define index above based on index below to obtain correct
 !           values from subr.anyavg
-         NDXALO = NDXBLO + 1
+         ndxalo = ndxblo + 1
 
          call anyavg (mxglvl, gridht, gridws, z30lo, ndxalo,&
          &z30hi, ndxbhi, u30)
@@ -1749,65 +1749,65 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
          call anyavg (mxglvl, gridht, gridsw, z30lo, ndxalo,&
          &z30hi, ndxbhi, sw30)
          !----
-      END IF
+      end if
 
 !RWB     Modify treatment of low wind/low turbulence cases.
 !RWB     R. Brode, PES, 8/15/96
 
-      SWEFF = MAX( SWEFF, SWMIN )
+      sweff = max( sweff, swmin )
 
-      SVEFF = MAX( SVEFF, SVMIN, SVUMIN*UEFF )
+      sveff = max( sveff, svmin, svumin*ueff )
 
-      IF( L_VECTORWS )THEN
-         UEFF  = DSQRT( UEFF*UEFF + 2.0D0*SVEFF*SVEFF )
-      ENDIF
+      if( l_vectorws )then
+         ueff  = dsqrt( ueff*ueff + 2.0d0*sveff*sveff )
+      endif
 
-      UEFF  = MAX( UEFF, WSMIN )
+      ueff  = max( ueff, wsmin )
 
 ! ---    AWMA version D20350
-      IF (L_AWMA_UTurb .or. L_AWMA_UTurbHX )THEN
+      if (L_AWMA_UTurb .or. L_AWMA_UTurbHX )then
          sw30 =  max (sw30, swmin)
          sv30 =  max (sv30, svmin, svumin*u30)
-         IF (L_VECTORWS) u30 = dsqrt (u30*u30 +2.d0*sv30*sv30)
-         u30 = MAX (u30, wsmin)
-      END IF
+         if (l_vectorws) u30 = dsqrt (u30*u30 +2.d0*sv30*sv30)
+         u30 = max (u30, wsmin)
+      end if
 
-      if (PRIMEDBG) then
-         write(PRMDBUNT,*) 'PRIME Effective Parameters: '
+      if (primedbg) then
+         write(prmdbunt,*) 'PRIME Effective Parameters: '
          if (L_AWMA_UTurb .or. L_AWMA_UTurbHX) then
-            write(PRMDBUNT,*) '  AWMAUturb/HX applied to eff params'
+            write(prmdbunt,*) '  AWMAUturb/HX applied to eff params'
          end if
-         write(PRMDBUNT,*)   '  ZLO, ZHI     = ', zlo, zhi
-         write(PRMDBUNT,*)   '  SWEFF, SVEFF = ', sweff, sveff
-         write(PRMDBUNT,*)   '  UEFF,  TGEFF = ', ueff, tgeff
+         write(prmdbunt,*)   '  ZLO, ZHI     = ', zlo, zhi
+         write(prmdbunt,*)   '  SWEFF, SVEFF = ', sweff, sveff
+         write(prmdbunt,*)   '  UEFF,  TGEFF = ', ueff, tgeff
       end if
 
 !        Calculate the plume rise                     ---   CALL PRMDELH
-      CALL PRMDELH ( X, L_INWAKE )
+      call prmdelh ( x, l_inwake )
 
 ! ---    Check for runtime error (RUNERR) before continuing
-      IF (RUNERR) RETURN
+      if (runerr) return
 
-      IF (.NOT. L_INWAKE) THEN
+      if (.not. l_inwake) then
 !           Plume is not affected by wake, set PRMVAL = AERVAL and return
-         PRMVAL = AERVAL
-         IF(GRSM) PRMVAL_Src1 = AERVAL(1)
-         RETURN
-      END IF
+         prmval = aerval
+         if(grsm) PRMVAL_Src1 = aerval(1)
+         return
+      end if
 
 !        Determine Effective Plume Height             ---   CALL PRMHEFF
-      CALL PRMHEFF
+      call prmheff
 
-      IF (UNSTAB .and. HE .GE. ZI) THEN
+      if (unstab .and. he .ge. zi) then
 !           Plume is above ZI, set PRMVAL = AERVAL and return
-         PRMVAL = AERVAL
-         IF(GRSM) PRMVAL_Src1 = AERVAL(1)
-         RETURN
-      END IF
+         prmval = aerval
+         if(grsm) PRMVAL_Src1 = aerval(1)
+         return
+      end if
 
 ! ---    Calculate sigmas
       dhpout = dhp
-      call WAKE_XSIG(x,hs,dhpout,nobid,szout,syout,&
+      call wake_xsig(x,hs,dhpout,nobid,szout,syout,&
       &szcav,sycav)
       sy = syout
       sz = szout
@@ -1826,16 +1826,16 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
       sz2(1) = sz
       n1 = 1
       n2 = 1
-      if(WAKE) then
+      if(wake) then
 ! ---       Define cavity source                              ---   CALL CAV_SRC
-         call CAV_SRC(x,y,zflag,fqcav,qc2,h2,y2,z2,sz2,sy2,n1,n2)
-         if (SCREEN) then
+         call cav_src(x,y,zflag,fqcav,qc2,h2,y2,z2,sz2,sy2,n1,n2)
+         if (screen) then
 ! ---          Force receptor to be on "centerline" for all plumes for SCREEN
-            y2 = 0.0D0
+            y2 = 0.0d0
          end if
-         if(fqcav.GT.0.0D0) then
+         if(fqcav.gt.0.0d0) then
 ! ---          Set source strengths
-            q2(1)=qtk*(1.0D0-fqcav)
+            q2(1)=qtk*(1.0d0-fqcav)
             q2(2)=qtk*fqcav*qc2(2)
             q2(3)=qtk*fqcav*qc2(3)
          end if
@@ -1844,11 +1844,11 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
 ! ---    Initialize PRMVAL(NUMTYP) output array values to zero, because contributions
 ! ---    due to more than one source are summed here (or do loop may
 ! ---    not execute if neither source contributes)
-      PRMVAL = 0.0D0
+      prmval = 0.0d0
 ! ---    Initialise source 1 concentration for GRSM
-      IF(GRSM)THEN
-         PRMVAL_Src1 = 0.0D0
-      ENDIF
+      if(grsm)then
+         PRMVAL_Src1 = 0.0d0
+      endif
 
 ! ---    Loop over 3 possible sources (is=1 for primary source,
 ! ---    is=2 for "outside" cavity source, and is=3 for "inside" cavity source)
@@ -1865,7 +1865,7 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
 !     &                                        ' 3=inside cav)'
 !         END IF
 ! ---       Cycle to next source if emission rate is 0.0
-         if (q2(is) .eq. 0.0D0) cycle
+         if (q2(is) .eq. 0.0d0) cycle
 
 ! ---       Transfer data for current source
          qtk = q2(is)
@@ -1878,90 +1878,90 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
 ! -------------------------------------------------------------
 !           Calculate the 'y-term' contribution to
 !           dispersion, FSUBY                              ---   CALL FYPLM
-         CALL FYPLM(SY,FYOUT)
-         FSUBY  = FYOUT
+         call fyplm(sy,fyout)
+         fsuby  = fyout
 
-         IF( FSUBY.EQ.0.0D0 )THEN
+         if( fsuby.eq.0.0d0 )then
 ! ---          Lateral term is 0.0, set PRMVAL array (1:NUMTYP) to 0.0.
-            PRMVAL = 0.0D0
-            IF(GRSM) PRMVAL_Src1 = 0.0D0
+            prmval = 0.0d0
+            if(grsm) PRMVAL_Src1 = 0.0d0
 
-         ELSE
+         else
 
 ! ---          Set FOPT = 0.5 for PRIME calculation since wake is "near neutral"
-            FOPT = 0.5D0
+            fopt = 0.5d0
 
-            IF (NPD .EQ. 0) THEN
+            if (npd .eq. 0) then
 !                 Determine Deposition Correction Factors
-               IF ((LDGAS.or.LWGAS) .and. IS.NE.3 .and.&
-               &X.GT.1.0D0) THEN
+               if ((ldgas.or.lwgas) .and. is.ne.3 .and.&
+               &x.gt.1.0d0) then
 !                    Do not apply depletion for "inside cavity source", IS=3
-                  CALL PRM_PDEPG (X)
+                  call prm_pdepg (x)
 
 !                    Reassign plume height and sigmas, which may have changed
 !                    during integration
                   sy  = sy2(is)
                   sz  = sz2(is)
                   he  = h2(is)
-               ELSE
-                  DQCORG = 1.0D0
-                  WQCORG = 1.0D0
-               END IF
+               else
+                  dqcorg = 1.0d0
+                  wqcorg = 1.0d0
+               end if
 
-               ADJ = DQCORG * WQCORG
-               CALL PRM_PCHI( ADJ, VDEPG, 0, is )                    ! ORD (EMM) change
+               adj = dqcorg * wqcorg
+               call prm_pchi( adj, vdepg, 0, is )                    ! ORD (EMM) change
 
-            ELSE
-               IF ((LDPART.or.LWPART) .and. IS.NE.3 .and.&
-               &X.GT.1.0D0) THEN
+            else
+               if ((ldpart.or.lwpart) .and. is.ne.3 .and.&
+               &x.gt.1.0d0) then
 !                    Do not apply depletion for "inside cavity source", IS=3
-                  CALL PRM_PDEP (X)
+                  call prm_pdep (x)
 
 !                    Reassign plume height and sigmas, which may have changed
 !                    during integration
                   sy  = sy2(is)
                   sz  = sz2(is)
                   he  = h2(is)
-               ELSE
+               else
 !                    Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
-                  DQCOR = 1.0D0
-                  WQCOR = 1.0D0
-               END IF
+                  dqcor = 1.0d0
+                  wqcor = 1.0d0
+               end if
 
-               DO J = 1, NPD
+               do j = 1, npd
 
-                  ADJ = PHI(J) * DQCOR(J) * WQCOR(J)
-                  HV  = (X/US) * VGRAV(J)
-                  HE  = MAX ( 0.0D0, HE - HV )
+                  adj = phi(j) * dqcor(j) * wqcor(j)
+                  hv  = (x/us) * vgrav(j)
+                  he  = max ( 0.0d0, he - hv )
 
-                  CALL PRM_PCHI( ADJ, VDEP(J), J, is )               ! ORD (EMM) change
+                  call prm_pchi( adj, vdep(j), j, is )               ! ORD (EMM) change
 
-               END DO
-            END IF
+               end do
+            end if
 
 !              If this is source 1, store the concentration for GRSM
-            IF(GRSM .and. is==1) PRMVAL_Src1 = PRMVAL(1)
+            if(grsm .and. is==1) PRMVAL_Src1 = prmval(1)
 
-         END IF
+         end if
 
-      END DO
+      end do
 
 ! ---    Restore original plume data
-      QTK = QTKSAV
-      PPF = PPFSAV
+      qtk = qtksav
+      ppf = ppfsav
       y   = y2(1)
       sy  = sy2(1)
       sz  = sz2(1)
       he  = h2(1)
       zflag = z2(1)
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
 
-SUBROUTINE GAMCALC ( XARG, YARG )
+subroutine gamcalc ( xarg, yarg )
 !***********************************************************************
 !             GAMCALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1984,81 +1984,81 @@ SUBROUTINE GAMCALC ( XARG, YARG )
 !
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: XARG, YARG
-   DOUBLE PRECISION :: WAKE_LEN, WAKE_WID, WAKE_HGT
-   DOUBLE PRECISION :: XAY, XAZ, XAMX
-   DOUBLE PRECISION :: SIGMA_XG,  SIGMA_YG,  SIGMA_ZG,&
-   &EXPARG_XG, EXPARG_YG, EXPARG_ZG
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: xarg, yarg
+   double precision :: wake_len, wake_wid, wake_hgt
+   double precision :: xay, xaz, xamx
+   double precision :: sigma_xg,  sigma_yg,  sigma_zg,&
+   &exparg_xg, exparg_yg, exparg_zg
 
 ! --- Variable Initializations
-   MODNAM = 'GAMCALC'
+   modnam = 'GAMCALC'
 
-   IF (XARG .LE. 0.0D0 .or. .NOT.WAKE) THEN
+   if (xarg .le. 0.0d0 .or. .not.wake) then
 ! ---    Receptor is upwind of building or no WAKE, set GAMFACT = 0.0 to
 ! ---    use AERVAL only.
-      GAMFACT = 0.0D0
+      gamfact = 0.0d0
 
-   ELSE
+   else
 
 ! ---    Calculate the height, half-width and "length" of the wake.
 ! ---    Length of wake is measured from upwind edge of building.
-      WAKE_HGT = 1.2D0*RSCALE * (XARG/RSCALE +&
-      &(DSBH/(1.2D0*RSCALE))**3)**THIRD
-      WAKE_WID = 0.5D0*DSBW + (RSCALE/3.0D0)*&
-      &(XARG/RSCALE)**THIRD
+      wake_hgt = 1.2d0*rscale * (xarg/rscale +&
+      &(dsbh/(1.2d0*rscale))**3)**third
+      wake_wid = 0.5d0*dsbw + (rscale/3.0d0)*&
+      &(xarg/rscale)**third
 ! ---    Obtain distance to transition from wake to ambient turbulence,
 ! ---    without cap at 15R.
-      call WAKE_XA2(DSBL,RSCALE,xaz,xay)
-      XAMX = MAX(XAZ,XAY)
+      call wake_xa2(dsbl,rscale,xaz,xay)
+      xamx = max(xaz,xay)
 ! ---    Set WAKE_LEN as maximum of 15R and transition distance
-      WAKE_LEN = MAX(15.0D0 * RSCALE, XAMX)
+      wake_len = max(15.0d0 * rscale, xamx)
 
 ! ---    Assign wake dimensions to SIGMA_?G terms
-      SIGMA_XG = WAKE_LEN
-      SIGMA_YG = WAKE_WID
-      SIGMA_ZG = WAKE_HGT
+      sigma_xg = wake_len
+      sigma_yg = wake_wid
+      sigma_zg = wake_hgt
 
 ! ---    Calculate exponential argument for alongwind dimension
-      IF (XARG .LE. SIGMA_XG) THEN
-         EXPARG_XG = 0.0D0
-      ELSE
-         EXPARG_XG = -((XARG-SIGMA_XG)**2 / (2.0D0 * SIGMA_XG**2))
-      END IF
+      if (xarg .le. sigma_xg) then
+         exparg_xg = 0.0d0
+      else
+         exparg_xg = -((xarg-sigma_xg)**2 / (2.0d0 * sigma_xg**2))
+      end if
 
 ! ---    Calculate exponential argument for crosswind dimension
-      IF (DABS(YARG) .LE. SIGMA_YG) THEN
-         EXPARG_YG = 0.0D0
-      ELSE
-         EXPARG_YG = -((DABS(YARG)-SIGMA_YG)**2 /&
-         &(2.0D0 * SIGMA_YG**2))
-      END IF
+      if (dabs(yarg) .le. sigma_yg) then
+         exparg_yg = 0.0d0
+      else
+         exparg_yg = -((dabs(yarg)-sigma_yg)**2 /&
+         &(2.0d0 * sigma_yg**2))
+      end if
 
 ! ---    Calculate exponential argument for vertical dimension, using ZRT,
 ! ---    height of receptor above stack base, including terrain and flagpole.
-      IF (ZRT .LE. SIGMA_ZG) THEN
-         EXPARG_ZG = 0.0D0
-      ELSE
-         EXPARG_ZG = -((ZRT-SIGMA_ZG)**2 / (2.0D0 * SIGMA_ZG**2))
-      END IF
+      if (zrt .le. sigma_zg) then
+         exparg_zg = 0.0d0
+      else
+         exparg_zg = -((zrt-sigma_zg)**2 / (2.0d0 * sigma_zg**2))
+      end if
 
 !        Calculate gamma weighting factor, GAMFACT
-      IF (EXPARG_XG.GT.EXPLIM .and. EXPARG_YG.GT.EXPLIM .and.&
-      &EXPARG_ZG.GT.EXPLIM) THEN
-         GAMFACT = DEXP(EXPARG_XG)*DEXP(EXPARG_YG)*DEXP(EXPARG_ZG)
-      ELSE
-         GAMFACT = 0.0D0
-      END IF
+      if (exparg_xg.gt.explim .and. exparg_yg.gt.explim .and.&
+      &exparg_zg.gt.explim) then
+         gamfact = dexp(exparg_xg)*dexp(exparg_yg)*dexp(exparg_zg)
+      else
+         gamfact = 0.0d0
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
 
-SUBROUTINE CENTROID (XARG)
+subroutine centroid (xarg)
 !***********************************************************************
 !             CENTROID Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2083,81 +2083,81 @@ SUBROUTINE CENTROID (XARG)
 !
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: XARG, DELX, DELZ, FRAC, xtmp
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: xarg, delx, delz, frac, xtmp
 
 !     Variable Initializations
-   MODNAM = 'CENTROID'
+   modnam = 'CENTROID'
 
-   xtmp = max( xarg, 1.0D0 )
+   xtmp = max( xarg, 1.0d0 )
 
-   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
+   if( unstab  .and.  (hs .lt. zi) ) then
 !----    Calculate plume centerline height without PDF adjustments
-      IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
-         CALL CBLPRD ( xtmp )
-         HTEFF = MIN (HSP+DHP1, ZI)
+      if (srctyp(isrc)(1:5) .eq. 'POINT') then
+         call cblprd ( xtmp )
+         hteff = min (hsp+dhp1, zi)
 !**  Added for Aircraft Plume Rise; UNC-IE
-      ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and.&
-      &AFTSRC(ISRC) .EQ. 'Y') THEN
-         CALL ACBLPRD ( xtmp )
-         HTEFF = MIN (HSP+DHP1, ZI)
-      ELSE IF (SRCTYP(ISRC) (1:4) .EQ. 'AREA' .and.&
-      &AFTSRC(ISRC) .EQ. 'Y') THEN
-         CALL ACBLPRD ( xtmp )
-         HTEFF = MIN (HSP+DHP1, ZI)
+      else if (srctyp(isrc) .eq. 'VOLUME' .and.&
+      &aftsrc(isrc) .eq. 'Y') then
+         call acblprd ( xtmp )
+         hteff = min (hsp+dhp1, zi)
+      else if (srctyp(isrc) (1:4) .eq. 'AREA' .and.&
+      &aftsrc(isrc) .eq. 'Y') then
+         call acblprd ( xtmp )
+         hteff = min (hsp+dhp1, zi)
 !**  End Aircraft Plume Rise insert; April 2023
-      ELSE
-         HTEFF = HSP
+      else
+         hteff = hsp
 ! ---       Assign DHCRIT = 0.0  and XFINAL = 0.0 for non-POINT and non-aircraft sources
-         DHCRIT = 0.0D0
-         XFINAL = 0.0D0
-      END IF
-      IF( xtmp .LT. XFINAL) THEN
-         CENTER = HTEFF
-      ELSE IF( xtmp .GE. XMIXED) THEN
-         CENTER = ZMIDMX
-      ELSE
-         DELX = XMIXED - XFINAL
-         DELZ = ZMIDMX - MIN( HSP+DHCRIT, ZI)
-         FRAC = (xtmp-XFINAL)/DELX
-         CENTER = MIN(HSP+DHCRIT,ZI) + FRAC * DELZ
-      END IF
+         dhcrit = 0.0d0
+         xfinal = 0.0d0
+      end if
+      if( xtmp .lt. xfinal) then
+         center = hteff
+      else if( xtmp .ge. xmixed) then
+         center = zmidmx
+      else
+         delx = xmixed - xfinal
+         delz = zmidmx - min( hsp+dhcrit, zi)
+         frac = (xtmp-xfinal)/delx
+         center = min(hsp+dhcrit,zi) + frac * delz
+      end if
 
 !----    Determine if this is a surface layer release
-      IF( CENTER .LT. 0.1D0*ZI )THEN
-         SURFAC = .TRUE.
-      ELSE
-         SURFAC = .FALSE.
-      END IF
+      if( center .lt. 0.1d0*zi )then
+         surfac = .true.
+      else
+         surfac = .false.
+      end if
 
-   ELSE IF( UNSTAB .and. (HS .GE. ZI) )THEN
-      SURFAC = .FALSE.
-      CENTER = HSP
+   else if( unstab .and. (hs .ge. zi) )then
+      surfac = .false.
+      center = hsp
 ! ----   Account for distance-dependent CENTER and SURFAC
-      IF( CENTER .LT. 0.1D0*ZI )THEN
-         SURFAC = .TRUE.
-      ELSE
-         SURFAC = .FALSE.
-      END IF
-   ELSE
+      if( center .lt. 0.1d0*zi )then
+         surfac = .true.
+      else
+         surfac = .false.
+      end if
+   else
 !----    Assign centroid height to release height
-      CENTER = HSP
+      center = hsp
 ! ----   Account for distance-dependent CENTER and SURFAC
-      IF( CENTER .LT. 0.1D0*ZI )THEN
-         SURFAC = .TRUE.
-      ELSE
-         SURFAC = .FALSE.
-      END IF
+      if( center .lt. 0.1d0*zi )then
+         surfac = .true.
+      else
+         surfac = .false.
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
 
-SUBROUTINE REFL_HT (HEARG, XARG, SZBARG, VSIGZARG, HEREFL)
+subroutine refl_ht (hearg, xarg, szbarg, vsigzarg, herefl)
 !***********************************************************************
 !             REFL_HT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2180,106 +2180,106 @@ SUBROUTINE REFL_HT (HEARG, XARG, SZBARG, VSIGZARG, HEREFL)
 !
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   INTEGER :: NDXHE
-   DOUBLE PRECISION :: HEARG, HEREFL, XARG, SZBARG, VSIGZARG,&
-   &SVREFL, SWREFL, UREFL, TGREFL, PTREFL,&
-   &TTRAVL, BVFRQ, ZTMP, SZREFL, SZRF, SIGF, SZHSBL
+   use main1
+   implicit none
+   character modnam*12
+   integer :: ndxhe
+   double precision :: hearg, herefl, xarg, szbarg, vsigzarg,&
+   &svrefl, swrefl, urefl, tgrefl, ptrefl,&
+   &ttravl, bvfrq, ztmp, szrefl, szrf, sigf, szhsbl
 ! Unused:       DOUBLE PRECISION :: SVREFL2
 
 !     Variable Initializations
-   MODNAM = 'REFL_HT'
+   modnam = 'REFL_HT'
 
 !---- Compute the height of the "effective reflecting surface"
 !---- for stable plumes, HEREFL
 !---- First locate index below HEARG
-   CALL LOCATE(GRIDHT, 1, MXGLVL, HEARG, NDXHE)
+   call locate(gridht, 1, mxglvl, hearg, ndxhe)
 
-   IF (NDXHE .GE. 1) THEN
+   if (ndxhe .ge. 1) then
 
 !---- Sigma_V at HEARG
-      CALL GINTRP( GRIDHT(NDXHE), GRIDSV(NDXHE),&
-      &GRIDHT(NDXHE+1), GRIDSV(NDXHE+1),&
-      &HEARG, SVREFL )
+      call gintrp( gridht(ndxhe), gridsv(ndxhe),&
+      &gridht(ndxhe+1), gridsv(ndxhe+1),&
+      &hearg, svrefl )
 
 !---- Sigma_W at HEARG
-      CALL GINTRP( GRIDHT(NDXHE), GRIDSW(NDXHE),&
-      &GRIDHT(NDXHE+1), GRIDSW(NDXHE+1),&
-      &HEARG, SWREFL )
+      call gintrp( gridht(ndxhe), gridsw(ndxhe),&
+      &gridht(ndxhe+1), gridsw(ndxhe+1),&
+      &hearg, swrefl )
 
 !---- Wind speed at HEARG
-      CALL GINTRP( GRIDHT(NDXHE), GRIDWS(NDXHE),&
-      &GRIDHT(NDXHE+1), GRIDWS(NDXHE+1),&
-      &HEARG, UREFL )
+      call gintrp( gridht(ndxhe), gridws(ndxhe),&
+      &gridht(ndxhe+1), gridws(ndxhe+1),&
+      &hearg, urefl )
 
 !---- Temperature gradient at HEARG
-      CALL GINTRP( GRIDHT(NDXHE), GRIDTG(NDXHE),&
-      &GRIDHT(NDXHE+1), GRIDTG(NDXHE+1),&
-      &HEARG, TGREFL )
+      call gintrp( gridht(ndxhe), gridtg(ndxhe),&
+      &gridht(ndxhe+1), gridtg(ndxhe+1),&
+      &hearg, tgrefl )
 
 !---- Potential temperature at HEARG
-      CALL GINTRP( GRIDHT(NDXHE), GRIDPT(NDXHE),&
-      &GRIDHT(NDXHE+1), GRIDPT(NDXHE+1),&
-      &HEARG, PTREFL )
+      call gintrp( gridht(ndxhe), gridpt(ndxhe),&
+      &gridht(ndxhe+1), gridpt(ndxhe+1),&
+      &hearg, ptrefl )
 
-   ELSE
-      SVREFL = GRIDSV(1)
-      SWREFL = GRIDSW(1)
-      UREFL  = GRIDWS(1)
-      TGREFL = GRIDTG(1)
-      PTREFL = GRIDPT(1)
-   END IF
+   else
+      svrefl = gridsv(1)
+      swrefl = gridsw(1)
+      urefl  = gridws(1)
+      tgrefl = gridtg(1)
+      ptrefl = gridpt(1)
+   end if
 
 !---- Apply minimum wind speed and turbulence checks to values
 !     at HEARG
 !
-   SWREFL = MAX( SWREFL, SWMIN )
-   SVREFL = MAX( SVREFL, SVMIN, SVUMIN*UREFL )
-   IF( L_VECTORWS )THEN
-      UREFL  = DSQRT( UREFL*UREFL + 2.0D0*SVREFL*SVREFL )
-   ENDIF
-   UREFL  = MAX( UREFL, WSMIN )
+   swrefl = max( swrefl, swmin )
+   svrefl = max( svrefl, svmin, svumin*urefl )
+   if( l_vectorws )then
+      urefl  = dsqrt( urefl*urefl + 2.0d0*svrefl*svrefl )
+   endif
+   urefl  = max( urefl, wsmin )
 
 !     Compute surface sigma-z term for stable conditions
-   IF (STABLE) THEN
-      SZSURF = (RTOF2/RTOFPI) * USTAR * (XARG/UREFL) *&
-      &(1.0D0 + 0.7D0*XARG/OBULEN)**(-1.0D0*THIRD)
-   ELSE
-      SZSURF = 0.0D0
-   END IF
+   if (stable) then
+      szsurf = (rtof2/rtofpi) * ustar * (xarg/urefl) *&
+      &(1.0d0 + 0.7d0*xarg/obulen)**(-1.0d0*third)
+   else
+      szsurf = 0.0d0
+   end if
 
 !     Compute ambient sigma-z term at HEARG
-   TTRAVL = XARG / UREFL
+   ttravl = xarg / urefl
 !---- Apply Sigma-Z formulation from CTDMPLUS
 
-   BVFRQ = DSQRT( G * TGREFL / PTREFL )
-   IF(BVFRQ .LT. 1.0D-10) BVFRQ = 1.0D-10
+   bvfrq = dsqrt( g * tgrefl / ptrefl )
+   if(bvfrq .lt. 1.0d-10) bvfrq = 1.0d-10
 
 !     Set height for sigma-z calculation, ZTMP
-   ZTMP = MAX( HS, HEARG, 1.0D-4 )
-   SZREFL = SWREFL * TTRAVL /&
-   &DSQRT( 1.0D0 + SWREFL*TTRAVL * ( 1.0D0/(0.72D0*ZTMP) +&
-   &BVFRQ/(0.54D0*SWREFL) ) )
+   ztmp = max( hs, hearg, 1.0d-4 )
+   szrefl = swrefl * ttravl /&
+   &dsqrt( 1.0d0 + swrefl*ttravl * ( 1.0d0/(0.72d0*ztmp) +&
+   &bvfrq/(0.54d0*swrefl) ) )
 
-   IF (HEARG .GE. ZI) THEN
-      SZRF = SZREFL
-   ELSE
-      SIGF = MIN( HEARG/ZI, 1.0D0 )
-      SZRF = (1.0D0 - SIGF) * SZSURF + SIGF * SZREFL
-   END IF
+   if (hearg .ge. zi) then
+      szrf = szrefl
+   else
+      sigf = min( hearg/zi, 1.0d0 )
+      szrf = (1.0d0 - sigf) * szsurf + sigf * szrefl
+   end if
 
 !     Calculate sigma-z at plume height, SZHSBL
-   SZHSBL = DSQRT( SZBARG*SZBARG + SZRF*SZRF + VSIGZARG*VSIGZARG)
+   szhsbl = dsqrt( szbarg*szbarg + szrf*szrf + vsigzarg*vsigzarg)
 
 !     Compute height of effective reflecting surface, HEREFL
-   HEREFL = MAX( ZI, HEARG + 2.15D0*SZHSBL )
+   herefl = max( zi, hearg + 2.15d0*szhsbl )
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE PSRDEB
+subroutine psrdeb
 !***********************************************************************
 !             PSRDEB Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2302,36 +2302,36 @@ SUBROUTINE PSRDEB
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   character modnam*12
 
 !     Variable Initializations
-   MODNAM = 'PSRDEB'
+   modnam = 'PSRDEB'
 
-   WRITE (DBGUNT, 6130) KURDAT
+   write (dbgunt, 6130) kurdat
 
-   WRITE (DBGUNT, 6135) ISRC, QS, TS, VS, DS, FB, FM, HS, DHCRIT
-   WRITE (DBGUNT, 6140) HS, WDIR, US, UP, SVS, SWS, TGS
+   write (dbgunt, 6135) isrc, qs, ts, vs, ds, fb, fm, hs, dhcrit
+   write (dbgunt, 6140) hs, wdir, us, up, svs, sws, tgs
 
-6130 FORMAT(20('===='),//,' YR/MN/DY/HR:  ', I8,&
-   &//,8X,'<----------------- SOURCE INFORMATION ---------',&
+6130 format(20('===='),//,' YR/MN/DY/HR:  ', i8,&
+   &//,8x,'<----------------- SOURCE INFORMATION ---------',&
    &'------> FINAL PLUME',/,&
    &' SOURCE   QS    TS      VS     DS   BUOY FLUX  MOM FLUX  ',&
    &' HS      RISE',/,&
    &'   #    (G/S)   (K)    (M/S)   (M)   (M4/S3)    (M4/S2)  ',&
    &' (M)      (M)',/)
-6135 FORMAT(I4,F9.1,F7.1,F7.2,F7.2,F10.1,2X,F9.1,F6.1,F9.1,&
-   &//,2X,'VARIABLES AT ',T21,'HEIGHT   WDIR   ',&
+6135 format(i4,f9.1,f7.1,f7.2,f7.2,f10.1,2x,f9.1,f6.1,f9.1,&
+   &//,2x,'VARIABLES AT ',t21,'HEIGHT   WDIR   ',&
    &'USCAL  URISE  SIGV   SIGW   DTHDZ ',&
-   &/,2X,'STACK HEIGHT:',T21,&
+   &/,2x,'STACK HEIGHT:',t21,&
    &'  (M)    (DEG)  (M/S)  (M/S)  (M/S)  (M/S) (DEG/M)',/)
-6140 FORMAT(19X,F7.1,F7.0,F8.2,2F7.2,F7.2,F8.4,/)
+6140 format(19x,f7.1,f7.0,f8.2,2f7.2,f7.2,f8.4,/)
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE VCALC
+subroutine vcalc
 !***********************************************************************
 !        VCALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2384,247 +2384,247 @@ SUBROUTINE VCALC
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   INTEGER :: I
-   DOUBLE PRECISION :: AERPLM(NUMTYP), AERPAN(NUMTYP), FRAN
-   LOGICAL :: L_PLUME
+   use main1
+   implicit none
+   character modnam*12
+   integer :: i
+   double precision :: aerplm(numtyp), aerpan(numtyp), fran
+   logical :: l_plume
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   INTEGER :: KITER, NDXZMID, NDXZPL
-   INTEGER :: NDXBH
-   DOUBLE PRECISION :: HSPRIM, ZPLM, DHFOLD, SVPM, UPM, TGPM,&
-   &PTPM, PTP, ZMID, FRAN3, SWPM
-   DOUBLE PRECISION :: VALABV, VBELOW
+   integer :: kiter, ndxzmid, ndxzpl
+   integer :: ndxbh
+   double precision :: hsprim, zplm, dhfold, svpm, upm, tgpm,&
+   &ptpm, ptp, zmid, fran3, swpm
+   double precision :: valabv, vbelow
 !**  End Aircraft Plume Rise insert; April 2023
 
 !     Variable Initializations
-   MODNAM = 'VCALC'
-   WAKE = .FALSE.
+   modnam = 'VCALC'
+   wake = .false.
 
 !     Initialize __VAL arrays (1:NUMTYP)
-   HRVAL   = 0.0D0
-   AERVAL  = 0.0D0
-   AERPLM  = 0.0D0
-   AERPAN  = 0.0D0
-   PRMVAL  = 0.0D0
-   FRAN    = 0.0D0
-   FRAN3   = 0.0D0         ! Added for ARISE; UNC-IE
+   hrval   = 0.0d0
+   aerval  = 0.0d0
+   aerplm  = 0.0d0
+   aerpan  = 0.0d0
+   prmval  = 0.0d0
+   fran    = 0.0d0
+   fran3   = 0.0d0         ! Added for ARISE; UNC-IE
 
-   IF( ALLOCATED(CHI) ) CHI(:,ISRC,:) = 0.0D0
+   if( allocated(chi) ) chi(:,isrc,:) = 0.0d0
 
-   IF(GRSM)THEN
-      CHI_TTRAVPLM = 0.0D0
-      CHI_TTRAVPAN = 0.0D0
-      CHI_TTRAVAER = 0.0D0
-      CHI_TTRAVCHM(:,ISRC) = 0.0D0
-   END IF
+   if(grsm)then
+      chi_ttravplm = 0.0d0
+      chi_ttravpan = 0.0d0
+      chi_ttravaer = 0.0d0
+      chi_ttravchm(:,isrc) = 0.0d0
+   end if
 
 !     Set the Source Variables for This Source              ---   CALL SETSRC
-   CALL SETSRC
+   call setsrc
 
 !     Apply Variable Emission Rate Factors                  ---   CALL EMFACT
-   CALL EMFACT(QS)
+   call emfact(qs)
 
 !     Initialize 'ARC' Arrays for EVALFILE Output           ---   CALL EVLINI
-   IF (EVAL(ISRC)) THEN
-      CALL EVLINI
-   END IF
+   if (eval(isrc)) then
+      call evlini
+   end if
 
-   IF (QTK .NE. 0.0D0) THEN
+   if (qtk .ne. 0.0d0) then
 
 !        Set Mixing Height and Profiles for Urban Option if Needed
-      IF (URBSRC(ISRC) .EQ. 'Y') THEN
+      if (urbsrc(isrc) .eq. 'Y') then
 !           Find Urban Area Index for This Source
-         DO I = 1, NUMURB
-            IF (IURBGRP(ISRC,I) .EQ. 1) THEN
-               IURB = I
-               EXIT
-            END IF
-         END DO
-         IF (STABLE .or. L_MorningTrans(IURB)) THEN
-            URBSTAB = .TRUE.
-            ZI = MAX( ZIURB(IURB), ZIMECH )
-            GRIDSV = GRDSVU(1:MXGLVL,IURB)
-            GRIDSW = GRDSWU(1:MXGLVL,IURB)
-            GRIDTG = GRDTGU(1:MXGLVL,IURB)
-            GRIDPT = GRDPTU(1:MXGLVL,IURB)
-            OBULEN = URBOBULEN(IURB)
-            USTAR  = URBUSTR(IURB)
-         ELSE
-            URBSTAB = .FALSE.
-            ZI = ZIRUR
-            GRIDSV = GRDSVR
-            GRIDSW = GRDSWR
-            GRIDTG = GRDTGR
-            GRIDPT = GRDPTR
-            OBULEN = RUROBULEN
-            USTAR  = RURUSTR
-         END IF
-      ELSE IF (URBAN .and. URBSRC(ISRC) .EQ. 'N') THEN
-         URBSTAB = .FALSE.
-         ZI = ZIRUR
-         GRIDSV = GRDSVR
-         GRIDSW = GRDSWR
-         GRIDTG = GRDTGR
-         GRIDPT = GRDPTR
-         OBULEN = RUROBULEN
-         USTAR  = RURUSTR
-      ELSE
+         do i = 1, numurb
+            if (iurbgrp(isrc,i) .eq. 1) then
+               iurb = i
+               exit
+            end if
+         end do
+         if (stable .or. L_MorningTrans(iurb)) then
+            urbstab = .true.
+            zi = max( ziurb(iurb), zimech )
+            gridsv = grdsvu(1:mxglvl,iurb)
+            gridsw = grdswu(1:mxglvl,iurb)
+            gridtg = grdtgu(1:mxglvl,iurb)
+            gridpt = grdptu(1:mxglvl,iurb)
+            obulen = urbobulen(iurb)
+            ustar  = urbustr(iurb)
+         else
+            urbstab = .false.
+            zi = zirur
+            gridsv = grdsvr
+            gridsw = grdswr
+            gridtg = grdtgr
+            gridpt = grdptr
+            obulen = rurobulen
+            ustar  = rurustr
+         end if
+      else if (urban .and. urbsrc(isrc) .eq. 'N') then
+         urbstab = .false.
+         zi = zirur
+         gridsv = grdsvr
+         gridsw = grdswr
+         gridtg = grdtgr
+         gridpt = grdptr
+         obulen = rurobulen
+         ustar  = rurustr
+      else
 ! ---       Rural
-         URBSTAB = .FALSE.
-      END IF
+         urbstab = .false.
+      end if
 
 !        Initialize meteorological variables                ---   CALL METINI
-      CALL METINI
+      call metini
 
 !        Save WDSIN and WSCOS for later use by PVMRM/GRSM option
-      AWDSIN(ISRC) = WDSIN
-      AWDCOS(ISRC) = WDCOS
-      AAFV(ISRC)   = AFV
+      awdsin(isrc) = wdsin
+      awdcos(isrc) = wdcos
+      aafv(isrc)   = afv
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-      IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+      if (aftsrc(isrc) .eq. 'Y') then
 !        Find Aircraft Index for This Source
 
-         FM  = 0.0D0                                       ! Momentum Flux
-         HSP = HS
+         fm  = 0.0d0                                       ! Momentum Flux
+         hsp = hs
 
 !         Calculate Buoyancy Flux                            ---   CALL AFLUXES
-         CALL AFLUXES
+         call afluxes
 
 !         Define temporary values of CENTER and SURFAC based on HS
-         CENTER = HS
-         IF( CENTER .LT. 0.1D0*ZI )THEN
-            SURFAC = .TRUE.
-         ELSE
-            SURFAC = .FALSE.
-         END IF
+         center = hs
+         if( center .lt. 0.1d0*zi )then
+            surfac = .true.
+         else
+            surfac = .false.
+         end if
 
 !         Calculate Distance to Final Rise                   ---   CALL ADISTF
-         CALL ADISTF
+         call adistf
 
 !         Calculate the plume penetration factor             ---   CALL PENFCT
-         CALL PENFCT
+         call penfct
 
-         IF(ARCFTDEBUG) THEN
+         if(arcftdebug) then
 !            WRITE(ARCFTDBG,*) '========================================'
 !            WRITE(ARCFTDBG,*) ' VCALC: YYMMDDHH ',KURDAT,
 !     &                        '  Source  ',srcid(isrc)
-            WRITE(ARCFTDBG,6000) DHFAER, UP, TGS
-6000        FORMAT(/,5X,'INITIAL PLUME RISE ESTIMATE:  DELH = ',&
-            &F6.1,' M; Uplume = ',F5.2,' M/S; DTHDZ = ',&
-            &F7.4,' DEG K/M')
-         END IF
+            write(arcftdbg,6000) dhfaer, up, tgs
+6000        format(/,5x,'INITIAL PLUME RISE ESTIMATE:  DELH = ',&
+            &f6.1,' M; Uplume = ',f5.2,' M/S; DTHDZ = ',&
+            &f7.4,' DEG K/M')
+         end if
 
-         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+         if (stable .or. (unstab.and.(hs.ge.zi))) then
 !            Use iterative approach to stable plume rise calculations
-            KITER = 0
-50          ZPLM = HSP + 0.5D0 * DHFAER
-            DHFOLD = DHFAER
+            kiter = 0
+50          zplm = hsp + 0.5d0 * dhfaer
+            dhfold = dhfaer
 
 !----        Locate index below ZPLM
 
-            CALL LOCATE(GRIDHT, 1, MXGLVL, ZPLM, NDXZPL)
+            call locate(gridht, 1, mxglvl, zplm, ndxzpl)
 
 !----        Get Wind speed at ZPLM; replace UP.  Also, replace SVP,SWP,TGP,
 !            vertical potential temperature gradient, if stable.
 
-            CALL GINTRP( GRIDHT(NDXZPL), GRIDSV(NDXZPL),&
-            &GRIDHT(NDXZPL+1), GRIDSV(NDXZPL+1), ZPLM, SVPM )
-            CALL GINTRP( GRIDHT(NDXZPL), GRIDSW(NDXZPL),&
-            &GRIDHT(NDXZPL+1), GRIDSW(NDXZPL+1),&
-            &ZPLM, SWPM )
-            CALL GINTRP( GRIDHT(NDXZPL), GRIDWS(NDXZPL),&
-            &GRIDHT(NDXZPL+1), GRIDWS(NDXZPL+1), ZPLM, UPM )
+            call gintrp( gridht(ndxzpl), gridsv(ndxzpl),&
+            &gridht(ndxzpl+1), gridsv(ndxzpl+1), zplm, svpm )
+            call gintrp( gridht(ndxzpl), gridsw(ndxzpl),&
+            &gridht(ndxzpl+1), gridsw(ndxzpl+1),&
+            &zplm, swpm )
+            call gintrp( gridht(ndxzpl), gridws(ndxzpl),&
+            &gridht(ndxzpl+1), gridws(ndxzpl+1), zplm, upm )
 
-            SVPM = MAX( SVPM, SVMIN, SVUMIN*UPM )
-            SWPM = MAX( SWPM, SWMIN )
+            svpm = max( svpm, svmin, svumin*upm )
+            swpm = max( swpm, swmin )
 
-            IF( L_VECTORWS )THEN
-               UPM = DSQRT( UPM*UPM + 2.0D0*SVPM*SVPM )
-            ENDIF
+            if( l_vectorws )then
+               upm = dsqrt( upm*upm + 2.0d0*svpm*svpm )
+            endif
 
-            UPM  = MAX( UPM, WSMIN )
+            upm  = max( upm, wsmin )
 
 !RWB         Use average of stack top and midpoint wind speeds and others.
-            UP = 0.5D0 * (US + UPM)
-            SVP = 0.5D0 * (SVS + SVPM)
-            SWP = 0.5D0 * (SWS + SWPM)
+            up = 0.5d0 * (us + upm)
+            svp = 0.5d0 * (svs + svpm)
+            swp = 0.5d0 * (sws + swpm)
 
-            CALL GINTRP( GRIDHT(NDXZPL), GRIDTG(NDXZPL),&
-            &GRIDHT(NDXZPL+1), GRIDTG(NDXZPL+1), ZPLM, TGPM )
-            CALL GINTRP( GRIDHT(NDXZPL), GRIDPT(NDXZPL),&
-            &GRIDHT(NDXZPL+1), GRIDPT(NDXZPL+1), ZPLM, PTPM )
+            call gintrp( gridht(ndxzpl), gridtg(ndxzpl),&
+            &gridht(ndxzpl+1), gridtg(ndxzpl+1), zplm, tgpm )
+            call gintrp( gridht(ndxzpl), gridpt(ndxzpl),&
+            &gridht(ndxzpl+1), gridpt(ndxzpl+1), zplm, ptpm )
 !RWB         Use average of stack top and midpoint temperature gradients.
-            TGP = 0.5D0 * (TGS + TGPM)
-            PTP = 0.5D0 * (PTS + PTPM)
-            BVF = DSQRT( G * TGP / PTP )
-            IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
-            BVPRIM  = 0.7D0 * BVF
+            tgp = 0.5d0 * (tgs + tgpm)
+            ptp = 0.5d0 * (pts + ptpm)
+            bvf = dsqrt( g * tgp / ptp )
+            if(bvf .lt. 1.0d-10) bvf = 1.0d-10
+            bvprim  = 0.7d0 * bvf
 
 !           Calculate Distance to Final Rise                   ---   CALL ADISTF
-            CALL ADISTF
+            call adistf
 
-            KITER = KITER + 1
+            kiter = kiter + 1
 
 !RJP         Add temporary debugging statements
 
-            IF(ARCFTDEBUG) THEN
-               WRITE(ARCFTDBG,6001) KITER,DHFOLD, DHFAER, ZPLM, UP,TGP
-6001           FORMAT(/,5X,'OPTH2 ITER. #',I1,': OLD DELH = ',&
-               &F6.1,' M; NEW DELH = ',F6.1,' M; MET LEVEL = ',&
-               &F6.1,' M; NEW Upl = ',F5.2,' M/S; NEW DTHDZ = ',&
-               &F7.4,' K/M')
-            END IF
+            if(arcftdebug) then
+               write(arcftdbg,6001) kiter,dhfold, dhfaer, zplm, up,tgp
+6001           format(/,5x,'OPTH2 ITER. #',i1,': OLD DELH = ',&
+               &f6.1,' M; NEW DELH = ',f6.1,' M; MET LEVEL = ',&
+               &f6.1,' M; NEW Upl = ',f5.2,' M/S; NEW DTHDZ = ',&
+               &f7.4,' K/M')
+            end if
 
 !            Check for convergence
-            IF(DABS((DHFOLD - DHFAER)/DHFAER) .LT. 0.01D0) GO TO 60
+            if(dabs((dhfold - dhfaer)/dhfaer) .lt. 0.01d0) go to 60
 
-            IF(KITER .GE. 5) THEN
-               DHFAER = 0.5D0 * (DHFAER + DHFOLD)
-               IF(ARCFTDEBUG) WRITE(ARCFTDBG,6002) DHFAER
-6002           FORMAT(/,5X,'PLUME RISE ITERATION FAILED TO CONVERGE; ',&
-               &' PLUME RISE SET AT ',F6.1,' METERS.',/)
-               GO TO 60
-            ELSE
-               GO TO 50
-            END IF
+            if(kiter .ge. 5) then
+               dhfaer = 0.5d0 * (dhfaer + dhfold)
+               if(arcftdebug) write(arcftdbg,6002) dhfaer
+6002           format(/,5x,'PLUME RISE ITERATION FAILED TO CONVERGE; ',&
+               &' PLUME RISE SET AT ',f6.1,' METERS.',/)
+               go to 60
+            else
+               go to 50
+            end if
 
-60          CONTINUE
+60          continue
 
 !RWB         After completing iteration, reset UP, SVP, SWP, and TGP to stack top
 !RWB         values for subsequent distance-dependent plume rise calcs.
-            UP = US
-            SVP = SVS
-            SWP = SWS
-            TGP = TGS
-            PTP = PTS
-            BVF = DSQRT( G * TGP / PTP )
-            IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
-            BVPRIM  = 0.7D0 * BVF
-         END IF
+            up = us
+            svp = svs
+            swp = sws
+            tgp = tgs
+            ptp = pts
+            bvf = dsqrt( g * tgp / ptp )
+            if(bvf .lt. 1.0d-10) bvf = 1.0d-10
+            bvprim  = 0.7d0 * bvf
+         end if
 
 !         Initialize PRM_FSTREC Logical Switch for First Receptor of Loop;
-         PRM_FSTREC = .TRUE.
+         prm_fstrec = .true.
 
 !         Initialize 'ARC' Arrays for EVALFILE Output        ---   CALL EVLINI
-         IF (EVAL(ISRC)) THEN
-            CALL EVLINI
-         END IF
+         if (eval(isrc)) then
+            call evlini
+         end if
 
-         ZMIDMX = 0.5D0 * ZI
+         zmidmx = 0.5d0 * zi
 
 !RJP      Add temporary debugging statement.
 
-         IF(ARCFTDEBUG) THEN
-            WRITE(ARCFTDBG,6010) KURDAT, ZMIDMX
-6010        FORMAT(/,72('*'),//,5X,'YR/MN/DY/HR: ',I8,//,&
-            &5X,'Height assigned to midpoint of ',&
+         if(arcftdebug) then
+            write(arcftdbg,6010) kurdat, zmidmx
+6010        format(/,72('*'),//,5x,'YR/MN/DY/HR: ',i8,//,&
+            &5x,'Height assigned to midpoint of ',&
             &'well-mixed layer for effective parameters = ',&
-            &F6.1,' meters.',/)
-         END IF
+            &f6.1,' meters.',/)
+         end if
 !RJP
 !RJP      Calculate distance to uniformly mixed plume within the
 !RJP      boundary layer (XMIXED) after Turner's Workbook (1970), page 7:
@@ -2636,509 +2636,509 @@ SUBROUTINE VCALC
 !RJP      First, get refined estimate of final rise and distance to final
 !RJP      rise if downwash conditions prevail.
 !RJP
-         XFINAL = XMAX
-         DHCRIT = DHFAER
-         XMIXED = ZI * UAVG / SWAVG
-         IF (UNSTAB .and. HS.LT.ZI) THEN
+         xfinal = xmax
+         dhcrit = dhfaer
+         xmixed = zi * uavg / swavg
+         if (unstab .and. hs.lt.zi) then
 !            Check for XMIXED smaller than 1.25*XFINAL
-            IF (XMIXED .LT. 1.25D0*XFINAL) THEN
-               XFINAL = 0.8D0 * XMIXED
-               CALL ACBLPRD (XFINAL)
-               DHCRIT = DHP1
-            END IF
-         END IF
+            if (xmixed .lt. 1.25d0*xfinal) then
+               xfinal = 0.8d0 * xmixed
+               call acblprd (xfinal)
+               dhcrit = dhp1
+            end if
+         end if
 
-      ELSE
+      else
 !**  End Aircraft Plume Rise insert; April 2023
 
 !        Initialize miscellaneous variables
-         FB  = 0.0D0
-         FM  = 0.0D0
-         PPF = 0.0D0
-         HSP = HS
-         DHP  = 0.0D0
-         DHP1 = 0.0D0
-         DHP2 = 0.0D0
-         DHP3 = 0.0D0
-         DHCRIT = 0.0D0
-         XFINAL = 0.0D0
-         XMIXED = ZI * UAVG / SWAVG
-         IF(XMIXED .LT. XFINAL) XMIXED = XFINAL
-         ZMIDMX = 0.5D0 * ZI
+         fb  = 0.0d0
+         fm  = 0.0d0
+         ppf = 0.0d0
+         hsp = hs
+         dhp  = 0.0d0
+         dhp1 = 0.0d0
+         dhp2 = 0.0d0
+         dhp3 = 0.0d0
+         dhcrit = 0.0d0
+         xfinal = 0.0d0
+         xmixed = zi * uavg / swavg
+         if(xmixed .lt. xfinal) xmixed = xfinal
+         zmidmx = 0.5d0 * zi
 
 !        Calculate Effective Radius
-         XRAD = 2.15D0*SYINIT
-      END IF                    ! Added for Aircraft; UNC-IE
+         xrad = 2.15d0*syinit
+      end if                    ! Added for Aircraft; UNC-IE
 
 ! ---    Initialize PDF parameters for use in calculating ZSUBP
-      IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-         CALL PDF
-      END IF
+      if( unstab  .and.  (hs .lt. zi) ) then
+         call pdf
+      end if
 !        Set Dry Deposition Variables for this Source
-      IF (LUSERVD .and. LDGAS .and. NPD.EQ.0) THEN
+      if (luservd .and. ldgas .and. npd.eq.0) then
 !           Assign user-specified gas dry deposition velocity (GASDEPVD option)
-         VDEPG = USERVD
-      ELSE IF (LDPART .or. (.NOT.LUSERVD .and. LDGAS .and.&
-      &NPD.EQ.0)) THEN
+         vdepg = uservd
+      else if (ldpart .or. (.not.luservd .and. ldgas .and.&
+      &npd.eq.0)) then
 !           Calculate Deposition Velocities for this Source    ---   CALL VDP
-         CALL VDP
-      END IF
-      IF (LWPART .or. LWGAS) THEN
+         call vdp
+      end if
+      if (lwpart .or. lwgas) then
 !PES        Set value of ZSUBP = MAX( ZI, TOP OF PLUME ), where
 !PES        TOP OF PLUME is defined as plume height (HE) plus 2.15*SZ,
 !PES        evaluated at a distance of 20 kilometers downwind.
 !PES        Apply minimum value of 500m and maximum value of 10,000m.
-         CALL HEFF (20000.0D0)
-         IF( STABLE .or. (UNSTAB .and. HS .GE. ZI) )THEN
+         call heff (20000.0d0)
+         if( stable .or. (unstab .and. hs .ge. zi) )then
 !**  Added for Aircraft Plume Rise; UNC-IE
-            IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-               HE = HSP + DHCRIT
-               CALL SIGZ(20000.0D0)
-               ZSUBP = MAX( 500.0D0, ZI, HE + SZCOEF*SZAS )
-            ELSE
+            if (aftsrc(isrc) .eq. 'Y') then
+               he = hsp + dhcrit
+               call sigz(20000.0d0)
+               zsubp = max( 500.0d0, zi, he + szcoef*szas )
+            else
 !**  End Aircraft Plume Rise insert; April 2023
-               CALL SIGZ(20000.0D0)
-               ZSUBP = MAX( 500.0D0, ZI, HS + SZCOEF*SZAS )
-            END IF               ! Added for ARISE; UNC-IE
-         ELSE IF (UNSTAB) THEN
+               call sigz(20000.0d0)
+               zsubp = max( 500.0d0, zi, hs + szcoef*szas )
+            end if               ! Added for ARISE; UNC-IE
+         else if (unstab) then
 !**  Added for Aircraft Plume Rise; UNC-IE
-            IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-               HED1 = HSP + DHCRIT
-               IF (PPF .GT. 0.0D0) THEN
-                  CALL ACBLPR3
-               END IF
-               CALL SIGZ(20000.0D0)
+            if (aftsrc(isrc) .eq. 'Y') then
+               hed1 = hsp + dhcrit
+               if (ppf .gt. 0.0d0) then
+                  call acblpr3
+               end if
+               call sigz(20000.0d0)
 
-               IF (PPF .EQ. 0.0D0) THEN
-                  ZSUBP=MAX( 500.0D0, ZI, HED1 + SZCOEF*(SZAD1+SZAD2)/&
-                  &2.0D0 )
-               ELSE IF (PPF .EQ. 1.0D0) THEN
-                  ZSUBP=MAX( 500.0D0, ZI, HE3 + SZCOEF*SZA3)
-               ELSE
-                  ZSUBP=MAX( 500.0D0, ZI, PPF*(HE3+SZCOEF*SZA3) +&
-                  &(1.0D0-PPF)*(HED1 + SZCOEF*(SZAD1+SZAD2)/2.0D0) )
-               END IF
-            ELSE
+               if (ppf .eq. 0.0d0) then
+                  zsubp=max( 500.0d0, zi, hed1 + szcoef*(szad1+szad2)/&
+                  &2.0d0 )
+               else if (ppf .eq. 1.0d0) then
+                  zsubp=max( 500.0d0, zi, he3 + szcoef*sza3)
+               else
+                  zsubp=max( 500.0d0, zi, ppf*(he3+szcoef*sza3) +&
+                  &(1.0d0-ppf)*(hed1 + szcoef*(szad1+szad2)/2.0d0) )
+               end if
+            else
 !**  End Aircraft Plume Rise insert; April 2023
-               CALL SIGZ(20000.0D0)
-               ZSUBP = MAX( 500.0D0, ZI, HS +&
-               &SZCOEF*(SZAD1+SZAD2)/2.0D0 )
-            END IF               ! Added for ARISE; UNC-IE
-         END IF
-         ZSUBP = MIN( 10000.0D0, ZSUBP )
+               call sigz(20000.0d0)
+               zsubp = max( 500.0d0, zi, hs +&
+               &szcoef*(szad1+szad2)/2.0d0 )
+            end if               ! Added for ARISE; UNC-IE
+         end if
+         zsubp = min( 10000.0d0, zsubp )
 !           Calculate Scavenging Ratios for this Source           ---   CALL SCAVRAT
-         CALL SCAVRAT
-      END IF
+         call scavrat
+      end if
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-      IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+      if (aftsrc(isrc) .eq. 'Y') then
 !RWB     Determine transport wind direction using midpoint between
 !RWB     stack height and "final" plume height.  R. Brode, PES, 1/22/98
 !----    Define ZMID=midpoint between stack height and "final" plume height
-         ZMID = MIN( 4000.0D0, (HS + 0.5D0*DHFAER) )
+         zmid = min( 4000.0d0, (hs + 0.5d0*dhfaer) )
 
 !----    Locate index below ZMID
-         CALL LOCATE(GRIDHT, 1, MXGLVL, ZMID, NDXZMID)
+         call locate(gridht, 1, mxglvl, zmid, ndxzmid)
 
 !----    Extract WD for grid levels above and below ZMID
-         VALABV = GRIDWD(NDXZMID+1)
-         VBELOW = GRIDWD(NDXZMID)
+         valabv = gridwd(ndxzmid+1)
+         vbelow = gridwd(ndxzmid)
 
 !----    Check for 360 crossover and adjust if necessary
-         IF( (VALABV-VBELOW) .LT. -180.0D0) THEN
-            VALABV = VALABV + 360.0D0
-         ELSE IF( (VALABV-VBELOW) .GT. 180.0D0) THEN
-            VALABV = VALABV - 360.0D0
-         END IF
+         if( (valabv-vbelow) .lt. -180.0d0) then
+            valabv = valabv + 360.0d0
+         else if( (valabv-vbelow) .gt. 180.0d0) then
+            valabv = valabv - 360.0d0
+         end if
 
 !----    Assign Wind direction
-         IF (VBELOW .EQ. VALABV) THEN
-            WDIR = VBELOW
-         ELSE
+         if (vbelow .eq. valabv) then
+            wdir = vbelow
+         else
 !----       Interpolate to ZMID
-            CALL GINTRP( GRIDHT(NDXZMID), VBELOW,&
-            &GRIDHT(NDXZMID+1), VALABV,&
-            &ZMID, WDIR )
-         END IF
+            call gintrp( gridht(ndxzmid), vbelow,&
+            &gridht(ndxzmid+1), valabv,&
+            &zmid, wdir )
+         end if
 
 !        Check for WDIR > 360 or < 0
-         IF (WDIR .GT. 360.0D0) THEN
-            WDIR = WDIR - 360.0D0
-         ELSE IF (WDIR .LE. 0.0D0) THEN
-            WDIR = WDIR + 360.0D0
-         END IF
+         if (wdir .gt. 360.0d0) then
+            wdir = wdir - 360.0d0
+         else if (wdir .le. 0.0d0) then
+            wdir = wdir + 360.0d0
+         end if
 !
 !----    Convert direction to radians, compute sine and cosine of direction,
 !        and determine nearest 10-degree sector.
 !
 !---->   wind direction = wind direction in degrees * DTORAD
 
-         WDSIN = DSIN(WDIR * DTORAD)
-         WDCOS = DCOS(WDIR * DTORAD)
+         wdsin = dsin(wdir * dtorad)
+         wdcos = dcos(wdir * dtorad)
 
 ! ---    Save WDSIN and WSCOS for later use by PVMRM/GRSM option
-         AWDSIN(ISRC) = WDSIN
-         AWDCOS(ISRC) = WDCOS
+         awdsin(isrc) = wdsin
+         awdcos(isrc) = wdcos
 
-         AFV = WDIR - 180.0D0
-         IF (AFV .LT. 0.0D0) THEN
-            AFV = AFV + 360.0D0
-         END IF
-         AAFV(ISRC) = AFV       ! save flowvector for this source
+         afv = wdir - 180.0d0
+         if (afv .lt. 0.0d0) then
+            afv = afv + 360.0d0
+         end if
+         aafv(isrc) = afv       ! save flowvector for this source
          ! for use in MAXDCONT processing
-         IFVSEC = IDINT (AFV*0.10D0 + 0.4999D0)
-         IF (IFVSEC .EQ. 0) IFVSEC = 36
+         ifvsec = idint (afv*0.10d0 + 0.4999d0)
+         if (ifvsec .eq. 0) ifvsec = 36
 
 !RJP     Add temporary debugging statement.
 
-         IF(ARCFTDEBUG) THEN
+         if(arcftdebug) then
 ! ---       Include "effective" wind direction here
-            WRITE(ARCFTDBG, 6011) DHCRIT, XFINAL, XMIXED, AFV
-6011        FORMAT(5X,'For effective parameter calculations: ',&
-            &'"Final" plume rise = ',G14.6, ' m; Distance to final ',&
-            &'rise = ',G14.6,' m',/,5x,'Distance to well-mixed ',&
-            &'state = ',G14.6,' m;',/,5x,'"Effective" flow vector = ',&
-            &F6.2)
+            write(arcftdbg, 6011) dhcrit, xfinal, xmixed, afv
+6011        format(5x,'For effective parameter calculations: ',&
+            &'"Final" plume rise = ',g14.6, ' m; Distance to final ',&
+            &'rise = ',g14.6,' m',/,5x,'Distance to well-mixed ',&
+            &'state = ',g14.6,' m;',/,5x,'"Effective" flow vector = ',&
+            &f6.2)
 
-         END IF
+         end if
 
-      END IF
+      end if
 !**  End Aircraft Plume Rise insert; April 2023
 
 !        Begin Receptor LOOP
-      RECEPTOR_LOOP: DO IREC = 1, NUMREC
+      receptor_loop: do irec = 1, numrec
 !           Calculate Down and Crosswind Distances          ---   CALL XYDIST
-         IF (EVONLY) THEN
-            CALL XYDIST(IEVENT)
-         ELSE
-            CALL XYDIST(IREC)
-         END IF
+         if (evonly) then
+            call xydist(ievent)
+         else
+            call xydist(irec)
+         end if
 
 ! ---       First check for receptor exceeding minimum distance (1m) or
 !           maximum distance (80km for FASTALL or 1.0D20 otherwise).
-         IF( DISTR.LT.(XRAD+0.99D0) .or. (DISTR.GT.MAXDIST) )THEN
+         if( distr.lt.(xrad+0.99d0) .or. (distr.gt.maxdist) )then
 !              Receptor too close to source for calculation or
 !              receptor is beyond the maximum distance from source.
-            HRVAL(:)  = 0.0D0
-            AERPLM(:) = 0.0D0
-            AERPAN(:) = 0.0D0
-            IF (PVMRM .or. OLM .or. ARM2&
-            &.or. RUNTTRM .or. GRSM) THEN
+            hrval(:)  = 0.0d0
+            aerplm(:) = 0.0d0
+            aerpan(:) = 0.0d0
+            if (pvmrm .or. olm .or. arm2&
+            &.or. runttrm .or. grsm) then
 ! ---             Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                 cycling to the next receptor to avoid
 !                 persisting value from previous hour.
-               CHI(IREC,ISRC,:) = 0.0D0
-               IF(GRSM)THEN
-                  CHI_TTRAVPLM = 0.0D0
-                  CHI_TTRAVPAN = 0.0D0
-                  CHI_TTRAVAER = 0.0D0
-                  CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
-               END IF
-               IF (PVMRM .or. GRSM) THEN
-                  HECNTR(IREC,ISRC)  = 0.0D0
-                  UEFFS(IREC,ISRC)   = 0.0D0
-                  EPSEF(IREC,ISRC)   = 0.0D0
-                  PPFACT(IREC,ISRC)  = 0.0D0
-                  HECNTR3(IREC,ISRC) = 0.0D0
-                  UEFF3S(IREC,ISRC)  = 0.0D0
-                  EPSEF3(IREC,ISRC)  = 0.0D0
-                  FOPTS(IREC,ISRC)   = 0.0D0
-               END IF
-            END IF
+               chi(irec,isrc,:) = 0.0d0
+               if(grsm)then
+                  chi_ttravplm = 0.0d0
+                  chi_ttravpan = 0.0d0
+                  chi_ttravaer = 0.0d0
+                  chi_ttravchm(irec,isrc) = 0.0d0
+               end if
+               if (pvmrm .or. grsm) then
+                  hecntr(irec,isrc)  = 0.0d0
+                  ueffs(irec,isrc)   = 0.0d0
+                  epsef(irec,isrc)   = 0.0d0
+                  ppfact(irec,isrc)  = 0.0d0
+                  hecntr3(irec,isrc) = 0.0d0
+                  ueff3s(irec,isrc)  = 0.0d0
+                  epsef3(irec,isrc)  = 0.0d0
+                  fopts(irec,isrc)   = 0.0d0
+               end if
+            end if
 ! ---          Cycle to next receptor
-            CYCLE RECEPTOR_LOOP
-         END IF
+            cycle receptor_loop
+         end if
 
 ! ---       Calculate coherent plume component using downwind distance, X
-         L_PLUME = .TRUE.
+         l_plume = .true.
 
 ! ---       Assign XDIST for use in dry depletion (FUNCTION F2INT)
-         XDIST = X
+         xdist = x
 
 ! ---       Start with coherent plume component, but check for X < 1m
-         IF( X .LT. 1.0D0 )THEN
+         if( x .lt. 1.0d0 )then
 !              Receptor is upwind of source; set AERPLM = 0.0 and skip
 !              the call to VOLCALC
-            AERPLM = 0.0D0
+            aerplm = 0.0d0
 !              CERC 11/30/20 Also set conc*travel time to zero
-            IF(GRSM)THEN
-               CHI_TTRAVPLM=0.0D0
-            END IF
-         ELSE
+            if(grsm)then
+               chi_ttravplm=0.0d0
+            end if
+         else
 ! ---          Receptor is downwind of source; call VOLCALC to get AERPLM
-            CALL VOLCALC( X, L_PLUME, AERPLM )
+            call volcalc( x, l_plume, aerplm )
 
 ! ---          CERC 11/30/20 Calculate the conc*travel time for the Gaussian plume
-            IF(GRSM)THEN
-               IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-                  UCHM=UEFF
-               ELSE
-                  UCHM=UEFFD
-               END IF
-               IF (UCHM/=0) THEN
-                  CHI_TTRAVPLM=MAX(0.0D0,AERPLM(1)*X/UCHM) !Don't allow negative conc*travel times
-               ELSE
+            if(grsm)then
+               if (stable .or. (unstab.and.(hs.ge.zi))) then
+                  uchm=ueff
+               else
+                  uchm=ueffd
+               end if
+               if (uchm/=0) then
+                  chi_ttravplm=max(0.0d0,aerplm(1)*x/uchm) !Don't allow negative conc*travel times
+               else
                   !Error - no travel time if UEFF is zero
-                  CALL ERRHDL(PATH, MODNAM, 'E','601','GRSM')
-                  RUNERR=.TRUE.
-                  RETURN
-               END IF
-            END IF
-         END IF
+                  call errhdl(path, modnam, 'E','601','GRSM')
+                  runerr=.true.
+                  return
+               end if
+            end if
+         end if
 
 ! ---       Next determine "random/pancake" component of plume
-         IF (L_EFFSIGY) THEN
+         if (l_effsigy) then
 ! ---          No "pancake" calculation for non-DFAULT FASTALL option (L_EFFSIGY)
-            HRVAL  = AERPLM
-            AERPAN = 0.0D0
-            FRAN   = 0.0D0
+            hrval  = aerplm
+            aerpan = 0.0d0
+            fran   = 0.0d0
 !              CERC 11/30/20 Also set conc*travel time for GRSM to zero
-            IF(GRSM)THEN
-               CHI_TTRAVPAN=0.0D0
-            END IF
+            if(grsm)then
+               chi_ttravpan=0.0d0
+            end if
 
-         ELSE
+         else
 
 ! ---          Next calculate random "pancake" component using radial distance
-            L_PLUME = .FALSE.
+            l_plume = .false.
 ! ---          Assign XDIST based on radial distance for use in dry depletion (FUNCTION F2INT)
-            XDIST = DISTR
-            CALL VOLCALC( DISTR, L_PLUME, AERPAN )
+            xdist = distr
+            call volcalc( distr, l_plume, aerpan )
 ! ---          CERC 11/30/20 Calculate the conc*travel time for the Gaussian plume
-            IF(GRSM)THEN
-               IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-                  UCHM=UEFF
-               ELSE
-                  UCHM=UEFFD
-               END IF
-               IF (UCHM/=0) THEN
-                  CHI_TTRAVPAN=MAX(0.0D0,AERPAN(1)*XDIST/UCHM) !Don't allow negative conc*travel times
-               ELSE
+            if(grsm)then
+               if (stable .or. (unstab.and.(hs.ge.zi))) then
+                  uchm=ueff
+               else
+                  uchm=ueffd
+               end if
+               if (uchm/=0) then
+                  chi_ttravpan=max(0.0d0,aerpan(1)*xdist/uchm) !Don't allow negative conc*travel times
+               else
                   !Error - no travel time if UEFF is zero
-                  CALL ERRHDL(PATH, MODNAM, 'E','601','GRSM')
-                  RUNERR=.TRUE.
-                  RETURN
-               END IF
-            END IF
+                  call errhdl(path, modnam, 'E','601','GRSM')
+                  runerr=.true.
+                  return
+               end if
+            end if
 
 ! ---          Calculate fraction of random kinetic energy to total kinetic energy.
 !              Note that these effective parameters are based on the radial dist.
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-               CALL MEANDR( UEFF, SVEFF, FRAN )
-            ELSE IF (UNSTAB) THEN
-               CALL MEANDR( UEFFD, SVEFFD, FRAN )
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
+               call meandr( ueff, sveff, fran )
+            else if (unstab) then
+               call meandr( ueffd, sveffd, fran )
 !**   Added for Aircraft Plume Rise; UNC-IE
-               IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-                  IF (PPF .GT. 0.0D0) THEN
+               if (aftsrc(isrc) .eq. 'Y') then
+                  if (ppf .gt. 0.0d0) then
 !                    For penetrated source calculate weighted average of
 !                    direct/indirect plume component and penetrated component
-                     CALL MEANDR( UEFF3, SVEFF3, FRAN3 )
-                     FRAN = PPF*FRAN3 + (1.0D0-PPF)*FRAN
-                  END IF
-               END IF
+                     call meandr( ueff3, sveff3, fran3 )
+                     fran = ppf*fran3 + (1.0d0-ppf)*fran
+                  end if
+               end if
 !**   End Aircraft Plume Rise insert; April 2023
-            END IF
+            end if
 
-            HRVAL = FRAN*AERPAN + (1.0D0-FRAN)*AERPLM
+            hrval = fran*aerpan + (1.0d0-fran)*aerplm
 
 ! ---          CERC 11/30/20 Combine to calculate the conc*travel time for the combined plume
-            IF(GRSM)THEN
-               CHI_TTRAVCHM(IREC,ISRC)=FRAN*CHI_TTRAVPAN +&
-               &(1.0D0-FRAN)*CHI_TTRAVPLM
-            END IF
+            if(grsm)then
+               chi_ttravchm(irec,isrc)=fran*chi_ttravpan +&
+               &(1.0d0-fran)*chi_ttravplm
+            end if
 
-         END IF
+         end if
 
 !           ENSR STATEMENT
-         IF(DEBUG) THEN
-            DO ITYP = 1, NUMTYP
-               WRITE(DBGUNT,10) AERPAN(ITYP), AERPLM(ITYP), FRAN,&
-               &HRVAL(ITYP)
-10             FORMAT(/,'HRVAL(ITYP) = FRAN*AERPAN(ITYP) + (1.-FRAN)',&
+         if(debug) then
+            do ityp = 1, numtyp
+               write(dbgunt,10) aerpan(ityp), aerplm(ityp), fran,&
+               &hrval(ityp)
+10             format(/,'HRVAL(ITYP) = FRAN*AERPAN(ITYP) + (1.-FRAN)',&
                &'*AERPLM(ITYP)',//,&
                &'PANCAKE/MEANDER COMPONENT, AERPAN(ITYP) = ',&
-               &G16.8,/,'COHERENT PLUME COMPONENT,  AERPLM(ITYP) = ',&
-               &G16.8,/,'MEANDER FACTOR, FRAN = ',&
-               &G16.8,/,'RESULTANT CONC, HRVAL(ITYP) = ',G16.8,//)
-            END DO
-         END IF
+               &g16.8,/,'COHERENT PLUME COMPONENT,  AERPLM(ITYP) = ',&
+               &g16.8,/,'MEANDER FACTOR, FRAN = ',&
+               &g16.8,/,'RESULTANT CONC, HRVAL(ITYP) = ',g16.8,//)
+            end do
+         end if
 !  Added for TTRM; AECOM
 
-         IF (RUNTTRM) THEN
-            TTRMOUT(IREC,ISRC,12) = UEFF
-            TTRMOUT(IREC,ISRC,13) = UEFFD
-            TTRMOUT(IREC,ISRC,15) = FRAN
-         END IF
+         if (runttrm) then
+            ttrmout(irec,isrc,12) = ueff
+            ttrmout(irec,isrc,13) = ueffd
+            ttrmout(irec,isrc,15) = fran
+         end if
 
-         IF (RUNTTRM) THEN
-            TTRMOUT(IREC,ISRC,10) = X
-            TTRMOUT(IREC,ISRC,11) = DISTR
-            TTRMOUT(IREC,ISRC,20) = Y
-         END IF
+         if (runttrm) then
+            ttrmout(irec,isrc,10) = x
+            ttrmout(irec,isrc,11) = distr
+            ttrmout(irec,isrc,20) = y
+         end if
 ! End TTRM insert; Feb. 2021
 
 
-         IF (PVMRM) THEN
+         if (pvmrm) then
 ! ---          Store data by source and receptor for PVMRM option
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-               HECNTR(IREC,ISRC) = HE
-               UEFFS(IREC,ISRC)  = UEFF
-               EPSEF(IREC,ISRC)  = EPSEFF
-            ELSE
-               HECNTR(IREC,ISRC) = CENTER
-               UEFFS(IREC,ISRC)  = UEFFD
-               EPSEF(IREC,ISRC)  = EPSEFFD
-            END IF
-            IF (PPF .GT. 0.0D0) THEN
-               PPFACT(IREC,ISRC)  = PPF
-               HECNTR3(IREC,ISRC) = HE3
-               UEFF3S(IREC,ISRC)  = UEFF3
-               EPSEF3(IREC,ISRC)  = EPSEFF3
-            ELSE
-               PPFACT(IREC,ISRC)  = 0.0D0
-               HECNTR3(IREC,ISRC) = 0.0D0
-               UEFF3S(IREC,ISRC)  = 0.0D0
-               EPSEF3(IREC,ISRC)  = 0.0D0
-            END IF
-            FOPTS(IREC,ISRC) = FOPT
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
+               hecntr(irec,isrc) = he
+               ueffs(irec,isrc)  = ueff
+               epsef(irec,isrc)  = epseff
+            else
+               hecntr(irec,isrc) = center
+               ueffs(irec,isrc)  = ueffd
+               epsef(irec,isrc)  = epseffd
+            end if
+            if (ppf .gt. 0.0d0) then
+               ppfact(irec,isrc)  = ppf
+               hecntr3(irec,isrc) = he3
+               ueff3s(irec,isrc)  = ueff3
+               epsef3(irec,isrc)  = epseff3
+            else
+               ppfact(irec,isrc)  = 0.0d0
+               hecntr3(irec,isrc) = 0.0d0
+               ueff3s(irec,isrc)  = 0.0d0
+               epsef3(irec,isrc)  = 0.0d0
+            end if
+            fopts(irec,isrc) = fopt
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AERPLM(:) = 0.0D0
-            AERPAN(:) = 0.0D0
-            PRMVAL(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerplm(:) = 0.0d0
+            aerpan(:) = 0.0d0
+            prmval(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 
-         ELSE IF (OLM) THEN
+         else if (olm) then
 ! ---          Store data by source and receptor for OLM option
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AERPLM(:) = 0.0D0
-            AERPAN(:) = 0.0D0
-            PRMVAL(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerplm(:) = 0.0d0
+            aerpan(:) = 0.0d0
+            prmval(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 !    Added for TTRM; AECOM
-         ELSE IF (RUNTTRM) THEN
+         else if (runttrm) then
 ! ---          Store data by source and receptor for TTRM option
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AERPLM(:) = 0.0D0
-            AERPAN(:) = 0.0D0
-            PRMVAL(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerplm(:) = 0.0d0
+            aerpan(:) = 0.0d0
+            prmval(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 !    End TTRM insert; Feb. 2021
 
-         ELSE IF (ARM2) THEN
+         else if (arm2) then
 ! ---          Store data by source and receptor for ARM2 options
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AERPLM(:) = 0.0D0
-            AERPAN(:) = 0.0D0
-            PRMVAL(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerplm(:) = 0.0d0
+            aerpan(:) = 0.0d0
+            prmval(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 
 !           CERC 11/30/20
-         ELSE IF (GRSM) THEN
+         else if (grsm) then
 ! ---          Store data by source and receptor for GRSM options
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-               HECNTR(IREC,ISRC) = HE
-               UEFFS(IREC,ISRC)  = UEFF
-               EPSEF(IREC,ISRC)  = EPSEFF
-            ELSE
-               HECNTR(IREC,ISRC) = CENTER
-               UEFFS(IREC,ISRC)  = UEFFD
-               EPSEF(IREC,ISRC)  = EPSEFFD
-            END IF
-            IF (PPF .GT. 0.0D0) THEN
-               PPFACT(IREC,ISRC)  = PPF
-               HECNTR3(IREC,ISRC) = HE3
-               UEFF3S(IREC,ISRC)  = UEFF3
-               EPSEF3(IREC,ISRC)  = EPSEFF3
-            ELSE
-               PPFACT(IREC,ISRC)  = 0.0D0
-               HECNTR3(IREC,ISRC) = 0.0D0
-               UEFF3S(IREC,ISRC)  = 0.0D0
-               EPSEF3(IREC,ISRC)  = 0.0D0
-            END IF
-            FOPTS(IREC,ISRC) = FOPT
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
+               hecntr(irec,isrc) = he
+               ueffs(irec,isrc)  = ueff
+               epsef(irec,isrc)  = epseff
+            else
+               hecntr(irec,isrc) = center
+               ueffs(irec,isrc)  = ueffd
+               epsef(irec,isrc)  = epseffd
+            end if
+            if (ppf .gt. 0.0d0) then
+               ppfact(irec,isrc)  = ppf
+               hecntr3(irec,isrc) = he3
+               ueff3s(irec,isrc)  = ueff3
+               epsef3(irec,isrc)  = epseff3
+            else
+               ppfact(irec,isrc)  = 0.0d0
+               hecntr3(irec,isrc) = 0.0d0
+               ueff3s(irec,isrc)  = 0.0d0
+               epsef3(irec,isrc)  = 0.0d0
+            end if
+            fopts(irec,isrc) = fopt
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AERPLM(:) = 0.0D0
-            AERPAN(:) = 0.0D0
-            PRMVAL(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerplm(:) = 0.0d0
+            aerpan(:) = 0.0d0
+            prmval(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 
-         END IF
+         end if
 
 !           Sum HRVAL to AVEVAL and ANNVAL Arrays  ---   CALL SUMVAL
 !           As noted just above, the calls to EV_SUMVAL and SUMVAL
 !           are skipped for a PVMRM, OLM, ARM2 or GRSM run; the
 !           summing is performed for these options in the
 !           respective routines
-         IF (EVONLY) THEN
-            CALL EV_SUMVAL
-         ELSE
-            DO IGRP = 1, NUMGRP
-               CALL SUMVAL
-            END DO
-         END IF
+         if (evonly) then
+            call ev_sumval
+         else
+            do igrp = 1, numgrp
+               call sumval
+            end do
+         end if
 
-         IF (EVAL(ISRC)) THEN
+         if (eval(isrc)) then
 !              Check ARC centerline values for EVALFILE
 !              output                              ---   CALL EVALCK
-            CALL EVALCK
-         END IF
+            call evalck
+         end if
 
-      END DO RECEPTOR_LOOP
+      end do receptor_loop
 !        End Receptor LOOP
 
 !        Output 'ARC' Values for EVALFILE                   ---   CALL EVALFL
-      IF (EVAL(ISRC)) THEN
-         CALL EVALFL
-      END IF
+      if (eval(isrc)) then
+         call evalfl
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
 
-SUBROUTINE VOLCALC( XARG, L_PLUME, AEROUT )
+subroutine volcalc( xarg, l_plume, aerout )
 !***********************************************************************
 !             VOLCALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3173,334 +3173,334 @@ SUBROUTINE VOLCALC( XARG, L_PLUME, AEROUT )
 !
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: AEROUT(NUMTYP), AERTMP(NUMTYP), FYOUT, XARG,&
-   &ADJ, FRAN,&
-   &FRAN3                 ! Added for ARISE; UNC-IE
-   INTEGER :: J
-   LOGICAL :: L_PLUME
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: aerout(numtyp), aertmp(numtyp), fyout, xarg,&
+   &adj, fran,&
+   &fran3                 ! Added for ARISE; UNC-IE
+   integer :: j
+   logical :: l_plume
 
 !     Variable Initializations
-   MODNAM = 'VOLCALC'
+   modnam = 'VOLCALC'
 
 ! --- Initialize FRAN
-   FRAN  = 0.0D0
+   fran  = 0.0d0
 ! --- Initialize FRAN3                          ! Added for ARISE; UNC-IE
-   FRAN3 = 0.0D0                             ! Added for ARISE; UNC-IE
+   fran3 = 0.0d0                             ! Added for ARISE; UNC-IE
 
 !     Initialize AEROUT and AERTMP arrays (1:NUMTYP)
-   AEROUT = 0.0D0
-   AERTMP = 0.0D0
+   aerout = 0.0d0
+   aertmp = 0.0d0
 
 !     Determine Deposition Correction Factors
-   IF (NPD .EQ. 0 .and. (LDGAS .or. LWGAS)) THEN
-      CALL PDEPG (XARG)
-   ELSE
-      DQCORG = 1.0D0
-      WQCORG = 1.0D0
-   END IF
-   IF (NPD .GT. 0 .and. (LDPART .or. LWPART)) THEN
-      CALL PDEP (XARG)
-   ELSE IF (NPD .GT. 0) THEN
+   if (npd .eq. 0 .and. (ldgas .or. lwgas)) then
+      call pdepg (xarg)
+   else
+      dqcorg = 1.0d0
+      wqcorg = 1.0d0
+   end if
+   if (npd .gt. 0 .and. (ldpart .or. lwpart)) then
+      call pdep (xarg)
+   else if (npd .gt. 0) then
 !        Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
-      DQCOR = 1.0D0
-      WQCOR = 1.0D0
-   END IF
+      dqcor = 1.0d0
+      wqcor = 1.0d0
+   end if
 
 !     Set initial effective parameters
-   UEFF  = US
-   SVEFF = SVS
-   SWEFF = SWS
-   TGEFF = TGS
-   IF ( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-      UEFFD  = US
-      SVEFFD = SVS
-      SWEFFD = SWS
-      UEFFN  = US
-      SVEFFN = SVS
-      SWEFFN = SWS
+   ueff  = us
+   sveff = svs
+   sweff = sws
+   tgeff = tgs
+   if ( unstab  .and.  (hs .lt. zi) ) then
+      ueffd  = us
+      sveffd = svs
+      sweffd = sws
+      ueffn  = us
+      sveffn = svs
+      sweffn = sws
 !**  Added for Aircraft Plume Rise; UNC-IE
-      IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-         UEFF3  = US
-         SVEFF3 = SVS
-         SWEFF3 = SWS
-         TGEFF3 = TGS
-      END IF
+      if (aftsrc(isrc) .eq. 'Y') then
+         ueff3  = us
+         sveff3 = svs
+         sweff3 = sws
+         tgeff3 = tgs
+      end if
 !**  End Aircraft Plume Rise insert; April 2023
-   END IF
+   end if
 
 !RJP  Add temporary debugging statement here.
 
 !     ENSR ENHANCEMENT OF WRITE STATEMENT TO IDENTIFY COMPONENT CONCENTRATION
-   IF(DEBUG) THEN
-      WRITE(DBGUNT, 6014) SRCID(ISRC)
-6014  FORMAT(//,'SRCID: ', A8)
-      IF(L_PLUME)THEN
-         WRITE(DBGUNT, 6015) UEFF, SVEFF, SWEFF
-6015     FORMAT(//,'COHERENT PLUME COMPONENT',/,5X,&
+   if(debug) then
+      write(dbgunt, 6014) srcid(isrc)
+6014  format(//,'SRCID: ', a8)
+      if(l_plume)then
+         write(dbgunt, 6015) ueff, sveff, sweff
+6015     format(//,'COHERENT PLUME COMPONENT',/,5x,&
          &'Initial effective parameters for ',&
          &'stable or direct convective ',&
-         &'plume:',//,5x,'Ueff = ',F7.2,' m/s; ',&
-         &'SVeff = ',F7.2,&
-         &' m/s; SWeff = ',F7.2,' m/s.',/)
-      ELSE
-         WRITE(DBGUNT, 6016) UEFF, SVEFF, SWEFF
-6016     FORMAT(//,'MEANDER COMPONENT',/,5X,&
+         &'plume:',//,5x,'Ueff = ',f7.2,' m/s; ',&
+         &'SVeff = ',f7.2,&
+         &' m/s; SWeff = ',f7.2,' m/s.',/)
+      else
+         write(dbgunt, 6016) ueff, sveff, sweff
+6016     format(//,'MEANDER COMPONENT',/,5x,&
          &'Initial effective parameters for ',&
          &'stable or direct convective ',&
-         &'plume:',//,5x,'Ueff = ',F7.2,' m/s; ',&
-         &'SVeff = ',F7.2,&
-         &' m/s; SWeff = ',F7.2,' m/s.',/)
-      END IF
-   END IF
+         &'plume:',//,5x,'Ueff = ',f7.2,' m/s; ',&
+         &'SVeff = ',f7.2,&
+         &' m/s; SWeff = ',f7.2,' m/s.',/)
+      end if
+   end if
 
 !     Define plume centroid height (CENTER) for use in
 !     inhomogeniety calculations
-   CALL CENTROID (XARG)
+   call centroid (xarg)
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+   if (aftsrc(isrc) .eq. 'Y') then
 !     Calculate the plume rise                     ---   CALL ADELTAH
-      CALL ADELTAH ( XARG )
-   END IF
+      call adeltah ( xarg )
+   end if
 !**  End Aircraft Plume Rise insert; April 2023
 
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                     ---   CALL PDF
-   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-      CALL PDF
-   END IF
+   if( unstab  .and.  (hs .lt. zi) ) then
+      call pdf
+   end if
 
 !     Determine Effective Plume Height             ---   CALL HEFF
-   CALL HEFF ( XARG )
+   call heff ( xarg )
 
 !     Compute effective parameters using an
 !     iterative average through plume rise layer
-   CALL IBLVAL ( XARG )
+   call iblval ( xarg )
 
 !     Call PDF & HEFF again for final CBL plume heights
-   IF (UNSTAB .and. (HS.LT.ZI) ) THEN
-      CALL PDF
-      CALL HEFF ( XARG )
-   END IF
+   if (unstab .and. (hs.lt.zi) ) then
+      call pdf
+      call heff ( xarg )
+   end if
 
 !     Determine Dispersion Parameters              ---   CALL VDIS
-   CALL VDIS ( XARG )
+   call vdis ( xarg )
 
 !     Calculate the 'y-term' contribution to
 !     dispersion, FSUBY
-   IF (L_PLUME) THEN
+   if (l_plume) then
 !        Calculate FSUBY for coherent plume
-      IF( L_EFFSIGY )THEN
+      if( l_effsigy )then
 ! ---       Calculate fraction of random kinetic energy to total kinetic energy
 !           for FASTALL option to optimize meander using effective sigma-y (EFFSIGY),
 !           and for the Beta option that uses an effective sigma-y value.
 !           Note that these effective parameters are based on the downwind distance,
 !           rather than the radial distance used in the standard meander approach
-         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-            CALL MEANDR( UEFF, SVEFF, FRAN )
-         ELSE IF (UNSTAB) THEN
-            CALL MEANDR( UEFFD, SVEFFD, FRAN )
+         if (stable .or. (unstab.and.(hs.ge.zi))) then
+            call meandr( ueff, sveff, fran )
+         else if (unstab) then
+            call meandr( ueffd, sveffd, fran )
 !**  Added for Aircraft Plume Rise; UNC-IE
-            IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-               IF (PPF .GT. 0.0D0) THEN
+            if (aftsrc(isrc) .eq. 'Y') then
+               if (ppf .gt. 0.0d0) then
 !                 For penetrated source calculate weighted average of
 !                 direct/indirect plume component and penetrated component
-                  CALL MEANDR( UEFF3, SVEFF3, FRAN3 )
-                  FRAN = PPF*FRAN3 + (1.0D0-PPF)*FRAN
-               END IF
-            END IF
+                  call meandr( ueff3, sveff3, fran3 )
+                  fran = ppf*fran3 + (1.0d0-ppf)*fran
+               end if
+            end if
 !**  End Aircraft Plume Rise insert; April 2023
-         END IF
+         end if
 
 !           Calculate effective sigma-y for non-DFAULT FASTALL option (EFFSIGY)
-         SYEFF = 1.0D0/((FRAN/(SRT2PI*XARG)) + (1.0D0-FRAN)/SY)
-         IF (DABS(Y) .GT. NUMSYEFF*SYEFF) THEN
+         syeff = 1.0d0/((fran/(srt2pi*xarg)) + (1.0d0-fran)/sy)
+         if (dabs(y) .gt. numsyeff*syeff) then
 !               Plume is more than 4 sigmas off centerline, skip calculation
-            FYOUT = 0.0D0
-         ELSE
+            fyout = 0.0d0
+         else
 !               Calculate FSUBY for coherent plume        ---   CALL FYPLM
-            CALL FYPLM(SYEFF,FYOUT)
-         END IF
-      ELSE
+            call fyplm(syeff,fyout)
+         end if
+      else
 !           Calculate FSUBY for coherent plume        ---   CALL FYPLM
-         CALL FYPLM(SY,FYOUT)
+         call fyplm(sy,fyout)
 
-      END IF
+      end if
 
-   ELSE
+   else
 !        Calculate FSUBY for random component      ---   CALL FYPAN
-      CALL FYPAN(FYOUT)
+      call fypan(fyout)
 
-   END IF
+   end if
 
-   FSUBY  = FYOUT
-   FSUBYD = FSUBY
-   FSUBYN = FSUBYD
+   fsuby  = fyout
+   fsubyd = fsuby
+   fsubyn = fsubyd
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+   if (aftsrc(isrc) .eq. 'Y') then
 !      Calculate the 'y-term' contribution to dispersion
 !      for the penetrated plume, FSUBY3
-      IF( UNSTAB  .and.  (HS .LT. ZI)  .and. (PPF .GT. 0.0D0) )THEN
+      if( unstab  .and.  (hs .lt. zi)  .and. (ppf .gt. 0.0d0) )then
 !        Compute meander fraction of horizontal distribution function
 !        from Venky's memo of 6/24/98.
-         IF (L_PLUME) THEN
-            IF (L_EFFSIGY) THEN
+         if (l_plume) then
+            if (l_effsigy) then
 ! ---          Calculate fraction of random kinetic energy to total kinetic energy
 !              for FASTALL option to optimize meander using effective sigma-y.
 !              Note that these effective parameters are based on the downwind distance,
 !              rather than the radial distance used in the standard meander approach
-               SYEFF = 1.0D0/((FRAN/(SRT2PI*XARG)) + (1.0D0-FRAN)/SY3)
+               syeff = 1.0d0/((fran/(srt2pi*xarg)) + (1.0d0-fran)/sy3)
 
-               IF (DABS(Y) .GT. NUMSYEFF*SYEFF) THEN
+               if (dabs(y) .gt. numsyeff*syeff) then
 !                 Plume is more than 4 sigmas off centerline, skip calculation
-                  FYOUT = 0.0D0
-               ELSE
+                  fyout = 0.0d0
+               else
 !                 Calculate FSUBY for coherent plume        ---   CALL FYPLM
-                  CALL FYPLM(SYEFF,FYOUT)
-               END IF
+                  call fyplm(syeff,fyout)
+               end if
 
-            ELSE
+            else
 !              Calculate FSUBY for coherent plume        ---   CALL FYPLM
-               CALL FYPLM(SY3,FYOUT)
-            END IF
-         ELSE
+               call fyplm(sy3,fyout)
+            end if
+         else
 !           Calculate FSUBY for random component   ---   CALL FYPAN
-            CALL FYPAN(FYOUT)
-         END IF
+            call fypan(fyout)
+         end if
 
-         FSUBY3 = FYOUT
-      ELSE
-         FSUBY3 = 0.0D0
-      END IF
-   ELSE
+         fsuby3 = fyout
+      else
+         fsuby3 = 0.0d0
+      end if
+   else
 !**  End Aircraft Plume Rise insert; February 2023
 !     Set lateral term = 0.0 for penetrated source
-      FSUBY3 = 0.0D0
-   END IF                       ! Added for ARISE; UNC-IE
+      fsuby3 = 0.0d0
+   end if                       ! Added for ARISE; UNC-IE
 
 !     Check for zero "y-terms"; if zero then skip calculations
 !     and go to next receptor.
-   IF( FSUBY.EQ.0.0D0 .and. FSUBY3.EQ.0.0D0 )THEN
-      AEROUT = 0.0D0
+   if( fsuby.eq.0.0d0 .and. fsuby3.eq.0.0d0 )then
+      aerout = 0.0d0
 
-   ELSE
+   else
 
-      IF (NPD .EQ. 0) THEN
+      if (npd .eq. 0) then
 !           Perform calculations for gases
 !           Assign plume tilt, HV = 0.0
 
-         ADJ = DQCORG * WQCORG
+         adj = dqcorg * wqcorg
 
-         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+         if (stable .or. (unstab.and.(hs.ge.zi))) then
 !              Calculate height of the "effective reflecting surface"
 !**  Added for Aircraft Plume Rise; UNC-IE
-            IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-               CALL REFL_HT (HE, XARG, SZB, VSIGZ, HSBL)
-            ELSE
+            if (aftsrc(isrc) .eq. 'Y') then
+               call refl_ht (he, xarg, szb, vsigz, hsbl)
+            else
 !**  End Aircraft Plume Rise insert; April 2023
-               CALL REFL_HT (HE, XARG, 0.0D0, VSIGZ, HSBL)
-            END IF                         ! Added for ARISE; UNC-IE
-         ELSE IF ( UNSTAB ) THEN
-            HSBL = 0.0D0
-         END IF
+               call refl_ht (he, xarg, 0.0d0, vsigz, hsbl)
+            end if                         ! Added for ARISE; UNC-IE
+         else if ( unstab ) then
+            hsbl = 0.0d0
+         end if
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-         IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-            IF (UNSTAB .and. (HS.LT.ZI) .and. (PPF.GT.0.0D0)) THEN
+         if (aftsrc(isrc) .eq. 'Y') then
+            if (unstab .and. (hs.lt.zi) .and. (ppf.gt.0.0d0)) then
 !               Calculate height of the "effective reflecting surface"
-               CALL REFL_HT (HE3, XARG, SZB3, VSIGZ, HPEN)
-            ELSE
-               HPEN = 0.0D0
-            END IF
-         END IF
+               call refl_ht (he3, xarg, szb3, vsigz, hpen)
+            else
+               hpen = 0.0d0
+            end if
+         end if
 !**  End Aircraft Plume Rise insert; April 2023
 
 !           Determine the CRITical Dividing Streamline---   CALL CRITDS
-         CALL CRITDS (HE)
+         call critds (he)
 
 !           Calculate the fraction of plume below
 !           HCRIT, PHEE                               ---   CALL PFRACT
-         CALL PFRACT (HE)
+         call pfract (he)
 
 !           Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-         CALL FTERM
+         call fterm
 
 !           Calculate Conc. for Virtual Point Source  ---   CALL AER_PCHI
-         CALL AER_PCHI( XARG, ADJ, VDEPG, 0, AEROUT )
+         call aer_pchi( xarg, adj, vdepg, 0, aerout )
 
-      ELSE
+      else
 !           Perform calculations for particles, loop through particle sizes
 
 !           Begin loop over particle sizes
-         DO J = 1, NPD
+         do j = 1, npd
 
 !              Calculate Plume Tilt Due to Settling, HV
-            HV = (XARG/US) * VGRAV(J)
+            hv = (xarg/us) * vgrav(j)
 
 !              Adjust Jth contribution by mass fraction and source
 !              depletion
-            ADJ = PHI(J) * DQCOR(J) * WQCOR(J)
+            adj = phi(j) * dqcor(j) * wqcor(j)
 
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
 !                 Calculate height of the "effective reflecting surface"
-               HESETL = MAX( 0.0D0, HE - HV )
+               hesetl = max( 0.0d0, he - hv )
 !**  Added for Aircraft Plume Rise; UNC-IE
-               IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-                  CALL REFL_HT (HESETL, XARG, SZB, VSIGZ, HSBL)
-               ELSE
+               if (aftsrc(isrc) .eq. 'Y') then
+                  call refl_ht (hesetl, xarg, szb, vsigz, hsbl)
+               else
 !**  End Aircraft Plume Rise insert; April 2023
-                  CALL REFL_HT (HESETL, XARG, 0.0D0, VSIGZ, HSBL)
-               END IF                         ! Added for ARISE; UNC-IE
+                  call refl_ht (hesetl, xarg, 0.0d0, vsigz, hsbl)
+               end if                         ! Added for ARISE; UNC-IE
 
-            ELSE IF ( UNSTAB ) THEN
-               HESETL = MAX( 0.0D0, 0.5D0*(HED1+HED2) - HV )
-               HSBL = 0.0D0
-            END IF
+            else if ( unstab ) then
+               hesetl = max( 0.0d0, 0.5d0*(hed1+hed2) - hv )
+               hsbl = 0.0d0
+            end if
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-            IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-               IF (UNSTAB .and. (HS.LT.ZI) .and. (PPF.GT.0.0D0)) THEN
+            if (aftsrc(isrc) .eq. 'Y') then
+               if (unstab .and. (hs.lt.zi) .and. (ppf.gt.0.0d0)) then
 !                 Calculate height of the "effective reflecting surface"
 !                 Calculate Settled Plume Height(s), HE3SETL
-                  HE3SETL = MAX( 0.0D0, HE3 - HV )
-                  CALL REFL_HT (HE3SETL, XARG, SZB3, VSIGZ, HPEN)
-                  HPEN = MAX( HPEN, ZI )
-               ELSE
-                  HPEN = 0.0D0
-               END IF
-            END IF
+                  he3setl = max( 0.0d0, he3 - hv )
+                  call refl_ht (he3setl, xarg, szb3, vsigz, hpen)
+                  hpen = max( hpen, zi )
+               else
+                  hpen = 0.0d0
+               end if
+            end if
 !**  End Aircraft Plume Rise insert; April 2023
 
 !              Determine the CRITical Dividing Streamline---   CALL CRITDS
-            CALL CRITDS (HESETL)
+            call critds (hesetl)
 
 !              Calculate the fraction of plume below
 !              HCRIT, PHEE                               ---   CALL PFRACT
-            CALL PFRACT (HESETL)
+            call pfract (hesetl)
 
 !              Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-            CALL FTERM
+            call fterm
 
 !              Calculate Conc. for Virtual Point Source  ---   CALL AER_PCHI
-            CALL AER_PCHI( XARG, ADJ, VDEP(J), J, AERTMP )
-            AEROUT = AEROUT + AERTMP
+            call aer_pchi( xarg, adj, vdep(j), j, aertmp )
+            aerout = aerout + aertmp
 
-         END DO
+         end do
 !           End loop over particle sizes
 
-      END IF
-   END IF
+      end if
+   end if
 
-   RETURN
-END
+   return
+end
 
 
-SUBROUTINE ACALC
+subroutine acalc
 !***********************************************************************
 !            ACALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -3568,255 +3568,255 @@ SUBROUTINE ACALC
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   INTEGER :: I, J
-   DOUBLE PRECISION :: XDEP, WIDTH, LENGTH, XMINR, XMAXR, XPOINT,&
-   &QTKSAV, ADJ
-   DOUBLE PRECISION :: AEROUT(NUMTYP), FYOUT
-   DOUBLE PRECISION :: AEROUT_PLM, AEROUT_PAN, FRAN !Wood 4/14/22
+   use main1
+   implicit none
+   character modnam*12
+   integer :: i, j
+   double precision :: xdep, width, length, xminr, xmaxr, xpoint,&
+   &qtksav, adj
+   double precision :: aerout(numtyp), fyout
+   double precision :: aerout_plm, aerout_pan, fran !Wood 4/14/22
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   INTEGER :: KITER, NDXZMID, NDXZPL
-   INTEGER :: NDXBH
-   DOUBLE PRECISION :: HSPRIM, ZPLM, DHFOLD, SVPM, UPM, TGPM,&
-   &PTPM, PTP, ZMID, SWPM
-   DOUBLE PRECISION :: VALABV, VBELOW
+   integer :: kiter, ndxzmid, ndxzpl
+   integer :: ndxbh
+   double precision :: hsprim, zplm, dhfold, svpm, upm, tgpm,&
+   &ptpm, ptp, zmid, swpm
+   double precision :: valabv, vbelow
 !**  End Aircraft Plume Rise insert; April 2023
 
 !     Variable Initializations
-   MODNAM = 'ACALC'
-   WAKE = .FALSE.
-   L_APLUME = .TRUE.                !5/31/22 Wood initalized L_APLUME
-   AEROUT_PLM = 0.0D0               !5/31/22 Wood initalized  Plume
-   AEROUT_PAN = 0.0D0               !5/31/22 Wood initalized  Meander/Pancake
-   FRAN = 0.0D0                     !5/31/22 Wood initalized  FRAN
+   modnam = 'ACALC'
+   wake = .false.
+   l_aplume = .true.                !5/31/22 Wood initalized L_APLUME
+   aerout_plm = 0.0d0               !5/31/22 Wood initalized  Plume
+   aerout_pan = 0.0d0               !5/31/22 Wood initalized  Meander/Pancake
+   fran = 0.0d0                     !5/31/22 Wood initalized  FRAN
 
 !     Initialize __VAL arrays (1:NUMTYP)
-   HRVAL   = 0.0D0
-   AERVAL  = 0.0D0
-   AEROUT  = 0.0D0
-   PRMVAL  = 0.0D0
-   IF( ALLOCATED(CHI) ) CHI(:,ISRC,:) = 0.0D0
-   IF(GRSM)THEN
-      CHI_TTRAVCHM(:,ISRC) = 0.0D0
-   END IF
+   hrval   = 0.0d0
+   aerval  = 0.0d0
+   aerout  = 0.0d0
+   prmval  = 0.0d0
+   if( allocated(chi) ) chi(:,isrc,:) = 0.0d0
+   if(grsm)then
+      chi_ttravchm(:,isrc) = 0.0d0
+   end if
 
 !     Set the Source Variables for This Source              ---   CALL SETSRC
-   CALL SETSRC
+   call setsrc
 
 !     Apply Variable Emission Rate Factors                  ---   CALL EMFACT
-   CALL EMFACT(QS)
+   call emfact(qs)
 
 !     Initialize 'ARC' Arrays for EVALFILE Output           ---   CALL EVLINI
-   IF (EVAL(ISRC)) THEN
-      CALL EVLINI
-   END IF
+   if (eval(isrc)) then
+      call evlini
+   end if
 
 ! ---  Write info to AREA debug file if needed
-   IF( AREADBG )THEN
-      write(AREADBUNT,100) KURDAT
-100   format(/'AREA Debug Sub_ACALC: ',2x,'YYMMDDHH = ',I8.8)
-   ENDIF
+   if( areadbg )then
+      write(areadbunt,100) kurdat
+100   format(/'AREA Debug Sub_ACALC: ',2x,'YYMMDDHH = ',i8.8)
+   endif
 
-   IF (QTK .NE. 0.0D0) THEN
+   if (qtk .ne. 0.0d0) then
 
 ! ---    Save original emission rate, which may be needed if RECLOOP is cycled
 !        and point source approximation is used (FASTAREA or FASTALL options)
-      QTKSAV = QTK
+      qtksav = qtk
 
 !        Set Mixing Height and Profiles for Urban Option if Needed
-      IF (URBSRC(ISRC) .EQ. 'Y') THEN
+      if (urbsrc(isrc) .eq. 'Y') then
 !           Find Urban Area Index for This Source
-         DO I = 1, NUMURB
-            IF (IURBGRP(ISRC,I) .EQ. 1) THEN
-               IURB = I
-               EXIT
-            END IF
-         END DO
-         IF (STABLE .or. L_MorningTrans(IURB)) THEN
-            URBSTAB = .TRUE.
-            ZI = MAX( ZIURB(IURB), ZIMECH )
-            GRIDSV = GRDSVU(1:MXGLVL,IURB)
-            GRIDSW = GRDSWU(1:MXGLVL,IURB)
-            GRIDTG = GRDTGU(1:MXGLVL,IURB)
-            GRIDPT = GRDPTU(1:MXGLVL,IURB)
-            OBULEN = URBOBULEN(IURB)
-            USTAR  = URBUSTR(IURB)
-         ELSE
-            URBSTAB = .FALSE.
-            ZI = ZIRUR
-            GRIDSV = GRDSVR
-            GRIDSW = GRDSWR
-            GRIDTG = GRDTGR
-            GRIDPT = GRDPTR
-            OBULEN = RUROBULEN
-            USTAR  = RURUSTR
-         END IF
-      ELSE IF (URBAN .and. URBSRC(ISRC) .EQ. 'N') THEN
-         URBSTAB = .FALSE.
-         ZI = ZIRUR
-         GRIDSV = GRDSVR
-         GRIDSW = GRDSWR
-         GRIDTG = GRDTGR
-         GRIDPT = GRDPTR
-         OBULEN = RUROBULEN
-         USTAR  = RURUSTR
-      ELSE
+         do i = 1, numurb
+            if (iurbgrp(isrc,i) .eq. 1) then
+               iurb = i
+               exit
+            end if
+         end do
+         if (stable .or. L_MorningTrans(iurb)) then
+            urbstab = .true.
+            zi = max( ziurb(iurb), zimech )
+            gridsv = grdsvu(1:mxglvl,iurb)
+            gridsw = grdswu(1:mxglvl,iurb)
+            gridtg = grdtgu(1:mxglvl,iurb)
+            gridpt = grdptu(1:mxglvl,iurb)
+            obulen = urbobulen(iurb)
+            ustar  = urbustr(iurb)
+         else
+            urbstab = .false.
+            zi = zirur
+            gridsv = grdsvr
+            gridsw = grdswr
+            gridtg = grdtgr
+            gridpt = grdptr
+            obulen = rurobulen
+            ustar  = rurustr
+         end if
+      else if (urban .and. urbsrc(isrc) .eq. 'N') then
+         urbstab = .false.
+         zi = zirur
+         gridsv = grdsvr
+         gridsw = grdswr
+         gridtg = grdtgr
+         gridpt = grdptr
+         obulen = rurobulen
+         ustar  = rurustr
+      else
 ! ---       Rural
-         URBSTAB = .FALSE.
-      END IF
+         urbstab = .false.
+      end if
 
 !        Initialize meteorological variables                ---   CALL METINI
-      CALL METINI
+      call metini
 
 !        Save WDSIN and WSCOS for later use by PVMRM/GRSM option
-      AWDSIN(ISRC) = WDSIN
-      AWDCOS(ISRC) = WDCOS
-      AAFV(ISRC)   = AFV
+      awdsin(isrc) = wdsin
+      awdcos(isrc) = wdcos
+      aafv(isrc)   = afv
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-      IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+      if (aftsrc(isrc) .eq. 'Y') then
 !        Find Aircraft Index for This Source
 
-         FM  = 0.0D0                                       ! Momentum Flux
-         HSP = HS
+         fm  = 0.0d0                                       ! Momentum Flux
+         hsp = hs
 
 !         Calculate Buoyancy Flux                            ---   CALL AFLUXES
-         CALL AFLUXES
+         call afluxes
 
 !         Define temporary values of CENTER and SURFAC based on HS
-         CENTER = HS
-         IF( CENTER .LT. 0.1D0*ZI )THEN
-            SURFAC = .TRUE.
-         ELSE
-            SURFAC = .FALSE.
-         END IF
+         center = hs
+         if( center .lt. 0.1d0*zi )then
+            surfac = .true.
+         else
+            surfac = .false.
+         end if
 
 !         Calculate Distance to Final Rise                   ---   CALL ADISTF
-         CALL ADISTF
+         call adistf
 
 !         Calculate the plume penetration factor             ---   CALL PENFCT
-         CALL PENFCT
+         call penfct
 
-         IF(ARCFTDEBUG) THEN
+         if(arcftdebug) then
 !            WRITE(ARCFTDBG,*) '========================================'
 !            WRITE(ARCFTDBG,*) 'ACALC: YYMMDDHH ',KURDAT,
 !     &                        '  Source  ',srcid(isrc)
-            WRITE(ARCFTDBG,6000) DHFAER, UP, TGS
-6000        FORMAT(/,5X,'INITIAL PLUME RISE ESTIMATE:  DELH = ',&
-            &F6.1,' M; Uplume = ',F5.2,' M/S; DTHDZ = ',&
-            &F7.4,' DEG K/M')
-         END IF
+            write(arcftdbg,6000) dhfaer, up, tgs
+6000        format(/,5x,'INITIAL PLUME RISE ESTIMATE:  DELH = ',&
+            &f6.1,' M; Uplume = ',f5.2,' M/S; DTHDZ = ',&
+            &f7.4,' DEG K/M')
+         end if
 
-         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+         if (stable .or. (unstab.and.(hs.ge.zi))) then
 !            Use iterative approach to stable plume rise calculations
-            KITER = 0
-50          ZPLM = HSP + 0.5D0 * DHFAER
-            DHFOLD = DHFAER
+            kiter = 0
+50          zplm = hsp + 0.5d0 * dhfaer
+            dhfold = dhfaer
 
 !----        Locate index below ZPLM
 
-            CALL LOCATE(GRIDHT, 1, MXGLVL, ZPLM, NDXZPL)
+            call locate(gridht, 1, mxglvl, zplm, ndxzpl)
 
 !----        Get Wind speed at ZPLM; replace UP, SVP, SWP.  Also, replace TGP,
 !            vertical potential temperature gradient, if stable.
 
-            CALL GINTRP( GRIDHT(NDXZPL), GRIDSV(NDXZPL),&
-            &GRIDHT(NDXZPL+1), GRIDSV(NDXZPL+1), ZPLM, SVPM )
-            CALL GINTRP( GRIDHT(NDXZPL), GRIDSW(NDXZPL),&
-            &GRIDHT(NDXZPL+1), GRIDSW(NDXZPL+1),&
-            &ZPLM, SWPM )
-            CALL GINTRP( GRIDHT(NDXZPL), GRIDWS(NDXZPL),&
-            &GRIDHT(NDXZPL+1), GRIDWS(NDXZPL+1), ZPLM, UPM )
+            call gintrp( gridht(ndxzpl), gridsv(ndxzpl),&
+            &gridht(ndxzpl+1), gridsv(ndxzpl+1), zplm, svpm )
+            call gintrp( gridht(ndxzpl), gridsw(ndxzpl),&
+            &gridht(ndxzpl+1), gridsw(ndxzpl+1),&
+            &zplm, swpm )
+            call gintrp( gridht(ndxzpl), gridws(ndxzpl),&
+            &gridht(ndxzpl+1), gridws(ndxzpl+1), zplm, upm )
 
-            SVPM = MAX( SVPM, SVMIN, SVUMIN*UPM )
-            SWPM = MAX( SWPM, SWMIN )
+            svpm = max( svpm, svmin, svumin*upm )
+            swpm = max( swpm, swmin )
 
-            IF( L_VECTORWS )THEN
-               UPM = DSQRT( UPM*UPM + 2.0D0*SVPM*SVPM )
-            ENDIF
+            if( l_vectorws )then
+               upm = dsqrt( upm*upm + 2.0d0*svpm*svpm )
+            endif
 
-            UPM  = MAX( UPM, WSMIN )
+            upm  = max( upm, wsmin )
 
 !RWB         Use average of stack top and midpoint wind speeds and others.
-            UP = 0.5D0 * (US + UPM)
-            SVP = 0.5D0 * (SVS + SVPM)
-            SWP = 0.5D0 * (SWS + SWPM)
+            up = 0.5d0 * (us + upm)
+            svp = 0.5d0 * (svs + svpm)
+            swp = 0.5d0 * (sws + swpm)
 
-            CALL GINTRP( GRIDHT(NDXZPL), GRIDTG(NDXZPL),&
-            &GRIDHT(NDXZPL+1), GRIDTG(NDXZPL+1), ZPLM, TGPM )
-            CALL GINTRP( GRIDHT(NDXZPL), GRIDPT(NDXZPL),&
-            &GRIDHT(NDXZPL+1), GRIDPT(NDXZPL+1), ZPLM, PTPM )
+            call gintrp( gridht(ndxzpl), gridtg(ndxzpl),&
+            &gridht(ndxzpl+1), gridtg(ndxzpl+1), zplm, tgpm )
+            call gintrp( gridht(ndxzpl), gridpt(ndxzpl),&
+            &gridht(ndxzpl+1), gridpt(ndxzpl+1), zplm, ptpm )
 !RWB         Use average of stack top and midpoint temperature gradients.
-            TGP = 0.5D0 * (TGS + TGPM)
-            PTP = 0.5D0 * (PTS + PTPM)
-            BVF = DSQRT( G * TGP / PTP )
-            IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
-            BVPRIM  = 0.7D0 * BVF
+            tgp = 0.5d0 * (tgs + tgpm)
+            ptp = 0.5d0 * (pts + ptpm)
+            bvf = dsqrt( g * tgp / ptp )
+            if(bvf .lt. 1.0d-10) bvf = 1.0d-10
+            bvprim  = 0.7d0 * bvf
 
 !            Calculate Distance to Final Rise                   ---   CALL ADISTF
-            CALL ADISTF
+            call adistf
 
-            KITER = KITER + 1
+            kiter = kiter + 1
 
 !RJP         Add temporary debugging statements
 
-            IF(ARCFTDEBUG) THEN
-               WRITE(ARCFTDBG,6001) KITER,DHFOLD, DHFAER, ZPLM, UP,TGP
-6001           FORMAT(/,5X,'OPTH2 ITER. #',I1,': OLD DELH = ',&
-               &F6.1,' M; NEW DELH = ',F6.1,' M; MET LEVEL = ',&
-               &F6.1,' M; NEW Upl = ',F5.2,' M/S; NEW DTHDZ = ',&
-               &F7.4,' K/M')
-            END IF
+            if(arcftdebug) then
+               write(arcftdbg,6001) kiter,dhfold, dhfaer, zplm, up,tgp
+6001           format(/,5x,'OPTH2 ITER. #',i1,': OLD DELH = ',&
+               &f6.1,' M; NEW DELH = ',f6.1,' M; MET LEVEL = ',&
+               &f6.1,' M; NEW Upl = ',f5.2,' M/S; NEW DTHDZ = ',&
+               &f7.4,' K/M')
+            end if
 
 !            Check for convergence
-            IF(DABS((DHFOLD - DHFAER)/DHFAER) .LT. 0.01D0) GO TO 60
+            if(dabs((dhfold - dhfaer)/dhfaer) .lt. 0.01d0) go to 60
 
-            IF(KITER .GE. 5) THEN
-               DHFAER = 0.5D0 * (DHFAER + DHFOLD)
-               IF(ARCFTDEBUG) WRITE(ARCFTDBG,6002) DHFAER
-6002           FORMAT(/,5X,'PLUME RISE ITERATION FAILED TO CONVERGE; ',&
-               &' PLUME RISE SET AT ',F6.1,' METERS.',/)
-               GO TO 60
-            ELSE
-               GO TO 50
-            END IF
+            if(kiter .ge. 5) then
+               dhfaer = 0.5d0 * (dhfaer + dhfold)
+               if(arcftdebug) write(arcftdbg,6002) dhfaer
+6002           format(/,5x,'PLUME RISE ITERATION FAILED TO CONVERGE; ',&
+               &' PLUME RISE SET AT ',f6.1,' METERS.',/)
+               go to 60
+            else
+               go to 50
+            end if
 
-60          CONTINUE
+60          continue
 
 !RWB         After completing iteration, reset UP, SVP, SWP, and TGP to stack top
 !RWB         values for subsequent distance-dependent plume rise calcs.
-            UP = US
-            SVP = SVS
-            SWP = SWS
-            TGP = TGS
-            PTP = PTS
-            BVF = DSQRT( G * TGP / PTP )
-            IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
-            BVPRIM  = 0.7D0 * BVF
-         END IF
+            up = us
+            svp = svs
+            swp = sws
+            tgp = tgs
+            ptp = pts
+            bvf = dsqrt( g * tgp / ptp )
+            if(bvf .lt. 1.0d-10) bvf = 1.0d-10
+            bvprim  = 0.7d0 * bvf
+         end if
 
 !         Initialize PRM_FSTREC Logical Switch for First Receptor of Loop;
-         PRM_FSTREC = .TRUE.
+         prm_fstrec = .true.
 
 !         Initialize 'ARC' Arrays for EVALFILE Output        ---   CALL EVLINI
-         IF (EVAL(ISRC)) THEN
-            CALL EVLINI
-         END IF
+         if (eval(isrc)) then
+            call evlini
+         end if
 
-         ZMIDMX = 0.5D0 * ZI
+         zmidmx = 0.5d0 * zi
 
 !RJP      Add temporary debugging statement.
 
-         IF(ARCFTDEBUG) THEN
-            WRITE(ARCFTDBG,6010) KURDAT, ZMIDMX
-6010        FORMAT(/,72('*'),//,5X,'YR/MN/DY/HR: ',I8,//,&
-            &5X,'Height assigned to midpoint of ',&
+         if(arcftdebug) then
+            write(arcftdbg,6010) kurdat, zmidmx
+6010        format(/,72('*'),//,5x,'YR/MN/DY/HR: ',i8,//,&
+            &5x,'Height assigned to midpoint of ',&
             &'well-mixed layer for effective parameters = ',&
-            &F6.1,' meters.',/)
-         END IF
+            &f6.1,' meters.',/)
+         end if
 !RJP
 !RJP      Calculate distance to uniformly mixed plume within the
 !RJP      boundary layer (XMIXED) after Turner's Workbook (1970), page 7:
@@ -3828,278 +3828,278 @@ SUBROUTINE ACALC
 !RJP      First, get refined estimate of final rise and distance to final
 !RJP      rise if downwash conditions prevail.
 !RJP
-         XFINAL = XMAX
-         DHCRIT = DHFAER
-         XMIXED = ZI * UAVG / SWAVG
-         IF (UNSTAB .and. HS.LT.ZI) THEN
+         xfinal = xmax
+         dhcrit = dhfaer
+         xmixed = zi * uavg / swavg
+         if (unstab .and. hs.lt.zi) then
 !            Check for XMIXED smaller than 1.25*XFINAL
-            IF (XMIXED .LT. 1.25D0*XFINAL) THEN
-               XFINAL = 0.8D0 * XMIXED
-               CALL ACBLPRD (XFINAL)
-               DHCRIT = DHP1
-            END IF
-         END IF
+            if (xmixed .lt. 1.25d0*xfinal) then
+               xfinal = 0.8d0 * xmixed
+               call acblprd (xfinal)
+               dhcrit = dhp1
+            end if
+         end if
 
-      ELSE
+      else
 !**  End Aircraft Plume Rise insert; April 2023
 !        Initialize miscellaneous variables
-         FB  = 0.0D0
-         FM  = 0.0D0
-         PPF = 0.0D0
-         HSP = HS
-         HE  = HS
-         DHP  = 0.0D0
-         DHP1 = 0.0D0
-         DHP2 = 0.0D0
-         DHP3 = 0.0D0
-         DHCRIT = 0.0D0
-         XFINAL = 0.0D0
-         XMIXED = ZI * UAVG / SWAVG
-         IF(XMIXED .LT. XFINAL) XMIXED = XFINAL
-         ZMIDMX = 0.5D0 * ZI
-      END IF                    ! Added for Aircraft; UNC-IE
+         fb  = 0.0d0
+         fm  = 0.0d0
+         ppf = 0.0d0
+         hsp = hs
+         he  = hs
+         dhp  = 0.0d0
+         dhp1 = 0.0d0
+         dhp2 = 0.0d0
+         dhp3 = 0.0d0
+         dhcrit = 0.0d0
+         xfinal = 0.0d0
+         xmixed = zi * uavg / swavg
+         if(xmixed .lt. xfinal) xmixed = xfinal
+         zmidmx = 0.5d0 * zi
+      end if                    ! Added for Aircraft; UNC-IE
 
 ! ---    Initialize PDF parameters for use in calculating ZSUBP
-      IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-         CALL PDF
-      END IF
+      if( unstab  .and.  (hs .lt. zi) ) then
+         call pdf
+      end if
 !        Set Dry Deposition Variables for this Source
-      IF (LUSERVD .and. LDGAS .and. NPD.EQ.0) THEN
+      if (luservd .and. ldgas .and. npd.eq.0) then
 !           Assign user-specified gas dry deposition velocity (GASDEPVD option)
-         VDEPG = USERVD
-      ELSE IF (LDPART .or. (.NOT.LUSERVD .and. LDGAS .and.&
-      &NPD.EQ.0)) THEN
+         vdepg = uservd
+      else if (ldpart .or. (.not.luservd .and. ldgas .and.&
+      &npd.eq.0)) then
 !           Calculate Deposition Velocities for this Source    ---   CALL VDP
-         CALL VDP
-      END IF
-      IF (LWPART .or. LWGAS) THEN
+         call vdp
+      end if
+      if (lwpart .or. lwgas) then
 !PES        Set value of ZSUBP = MAX( ZI, TOP OF PLUME ), where
 !PES        TOP OF PLUME is defined as plume height (HE) plus 2.15*SZ,
 !PES        evaluated at a distance of 20 kilometers downwind.
 !PES        Apply minimum value of 500m and maximum value of 10,000m.
-         CALL HEFF (20000.0D0)
-         IF( STABLE .or. (UNSTAB .and. HS .GE. ZI) )THEN
+         call heff (20000.0d0)
+         if( stable .or. (unstab .and. hs .ge. zi) )then
 !**  Added for Aircraft Plume Rise; UNC-IE
-            IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-               HE = HSP + DHCRIT
-               CALL SIGZ(20000.0D0)
-               ZSUBP = MAX( 500.0D0, ZI, HE + SZCOEF*SZAS )
-            ELSE
+            if (aftsrc(isrc) .eq. 'Y') then
+               he = hsp + dhcrit
+               call sigz(20000.0d0)
+               zsubp = max( 500.0d0, zi, he + szcoef*szas )
+            else
 !**  End Aircraft Plume Rise insert; April 2023
-               CALL SIGZ(20000.0D0)
-               ZSUBP = MAX( 500.0D0, ZI, HS + SZCOEF*SZAS )
-            END IF               ! Added for Aircraft; UNC-IE
-         ELSE IF (UNSTAB) THEN
+               call sigz(20000.0d0)
+               zsubp = max( 500.0d0, zi, hs + szcoef*szas )
+            end if               ! Added for Aircraft; UNC-IE
+         else if (unstab) then
 !**  Added for Aircraft Plume Rise; UNC-IE
-            IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-               HED1 = HSP + DHCRIT
-               IF (PPF .GT. 0.0D0) THEN
-                  CALL ACBLPR3
-               END IF
-               CALL SIGZ(20000.0D0)
+            if (aftsrc(isrc) .eq. 'Y') then
+               hed1 = hsp + dhcrit
+               if (ppf .gt. 0.0d0) then
+                  call acblpr3
+               end if
+               call sigz(20000.0d0)
 
-               IF (PPF .EQ. 0.0D0) THEN
-                  ZSUBP=MAX( 500.0D0, ZI, HED1 + SZCOEF*(SZAD1+SZAD2)/&
-                  &2.0D0 )
-               ELSE IF (PPF .EQ. 1.0D0) THEN
-                  ZSUBP=MAX( 500.0D0, ZI, HE3 + SZCOEF*SZA3)
-               ELSE
-                  ZSUBP=MAX( 500.0D0, ZI, PPF*(HE3+SZCOEF*SZA3) +&
-                  &(1.0D0-PPF)*(HED1 + SZCOEF*(SZAD1+SZAD2)/2.0D0) )
-               END IF
+               if (ppf .eq. 0.0d0) then
+                  zsubp=max( 500.0d0, zi, hed1 + szcoef*(szad1+szad2)/&
+                  &2.0d0 )
+               else if (ppf .eq. 1.0d0) then
+                  zsubp=max( 500.0d0, zi, he3 + szcoef*sza3)
+               else
+                  zsubp=max( 500.0d0, zi, ppf*(he3+szcoef*sza3) +&
+                  &(1.0d0-ppf)*(hed1 + szcoef*(szad1+szad2)/2.0d0) )
+               end if
 
-            ELSE
+            else
 !**  End Aircraft Plume Rise insert; April 2023
-               CALL SIGZ(20000.0D0)
-               ZSUBP = MAX( 500.0D0, ZI, HS +&
-               &SZCOEF*(SZAD1+SZAD2)/2.0D0 )
-            END IF               ! Added for Aircraft; UNC-IE
-         END IF
-         ZSUBP = MIN( 10000.0D0, ZSUBP )
+               call sigz(20000.0d0)
+               zsubp = max( 500.0d0, zi, hs +&
+               &szcoef*(szad1+szad2)/2.0d0 )
+            end if               ! Added for Aircraft; UNC-IE
+         end if
+         zsubp = min( 10000.0d0, zsubp )
 !           Calculate Scavenging Ratios for this Source           ---   CALL SCAVRAT
-         CALL SCAVRAT
-      END IF
+         call scavrat
+      end if
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-      IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+      if (aftsrc(isrc) .eq. 'Y') then
 !RWB     Determine transport wind direction using midpoint between
 !RWB     stack height and "final" plume height.  R. Brode, PES, 1/22/98
 !----    Define ZMID=midpoint between stack height and "final" plume height
-         ZMID = MIN( 4000.0D0, (HS + 0.5D0*DHFAER) )
+         zmid = min( 4000.0d0, (hs + 0.5d0*dhfaer) )
 !----    Locate index below ZMID
-         CALL LOCATE(GRIDHT, 1, MXGLVL, ZMID, NDXZMID)
+         call locate(gridht, 1, mxglvl, zmid, ndxzmid)
 
 !----    Extract WD for grid levels above and below ZMID
-         VALABV = GRIDWD(NDXZMID+1)
-         VBELOW = GRIDWD(NDXZMID)
+         valabv = gridwd(ndxzmid+1)
+         vbelow = gridwd(ndxzmid)
 
 !----    Check for 360 crossover and adjust if necessary
-         IF( (VALABV-VBELOW) .LT. -180.0D0) THEN
-            VALABV = VALABV + 360.0D0
-         ELSE IF( (VALABV-VBELOW) .GT. 180.0D0) THEN
-            VALABV = VALABV - 360.0D0
-         END IF
+         if( (valabv-vbelow) .lt. -180.0d0) then
+            valabv = valabv + 360.0d0
+         else if( (valabv-vbelow) .gt. 180.0d0) then
+            valabv = valabv - 360.0d0
+         end if
 
 !----    Assign Wind direction
-         IF (VBELOW .EQ. VALABV) THEN
-            WDIR = VBELOW
-         ELSE
+         if (vbelow .eq. valabv) then
+            wdir = vbelow
+         else
 !----       Interpolate to ZMID
-            CALL GINTRP( GRIDHT(NDXZMID), VBELOW,&
-            &GRIDHT(NDXZMID+1), VALABV,&
-            &ZMID, WDIR )
-         END IF
+            call gintrp( gridht(ndxzmid), vbelow,&
+            &gridht(ndxzmid+1), valabv,&
+            &zmid, wdir )
+         end if
 
 !        Check for WDIR > 360 or < 0
-         IF (WDIR .GT. 360.0D0) THEN
-            WDIR = WDIR - 360.0D0
-         ELSE IF (WDIR .LE. 0.0D0) THEN
-            WDIR = WDIR + 360.0D0
-         END IF
+         if (wdir .gt. 360.0d0) then
+            wdir = wdir - 360.0d0
+         else if (wdir .le. 0.0d0) then
+            wdir = wdir + 360.0d0
+         end if
 !
 !----    Convert direction to radians, compute sine and cosine of direction,
 !        and determine nearest 10-degree sector.
 !
 !---->   wind direction = wind direction in degrees * DTORAD
 
-         WDSIN = DSIN(WDIR * DTORAD)
-         WDCOS = DCOS(WDIR * DTORAD)
+         wdsin = dsin(wdir * dtorad)
+         wdcos = dcos(wdir * dtorad)
 
-         AFV = WDIR - 180.0D0
-         IF (AFV .LT. 0.0D0) THEN
-            AFV = AFV + 360.0D0
-         END IF
-         AAFV(ISRC) = AFV       ! save flowvector for this source
+         afv = wdir - 180.0d0
+         if (afv .lt. 0.0d0) then
+            afv = afv + 360.0d0
+         end if
+         aafv(isrc) = afv       ! save flowvector for this source
          ! for use in MAXDCONT processing
-         IFVSEC = IDINT (AFV*0.10D0 + 0.4999D0)
-         IF (IFVSEC .EQ. 0) IFVSEC = 36
+         ifvsec = idint (afv*0.10d0 + 0.4999d0)
+         if (ifvsec .eq. 0) ifvsec = 36
 
 !RJP     Add temporary debugging statement.
 
-         IF(ARCFTDEBUG) THEN
+         if(arcftdebug) then
 ! ---       Include "effective" wind direction here
-            WRITE(ARCFTDBG, 6011) DHCRIT, XFINAL, XMIXED, AFV
-6011        FORMAT(5X,'For effective parameter calculations: ',&
-            &'"Final" plume rise = ',G14.6, ' m; Distance to final ',&
-            &'rise = ',G14.6,' m',/,5x,'Distance to well-mixed ',&
-            &'state = ',G14.6,' m;',/,5x,'"Effective" flow vector = ',&
-            &F6.2)
+            write(arcftdbg, 6011) dhcrit, xfinal, xmixed, afv
+6011        format(5x,'For effective parameter calculations: ',&
+            &'"Final" plume rise = ',g14.6, ' m; Distance to final ',&
+            &'rise = ',g14.6,' m',/,5x,'Distance to well-mixed ',&
+            &'state = ',g14.6,' m;',/,5x,'"Effective" flow vector = ',&
+            &f6.2)
 
-         END IF
+         end if
 
-      END IF
+      end if
 !**  End Aircraft Plume Rise insert; April 2023
 
 ! ---    Save WDSIN and WSCOS for later use by PVMRM/GRSM option
-      AWDSIN(ISRC) = WDSIN
-      AWDCOS(ISRC) = WDCOS
+      awdsin(isrc) = wdsin
+      awdcos(isrc) = wdcos
 
 !        Begin Receptor LOOP
-      RECEPTOR_LOOP: DO IREC = 1, NUMREC
+      receptor_loop: do irec = 1, numrec
 
 !  Added for TTRM; AECOM
-         IF (RUNTTRM) THEN
-            TTRMOUT(IREC,ISRC,11) = DISTR
-            TTRMOUT(IREC,ISRC,12) = UEFF
-            TTRMOUT(IREC,ISRC,13) = UEFFD
-         END IF
+         if (runttrm) then
+            ttrmout(irec,isrc,11) = distr
+            ttrmout(irec,isrc,12) = ueff
+            ttrmout(irec,isrc,13) = ueffd
+         end if
 !  End TTRM insert; Feb. 2021
 
 !           Calculate Down and Crosswind Distances          ---   CALL ARDIST
-         IF( AREADBG )THEN
-            IF( EVONLY )THEN
-               write(AREADBUNT,101) SRCID(ISRC), IEVENT
-101            format(/1x,'SRCID= ', A12,'  IEVT=',I7,/)
-            ELSE
-               write(AREADBUNT,102) SRCID(ISRC), IREC
-102            format(/1x,'SRCID= ', A12,'  IREC=',I7,/)
-            ENDIF
-         ENDIF
+         if( areadbg )then
+            if( evonly )then
+               write(areadbunt,101) srcid(isrc), ievent
+101            format(/1x,'SRCID= ', a12,'  IEVT=',i7,/)
+            else
+               write(areadbunt,102) srcid(isrc), irec
+102            format(/1x,'SRCID= ', a12,'  IREC=',i7,/)
+            endif
+         endif
 
-         IF (EVONLY) THEN
-            CALL ARDIST(IEVENT,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-         ELSE
-            CALL ARDIST(IREC,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-         END IF
+         if (evonly) then
+            call ardist(ievent,xdep,width,length,xminr,xmaxr)
+         else
+            call ardist(irec,xdep,width,length,xminr,xmaxr)
+         end if
 
 !           Check to see if receptor is upwind of area source;
 !           also check to see if receptor is beyond the maximum
 !           distance from source; assigned value of 80km
 !           for obsolescent TOXICS option or new FASTAREA or
 !           FASTALL options; otherwise "unlimited" (1.0D20)
-         IF (XMAXR .LT. 1.0D0 .or. DISTR .GT. MAXDIST) THEN
+         if (xmaxr .lt. 1.0d0 .or. distr .gt. maxdist) then
 !     Added for TTRM; AECOM
 !           For TTRM, reset radial distance if the receptor is upwind or
 !           the maximum distance from the source
-            IF (RUNTTRM) THEN
-               TTRMOUT(IREC,ISRC,11) = 0.0D0
-            END IF
+            if (runttrm) then
+               ttrmout(irec,isrc,11) = 0.0d0
+            end if
 !    End TTRM insert; Feb. 2021
 !              Receptor is upwind of source or receptor is beyond the
 !              maximum distance from source; set CHI = 0.0 for current
 !              REC and SRC and set NO2 option variables to 0.0 before
 !              cycling to next receptor
-            IF (PVMRM .or. OLM .or. ARM2&
-            &.or. RUNTTRM .or. GRSM) THEN
+            if (pvmrm .or. olm .or. arm2&
+            &.or. runttrm .or. grsm) then
 ! ---             Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                 cycling to the next receptor to avoid
 !                 persisting value from previous hour.
-               CHI(IREC,ISRC,:) = 0.0D0
-               IF(GRSM)THEN
-                  CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
-               END IF
-               IF (PVMRM .or. GRSM) THEN
-                  HECNTR(IREC,ISRC)  = 0.0D0
-                  UEFFS(IREC,ISRC)   = 0.0D0
-                  EPSEF(IREC,ISRC)   = 0.0D0
-                  PPFACT(IREC,ISRC)  = 0.0D0
-                  HECNTR3(IREC,ISRC) = 0.0D0
-                  UEFF3S(IREC,ISRC)  = 0.0D0
-                  EPSEF3(IREC,ISRC)  = 0.0D0
-                  FOPTS(IREC,ISRC)   = 0.0D0
-               END IF
-            END IF
+               chi(irec,isrc,:) = 0.0d0
+               if(grsm)then
+                  chi_ttravchm(irec,isrc) = 0.0d0
+               end if
+               if (pvmrm .or. grsm) then
+                  hecntr(irec,isrc)  = 0.0d0
+                  ueffs(irec,isrc)   = 0.0d0
+                  epsef(irec,isrc)   = 0.0d0
+                  ppfact(irec,isrc)  = 0.0d0
+                  hecntr3(irec,isrc) = 0.0d0
+                  ueff3s(irec,isrc)  = 0.0d0
+                  epsef3(irec,isrc)  = 0.0d0
+                  fopts(irec,isrc)   = 0.0d0
+               end if
+            end if
 ! ---          Also set HRVAL/AERVAL/AEROUR = 0
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AEROUT(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerout(:) = 0.0d0
 
 ! ---          Reset QTK since it may have been changed if
 !              point source approximation has been used
-            QTK = QTKSAV
+            qtk = qtksav
 ! ---          Cycle to next receptor
-            CYCLE RECEPTOR_LOOP
-         END IF
+            cycle receptor_loop
+         end if
 
 !           Initialize HE for initial call to ADISY
-         HE = HS
+         he = hs
 !           Set initial effective parameters
-         UEFF  = US
-         SVEFF = SVS
-         SWEFF = SWS
-         TGEFF = TGS
-         IF ( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-            UEFFD  = US
-            SVEFFD = SVS
-            SWEFFD = SWS
-            UEFFN  = US
-            SVEFFN = SVS
-            SWEFFN = SWS
+         ueff  = us
+         sveff = svs
+         sweff = sws
+         tgeff = tgs
+         if ( unstab  .and.  (hs .lt. zi) ) then
+            ueffd  = us
+            sveffd = svs
+            sweffd = sws
+            ueffn  = us
+            sveffn = svs
+            sweffn = sws
 !**  Added for Aircraft Plume Rise; UNC-IE
-            IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-               UEFF3  = US
-               SVEFF3 = SVS
-               SWEFF3 = SWS
-               TGEFF3 = TGS
-            END IF
+            if (aftsrc(isrc) .eq. 'Y') then
+               ueff3  = us
+               sveff3 = svs
+               sweff3 = sws
+               tgeff3 = tgs
+            end if
 !**  End Aircraft Plume Rise insert; April 2023
-         END IF
+         end if
 
 ! ---         Removed this check if calculating meander since the lateral plume width is extended
 ! ---             and this check would artificially reduce the width of the plume Wood 6/10/22
 ! ---       Check to see if receptor is beyond edge of plume laterally.
-         IF (.NOT. L_AREAMNDR) THEN
-            IF ( (DABS(Y)-0.5D0*WIDTH) .GT. 0.0D0) THEN
+         if (.not. l_areamndr) then
+            if ( (dabs(y)-0.5d0*width) .gt. 0.0d0) then
 ! ---              Receptor is outside "projected" width of effective area source
 !                  Calculate maximum sigma-y based on XMAXR and compare minimum
 !                  lateral distance of receptor from source to 5*sigma-y;
@@ -4108,530 +4108,530 @@ SUBROUTINE ACALC
 
 ! ---              Calculate SY at XMAXR to determine if receptor is beyond
 !                  the plume laterally.
-               CALL ADISY(XMAXR)
-               IF ((DABS(Y)-0.5D0*WIDTH) .GE. 5.0D0*SY) THEN
+               call adisy(xmaxr)
+               if ((dabs(y)-0.5d0*width) .ge. 5.0d0*sy) then
 !         Added for TTRM; AECOM
 !               For TTRM, reset radial distance if the receptor is more than
 !               5&SY from the edge of the projected area source
-                  IF (RUNTTRM) THEN
-                     TTRMOUT(IREC,ISRC,11) = 0.0D0
-                  END IF
+                  if (runttrm) then
+                     ttrmout(irec,isrc,11) = 0.0d0
+                  end if
 !         End TTRM insert; Feb. 2021
 !                     Receptor is more than 5*SY from the edge of the
 !                     projected area source; set CHI = 0.0 for current
 !                     REC and SRC and set NO2 option variables to 0.0
 !                     before cycling to next receptor.
-                  IF (PVMRM .or. OLM .or. ARM2&
-                  &.or. RUNTTRM .or. GRSM) THEN
+                  if (pvmrm .or. olm .or. arm2&
+                  &.or. runttrm .or. grsm) then
 ! ---                    Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                        cycling to the next receptor to avoid
 !                        persisting value from previous hour.
-                     CHI(IREC,ISRC,:) = 0.0D0
-                     IF(GRSM)THEN
-                        CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
-                     END IF
-                     IF (PVMRM .or. GRSM) THEN
-                        HECNTR(IREC,ISRC)  = 0.0D0
-                        UEFFS(IREC,ISRC)   = 0.0D0
-                        EPSEF(IREC,ISRC)   = 0.0D0
-                        PPFACT(IREC,ISRC)  = 0.0D0
-                        HECNTR3(IREC,ISRC) = 0.0D0
-                        UEFF3S(IREC,ISRC)  = 0.0D0
-                        EPSEF3(IREC,ISRC)  = 0.0D0
-                        FOPTS(IREC,ISRC)   = 0.0D0
-                     END IF
-                  END IF
+                     chi(irec,isrc,:) = 0.0d0
+                     if(grsm)then
+                        chi_ttravchm(irec,isrc) = 0.0d0
+                     end if
+                     if (pvmrm .or. grsm) then
+                        hecntr(irec,isrc)  = 0.0d0
+                        ueffs(irec,isrc)   = 0.0d0
+                        epsef(irec,isrc)   = 0.0d0
+                        ppfact(irec,isrc)  = 0.0d0
+                        hecntr3(irec,isrc) = 0.0d0
+                        ueff3s(irec,isrc)  = 0.0d0
+                        epsef3(irec,isrc)  = 0.0d0
+                        fopts(irec,isrc)   = 0.0d0
+                     end if
+                  end if
 !                     Also reinitialize HRVAL, AERVAL and AEROUT
-                  HRVAL(:)  = 0.0D0
-                  AERVAL(:) = 0.0D0
-                  AEROUT(:) = 0.0D0
+                  hrval(:)  = 0.0d0
+                  aerval(:) = 0.0d0
+                  aerout(:) = 0.0d0
 
 ! ---                 Reset QTK since it may have been changed if
 !                     point source approximation has been used
-                  QTK = QTKSAV
+                  qtk = qtksav
 
 ! ---                 Cycle to next receptor
-                  CYCLE RECEPTOR_LOOP
-               END IF
-            END IF
-         END IF
+                  cycle receptor_loop
+               end if
+            end if
+         end if
 
-         IF(DEBUG) THEN
-            WRITE(DBGUNT, 6015) UEFF, SVEFF, SWEFF
+         if(debug) then
+            write(dbgunt, 6015) ueff, sveff, sweff
 !             ENSR ENHANCEMENT OF WRITE STATEMENT
-6015        FORMAT(//,'AERMOD AREA SOURCE COMPONENT',/,5X,&
+6015        format(//,'AERMOD AREA SOURCE COMPONENT',/,5x,&
             &'Initial effective parameters for ',&
             &'stable or direct convective ',&
-            &'plume:',//,5x,'Ueff = ',F7.2,' m/s; ',&
-            &'SVeff = ',F7.2,&
-            &' m/s; SWeff = ',F7.2,' m/s.',/)
-         END IF
+            &'plume:',//,5x,'Ueff = ',f7.2,' m/s; ',&
+            &'SVeff = ',f7.2,&
+            &' m/s; SWeff = ',f7.2,' m/s.',/)
+         end if
 
 !           Determine the CRITical Dividing Streamline      ---   CALL CRITDS
-         CALL CRITDS (HE)
+         call critds (he)
 
 !           Set distance factor for point source approx. for FASTAREA option
 !           based on "equivalent" PG stability class (KST)
-         IF (URBSTAB) THEN
-            VP_FACT = VIRTPNT_URB(KST)
-         ELSE
-            VP_FACT = VIRTPNT_RUR(KST)
-         END IF
+         if (urbstab) then
+            vp_fact = virtpnt_urb(kst)
+         else
+            vp_fact = virtpnt_rur(kst)
+         end if
 
 !           Calculate distance for switch to point source approx. for FASTAREA
-         XPOINT = 1.5D0*LENGTH + VP_FACT*WIDTH
+         xpoint = 1.5d0*length + vp_fact*width
 
 ! ---       Assign XDIST for use in dry depletion (FUNCTION F2INT)
-         XDIST = X
+         xdist = x
 
-         IF ( (.NOT.FASTAREA .and. .NOT.FASTALL) .or.&
-         &((FASTAREA .or. FASTALL) .and. X .LT. XPOINT)) THEN
-            IF (ARDPLETE) THEN
+         if ( (.not.fastarea .and. .not.fastall) .or.&
+         &((fastarea .or. fastall) .and. x .lt. xpoint)) then
+            if (ardplete) then
 
-               IF (NPD .EQ. 0 .and. (LDGAS .or. LWGAS)) THEN
-                  CALL PDEPG (XDEP)
-               ELSE
-                  DQCORG = 1.0D0
-                  WQCORG = 1.0D0
-               END IF
-               IF (NPD .GT. 0 .and. (LDPART .or. LWPART)) THEN
-                  CALL PDEP (XDEP)
-               ELSE IF (NPD .GT. 0) THEN
+               if (npd .eq. 0 .and. (ldgas .or. lwgas)) then
+                  call pdepg (xdep)
+               else
+                  dqcorg = 1.0d0
+                  wqcorg = 1.0d0
+               end if
+               if (npd .gt. 0 .and. (ldpart .or. lwpart)) then
+                  call pdep (xdep)
+               else if (npd .gt. 0) then
 !                    Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
-                  DQCOR = 1.0D0
-                  WQCOR = 1.0D0
-               END IF
+                  dqcor = 1.0d0
+                  wqcor = 1.0d0
+               end if
 
-            END IF
+            end if
 
-            DO ITYP = 1, NUMTYP
+            do ityp = 1, numtyp
 ! ---       Area meander option added Wood 6/3/22
 ! ---       Calculate coherent plume component using downwind distance, X
-               L_APLUME = .TRUE.
-               AEROUT_PLM = 0.0D0
+               l_aplume = .true.
+               aerout_plm = 0.0d0
 
 !                 Calculate Area Source Integral - Plume         ---   CALL AREAIN
-               CALL AREAIN
-               AEROUT_PLM = HRVAL(ITYP)
+               call areain
+               aerout_plm = hrval(ityp)
 
 !                 Check if user selected to calculate meander
 !                 Calculate Area Source Integral - meander/pancake plume         ---   CALL AREAIN
-               IF (L_AREAMNDR) THEN
-                  AEROUT_PAN = 0.0D0
-                  L_APLUME = .FALSE.
-                  CALL AREAIN
-                  AEROUT_PAN = HRVAL(ITYP)
+               if (l_areamndr) then
+                  aerout_pan = 0.0d0
+                  l_aplume = .false.
+                  call areain
+                  aerout_pan = hrval(ityp)
 
-                  IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-                     CALL MEANDR( UEFF, SVEFF, FRAN )
-                  ELSE IF (UNSTAB) THEN
-                     CALL MEANDR( UEFFD, SVEFFD, FRAN )
-                  END IF
+                  if (stable .or. (unstab.and.(hs.ge.zi))) then
+                     call meandr( ueff, sveff, fran )
+                  else if (unstab) then
+                     call meandr( ueffd, sveffd, fran )
+                  end if
 !                Concentration calculated based on FRAN wieghting between plume and meander/pancake plume components
-                  HRVAL(ITYP) = FRAN*AEROUT_PAN + (1.0D0-FRAN)*AEROUT_PLM
-               ELSE
+                  hrval(ityp) = fran*aerout_pan + (1.0d0-fran)*aerout_plm
+               else
 !                    Concentration equivalent to the plume component only
-                  HRVAL(ITYP) = AEROUT_PLM
-               END IF
-            END DO
-         ELSE
+                  hrval(ityp) = aerout_plm
+               end if
+            end do
+         else
 !              Use point source approximation
 !              Save emissions per unit area and calculate total emissions
-            QTKSAV = QTK
-            IF (SRCTYP(ISRC) .EQ. 'AREA' .or.&
-            &SRCTYP(ISRC) .EQ. 'LINE' .or.&
-            &SRCTYP(ISRC) .EQ. 'AREAPOLY') THEN
+            qtksav = qtk
+            if (srctyp(isrc) .eq. 'AREA' .or.&
+            &srctyp(isrc) .eq. 'LINE' .or.&
+            &srctyp(isrc) .eq. 'AREAPOLY') then
 !                 Note that XINIT and YINIT are equivalent values for AREAPOLY
-               QTK = QTK * XINIT * YINIT
-            ELSE IF (SRCTYP(ISRC) .EQ. 'AREACIRC') THEN
-               QTK = QTK * PI * RADIUS(ISRC) * RADIUS(ISRC)
-            END IF
-            SYINIT = 0.0D0
+               qtk = qtk * xinit * yinit
+            else if (srctyp(isrc) .eq. 'AREACIRC') then
+               qtk = qtk * pi * radius(isrc) * radius(isrc)
+            end if
+            syinit = 0.0d0
 
 !              Determine Deposition Correction Factors
-            IF (NPD .EQ. 0 .and. (LDGAS .or. LWGAS)) THEN
-               CALL PDEPG (X)
-            ELSE
-               DQCORG = 1.0D0
-               WQCORG = 1.0D0
-            END IF
-            IF (NPD .GT. 0 .and. (LDPART .or. LWPART)) THEN
-               CALL PDEP (X)
-            ELSE IF (NPD .GT. 0) THEN
+            if (npd .eq. 0 .and. (ldgas .or. lwgas)) then
+               call pdepg (x)
+            else
+               dqcorg = 1.0d0
+               wqcorg = 1.0d0
+            end if
+            if (npd .gt. 0 .and. (ldpart .or. lwpart)) then
+               call pdep (x)
+            else if (npd .gt. 0) then
 !                 Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
-               DQCOR = 1.0D0
-               WQCOR = 1.0D0
-            END IF
+               dqcor = 1.0d0
+               wqcor = 1.0d0
+            end if
 
 !              Define plume centroid height (CENTER) for use in
 !              inhomogeniety calculations
-            CALL CENTROID (X)
+            call centroid (x)
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-            IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+            if (aftsrc(isrc) .eq. 'Y') then
 !     Calculate the plume rise                              ---   CALL ADELTAH
-               CALL ADELTAH ( X )
-            END IF
+               call adeltah ( x )
+            end if
 !**  End Aircraft Plume Rise insert; April 2023
 
 !              If the atmosphere is unstable and the stack
 !              top is below the mixing height, calculate
 !              the CBL PDF coefficients                     ---   CALL PDF
-            IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-               CALL PDF
-            END IF
+            if( unstab  .and.  (hs .lt. zi) ) then
+               call pdf
+            end if
 
 !              Determine Effective Plume Height             ---   CALL HEFF
-            CALL HEFF ( X )
+            call heff ( x )
 
 !              Compute effective parameters using an
 !              iterative average through plume rise layer
-            CALL IBLVAL (X)
+            call iblval (x)
 
 !              Call PDF & HEFF again for final CBL plume heights
-            IF (UNSTAB .and. (HS.LT.ZI) ) THEN
-               CALL PDF
-               CALL HEFF (X)
-            END IF
+            if (unstab .and. (hs.lt.zi) ) then
+               call pdf
+               call heff (x)
+            end if
 
 !              Determine Dispersion Parameters              ---   CALL VDIS
-            CALL VDIS (X)
+            call vdis (x)
 
 !              Calculate the 'y-term' contribution to
 !              dispersion, FSUBY, for coherent plume        ---   CALL FYPLM
-            CALL FYPLM(SY,FYOUT)
-            FSUBY  = FYOUT
-            FSUBYD = FSUBY
-            FSUBYN = FSUBYD
+            call fyplm(sy,fyout)
+            fsuby  = fyout
+            fsubyd = fsuby
+            fsubyn = fsubyd
 
 !              Set lateral term = 0.0 for penetrated source
-            FSUBY3 = 0.0D0
+            fsuby3 = 0.0d0
 
 !              Check for zero "y-terms"; if zero then skip calculations
 !              and go to next receptor.
-            IF( FSUBY.EQ.0.0D0 .and. FSUBY3.EQ.0.0D0 )THEN
+            if( fsuby.eq.0.0d0 .and. fsuby3.eq.0.0d0 )then
 !      Added for TTRM; AECOM
 !              For TTRM, if the "y-terms" are zero then set the radial
 !              distance to zero.
-               IF (RUNTTRM) THEN
-                  TTRMOUT(IREC,ISRC,11) = 0.0D0
-               END IF
+               if (runttrm) then
+                  ttrmout(irec,isrc,11) = 0.0d0
+               end if
 !      End TTRM insert; Feb. 2021
 !                 FSUBY terms are both 0.0; assign 0.0 to arrays
-               IF (PVMRM .or. OLM .or. ARM2&
-               &.or. RUNTTRM .or. GRSM) THEN
+               if (pvmrm .or. olm .or. arm2&
+               &.or. runttrm .or. grsm) then
 ! ---                Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                    cycling to the next receptor to avoid
 !                    persisting value from previous hour.
-                  CHI(IREC,ISRC,:) = 0.0D0
-                  IF(GRSM)THEN
-                     CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
-                  END IF
-                  IF (PVMRM .or. GRSM) THEN
-                     HECNTR(IREC,ISRC)  = 0.0D0
-                     UEFFS(IREC,ISRC)   = 0.0D0
-                     EPSEF(IREC,ISRC)   = 0.0D0
-                     PPFACT(IREC,ISRC)  = 0.0D0
-                     HECNTR3(IREC,ISRC) = 0.0D0
-                     UEFF3S(IREC,ISRC)  = 0.0D0
-                     EPSEF3(IREC,ISRC)  = 0.0D0
-                     FOPTS(IREC,ISRC)   = 0.0D0
-                  END IF
+                  chi(irec,isrc,:) = 0.0d0
+                  if(grsm)then
+                     chi_ttravchm(irec,isrc) = 0.0d0
+                  end if
+                  if (pvmrm .or. grsm) then
+                     hecntr(irec,isrc)  = 0.0d0
+                     ueffs(irec,isrc)   = 0.0d0
+                     epsef(irec,isrc)   = 0.0d0
+                     ppfact(irec,isrc)  = 0.0d0
+                     hecntr3(irec,isrc) = 0.0d0
+                     ueff3s(irec,isrc)  = 0.0d0
+                     epsef3(irec,isrc)  = 0.0d0
+                     fopts(irec,isrc)   = 0.0d0
+                  end if
 
-               END IF
+               end if
 !                 Also reinitialize HRVAL, AERVAL and AEROUT
-               HRVAL(:)  = 0.0D0
-               AERVAL(:) = 0.0D0
-               AEROUT(:) = 0.0D0
+               hrval(:)  = 0.0d0
+               aerval(:) = 0.0d0
+               aerout(:) = 0.0d0
 
 ! ---             Reset QTK since it may have been changed if
 !                 point source approximation has been used
-               QTK = QTKSAV
+               qtk = qtksav
 
 ! ---             Cycle to next receptor
-               CYCLE RECEPTOR_LOOP
+               cycle receptor_loop
 
-            ELSE
+            else
 
-               IF (NPD .EQ. 0) THEN
+               if (npd .eq. 0) then
 !                    Perform calculations for gases
 !                    Assign plume tilt, HV = 0.0
 
-                  ADJ = DQCORG * WQCORG
+                  adj = dqcorg * wqcorg
 
-                  IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+                  if (stable .or. (unstab.and.(hs.ge.zi))) then
 !                       Calculate height of the "effective reflecting surface"
 !**  Added for Aircraft Plume Rise; UNC-IE
-                     IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-                        CALL REFL_HT (HE, X, SZB, VSIGZ, HSBL)
-                     ELSE
+                     if (aftsrc(isrc) .eq. 'Y') then
+                        call refl_ht (he, x, szb, vsigz, hsbl)
+                     else
 !**  End Aircraft Plume Rise insert; April 2023
-                        CALL REFL_HT (HE, X, 0.0D0, VSIGZ, HSBL)
-                     END IF                         ! Added for ARISE; UNC-IE
-                  ELSE IF ( UNSTAB ) THEN
-                     HSBL = 0.0D0
-                  END IF
+                        call refl_ht (he, x, 0.0d0, vsigz, hsbl)
+                     end if                         ! Added for ARISE; UNC-IE
+                  else if ( unstab ) then
+                     hsbl = 0.0d0
+                  end if
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-                  IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-                     IF (UNSTAB.and.(HS.LT.ZI).and.(PPF.GT.0.0D0))THEN
+                  if (aftsrc(isrc) .eq. 'Y') then
+                     if (unstab.and.(hs.lt.zi).and.(ppf.gt.0.0d0))then
 !               Calculate height of the "effective reflecting surface"
-                        CALL REFL_HT (HE3, X, SZB3, VSIGZ, HPEN)
-                     ELSE
-                        HPEN = 0.0D0
-                     END IF
-                  END IF
+                        call refl_ht (he3, x, szb3, vsigz, hpen)
+                     else
+                        hpen = 0.0d0
+                     end if
+                  end if
 !**  End Aircraft Plume Rise insert; April 2023
 
 !                    Determine the CRITical Dividing Streamline---   CALL CRITDS
-                  CALL CRITDS (HE)
+                  call critds (he)
 
 !                    Calculate the fraction of plume below
 !                    HCRIT, PHEE                               ---   CALL PFRACT
-                  CALL PFRACT (HE)
+                  call pfract (he)
 
 !                    Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-                  CALL FTERM
+                  call fterm
 
 !                    Calculate Conc. for Virtual Point Source  ---   CALL AER_PCHI
-                  CALL AER_PCHI( X, ADJ, VDEPG, 0, AEROUT )
-                  HRVAL = AEROUT
+                  call aer_pchi( x, adj, vdepg, 0, aerout )
+                  hrval = aerout
 
-               ELSE
+               else
 !                    Perform calculations for particles, loop through particle sizes
 
 !                    Begin loop over particle sizes
-                  DO J = 1, NPD
+                  do j = 1, npd
 
 !                       Calculate Plume Tilt Due to Settling, HV
-                     HV = (X/US) * VGRAV(J)
+                     hv = (x/us) * vgrav(j)
 
 !                       Adjust Jth contribution by mass fraction and source
 !                       depletion
-                     ADJ = PHI(J) * DQCOR(J) * WQCOR(J)
+                     adj = phi(j) * dqcor(j) * wqcor(j)
 
-                     IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+                     if (stable .or. (unstab.and.(hs.ge.zi))) then
 !                          Calculate height of the "effective reflecting surface"
 !                          Calculate Settled Plume Height(s), HESETL
-                        HESETL = MAX( 0.0D0, HE - HV )
+                        hesetl = max( 0.0d0, he - hv )
 !**  Added for Aircraft Plume Rise; UNC-IE
-                        IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-                           CALL REFL_HT (HESETL, X, SZB, VSIGZ, HSBL)
-                        ELSE
+                        if (aftsrc(isrc) .eq. 'Y') then
+                           call refl_ht (hesetl, x, szb, vsigz, hsbl)
+                        else
 !**  End Aircraft Plume Rise insert; April 2023
-                           CALL REFL_HT (HESETL, X, 0.0D0, VSIGZ, HSBL)
-                        END IF                         ! Added for ARISE; UNC-IE
-                     ELSE IF ( UNSTAB ) THEN
+                           call refl_ht (hesetl, x, 0.0d0, vsigz, hsbl)
+                        end if                         ! Added for ARISE; UNC-IE
+                     else if ( unstab ) then
 !                          Calculate Settled Plume Height(s), HESETL
-                        HESETL = MAX( 0.0D0, 0.5D0*(HED1+HED2) - HV )
-                        HSBL = 0.0D0
-                     END IF
+                        hesetl = max( 0.0d0, 0.5d0*(hed1+hed2) - hv )
+                        hsbl = 0.0d0
+                     end if
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-                     IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-                        IF(UNSTAB.and.(HS.LT.ZI).and.(PPF.GT.0.0D0))THEN
+                     if (aftsrc(isrc) .eq. 'Y') then
+                        if(unstab.and.(hs.lt.zi).and.(ppf.gt.0.0d0))then
 !                 Calculate height of the "effective reflecting surface"
 !                 Calculate Settled Plume Height(s), HE3SETL
-                           HE3SETL = MAX( 0.0D0, HE3 - HV )
-                           CALL REFL_HT (HE3SETL, X, SZB3, VSIGZ, HPEN)
-                           HPEN = MAX( HPEN, ZI )
-                        ELSE
-                           HPEN = 0.0D0
-                        END IF
-                     END IF
+                           he3setl = max( 0.0d0, he3 - hv )
+                           call refl_ht (he3setl, x, szb3, vsigz, hpen)
+                           hpen = max( hpen, zi )
+                        else
+                           hpen = 0.0d0
+                        end if
+                     end if
 !**  End Aircraft Plume Rise insert; April 2023
 
 !                       Determine the CRITical Dividing Streamline---   CALL CRITDS
-                     CALL CRITDS (HESETL)
+                     call critds (hesetl)
 
 !                       Calculate the fraction of plume below
 !                       HCRIT, PHEE                               ---   CALL PFRACT
-                     CALL PFRACT (HESETL)
+                     call pfract (hesetl)
 
 !                       Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-                     CALL FTERM
+                     call fterm
 
 !                       Calculate Conc. for Virtual Point Source  ---   CALL AER_PCHI
-                     CALL AER_PCHI( X, ADJ, VDEP(J), J, AEROUT )
-                     HRVAL = HRVAL + AEROUT
+                     call aer_pchi( x, adj, vdep(j), j, aerout )
+                     hrval = hrval + aerout
 
-                  END DO
+                  end do
 !                    End loop over particle sizes
 
-               END IF
-            END IF
+               end if
+            end if
 ! ---          Reset QTK since it may have been changed if
 !              point source approximation has been used
-            QTK = QTKSAV
-         END IF
+            qtk = qtksav
+         end if
 
-         IF (PVMRM) THEN
+         if (pvmrm) then
 ! ---          Store data by source and receptor for PVMRM option
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-               HECNTR(IREC,ISRC) = HE
-               UEFFS(IREC,ISRC)  = UEFF
-               EPSEF(IREC,ISRC)  = EPSEFF
-            ELSE
-               HECNTR(IREC,ISRC) = CENTER
-               UEFFS(IREC,ISRC)  = UEFFD
-               EPSEF(IREC,ISRC)  = EPSEFFD
-            END IF
-            IF (PPF .GT. 0.0D0) THEN
-               PPFACT(IREC,ISRC)  = PPF
-               HECNTR3(IREC,ISRC) = HE3
-               UEFF3S(IREC,ISRC)  = UEFF3
-               EPSEF3(IREC,ISRC)  = EPSEFF3
-            ELSE
-               PPFACT(IREC,ISRC)  = 0.0D0
-               HECNTR3(IREC,ISRC) = 0.0D0
-               UEFF3S(IREC,ISRC)  = 0.0D0
-               EPSEF3(IREC,ISRC)  = 0.0D0
-            END IF
-            FOPTS(IREC,ISRC) = FOPT
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
+               hecntr(irec,isrc) = he
+               ueffs(irec,isrc)  = ueff
+               epsef(irec,isrc)  = epseff
+            else
+               hecntr(irec,isrc) = center
+               ueffs(irec,isrc)  = ueffd
+               epsef(irec,isrc)  = epseffd
+            end if
+            if (ppf .gt. 0.0d0) then
+               ppfact(irec,isrc)  = ppf
+               hecntr3(irec,isrc) = he3
+               ueff3s(irec,isrc)  = ueff3
+               epsef3(irec,isrc)  = epseff3
+            else
+               ppfact(irec,isrc)  = 0.0d0
+               hecntr3(irec,isrc) = 0.0d0
+               ueff3s(irec,isrc)  = 0.0d0
+               epsef3(irec,isrc)  = 0.0d0
+            end if
+            fopts(irec,isrc) = fopt
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AEROUT(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerout(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 
-         ELSE IF (OLM) THEN
+         else if (olm) then
 ! ---          Store data by source and receptor for OLM option
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AEROUT(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerout(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 !     Added for TTRM; AECOM
-         ELSE IF (RUNTTRM) THEN
+         else if (runttrm) then
 ! ---          Store data by source and receptor for OLM option
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AEROUT(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerout(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 !     End TTRM insert; Feb. 2021
 
-         ELSE IF (ARM2) THEN
+         else if (arm2) then
 ! ---          Store data by source and receptor for ARM2 options
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AEROUT(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerout(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 
 !           CERC 11/30/20
-         ELSE IF (GRSM) THEN
+         else if (grsm) then
 
 !              Calculate the effective wind speed
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-               UCHM=UEFF
-            ELSE
-               UCHM=UEFFD
-            END IF
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
+               uchm=ueff
+            else
+               uchm=ueffd
+            end if
 !              Calculate the conc x travel time for the chemistry scheme
-            IF(UCHM/=0)THEN
-               CHI_TTRAVCHM(IREC,ISRC)=&
-               &MAX(0.0D0,HRVAL(1)*X/UCHM) !Don't allow negative conc*travel times
-            ELSE
+            if(uchm/=0)then
+               chi_ttravchm(irec,isrc)=&
+               &max(0.0d0,hrval(1)*x/uchm) !Don't allow negative conc*travel times
+            else
                !Error - no travel time if UCHM is zero
-               CALL ERRHDL(PATH, MODNAM, 'E','601','GRSM')
-               RUNERR=.TRUE.
-               RETURN
-            END IF
+               call errhdl(path, modnam, 'E','601','GRSM')
+               runerr=.true.
+               return
+            end if
 
 ! ---          Store data by source and receptor for GRSM options
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-               HECNTR(IREC,ISRC) = HE
-               UEFFS(IREC,ISRC)  = UEFF
-               EPSEF(IREC,ISRC)  = EPSEFF
-            ELSE
-               HECNTR(IREC,ISRC) = CENTER
-               UEFFS(IREC,ISRC)  = UEFFD
-               EPSEF(IREC,ISRC)  = EPSEFFD
-            END IF
-            IF (PPF .GT. 0.0D0) THEN
-               PPFACT(IREC,ISRC)  = PPF
-               HECNTR3(IREC,ISRC) = HE3
-               UEFF3S(IREC,ISRC)  = UEFF3
-               EPSEF3(IREC,ISRC)  = EPSEFF3
-            ELSE
-               PPFACT(IREC,ISRC)  = 0.0D0
-               HECNTR3(IREC,ISRC) = 0.0D0
-               UEFF3S(IREC,ISRC)  = 0.0D0
-               EPSEF3(IREC,ISRC)  = 0.0D0
-            END IF
-            FOPTS(IREC,ISRC) = FOPT
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
+               hecntr(irec,isrc) = he
+               ueffs(irec,isrc)  = ueff
+               epsef(irec,isrc)  = epseff
+            else
+               hecntr(irec,isrc) = center
+               ueffs(irec,isrc)  = ueffd
+               epsef(irec,isrc)  = epseffd
+            end if
+            if (ppf .gt. 0.0d0) then
+               ppfact(irec,isrc)  = ppf
+               hecntr3(irec,isrc) = he3
+               ueff3s(irec,isrc)  = ueff3
+               epsef3(irec,isrc)  = epseff3
+            else
+               ppfact(irec,isrc)  = 0.0d0
+               hecntr3(irec,isrc) = 0.0d0
+               ueff3s(irec,isrc)  = 0.0d0
+               epsef3(irec,isrc)  = 0.0d0
+            end if
+            fopts(irec,isrc) = fopt
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AEROUT(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerout(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 
-         END IF
+         end if
 
 !           Sum HRVAL to AVEVAL and ANNVAL Arrays  ---   CALL SUMVAL
 !           As noted just above, the calls to EV_SUMVAL and SUMVAL
 !           are skipped for a PVMRM, OLM, ARM2 or GRSM run; the
 !           summing is performed for these options in the
 !           respective routines
-         IF (EVONLY) THEN
-            CALL EV_SUMVAL
-         ELSE
-            DO IGRP = 1, NUMGRP
-               CALL SUMVAL
-            END DO
-         END IF
+         if (evonly) then
+            call ev_sumval
+         else
+            do igrp = 1, numgrp
+               call sumval
+            end do
+         end if
 
 !           Initialize __VAL arrays (1:NUMTYP)
-         HRVAL(:)  = 0.0D0
-         AERVAL(:) = 0.0D0
-         AEROUT(:) = 0.0D0
+         hrval(:)  = 0.0d0
+         aerval(:) = 0.0d0
+         aerout(:) = 0.0d0
 
-      END DO RECEPTOR_LOOP
+      end do receptor_loop
 !        End Receptor LOOP
 
 !        Output 'ARC' Values for EVALFILE                   ---   CALL EVALFL
-      IF (EVAL(ISRC)) THEN
-         CALL EVALFL
-      END IF
+      if (eval(isrc)) then
+         call evalfl
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE ARDIST(INDX,XDEP,WIDTH,LENGTH,XMINREC,XMAXREC)
+subroutine ardist(indx,xdep,width,length,xminrec,xmaxrec)
 !***********************************************************************
 !                 ARDIST Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4673,106 +4673,106 @@ SUBROUTINE ARDIST(INDX,XDEP,WIDTH,LENGTH,XMINREC,XMAXREC)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   character modnam*12
 
-   INTEGER :: I, INDX
-   DOUBLE PRECISION :: XSRC, YSRC, XMINREC, XMAXREC, YMINREC,&
-   &YMAXREC, XDEP, WIDTH, LENGTH
+   integer :: i, indx
+   double precision :: xsrc, ysrc, xminrec, xmaxrec, yminrec,&
+   &ymaxrec, xdep, width, length
 
 !     Variable Initializations
-   MODNAM = 'ARDIST'
+   modnam = 'ARDIST'
 
 !     Set Receptor Coordinates, Terrain Elevation and Flagpole Heights
-   XR = AXR(INDX)
-   YR = AYR(INDX)
-   ZELEV = AZELEV(INDX)
-   ZHILL = AZHILL(INDX)
-   ZFLAG = AZFLAG(INDX)
+   xr = axr(indx)
+   yr = ayr(indx)
+   zelev = azelev(indx)
+   zhill = azhill(indx)
+   zflag = azflag(indx)
 
 !     Initialize min and max distances from source to receptor
-   XMINREC =  9.0D10
-   XMAXREC = -9.0D10
-   YMINREC =  9.0D10
-   YMAXREC = -9.0D10
+   xminrec =  9.0d10
+   xmaxrec = -9.0d10
+   yminrec =  9.0d10
+   ymaxrec = -9.0d10
 
 !     Initialize SPA(:,:) array
-   SPA(:,:) = 0.0D0
+   spa(:,:) = 0.0d0
 
 !     Calculate Downwind (X) and Crosswind (Y) Distances for Each Vertex
-   DO I = 1, NVERT+1
-      XSRC = XVERT(I)
-      YSRC = YVERT(I)
-      SPA(I,1) = -((XR-XSRC)*WDSIN + (YR-YSRC)*WDCOS)
-      SPA(I,2) =   (XR-XSRC)*WDCOS - (YR-YSRC)*WDSIN
-      XMINREC = MIN(XMINREC, SPA(I,1))
-      XMAXREC = MAX(XMAXREC, SPA(I,1))
-      YMINREC = MIN(YMINREC, SPA(I,2))
-      YMAXREC = MAX(YMAXREC, SPA(I,2))
-   END DO
+   do i = 1, nvert+1
+      xsrc = xvert(i)
+      ysrc = yvert(i)
+      spa(i,1) = -((xr-xsrc)*wdsin + (yr-ysrc)*wdcos)
+      spa(i,2) =   (xr-xsrc)*wdcos - (yr-ysrc)*wdsin
+      xminrec = min(xminrec, spa(i,1))
+      xmaxrec = max(xmaxrec, spa(i,1))
+      yminrec = min(yminrec, spa(i,2))
+      ymaxrec = max(ymaxrec, spa(i,2))
+   end do
 
 !     Calculate crosswind width, WIDTH, and alongwind length, LENGTH
-   WIDTH  = YMAXREC - YMINREC
-   LENGTH = XMAXREC - XMINREC
+   width  = ymaxrec - yminrec
+   length = xmaxrec - xminrec
 
-   IF (AREADBG) THEN
-      write(AREADBUNT,*)
-      write(AREADBUNT,*) 'AREA Debug Sub_ARDIST: '
-      write(AREADBUNT,*)
-      IF (EVONLY) THEN
-         write(AREADBUNT,*) ' AREA DEBUG for SRC: ',ISRC,&
+   if (areadbg) then
+      write(areadbunt,*)
+      write(areadbunt,*) 'AREA Debug Sub_ARDIST: '
+      write(areadbunt,*)
+      if (evonly) then
+         write(areadbunt,*) ' AREA DEBUG for SRC: ',isrc,&
          &' and EVENT: ',indx
-         write(AREADBUNT,*)
-      ELSE
-         write(AREADBUNT,*) ' AREA DEBUG for SRC: ',ISRC,&
+         write(areadbunt,*)
+      else
+         write(areadbunt,*) ' AREA DEBUG for SRC: ',isrc,&
          &'   and REC: ',indx
-         write(AREADBUNT,*)
-      END IF
-      write(AREADBUNT,'(2x,"XMINREC, XMAXREC: ",2(F15.6))') XMINREC,&
-      &XMAXREC
-      write(AREADBUNT,'(2x,"YMINREC, YMAXREC: ",2(F15.6))') YMINREC,&
-      &YMAXREC
-      write(AREADBUNT,*)
+         write(areadbunt,*)
+      end if
+      write(areadbunt,'(2x,"XMINREC, XMAXREC: ",2(F15.6))') xminrec,&
+      &xmaxrec
+      write(areadbunt,'(2x,"YMINREC, YMAXREC: ",2(F15.6))') yminrec,&
+      &ymaxrec
+      write(areadbunt,*)
 
       do i = 1, nvert+1
-         write(AREADBUNT,'(a,i4,2(2x,F15.6))') '  IVERT, SPA1, SPA2: ',&
-         &I, SPA(I,1), SPA(I,2)
+         write(areadbunt,'(a,i4,2(2x,F15.6))') '  IVERT, SPA1, SPA2: ',&
+         &i, spa(i,1), spa(i,2)
       enddo
-      write(AREADBUNT,*)
-      write(AREADBUNT,*) '   WIDTH = ',width
-      write(AREADBUNT,*) '  LENGTH = ',length
+      write(areadbunt,*)
+      write(areadbunt,*) '   WIDTH = ',width
+      write(areadbunt,*) '  LENGTH = ',length
    endif
 
 !     Determine downwind distance to use for AREADPLT option, XDEP
-   IF (XMINREC .GE. 0.0D0) THEN
-      XDEP = XMINREC + LENGTH/3.0D0
-   ELSE
-      XDEP = XMAXREC/3.0D0
-   END IF
+   if (xminrec .ge. 0.0d0) then
+      xdep = xminrec + length/3.0d0
+   else
+      xdep = xmaxrec/3.0d0
+   end if
 
-   XDEP = MAX( 1.0D0, XDEP )
+   xdep = max( 1.0d0, xdep )
 
 !     Calculate Downwind (X) and Crosswind (Y) Distances from Center of Source;
 !     X and Y are included in module MAIN1
-   X = -((XR-XCNTR)*WDSIN + (YR-YCNTR)*WDCOS)
-   Y =   (XR-XCNTR)*WDCOS - (YR-YCNTR)*WDSIN
+   x = -((xr-xcntr)*wdsin + (yr-ycntr)*wdcos)
+   y =   (xr-xcntr)*wdcos - (yr-ycntr)*wdsin
 
 !     Calculate Radial Distance from Center of Source;
 !     DISTR is included in module MAIN1
-   DISTR = DSQRT(X*X + Y*Y)
+   distr = dsqrt(x*x + y*y)
 
 !     Calculate height of receptor above stack base, ZRT
-   IF (L_FLATSRC(ISRC)) THEN
-      ZRT = ZFLAG
-   ELSE
-      ZRT = ZELEV - ZS + ZFLAG
-   END IF
+   if (l_flatsrc(isrc)) then
+      zrt = zflag
+   else
+      zrt = zelev - zs + zflag
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE OCALC
+subroutine ocalc
 !***********************************************************************
 !                 OCALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -4833,779 +4833,779 @@ SUBROUTINE OCALC
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   INTEGER :: I, II, J, ICAT, INOUT, NDXR
-   DOUBLE PRECISION :: QPTOT, XVM(5), YVM(5), XDEP, WIDTH, LENGTH,&
-   &XMINR, XMAXR, QTKSAV, XPOINT, ADJ, FYOUT
-   DOUBLE PRECISION :: AEROUT(NUMTYP)
+   use main1
+   implicit none
+   character modnam*12
+   integer :: i, ii, j, icat, inout, ndxr
+   double precision :: qptot, xvm(5), yvm(5), xdep, width, length,&
+   &xminr, xmaxr, qtksav, xpoint, adj, fyout
+   double precision :: aerout(numtyp)
 
 !     Variable Initializations
-   MODNAM = 'OCALC'
-   WAKE = .FALSE.
-   L_APLUME = .TRUE.            !6/14/22 Wood set L_APLUME to TRUE only coherent plume calculated
+   modnam = 'OCALC'
+   wake = .false.
+   l_aplume = .true.            !6/14/22 Wood set L_APLUME to TRUE only coherent plume calculated
 
 !     Initialize __VAL arrays (1:NUMTYP)
-   HRVAL   = 0.0D0
-   AERVAL  = 0.0D0
-   AEROUT  = 0.0D0
-   PRMVAL  = 0.0D0
-   IF( ALLOCATED(CHI) ) CHI(:,ISRC,:) = 0.0D0
-   IF(GRSM)THEN
-      CHI_TTRAVCHM(:,ISRC) = 0.0D0
-   END IF
+   hrval   = 0.0d0
+   aerval  = 0.0d0
+   aerout  = 0.0d0
+   prmval  = 0.0d0
+   if( allocated(chi) ) chi(:,isrc,:) = 0.0d0
+   if(grsm)then
+      chi_ttravchm(:,isrc) = 0.0d0
+   end if
 
 !     Obtain reference wind speed at 10-meters
 !---- First locate index below 10.
-   CALL LOCATE(GRIDHT, 1, MXGLVL, 10.0D0, NDXR)
-   CALL GINTRP( GRIDHT(NDXR), GRIDWS(NDXR),&
-   &GRIDHT(NDXR+1), GRIDWS(NDXR+1),&
-   &10.0D0, UREF10 )
+   call locate(gridht, 1, mxglvl, 10.0d0, ndxr)
+   call gintrp( gridht(ndxr), gridws(ndxr),&
+   &gridht(ndxr+1), gridws(ndxr+1),&
+   &10.0d0, uref10 )
 
 !     Set Mixing Height and Profiles for Urban Option if Needed
-   IF (URBSRC(ISRC) .EQ. 'Y') THEN
+   if (urbsrc(isrc) .eq. 'Y') then
 !        Find Urban Area Index for This Source
-      DO I = 1, NUMURB
-         IF (IURBGRP(ISRC,I) .EQ. 1) THEN
-            IURB = I
-            EXIT
-         END IF
-      END DO
-      IF (STABLE .or. L_MorningTrans(IURB)) THEN
-         URBSTAB = .TRUE.
-         ZI = MAX( ZIURB(IURB), ZIMECH )
-         GRIDSV = GRDSVU(1:MXGLVL,IURB)
-         GRIDSW = GRDSWU(1:MXGLVL,IURB)
-         GRIDTG = GRDTGU(1:MXGLVL,IURB)
-         GRIDPT = GRDPTU(1:MXGLVL,IURB)
-         OBULEN = URBOBULEN(IURB)
-         USTAR  = URBUSTR(IURB)
-      ELSE
-         URBSTAB = .FALSE.
-         ZI = ZIRUR
-         GRIDSV = GRDSVR
-         GRIDSW = GRDSWR
-         GRIDTG = GRDTGR
-         GRIDPT = GRDPTR
-         OBULEN = RUROBULEN
-         USTAR  = RURUSTR
-      END IF
-   ELSE IF (URBAN .and. URBSRC(ISRC) .EQ. 'N') THEN
-      URBSTAB = .FALSE.
-      ZI = ZIRUR
-      GRIDSV = GRDSVR
-      GRIDSW = GRDSWR
-      GRIDTG = GRDTGR
-      GRIDPT = GRDPTR
-      OBULEN = RUROBULEN
-      USTAR  = RURUSTR
-   ELSE
-      URBSTAB = .FALSE.
-   END IF
+      do i = 1, numurb
+         if (iurbgrp(isrc,i) .eq. 1) then
+            iurb = i
+            exit
+         end if
+      end do
+      if (stable .or. L_MorningTrans(iurb)) then
+         urbstab = .true.
+         zi = max( ziurb(iurb), zimech )
+         gridsv = grdsvu(1:mxglvl,iurb)
+         gridsw = grdswu(1:mxglvl,iurb)
+         gridtg = grdtgu(1:mxglvl,iurb)
+         gridpt = grdptu(1:mxglvl,iurb)
+         obulen = urbobulen(iurb)
+         ustar  = urbustr(iurb)
+      else
+         urbstab = .false.
+         zi = zirur
+         gridsv = grdsvr
+         gridsw = grdswr
+         gridtg = grdtgr
+         gridpt = grdptr
+         obulen = rurobulen
+         ustar  = rurustr
+      end if
+   else if (urban .and. urbsrc(isrc) .eq. 'N') then
+      urbstab = .false.
+      zi = zirur
+      gridsv = grdsvr
+      gridsw = grdswr
+      gridtg = grdtgr
+      gridpt = grdptr
+      obulen = rurobulen
+      ustar  = rurustr
+   else
+      urbstab = .false.
+   end if
 
 !     Set the Source Variables for This Source              ---   CALL SETSRC
-   CALL SETSRC
+   call setsrc
 
 !     Initialize meteorological variables                   ---   CALL METINI
-   CALL METINI
+   call metini
 
 !     Save WDSIN and WSCOS for later use by PVMRM/GRSM option
-   AWDSIN(ISRC) = WDSIN
-   AWDCOS(ISRC) = WDCOS
-   AAFV(ISRC)   = AFV
+   awdsin(isrc) = wdsin
+   awdcos(isrc) = wdcos
+   aafv(isrc)   = afv
 
 !*    Initialize the Total Adjusted Emission Rate from
 !*    All Particles
-   QPTOT = 0.0D0
+   qptot = 0.0d0
 
-   IF (NPD .EQ. 0) THEN
+   if (npd .eq. 0) then
 !*       Assign input emission to QPTOT variable for gas emissions
-      QPTOT = QS
+      qptot = qs
 
-   ELSE
+   else
 
 !*       Loop over Particle Size Categories
-      DO ICAT = 1,NPD
+      do icat = 1,npd
 !*          Calculate the Escape Fraction for Each Category    ---   CALL ESCAPE
-         CALL ESCAPE(ICAT)
+         call escape(icat)
 
 !*          Adjust the Emission Rate for Each Category         ---   CALL ADJEMI
-         CALL ADJEMI(ICAT,QPTOT)
+         call adjemi(icat,qptot)
 
 !*       End Loop Over Particle Size Categories
-      END DO
+      end do
 
-   END IF
+   end if
 
 !*    Skip Calculations if QPTOT = 0.0
-   IF (QPTOT .EQ. 0.0D0)  RETURN
+   if (qptot .eq. 0.0d0)  return
 
-   IF (NPD .GT. 0) THEN
+   if (npd .gt. 0) then
 !*       Adjust the Mass Fractions for All the Particle
 !*       Size Categories                                    ---   CALL AMFRAC
-      CALL AMFRAC(QPTOT)
-   END IF
+      call amfrac(qptot)
+   end if
 
 !*    Determine the AlongWind Length of the OPENPIT Source  ---   CALL LWIND
-   CALL LWIND
+   call lwind
 
 !*    Calculate the Relative Depth of the OPENPIT Source    ---   CALL PDEPTH
-   CALL PDEPTH
+   call pdepth
 
 !*    Calculate the Fractional Size of the
 !*    Effective Pit Area (PITFRA)                           ---   CALL PTFRAC
-   CALL PTFRAC
+   call ptfrac
 
 !*    If DEBUG Requested, Write Out Pit Info; include in AREA debug file if
 !     specified, otherwise in the MODEL debug file
-   IF (AREADBG) THEN
-      WRITE (AREADBUNT,*)
-      WRITE (AREADBUNT,*)&
-      &'DETAIL INFORMATION ON THE OPENPIT SOURCE :', SRCID(ISRC)
-      WRITE (AREADBUNT,*)
+   if (areadbg) then
+      write (areadbunt,*)
+      write (areadbunt,*)&
+      &'DETAIL INFORMATION ON THE OPENPIT SOURCE :', srcid(isrc)
+      write (areadbunt,*)
 !*    WRITE DEBUG INFORMATION
-   ELSEIF (DEBUG) THEN
-      WRITE (DBGUNT,*)
-      WRITE (DBGUNT,*) 'DETAIL INFORMATION ON THE OPENPIT SOURCE :',&
-      &SRCID(ISRC)
-      WRITE (DBGUNT,*)
-   END IF
+   elseif (debug) then
+      write (dbgunt,*)
+      write (dbgunt,*) 'DETAIL INFORMATION ON THE OPENPIT SOURCE :',&
+      &srcid(isrc)
+      write (dbgunt,*)
+   end if
 
 !*    Determine the Coordinates of the Effective Pit Area
 !*    in Wind Direction Coordinate System                   ---   CALL PITEFF
-   CALL PITEFF
+   call piteff
 
 !*    Calculate the adusted Emission Rate per unit area (QEFF) for the
 !*    Effective Pit Area (PITFRA)                           ---   CALL PITEMI
-   CALL PITEMI(QPTOT)
+   call pitemi(qptot)
 
 !*    If DEBUG Requested, Write Out Pit Info; include in AREA debug file if
 !     specified, otherwise in the MODEL debug file
-   IF (AREADBG) THEN
-      IF (NPD .GT. 0) THEN
-         WRITE (AREADBUNT,*) 'OPENPIT PARTICLE CHARACTERISTICS:'
-         WRITE (AREADBUNT,*) '--------------------------------'
-         WRITE (AREADBUNT,*)
-         WRITE (AREADBUNT,8000) (EFRAC(II),II = 1, NPD)
-8000     FORMAT (1X,'ESCAPE FRACTIONS        = ',10(F8.3,2X))
-         WRITE (AREADBUNT,8200) (QPART(II),II = 1, NPD)
-8200     FORMAT (1X,'ADJUSTED EMISSION RATES = ',10(F8.3,2X))
-         WRITE (AREADBUNT,8400) (PHI(II),II = 1, NPD)
-8400     FORMAT (1X,'ADJUSTED MASS FRACTIONS = ',10(F8.3,2X))
-      END IF
-      WRITE (AREADBUNT,*) ' EMISSION RATE OF EFFECTIVE PIT = ',QEFF
-      WRITE (AREADBUNT,*)
-   ELSEIF (DEBUG) THEN
-      IF (NPD .GT. 0) THEN
-         WRITE (DBGUNT,*) 'OPENPIT PARTICLE CHARACTERISTICS:'
-         WRITE (DBGUNT,*) '--------------------------------'
-         WRITE (DBGUNT,*)
-         WRITE (DBGUNT,8000) (EFRAC(II),II = 1, NPD)
-         WRITE (DBGUNT,8200) (QPART(II),II = 1, NPD)
-         WRITE (DBGUNT,8400) (PHI(II),II = 1, NPD)
-      END IF
-      WRITE (DBGUNT,*) ' EMISSION RATE OF EFFECTIVE PIT = ',QEFF
-      WRITE (DBGUNT,*)
-   END IF
+   if (areadbg) then
+      if (npd .gt. 0) then
+         write (areadbunt,*) 'OPENPIT PARTICLE CHARACTERISTICS:'
+         write (areadbunt,*) '--------------------------------'
+         write (areadbunt,*)
+         write (areadbunt,8000) (efrac(ii),ii = 1, npd)
+8000     format (1x,'ESCAPE FRACTIONS        = ',10(f8.3,2x))
+         write (areadbunt,8200) (qpart(ii),ii = 1, npd)
+8200     format (1x,'ADJUSTED EMISSION RATES = ',10(f8.3,2x))
+         write (areadbunt,8400) (phi(ii),ii = 1, npd)
+8400     format (1x,'ADJUSTED MASS FRACTIONS = ',10(f8.3,2x))
+      end if
+      write (areadbunt,*) ' EMISSION RATE OF EFFECTIVE PIT = ',qeff
+      write (areadbunt,*)
+   elseif (debug) then
+      if (npd .gt. 0) then
+         write (dbgunt,*) 'OPENPIT PARTICLE CHARACTERISTICS:'
+         write (dbgunt,*) '--------------------------------'
+         write (dbgunt,*)
+         write (dbgunt,8000) (efrac(ii),ii = 1, npd)
+         write (dbgunt,8200) (qpart(ii),ii = 1, npd)
+         write (dbgunt,8400) (phi(ii),ii = 1, npd)
+      end if
+      write (dbgunt,*) ' EMISSION RATE OF EFFECTIVE PIT = ',qeff
+      write (dbgunt,*)
+   end if
 
 !     Apply Variable Emission Rate Factors                  ---   CALL EMFACT
-   CALL EMFACT(QEFF)
+   call emfact(qeff)
 
 !     Initialize 'ARC' Arrays for EVALFILE Output           ---   CALL EVLINI
-   IF (EVAL(ISRC)) THEN
-      CALL EVLINI
-   END IF
+   if (eval(isrc)) then
+      call evlini
+   end if
 
-   IF ((QEFF.NE.0.0D0) .and. (STABLE .or. (HS.LE.ZI))) THEN
+   if ((qeff.ne.0.0d0) .and. (stable .or. (hs.le.zi))) then
 !        Initialize miscellaneous variables
-      FB  = 0.0D0
-      FM  = 0.0D0
-      PPF = 0.0D0
-      HSP = HS
-      DHP  = 0.0D0
-      DHP1 = 0.0D0
-      DHP2 = 0.0D0
-      DHP3 = 0.0D0
-      DHCRIT = 0.0D0
-      XFINAL = 0.0D0
-      XMIXED = ZI * UAVG / SWAVG
-      IF(XMIXED .LT. XFINAL) XMIXED = XFINAL
-      ZMIDMX = 0.5D0 * ZI
+      fb  = 0.0d0
+      fm  = 0.0d0
+      ppf = 0.0d0
+      hsp = hs
+      dhp  = 0.0d0
+      dhp1 = 0.0d0
+      dhp2 = 0.0d0
+      dhp3 = 0.0d0
+      dhcrit = 0.0d0
+      xfinal = 0.0d0
+      xmixed = zi * uavg / swavg
+      if(xmixed .lt. xfinal) xmixed = xfinal
+      zmidmx = 0.5d0 * zi
 
 ! ---    Save original emission rate, which may be needed if RECLOOP is cycled
 !        and point source approximation is used for FASTAREA or FASTALL options
-      QTKSAV = QTK
+      qtksav = qtk
 
 ! ---    Initialize PDF parameters for use in calculating ZSUBP
-      IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-         CALL PDF
-      END IF
+      if( unstab  .and.  (hs .lt. zi) ) then
+         call pdf
+      end if
 !        Set Dry Deposition Variables for this Source
-      IF (LUSERVD .and. LDGAS .and. NPD.EQ.0) THEN
+      if (luservd .and. ldgas .and. npd.eq.0) then
 !           Assign user-specified gas dry deposition velocity (GASDEPVD option)
-         VDEPG = USERVD
-      ELSE IF (LDPART .or. (.NOT.LUSERVD .and. LDGAS .and.&
-      &NPD.EQ.0)) THEN
+         vdepg = uservd
+      else if (ldpart .or. (.not.luservd .and. ldgas .and.&
+      &npd.eq.0)) then
 !           Calculate Deposition Velocities for this Source    ---   CALL VDP
-         CALL VDP
-      END IF
-      IF (LWPART .or. LWGAS) THEN
+         call vdp
+      end if
+      if (lwpart .or. lwgas) then
 !PES        Set value of ZSUBP = MAX( ZI, TOP OF PLUME ), where
 !PES        TOP OF PLUME is defined as plume height (HE) plus 2.15*SZ,
 !PES        evaluated at a distance of 20 kilometers downwind.
 !PES        Apply minimum value of 500m and maximum value of 10,000m.
-         CALL HEFF (20000.0D0)
-         IF( STABLE .or. (UNSTAB .and. HS .GE. ZI) )THEN
-            CALL SIGZ(20000.0D0)
-            ZSUBP = MAX( 500.0D0, ZI, HS + SZCOEF*SZAS )
-         ELSE IF (UNSTAB) THEN
-            CALL SIGZ(20000.0D0)
-            ZSUBP = MAX( 500.0D0, ZI, HS +&
-            &SZCOEF*(SZAD1+SZAD2)/2.0D0 )
-         END IF
-         ZSUBP = MIN( 10000.0D0, ZSUBP )
+         call heff (20000.0d0)
+         if( stable .or. (unstab .and. hs .ge. zi) )then
+            call sigz(20000.0d0)
+            zsubp = max( 500.0d0, zi, hs + szcoef*szas )
+         else if (unstab) then
+            call sigz(20000.0d0)
+            zsubp = max( 500.0d0, zi, hs +&
+            &szcoef*(szad1+szad2)/2.0d0 )
+         end if
+         zsubp = min( 10000.0d0, zsubp )
 !           Calculate Scavenging Ratios for this Source           ---   CALL SCAVRAT
-         CALL SCAVRAT
-      END IF
+         call scavrat
+      end if
 
 !        Begin Receptor LOOP
-      RECEPTOR_LOOP: DO IREC = 1, NUMREC
+      receptor_loop: do irec = 1, numrec
 !           Check for receptor located inside boundary of open pit source
-         DO I = 1, NVERT+1
-            XVM(I) = AXVERT(I,ISRC)
-            YVM(I) = AYVERT(I,ISRC)
-         END DO
-         XR = AXR(IREC)
-         YR = AYR(IREC)
-         CALL PNPOLY(XR,YR,XVM,YVM,4,INOUT)
+         do i = 1, nvert+1
+            xvm(i) = axvert(i,isrc)
+            yvm(i) = ayvert(i,isrc)
+         end do
+         xr = axr(irec)
+         yr = ayr(irec)
+         call pnpoly(xr,yr,xvm,yvm,4,inout)
 
-         IF (INOUT .GT. 0) THEN
+         if (inout .gt. 0) then
 !              Receptor is within boundary - skip to next receptor
 
-            IF (PVMRM .or. OLM .or. ARM2 .or. GRSM) THEN
+            if (pvmrm .or. olm .or. arm2 .or. grsm) then
 ! ---             Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                 cycling to the next receptor to avoid
 !                 persisting value from previous hour.
-               CHI(IREC,ISRC,:)   = 0.0D0
-               IF(GRSM)THEN
-                  CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
-               END IF
-               IF (PVMRM .or. GRSM) THEN
-                  HECNTR(IREC,ISRC)  = 0.0D0
-                  UEFFS(IREC,ISRC)   = 0.0D0
-                  EPSEF(IREC,ISRC)   = 0.0D0
-                  PPFACT(IREC,ISRC)  = 0.0D0
-                  HECNTR3(IREC,ISRC) = 0.0D0
-                  UEFF3S(IREC,ISRC)  = 0.0D0
-                  EPSEF3(IREC,ISRC)  = 0.0D0
-                  FOPTS(IREC,ISRC)   = 0.0D0
-               END IF
-            END IF
+               chi(irec,isrc,:)   = 0.0d0
+               if(grsm)then
+                  chi_ttravchm(irec,isrc) = 0.0d0
+               end if
+               if (pvmrm .or. grsm) then
+                  hecntr(irec,isrc)  = 0.0d0
+                  ueffs(irec,isrc)   = 0.0d0
+                  epsef(irec,isrc)   = 0.0d0
+                  ppfact(irec,isrc)  = 0.0d0
+                  hecntr3(irec,isrc) = 0.0d0
+                  ueff3s(irec,isrc)  = 0.0d0
+                  epsef3(irec,isrc)  = 0.0d0
+                  fopts(irec,isrc)   = 0.0d0
+               end if
+            end if
 !              Also reinitialize HRVAL, AERVAL and AEROUT
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AEROUT(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerout(:) = 0.0d0
 
 ! ---          Reset QTK since it may have been changed if
 !              point source approximation has been used
-            QTK = QTKSAV
+            qtk = qtksav
 
-            CYCLE RECEPTOR_LOOP
-         END IF
+            cycle receptor_loop
+         end if
 
 !           Calculate Down and Crosswind Distances          ---   CALL ARDIST
-         IF (EVONLY) THEN
-            CALL ARDIST(IEVENT,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-         ELSE
-            CALL ARDIST(IREC,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-         END IF
+         if (evonly) then
+            call ardist(ievent,xdep,width,length,xminr,xmaxr)
+         else
+            call ardist(irec,xdep,width,length,xminr,xmaxr)
+         end if
 
 !           Check to see if receptor is upwind of area source;
 !           also check to see if receptor is beyond the maximum
 !           distance from source; assigned value of 80km for
 !           the obsolescent TOXICS option or new FASTALL option;
 !           otherwise "unlimited" (1.0D20)
-         IF (XMAXR .LT. 1.0D0 .or. DISTR .GT. MAXDIST) THEN
-            IF (PVMRM .or. OLM .or. ARM2&
-            &.or. RUNTTRM .or. GRSM) THEN
+         if (xmaxr .lt. 1.0d0 .or. distr .gt. maxdist) then
+            if (pvmrm .or. olm .or. arm2&
+            &.or. runttrm .or. grsm) then
 ! ---             Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                 cycling to the next receptor to avoid
 !                 persisting value from previous hour.
-               CHI(IREC,ISRC,:) = 0.0D0
-               IF(GRSM)THEN
-                  CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
-               END IF
-               IF (PVMRM .or. GRSM) THEN
-                  HECNTR(IREC,ISRC)  = 0.0D0
-                  UEFFS(IREC,ISRC)   = 0.0D0
-                  EPSEF(IREC,ISRC)   = 0.0D0
-                  PPFACT(IREC,ISRC)  = 0.0D0
-                  HECNTR3(IREC,ISRC) = 0.0D0
-                  UEFF3S(IREC,ISRC)  = 0.0D0
-                  EPSEF3(IREC,ISRC)  = 0.0D0
-                  FOPTS(IREC,ISRC)   = 0.0D0
-               END IF
-            END IF
+               chi(irec,isrc,:) = 0.0d0
+               if(grsm)then
+                  chi_ttravchm(irec,isrc) = 0.0d0
+               end if
+               if (pvmrm .or. grsm) then
+                  hecntr(irec,isrc)  = 0.0d0
+                  ueffs(irec,isrc)   = 0.0d0
+                  epsef(irec,isrc)   = 0.0d0
+                  ppfact(irec,isrc)  = 0.0d0
+                  hecntr3(irec,isrc) = 0.0d0
+                  ueff3s(irec,isrc)  = 0.0d0
+                  epsef3(irec,isrc)  = 0.0d0
+                  fopts(irec,isrc)   = 0.0d0
+               end if
+            end if
 !              Also reinitialize HRVAL, AERVAL and AEROUT
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AEROUT(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerout(:) = 0.0d0
 
 ! ---          Reset QTK since it may have been changed if
 !              point source approximation has been used
-            QTK = QTKSAV
+            qtk = qtksav
 
-            CYCLE RECEPTOR_LOOP
-         END IF
+            cycle receptor_loop
+         end if
 
 !           Initialize HE for initial call to ADISY
-         HE = HS
+         he = hs
 !           Set initial effective parameters
-         UEFF  = US
-         SVEFF = SVS
-         SWEFF = SWS
-         TGEFF = TGS
-         IF ( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-            UEFFD  = US
-            SVEFFD = SVS
-            SWEFFD = SWS
-            UEFFN  = US
-            SVEFFN = SVS
-            SWEFFN = SWS
-         END IF
+         ueff  = us
+         sveff = svs
+         sweff = sws
+         tgeff = tgs
+         if ( unstab  .and.  (hs .lt. zi) ) then
+            ueffd  = us
+            sveffd = svs
+            sweffd = sws
+            ueffn  = us
+            sveffn = svs
+            sweffn = sws
+         end if
 
 ! ---       Check to see if receptor is beyond edge of plume laterally.
-         IF ( (DABS(Y)-0.5D0*WIDTH) .GT. 0.0D0) THEN
+         if ( (dabs(y)-0.5d0*width) .gt. 0.0d0) then
 ! ---          Receptor is outside "projected" width of effective area source
 !              Calculate maximum sigma-y based on XMAXR and compare minimum
 !              lateral distance of receptor from source to 4*sigma-y
-            CALL ADISY(XMAXR)
+            call adisy(xmaxr)
 
-            IF ((DABS(Y)-0.5D0*WIDTH) .GE. 5.0D0*SY) THEN
+            if ((dabs(y)-0.5d0*width) .ge. 5.0d0*sy) then
 ! ---             Receptor is beyond the edge of plume; set CHI = 0.0
 !                 and cycle to next receptor
-               IF (PVMRM .or. OLM .or. ARM2&
-               &.or. RUNTTRM .or. GRSM) THEN
+               if (pvmrm .or. olm .or. arm2&
+               &.or. runttrm .or. grsm) then
 ! ---                Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                    cycling to the next receptor to avoid
 !                    persisting value from previous hour.
-                  CHI(IREC,ISRC,:) = 0.0D0
-                  IF(GRSM)THEN
-                     CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
-                  END IF
-                  IF (PVMRM .or. GRSM) THEN
-                     HECNTR(IREC,ISRC)  = 0.0D0
-                     UEFFS(IREC,ISRC)   = 0.0D0
-                     EPSEF(IREC,ISRC)   = 0.0D0
-                     PPFACT(IREC,ISRC)  = 0.0D0
-                     HECNTR3(IREC,ISRC) = 0.0D0
-                     UEFF3S(IREC,ISRC)  = 0.0D0
-                     EPSEF3(IREC,ISRC)  = 0.0D0
-                     FOPTS(IREC,ISRC)   = 0.0D0
-                  END IF
-               END IF
+                  chi(irec,isrc,:) = 0.0d0
+                  if(grsm)then
+                     chi_ttravchm(irec,isrc) = 0.0d0
+                  end if
+                  if (pvmrm .or. grsm) then
+                     hecntr(irec,isrc)  = 0.0d0
+                     ueffs(irec,isrc)   = 0.0d0
+                     epsef(irec,isrc)   = 0.0d0
+                     ppfact(irec,isrc)  = 0.0d0
+                     hecntr3(irec,isrc) = 0.0d0
+                     ueff3s(irec,isrc)  = 0.0d0
+                     epsef3(irec,isrc)  = 0.0d0
+                     fopts(irec,isrc)   = 0.0d0
+                  end if
+               end if
 !                 Also reinitialize HRVAL, AERVAL and AEROUT
-               HRVAL(:)  = 0.0D0
-               AERVAL(:) = 0.0D0
-               AEROUT(:) = 0.0D0
+               hrval(:)  = 0.0d0
+               aerval(:) = 0.0d0
+               aerout(:) = 0.0d0
 
 ! ---             Reset QTK since it may have been changed if
 !                 point source approximation has been used
-               QTK = QTKSAV
+               qtk = qtksav
 
 ! ---             Cycle to next receptor
-               CYCLE RECEPTOR_LOOP
-            END IF
+               cycle receptor_loop
+            end if
 
-         END IF
+         end if
 
-         IF(DEBUG) THEN
-            WRITE(DBGUNT, 6015) UEFF, SVEFF, SWEFF
-6015        FORMAT(//,'AERMOD OPENPIT SOURCE COMPONENT',/,5X,/&
+         if(debug) then
+            write(dbgunt, 6015) ueff, sveff, sweff
+6015        format(//,'AERMOD OPENPIT SOURCE COMPONENT',/,5x,/&
             &'Initial effective parameters for ',&
             &'stable or direct convective ',&
-            &'plume:',//,5x,'Ueff = ',F7.2,' m/s; ',&
-            &'SVeff = ',F7.2,&
-            &' m/s; SWeff = ',F7.2,' m/s.',/)
-         END IF
+            &'plume:',//,5x,'Ueff = ',f7.2,' m/s; ',&
+            &'SVeff = ',f7.2,&
+            &' m/s; SWeff = ',f7.2,' m/s.',/)
+         end if
 
 !           Determine the CRITical Dividing Streamline---   CALL CRITDS
-         CALL CRITDS (HE)
+         call critds (he)
 
 !           Set distance factor for point source approx. for FASTAREA option
 !           based on "equivalent" PG stability class (KST)
-         IF (URBSTAB) THEN
-            VP_FACT = VIRTPNT_URB(KST)
-         ELSE
-            VP_FACT = VIRTPNT_RUR(KST)
-         END IF
+         if (urbstab) then
+            vp_fact = virtpnt_urb(kst)
+         else
+            vp_fact = virtpnt_rur(kst)
+         end if
 
 !           Calculate distance for switch to point source approx. for FASTAREA
-         XPOINT = 1.5D0*LENGTH + VP_FACT*WIDTH
-         IF ( (.NOT.FASTAREA .and. .NOT.FASTALL) .or.&
-         &((FASTAREA .or. FASTALL) .and. X .LT. XPOINT)) THEN
-            IF (ARDPLETE) THEN
+         xpoint = 1.5d0*length + vp_fact*width
+         if ( (.not.fastarea .and. .not.fastall) .or.&
+         &((fastarea .or. fastall) .and. x .lt. xpoint)) then
+            if (ardplete) then
 
-               IF (NPD .EQ. 0 .and. (LDGAS .or. LWGAS)) THEN
-                  CALL PDEPG (XDEP)
-               ELSE
-                  DQCORG = 1.0D0
-                  WQCORG = 1.0D0
-               END IF
-               IF (NPD .GT. 0 .and. (LDPART .or. LWPART)) THEN
-                  CALL PDEP (XDEP)
-               ELSE IF (NPD .GT. 0) THEN
+               if (npd .eq. 0 .and. (ldgas .or. lwgas)) then
+                  call pdepg (xdep)
+               else
+                  dqcorg = 1.0d0
+                  wqcorg = 1.0d0
+               end if
+               if (npd .gt. 0 .and. (ldpart .or. lwpart)) then
+                  call pdep (xdep)
+               else if (npd .gt. 0) then
 !                    Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
-                  DQCOR = 1.0D0
-                  WQCOR = 1.0D0
-               END IF
+                  dqcor = 1.0d0
+                  wqcor = 1.0d0
+               end if
 
-            END IF
+            end if
 
-            DO ITYP = 1, NUMTYP
-               L_APLUME = .TRUE.
+            do ityp = 1, numtyp
+               l_aplume = .true.
 !                 Calculate Area Source Integral         ---   CALL AREAIN
-               CALL AREAIN
-            END DO
-         ELSE
+               call areain
+            end do
+         else
 ! ---          Use point source approximation
 !              Save emissions per unit area (QTK) and calculate total emissions
 !              based on effective area (= XEFF*YEFF)
-            QTKSAV = QTK
-            QTK = QTK * XEFF * YEFF
-            SYINIT = 0.0D0
+            qtksav = qtk
+            qtk = qtk * xeff * yeff
+            syinit = 0.0d0
 
 !              Determine Deposition Correction Factors
-            IF (NPD .EQ. 0 .and. (LDGAS .or. LWGAS)) THEN
-               CALL PDEPG (X)
-            ELSE
-               DQCORG = 1.0D0
-               WQCORG = 1.0D0
-            END IF
-            IF (NPD .GT. 0 .and. (LDPART .or. LWPART)) THEN
-               CALL PDEP (X)
-            ELSE IF (NPD .GT. 0) THEN
+            if (npd .eq. 0 .and. (ldgas .or. lwgas)) then
+               call pdepg (x)
+            else
+               dqcorg = 1.0d0
+               wqcorg = 1.0d0
+            end if
+            if (npd .gt. 0 .and. (ldpart .or. lwpart)) then
+               call pdep (x)
+            else if (npd .gt. 0) then
 !                 Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
-               DQCOR = 1.0D0
-               WQCOR = 1.0D0
-            END IF
+               dqcor = 1.0d0
+               wqcor = 1.0d0
+            end if
 
 !              Define plume centroid height (CENTER) for use in
 !              inhomogeniety calculations
-            CALL CENTROID (X)
+            call centroid (x)
 
 !              If the atmosphere is unstable and the stack
 !              top is below the mixing height, calculate
 !              the CBL PDF coefficients                     ---   CALL PDF
-            IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-               CALL PDF
-            END IF
+            if( unstab  .and.  (hs .lt. zi) ) then
+               call pdf
+            end if
 
 !              Determine Effective Plume Height             ---   CALL HEFF
-            CALL HEFF ( X )
+            call heff ( x )
 
 !              Compute effective parameters using an
 !              iterative average through plume rise layer
-            CALL IBLVAL (X)
+            call iblval (x)
 
 !              Call PDF & HEFF again for final CBL plume heights
-            IF (UNSTAB .and. (HS.LT.ZI) ) THEN
-               CALL PDF
-               CALL HEFF (X)
-            END IF
+            if (unstab .and. (hs.lt.zi) ) then
+               call pdf
+               call heff (x)
+            end if
 
 !              Determine Dispersion Parameters              ---   CALL VDIS
-            CALL VDIS (X)
+            call vdis (x)
 
 !              Calculate the 'y-term' contribution to
 !              dispersion, FSUBY, for coherent plume        ---   CALL FYPLM
-            CALL FYPLM(SY,FYOUT)
-            FSUBY  = FYOUT
-            FSUBYD = FSUBY
-            FSUBYN = FSUBYD
+            call fyplm(sy,fyout)
+            fsuby  = fyout
+            fsubyd = fsuby
+            fsubyn = fsubyd
 
 !              Set lateral term = 0.0 for penetrated source
-            FSUBY3 = 0.0D0
+            fsuby3 = 0.0d0
 
 !              Check for zero "y-terms"; if zero then skip calculations
 !              and go to next receptor.
-            IF( FSUBY.EQ.0.0D0 .and. FSUBY3.EQ.0.0D0 )THEN
+            if( fsuby.eq.0.0d0 .and. fsuby3.eq.0.0d0 )then
 !                 FSUBY terms are both 0.0; assign 0.0 to arrays
-               IF (PVMRM .or. OLM .or. ARM2 .or. GRSM)THEN
+               if (pvmrm .or. olm .or. arm2 .or. grsm)then
 ! ---                Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                    cycling to the next receptor to avoid
 !                    persisting value from previous hour.
-                  CHI(IREC,ISRC,:) = 0.0D0
-                  IF(GRSM)THEN
-                     CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
-                  END IF
-                  IF (PVMRM .or. GRSM) THEN
-                     HECNTR(IREC,ISRC)  = 0.0D0
-                     UEFFS(IREC,ISRC)   = 0.0D0
-                     EPSEF(IREC,ISRC)   = 0.0D0
-                     PPFACT(IREC,ISRC)  = 0.0D0
-                     HECNTR3(IREC,ISRC) = 0.0D0
-                     UEFF3S(IREC,ISRC)  = 0.0D0
-                     EPSEF3(IREC,ISRC)  = 0.0D0
-                     FOPTS(IREC,ISRC)   = 0.0D0
-                  END IF
-               END IF
+                  chi(irec,isrc,:) = 0.0d0
+                  if(grsm)then
+                     chi_ttravchm(irec,isrc) = 0.0d0
+                  end if
+                  if (pvmrm .or. grsm) then
+                     hecntr(irec,isrc)  = 0.0d0
+                     ueffs(irec,isrc)   = 0.0d0
+                     epsef(irec,isrc)   = 0.0d0
+                     ppfact(irec,isrc)  = 0.0d0
+                     hecntr3(irec,isrc) = 0.0d0
+                     ueff3s(irec,isrc)  = 0.0d0
+                     epsef3(irec,isrc)  = 0.0d0
+                     fopts(irec,isrc)   = 0.0d0
+                  end if
+               end if
 !                 Also reinitialize HRVAL, AERVAL and AEROUT
-               HRVAL(:)  = 0.0D0
-               AERVAL(:) = 0.0D0
-               AEROUT(:) = 0.0D0
+               hrval(:)  = 0.0d0
+               aerval(:) = 0.0d0
+               aerout(:) = 0.0d0
 
 ! ---             Reset QTK since it may have been changed if
 !                 point source approximation has been used
-               QTK = QTKSAV
+               qtk = qtksav
 
-               CYCLE RECEPTOR_LOOP
-            ELSE
+               cycle receptor_loop
+            else
 
-               IF (NPD .EQ. 0) THEN
+               if (npd .eq. 0) then
 !                    Perform calculations for gases
 !                    Assign plume tilt, HV = 0.0
 
-                  ADJ = DQCORG * WQCORG
+                  adj = dqcorg * wqcorg
 
-                  IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+                  if (stable .or. (unstab.and.(hs.ge.zi))) then
 !                       Calculate height of the "effective reflecting surface"
-                     CALL REFL_HT (HE, X, 0.0D0, VSIGZ, HSBL)
-                  ELSE IF ( UNSTAB ) THEN
-                     HSBL = 0.0D0
-                  END IF
+                     call refl_ht (he, x, 0.0d0, vsigz, hsbl)
+                  else if ( unstab ) then
+                     hsbl = 0.0d0
+                  end if
 
 !                    Determine the CRITical Dividing Streamline---   CALL CRITDS
-                  CALL CRITDS (HE)
+                  call critds (he)
 
 !                    Calculate the fraction of plume below
 !                    HCRIT, PHEE                               ---   CALL PFRACT
-                  CALL PFRACT (HE)
+                  call pfract (he)
 
 !                    Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-                  CALL FTERM
+                  call fterm
 
 !                    Calculate Conc. for Virtual Point Source  ---   CALL AER_PCHI
-                  CALL AER_PCHI( X, ADJ, VDEPG, 0, AEROUT )
-                  HRVAL = AEROUT
+                  call aer_pchi( x, adj, vdepg, 0, aerout )
+                  hrval = aerout
 
-               ELSE
+               else
 !                    Perform calculations for particles, loop through particle sizes
 
 !                    Begin loop over particle sizes
-                  DO J = 1, NPD
+                  do j = 1, npd
 
 !                       Calculate Plume Tilt Due to Settling, HV
-                     HV = (X/US) * VGRAV(J)
+                     hv = (x/us) * vgrav(j)
 
 !                       Adjust Jth contribution by mass fraction and source
 !                       depletion
-                     ADJ = PHI(J) * DQCOR(J) * WQCOR(J)
+                     adj = phi(j) * dqcor(j) * wqcor(j)
 
-                     IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+                     if (stable .or. (unstab.and.(hs.ge.zi))) then
 !                          Calculate height of the "effective reflecting surface"
 !                          Calculate Settled Plume Height(s), HESETL
-                        HESETL = MAX( 0.0D0, HE - HV )
-                        CALL REFL_HT (HESETL, X, 0.0D0, VSIGZ, HSBL)
-                     ELSE IF ( UNSTAB ) THEN
+                        hesetl = max( 0.0d0, he - hv )
+                        call refl_ht (hesetl, x, 0.0d0, vsigz, hsbl)
+                     else if ( unstab ) then
 !                          Calculate Settled Plume Height(s), HESETL
-                        HESETL = MAX( 0.0D0, 0.5D0*(HED1+HED2) - HV )
-                        HSBL = 0.0D0
-                     END IF
+                        hesetl = max( 0.0d0, 0.5d0*(hed1+hed2) - hv )
+                        hsbl = 0.0d0
+                     end if
 
 !                       Determine the CRITical Dividing Streamline---   CALL CRITDS
-                     CALL CRITDS (HESETL)
+                     call critds (hesetl)
 
 !                       Calculate the fraction of plume below
 !                       HCRIT, PHEE                               ---   CALL PFRACT
-                     CALL PFRACT (HESETL)
+                     call pfract (hesetl)
 
 !                       Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-                     CALL FTERM
+                     call fterm
 
 !                       Calculate Conc. for Virtual Point Source  ---   CALL AER_PCHI
-                     CALL AER_PCHI( X, ADJ, VDEP(J), J, AEROUT )
-                     HRVAL = HRVAL + AEROUT
+                     call aer_pchi( x, adj, vdep(j), j, aerout )
+                     hrval = hrval + aerout
 
-                  END DO
+                  end do
 !                    End loop over particle sizes
 
-               END IF
-            END IF
+               end if
+            end if
 ! ---          Reset QTK since it may have been changed if
 !              point source approximation has been used
-            QTK = QTKSAV
-         END IF
+            qtk = qtksav
+         end if
 
-         IF (PVMRM) THEN
+         if (pvmrm) then
 ! ---          Store data by source and receptor for PVMRM option
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-               HECNTR(IREC,ISRC) = HE
-               UEFFS(IREC,ISRC)  = UEFF
-               EPSEF(IREC,ISRC)  = EPSEFF
-            ELSE
-               HECNTR(IREC,ISRC) = CENTER
-               UEFFS(IREC,ISRC)  = UEFFD
-               EPSEF(IREC,ISRC)  = EPSEFFD
-            END IF
-            IF (PPF .GT. 0.0D0) THEN
-               PPFACT(IREC,ISRC)  = PPF
-               HECNTR3(IREC,ISRC) = HE3
-               UEFF3S(IREC,ISRC)  = UEFF3
-               EPSEF3(IREC,ISRC)  = EPSEFF3
-            ELSE
-               PPFACT(IREC,ISRC)  = 0.0D0
-               HECNTR3(IREC,ISRC) = 0.0D0
-               UEFF3S(IREC,ISRC)  = 0.0D0
-               EPSEF3(IREC,ISRC)  = 0.0D0
-            END IF
-            FOPTS(IREC,ISRC) = FOPT
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
+               hecntr(irec,isrc) = he
+               ueffs(irec,isrc)  = ueff
+               epsef(irec,isrc)  = epseff
+            else
+               hecntr(irec,isrc) = center
+               ueffs(irec,isrc)  = ueffd
+               epsef(irec,isrc)  = epseffd
+            end if
+            if (ppf .gt. 0.0d0) then
+               ppfact(irec,isrc)  = ppf
+               hecntr3(irec,isrc) = he3
+               ueff3s(irec,isrc)  = ueff3
+               epsef3(irec,isrc)  = epseff3
+            else
+               ppfact(irec,isrc)  = 0.0d0
+               hecntr3(irec,isrc) = 0.0d0
+               ueff3s(irec,isrc)  = 0.0d0
+               epsef3(irec,isrc)  = 0.0d0
+            end if
+            fopts(irec,isrc) = fopt
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AEROUT(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerout(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 
-         ELSE IF (OLM) THEN
+         else if (olm) then
 ! ---          Store data by source and receptor for OLM option
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AEROUT(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerout(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 !    Added for TTRM; AECOM
-         ELSE IF (RUNTTRM) THEN
+         else if (runttrm) then
 ! ---          Store data by source and receptor for TTRM option
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AEROUT(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerout(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 !    End TTRM insert, Feb. 2021
 
-         ELSE IF (ARM2) THEN
+         else if (arm2) then
 ! ---          Store data by source and receptor for ARM2 options
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AEROUT(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerout(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 
 !           CERC 11/30/20
-         ELSE IF (GRSM) THEN
+         else if (grsm) then
 
 !              Calculate the effective wind speed
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-               UCHM=UEFF
-            ELSE
-               UCHM=UEFFD
-            END IF
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
+               uchm=ueff
+            else
+               uchm=ueffd
+            end if
 !              Calculate the conc x travel time for the chemistry scheme
-            IF(UCHM/=0)THEN
-               CHI_TTRAVCHM(IREC,ISRC)=&
-               &MAX(0.0D0,HRVAL(1)*X/UCHM) !Don't allow negative conc*travel times
-            ELSE
+            if(uchm/=0)then
+               chi_ttravchm(irec,isrc)=&
+               &max(0.0d0,hrval(1)*x/uchm) !Don't allow negative conc*travel times
+            else
                !Error - no travel time if UEFF is zero
-               CALL ERRHDL(PATH, MODNAM, 'E','601','GRSM')
-               RUNERR=.TRUE.
-               RETURN
-            END IF
+               call errhdl(path, modnam, 'E','601','GRSM')
+               runerr=.true.
+               return
+            end if
 
 ! ---          Store data by source and receptor for GRSM options
-            DO ITYP = 1, NUMTYP
-               CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-            END DO
+            do ityp = 1, numtyp
+               chi(irec,isrc,ityp) = hrval(ityp)
+            end do
 
-            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
-               HECNTR(IREC,ISRC) = HE
-               UEFFS(IREC,ISRC)  = UEFF
-               EPSEF(IREC,ISRC)  = EPSEFF
-            ELSE
-               HECNTR(IREC,ISRC) = CENTER
-               UEFFS(IREC,ISRC)  = UEFFD
-               EPSEF(IREC,ISRC)  = EPSEFFD
-            END IF
-            IF (PPF .GT. 0.0D0) THEN
-               PPFACT(IREC,ISRC)  = PPF
-               HECNTR3(IREC,ISRC) = HE3
-               UEFF3S(IREC,ISRC)  = UEFF3
-               EPSEF3(IREC,ISRC)  = EPSEFF3
-            ELSE
-               PPFACT(IREC,ISRC)  = 0.0D0
-               HECNTR3(IREC,ISRC) = 0.0D0
-               UEFF3S(IREC,ISRC)  = 0.0D0
-               EPSEF3(IREC,ISRC)  = 0.0D0
-            END IF
-            FOPTS(IREC,ISRC) = FOPT
+            if (stable .or. (unstab.and.(hs.ge.zi))) then
+               hecntr(irec,isrc) = he
+               ueffs(irec,isrc)  = ueff
+               epsef(irec,isrc)  = epseff
+            else
+               hecntr(irec,isrc) = center
+               ueffs(irec,isrc)  = ueffd
+               epsef(irec,isrc)  = epseffd
+            end if
+            if (ppf .gt. 0.0d0) then
+               ppfact(irec,isrc)  = ppf
+               hecntr3(irec,isrc) = he3
+               ueff3s(irec,isrc)  = ueff3
+               epsef3(irec,isrc)  = epseff3
+            else
+               ppfact(irec,isrc)  = 0.0d0
+               hecntr3(irec,isrc) = 0.0d0
+               ueff3s(irec,isrc)  = 0.0d0
+               epsef3(irec,isrc)  = 0.0d0
+            end if
+            fopts(irec,isrc) = fopt
 
 !              Initialize __VAL arrays (1:NUMTYP)
-            HRVAL(:)  = 0.0D0
-            AERVAL(:) = 0.0D0
-            AEROUT(:) = 0.0D0
+            hrval(:)  = 0.0d0
+            aerval(:) = 0.0d0
+            aerout(:) = 0.0d0
 
 !              Cycle to next receptor & skip call to SUMVAL (will be done later)
-            CYCLE RECEPTOR_LOOP
+            cycle receptor_loop
 
-         END IF
+         end if
 
 !           Sum HRVAL to AVEVAL and ANNVAL Arrays  ---   CALL SUMVAL
 !           As noted just above, the calls to EV_SUMVAL and SUMVAL
 !           are skipped for a PVMRM, OLM, ARM2 or GRSM run; the
 !           summing is performed for these options in the
 !           respective routines
-         IF (EVONLY) THEN
-            CALL EV_SUMVAL
-         ELSE
-            DO IGRP = 1, NUMGRP
-               CALL SUMVAL
-            END DO
-         END IF
+         if (evonly) then
+            call ev_sumval
+         else
+            do igrp = 1, numgrp
+               call sumval
+            end do
+         end if
 
 !           Initialize __VAL arrays (1:NUMTYP)
-         HRVAL(:)  = 0.0D0
-         AERVAL(:) = 0.0D0
-         AEROUT(:) = 0.0D0
+         hrval(:)  = 0.0d0
+         aerval(:) = 0.0d0
+         aerout(:) = 0.0d0
 
-      END DO RECEPTOR_LOOP
+      end do receptor_loop
 !        End Receptor LOOP
 
 !        Output 'ARC' Values for EVALFILE                   ---   CALL EVALFL
-      IF (EVAL(ISRC)) THEN
-         CALL EVALFL
-      END IF
+      if (eval(isrc)) then
+         call evalfl
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
 
-SUBROUTINE SETSRC
+subroutine setsrc
 !***********************************************************************
 !             SETSRC Module of the AMS/EPA Regulatory Model - AERMOD
 ! ----------------------------------------------------------------------
@@ -5648,282 +5648,282 @@ SUBROUTINE SETSRC
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   character modnam*12
 
-   INTEGER :: J
+   integer :: j
 
 !     Variable Initializations
-   MODNAM = 'SETSRC'
+   modnam = 'SETSRC'
 
 ! --- Initialize AREA source dimensions and initial sigmas
 !     to avoid initialization problems with PVMRM
-   XINIT  = 0.0D0
-   YINIT  = 0.0D0
-   SYINIT = 0.0D0
-   SZINIT = 0.0D0
-   ANGLE  = 0.0D0
-   PALPHA = 0.0D0
-   PDEFF  = 0.0D0
-   PITLEN = 0.0D0
-   PITWID = 0.0D0
+   xinit  = 0.0d0
+   yinit  = 0.0d0
+   syinit = 0.0d0
+   szinit = 0.0d0
+   angle  = 0.0d0
+   palpha = 0.0d0
+   pdeff  = 0.0d0
+   pitlen = 0.0d0
+   pitwid = 0.0d0
 
 !     Assign The Values From Array Elements To Variables
-   IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
-      XS = AXS(ISRC)
-      YS = AYS(ISRC)
-      ZS = AZS(ISRC)
-      QS = AQS(ISRC)
-      HS = AHS(ISRC)
+   if (srctyp(isrc)(1:5) .eq. 'POINT') then
+      xs = axs(isrc)
+      ys = ays(isrc)
+      zs = azs(isrc)
+      qs = aqs(isrc)
+      hs = ahs(isrc)
 
-      DS = ADS(ISRC)
-      VS = AVS(ISRC)
-      TS = ATS(ISRC)
+      ds = ads(isrc)
+      vs = avs(isrc)
+      ts = ats(isrc)
 
-      IF (SRCTYP(ISRC) .EQ. 'POINTCAP') THEN
+      if (srctyp(isrc) .eq. 'POINTCAP') then
 !           Assign factor to adjust initial diameter of plume for
 !           capped stacks for use in PRIME algorithm.
-         DSFACT = ADSFACT(ISRC)
-      ELSE
-         DSFACT = 1.0D0
-      END IF
+         dsfact = adsfact(isrc)
+      else
+         dsfact = 1.0d0
+      end if
 
-   ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME') THEN
-      XS = AXS(ISRC)
-      YS = AYS(ISRC)
-      ZS = AZS(ISRC)
-      QS = AQS(ISRC)
-      HS = AHS(ISRC)
+   else if (srctyp(isrc) .eq. 'VOLUME') then
+      xs = axs(isrc)
+      ys = ays(isrc)
+      zs = azs(isrc)
+      qs = aqs(isrc)
+      hs = ahs(isrc)
 
-      SYINIT = ASYINI(ISRC)
-      SZINIT = ASZINI(ISRC)
+      syinit = asyini(isrc)
+      szinit = aszini(isrc)
 !**  Added for Aircraft Plume Rise; UNC-IE
-      IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+      if (aftsrc(isrc) .eq. 'Y') then
 !        Find Aircraft Index for This Source
 !        Aircraft Engine Parameters
-         MFUEL    = AMFUEL(ISRC)
-         THRUST   = ATHRUST(ISRC)
-         VAA      = AVAA(ISRC)
-         AFR      = AAFR(ISRC)
-         BYPR     = ABYPR(ISRC)
-         RPWR     = ARPWR(ISRC)
-         SRCANGLE = ASRCANGLE(ISRC)
-      ELSE
-         MFUEL    = 0.0D0
-         THRUST   = 0.0D0
-         VAA      = 0.0D0
-         AFR      = 0.0D0
-         BYPR     = 0.0D0
-         RPWR     = 0.0D0
-         SRCANGLE = 0.0D0
-      END IF
+         mfuel    = amfuel(isrc)
+         thrust   = athrust(isrc)
+         vaa      = avaa(isrc)
+         afr      = aafr(isrc)
+         bypr     = abypr(isrc)
+         rpwr     = arpwr(isrc)
+         srcangle = asrcangle(isrc)
+      else
+         mfuel    = 0.0d0
+         thrust   = 0.0d0
+         vaa      = 0.0d0
+         afr      = 0.0d0
+         bypr     = 0.0d0
+         rpwr     = 0.0d0
+         srcangle = 0.0d0
+      end if
 !**  End Aircraft Plume Rise insert; April 2023
 
-   ELSE IF (SRCTYP(ISRC) .EQ. 'AREA' .or.&
-   &SRCTYP(ISRC) .EQ. 'LINE') THEN
-      XS = AXS(ISRC)
-      YS = AYS(ISRC)
-      ZS = AZS(ISRC)
-      QS = AQS(ISRC)
-      HS = AHS(ISRC)
+   else if (srctyp(isrc) .eq. 'AREA' .or.&
+   &srctyp(isrc) .eq. 'LINE') then
+      xs = axs(isrc)
+      ys = ays(isrc)
+      zs = azs(isrc)
+      qs = aqs(isrc)
+      hs = ahs(isrc)
 
-      XINIT = AXINIT(ISRC)
-      YINIT = AYINIT(ISRC)
-      ANGLE = AANGLE(ISRC)
+      xinit = axinit(isrc)
+      yinit = ayinit(isrc)
+      angle = aangle(isrc)
 
-      SZINIT = ASZINI(ISRC)
-      NVERT  = 4
+      szinit = aszini(isrc)
+      nvert  = 4
 
 !        Store Vertices in Temporary Arrays
-      DO IVERT = 1, NVERT+1
-         XVERT(IVERT) = AXVERT(IVERT,ISRC)
-         YVERT(IVERT) = AYVERT(IVERT,ISRC)
-      END DO
+      do ivert = 1, nvert+1
+         xvert(ivert) = axvert(ivert,isrc)
+         yvert(ivert) = ayvert(ivert,isrc)
+      end do
 
-      XCNTR = AXCNTR(ISRC)
-      YCNTR = AYCNTR(ISRC)
+      xcntr = axcntr(isrc)
+      ycntr = aycntr(isrc)
 !**  Added for Aircraft Plume Rise; UNC-IE
-      IF (SRCTYP(ISRC) .EQ. 'AREA' .and.&
-      &AFTSRC(ISRC) .EQ. 'Y') THEN
+      if (srctyp(isrc) .eq. 'AREA' .and.&
+      &aftsrc(isrc) .eq. 'Y') then
 !        Find Aircraft Index for This Source
 !        Aircraft Engine Parameters
-         MFUEL    = AMFUEL(ISRC)
-         THRUST   = ATHRUST(ISRC)
-         VAA      = AVAA(ISRC)
-         AFR      = AAFR(ISRC)
-         BYPR     = ABYPR(ISRC)
-         RPWR     = ARPWR(ISRC)
-         SRCANGLE = ASRCANGLE(ISRC)
-      ELSE
-         MFUEL    = 0.0D0
-         THRUST   = 0.0D0
-         VAA      = 0.0D0
-         AFR      = 0.0D0
-         BYPR     = 0.0D0
-         RPWR     = 0.0D0
-         SRCANGLE = 0.0D0
-      END IF
+         mfuel    = amfuel(isrc)
+         thrust   = athrust(isrc)
+         vaa      = avaa(isrc)
+         afr      = aafr(isrc)
+         bypr     = abypr(isrc)
+         rpwr     = arpwr(isrc)
+         srcangle = asrcangle(isrc)
+      else
+         mfuel    = 0.0d0
+         thrust   = 0.0d0
+         vaa      = 0.0d0
+         afr      = 0.0d0
+         bypr     = 0.0d0
+         rpwr     = 0.0d0
+         srcangle = 0.0d0
+      end if
 !**  End Aircraft Plume Rise insert; April 2023
 
-   ELSE IF (SRCTYP(ISRC) .EQ. 'AREAPOLY') THEN
-      XS = AXS(ISRC)
-      YS = AYS(ISRC)
-      ZS = AZS(ISRC)
-      QS = AQS(ISRC)
-      HS = AHS(ISRC)
+   else if (srctyp(isrc) .eq. 'AREAPOLY') then
+      xs = axs(isrc)
+      ys = ays(isrc)
+      zs = azs(isrc)
+      qs = aqs(isrc)
+      hs = ahs(isrc)
 
-      SZINIT = ASZINI(ISRC)
-      NVERT  = NVERTS(ISRC)
+      szinit = aszini(isrc)
+      nvert  = nverts(isrc)
 
 !        Store Vertices in Temporary Arrays
-      DO IVERT = 1, NVERT+1
-         XVERT(IVERT) = AXVERT(IVERT,ISRC)
-         YVERT(IVERT) = AYVERT(IVERT,ISRC)
-      END DO
+      do ivert = 1, nvert+1
+         xvert(ivert) = axvert(ivert,isrc)
+         yvert(ivert) = ayvert(ivert,isrc)
+      end do
 
 !        Assign equivalent values of XINIT and YINIT for calculating area
-      XINIT = AXINIT(ISRC)
-      YINIT = AYINIT(ISRC)
+      xinit = axinit(isrc)
+      yinit = ayinit(isrc)
 
 !        Assign centroid of polygon
-      XCNTR = AXCNTR(ISRC)
-      YCNTR = AYCNTR(ISRC)
+      xcntr = axcntr(isrc)
+      ycntr = aycntr(isrc)
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-      IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+      if (aftsrc(isrc) .eq. 'Y') then
 !        Find Aircraft Index for This Source
 !        Aircraft Engine Parameters
-         MFUEL    = AMFUEL(ISRC)
-         THRUST   = ATHRUST(ISRC)
-         VAA      = AVAA(ISRC)
-         AFR      = AAFR(ISRC)
-         BYPR     = ABYPR(ISRC)
-         RPWR     = ARPWR(ISRC)
-         SRCANGLE = ASRCANGLE(ISRC)
-      ELSE
-         MFUEL    = 0.0D0
-         THRUST   = 0.0D0
-         VAA      = 0.0D0
-         AFR      = 0.0D0
-         BYPR     = 0.0D0
-         RPWR     = 0.0D0
-         SRCANGLE = 0.0D0
-      END IF
+         mfuel    = amfuel(isrc)
+         thrust   = athrust(isrc)
+         vaa      = avaa(isrc)
+         afr      = aafr(isrc)
+         bypr     = abypr(isrc)
+         rpwr     = arpwr(isrc)
+         srcangle = asrcangle(isrc)
+      else
+         mfuel    = 0.0d0
+         thrust   = 0.0d0
+         vaa      = 0.0d0
+         afr      = 0.0d0
+         bypr     = 0.0d0
+         rpwr     = 0.0d0
+         srcangle = 0.0d0
+      end if
 !**  End Aircraft Plume Rise insert; April 2023
 
-   ELSE IF (SRCTYP(ISRC) .EQ. 'AREACIRC') THEN
-      XS = AXS(ISRC)
-      YS = AYS(ISRC)
-      ZS = AZS(ISRC)
-      QS = AQS(ISRC)
-      HS = AHS(ISRC)
+   else if (srctyp(isrc) .eq. 'AREACIRC') then
+      xs = axs(isrc)
+      ys = ays(isrc)
+      zs = azs(isrc)
+      qs = aqs(isrc)
+      hs = ahs(isrc)
 
-      SZINIT = ASZINI(ISRC)
-      NVERT  = NVERTS(ISRC)
+      szinit = aszini(isrc)
+      nvert  = nverts(isrc)
 
 !        Store Vertices in Temporary Arrays
-      DO IVERT = 1, NVERT+1
-         XVERT(IVERT) = AXVERT(IVERT,ISRC)
-         YVERT(IVERT) = AYVERT(IVERT,ISRC)
-      END DO
+      do ivert = 1, nvert+1
+         xvert(ivert) = axvert(ivert,isrc)
+         yvert(ivert) = ayvert(ivert,isrc)
+      end do
 
 !        Assign equivalent values of XINIT and YINIT for calculating area
-      XINIT = AXINIT(ISRC)
-      YINIT = AYINIT(ISRC)
+      xinit = axinit(isrc)
+      yinit = ayinit(isrc)
 
-      XCNTR = AXCNTR(ISRC)
-      YCNTR = AYCNTR(ISRC)
+      xcntr = axcntr(isrc)
+      ycntr = aycntr(isrc)
 !**  Added for Aircraft Plume Rise; UNC-IE
-      IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+      if (aftsrc(isrc) .eq. 'Y') then
 !         Find Aircraft Index for This Source
 !         Aircraft Engine Parameters
-         MFUEL    = AMFUEL(ISRC)
-         THRUST   = ATHRUST(ISRC)
-         VAA      = AVAA(ISRC)
-         AFR      = AAFR(ISRC)
-         BYPR     = ABYPR(ISRC)
-         RPWR     = ARPWR(ISRC)
-         SRCANGLE = ASRCANGLE(ISRC)
-      ELSE
-         MFUEL    = 0.0D0
-         THRUST   = 0.0D0
-         VAA      = 0.0D0
-         AFR      = 0.0D0
-         BYPR     = 0.0D0
-         RPWR     = 0.0D0
-         SRCANGLE = 0.0D0
-      END IF
+         mfuel    = amfuel(isrc)
+         thrust   = athrust(isrc)
+         vaa      = avaa(isrc)
+         afr      = aafr(isrc)
+         bypr     = abypr(isrc)
+         rpwr     = arpwr(isrc)
+         srcangle = asrcangle(isrc)
+      else
+         mfuel    = 0.0d0
+         thrust   = 0.0d0
+         vaa      = 0.0d0
+         afr      = 0.0d0
+         bypr     = 0.0d0
+         rpwr     = 0.0d0
+         srcangle = 0.0d0
+      end if
 !**  End Aircraft Plume Rise insert; April 2023
 
-   ELSE IF (SRCTYP(ISRC) .EQ. 'OPENPIT') THEN
-      XS = AXS(ISRC)
-      YS = AYS(ISRC)
-      ZS = AZS(ISRC)
-      QS = AQS(ISRC)
+   else if (srctyp(isrc) .eq. 'OPENPIT') then
+      xs = axs(isrc)
+      ys = ays(isrc)
+      zs = azs(isrc)
+      qs = aqs(isrc)
 !        Set Emission Height of Effective Area, HS = 0.0
-      HS = 0.0D0
+      hs = 0.0d0
 !        Set Height of Emissions Above Base of Pit, EMIHGT
-      EMIHGT = AHS(ISRC)
-      NVERT  = 4
+      emihgt = ahs(isrc)
+      nvert  = 4
 
-      XINIT = AXINIT(ISRC)
-      YINIT = AYINIT(ISRC)
-      ANGLE = AANGLE(ISRC)
-      PALPHA = AALPHA(ISRC)
-      PDEFF  = APDEFF(ISRC)
-      SZINIT = ASZINI(ISRC)
-      PITLEN = MAX(XINIT,YINIT)
-      PITWID = MIN(XINIT,YINIT)
+      xinit = axinit(isrc)
+      yinit = ayinit(isrc)
+      angle = aangle(isrc)
+      palpha = aalpha(isrc)
+      pdeff  = apdeff(isrc)
+      szinit = aszini(isrc)
+      pitlen = max(xinit,yinit)
+      pitwid = min(xinit,yinit)
 
 !        Store Vertices in Temporary Arrays
-      DO IVERT = 1, NVERT+1
-         XVERT(IVERT) = AXVERT(IVERT,ISRC)
-         YVERT(IVERT) = AYVERT(IVERT,ISRC)
-      END DO
+      do ivert = 1, nvert+1
+         xvert(ivert) = axvert(ivert,isrc)
+         yvert(ivert) = ayvert(ivert,isrc)
+      end do
 
-      XCNTR = AXCNTR(ISRC)
-      YCNTR = AYCNTR(ISRC)
+      xcntr = axcntr(isrc)
+      ycntr = aycntr(isrc)
 
-   ELSE IF (SRCTYP(ISRC) .EQ. 'BUOYLINE') THEN
-      QS = AQS(ISRC)
+   else if (srctyp(isrc) .eq. 'BUOYLINE') then
+      qs = aqs(isrc)
 
 !     Added for sidewash
-   ELSE IF (SRCTYP(ISRC) .EQ. 'SWPOINT') THEN
-      XS = AXS(ISRC)
-      YS = AYS(ISRC)
-      ZS = AZS(ISRC)
-      QS = AQS(ISRC)
-      HS = AHS(ISRC)
-      BW = ABW(ISRC)
-      BL = ABL(ISRC)
-      BH = ABH(ISRC)
-      BA = ABA(ISRC)
+   else if (srctyp(isrc) .eq. 'SWPOINT') then
+      xs = axs(isrc)
+      ys = ays(isrc)
+      zs = azs(isrc)
+      qs = aqs(isrc)
+      hs = ahs(isrc)
+      bw = abw(isrc)
+      bl = abl(isrc)
+      bh = abh(isrc)
+      ba = aba(isrc)
 
-   END IF
+   end if
 
-   NPD = INPD(ISRC)
-   IF (NPD .GT. 0) THEN
-      DO J = 1, NPD
-         PDIAM(J) = APDIAM(J,ISRC)
-         PHI(J)   = APHI(J,ISRC)
-         PDENS(J) = APDENS(J,ISRC)
-         VGRAV(J) = AVGRAV(J,ISRC)
-         TSTOP(J) = ATSTOP(J,ISRC)
-      END DO
-   END IF
+   npd = inpd(isrc)
+   if (npd .gt. 0) then
+      do j = 1, npd
+         pdiam(j) = apdiam(j,isrc)
+         phi(j)   = aphi(j,isrc)
+         pdens(j) = apdens(j,isrc)
+         vgrav(j) = avgrav(j,isrc)
+         tstop(j) = atstop(j,isrc)
+      end do
+   end if
 
 ! --- Initialize SURFAC for this source
-   IF( HS .LT. 0.1D0 * ZI )THEN
-      SURFAC = .TRUE.
-   ELSE
-      SURFAC = .FALSE.
-   END IF
+   if( hs .lt. 0.1d0 * zi )then
+      surfac = .true.
+   else
+      surfac = .false.
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE FLUXES(VSEQ)
+subroutine fluxes(vseq)
 !***********************************************************************
 !             FLUXES Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -5950,54 +5950,54 @@ SUBROUTINE FLUXES(VSEQ)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   character modnam*12
 
-   DOUBLE PRECISION  TSEQ, DSEQ, VSEQ
+   double precision  tseq, dseq, vseq
 
 !     Variable Initializations
-   MODNAM = 'FLUXES'
+   modnam = 'FLUXES'
 
 !     Note:  TA is now ambient temperature AT STACK HEIGHT and
 !            was computed in METINI
 
 !     Check for Negative Stack Temperature, Used to
 !     Indicate Constant TS-TA
-   IF (TS .LT. 0.0D0) THEN
-      TS = TA + DABS(TS)
-   END IF
+   if (ts .lt. 0.0d0) then
+      ts = ta + dabs(ts)
+   end if
 
-   IF (TS .LT. TA)  TS = TA
-   FB = (0.25D0 / TS) * (VS * DS * DS) * G * (TS - TA)
-   FM = (0.25D0 / TS) * (VS * DS * DS) * VS * TA
+   if (ts .lt. ta)  ts = ta
+   fb = (0.25d0 / ts) * (vs * ds * ds) * g * (ts - ta)
+   fm = (0.25d0 / ts) * (vs * ds * ds) * vs * ta
 
 !     Set effective exit velocity, diameter and momentum flux for
 !     capped stack (POINTCAP) or horizontal release (POINTHOR).
-   IF (SRCTYP(ISRC) .EQ. 'POINTCAP') THEN
-      VSEQ = 0.001D0
-      DSEQ = DS * DSQRT( VS/VSEQ )
-      TSEQ = TS
-      FM = (0.25D0 / TSEQ) * (VSEQ * DSEQ * DSEQ) * VSEQ * TA
-   ELSE IF (SRCTYP(ISRC) .EQ. 'POINTHOR') THEN
-      VSEQ = 0.001D0
-      DSEQ = DS * DSQRT( VS/VSEQ )
-      TSEQ = TS
-      FM = (0.25D0 / TSEQ) * (VSEQ * DSEQ * DSEQ) * VSEQ * TA
-   ELSE
-      VSEQ = VS
-      DSEQ = DS
-      TSEQ = TS
-   END IF
+   if (srctyp(isrc) .eq. 'POINTCAP') then
+      vseq = 0.001d0
+      dseq = ds * dsqrt( vs/vseq )
+      tseq = ts
+      fm = (0.25d0 / tseq) * (vseq * dseq * dseq) * vseq * ta
+   else if (srctyp(isrc) .eq. 'POINTHOR') then
+      vseq = 0.001d0
+      dseq = ds * dsqrt( vs/vseq )
+      tseq = ts
+      fm = (0.25d0 / tseq) * (vseq * dseq * dseq) * vseq * ta
+   else
+      vseq = vs
+      dseq = ds
+      tseq = ts
+   end if
 
 !     To avoid divide by zero or underflow, set FB and FM to a minimum value
-   IF( FB .LT. 1.0D-10 ) FB = 1.0D-10
-   IF( FM .LT. 1.0D-10 ) FM = 1.0D-10
+   if( fb .lt. 1.0d-10 ) fb = 1.0d-10
+   if( fm .lt. 1.0d-10 ) fm = 1.0d-10
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE HEFF ( XARG )
+subroutine heff ( xarg )
 !***********************************************************************
 !             HEFF Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6037,107 +6037,107 @@ SUBROUTINE HEFF ( XARG )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: XARG
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: xarg
 
 !     Variable Initializations
-   MODNAM = 'HEFF'
+   modnam = 'HEFF'
 
-   DHP3PLAT = 0.0D0     !D142 initialized DHP3PLAT 2/2/23 WSP
+   dhp3plat = 0.0d0     !D142 initialized DHP3PLAT 2/2/23 WSP
 
 !     Compute the effective plume height
-   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
+   if( stable  .or.  (unstab .and. (hs .ge. zi) ) )then
 !        The atmosphere is stable or the release is above the CBL
 !        mixing ht.
-      HE = HSP + DHP
+      he = hsp + dhp
 !        Don't Allow Effective Plume Height to be < 0.0
-      HE = MAX( 0.0D0, HE)
+      he = max( 0.0d0, he)
 
-      HED1 = 0.0D0
-      HED2 = 0.0D0
-      HEN1 = 0.0D0
-      HEN2 = 0.0D0
-      HE3  = 0.0D0
+      hed1 = 0.0d0
+      hed2 = 0.0d0
+      hen1 = 0.0d0
+      hen2 = 0.0d0
+      he3  = 0.0d0
 
 !CRT     D063 Platform Downwash Debug
-      IF (PLATFMDBG .and. OSPLAT(ISRC)) THEN
-         WRITE(PLATFMDBUNT,'(A, 1(2X, A, F12.3), 3(2X, A, F7.3))')&
+      if (platfmdbg .and. osplat(isrc)) then
+         write(platfmdbunt,'(A, 1(2X, A, F12.3), 3(2X, A, F7.3))')&
          &'calc1.f/HEFF(STABLE): ',&
-         &'XARG = ', XARG,&
-         &'HSP = ', HSP,&
-         &'DHP = ', DHP,&
-         &'HE = ', HE
-      END IF
+         &'XARG = ', xarg,&
+         &'HSP = ', hsp,&
+         &'DHP = ', dhp,&
+         &'HE = ', he
+      end if
 
-   ELSEIF( UNSTAB )THEN
+   elseif( unstab )then
 !        The atmosphere is unstable and the release is below the
 !        mixing ht.
 
 ! ---    Set HE = 0.0 for unstable conditions
-      HE = 0.0D0
+      he = 0.0d0
 
 !        Compute the effective direct plume height, for both the
 !        Plume 1 (HED1) and Plume 2 (HED2)
-      HED1 = HSP + DHP1 + (ASUB1 * WSTAR * XARG / UEFFD)
-      HED2 = HSP + DHP1 + (ASUB2 * WSTAR * XARG / UEFFD)
+      hed1 = hsp + dhp1 + (asub1 * wstar * xarg / ueffd)
+      hed2 = hsp + dhp1 + (asub2 * wstar * xarg / ueffd)
 
 !        Compute the effective indirect plume height, for both the
 !        updraft (HEN1) and downdraft (HEN2)
 
-      HEN1 = HSP + DHP1 - DHP2 + (ASUB1 * WSTAR * XARG / UEFFN)
-      HEN2 = HSP + DHP1 - DHP2 + (ASUB2 * WSTAR * XARG / UEFFN)
+      hen1 = hsp + dhp1 - dhp2 + (asub1 * wstar * xarg / ueffn)
+      hen2 = hsp + dhp1 - dhp2 + (asub2 * wstar * xarg / ueffn)
 
 ! ---    Include calculation of penetrated plume rise and height
-      IF( PPF .GT. 0.0D0 )THEN
+      if( ppf .gt. 0.0d0 )then
 
 !           Compute the plume height for the penetrated source
 !           (See Eq. 8 in the reference for Source 3)
-         IF (PPF .EQ. 1.0D0) THEN
-            DHP3 = HEDHH * (ZI-HSP)
-         ELSE
-            DHP3 = 0.75D0 * (ZI-HSP) * HEDHH + 0.5D0 * (ZI-HSP)
-         END IF
+         if (ppf .eq. 1.0d0) then
+            dhp3 = hedhh * (zi-hsp)
+         else
+            dhp3 = 0.75d0 * (zi-hsp) * hedhh + 0.5d0 * (zi-hsp)
+         end if
 
 !MGS        D063 Platform Downwash
-         IF (OSPLAT(ISRC))THEN
-            HE3 = HSP + DHP3 - DHP3PLAT
-         ELSE
-            HE3 = HSP + DHP3
-         END IF
+         if (osplat(isrc))then
+            he3 = hsp + dhp3 - dhp3plat
+         else
+            he3 = hsp + dhp3
+         end if
 
-      ELSE
-         DHP3 = 0.0D0
-         HE3  = 0.0D0
+      else
+         dhp3 = 0.0d0
+         he3  = 0.0d0
 
-      END IF
+      end if
 
 !CRT     D063 Platform Downwash Debug
-      IF (PLATFMDBG .and. OSPLAT(ISRC)) THEN
-         WRITE(PLATFMDBUNT,'(A, 1(2X, A, F12.3), 12(2X, A, F7.3))')&
+      if (platfmdbg .and. osplat(isrc)) then
+         write(platfmdbunt,'(A, 1(2X, A, F12.3), 12(2X, A, F7.3))')&
          &'calc1.f/HEFF(UNSTABLE): ',&
-         &'XARG = ', XARG,&
-         &'HSP = ', HSP,&
-         &'DHP1 = ', DHP1,&
-         &'WSTAR = ', WSTAR,&
-         &'UEFFD = ', UEFFD,&
-         &'ASUB1 = ', ASUB1,&
-         &'HED1 = ', HED1,&
-         &'ASUB2 = ', ASUB2,&
-         &'HED2 = ', HED2,&
-         &'DHP2 = ', DHP2,&
-         &'HEN1 = ', HEN1,&
-         &'HEN2 = ', HEN2,&
-         &'HE3 = ', HE3
-      END IF
+         &'XARG = ', xarg,&
+         &'HSP = ', hsp,&
+         &'DHP1 = ', dhp1,&
+         &'WSTAR = ', wstar,&
+         &'UEFFD = ', ueffd,&
+         &'ASUB1 = ', asub1,&
+         &'HED1 = ', hed1,&
+         &'ASUB2 = ', asub2,&
+         &'HED2 = ', hed2,&
+         &'DHP2 = ', dhp2,&
+         &'HEN1 = ', hen1,&
+         &'HEN2 = ', hen2,&
+         &'HE3 = ', he3
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE PRMHEFF
+subroutine prmheff
 !***********************************************************************
 !             PRMHEFF Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6171,35 +6171,35 @@ SUBROUTINE PRMHEFF
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   character modnam*12
 
 !     Variable Initializations
-   MODNAM = 'PRMHEFF'
+   modnam = 'PRMHEFF'
 
 !     Compute the effective plume height
-   IF( STABLE )THEN
+   if( stable )then
 !        The atmosphere is stable or the release is above the CBL
 !        mixing ht.
 
-      HE = HS + DHP
+      he = hs + dhp
 !        Don't Allow Effective Plume Height to be < 0.0
-      HE = MAX( 0.0D0, HE)
+      he = max( 0.0d0, he)
 
-   ELSE IF( UNSTAB )THEN
+   else if( unstab )then
 !        The atmosphere is unstable and the release is below the
 !        mixing ht.
 
-      HE = HS + DHP
+      he = hs + dhp
 !        Don't Allow Effective Plume Height to be < 0.0
-      HE = MAX( 0.0D0, HE)
-   END IF
+      he = max( 0.0d0, he)
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE PDIS ( XARG )
+subroutine pdis ( xarg )
 !***********************************************************************
 !             PDIS module of the AMS/EPA Regulatory Model - AERMOD
 ! ----------------------------------------------------------------------
@@ -6234,51 +6234,51 @@ SUBROUTINE PDIS ( XARG )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: XARG
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: xarg
 
 !     Variable Initializations
-   MODNAM = 'PDIS'
+   modnam = 'PDIS'
 
 !     Calculate Sigma-z from formuale                 --- CALL SIGZ
-   CALL SIGZ ( XARG )
+   call sigz ( xarg )
 !     Calculate Sigma-y from formulae                 --- CALL SIGY
-   CALL SIGY ( XARG )
+   call sigy ( xarg )
 
 !     Set all virtual source terms to 0 for non-downwashing sources
-   VSIGY = 0.0D0
-   VSYN  = 0.0D0
-   VSIGZ = 0.0D0
-   VSZD1 = 0.0D0
-   VSZD2 = 0.0D0
-   VSZN1 = 0.0D0
-   VSZN2 = 0.0D0
-   VSZ3  = 0.0D0
-   VSY3  = 0.0D0
+   vsigy = 0.0d0
+   vsyn  = 0.0d0
+   vsigz = 0.0d0
+   vszd1 = 0.0d0
+   vszd2 = 0.0d0
+   vszn1 = 0.0d0
+   vszn2 = 0.0d0
+   vsz3  = 0.0d0
+   vsy3  = 0.0d0
 
 !     Calculate the buoyancy-induced dispersion parameters
-   IF( NOBID )THEN
+   if( nobid )then
 !        Set BID Terms to 0.0
-      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
-         SYB = 0.0D0
-         SZB = 0.0D0
+      if( stable  .or.  (unstab .and. (hs .ge. zi) ) )then
+         syb = 0.0d0
+         szb = 0.0d0
 
-      ELSE IF( UNSTAB )THEN
-         SYB  = 0.0D0
-         SZBD = 0.0D0
-         SZBN = 0.0D0
-         SYB3 = 0.0D0
-         SZB3 = 0.0D0
+      else if( unstab )then
+         syb  = 0.0d0
+         szbd = 0.0d0
+         szbn = 0.0d0
+         syb3 = 0.0d0
+         szb3 = 0.0d0
 
-      END IF
+      end if
 
-   ELSE
+   else
 !        Specify BID Terms                                 --- CALL BID
-      CALL BID
+      call bid
 
-   END IF
+   end if
 
 ! ----------------------------------------------------------------------
 ! ---------- BEGIN PLATFORM DOWNWASH INTITAL SIGMAY and SIGMAZ ---------
@@ -6291,70 +6291,70 @@ SUBROUTINE PDIS ( XARG )
 
 !CRT  D063
 !     Initialize platform downwash sigmas
-   PLATSZ   = 0.0D0  ! stable or unstable injected
-   PLATSY   = 0.0D0  ! stable or unstable injected
-   PLATSZD1 = 0.0D0  ! unstable, direct, updraft
-   PLATSYD1 = 0.0D0  ! unstable, direct, updraft
-   PLATSZD2 = 0.0D0  ! unstable, direct, downdraft
-   PLATSYD2 = 0.0D0  ! unstable, direct, downdraft
-   PLATSZN1 = 0.0D0  ! unstable, indirect, updraft
-   PLATSYN1 = 0.0D0  ! unstable, indirect, updraft
-   PLATSZN2 = 0.0D0  ! unstable, indirect, downdraft
-   PLATSYN2 = 0.0D0  ! unstable, indirect, downdraft
-   PLATSZP  = 0.0D0  ! unstable, penetrated
-   PLATSYP  = 0.0D0  ! unstable, penetrated
+   platsz   = 0.0d0  ! stable or unstable injected
+   platsy   = 0.0d0  ! stable or unstable injected
+   platszd1 = 0.0d0  ! unstable, direct, updraft
+   platsyd1 = 0.0d0  ! unstable, direct, updraft
+   platszd2 = 0.0d0  ! unstable, direct, downdraft
+   platsyd2 = 0.0d0  ! unstable, direct, downdraft
+   platszn1 = 0.0d0  ! unstable, indirect, updraft
+   platsyn1 = 0.0d0  ! unstable, indirect, updraft
+   platszn2 = 0.0d0  ! unstable, indirect, downdraft
+   platsyn2 = 0.0d0  ! unstable, indirect, downdraft
+   platszp  = 0.0d0  ! unstable, penetrated
+   platsyp  = 0.0d0  ! unstable, penetrated
 
-   IF (OSPLAT(ISRC)) THEN
+   if (osplat(isrc)) then
 
 
 !           Get initial value for downwash sigma-z
 !           Consider all conditions in HEFF
-      IF (STABLE) THEN
+      if (stable) then
 
 !              The atmosphere is stable or the release is above the CBL
-         CALL PLAT_DOWNWASH (XARG, PLATHB(ISRC)+0.0D0,&
-         &PLATWB(ISRC), HE, PLATSZ, PLATSY)
+         call plat_downwash (xarg, plathb(isrc)+0.0d0,&
+         &platwb(isrc), he, platsz, platsy)
 
-      ELSEIF (UNSTAB .and. (HS .GE. ZI)) THEN
+      elseif (unstab .and. (hs .ge. zi)) then
 
 !              Do not apply to injected plume
-         CONTINUE
+         continue
 
 
-      ELSEIF( UNSTAB )THEN
+      elseif( unstab )then
 !              Direct Plume updraft(HED1) and downdraft(HED2)
-         CALL PLAT_DOWNWASH (XARG, PLATHB(ISRC)+0.0D0,&
-         &PLATWB(ISRC), HED1, PLATSZD1, PLATSYD1)
+         call plat_downwash (xarg, plathb(isrc)+0.0d0,&
+         &platwb(isrc), hed1, platszd1, platsyd1)
 
-         CALL PLAT_DOWNWASH (XARG, PLATHB(ISRC)+0.0D0,&
-         &PLATWB(ISRC), HED2, PLATSZD2, PLATSYD2)
+         call plat_downwash (xarg, plathb(isrc)+0.0d0,&
+         &platwb(isrc), hed2, platszd2, platsyd2)
 
 !              Indirect Plume updraft(HEN1) and downdraft(HEN2)
-         CALL PLAT_DOWNWASH (XARG, PLATHB(ISRC)+0.0D0,&
-         &PLATWB(ISRC), HEN1, PLATSZN1, PLATSYN1)
+         call plat_downwash (xarg, plathb(isrc)+0.0d0,&
+         &platwb(isrc), hen1, platszn1, platsyn1)
 
-         CALL PLAT_DOWNWASH (XARG, PLATHB(ISRC)+0.0D0,&
-         &PLATWB(ISRC), HEN2, PLATSZN2, PLATSYN2)
+         call plat_downwash (xarg, plathb(isrc)+0.0d0,&
+         &platwb(isrc), hen2, platszn2, platsyn2)
 
 !              Penetrated Plume
-         CALL PLAT_DOWNWASH (XARG, PLATHB(ISRC)+0.0D0,&
-         &PLATWB(ISRC), HE3, PLATSZP, PLATSYP)
+         call plat_downwash (xarg, plathb(isrc)+0.0d0,&
+         &platwb(isrc), he3, platszp, platsyp)
 
-      END IF
+      end if
 
-   END IF
+   end if
 ! ----------------------------------------------------------------------
 ! ---------- END PLATFORM DOWNWASH INTITAL SIGMAY and SIGMAZ -----------
 !----------             RESUME NORMAL PROCESSING           -------------
 ! ----------------------------------------------------------------------
 
 !---- Calculate the root-mean-square sigma_Y and sigma_Z   --- CALL RMSSIG
-   CALL RMSSIG
+   call rmssig
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE VDIS (XARG)
+subroutine vdis (xarg)
 !***********************************************************************
 !             VDIS Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6379,52 +6379,52 @@ SUBROUTINE VDIS (XARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: XARG
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: xarg
 
 !     Variable Initializations
-   MODNAM = 'VDIS'
+   modnam = 'VDIS'
 
 !     Calculate Sigma-y from formulae                 --- CALL SIGY
-   CALL SIGY ( XARG )
+   call sigy ( xarg )
 !     Calculate Sigma-z from formulae                 --- CALL SIGZ
-   CALL SIGZ ( XARG )
+   call sigz ( xarg )
 
 !     Set virtual source terms based on initial sigmas input by user
-   VSIGY = SYINIT
-   VSYN  = SYINIT
-   VSIGZ = SZINIT
-   VSZD1 = SZINIT
-   VSZD2 = SZINIT
-   VSZN1 = SZINIT
-   VSZN2 = SZINIT
-   VSZ3  = 0.0D0
-   VSY3  = 0.0D0
+   vsigy = syinit
+   vsyn  = syinit
+   vsigz = szinit
+   vszd1 = szinit
+   vszd2 = szinit
+   vszn1 = szinit
+   vszn2 = szinit
+   vsz3  = 0.0d0
+   vsy3  = 0.0d0
 !**  Added for Aircraft Plume Rise; UNC-IE
-   IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+   if (aftsrc(isrc) .eq. 'Y') then
 !         CALL ADELTAH (XARG)
 !        Specify BID Terms                                 --- CALL BID
-      CALL BID
-   ELSE
+      call bid
+   else
 !**  End Aircraft Plume Rise insert; April 2023
 !     Set BID terms to zero
-      SYB  = 0.0D0
-      SZB  = 0.0D0
-      SZBD = 0.0D0
-      SZBN = 0.0D0
-      SYB3 = 0.0D0
-      SZB3 = 0.0D0
-   END IF                 ! Added for Aircraft; UNC-IE
+      syb  = 0.0d0
+      szb  = 0.0d0
+      szbd = 0.0d0
+      szbn = 0.0d0
+      syb3 = 0.0d0
+      szb3 = 0.0d0
+   end if                 ! Added for Aircraft; UNC-IE
 
 !---- Calculate the root-mean-square sigma_Y and sigma_Z   --- CALL RMSSIG
-   CALL RMSSIG
+   call rmssig
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE ADISY(XARG)
+subroutine adisy(xarg)
 !***********************************************************************
 !                 ADISY Module of the AERMOD Model
 !
@@ -6452,39 +6452,39 @@ SUBROUTINE ADISY(XARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: XARG
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: xarg
 
 !     Variable Initializations
-   MODNAM = 'ADISY'
+   modnam = 'ADISY'
 
 !     Calculate Sigma-y from formulae                 --- CALL SIGY
-   CALL SIGY ( XARG )
+   call sigy ( xarg )
 
 !     Set virtual source terms for AREA sources to zero
-   VSIGY = 0.0D0
-   VSY3  = 0.0D0
+   vsigy = 0.0d0
+   vsy3  = 0.0d0
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+   if (aftsrc(isrc) .eq. 'Y') then
 !         CALL ADELTAH (XARG)
 !        Specify BID Terms                                 --- CALL BID
-      CALL BID
-   ELSE
+      call bid
+   else
 !**  End Aircraft Plume Rise insert; April 2023
 !     Set BID terms to zero
-      SYB  = 0.0D0
-      SYB3 = 0.0D0
-   END IF                 ! Added for Aircraft; UNC-IE
+      syb  = 0.0d0
+      syb3 = 0.0d0
+   end if                 ! Added for Aircraft; UNC-IE
 
-   SY = SYAMB
+   sy = syamb
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE ADISZ(XARG)
+subroutine adisz(xarg)
 !***********************************************************************
 !                 ADISZ Module of the AERMOD Model
 !
@@ -6513,46 +6513,46 @@ SUBROUTINE ADISZ(XARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: XARG
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: xarg
 
 !     Variable Initializations
-   MODNAM = 'ADISZ'
+   modnam = 'ADISZ'
 
 !     Calculate Sigma-z from formulae                 --- CALL SIGZ
-   CALL SIGZ ( XARG )
+   call sigz ( xarg )
 
 !     Set virtual source terms based on initial sigmas input by user
-   VSIGZ = SZINIT
-   VSZD1 = SZINIT
-   VSZD2 = SZINIT
-   VSZN1 = SZINIT
-   VSZN2 = SZINIT
-   VSZ3  = 0.0D0
+   vsigz = szinit
+   vszd1 = szinit
+   vszd2 = szinit
+   vszn1 = szinit
+   vszn2 = szinit
+   vsz3  = 0.0d0
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+   if (aftsrc(isrc) .eq. 'Y') then
 !         CALL ADELTAH (XARG)
 !        Specify BID Terms                                 --- CALL BID
-      CALL BID
-   ELSE
+      call bid
+   else
 !**  End Aircraft Plume Rise insert; April 2023
 !     Set BID terms to zero
-      SZB  = 0.0D0
-      SZBD = 0.0D0
-      SZBN = 0.0D0
-      SZB3 = 0.0D0
-   END IF                ! Added for Aircraft; UNC-IE
+      szb  = 0.0d0
+      szbd = 0.0d0
+      szbn = 0.0d0
+      szb3 = 0.0d0
+   end if                ! Added for Aircraft; UNC-IE
 
 !---- Calculate the root-mean-square sigma_Y and sigma_Z   --- CALL RMSSIG
-   CALL RMSSIG
+   call rmssig
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE AER_PCHI( XARG, ADJ, VDINP, JIN, AEROUT )
+subroutine aer_pchi( xarg, adj, vdinp, jin, aerout )
 !***********************************************************************
 !        AER_PCHI Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6592,181 +6592,181 @@ SUBROUTINE AER_PCHI( XARG, ADJ, VDINP, JIN, AEROUT )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   INTEGER :: JIN
-   DOUBLE PRECISION :: AEROUT(NUMTYP), XARG, ADJ, VDINP, DRYFLUX,&
-   &WETFLUX
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   integer :: jin
+   double precision :: aerout(numtyp), xarg, adj, vdinp, dryflux,&
+   &wetflux
+   character modnam*12
 
 !     Variable Initializations
-   MODNAM = 'AER_PCHI'
-   DRYFLUX = 0.0D0
-   WETFLUX = 0.0D0
+   modnam = 'AER_PCHI'
+   dryflux = 0.0d0
+   wetflux = 0.0d0
 
 !---- Calculate the contribution due to horizontal plume, CWRAP
-   IF (FOPT .EQ. 0.0D0) THEN
-      CWRAP = 0.0D0
-   ELSE
-      CALL CPLUME (ZRT, CWRAP)
-   END IF
+   if (fopt .eq. 0.0d0) then
+      cwrap = 0.0d0
+   else
+      call cplume (zrt, cwrap)
+   end if
 
 !---- Calculate the contribution due to terrain-following plume, CLIFT
-   IF (ZRT .EQ. ZFLAG) THEN
+   if (zrt .eq. zflag) then
 !----    Effective receptor heights are equal, therefore CLIFT = CWRAP
-      CLIFT = CWRAP
-   ELSE IF (FOPT .EQ. 1.0D0) THEN
-      CLIFT = 0.0D0
-   ELSE
-      CALL CPLUME (ZFLAG, CLIFT)
-   END IF
+      clift = cwrap
+   else if (fopt .eq. 1.0d0) then
+      clift = 0.0d0
+   else
+      call cplume (zflag, clift)
+   end if
 
 !---- Calculate the exponential decay term, D               ---   CALL DECAY
-   Call DECAY (XARG)
+   Call decay (xarg)
 
 !---- Calculate the hourly concentration and deposition values
-   ITYP = 0
-   IF (CONC) THEN
-      ITYP = 1
-      AEROUT(ITYP) = ADJ * EMIFAC(ITYP) *&
-      &(FOPT * CWRAP + (1.0D0 - FOPT) * CLIFT) * D
+   ityp = 0
+   if (conc) then
+      ityp = 1
+      aerout(ityp) = adj * emifac(ityp) *&
+      &(fopt * cwrap + (1.0d0 - fopt) * clift) * d
 
 !   ENHANCEMENT TO DEBUG OUTPUT BASED ON ENSR
-      IF (DEBUG) THEN
-         WRITE(DBGUNT,10) ITYP, ADJ, FOPT, CWRAP, CLIFT, D,&
-         &AEROUT(ITYP)
-10       FORMAT(/,'ITYP = ',I2,' - CONC:',&
+      if (debug) then
+         write(dbgunt,10) ityp, adj, fopt, cwrap, clift, d,&
+         &aerout(ityp)
+10       format(/,'ITYP = ',i2,' - CONC:',&
          &/,'AEROUT(ITYP) = ADJ * EMIFAC(ITYP) * (FOPT * ',&
          &'CWRAP + (1.0 -FOPT) * CLIFT) * D',&
-         &/,' ADJ   = ',G16.8,&
-         &/,' FOPT  = ',G16.8,&
-         &/,' CWRAP = ',G16.8,&
-         &/,' CLIFT = ',G16.8,&
-         &/,' D     = ',G16.8,&
-         &/,' AEROUT(ITYP) = ',G16.8,/)
-      END IF
+         &/,' ADJ   = ',g16.8,&
+         &/,' FOPT  = ',g16.8,&
+         &/,' CWRAP = ',g16.8,&
+         &/,' CLIFT = ',g16.8,&
+         &/,' D     = ',g16.8,&
+         &/,' AEROUT(ITYP) = ',g16.8,/)
+      end if
 
-   END IF
+   end if
 
-   IF (DEPOS .or. DDEP) THEN
+   if (depos .or. ddep) then
 !        Calculate DRYFLUX, vertical term for wet deposition
 !----    Calculate the contribution due to horizontal plume, CWRAP
-      IF (FOPT .EQ. 0.0D0) THEN
-         CWRAP = 0.0D0
-      ELSE
-         CALL CPLUME (ZRT-ZFLAG+ZRDEP, CWRAP)
-      END IF
+      if (fopt .eq. 0.0d0) then
+         cwrap = 0.0d0
+      else
+         call cplume (zrt-zflag+zrdep, cwrap)
+      end if
 
 !----    Calculate the contribution due to terrain-following plume, CLIFT
-      IF (ZRT .EQ. ZFLAG) THEN
+      if (zrt .eq. zflag) then
 !----       Effective receptor heights are equal, therefore CLIFT = CWRAP
-         CLIFT = CWRAP
-      ELSE IF (FOPT .EQ. 1.0D0) THEN
-         CLIFT = 0.0D0
-      ELSE
-         CALL CPLUME (ZRDEP, CLIFT)
-      END IF
+         clift = cwrap
+      else if (fopt .eq. 1.0d0) then
+         clift = 0.0d0
+      else
+         call cplume (zrdep, clift)
+      end if
 
-      DRYFLUX = (FOPT * CWRAP + (1.0D0 - FOPT) * CLIFT) * D&
+      dryflux = (fopt * cwrap + (1.0d0 - fopt) * clift) * d&
       &
-   END IF
+   end if
 
-   IF (DEPOS .or. WDEP) THEN
+   if (depos .or. wdep) then
 !        Calculate WETFLUX, vertical term for wet deposition.
 !        Note that the SRT2PI for the integrated vertical term
 !        has been removed since it should be divided by SRT2PI.
 !        Additional factor of 3600. has been added to denominator
 !        to account for conversion from seconds to hours when
 !        divided by wind speed below.
-      IF (PRATE .GT. 0.0D0) THEN
-         IF (NPD .EQ. 0) THEN
-            WETFLUX = (ADJ*FRACSAT*PRATE*1.0D6*RGAS*TA)/&
-            &(ZSUBP*HENRY(ISRC)*1.0D9*DENOM*3600.0D0)
-         ELSE
-            WETFLUX = 1.0D-3*ADJ*WASHOUT(JIN)*PRATE/&
-            &(ZSUBP*3600.0D0)
-         END IF
-      ELSE
-         WETFLUX = 0.0D0
-      END IF
-   END IF
+      if (prate .gt. 0.0d0) then
+         if (npd .eq. 0) then
+            wetflux = (adj*fracsat*prate*1.0d6*rgas*ta)/&
+            &(zsubp*henry(isrc)*1.0d9*denom*3600.0d0)
+         else
+            wetflux = 1.0d-3*adj*washout(jin)*prate/&
+            &(zsubp*3600.0d0)
+         end if
+      else
+         wetflux = 0.0d0
+      end if
+   end if
 
-   IF (DEPOS) THEN
-      ITYP = ITYP + 1
-      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
-         AEROUT(ITYP) = ADJ * VDINP * EMIFAC(ITYP) * DRYFLUX +&
-         &QTK * WETFLUX * EMIFAC(ITYP) * FSUBY/UEFF
-      ELSE IF (UNSTAB) THEN
-         AEROUT(ITYP) = ADJ * VDINP * EMIFAC(ITYP) * DRYFLUX +&
-         &QTK * WETFLUX * EMIFAC(ITYP) *&
-         &(PPF*FSUBY3/UEFF3+(1.0D0-PPF)*FSUBY/UEFFD)
-      END IF
+   if (depos) then
+      ityp = ityp + 1
+      if( stable  .or.  (unstab .and. (hs .ge. zi) ) ) then
+         aerout(ityp) = adj * vdinp * emifac(ityp) * dryflux +&
+         &qtk * wetflux * emifac(ityp) * fsuby/ueff
+      else if (unstab) then
+         aerout(ityp) = adj * vdinp * emifac(ityp) * dryflux +&
+         &qtk * wetflux * emifac(ityp) *&
+         &(ppf*fsuby3/ueff3+(1.0d0-ppf)*fsuby/ueffd)
+      end if
 
-      IF (DEBUG) THEN
-         WRITE(DBGUNT,11) ITYP, ADJ, VDINP, DRYFLUX, WETFLUX,&
-         &AEROUT(ITYP)
-11       FORMAT(/,'ITYP = ',I2,' - DEPOS:',&
-         &/,' ADJ     = ',G16.8,&
-         &/,' VDINP   = ',G16.8,&
-         &/,' DRYFLUX = ',G16.8,&
-         &/,' WETFLUX = ',G16.8,&
-         &/,' AEROUT(ITYP) = ',G16.8,/)
-      END IF
+      if (debug) then
+         write(dbgunt,11) ityp, adj, vdinp, dryflux, wetflux,&
+         &aerout(ityp)
+11       format(/,'ITYP = ',i2,' - DEPOS:',&
+         &/,' ADJ     = ',g16.8,&
+         &/,' VDINP   = ',g16.8,&
+         &/,' DRYFLUX = ',g16.8,&
+         &/,' WETFLUX = ',g16.8,&
+         &/,' AEROUT(ITYP) = ',g16.8,/)
+      end if
 
-   END IF
+   end if
 
-   IF (DDEP) THEN
-      ITYP = ITYP + 1
-      AEROUT(ITYP) = ADJ * VDINP * EMIFAC(ITYP) * DRYFLUX
+   if (ddep) then
+      ityp = ityp + 1
+      aerout(ityp) = adj * vdinp * emifac(ityp) * dryflux
 
-      IF (DEBUG) THEN
-         WRITE(DBGUNT,12) ITYP, ADJ, VDINP, DRYFLUX,&
-         &AEROUT(ITYP)
-12       FORMAT(/,'ITYP = ',I2,' - DDEP:',&
-         &/,' ADJ     = ',G16.8,&
-         &/,' VDINP   = ',G16.8,&
-         &/,' DRYFLUX = ',G16.8,&
-         &/,' AEROUT(ITYP) = ',G16.8,/)
-      END IF
+      if (debug) then
+         write(dbgunt,12) ityp, adj, vdinp, dryflux,&
+         &aerout(ityp)
+12       format(/,'ITYP = ',i2,' - DDEP:',&
+         &/,' ADJ     = ',g16.8,&
+         &/,' VDINP   = ',g16.8,&
+         &/,' DRYFLUX = ',g16.8,&
+         &/,' AEROUT(ITYP) = ',g16.8,/)
+      end if
 
-   END IF
+   end if
 
-   IF (WDEP) THEN
-      ITYP = ITYP + 1
-      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
-         AEROUT(ITYP) = QTK * WETFLUX * EMIFAC(ITYP) * FSUBY/UEFF
-      ELSE IF (UNSTAB) THEN
-         AEROUT(ITYP) = QTK * WETFLUX * EMIFAC(ITYP) *&
-         &(PPF*FSUBY3/UEFF3+(1.0D0-PPF)*FSUBY/UEFFD)
-      END IF
+   if (wdep) then
+      ityp = ityp + 1
+      if( stable  .or.  (unstab .and. (hs .ge. zi) ) ) then
+         aerout(ityp) = qtk * wetflux * emifac(ityp) * fsuby/ueff
+      else if (unstab) then
+         aerout(ityp) = qtk * wetflux * emifac(ityp) *&
+         &(ppf*fsuby3/ueff3+(1.0d0-ppf)*fsuby/ueffd)
+      end if
 
-      IF (DEBUG) THEN
-         WRITE(DBGUNT,13) ITYP, ADJ, ZSUBP, PRATE, WETFLUX,&
-         &AEROUT(ITYP)
-13       FORMAT(/,'ITYP = ',I2,' - WDEP:',&
-         &/,' ADJ     = ',G16.8,&
-         &/,' ZSUBP   = ',G16.8,&
-         &/,' PRATE   = ',G16.8,&
-         &/,' WETFLUX = ',G16.8,&
-         &/,' AEROUT(ITYP) = ',G16.8,/)
-      END IF
+      if (debug) then
+         write(dbgunt,13) ityp, adj, zsubp, prate, wetflux,&
+         &aerout(ityp)
+13       format(/,'ITYP = ',i2,' - WDEP:',&
+         &/,' ADJ     = ',g16.8,&
+         &/,' ZSUBP   = ',g16.8,&
+         &/,' PRATE   = ',g16.8,&
+         &/,' WETFLUX = ',g16.8,&
+         &/,' AEROUT(ITYP) = ',g16.8,/)
+      end if
 
-   END IF
+   end if
 
 
 !CRFL Call to METDEB was moved here from METEXT on 9/26/94, R.F. Lee.
 !CRFL Print meteorological debug output.                   ---   CALL METDEB
-   IF (METEORDBG) CALL METDEB
+   if (meteordbg) call metdeb
 
-   IF ( DEBUG ) THEN
+   if ( debug ) then
 !        Print Out Debugging Information                    ---   CALL DEBOUT
-      CALL DEBOUT
-   END IF
+      call debout
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE PRM_PCHI(ADJ, VDINP, JIN, INSRC)                       ! ORD(EMM) change
+subroutine prm_pchi(adj, vdinp, jin, insrc)                       ! ORD(EMM) change
 !***********************************************************************
 !        PRM_PCHI Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -6809,180 +6809,180 @@ SUBROUTINE PRM_PCHI(ADJ, VDINP, JIN, INSRC)                       ! ORD(EMM) cha
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE PRIME_WAKEDAT, only : HB
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
+   use main1
+   use prime_wakedat, only : hb
+   implicit none
+   character modnam*12
 
-   INTEGER          :: JIN, INSRC, NDXBLDG          !  EMM ADD
-   INTEGER          :: NDXBHIe, NDXBLOe             !  EMM ADD
-   INTEGER          :: HT_NDX
-   DOUBLE PRECISION :: ZPHT, UHB                    !  EMM ADD
-   DOUBLE PRECISION :: UEFFe                        !  EMM ADD
-   DOUBLE PRECISION :: ADJ, VDINP, DRYFLUX, WETFLUX
-   DOUBLE PRECISION :: HT2USE,U_above,U_below
+   integer          :: jin, insrc, ndxbldg          !  EMM ADD
+   integer          :: NDXBHIe, NDXBLOe             !  EMM ADD
+   integer          :: ht_ndx
+   double precision :: zpht, uhb                    !  EMM ADD
+   double precision :: UEFFe                        !  EMM ADD
+   double precision :: adj, vdinp, dryflux, wetflux
+   double precision :: ht2use,U_above,U_below
 !     ZPHT_MIN is the lowest height to use in the calculations; this is
 !       to avoid problems with very short stacks and stack-tip downwash
-   DOUBLE PRECISION, PARAMETER :: ZPHT_MIN=0.5D0
+   double precision, parameter :: zpht_min=0.5d0
 ! Unused:       INTEGER          :: LOWWFLG
 ! Unused:       DOUBLE PRECISION :: UZPHT, UZLO
 
 !     Variable Initializations
-   MODNAM = 'PRM_PCHI'
-   DRYFLUX = 0.0D0
-   WETFLUX = 0.0D0
+   modnam = 'PRM_PCHI'
+   dryflux = 0.0d0
+   wetflux = 0.0d0
 
 !---- Calculate the exponential decay term, D               ---   CALL DECAY
-   Call DECAY (X)
+   Call decay (x)
 
-   IF (L_ORD_Ueff) THEN
+   if (L_ORD_Ueff) then
 ! ---    ORD formulation
-      ZPHT = DHP + HS
-      CALL LOCATE(GRIDHT, 1, MXGLVL, ZFLAG, NDXBLOe)
-      CALL LOCATE(GRIDHT, 1, MXGLVL, ZPHT, NDXBHIe)
+      zpht = dhp + hs
+      call locate(gridht, 1, mxglvl, zflag, NDXBLOe)
+      call locate(gridht, 1, mxglvl, zpht, NDXBHIe)
 
 !        Find the wind speed at building height for source 2 calc
-      CALL LOCATE(GRIDHT, 1, MXGLVL, HB, NDXBLDG)
-      UHB = GRIDWS(NDXBLDG)  ! Wind speed at building height
+      call locate(gridht, 1, mxglvl, hb, ndxbldg)
+      uhb = gridws(ndxbldg)  ! Wind speed at building height
 
-      CALL ANYAVG ( MXGLVL, GRIDHT, GRIDWS, ZFLAG ,NDXBLOe+1,&
-      &ZPHT, NDXBHIe, UEFFe )
-      IF ((INSRC.eq.2) .or. (INSRC .eq. 3)) THEN
-         UEFFe = US
-      END IF
+      call anyavg ( mxglvl, gridht, gridws, zflag ,NDXBLOe+1,&
+      &zpht, NDXBHIe, UEFFe )
+      if ((insrc.eq.2) .or. (insrc .eq. 3)) then
+         UEFFe = us
+      end if
 
-   ELSE IF (L_AWMA_Ueff) THEN
+   else if (L_AWMA_Ueff) then
 ! ---    AWMA PRIME2 Subcommittee (CPP) formulation
-      ZPHT = DHP + HS       ! GET PLUME HEIGHT
+      zpht = dhp + hs       ! GET PLUME HEIGHT
 
 !        Set the height to use in calculations to
 !        MAX(plume ht, receptor ht)
-      HT2USE = MAX(ZPHT,ZPHT_MIN)
+      ht2use = max(zpht,zpht_min)
 
 !        Identify the grid height immediately below HT2USE
-      CALL LOCATE(GRIDHT, 1, MXGLVL, HT2USE, HT_NDX)
-      U_below = GRIDWS(HT_NDX)
-      U_above = GRIDWS(HT_NDX+1)
+      call locate(gridht, 1, mxglvl, ht2use, ht_ndx)
+      U_below = gridws(ht_ndx)
+      U_above = gridws(ht_ndx+1)
 
-      CALL GINTRP(GRIDHT(HT_NDX),U_below, GRIDHT(HT_NDX+1),U_above,&
-      &HT2USE,UEFFe)
+      call gintrp(gridht(ht_ndx),U_below, gridht(ht_ndx+1),U_above,&
+      &ht2use,UEFFe)
 
 !        Check if source is inside or outside cavity and if so, use
 !          appropriate wind speed for calculations
-      IF ((INSRC .eq. 3)) THEN     !! "inside" cavity source
-         UEFFe = US                 ! Wind speed at stack height
+      if ((insrc .eq. 3)) then     !! "inside" cavity source
+         UEFFe = us                 ! Wind speed at stack height
 
-      ELSE IF((INSRC.eq.2)) THEN    !! "outside" cavity source
+      else if((insrc.eq.2)) then    !! "outside" cavity source
 !           Get grid height immediately BELOW the building ht
-         CALL LOCATE(GRIDHT, 1, MXGLVL, HB, NDXBLDG)
+         call locate(gridht, 1, mxglvl, hb, ndxbldg)
 !           Get the wind speed at
-         UHB = GRIDWS(NDXBLDG)
-         UEFFe = UHB                ! Wind speed at 'building ht'
-      END IF
+         uhb = gridws(ndxbldg)
+         UEFFe = uhb                ! Wind speed at 'building ht'
+      end if
 
-   ELSE
+   else
 ! --- Set UEFFe to the regulatory AERMOD value
-      UEFFe = US
-   END IF
+      UEFFe = us
+   end if
 
 ! Added for TTRM; AECOM, Nov. 2021
-   IF (RUNTTRM) THEN
-      TTRMOUT(IREC,ISRC,24) = UEFFe
-   ENDIF
+   if (runttrm) then
+      ttrmout(irec,isrc,24) = UEFFe
+   endif
 ! End TTRM insert
 
 !---- Calculate the hourly concentration value
-   ITYP = 0
-   IF (CONC) THEN
-      ITYP = 1
+   ityp = 0
+   if (conc) then
+      ityp = 1
 !----    Calculate the contribution due to horizontal plume, CWRAP
-      IF (FOPT .EQ. 0.0D0) THEN
-         CWRAP = 0.0D0
-      ELSE
-         CALL PRM_PLUME (ZRT, UEFFe, CWRAP)
-      END IF
+      if (fopt .eq. 0.0d0) then
+         cwrap = 0.0d0
+      else
+         call prm_plume (zrt, UEFFe, cwrap)
+      end if
 
 !----    Calculate the contribution due to terrain-following plume, CLIFT
-      IF (ZRT .EQ. ZFLAG) THEN
+      if (zrt .eq. zflag) then
 !----       Effective receptor heights are equal, therefore CLIFT = CWRAP
-         CLIFT = CWRAP
-      ELSE IF (FOPT .EQ. 1.0D0) THEN
-         CLIFT = 0.0D0
-      ELSE
-         CALL PRM_PLUME (ZFLAG, UEFFe, CLIFT)
-      END IF
+         clift = cwrap
+      else if (fopt .eq. 1.0d0) then
+         clift = 0.0d0
+      else
+         call prm_plume (zflag, UEFFe, clift)
+      end if
 
-      PRMVAL(ITYP) = PRMVAL(ITYP) + ADJ * EMIFAC(ITYP) *&
-      &(FOPT * CWRAP + (1.0D0 - FOPT) * CLIFT) * D
-   END IF
+      prmval(ityp) = prmval(ityp) + adj * emifac(ityp) *&
+      &(fopt * cwrap + (1.0d0 - fopt) * clift) * d
+   end if
 
-   IF (DEPOS .or. DDEP) THEN
+   if (depos .or. ddep) then
 !        Calculate DRYFLUX, vertical term for wet deposition
 !----    Calculate the contribution due to horizontal plume, CWRAP
-      IF (FOPT .EQ. 0.0D0) THEN
-         CWRAP = 0.0D0
-      ELSE
-         CALL PRM_PLUME (ZRT-ZFLAG+ZRDEP, UEFFe, CWRAP)
-      END IF
+      if (fopt .eq. 0.0d0) then
+         cwrap = 0.0d0
+      else
+         call prm_plume (zrt-zflag+zrdep, UEFFe, cwrap)
+      end if
 
 !----    Calculate the contribution due to terrain-following plume, CLIFT
-      IF (ZRT .EQ. ZFLAG) THEN
+      if (zrt .eq. zflag) then
 !----       Effective receptor heights are equal, therefore CLIFT = CWRAP
-         CLIFT = CWRAP
-      ELSE IF (FOPT .EQ. 1.0D0) THEN
-         CLIFT = 0.0D0
-      ELSE
-         CALL PRM_PLUME (ZRDEP, UEFFe, CLIFT)
-      END IF
+         clift = cwrap
+      else if (fopt .eq. 1.0d0) then
+         clift = 0.0d0
+      else
+         call prm_plume (zrdep, UEFFe, clift)
+      end if
 
-      DRYFLUX = (FOPT * CWRAP + (1.0D0 - FOPT) * CLIFT) * D
-   END IF
+      dryflux = (fopt * cwrap + (1.0d0 - fopt) * clift) * d
+   end if
 
-   IF (DEPOS .or. WDEP) THEN
+   if (depos .or. wdep) then
 !        Calculate WETFLUX, vertical term for wet deposition
 !        Note that the SRT2PI for the integrated vertical term
 !        has been removed since it should be divided by SRT2PI.
 !        Additional factor of 3600. has been added to denominator
 !        to account for conversion from seconds to hours when
 !        divided by wind speed below.
-      IF (PRATE .GT. 0.0D0) THEN
-         IF (NPD .EQ. 0) THEN
-            WETFLUX = (ADJ*FRACSAT*PRATE*1.0D6*RGAS*TA)/&
-            &(ZSUBP*HENRY(ISRC)*1.0D9*DENOM*3600.0D0)
-         ELSE
-            WETFLUX = 1.0D-3*ADJ*WASHOUT(JIN)*PRATE/&
-            &(ZSUBP*3600.0D0)
-         END IF
-      ELSE
-         WETFLUX = 0.0D0
-      END IF
-   END IF
+      if (prate .gt. 0.0d0) then
+         if (npd .eq. 0) then
+            wetflux = (adj*fracsat*prate*1.0d6*rgas*ta)/&
+            &(zsubp*henry(isrc)*1.0d9*denom*3600.0d0)
+         else
+            wetflux = 1.0d-3*adj*washout(jin)*prate/&
+            &(zsubp*3600.0d0)
+         end if
+      else
+         wetflux = 0.0d0
+      end if
+   end if
 
-   IF (DEPOS) THEN
-      ITYP = ITYP + 1
-      PRMVAL(ITYP) = PRMVAL(ITYP) + ADJ*VDINP*EMIFAC(ITYP)*DRYFLUX +&
-      &QTK * WETFLUX * EMIFAC(ITYP) * FSUBY/UEFF
-   END IF
+   if (depos) then
+      ityp = ityp + 1
+      prmval(ityp) = prmval(ityp) + adj*vdinp*emifac(ityp)*dryflux +&
+      &qtk * wetflux * emifac(ityp) * fsuby/ueff
+   end if
 
-   IF (DDEP) THEN
-      ITYP = ITYP + 1
-      PRMVAL(ITYP) = PRMVAL(ITYP) + ADJ*VDINP*EMIFAC(ITYP)*DRYFLUX
-   END IF
+   if (ddep) then
+      ityp = ityp + 1
+      prmval(ityp) = prmval(ityp) + adj*vdinp*emifac(ityp)*dryflux
+   end if
 
-   IF (WDEP) THEN
-      ITYP = ITYP + 1
-      PRMVAL(ITYP) = PRMVAL(ITYP)+QTK*WETFLUX*EMIFAC(ITYP)*FSUBY/UEFF
-   END IF
+   if (wdep) then
+      ityp = ityp + 1
+      prmval(ityp) = prmval(ityp)+qtk*wetflux*emifac(ityp)*fsuby/ueff
+   end if
 
-   IF ( DEBUG ) THEN
+   if ( debug ) then
 !        Print Out Debugging Information                    ---   CALL DEBOUT
-      CALL DEBOUT
-   END IF
+      call debout
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE AER_ACHI( XARG, ADJ, VDINP, JIN, FYARG, POUT )
+subroutine aer_achi( xarg, adj, vdinp, jin, fyarg, pout )
 !***********************************************************************
 !        AER_ACHI Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7017,153 +7017,153 @@ SUBROUTINE AER_ACHI( XARG, ADJ, VDINP, JIN, FYARG, POUT )
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   INTEGER :: JIN
-   DOUBLE PRECISION :: POUT, XARG, ADJ, VDINP, FYARG, DRYFLUX,&
-   &WETFLUX
-   LOGICAL :: SCONC, SDEPOS, SDDEP, SWDEP
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   integer :: jin
+   double precision :: pout, xarg, adj, vdinp, fyarg, dryflux,&
+   &wetflux
+   logical :: sconc, sdepos, sddep, swdep
+   character modnam*12
 
 !     Variable Initializations
-   MODNAM = 'AER_ACHI'
-   DRYFLUX = 0.0D0
-   WETFLUX = 0.0D0
+   modnam = 'AER_ACHI'
+   dryflux = 0.0d0
+   wetflux = 0.0d0
 
 !     Determine appropriate output type for this ITYP, assign output type
 !     logicals to local variables, and set others to .FALSE.
-   IF (OUTTYP(ITYP) .EQ. 'CONC') THEN
-      SCONC  = .TRUE.
-      SDEPOS = .FALSE.
-      SDDEP  = .FALSE.
-      SWDEP  = .FALSE.
-   ELSE IF (OUTTYP(ITYP) .EQ. 'DEPOS') THEN
-      SCONC  = .FALSE.
-      SDEPOS = .TRUE.
-      SDDEP  = .FALSE.
-      SWDEP  = .FALSE.
-   ELSE IF (OUTTYP(ITYP) .EQ. 'DDEP') THEN
-      SCONC  = .FALSE.
-      SDEPOS = .FALSE.
-      SDDEP  = .TRUE.
-      SWDEP  = .FALSE.
-   ELSE IF (OUTTYP(ITYP) .EQ. 'WDEP') THEN
-      SCONC  = .FALSE.
-      SDEPOS = .FALSE.
-      SDDEP  = .FALSE.
-      SWDEP  = .TRUE.
-   ELSE   ! this condition should never happen, set all F
-      SCONC  = .FALSE.
-      SDEPOS = .FALSE.
-      SDDEP  = .FALSE.
-      SWDEP  = .FALSE.
-      RETURN
-   END IF
+   if (outtyp(ityp) .eq. 'CONC') then
+      sconc  = .true.
+      sdepos = .false.
+      sddep  = .false.
+      swdep  = .false.
+   else if (outtyp(ityp) .eq. 'DEPOS') then
+      sconc  = .false.
+      sdepos = .true.
+      sddep  = .false.
+      swdep  = .false.
+   else if (outtyp(ityp) .eq. 'DDEP') then
+      sconc  = .false.
+      sdepos = .false.
+      sddep  = .true.
+      swdep  = .false.
+   else if (outtyp(ityp) .eq. 'WDEP') then
+      sconc  = .false.
+      sdepos = .false.
+      sddep  = .false.
+      swdep  = .true.
+   else   ! this condition should never happen, set all F
+      sconc  = .false.
+      sdepos = .false.
+      sddep  = .false.
+      swdep  = .false.
+      return
+   end if
 
-   POUT = 0.0D0
+   pout = 0.0d0
 
 !---- Calculate the exponential decay term, D               ---   CALL DECAY
-   Call DECAY (XARG)
+   Call decay (xarg)
 
-   IF (SCONC) THEN
+   if (sconc) then
 !----    Get Concentration or Deposition due to horizontal plume, CWRAP
-      IF (FOPT .EQ. 0.0D0) THEN
-         CWRAP = 0.0D0
-      ELSE
-         CALL ACPLUME (ZRT, FYARG, CWRAP)
-      END IF
+      if (fopt .eq. 0.0d0) then
+         cwrap = 0.0d0
+      else
+         call acplume (zrt, fyarg, cwrap)
+      end if
 
 !----    Calculate the contribution due to terrain-following plume, CLIFT
-      IF (ZRT .EQ. ZFLAG) THEN
+      if (zrt .eq. zflag) then
 !----       Effective receptor heights are equal, therefore CLIFT = CWRAP
-         CLIFT = CWRAP
-      ELSE IF (FOPT .EQ. 1.0D0) THEN
-         CLIFT = 0.0D0
-      ELSE
+         clift = cwrap
+      else if (fopt .eq. 1.0d0) then
+         clift = 0.0d0
+      else
 !           Get Concentration or Deposition due to LIFT algorithm
-         CALL ACPLUME (ZFLAG, FYARG, CLIFT)
-      END IF
+         call acplume (zflag, fyarg, clift)
+      end if
 
 !----    Calculate the hourly concentration value
 !        Now compute the function
-      POUT = ADJ * (FOPT * CWRAP + (1.0D0 - FOPT) * CLIFT) * D
+      pout = adj * (fopt * cwrap + (1.0d0 - fopt) * clift) * d
 
-   END IF
-   IF (SDEPOS .or. SDDEP) THEN
+   end if
+   if (sdepos .or. sddep) then
 !----    Get Concentration or Deposition due to horizontal plume, CWRAP
-      IF (FOPT .EQ. 0.0D0) THEN
-         CWRAP = 0.0D0
-      ELSE
-         CALL ACPLUME (ZRT-ZFLAG+ZRDEP, FYARG, CWRAP)
-      END IF
+      if (fopt .eq. 0.0d0) then
+         cwrap = 0.0d0
+      else
+         call acplume (zrt-zflag+zrdep, fyarg, cwrap)
+      end if
 
 !----    Calculate the contribution due to terrain-following plume, CLIFT
-      IF (ZRT .EQ. ZFLAG) THEN
+      if (zrt .eq. zflag) then
 !----       Effective receptor heights are equal, therefore CLIFT = CWRAP
-         CLIFT = CWRAP
-      ELSE IF (FOPT .EQ. 1.0D0) THEN
-         CLIFT = 0.0D0
-      ELSE
+         clift = cwrap
+      else if (fopt .eq. 1.0d0) then
+         clift = 0.0d0
+      else
 !           Get Concentration or Deposition due to LIFT algorithm
-         CALL ACPLUME (ZRDEP, FYARG, CLIFT)
-      END IF
+         call acplume (zrdep, fyarg, clift)
+      end if
 
 !----    Calculate the hourly concentration value
 !        Now compute the function
-      DRYFLUX = ADJ * (FOPT * CWRAP + (1.0D0 - FOPT) * CLIFT) * D
+      dryflux = adj * (fopt * cwrap + (1.0d0 - fopt) * clift) * d
 
-   END IF
-   IF (SDEPOS .or. SWDEP) THEN
+   end if
+   if (sdepos .or. swdep) then
 !        Calculate WETFLUX, vertical term for wet deposition
 !        Note that the SRT2PI for the integrated vertical term
 !        has been removed since it should be divided by SRT2PI.
 !        Additional factor of 3600. has been added to denominator
 !        to account for conversion from seconds to hours when
 !        divided by wind speed below.
-      IF (PRATE .GT. 0.0D0) THEN
-         IF (NPD .EQ. 0) THEN
-            WETFLUX = (ADJ*FRACSAT*PRATE*1.0D6*RGAS*TA)/&
-            &(ZSUBP*HENRY(ISRC)*1.0D9*DENOM*3600.0D0)
-         ELSE
-            WETFLUX = 1.0D-3*ADJ*WASHOUT(JIN)*PRATE/&
-            &(ZSUBP*3600.0D0)
-         END IF
-      ELSE
-         WETFLUX = 0.0D0
-      END IF
-   END IF
-   IF (SDEPOS) THEN
-      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
-         POUT = VDINP*DRYFLUX + WETFLUX*FYARG/UEFF
-      ELSE IF (UNSTAB) THEN
-         POUT = VDINP*DRYFLUX + WETFLUX*FYARG/UEFFD
-      END IF
-   END IF
-   IF (SDDEP) THEN
-      POUT = VDINP*DRYFLUX
-   END IF
-   IF (SWDEP) THEN
-      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
-         POUT = WETFLUX*FYARG/UEFF
-      ELSE IF (UNSTAB) THEN
-         POUT = WETFLUX*FYARG/UEFFD
-      END IF
-   END IF
+      if (prate .gt. 0.0d0) then
+         if (npd .eq. 0) then
+            wetflux = (adj*fracsat*prate*1.0d6*rgas*ta)/&
+            &(zsubp*henry(isrc)*1.0d9*denom*3600.0d0)
+         else
+            wetflux = 1.0d-3*adj*washout(jin)*prate/&
+            &(zsubp*3600.0d0)
+         end if
+      else
+         wetflux = 0.0d0
+      end if
+   end if
+   if (sdepos) then
+      if( stable  .or.  (unstab .and. (hs .ge. zi) ) ) then
+         pout = vdinp*dryflux + wetflux*fyarg/ueff
+      else if (unstab) then
+         pout = vdinp*dryflux + wetflux*fyarg/ueffd
+      end if
+   end if
+   if (sddep) then
+      pout = vdinp*dryflux
+   end if
+   if (swdep) then
+      if( stable  .or.  (unstab .and. (hs .ge. zi) ) ) then
+         pout = wetflux*fyarg/ueff
+      else if (unstab) then
+         pout = wetflux*fyarg/ueffd
+      end if
+   end if
 
 
 !CRFL Call to METDEB was moved here from METEXT on 9/26/94, R.F. Lee.
 !CRFL Print meteorological debug output.                   ---   CALL METDEB
-   IF (METEORDBG) CALL METDEB
+   if (meteordbg) call metdeb
 
-   IF ( DEBUG ) THEN
+   if ( debug ) then
 !        Print Out Debugging Information                    ---   CALL DEBOUT
-      CALL DEBOUT
-   END IF
+      call debout
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE DEBOUT
+subroutine debout
 !***********************************************************************
 !             DEBOUT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7203,88 +7203,88 @@ SUBROUTINE DEBOUT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: CHID, CHIN, CHI3
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: chid, chin, chi3
 
 !     Variable Initializations
-   MODNAM = 'DEBOUT'
+   modnam = 'DEBOUT'
 
 !     Calculate contributions from each "plume"
-   IF (STABLE .or. (UNSTAB .and. HS.GE.ZI)) THEN
-      CHID = HRVAL(1)
-   ELSE IF (UNSTAB) THEN
+   if (stable .or. (unstab .and. hs.ge.zi)) then
+      chid = hrval(1)
+   else if (unstab) then
 !CRFL
 !CRFL    Revised emission rate terms:  for CHID & CHIN, to QTK*(1-PPF),
 !CRFL    and for CHI3 to QTK*PPF.  Ref:  P.D.F. Model for Dispersion in
 !CRFL    the Convective Boundary Layer, J.C. Weil, 6/27/94.  Changed
 !CRFL    7/19/94, R.F. Lee.
 !CRFL
-      CHID = (QTK*EMIFAC(1) * (1.0D0-PPF) / UEFFD) * (FSUBYD*FSUBZD)
-      CHIN = (QTK*EMIFAC(1) * (1.0D0-PPF) / UEFFN) * (FSUBYN*FSUBZN)
-      IF (PPF.GT.0.0D0 .and. UEFF3.GT.0.0D0) THEN
-         CHI3 = (QTK * EMIFAC(1) * PPF / UEFF3) * (FSUBY3*FSUBZ3)
-      ELSE
-         CHI3 = 0.0D0
-      END IF
-   END IF
+      chid = (qtk*emifac(1) * (1.0d0-ppf) / ueffd) * (fsubyd*fsubzd)
+      chin = (qtk*emifac(1) * (1.0d0-ppf) / ueffn) * (fsubyn*fsubzn)
+      if (ppf.gt.0.0d0 .and. ueff3.gt.0.0d0) then
+         chi3 = (qtk * emifac(1) * ppf / ueff3) * (fsuby3*fsubz3)
+      else
+         chi3 = 0.0d0
+      end if
+   end if
 
 !     Write a blank line to separate the groupings
-   WRITE ( DBGUNT , 101 )
+   write ( dbgunt , 101 )
 
 !     Write the debug output for the receptor data
-   WRITE ( DBGUNT , 320 ) IREC, XR, YR, ZELEV, ZHILL, ZFLAG,&
-   &X,  Y, ZELEV-ZS, HCRIT, PHEE, FOPT,&
-   &D, CWRAP*EMIFAC(1), CLIFT*EMIFAC(1),&
-   &AERVAL(1),PRMVAL(1)
+   write ( dbgunt , 320 ) irec, xr, yr, zelev, zhill, zflag,&
+   &x,  y, zelev-zs, hcrit, phee, fopt,&
+   &d, cwrap*emifac(1), clift*emifac(1),&
+   &aerval(1),prmval(1)
 !
 !     Write header for plume sigma information
 !
-   WRITE ( DBGUNT, 330 )
+   write ( dbgunt, 330 )
 !
 !     Write the data that was used in the plume computations,
 !      which is stability-dependent.
 !
-   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
-      WRITE ( DBGUNT, 400 ) PPF,QTK,HE,SYAMB,VSIGY,SYB,SY,&
-      &FSUBY,SZAMB,VSIGZ,SZB,SZSURF,SZ,FSUBZ,CHID
+   if( stable  .or.  (unstab .and. (hs .ge. zi) ) )then
+      write ( dbgunt, 400 ) ppf,qtk,he,syamb,vsigy,syb,sy,&
+      &fsuby,szamb,vsigz,szb,szsurf,sz,fsubz,chid
 
-   ELSEIF ( UNSTAB ) THEN
-      IF((1.0D0 - PPF) * QTK .GT. 0.0D0) THEN
-         WRITE ( DBGUNT, 410 ) PPF,(1.0D0-PPF)*QTK,HED1,SYAMB,&
-         &VSIGY,SYB,SY,SZAD1,VSZD1,SZBD,SZSURF,SZD1
-         WRITE ( DBGUNT, 420 ) (1.0D0-PPF)*QTK,HED2,SYAMB,VSIGY,&
-         &SYB,SY,FSUBYD,SZAD2,VSZD2,SZBD,SZSURF,SZD2,FSUBZD,CHID
+   elseif ( unstab ) then
+      if((1.0d0 - ppf) * qtk .gt. 0.0d0) then
+         write ( dbgunt, 410 ) ppf,(1.0d0-ppf)*qtk,hed1,syamb,&
+         &vsigy,syb,sy,szad1,vszd1,szbd,szsurf,szd1
+         write ( dbgunt, 420 ) (1.0d0-ppf)*qtk,hed2,syamb,vsigy,&
+         &syb,sy,fsubyd,szad2,vszd2,szbd,szsurf,szd2,fsubzd,chid
 !CRFL
 !CRFL  SZSURF has been added to the indirect plume sigma z calculations--
 !CRFL  add it also to the debug output for the indirect plume.
 !CRFL  Changed 9/12/94.  R.F. Lee.  (Format statements 430 and 440 were
 !CRFL  changed also.)
-         WRITE ( DBGUNT, 430 ) PPF,(1.0D0-PPF)*QTK,HEN1,SYAMB,&
-         &VSIGY,SYB,SY,SZAN1,VSZN1,SZBN,SZSURF,SZN1
-         WRITE ( DBGUNT, 440 ) (1.0D0-PPF)*QTK,HEN2,SYAMB,&
-         &VSIGY,SYB,SY,FSUBYN,SZAN2,VSZN2,SZBN,SZSURF,SZN2,FSUBZN,&
-         &CHIN
-      END IF
-      IF ((PPF*QTK) .GT. 0.0D0) THEN
-         WRITE ( DBGUNT, 450 ) PPF, PPF*QTK, HE3,SYA3,VSY3,&
-         &SYB3,SY3,FSUBY3,SZA3,VSZ3,SZB3,SZ3,FSUBZ3,CHI3
-      END IF
-   END IF
+         write ( dbgunt, 430 ) ppf,(1.0d0-ppf)*qtk,hen1,syamb,&
+         &vsigy,syb,sy,szan1,vszn1,szbn,szsurf,szn1
+         write ( dbgunt, 440 ) (1.0d0-ppf)*qtk,hen2,syamb,&
+         &vsigy,syb,sy,fsubyn,szan2,vszn2,szbn,szsurf,szn2,fsubzn,&
+         &chin
+      end if
+      if ((ppf*qtk) .gt. 0.0d0) then
+         write ( dbgunt, 450 ) ppf, ppf*qtk, he3,sya3,vsy3,&
+         &syb3,sy3,fsuby3,sza3,vsz3,szb3,sz3,fsubz3,chi3
+      end if
+   end if
 !
 !     FORMAT STATEMENTS
 !
-101 FORMAT ( 1X )
-320 FORMAT('  REC   REC-X    REC-Y    REC-Z    HILLHT  FLAGPL    ',&
+101 format ( 1x )
+320 format('  REC   REC-X    REC-Y    REC-Z    HILLHT  FLAGPL    ',&
    &'DEL-X   DEL-Y  DEL-Z   HCRIT   PHEE  FOPT  DECAY   CWRAP ',&
    &'     CLIFT      AERVAL    PRMVAL',/,&
    &'    #    (M)      (M)      (M)      (M)     (M)       (M)   ',&
    &'  (M)    (M)     (M)                       (UG/M3)    ',&
    &'(UG/M3)    (UG/M3)',//,&
-   &I5,F9.1,F10.1,F8.1,F9.1,F8.1,F10.1,F8.1,F7.1,F7.1,F7.3,F6.3,&
-   &F7.3,4E11.4,/)
-330 FORMAT('   PLUME   PART.  SOURCE  PLUME  <----- SIGMA-Y TERMS --',&
+   &i5,f9.1,f10.1,f8.1,f9.1,f8.1,f10.1,f8.1,f7.1,f7.1,f7.3,f6.3,&
+   &f7.3,4e11.4,/)
+330 format('   PLUME   PART.  SOURCE  PLUME  <----- SIGMA-Y TERMS --',&
    &'--->   GAUSS.     <--------- SIGMA-Z TERMS -------->   GAUSS.',&
    &/,&
    &' COMPONENT PEN.     Q     HEIGHT  AMB.  DOWNW.  BUOY.  TO',&
@@ -7293,23 +7293,23 @@ SUBROUTINE DEBOUT
    &'   TYPE    FRAC.   (G/S)   (M)    (M)    (M)     (M)    ',&
    &'(M)    TERM        (M)    (M)     (M)    (M)    (M)    TERM ',&
    &'       (UG/M3)',/)
-400 FORMAT(' GAUSSIAN ',F6.3,F9.2,F7.1,4F7.1,E11.4,2X,5F7.1,E11.4,&
-   &E12.4)
-410 FORMAT(' DIRECT #1',F6.3,F9.2,F7.1,4F7.1,13X,5F7.1)
-420 FORMAT(' DIRECT #2',6X,F9.2,F7.1,4F7.1,E11.4,2X,5F7.1,E11.4,&
-   &E12.4)
-430 FORMAT(' INDIRECT1',F6.3,F9.2,F7.1,4F7.1,13X,4F7.1,&
-   &F7.1)
-440 FORMAT(' INDIRECT2',6X,F9.2,F7.1,4F7.1,E11.4,2X,5F7.1,&
-   &E11.4,E12.4)
-450 FORMAT(' PENETRATE',F6.3,F9.2,F7.1,4F7.1,E11.4,2X,3F7.1,7X,&
-   &F7.1,E11.4,E12.4,/)
+400 format(' GAUSSIAN ',f6.3,f9.2,f7.1,4f7.1,e11.4,2x,5f7.1,e11.4,&
+   &e12.4)
+410 format(' DIRECT #1',f6.3,f9.2,f7.1,4f7.1,13x,5f7.1)
+420 format(' DIRECT #2',6x,f9.2,f7.1,4f7.1,e11.4,2x,5f7.1,e11.4,&
+   &e12.4)
+430 format(' INDIRECT1',f6.3,f9.2,f7.1,4f7.1,13x,4f7.1,&
+   &f7.1)
+440 format(' INDIRECT2',6x,f9.2,f7.1,4f7.1,e11.4,2x,5f7.1,&
+   &e11.4,e12.4)
+450 format(' PENETRATE',f6.3,f9.2,f7.1,4f7.1,e11.4,2x,3f7.1,7x,&
+   &f7.1,e11.4,e12.4,/)
 !
-   RETURN
-END
+   return
+end
 
 
-SUBROUTINE PENFCT
+subroutine penfct
 !***********************************************************************
 !             PENFCT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7346,57 +7346,57 @@ SUBROUTINE PENFCT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   character modnam*12
 
-   DOUBLE PRECISION    BVZI2
+   double precision    bvzi2
 
-   MODNAM = 'PENFCT'
+   modnam = 'PENFCT'
 
-   IF( STABLE ) THEN
-      PPF = 0.0D0
+   if( stable ) then
+      ppf = 0.0d0
 
-   ELSE IF (UNSTAB .and. (HS .GE. ZI) )THEN
-      PPF = 1.0D0
+   else if (unstab .and. (hs .ge. zi) )then
+      ppf = 1.0d0
 
-   ELSE
+   else
 !        Compute the square of the Brunt-Vaisala frequency at ZI, BVZI2
 
-      BVZI2 = (G / PTATZI) * VPTGZI
+      bvzi2 = (g / ptatzi) * vptgzi
 
 !        Compute the value of PsubS, Eq. 26b in the 2nd reference
 !**  Added for Aircraft Plume Rise; UNC-IE
-      IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-         PSUBS = FB / ((UP+VAA)*BVZI2*(ZI-HSP)*(ZI-HSP)*(ZI-HSP))
-      ELSE
+      if (aftsrc(isrc) .eq. 'Y') then
+         psubs = fb / ((up+vaa)*bvzi2*(zi-hsp)*(zi-hsp)*(zi-hsp))
+      else
 !**  End Aircraft Plume Rise insert; April 2023
-         PSUBS = FB / ( UP * BVZI2 * (ZI-HSP)*(ZI-HSP)*(ZI-HSP) )
-      END IF                        ! Added for ARISE; UNC-IE
+         psubs = fb / ( up * bvzi2 * (zi-hsp)*(zi-hsp)*(zi-hsp) )
+      end if                        ! Added for ARISE; UNC-IE
 
 !        Compute the ratio of delta(Hsub_e)/delta(Hsub_h), HEDHH
 !        (Eq. 25 in the 2nd ref.
 !        NOTE: 17.576 = (2.6)**3 and 0.296296 is (2/3)**3
-      HEDHH = (17.576D0 * PSUBS + 0.296296D0) ** THIRD
+      hedhh = (17.576d0 * psubs + 0.296296d0) ** third
 
 !        Check the value of HEDHH and compute the plume penetration, P
-      IF( HEDHH .LT. (2.0D0*THIRD) )THEN
-         PPF = 0.0D0
+      if( hedhh .lt. (2.0d0*third) )then
+         ppf = 0.0d0
 
-      ELSE IF( HEDHH .GT. 2.0D0 )THEN
-         PPF = 1.0D0
+      else if( hedhh .gt. 2.0d0 )then
+         ppf = 1.0d0
 
-      ELSE
-         PPF = 1.5D0 - (1.0D0 / HEDHH)
+      else
+         ppf = 1.5d0 - (1.0d0 / hedhh)
 
-      END IF
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE CPLUME (ZARG, COUT)
+subroutine cplume (zarg, cout)
 !***********************************************************************
 !             CPLUME Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7446,104 +7446,104 @@ SUBROUTINE CPLUME (ZARG, COUT)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: ZARG, COUT
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: zarg, cout
 
-   MODNAM = 'CPLUME'
+   modnam = 'CPLUME'
 
 !     Assign receptor height for vertical term calculations
-   ZR = ZARG
+   zr = zarg
 
-   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
+   if( stable  .or.  (unstab .and. (hs .ge. zi) ) ) then
 !        Calculate the vertical term, FSUBZ              ---   CALL VRTSBL
 !        With stable plume reflections and effective Zi
-      IF (ZR .LE. HSBL) THEN
-         CALL VRTSBL (SZ, MAX( 0.0D0, HE-HV ), HSBL)
-      ELSE
-         CALL VRTSBN (SZ, MAX( 0.0D0, HE-HV ))
-      END IF
+      if (zr .le. hsbl) then
+         call vrtsbl (sz, max( 0.0d0, he-hv ), hsbl)
+      else
+         call vrtsbn (sz, max( 0.0d0, he-hv ))
+      end if
 
 !        Calculate the concentration for a stable atmosphere
-      COUT = (QTK / UEFF) * ( FSUBY * FSUBZ )
+      cout = (qtk / ueff) * ( fsuby * fsubz )
 
-   ELSEIF( UNSTAB )THEN
-      IF (PPF .LT. 1.0D0) THEN
+   elseif( unstab )then
+      if (ppf .lt. 1.0d0) then
 !           Calculate the vertical term for the direct plume, FSUBZD
-         IF (ZR .LE. ZI) THEN
+         if (zr .le. zi) then
 !              Calculation for Receptor below Zi      ---   CALL VRTCBL
-            CALL VRTCBL ( HED1-HV, HED2-HV, SZD1, SZD2, 1.0D0)
-            FSUBZD = FSUBZ
-         ELSE
+            call vrtcbl ( hed1-hv, hed2-hv, szd1, szd2, 1.0d0)
+            fsubzd = fsubz
+         else
 !              Set FSUBZ = 0.0 for "receptor height" (ZR) > ZI
-            FSUBZD = 0.0D0
-         END IF
+            fsubzd = 0.0d0
+         end if
 
 !           Calculate the vertical term for the indirect plume, FSUBZN
-         IF (ZR .LE. ZI) THEN
+         if (zr .le. zi) then
 !              Calculation for Receptor below Zi      ---   CALL VRTCBL
-            CALL VRTCBL ( HEN1-HV, HEN2-HV, SZN1, SZN2, -1.0D0 )
-            FSUBZN = FSUBZ
-         ELSE
+            call vrtcbl ( hen1-hv, hen2-hv, szn1, szn2, -1.0d0 )
+            fsubzn = fsubz
+         else
 !              Set FSUBZ = 0.0 for "receptor height" (ZR) > ZI
-            FSUBZN = 0.0D0
-         END IF
-      ELSE
-         FSUBZD = 0.0D0
-         FSUBZN = 0.0D0
+            fsubzn = 0.0d0
+         end if
+      else
+         fsubzd = 0.0d0
+         fsubzn = 0.0d0
 
-      END IF
+      end if
 
 !        Note that UEFF and UEFF3 can never be zero, since they get
 !        set to a minimum value earlier on.
 
-      IF( PPF .GT. 0.0D0 )THEN
+      if( ppf .gt. 0.0d0 )then
 !           Calculate the vertical term for the penetrated
 !           plume, FSUBZ3                                ---   CALL VRTSBL
-         IF (ZR .LE. HPEN) THEN
-            CALL VRTSBL (SZ3, MAX(0.0D0,HE3-HV), HPEN)
-         ELSE
-            CALL VRTSBN (SZ3, MAX(0.0D0,HE3-HV))
-         END IF
-         FSUBZ3 = FSUBZ
+         if (zr .le. hpen) then
+            call vrtsbl (sz3, max(0.0d0,he3-hv), hpen)
+         else
+            call vrtsbn (sz3, max(0.0d0,he3-hv))
+         end if
+         fsubz3 = fsubz
 ! Added for HIGHLY BUOYANT PLUME (HBP), JAN 2023
 ! Apply HBP only for identified sources
-         IF ((HBPLUME) .and. (HBPSRC(ISRC).EQ.'Y')) THEN
-            IF (PPF .LT. 1.0D0) THEN
+         if ((hbplume) .and. (hbpsrc(isrc).eq.'Y')) then
+            if (ppf .lt. 1.0d0) then
 !  ************************************* modified code JAN 2023  --kja
-               COUT = (QTK * (1.0D0-PPF) / UEFFD) * ( FSUBYD*FSUBZD ) +&
-               &(QTK * (1.0D0-PPF) / UEFFN) * ( FSUBYN*FSUBZN ) +&
-               &(QTK * PPF*PPFN / UEFF3) * ( FSUBY3*FSUBZ3 )
-            ELSE
-               COUT = (QTK * PPF*PPFN / UEFF3) * ( FSUBY3*FSUBZ3 )
+               cout = (qtk * (1.0d0-ppf) / ueffd) * ( fsubyd*fsubzd ) +&
+               &(qtk * (1.0d0-ppf) / ueffn) * ( fsubyn*fsubzn ) +&
+               &(qtk * ppf*ppfn / ueff3) * ( fsuby3*fsubz3 )
+            else
+               cout = (qtk * ppf*ppfn / ueff3) * ( fsuby3*fsubz3 )
 !  ************************************* modified code end  --kja
-            ENDIF
-         ELSE ! For DEFAULT plume bouyancy
-            IF (PPF .LT. 1.0D0) THEN
-               COUT = (QTK * (1.0D0-PPF) / UEFFD) * ( FSUBYD*FSUBZD ) +&
-               &(QTK * (1.0D0-PPF) / UEFFN) * ( FSUBYN*FSUBZN ) +&
-               &(QTK * PPF / UEFF3) * ( FSUBY3*FSUBZ3 )
+            endif
+         else ! For DEFAULT plume bouyancy
+            if (ppf .lt. 1.0d0) then
+               cout = (qtk * (1.0d0-ppf) / ueffd) * ( fsubyd*fsubzd ) +&
+               &(qtk * (1.0d0-ppf) / ueffn) * ( fsubyn*fsubzn ) +&
+               &(qtk * ppf / ueff3) * ( fsuby3*fsubz3 )
 
-            ELSE
-               COUT = (QTK * PPF / UEFF3) * ( FSUBY3*FSUBZ3 )
-            ENDIF
-         ENDIF
+            else
+               cout = (qtk * ppf / ueff3) * ( fsuby3*fsubz3 )
+            endif
+         endif
 ! End HBP insert
-      ELSE
-         FSUBZ3 = 0.0D0
-         HPEN   = 0.0D0
-         COUT = (QTK / UEFFD) * ( FSUBYD * FSUBZD ) +&
-         &(QTK / UEFFN) * ( FSUBYN * FSUBZN )
+      else
+         fsubz3 = 0.0d0
+         hpen   = 0.0d0
+         cout = (qtk / ueffd) * ( fsubyd * fsubzd ) +&
+         &(qtk / ueffn) * ( fsubyn * fsubzn )
 
-      END IF
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE PRM_PLUME (ZARG, UEFFPH, COUT)                   ! ORD (EMM) change
+subroutine prm_plume (zarg, ueffph, cout)                   ! ORD (EMM) change
 !***********************************************************************
 !             PRM_PLUME Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7563,30 +7563,30 @@ SUBROUTINE PRM_PLUME (ZARG, UEFFPH, COUT)                   ! ORD (EMM) change
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: ZARG, COUT
-   DOUBLE PRECISION :: UEFFPH
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: zarg, cout
+   double precision :: ueffph
 
-   MODNAM = 'PRM_PLUME'
+   modnam = 'PRM_PLUME'
 
 !     Assign receptor height for vertical term calculations
-   ZR = ZARG
+   zr = zarg
 
-   IF (STABLE) THEN
-      CALL VRTSBN (SZ, HE)
-   ELSE IF (UNSTAB .and. HE.LE.ZI) THEN
-      CALL VRTSBL (SZ, HE, ZI)
-   ELSE
-      FSUBZ = 0.0D0
-   END IF
+   if (stable) then
+      call vrtsbn (sz, he)
+   else if (unstab .and. he.le.zi) then
+      call vrtsbl (sz, he, zi)
+   else
+      fsubz = 0.0d0
+   end if
 
 ! --- Calculate the WRAP term for a stable atmosphere
 !      UEFFPH is defined properly in PRM_PCHI (the calling program)
 !      for regulatory AERMOD, AWMA_DOWNWASH, and ORD_DOWNWASH
 !      COUT = (QTK / US) * ( FSUBY * FSUBZ )                    ! Original AERMOD
-   COUT = (QTK / UEFFPH) * ( FSUBY * FSUBZ )
+   cout = (qtk / ueffph) * ( fsuby * fsubz )
 !      IF (AWMADWDBG) THEN
 !         WRITE(AWMADWDBUNT,*) '     Contribution due to PRIME:'
 !         WRITE(AWMADWDBUNT,*) '     SY=',SY,' SZ=',SZ,
@@ -7595,10 +7595,10 @@ SUBROUTINE PRM_PLUME (ZARG, UEFFPH, COUT)                   ! ORD (EMM) change
 !         WRITE(AWMADWDBUNT,*) '     QTK / UEFFPH)*( FSUBY*FSUBZ )=',COUT
 !      END IF
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE ACPLUME (ZARG, FYARG, COUT)
+subroutine acplume (zarg, fyarg, cout)
 !***********************************************************************
 !             ACPLUME Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -7647,66 +7647,66 @@ SUBROUTINE ACPLUME (ZARG, FYARG, COUT)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: ZARG, FYARG, COUT
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: zarg, fyarg, cout
 
-   MODNAM = 'ACPLUME'
+   modnam = 'ACPLUME'
 
 !     Assign receptor height for vertical term calculations
-   ZR = ZARG
+   zr = zarg
 
 !     Assign lateral term
-   FSUBY = FYARG
+   fsuby = fyarg
 
-   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
+   if( stable  .or.  (unstab .and. (hs .ge. zi) ) ) then
 !        Calculate the vertical term, FSUBZ              ---   CALL VRTSBL
 !        With stable plume reflections
-      IF (ZR .LE. HSBL) THEN
-         CALL VRTSBL (SZ, MAX( 0.0D0, HE-HV ), HSBL)
-      ELSE
-         CALL VRTSBN (SZ, MAX( 0.0D0, HE-HV ))
-      END IF
+      if (zr .le. hsbl) then
+         call vrtsbl (sz, max( 0.0d0, he-hv ), hsbl)
+      else
+         call vrtsbn (sz, max( 0.0d0, he-hv ))
+      end if
 
 !        Calculate the WRAP term for a stable atmosphere
-      COUT = (1.0D0 / UEFF) * ( FSUBY * FSUBZ )
+      cout = (1.0d0 / ueff) * ( fsuby * fsubz )
 
-   ELSEIF( UNSTAB )THEN
+   elseif( unstab )then
 !        Calculate the vertical term for the direct plume, FSUBZD
-      IF (ZR .LE. ZI) THEN
+      if (zr .le. zi) then
 !           Calculation for Receptor below Zi         ---   CALL VRTCBL
-         CALL VRTCBL ( HED1-HV, HED2-HV, SZD1, SZD2, 1.0D0 )
-         FSUBZD = FSUBZ
-      ELSE
+         call vrtcbl ( hed1-hv, hed2-hv, szd1, szd2, 1.0d0 )
+         fsubzd = fsubz
+      else
 !           Set FSUBZ = 0.0 for "receptor height" (ZR) > ZI
-         FSUBZD = 0.0D0
-      END IF
+         fsubzd = 0.0d0
+      end if
 
 !        Calculate the vertical term for the indirect plume, FSUBZN
-      IF (ZR .LE. ZI) THEN
+      if (zr .le. zi) then
 !           Calculation for Receptor below Zi         ---   CALL VRTCBL
-         CALL VRTCBL ( HEN1-HV, HEN2-HV, SZN1, SZN2, -1.0D0 )
-         FSUBZN = FSUBZ
-      ELSE
+         call vrtcbl ( hen1-hv, hen2-hv, szn1, szn2, -1.0d0 )
+         fsubzn = fsubz
+      else
 !           Set FSUBZ = 0.0 for "receptor height" (ZR) > ZI
-         FSUBZN = 0.0D0
-      END IF
+         fsubzn = 0.0d0
+      end if
 
 !        Note that UEFF and UEFF3 can never be zero, since they get
 !        set to a minimum value earlier on.
 
-      FSUBZ3 = 0.0D0
-      HPEN   = 0.0D0
-      COUT = (1.0D0 / UEFFD) * ( FSUBY * FSUBZD ) +&
-      &(1.0D0 / UEFFN) * ( FSUBY * FSUBZN )
+      fsubz3 = 0.0d0
+      hpen   = 0.0d0
+      cout = (1.0d0 / ueffd) * ( fsuby * fsubzd ) +&
+      &(1.0d0 / ueffn) * ( fsuby * fsubzn )
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE LTOPG(LSTAB)
+subroutine ltopg(lstab)
 !-----------------------------------------------------------------------
 !                LTOPG Module of AERMOD Model
 !
@@ -7759,56 +7759,56 @@ SUBROUTINE LTOPG(LSTAB)
 !-----------------------------------------------------------------------
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 ! Unused:      CHARACTER MODNAM*12
 
-   DOUBLE PRECISION :: EL, XEL, XL, Z0, ZR0, YY, XM, B
+   double precision :: el, xel, xl, z0, zr0, yy, xm, b
 
-   INTEGER :: LSTAB
+   integer :: lstab
 
-   XL(YY,XM,B)=XM/(DLOG(YY)-B)
+   xl(yy,xm,b)=xm/(dlog(yy)-b)
 !
 !
-   EL  = OBULEN
-   ZR0 = SFCZ0
+   el  = obulen
+   zr0 = sfcz0
 !
-   Z0 = ZR0
-   IF(Z0 .GT. 0.5D0) Z0 = 0.5D0
-   IF(Z0 .LT. 0.01D0) Z0 = 0.01D0
-   IF(EL .LT. 0.0D0) THEN
-      XEL = -EL
-      IF(XEL .LE. XL(Z0,-70.0D0,4.35D0)) THEN
+   z0 = zr0
+   if(z0 .gt. 0.5d0) z0 = 0.5d0
+   if(z0 .lt. 0.01d0) z0 = 0.01d0
+   if(el .lt. 0.0d0) then
+      xel = -el
+      if(xel .le. xl(z0,-70.0d0,4.35d0)) then
 !             STABILITY A
-         LSTAB=1
-      ELSE IF(XEL .LE. XL(Z0,-85.2D0,0.502D0)) THEN
+         lstab=1
+      else if(xel .le. xl(z0,-85.2d0,0.502d0)) then
 !             STABILITY B
-         LSTAB=2
-      ELSE IF(XEL .LE. XL(Z0,-245.0D0,0.050D0)) THEN
+         lstab=2
+      else if(xel .le. xl(z0,-245.0d0,0.050d0)) then
 !             STABILITY C
-         LSTAB=3
-      ELSE
+         lstab=3
+      else
 !             STABILITY D
-         LSTAB=4
-      ENDIF
-   ELSE
-      IF(EL .GE. XL(Z0,-327.0D0,0.627D0)) THEN
+         lstab=4
+      endif
+   else
+      if(el .ge. xl(z0,-327.0d0,0.627d0)) then
 !             STABILITY D
-         LSTAB=4
-      ELSE IF(EL .GE. XL(Z0,-70.0D0,0.295D0)) THEN
+         lstab=4
+      else if(el .ge. xl(z0,-70.0d0,0.295d0)) then
 !             STABILITY E
-         LSTAB=5
-      ELSE
+         lstab=5
+      else
 !             STABILITY F
-         LSTAB=6
-      ENDIF
-   ENDIF
+         lstab=6
+      endif
+   endif
 !
-   RETURN
-END
+   return
+end
 
 !----------------------------------------------------------------------
-subroutine VDP
+subroutine vdp
 !----------------------------------------------------------------------
 !
 ! --- AERMOD     R.W. Brode, PES, Inc.
@@ -7915,90 +7915,90 @@ subroutine VDP
 ! --- VDP_TOX calls:      none
 !----------------------------------------------------------------------
 !
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 
 ! Unused:      DOUBLE PRECISION, PARAMETER :: a1=1.257D0, a2=0.4D0, a3=0.55D0,
 !     &                               xmfp=6.5D-6
-   INTEGER LANUSE, ILAND_NDX
+   integer lanuse, iland_ndx
 !     JAT 7/22/21 D065 Tcel not used
 !      DOUBLE PRECISION Tcel, Ri, Rcs, Rco, Rx
-   DOUBLE PRECISION Ri, Rcs, Rco, Rx
-   DOUBLE PRECISION Raci, Rgs, Rgo, F, rLAI, Gr
-   DOUBLE PRECISION de, Rp, f1, alfa, f3, f4, ppp, Rcox, Rac
-   DOUBLE PRECISION D_suba, Rb, Rcl, vd1, vd2, Sfact, D_sub_b
-   DOUBLE PRECISION Stab(9), Restab(9,6,5), Dv
-   DOUBLE PRECISION Po, To, Pressure, a, q, dq, qsat, vp
-   INTEGER j, k, isea5
+   double precision Ri, Rcs, Rco, Rx
+   double precision Raci, Rgs, Rgo, f, rLAI, Gr
+   double precision de, Rp, f1, alfa, f3, f4, ppp, Rcox, Rac
+   double precision D_suba, Rb, Rcl, vd1, vd2, Sfact, D_sub_b
+   double precision Stab(9), Restab(9,6,5), Dv
+   double precision Po, To, Pressure, a, q, dq, qsat, vp
+   integer j, k, isea5
 
-   INTEGER :: I, N
-   DOUBLE PRECISION :: RA, T1, ST, XINERT,&
-   &rd(npdmax), RG, RS, RC, GUST_ADJ
+   integer :: i, n
+   double precision :: ra, t1, st, xinert,&
+   &rd(npdmax), rg, rs, rc, gust_adj
 
 !CRT  Initialize variables 12/27/2017
-   Sfact = 0.0D0
-   rLAI =  0.0D0
-   Ri =    0.0D0
-   Rgs =   0.0D0
-   Rgo =   0.0D0
-   Rcs =   0.0D0
-   Rco =   0.0D0
-   Raci =  0.0D0
-   isea5 = 0.0D0
-   Gr =    0.0D0
-   F =     0.0D0
+   Sfact = 0.0d0
+   rLAI =  0.0d0
+   Ri =    0.0d0
+   Rgs =   0.0d0
+   Rgo =   0.0d0
+   Rcs =   0.0d0
+   Rco =   0.0d0
+   Raci =  0.0d0
+   isea5 = 0.0d0
+   Gr =    0.0d0
+   f =     0.0d0
 
 !
 !     Initialize stability factor array by land use category
-   data Stab/1.0D-5,6.0D0,5.0D0,7.0D0,3.0D0,4.0D0,1.0D-5,&
-   &1.0D-5,3.0D0/
+   data Stab/1.0d-5,6.0d0,5.0d0,7.0d0,3.0d0,4.0d0,1.0d-5,&
+   &1.0d-5,3.0d0/
 
 !     Initialize resistance table by land use category and season
 !     Split DATA statement into 2 parts to avoid continuation line limit
    data (((Restab(i,j,k),i=1,9),j=1,6),k=1,3)/&
-   &1.D07,   60.D0, 120.D0, 100.D0, 200.D0, 150.D0,1.D07,1.D07,80.D0,&
-   &1.D07, 2000.D0,2000.D0,2000.D0,2000.D0,2000.D0,1.D07,1.D07,2.5D3,&
-   &1.D07, 1000.D0,1000.D0,1000.D0,2000.D0,2000.D0,1.D07,1.D07, 1.D3,&
-   &100.D0, 200.D0, 100.D0,2000.D0, 100.D0,1500.D0,0.D0, 0.D0, 300.D0,&
-   &400.D0, 150.D0, 350.D0, 300.D0, 500.D0, 450.D0,0.D0,1000.D0, 0.D0,&
-   &300.D0, 150.D0, 200.D0, 200.D0, 300.D0, 300.D0,2.D3,400.D0, 1.D3,&
-   &1.D07,   1.D07,  1.D07, 350.D0,  1.D07, 700.D0,1.D07,1.D07, 1.D07,&
-   &1.D07, 6500.D0,6500.D0,3000.D0,2000.D0,2000.D0,1.D07,1.D07, 6.5D3,&
-   &1.D07,  400.D0, 300.D0, 500.D0, 600.D0,1000.D0,1.D07,1.D07,300.D0,&
-   &100.D0, 150.D0, 100.D0,1700.D0, 100.D0,1200.D0, 0.D0, 0.D0,200.D0,&
-   &400.D0, 200.D0, 350.D0, 300.D0, 500.D0, 450.D0, 0.D0,1.D3,  0.D0,&
-   &300.D0, 150.D0, 200.D0, 200.D0, 300.D0, 300.D0,2.0D3,400.D0,8.D2,&
-   &1.D07,   1.D07,  1.D07, 500.D0,  1.D07,1000.D0,1.D07, 1.D07,1.D07,&
-   &1.D07,   1.D07,9000.D0,6000.D0,2000.D0,2000.D0,1.D07, 1.D07, 9.D3,&
-   &1.D07,   1.D07, 400.D0, 600.D0, 800.D0,1600.D0,1.D07, 1.D07,8.D2,&
-   &100.D0,   0.D0, 100.D0,1500.D0, 100.D0,1000.D0, 0.D0,  0.D0,1.D2,&
-   &400.D0, 150.D0, 350.D0, 300.D0, 500.D0, 450.D0, 0.D0,  0.D0,1.D3,&
-   &300.D0, 150.D0, 200.D0, 200.D0, 300.D0, 300.D0,2.D3, 400.D0,1.D3/
+   &1.d07,   60.d0, 120.d0, 100.d0, 200.d0, 150.d0,1.d07,1.d07,80.d0,&
+   &1.d07, 2000.d0,2000.d0,2000.d0,2000.d0,2000.d0,1.d07,1.d07,2.5d3,&
+   &1.d07, 1000.d0,1000.d0,1000.d0,2000.d0,2000.d0,1.d07,1.d07, 1.d3,&
+   &100.d0, 200.d0, 100.d0,2000.d0, 100.d0,1500.d0,0.d0, 0.d0, 300.d0,&
+   &400.d0, 150.d0, 350.d0, 300.d0, 500.d0, 450.d0,0.d0,1000.d0, 0.d0,&
+   &300.d0, 150.d0, 200.d0, 200.d0, 300.d0, 300.d0,2.d3,400.d0, 1.d3,&
+   &1.d07,   1.d07,  1.d07, 350.d0,  1.d07, 700.d0,1.d07,1.d07, 1.d07,&
+   &1.d07, 6500.d0,6500.d0,3000.d0,2000.d0,2000.d0,1.d07,1.d07, 6.5d3,&
+   &1.d07,  400.d0, 300.d0, 500.d0, 600.d0,1000.d0,1.d07,1.d07,300.d0,&
+   &100.d0, 150.d0, 100.d0,1700.d0, 100.d0,1200.d0, 0.d0, 0.d0,200.d0,&
+   &400.d0, 200.d0, 350.d0, 300.d0, 500.d0, 450.d0, 0.d0,1.d3,  0.d0,&
+   &300.d0, 150.d0, 200.d0, 200.d0, 300.d0, 300.d0,2.0d3,400.d0,8.d2,&
+   &1.d07,   1.d07,  1.d07, 500.d0,  1.d07,1000.d0,1.d07, 1.d07,1.d07,&
+   &1.d07,   1.d07,9000.d0,6000.d0,2000.d0,2000.d0,1.d07, 1.d07, 9.d3,&
+   &1.d07,   1.d07, 400.d0, 600.d0, 800.d0,1600.d0,1.d07, 1.d07,8.d2,&
+   &100.d0,   0.d0, 100.d0,1500.d0, 100.d0,1000.d0, 0.d0,  0.d0,1.d2,&
+   &400.d0, 150.d0, 350.d0, 300.d0, 500.d0, 450.d0, 0.d0,  0.d0,1.d3,&
+   &300.d0, 150.d0, 200.d0, 200.d0, 300.d0, 300.d0,2.d3, 400.d0,1.d3/
    data (((Restab(i,j,k),i=1,9),j=1,6),k=4,5)/&
-   &1.D07,   1.D07,  1.D07, 800.D0,  1.D07,1600.D0,1.D07, 1.D07,1.D07,&
-   &1.D07,   1.D07,  1.D07, 400.D0,  1.D07, 800.D0,1.D07, 1.D07, 9.D3,&
-   &1.D07, 2000.D0,1000.D0, 600.D0,2000.D0,1200.D0,1.D07, 1.D07,8.D2,&
-   &100.D0,   0.D0,  10.D0,1500.D0, 100.D0,1000.D0, 0.D0, 0.D0, 50.D0,&
-   &100.D0, 100.D0, 100.D0, 100.D0, 200.D0, 200.D0, 0.D0, 1.D3,100.D0,&
-   &600.D0,3500.D0,3500.D0,3500.D0, 500.D0, 500.D0,2.D3,400.D0,3.5D3,&
-   &1.D07,  100.D0, 120.D0, 100.D0, 200.D0, 150.D0,1.D07, 1.D07,80.D0,&
-   &1.D07, 2000.D0,2000.D0,1500.D0,2000.D0,2000.D0,1.D07, 1.D07, 2.D3,&
-   &1.D07, 1000.D0, 250.D0, 350.D0, 500.D0, 700.D0,1.D07,1.D07,300.D0,&
-   &100.D0,  50.D0,  80.D0,1500.D0, 100.D0,1000.D0, 0.D0, 0.D0,200.D0,&
-   &500.D0, 150.D0, 350.D0, 300.D0, 500.D0, 450.D0, 0.D0,1.D3,  0.D0,&
-   &300.D0, 150.D0, 200.D0, 200.D0, 300.D0, 300.D0,2.D3, 400.D0, 1.D3/
+   &1.d07,   1.d07,  1.d07, 800.d0,  1.d07,1600.d0,1.d07, 1.d07,1.d07,&
+   &1.d07,   1.d07,  1.d07, 400.d0,  1.d07, 800.d0,1.d07, 1.d07, 9.d3,&
+   &1.d07, 2000.d0,1000.d0, 600.d0,2000.d0,1200.d0,1.d07, 1.d07,8.d2,&
+   &100.d0,   0.d0,  10.d0,1500.d0, 100.d0,1000.d0, 0.d0, 0.d0, 50.d0,&
+   &100.d0, 100.d0, 100.d0, 100.d0, 200.d0, 200.d0, 0.d0, 1.d3,100.d0,&
+   &600.d0,3500.d0,3500.d0,3500.d0, 500.d0, 500.d0,2.d3,400.d0,3.5d3,&
+   &1.d07,  100.d0, 120.d0, 100.d0, 200.d0, 150.d0,1.d07, 1.d07,80.d0,&
+   &1.d07, 2000.d0,2000.d0,1500.d0,2000.d0,2000.d0,1.d07, 1.d07, 2.d3,&
+   &1.d07, 1000.d0, 250.d0, 350.d0, 500.d0, 700.d0,1.d07,1.d07,300.d0,&
+   &100.d0,  50.d0,  80.d0,1500.d0, 100.d0,1000.d0, 0.d0, 0.d0,200.d0,&
+   &500.d0, 150.d0, 350.d0, 300.d0, 500.d0, 450.d0, 0.d0,1.d3,  0.d0,&
+   &300.d0, 150.d0, 200.d0, 200.d0, 300.d0, 300.d0,2.d3, 400.d0, 1.d3/
 
-   Dv = 0.219D-04
-   Po = 101.3D0
-   To = 273.16D0
+   Dv = 0.219d-04
+   Po = 101.3d0
+   To = 273.16d0
 !PES  Define alfa based on Eqn. 10
-   alfa = 0.1D0
+   alfa = 0.1d0
 
 
 ! ... Convert surface pressure and temperature to proper units.
-   Pressure = SFCP/10.0D0
+   Pressure = sfcp/10.0d0
 ! --- Assume 100 kPa if missing
-   if (Pressure .lt. 10.0D0) pressure = 100.0D0
+   if (Pressure .lt. 10.0d0) pressure = 100.0d0
 !     JAT 7/22/21 D065 Tcel not used
 !      Tcel = Ta-To
 
@@ -8010,111 +8010,111 @@ subroutine VDP
 !PES       Ta = Tcel+273.2
 !PES      end if
 
-   if (npd .eq. 0 .and. LDGAS .and. .NOT.LUSERVD) then
+   if (npd .eq. 0 .and. ldgas .and. .not.luservd) then
 ! ...    Assign parameters for gas deposition
 
 ! ...    Assign land use category for this direction based on user input.
 !        Use method consistent with specification of IFVSEC
-      ILAND_NDX = IDINT (AFV*0.10D0 + 0.4999D0)
-      IF (ILAND_NDX .EQ. 0) ILAND_NDX = 36
-      LANUSE = ILAND_GD(ILAND_NDX)
+      iland_ndx = idint (afv*0.10d0 + 0.4999d0)
+      if (iland_ndx .eq. 0) iland_ndx = 36
+      lanuse = iland_gd(iland_ndx)
 
 ! ...    Assign Wesely "seasonal" category (1-5) based on calendar month
-      ISEA5 = iseas_gd(imonth)
+      isea5 = iseas_gd(imonth)
 
 ! ...    Assign surface roughness, stability factor and resistance terms
-      Sfact   = Stab(LANUSE)
-      Ri      = Restab(LANUSE,1,ISEA5)
-      Rcs     = Restab(LANUSE,2,ISEA5)
-      Rco     = Restab(LANUSE,3,ISEA5)
-      Raci    = Restab(LANUSE,4,ISEA5)
-      Rgs     = Restab(LANUSE,5,ISEA5)
-      Rgo     = Restab(LANUSE,6,ISEA5)
+      Sfact   = Stab(lanuse)
+      Ri      = Restab(lanuse,1,isea5)
+      Rcs     = Restab(lanuse,2,isea5)
+      Rco     = Restab(lanuse,3,isea5)
+      Raci    = Restab(lanuse,4,isea5)
+      Rgs     = Restab(lanuse,5,isea5)
+      Rgo     = Restab(lanuse,6,isea5)
 ! ...    Compute rLAI and reference solar irradiance as a function of
 !        land use category and season.
-      if (ISEA5.EQ.1 .or. ISEA5.EQ.3 .or. ISEA5.EQ.4) THEN
-         F = 1.0D0
-      else if (ISEA5 .EQ. 2) then
+      if (isea5.eq.1 .or. isea5.eq.3 .or. isea5.eq.4) then
+         f = 1.0d0
+      else if (isea5 .eq. 2) then
 !           Assign user-supplied value for season 2, default it 0.50
-         F = FSEAS2
-      else if (ISEA5 .EQ. 5) then
+         f = fseas2
+      else if (isea5 .eq. 5) then
 !           Assign user-supplied value for season 5, default it 0.25
-         F = FSEAS5
+         f = fseas5
       end if
-      if (LANUSE.eq.4 .or. LANUSE.eq.6) then
-         rLAI = F
-         Gr = 30.0D0
+      if (lanuse.eq.4 .or. lanuse.eq.6) then
+         rLAI = f
+         Gr = 30.0d0
       else
-         rLAI = DSQRT(F)
-         Gr = 100.0D0
+         rLAI = dsqrt(f)
+         Gr = 100.0d0
       end if
 
-   else if (npd .eq. 0 .and. LDGAS .and. LUSERVD) then
+   else if (npd .eq. 0 .and. ldgas .and. luservd) then
       return
 
    end if
 
 ! ... Use Zrdep of SFCZ0 plus 1.0 meter for deposition option
-   Zrdep = SFCZ0 + 1.0D0
+   Zrdep = sfcz0 + 1.0d0
 
 ! ... Check to avoid corruption by bad humidity input data
-   if (RH.gt.100.0D0) RH = 100.0D0
-   if (RH.lt.5.0D0) RH = 5.0D0
+   if (rh.gt.100.0d0) rh = 100.0d0
+   if (rh.lt.5.0d0) rh = 5.0d0
 
 ! ... Compute vapor pressure deficit
-   de = ((100.0D0-RH)/100.0D0)*EsTa
-   if (de.lt.0.0D0) de = 0.0D0
+   de = ((100.0d0-rh)/100.0d0)*EsTa
+   if (de.lt.0.0d0) de = 0.0d0
 
 ! ... Compute specific humidity at saturation (g/kg)
-   qsat = 1.0D03*0.622D0*EsTa/(Pressure-0.378D0*EsTa)
+   qsat = 1.0d03*0.622d0*EsTa/(Pressure-0.378d0*EsTa)
 
 ! ... Compute ambient specific humidity (g/kg)
-   vp = (RH/100.0D0)*EsTa
-   q = 1.0D03*0.622D0*vp/(Pressure-0.378D0*vp)
+   vp = (rh/100.0d0)*EsTa
+   q = 1.0d03*0.622d0*vp/(Pressure-0.378d0*vp)
 
 ! ... Compute specific humidity deficit (g/kg)
    dq = qsat-q
 ! ... For negative or zero humidity deficit, set dq=0.001 to avoid zero-divide
-   if (dq.le.0.0D0) dq = 0.001D0
+   if (dq.le.0.0d0) dq = 0.001d0
 
 ! ... Compute atmospheric resistance Ra
 
-   if (obulen.ge.0.0D0) then
-      Ra = (1.0D0/(VONKAR*ustar))*(DLOG(Zrdep/SFCZ0) +&
-      &5.0D0*Zrdep/obulen)
+   if (obulen.ge.0.0d0) then
+      Ra = (1.0d0/(vonkar*ustar))*(dlog(Zrdep/sfcz0) +&
+      &5.0d0*Zrdep/obulen)
 
    else
 !        Ra = (1.0D0/(VONKAR*ustar))*(log(Zrdep/SFCZ0)-
 !    1   2.*log(0.5D0*(1.+sqrt(1.0D0-16.0D0*(Zrdep/obulen)))))
 ! ...   The following is the expanded form of the unstable Ra equation (2c)
-      Ra = (1.0D0/(VONKAR*ustar))*DLOG(((DSQRT(1.0D0-&
-      &16.0D0*Zrdep/obulen)-1.0D0)*&
-      &(DSQRT(1.0D0-16.0D0*SFCZ0/obulen)+1.0D0))/&
-      &((DSQRT(1.0D0-16.0D0*Zrdep/obulen)+1.0D0)*(DSQRT(1.0D0-&
-      &16.0D0*SFCZ0/obulen)-1.0D0)))
+      Ra = (1.0d0/(vonkar*ustar))*dlog(((dsqrt(1.0d0-&
+      &16.0d0*Zrdep/obulen)-1.0d0)*&
+      &(dsqrt(1.0d0-16.0d0*sfcz0/obulen)+1.0d0))/&
+      &((dsqrt(1.0d0-16.0d0*Zrdep/obulen)+1.0d0)*(dsqrt(1.0d0-&
+      &16.0d0*sfcz0/obulen)-1.0d0)))
    end if
 
 ! ... Compute kinematic viscosity of air (m**2/s), with temp and presssure corrections
-   Xnu = 0.1505D0*1.0D-4*((Ta/To)**1.772D0)*(Pressure/Po)*&
-   &(1.0D0+0.0132D0*(Pressure-Po))
+   Xnu = 0.1505d0*1.0d-4*((Ta/To)**1.772d0)*(Pressure/Po)*&
+   &(1.0d0+0.0132d0*(Pressure-Po))
 
 !***
-   if (npd .eq. 0 .and. LDGAS) then
+   if (npd .eq. 0 .and. ldgas) then
 
 ! ...    Compute gas deposition velocity, vdepg
 
 ! ...    compute parameters necessary for bulk stomatal resistance
-      f1 = ((QSW/Gr)+0.01D0)/((QSW/Gr)+1.0D0)
-      if (f1 .le. 0.01D0) f1 = 0.01D0
-      if (f1 .gt. 1.0D0)  f1 = 1.0D0
-      if (Ri .eq. 1.0D07) f1 = 0.01D0
+      f1 = ((qsw/Gr)+0.01d0)/((qsw/Gr)+1.0d0)
+      if (f1 .le. 0.01d0) f1 = 0.01d0
+      if (f1 .gt. 1.0d0)  f1 = 1.0d0
+      if (Ri .eq. 1.0d07) f1 = 0.01d0
 !PES     Calculation of Wnew and f2 moved outside the source loop
 
-      f3 = 1.0D0/(1.0D0+alfa*de)
-      if (f3.le.0.01D0) f3 = 0.01D0
+      f3 = 1.0d0/(1.0d0+alfa*de)
+      if (f3.le.0.01d0) f3 = 0.01d0
 
-      f4 = 1.0D0-0.0016D0*(298.2D0-Ta)**2
-      if (f4.le.0.01D0) f4 = 0.01D0
+      f4 = 1.0d0-0.0016d0*(298.2d0-Ta)**2
+      if (f4.le.0.01d0) f4 = 0.01d0
 
 
 ! ...    Modify certain resistances if the surface is wetted (high humidity/
@@ -8123,25 +8123,25 @@ subroutine VDP
 
 !PES     Adjust Rcs and Rco based on cloud cover from AERMET
 ! ...    Determine factor "a" as a function of cloud cover
-      a = 0.30D0
-      if (NCLOUD.le.2) a = 0.45D0
-      if (NCLOUD.ge.8) a = 0.15D0
+      a = 0.30d0
+      if (ncloud.le.2) a = 0.45d0
+      if (ncloud.ge.8) a = 0.15d0
 !        JAT 12/11/17
 !        correct ISEAS to be 4 "winter with snow" to be consistent with science document
 !         if (ISEA5 .EQ. 5 .and. IPCODE .gt.18 .and. Ta .LT. To) then
-      if (ISEA5 .EQ. 4 .and. IPCODE .gt.18 .and. Ta .LT. To) then
+      if (isea5 .eq. 4 .and. ipcode .gt.18 .and. Ta .lt. To) then
 ! ...       Skip adjustments for wetted surface if surface is snow covered
          Rcox = Rco
          continue
       else if ((ustar.lt.(a/dq).and.((ihour.lt.8).or.(ihour.gt.19)))&
-      &.or. ppp.gt.0.0D0) then
-         Rcs  = 50.0D0
-         Rcox = 0.75D0*Rco
-         Rgs  = 50.0D0
+      &.or. ppp.gt.0.0d0) then
+         Rcs  = 50.0d0
+         Rcox = 0.75d0*Rco
+         Rgs  = 50.0d0
          if ((ustar.lt.(a/dq)).and.&
          &((ihour.lt.8).or.(ihour.gt.19)))then
 ! ...          Limit Ra for gases if surface is wetted by dew
-            if (Ra.lt.1000.0D0) Ra = 1000.0D0
+            if (Ra.lt.1000.0d0) Ra = 1000.0d0
          end if
       else
          Rcox = Rco
@@ -8149,7 +8149,7 @@ subroutine VDP
 
 ! ...    Calculate Rx term, used to adjust cuticular and ground terms for
 !        hard freeze
-      Rx = 1.0D03*DEXP(-(Ta-269.2D0))
+      Rx = 1.0d03*dexp(-(Ta-269.2d0))
 
 ! ...    drive some resistances to high values if there is a hard freeze
       Rcs  = Rcs + Rx
@@ -8158,61 +8158,61 @@ subroutine VDP
       Rcox = Rcox + Rx
 
 ! ...    then compute in-canopy aerodynamic resistance, Racx
-      Rac = 0.3D0*Raci/ustar
+      Rac = 0.3d0*Raci/ustar
 
 ! ...    Assign diffusivity for this source. Note that conversion of
 !        diffusivity to m2/s is made in VDP1
-      D_suba = pdiff(ISRC)
+      D_suba = pdiff(isrc)
 
 ! ...    Compute quasiliminar resistance for bulk surface, Rb
 
-      Rb = 2.2D0*((Xnu/D_suba)**(2.0D0*THIRD))/(VONKAR*ustar)
+      Rb = 2.2d0*((Xnu/D_suba)**(2.0d0*third))/(vonkar*ustar)
 
 ! ...    Compute bulk surface resistance, Rc
 
 ! ...    First compute the bulk canopy stomatal resistance, Rs
 
       Rs = Ri*(Dv/D_suba)/(f1*f2*f3*f4)
-      if (Rs.gt.1.0D07) Rs = 1.0D07
+      if (Rs.gt.1.0d07) Rs = 1.0d07
 
 ! ...    Next compute bulk canopy leaf mesophyll resistance, Rm
 ! ...    The fo factor applies to ozone (fo=1.0) and nitrogen oxide (fo=0.1).
 !        The fo factor should also be set to 1.0 for titanium tetrachloride
 !        and divalent mercury, otherwise fo is 0.0
 
-      Rm = 1.0D0/((0.034D0/HENRY(ISRC))+100.0D0*fo)
-      if (Rm.gt.1.0D07) Rm = 1.0D07
+      Rm = 1.0d0/((0.034d0/henry(isrc))+100.0d0*fo)
+      if (Rm.gt.1.0d07) Rm = 1.0d07
 
 ! ...    Then compute cuticular resistance, Rcut
 !        Note that Rcli is converted from s/cm to s/m in SUB. VDP1
 
-      Rcl = Rcli(ISRC)/(rLAI*Sfact)
+      Rcl = Rcli(isrc)/(rLAI*Sfact)
 ! ...    Adjust Rcl for hard freeze
       Rcl = Rcl + Rx
-      if (Rcl.lt.100.0D0) Rcl = 100.0D0
+      if (Rcl.lt.100.0d0) Rcl = 100.0d0
 
-      Rcut = 1.0D0/((1.0D-3/(HENRY(ISRC)*Rcs))+&
-      &((fo+fo*fo/HENRY(ISRC))/Rcox)+(1.0D0/Rcl))
+      Rcut = 1.0d0/((1.0d-3/(henry(isrc)*Rcs))+&
+      &((fo+fo*fo/henry(isrc))/Rcox)+(1.0d0/Rcl))
 
 ! ...    Next compute ground resistance Rg
 
-      Rg=1.0D0/((1.0D-3/(HENRY(ISRC)*Rgs))+((fo+(0.1D0*fo*fo))/Rgo))
-      if (Rg.gt.1.0D07) Rg = 1.0D07
+      Rg=1.0d0/((1.0d-3/(henry(isrc)*Rgs))+((fo+(0.1d0*fo*fo))/Rgo))
+      if (Rg.gt.1.0d07) Rg = 1.0d07
 
 ! ...    Finally, combine to compute Rc
 
-      Rc = 1.0D0/((rLAI/(Rs+Rm))+(rLAI/Rcut)+(1.0D0/(Rac+Rg)))
+      Rc = 1.0d0/((rLAI/(Rs+Rm))+(rLAI/Rcut)+(1.0d0/(Rac+Rg)))
 
 ! ...    Add the parallel resistances and take the inverse to compute the
 !        deposition velocity for gases, Vdepg.
 
-      Vdepg = 1.0D0/(Ra+Rb+Rc)
+      Vdepg = 1.0d0/(Ra+Rb+Rc)
 
 !***
    else if (npd .gt. 0) then
 ! ...    Compute particle deposition velocity, vdep
 
-      if (.NOT. L_METHOD2(ISRC)) then
+      if (.not. l_method2(isrc)) then
 ! ...       Calculate using existing ISCST3 method with modified Rb (Eq. 21)
 
 ! ---       Calculate t1 using Xnu, adjusted for ambient temp and pressure
@@ -8224,58 +8224,58 @@ subroutine VDP
             st=tstop(i)*t1
 !
 ! ---          Compute inertial impaction term
-            xinert=10.0D0**(-3.0D0/st)
+            xinert=10.0d0**(-3.0d0/st)
 !
 ! ---          Calculate Schmidt number based on ambient temp and pressure
-            D_sub_b = 8.09D-14 * (TA*SCF(I)/PDIAM(I))
+            D_sub_b = 8.09d-14 * (ta*scf(i)/pdiam(i))
             Schmidt(i) = Xnu/D_sub_b
 
 ! ---          Calculate unstable gusty wind adjustment for rd,
 !              set factor to 1.0 for DFAULT option
-            if (wstar .le. 0.0D0) then
-               gust_adj = 1.0D0
+            if (wstar .le. 0.0d0) then
+               gust_adj = 1.0d0
             else
-               gust_adj = 1.0D0 + 0.24D0*wstar*wstar/(ustar*ustar)
+               gust_adj = 1.0d0 + 0.24d0*wstar*wstar/(ustar*ustar)
             end if
 !
 ! ---          Compute the deposition layer resistance (s/m)
-            rd(i) = 1.0D0 / (gust_adj * ustar *&
-            &(Schmidt(i)**(-2.0D0*THIRD) + xinert))
+            rd(i) = 1.0d0 / (gust_adj * ustar *&
+            &(Schmidt(i)**(-2.0d0*third) + xinert))
 !
 ! ---          Deposition velocity for this particle size category
-            vdep(i) =1.0D0/(ra+rd(i)+ra*rd(i)*vgrav(i))+vgrav(i)+&
+            vdep(i) =1.0d0/(ra+rd(i)+ra*rd(i)*vgrav(i))+vgrav(i)+&
             &vdphor
 
          end do
 ! ***
-         if(DEBUG .or. DEPOSDBG)then
-            write(DBGUNT,*)
-            write(DBGUNT,*)'RA (s/m)    = ',ra
-            write(DBGUNT,*)'RD (s/m)    = ',(rd(n),n=1,npd)
-            write(DBGUNT,*)'VDEP (m/s)  = ',(vdep(n),n=1,npd)
+         if(debug .or. deposdbg)then
+            write(dbgunt,*)
+            write(dbgunt,*)'RA (s/m)    = ',ra
+            write(dbgunt,*)'RD (s/m)    = ',(rd(n),n=1,npd)
+            write(dbgunt,*)'VDEP (m/s)  = ',(vdep(n),n=1,npd)
          end if
 
-      else if (L_METHOD2(ISRC)) then
+      else if (l_method2(isrc)) then
 ! ...       Calculate deposition velocities for fine (vd1) and
 !           coarse (vd2) particles for METHOD 2
-         if (obulen .ge. 0.0D0) then
-            Rp = 500.0D0/ustar
+         if (obulen .ge. 0.0d0) then
+            Rp = 500.0d0/ustar
          else
-            Rp = 500.0D0/(ustar*(1.0D0-(300.0D0/obulen)))
+            Rp = 500.0d0/(ustar*(1.0d0-(300.0d0/obulen)))
          end if
 
 !
 ! ---       Calculate Schmidt number based on ambient temp and pressure
-         D_sub_b = 8.09D-14 * (TA*SCF(1)/PDIAM(1))
+         D_sub_b = 8.09d-14 * (ta*scf(1)/pdiam(1))
          Schmidt(1) = Xnu/D_sub_b
 
-         vd1 = 1.0D0/(Ra+Rp)
+         vd1 = 1.0d0/(Ra+Rp)
 ! ...       Assign value of 0.002 m/s for Vgrav for coarse mode of METHOD 2
-         vd2 = 0.002D0+(1.0D0/(Ra+Rp+0.002D0*Ra*Rp))
+         vd2 = 0.002d0+(1.0d0/(Ra+Rp+0.002d0*Ra*Rp))
 
 ! ...       Combine fine and coarse terms to get total deposition velocity.
 !           Note that subscript 1 for vdep is used since NPD = 1 for METHOD 2.
-         vdep(1) = finemass(isrc)*vd1 + (1.0D0-finemass(isrc))*vd2
+         vdep(1) = finemass(isrc)*vd1 + (1.0d0-finemass(isrc))*vd2
       end if
 
    end if
@@ -8283,22 +8283,22 @@ subroutine VDP
 ! ... Write resistances and deposition velocities to separate files:
 !     GDEP.DAT for gas deposition and PDEP.DAT for particle deposition.
 
-   IF (DEBUG .or. DEPOSDBG) THEN
-      if (LDGAS .and. npd .eq. 0) then
-         write(GDEPDBG,1001) kurdat, isrc, ra, rb, rc, vdepg
+   if (debug .or. deposdbg) then
+      if (ldgas .and. npd .eq. 0) then
+         write(gdepdbg,1001) kurdat, isrc, ra, rb, rc, vdepg
 1001     format(1x,i8,1x,i6,4(2x,e12.6))
       end if
-      if (LDPART .and. .NOT. L_METHOD2(ISRC)) then
+      if (ldpart .and. .not. l_method2(isrc)) then
          do i = 1, npd
-            write(PDEPDBG,1002) kurdat, isrc, i, ra, rd(i), vgrav(i),&
+            write(pdepdbg,1002) kurdat, isrc, i, ra, rd(i), vgrav(i),&
             &vdep(i)
 1002        format(1x,i8,1x,i6,2x,i3,'  METHOD_1 ',4(2x,e12.6))
          end do
-      else if (LDPART .and. L_METHOD2(ISRC)) then
-         write(PDEPDBG,1003) kurdat, isrc, ra, rp, vgrav(1), vdep(1)
+      else if (ldpart .and. l_method2(isrc)) then
+         write(pdepdbg,1003) kurdat, isrc, ra, rp, vgrav(1), vdep(1)
 1003     format(1x,i8,1x,i6,4x,'-  METHOD_2 ',4(2x,e12.6))
       end if
-   END IF
+   end if
 
    return
 end
@@ -8341,35 +8341,35 @@ subroutine scavrat
 !----------------------------------------------------------------------
 !
 ! --- Include common blocks
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 
 ! --- Assign RHOW, density of water (g/m^3), as a parameter = 1.0E6
-   DOUBLE PRECISION, PARAMETER :: RHOW = 1.0D6
-   INTEGER :: I, N
-   DOUBLE PRECISION :: VFALL, RDROP, FSUBG, FSUBL,&
-   &TABS, TRES, REYNOLD, STOKE, SSTAR, KAPPA,&
-   &TERM1, TERM2, TERM3
+   double precision, parameter :: rhow = 1.0d6
+   integer :: i, n
+   double precision :: vfall, rdrop, fsubg, fsubl,&
+   &tabs, tres, reynold, stoke, sstar, kappa,&
+   &term1, term2, term3
 
-   if(DEBUG .or. DEPOSDBG)then
-      write(DBGUNT,*)
-      write(DBGUNT,*)'SUBR. SCAVRAT -- Inputs'
-      write(DBGUNT,*)'IPCODE               = ',ipcode
-      write(DBGUNT,*)'PRATE (mm/hr)        = ',prate
-      write(DBGUNT,*)'TA (deg K)           = ',ta
-      write(DBGUNT,*)'NPD                  = ',npd
-      write(DBGUNT,*)
+   if(debug .or. deposdbg)then
+      write(dbgunt,*)
+      write(dbgunt,*)'SUBR. SCAVRAT -- Inputs'
+      write(dbgunt,*)'IPCODE               = ',ipcode
+      write(dbgunt,*)'PRATE (mm/hr)        = ',prate
+      write(dbgunt,*)'TA (deg K)           = ',ta
+      write(dbgunt,*)'NPD                  = ',npd
+      write(dbgunt,*)
    end if
 
 ! --- If no precipitation, no wet removal
-   if(prate .EQ. 0.0D0) then
+   if(prate .eq. 0.0d0) then
       if (npd .gt. 0) then
 ! ---       Set pscvrt(npd), washout(npd), and ecoll(npd) arrays to 0
-         pscvrt = 0.0D0
-         washout= 0.0D0
-         ecoll  = 0.0D0
+         pscvrt = 0.0d0
+         washout= 0.0d0
+         ecoll  = 0.0d0
       else
-         gscvrt = 0.0D0
+         gscvrt = 0.0d0
       end if
 
    else if (npd .gt. 0) then
@@ -8384,13 +8384,13 @@ subroutine scavrat
 
 ! ---    Calculate the precipitaion fall speed, VFALL (m/s) based on
 !        precipitation rate in mm/hr.
-      VFALL = 3.75D0 * PRATE**0.111D0
+      vfall = 3.75d0 * prate**0.111d0
 
 ! ---    Calculate rainfall droplet radius, RDROP (cm), based on precipitation
 !        rate in mm/hr.
-      RDROP = (PRATE**0.232D0) / 18.11D0
+      rdrop = (prate**0.232d0) / 18.11d0
 
-      DO I = 1, NPD
+      do i = 1, npd
 !           JAT 6/25/19 added from 18081
 !           add code to calculate terms for scavenging ratio
 !           on the basis of whether Method 1 or Method 2 is used.
@@ -8405,62 +8405,62 @@ subroutine scavrat
 !           When using method 2 for dry dep and also calculating wet dep
 !           the modification is to calculate washout from Wesley et al. 2001
 !           and then solve for Ecoll to calculate the scavenging ratio
-         if (.not. L_METHOD2(ISRC)) then
+         if (.not. l_method2(isrc)) then
 ! ---       Calculate collision efficiency, ECOLL, as function of particle
 !           size and raindrop size based on Slinn (1984) and Seinfeld and
 !           Pandis (1998).
 
 ! ---       Calculate Reynolds number for raindrop
-            REYNOLD = RDROP*0.01D0*VFALL/XNU
+            reynold = rdrop*0.01d0*vfall/xnu
 !           Calculate diffusion term, TERM1
-            TERM1 = (4.0D0/(REYNOLD*SCHMIDT(I)))*(1.0D0+0.4D0*&
-            &DSQRT(REYNOLD)*SCHMIDT(I)**THIRD+&
-            &0.16D0*DSQRT(REYNOLD*SCHMIDT(I)))
+            term1 = (4.0d0/(reynold*schmidt(i)))*(1.0d0+0.4d0*&
+            &dsqrt(reynold)*schmidt(i)**third+&
+            &0.16d0*dsqrt(reynold*schmidt(i)))
 
 ! ---       Calculate ratio of particle diameter and raindrop diameter,
 !           KAPPA, with adjustments for units
-            KAPPA = (PDIAM(I)*1.0D-6)/(RDROP*0.02D0)
+            kappa = (pdiam(i)*1.0d-6)/(rdrop*0.02d0)
 !           Calculate interception term, TERM2
 !           The constant term 1.81E-2 is ratio of viscosity or air to water
-            TERM2 = 4.0D0*KAPPA*(1.81D-2+KAPPA*&
-            &(1.0D0+2.0D0*DSQRT(REYNOLD)))
+            term2 = 4.0d0*kappa*(1.81d-2+kappa*&
+            &(1.0d0+2.0d0*dsqrt(reynold)))
 
 ! ---       Calculate Stokes number for raindrop
-            STOKE = TSTOP(I)*(VFALL-VGRAV(I))/(RDROP*0.01D0)
+            stoke = tstop(i)*(vfall-vgrav(i))/(rdrop*0.01d0)
 !           Calculate critical Stokes number
-            SSTAR = (1.2D0+DLOG(1.0D0+REYNOLD)/12.0D0)/&
-            &(1.0D0+DLOG(1.0D0+REYNOLD))
-            SSTAR = MIN( SSTAR, STOKE )
+            sstar = (1.2d0+dlog(1.0d0+reynold)/12.0d0)/&
+            &(1.0d0+dlog(1.0d0+reynold))
+            sstar = min( sstar, stoke )
 !           Calculate inertial impaction term, TERM3
-            TERM3 = ((STOKE-SSTAR)/&
-            &(STOKE-SSTAR+2.0D0*THIRD))**(1.5D0)
+            term3 = ((stoke-sstar)/&
+            &(stoke-sstar+2.0d0*third))**(1.5d0)
 !           Scale TERM3, inertial impaction term,by ratio of water
 !           density (1 g/cm**3) to particle density
-            TERM3 = TERM3 * DSQRT(1.0D0/PDENS(I))
+            term3 = term3 * dsqrt(1.0d0/pdens(i))
 
-            ECOLL(I) = MIN( 1.0D0, TERM1 + TERM2 + TERM3 )
+            ecoll(i) = min( 1.0d0, term1 + term2 + term3 )
 
 ! ---       Calculate washout coefficient from Equation 29; factor of 0.01
 !           converts drop radius from cm to m.
-            WASHOUT(I) = 1.5D0 * (ZSUBP * ECOLL(I)) /&
-            &(2.0D0*RDROP*0.01D0)
-         ELSE  !NEW METHOD 2 code
+            washout(i) = 1.5d0 * (zsubp * ecoll(i)) /&
+            &(2.0d0*rdrop*0.01d0)
+         else  !NEW METHOD 2 code
 !             washout is calculated by 10^5*D (see Wesley et al, 2001)
 !             modify to account for fine and coarse fractions
             washout(i)=1.0d5*pdiam(i)*finemass(isrc)+&
-            &1.0d5*6.0D0*(1-finemass(isrc))
-            ecoll(i)=((2.0D0*RDROP*0.01D0)*washout(i))/(1.5D0*ZSUBP)
+            &1.0d5*6.0d0*(1-finemass(isrc))
+            ecoll(i)=((2.0d0*rdrop*0.01d0)*washout(i))/(1.5d0*zsubp)
             ecoll(i)=min(1.0d0,ecoll(i))
-         ENDIF
-         IF (PRATE .GT. 0.0D0) THEN
+         endif
+         if (prate .gt. 0.0d0) then
 ! ---          Calculate scavenging rate (1/s); factor of 3.6E4 converts drop
 !              radius from cm to mm, and converts hours to seconds.
-            PSCVRT(I) = 1.5D0 * ECOLL(I) * PRATE /&
-            &(2.0D0*RDROP * 3.6D4)
-         ELSE
-            PSCVRT(I) = 0.0D0
-         END IF
-      END DO
+            pscvrt(i) = 1.5d0 * ecoll(i) * prate /&
+            &(2.0d0*rdrop * 3.6d4)
+         else
+            pscvrt(i) = 0.0d0
+         end if
+      end do
    else
 !PES --- Apply deposition option based on Wesely, et. al. (2001),
 !PES     with modifications based on Chris Walcek, for gases.
@@ -8471,69 +8471,69 @@ subroutine scavrat
 
 ! ---    Calculate the precipitaion fall speed, VFALL (m/s) based on
 !        precipitation rate in mm/hr.
-      VFALL = 3.75D0 * PRATE**0.111D0
+      vfall = 3.75d0 * prate**0.111d0
 
 ! ---    Calculate rainfall droplet radius, RDROP (cm), based on precipitation
 !        rate in mm/hr.
-      RDROP = (PRATE**0.232D0) / 18.11D0
+      rdrop = (prate**0.232d0) / 18.11d0
 
 ! ---    Calculate liquid content of falling rain, LIQCONT (g/m^3), based on
 !        precipitation rate in mm/hr.
-      LIQCONT = (PRATE**0.889D0) / 13.28D0
+      liqcont = (prate**0.889d0) / 13.28d0
 
 ! ---    Calculate gas-side diffusion enhancement factor, FSUBG (unitless),
 !        based on droplet radius (cm).  Linear approximation based on
 !        Figure 13-20 of "Microphysics of Clouds and Precipitation" by
 !        Hans Pruppacher and James Klett.
-      FSUBG = 80.0D0*RDROP + 1.0D0
+      fsubg = 80.0d0*rdrop + 1.0d0
 
 ! ---    Set the liquid-side diffusion enhancement factor, FSUBL (unitless),
 !        based on droplet radius.
-      IF (RDROP .LT. 0.01D0) THEN
-         FSUBL = 1.0D0
-      ELSE IF (RDROP .LE. 0.05D0) THEN
-         FSUBL = 2.6D0
-      ELSE
-         FSUBL = 20.0D0
-      END IF
+      if (rdrop .lt. 0.01d0) then
+         fsubl = 1.0d0
+      else if (rdrop .le. 0.05d0) then
+         fsubl = 2.6d0
+      else
+         fsubl = 20.0d0
+      end if
 
 ! ---    Calculate the absorption time scale, TABS (s); first calculate
 !        term in the denominator.
-      DENOM = (1.0D0 + (LIQCONT*RGAS*TA)/(HENRY(ISRC)*RHOW))
-      TABS=(RDROP**2*RGAS*TA/(HENRY(ISRC)*3.0D0*PDIFF(ISRC)*&
-      &1.0D4*FSUBG)+(4.0D0*RDROP*RGAS*TA)/(HENRY(ISRC)*3.0D0*&
-      &50000.0D0*0.01D0)+(RDROP**2*0.17D0)/(3.0D0*PDIFFW(ISRC)*&
-      &1.0D4*FSUBL))/DENOM
+      denom = (1.0d0 + (liqcont*rgas*ta)/(henry(isrc)*rhow))
+      tabs=(rdrop**2*rgas*ta/(henry(isrc)*3.0d0*pdiff(isrc)*&
+      &1.0d4*fsubg)+(4.0d0*rdrop*rgas*ta)/(henry(isrc)*3.0d0*&
+      &50000.0d0*0.01d0)+(rdrop**2*0.17d0)/(3.0d0*pdiffw(isrc)*&
+      &1.0d4*fsubl))/denom
 
 ! ---    Calculate the residence time of drops in the plume, TRES (s);
 !        ZSUBP is defined in PCALC.
-      TRES = ZSUBP/VFALL
+      tres = zsubp/vfall
 
 ! ---    Calculate the fraction of saturation, FRACSAT, based on time scales.
-      FRACSAT = MIN( 1.0D0, TRES/TABS )
+      fracsat = min( 1.0d0, tres/tabs )
 
 ! ---    Calculate equivalent scavenging rate (1/s)
-      GSCVRT = (FRACSAT*RGAS*TA*PRATE)/&
-      &(3600.0D0*ZSUBP*HENRY(ISRC)*1.0D3*DENOM)
+      gscvrt = (fracsat*rgas*ta*prate)/&
+      &(3600.0d0*zsubp*henry(isrc)*1.0d3*denom)
 
    end if
 
-   if(DEBUG .or. DEPOSDBG)then
-      write(DBGUNT,*)'SUBR. SCAVRAT -- Results'
+   if(debug .or. deposdbg)then
+      write(dbgunt,*)'SUBR. SCAVRAT -- Results'
       if (npd .eq. 0) then
-         write(DBGUNT,*)'GSCVRT (1/s)= ',gscvrt
+         write(dbgunt,*)'GSCVRT (1/s)= ',gscvrt
       else if (npd .gt. 0) then
-         write(DBGUNT,*)'PSCVRT (1/s)= ',(pscvrt(n),n=1,npd)
-         write(DBGUNT,*)'COLL. EFF.  = ',(ecoll(n),n=1,npd)
-         write(DBGUNT,*)'WASHOUT COEF= ',(washout(n),n=1,npd)
+         write(dbgunt,*)'PSCVRT (1/s)= ',(pscvrt(n),n=1,npd)
+         write(dbgunt,*)'COLL. EFF.  = ',(ecoll(n),n=1,npd)
+         write(dbgunt,*)'WASHOUT COEF= ',(washout(n),n=1,npd)
       end if
-      write(DBGUNT,*)
+      write(dbgunt,*)
    end if
 
    return
 end
 
-SUBROUTINE PDEP (XARG)
+subroutine pdep (xarg)
 !***********************************************************************
 !               PDEP Module of AERMOD Model
 !
@@ -8554,37 +8554,37 @@ SUBROUTINE PDEP (XARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   character modnam*12
 
-   INTEGER :: I
-   DOUBLE PRECISION :: XARG
+   integer :: i
+   double precision :: xarg
 
 !     Variable Initializations
-   MODNAM = 'PDEP'
+   modnam = 'PDEP'
 
 !     Loop over particle sizes
-   DO I = 1, NPD
-      DQCOR(I) = 1.0D0
-      WQCOR(I) = 1.0D0
-      IF (DDPLETE) THEN
+   do i = 1, npd
+      dqcor(i) = 1.0d0
+      wqcor(i) = 1.0d0
+      if (ddplete) then
 !           Determine factor for dry depletion
-         VSETL = VGRAV(I)
-         CALL DEPLETE(VDEP(I),XARG,ROMBERG,DQCOR(I))
-      END IF
-      IF (WDPLETE .and. PSCVRT(I).GT.0.0D0) THEN
+         vsetl = vgrav(i)
+         call deplete(vdep(i),xarg,romberg,dqcor(i))
+      end if
+      if (wdplete .and. pscvrt(i).gt.0.0d0) then
 !           Determine source depletion factor from wet removal
 !           Simple Terrain Model
-         WQCOR(I) = DEXP(-PSCVRT(I)*XARG/US)
-      END IF
-   END DO
+         wqcor(i) = dexp(-pscvrt(i)*xarg/us)
+      end if
+   end do
 
-   RETURN
-END
+   return
+end
 
 
-SUBROUTINE PDEPG (XARG)
+subroutine pdepg (xarg)
 !***********************************************************************
 !               PDEPG Module of AERMOD Model
 !
@@ -8605,31 +8605,31 @@ SUBROUTINE PDEPG (XARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   character modnam*12
 
-   DOUBLE PRECISION :: XARG
+   double precision :: xarg
 
 !     Variable Initializations
-   MODNAM = 'PDEPG'
+   modnam = 'PDEPG'
 
 !     Initialize source depletion factors to unity.
-   DQCORG  = 1.0D0
-   WQCORG  = 1.0D0
-   IF (DDPLETE) THEN
+   dqcorg  = 1.0d0
+   wqcorg  = 1.0d0
+   if (ddplete) then
 !        Determine factor for dry depletion
-      CALL DEPLETE( VDEPG, XARG, ROMBERG, DQCORG)
-   END IF
-   IF (WDPLETE .and. GSCVRT.GT.0.0D0) THEN
+      call deplete( vdepg, xarg, romberg, dqcorg)
+   end if
+   if (wdplete .and. gscvrt.gt.0.0d0) then
 !        Determine source depletion factor
 !        from wet removal (GASES)
 !        Simple Terrain Model
-      WQCORG = DEXP(-GSCVRT*XARG/US)
-   END IF
+      wqcorg = dexp(-gscvrt*xarg/us)
+   end if
 
-   RETURN
-END
+   return
+end
 
 !-----------------------------------------------------------------------
 subroutine deplete(vdi, xri, lromb, qcor)
@@ -8660,35 +8660,35 @@ subroutine deplete(vdi, xri, lromb, qcor)
 
 !     Set up call to QATR2(xl,xu,eps,ndim2,fct,y,ier,num,aux2)
 !     Declare parameter to fix the size of the aux2 array
-   IMPLICIT NONE
+   implicit none
 
-   LOGICAL LROMB
-   DOUBLE PRECISION :: VDI, XRI, QCOR, EPS, VALUE
-   DOUBLE PRECISION, external :: F2INT
-   INTEGER NUM, IER
-   INTEGER, parameter :: ndim2=12
-   DOUBLE PRECISION aux2(ndim2)
+   logical lromb
+   double precision :: vdi, xri, qcor, eps, value
+   double precision, external :: f2int
+   integer num, ier
+   integer, parameter :: ndim2=12
+   double precision aux2(ndim2)
 
 !     Evaluate integral, Use Romberg if LROMB=.T., otherwise use
 !     two-point Gaussian Quadrature:
-   IF (LROMB) THEN
+   if (lromb) then
 !        Use ROMBERG Integration
-      eps = 0.050D0
-      call QATR2(1.0D0,xri,eps,ndim2,F2INT,value,ier,num,aux2)
-   ELSE
+      eps = 0.050d0
+      call qatr2(1.0d0,xri,eps,ndim2,f2int,value,ier,num,aux2)
+   else
 !        Use 2-point Gaussian Quadrature
-      CALL QG2D2(1.0D0,XRI,F2INT,VALUE)
-   END IF
-
-   if (vdi*value .gt. 50.0D0) then
-!        Potential underflow, limit product to 50.0
-      value = 50.0D0/vdi
-   else if (vdi*value .lt. -50.0D0) then
-!        Potential overflow, limit product to 50.0
-      value = -50.0D0/vdi
+      call qg2d2(1.0d0,xri,f2int,value)
    end if
 
-   qcor=DEXP(-vdi*value)
+   if (vdi*value .gt. 50.0d0) then
+!        Potential underflow, limit product to 50.0
+      value = 50.0d0/vdi
+   else if (vdi*value .lt. -50.0d0) then
+!        Potential overflow, limit product to 50.0
+      value = -50.0d0/vdi
+   end if
+
+   qcor=dexp(-vdi*value)
 
    return
 end
@@ -8721,297 +8721,297 @@ function f2int(xi)
 !
 !-----------------------------------------------------------------------
 !
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 
-   DOUBLE PRECISION XI, VWRAP, VLIFT, F2INT, ZETMP, ZHTMP
+   double precision xi, vwrap, vlift, f2int, zetmp, zhtmp
 
 !     Initialize VWRAP and VLIFT
-   VWRAP = 0.0D0
-   VLIFT = 0.0D0
+   vwrap = 0.0d0
+   vlift = 0.0d0
 
 !     Set initial effective parameters
-   UEFF  = US
-   SVEFF = SVS
-   SWEFF = SWS
-   TGEFF = TGS
-   IF ( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-      UEFFD  = US
-      SVEFFD = SVS
-      SWEFFD = SWS
-      UEFFN  = US
-      SVEFFN = SVS
-      SWEFFN = SWS
-      UEFF3  = US
-      SVEFF3 = SVS
-      SWEFF3 = SWS
-      TGEFF3 = TGS
-   END IF
+   ueff  = us
+   sveff = svs
+   sweff = sws
+   tgeff = tgs
+   if ( unstab  .and.  (hs .lt. zi) ) then
+      ueffd  = us
+      sveffd = svs
+      sweffd = sws
+      ueffn  = us
+      sveffn = svs
+      sweffn = sws
+      ueff3  = us
+      sveff3 = svs
+      sweff3 = sws
+      tgeff3 = tgs
+   end if
 
 !     Set temporary receptor elevation and height scale
-   ZETMP = ZELEV
-   ZELEV = ZS + (ZETMP-ZS)*XI/XDIST
+   zetmp = zelev
+   zelev = zs + (zetmp-zs)*xi/xdist
 
-   ZHTMP = ZHILL
-   ZHILL = HS + (ZHTMP-HS)*XI/XDIST
-
-!     Define plume centroid height (CENTER) for use in
-!     inhomogeneity calculations
-   CALL CENTROID ( XI )
+   zhtmp = zhill
+   zhill = hs + (zhtmp-hs)*xi/xdist
 
 !     Define plume centroid height (CENTER) for use in
 !     inhomogeneity calculations
-   CALL CENTROID ( XI )
+   call centroid ( xi )
 
-   IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
+!     Define plume centroid height (CENTER) for use in
+!     inhomogeneity calculations
+   call centroid ( xi )
+
+   if (srctyp(isrc)(1:5) .eq. 'POINT') then
 !        Calculate the plume rise                     ---   CALL DELTAH
-      CALL DELTAH ( XI )
-   END IF
+      call deltah ( xi )
+   end if
 !**  Added for Aircraft Plume Rise; UNC-IE
-   IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and.&
-   &AFTSRC(ISRC) .EQ. 'Y') THEN
+   if (srctyp(isrc) .eq. 'VOLUME' .and.&
+   &aftsrc(isrc) .eq. 'Y') then
 !        Calculate the plume rise                     ---   CALL ADELTAH
-      CALL ADELTAH (XI)
-   END IF
+      call adeltah (xi)
+   end if
 
-   IF (SRCTYP(ISRC) (1:4) .EQ. 'AREA' .and.&
-   &AFTSRC(ISRC) .EQ. 'Y') THEN
+   if (srctyp(isrc) (1:4) .eq. 'AREA' .and.&
+   &aftsrc(isrc) .eq. 'Y') then
 !        Calculate the plume rise                     ---   CALL ADELTAH
-      CALL ADELTAH (XI)
-   END IF
+      call adeltah (xi)
+   end if
 !**  End Aircraft Plume Rise insert; April 2023
 
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                     ---   CALL PDF
-   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-      CALL PDF
-   END IF
+   if( unstab  .and.  (hs .lt. zi) ) then
+      call pdf
+   end if
 
 !     Determine Effective Plume Height             ---   CALL HEFF
-   CALL HEFF ( XI )
+   call heff ( xi )
 
 !     Compute effective parameters using an
 !     average through plume layer
-   CALL IBLVAL ( XI )
+   call iblval ( xi )
 
 !     Call PDF & HEFF again for final CBL plume heights
-   IF (UNSTAB .and. (HS.LT.ZI) ) THEN
-      CALL PDF
-      CALL HEFF ( XI )
-   END IF
+   if (unstab .and. (hs.lt.zi) ) then
+      call pdf
+      call heff ( xi )
+   end if
 
 !     Determine Dispersion Parameters              ---   CALL PDIS
-   CALL PDIS ( XI )
+   call pdis ( xi )
 
 !     Calculate Plume Tilt Due to Settling, HV
-   HV = (XI/US) * VSETL
+   hv = (xi/us) * vsetl
 
-   IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+   if (stable .or. (unstab.and.(hs.ge.zi))) then
 !        Calculate height of the "effective reflecting surface"
 !        Calculate Settled Plume Height(s), HESETL
-      HESETL = MAX( 0.0D0, HE - HV )
-      CALL REFL_HT (HESETL, XI, SZB, 0.0D0, HSBL)
-   ELSE IF ( UNSTAB ) THEN
-      HESETL = MAX( 0.0D0, 0.5D0*(HED1+HED2) - HV )
-      HSBL = 0.0D0
-   END IF
+      hesetl = max( 0.0d0, he - hv )
+      call refl_ht (hesetl, xi, szb, 0.0d0, hsbl)
+   else if ( unstab ) then
+      hesetl = max( 0.0d0, 0.5d0*(hed1+hed2) - hv )
+      hsbl = 0.0d0
+   end if
 
-   IF (UNSTAB .and. (HS.LT.ZI) .and. (PPF.GT.0.0D0)) THEN
+   if (unstab .and. (hs.lt.zi) .and. (ppf.gt.0.0d0)) then
 !        Calculate height of the "effective reflecting surface"
 !        Calculate Settled Plume Height(s), HE3SETL
-      HE3SETL = MAX( 0.0D0, HE3 - HV )
-      CALL REFL_HT (HE3SETL, XI, SZB3, 0.0D0, HPEN)
-      HPEN = MAX( HPEN, ZI )
-   ELSE
-      HPEN = 0.0D0
-   END IF
+      he3setl = max( 0.0d0, he3 - hv )
+      call refl_ht (he3setl, xi, szb3, 0.0d0, hpen)
+      hpen = max( hpen, zi )
+   else
+      hpen = 0.0d0
+   end if
 
 !     Determine the CRITical Dividing Streamline---   CALL CRITDS
-   CALL CRITDS (HESETL)
+   call critds (hesetl)
 
 !     Calculate the fraction of plume below
 !     HCRIT, PHEE                               ---   CALL PFRACT
-   CALL PFRACT (HESETL)
+   call pfract (hesetl)
 
 !     Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-   CALL FTERM
+   call fterm
 
-   IF (FOPT .EQ. 0.0D0) THEN
-      VWRAP = 0.0D0
-   ELSE
+   if (fopt .eq. 0.0d0) then
+      vwrap = 0.0d0
+   else
 !        Assign receptor height for vertical term calculations
-      ZR = ZRT + ZRDEP
+      zr = zrt + zrdep
 
-      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
+      if( stable  .or.  (unstab .and. (hs .ge. zi) ) ) then
 !           Calculate the vertical term, FSUBZ              ---   CALL VRTSBL
 !           With stable plume reflections and effective Zi
-         IF (ZR .LE. HSBL) THEN
-            CALL VRTSBL (SZ, MAX( 0.0D0, HE-HV ), HSBL)
-         ELSE
-            CALL VRTSBN (SZ, MAX( 0.0D0, HE-HV ))
-         END IF
+         if (zr .le. hsbl) then
+            call vrtsbl (sz, max( 0.0d0, he-hv ), hsbl)
+         else
+            call vrtsbn (sz, max( 0.0d0, he-hv ))
+         end if
 
 !           Calculate value of integral, VWRAP
-         VWRAP = FSUBZ/UEFF
+         vwrap = fsubz/ueff
 
-      ELSE IF( UNSTAB )THEN
-         IF (PPF .LT. 1.0D0) THEN
+      else if( unstab )then
+         if (ppf .lt. 1.0d0) then
 !              Calculate the vertical term for the direct plume, FSUBZD
-            IF (ZR .LE. ZI) THEN
+            if (zr .le. zi) then
 !                 Calculation for Receptor below Zi      ---   CALL VRTCBL
-               CALL VRTCBL ( HED1-HV, HED2-HV, SZD1, SZD2, 1.0D0 )
-               FSUBZD = FSUBZ
-            ELSE
+               call vrtcbl ( hed1-hv, hed2-hv, szd1, szd2, 1.0d0 )
+               fsubzd = fsubz
+            else
 !                 Set FSUBZ = 0.0 for "receptor height" (ZR) > ZI
-               FSUBZD = 0.0D0
-            END IF
+               fsubzd = 0.0d0
+            end if
 
 !              Calculate the vertical term for the indirect plume, FSUBZN
-            IF (ZR .LE. ZI) THEN
+            if (zr .le. zi) then
 !                 Calculation for Receptor below Zi      ---   CALL VRTCBL
-               CALL VRTCBL ( HEN1-HV, HEN2-HV, SZN1, SZN2, -1.0D0 )
-               FSUBZN = FSUBZ
-            ELSE
+               call vrtcbl ( hen1-hv, hen2-hv, szn1, szn2, -1.0d0 )
+               fsubzn = fsubz
+            else
 !                 Set FSUBZ = 0.0 for "receptor height" (ZR) > ZI
-               FSUBZN = 0.0D0
-            END IF
-         ELSE
-            FSUBZD = 0.0D0
-            FSUBZN = 0.0D0
+               fsubzn = 0.0d0
+            end if
+         else
+            fsubzd = 0.0d0
+            fsubzn = 0.0d0
 
-         END IF
+         end if
 
 !           Note that UEFF and UEFF3 can never be zero, since they get
 !           set to a minimum value earlier on.
 
-         IF( PPF .GT. 0.0D0 )THEN
+         if( ppf .gt. 0.0d0 )then
 !              Calculate the vertical term for the penetrated
 !              plume, FSUBZ3                                ---   CALL VRTSBL
-            IF (ZR .LE. HPEN) THEN
-               CALL VRTSBL (SZ3, MAX(0.0D0,HE3-HV), HPEN)
-            ELSE
-               CALL VRTSBN (SZ3, MAX(0.0D0,HE3-HV))
-            END IF
-            FSUBZ3 = FSUBZ
+            if (zr .le. hpen) then
+               call vrtsbl (sz3, max(0.0d0,he3-hv), hpen)
+            else
+               call vrtsbn (sz3, max(0.0d0,he3-hv))
+            end if
+            fsubz3 = fsubz
 
 !              Calculate value of integral, VWRAP
-            IF (PPF .LT. 1.0D0) THEN
-               VWRAP = (1.0D0-PPF)*FSUBZD/UEFFD +&
-               &(1.0D0-PPF)*FSUBZN/UEFFN +&
-               &PPF*FSUBZ3/UEFF3
-            ELSE
-               VWRAP = PPF*FSUBZ3/UEFF3
-            END IF
+            if (ppf .lt. 1.0d0) then
+               vwrap = (1.0d0-ppf)*fsubzd/ueffd +&
+               &(1.0d0-ppf)*fsubzn/ueffn +&
+               &ppf*fsubz3/ueff3
+            else
+               vwrap = ppf*fsubz3/ueff3
+            end if
 
-         ELSE
-            FSUBZ3 = 0.0D0
-            HPEN   = 0.0D0
+         else
+            fsubz3 = 0.0d0
+            hpen   = 0.0d0
 
 !              Calculate value of integral, VWRAP
-            VWRAP = FSUBZD/UEFFD +&
-            &FSUBZN/UEFFN
+            vwrap = fsubzd/ueffd +&
+            &fsubzn/ueffn
 
-         END IF
+         end if
 
-      END IF
-   END IF
+      end if
+   end if
 
 !---- Calculate the contribution due to terrain-following plume, VLIFT
-   IF (ZRT .EQ. 0.0D0) THEN
+   if (zrt .eq. 0.0d0) then
 !----    Effective receptor heights are equal, therefore VLIFT = VWRAP
-      VLIFT = VWRAP
-   ELSE IF (FOPT .EQ. 1.0D0) THEN
-      VLIFT = 0.0D0
-   ELSE
+      vlift = vwrap
+   else if (fopt .eq. 1.0d0) then
+      vlift = 0.0d0
+   else
 !        Assign receptor height for vertical term calculations
-      ZR = ZRDEP
+      zr = zrdep
 
-      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
+      if( stable  .or.  (unstab .and. (hs .ge. zi) ) ) then
 !           Calculate the vertical term, FSUBZ              ---   CALL VRTSBL
 !           With stable plume reflections and effective Zi
-         IF (ZR .LE. HSBL) THEN
-            CALL VRTSBL (SZ, MAX( 0.0D0, HE-HV ), HSBL)
-         ELSE
-            CALL VRTSBN (SZ, MAX( 0.0D0, HE-HV ))
-         END IF
+         if (zr .le. hsbl) then
+            call vrtsbl (sz, max( 0.0d0, he-hv ), hsbl)
+         else
+            call vrtsbn (sz, max( 0.0d0, he-hv ))
+         end if
 
 !           Calculate value of integral, VLIFT
-         VLIFT = FSUBZ/UEFF
+         vlift = fsubz/ueff
 
-      ELSE IF( UNSTAB )THEN
-         IF (PPF .LT. 1.0D0) THEN
+      else if( unstab )then
+         if (ppf .lt. 1.0d0) then
 !              Calculate the vertical term for the direct plume, FSUBZD
-            IF (ZR .LE. ZI) THEN
+            if (zr .le. zi) then
 !                 Calculation for Receptor below Zi      ---   CALL VRTCBL
-               CALL VRTCBL ( HED1-HV, HED2-HV, SZD1, SZD2, 1.0D0 )
-               FSUBZD = FSUBZ
-            ELSE
+               call vrtcbl ( hed1-hv, hed2-hv, szd1, szd2, 1.0d0 )
+               fsubzd = fsubz
+            else
 !                 Set FSUBZ = 0.0 for "receptor height" (ZR) > ZI
-               FSUBZD = 0.0D0
-            END IF
+               fsubzd = 0.0d0
+            end if
 
 !              Calculate the vertical term for the indirect plume, FSUBZN
-            IF (ZR .LE. ZI) THEN
+            if (zr .le. zi) then
 !                 Calculation for Receptor below Zi      ---   CALL VRTCBL
-               CALL VRTCBL ( HEN1-HV, HEN2-HV, SZN1, SZN2, -1.0D0 )
-               FSUBZN = FSUBZ
-            ELSE
+               call vrtcbl ( hen1-hv, hen2-hv, szn1, szn2, -1.0d0 )
+               fsubzn = fsubz
+            else
 !                 Set FSUBZ = 0.0 for "receptor height" (ZR) > ZI
-               FSUBZN = 0.0D0
-            END IF
-         ELSE
-            FSUBZD = 0.0D0
-            FSUBZN = 0.0D0
+               fsubzn = 0.0d0
+            end if
+         else
+            fsubzd = 0.0d0
+            fsubzn = 0.0d0
 
-         END IF
+         end if
 
 !           Note that UEFF and UEFF3 can never be zero, since they get
 !           set to a minimum value earlier on.
 
-         IF( PPF .GT. 0.0D0 )THEN
+         if( ppf .gt. 0.0d0 )then
 !              Calculate the vertical term for the penetrated
 !              plume, FSUBZ3                                ---   CALL VRTSBL
-            IF (ZR .LE. HPEN) THEN
-               CALL VRTSBL (SZ3, MAX(0.0D0,HE3-HV), HPEN)
-            ELSE
-               CALL VRTSBN (SZ3, MAX(0.0D0,HE3-HV))
-            END IF
-            FSUBZ3 = FSUBZ
+            if (zr .le. hpen) then
+               call vrtsbl (sz3, max(0.0d0,he3-hv), hpen)
+            else
+               call vrtsbn (sz3, max(0.0d0,he3-hv))
+            end if
+            fsubz3 = fsubz
 
 !              Calculate value of integral, VLIFT
-            IF (PPF .LT. 1.0D0) THEN
-               VLIFT = (1.0D0-PPF)*FSUBZD/UEFFD +&
-               &(1.0D0-PPF)*FSUBZN/UEFFN +&
-               &PPF*FSUBZ3/UEFF3
-            ELSE
-               VLIFT = PPF*FSUBZ3/UEFF3
-            END IF
+            if (ppf .lt. 1.0d0) then
+               vlift = (1.0d0-ppf)*fsubzd/ueffd +&
+               &(1.0d0-ppf)*fsubzn/ueffn +&
+               &ppf*fsubz3/ueff3
+            else
+               vlift = ppf*fsubz3/ueff3
+            end if
 
-         ELSE
-            FSUBZ3 = 0.0D0
-            HPEN   = 0.0D0
+         else
+            fsubz3 = 0.0d0
+            hpen   = 0.0d0
 
 !              Calculate value of integral, VLIFT
-            VLIFT = FSUBZD/UEFFD +&
-            &FSUBZN/UEFFN
+            vlift = fsubzd/ueffd +&
+            &fsubzn/ueffn
 
-         END IF
+         end if
 
-      END IF
-   END IF
+      end if
+   end if
 
 !     Blend horizontal and terrain-responding components of integral
-   F2INT = FOPT * VWRAP + (1.0D0 - FOPT) * VLIFT
+   f2int = fopt * vwrap + (1.0d0 - fopt) * vlift
 
 !     Reassign receptor elevation and height scales
-   ZELEV = ZETMP
-   ZHILL = ZHTMP
+   zelev = zetmp
+   zhill = zhtmp
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE PRM_PDEP (XARG)
+subroutine prm_pdep (xarg)
 !***********************************************************************
 !               PRM_PDEP Module of AERMOD Model
 !
@@ -9033,37 +9033,37 @@ SUBROUTINE PRM_PDEP (XARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   character modnam*12
 
-   INTEGER :: I
-   DOUBLE PRECISION :: XARG
+   integer :: i
+   double precision :: xarg
 
 !     Variable Initializations
-   MODNAM = 'PRM_PDEP'
+   modnam = 'PRM_PDEP'
 
 !     Loop over particle sizes
-   DO I = 1, NPD
-      DQCOR(I) = 1.0D0
-      WQCOR(I) = 1.0D0
-      IF (DDPLETE) THEN
+   do i = 1, npd
+      dqcor(i) = 1.0d0
+      wqcor(i) = 1.0d0
+      if (ddplete) then
 !           Determine factor for dry depletion
-         VSETL = VGRAV(I)
-         CALL PRM_DEPLETE(VDEP(I),XARG,ROMBERG,DQCOR(I))
-      END IF
-      IF (WDPLETE .and. PSCVRT(I).GT.0.0D0) THEN
+         vsetl = vgrav(i)
+         call prm_deplete(vdep(i),xarg,romberg,dqcor(i))
+      end if
+      if (wdplete .and. pscvrt(i).gt.0.0d0) then
 !           Determine source depletion factor from wet removal
 !           Simple Terrain Model
-         WQCOR(I) = DEXP(-PSCVRT(I)*XARG/US)
-      END IF
-   END DO
+         wqcor(i) = dexp(-pscvrt(i)*xarg/us)
+      end if
+   end do
 
-   RETURN
-END
+   return
+end
 
 
-SUBROUTINE PRM_PDEPG (XARG)
+subroutine prm_pdepg (xarg)
 !***********************************************************************
 !               PRM_PDEPG Module of AERMOD Model
 !
@@ -9084,31 +9084,31 @@ SUBROUTINE PRM_PDEPG (XARG)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   character modnam*12
 
-   DOUBLE PRECISION :: XARG
+   double precision :: xarg
 
 !     Variable Initializations
-   MODNAM = 'PRM_PDEPG'
+   modnam = 'PRM_PDEPG'
 
 !     Initialize source depletion factors to unity.
-   DQCORG  = 1.0D0
-   WQCORG  = 1.0D0
-   IF (DDPLETE) THEN
+   dqcorg  = 1.0d0
+   wqcorg  = 1.0d0
+   if (ddplete) then
 !        Determine factor for dry depletion
-      CALL PRM_DEPLETE( VDEPG, XARG, ROMBERG, DQCORG)
-   END IF
-   IF (WDPLETE .and. GSCVRT.GT.0.0D0) THEN
+      call prm_deplete( vdepg, xarg, romberg, dqcorg)
+   end if
+   if (wdplete .and. gscvrt.gt.0.0d0) then
 !        Determine source depletion factor
 !        from wet removal (GASES)
 !        Simple Terrain Model
-      WQCORG = DEXP(-GSCVRT*XARG/US)
-   END IF
+      wqcorg = dexp(-gscvrt*xarg/us)
+   end if
 
-   RETURN
-END
+   return
+end
 
 !-----------------------------------------------------------------------
 subroutine PRM_deplete(vdi, xri, lromb, qcor)
@@ -9140,35 +9140,35 @@ subroutine PRM_deplete(vdi, xri, lromb, qcor)
 
 !     Set up call to QATR2(xl,xu,eps,ndim2,fct,y,ier,num,aux2)
 !     Declare parameter to fix the size of the aux2 array
-   IMPLICIT NONE
+   implicit none
 
-   LOGICAL LROMB
-   DOUBLE PRECISION :: VDI, XRI, QCOR, EPS, VALUE
-   DOUBLE PRECISION, external :: PRM_F2INT
-   INTEGER NUM, IER
-   INTEGER, parameter :: ndim2=12
-   DOUBLE PRECISION aux2(ndim2)
+   logical lromb
+   double precision :: vdi, xri, qcor, eps, value
+   double precision, external :: prm_f2int
+   integer num, ier
+   integer, parameter :: ndim2=12
+   double precision aux2(ndim2)
 
 !     Evaluate integral, Use Romberg if LROMB=.T., otherwise use
 !     two-point Gaussian Quadrature:
-   IF (LROMB) THEN
+   if (lromb) then
 !        Use ROMBERG Integration
-      eps = 0.05D0
-      call QATR2(1.0D0,xri,eps,ndim2,PRM_F2INT,value,ier,num,aux2)
-   ELSE
+      eps = 0.05d0
+      call qatr2(1.0d0,xri,eps,ndim2,prm_f2int,value,ier,num,aux2)
+   else
 !        Use 2-point Gaussian Quadrature
-      CALL QG2D2(1.0D0,XRI,PRM_F2INT,VALUE)
-   END IF
-
-   if (vdi*value .gt. 50.0D00) then
-!        Potential underflow, limit product to 50.0
-      value = 50.0D0/vdi
-   else if (vdi*value .lt. -50.0D0) then
-!        Potential overflow, limit product to 50.0
-      value = -50.0D0/vdi
+      call qg2d2(1.0d0,xri,prm_f2int,value)
    end if
 
-   qcor=DEXP(-vdi*value)
+   if (vdi*value .gt. 50.0d00) then
+!        Potential underflow, limit product to 50.0
+      value = 50.0d0/vdi
+   else if (vdi*value .lt. -50.0d0) then
+!        Potential overflow, limit product to 50.0
+      value = -50.0d0/vdi
+   end if
+
+   qcor=dexp(-vdi*value)
 
    return
 end
@@ -9197,81 +9197,81 @@ function PRM_f2int(xi)
 ! EXTERNAL ROUTINES:
 !
 !-----------------------------------------------------------------------
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 
-   DOUBLE PRECISION :: XI, VWRAP, VLIFT, PRM_F2INT, ZETMP, ZHTMP
-   DOUBLE PRECISION :: DHPOUT, SYOUT, SZOUT, SYCAV, SZCAV
-   LOGICAL L_INWAKE
+   double precision :: xi, vwrap, vlift, prm_f2int, zetmp, zhtmp
+   double precision :: dhpout, syout, szout, sycav, szcav
+   logical l_inwake
 
 !     Set temporary receptor elevation and height scale
-   ZETMP = ZELEV
-   ZELEV = ZS + (ZETMP-ZS)*XI/X
+   zetmp = zelev
+   zelev = zs + (zetmp-zs)*xi/x
 
-   ZHTMP = ZHILL
-   ZHILL = HS + (ZHTMP-HS)*XI/X
+   zhtmp = zhill
+   zhill = hs + (zhtmp-hs)*xi/x
 
 !     Calculate the plume rise                     ---   CALL PRMDELH
-   CALL PRMDELH ( XI, L_INWAKE )
+   call prmdelh ( xi, l_inwake )
 
 !     Determine Effective Plume Height             ---   CALL PRMHEFF
-   CALL PRMHEFF
+   call prmheff
 
 ! --- Calculate sigmas
    dhpout = dhp
-   call WAKE_XSIG(XI,hs,dhpout,nobid,szout,syout,&
+   call wake_xsig(xi,hs,dhpout,nobid,szout,syout,&
    &szcav,sycav)
    sy = syout
    sz = szout
 
 !     Calculate Plume Tilt Due to Settling, HV
-   HV = (XI/US) * VSETL
-   HE = MAX( 0.0D0, HE - HV )
+   hv = (xi/us) * vsetl
+   he = max( 0.0d0, he - hv )
 
 !     Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-   FOPT = 0.5D0
+   fopt = 0.5d0
 
 !     Assign receptor height for vertical term calculations
-   ZR = ZRT + ZRDEP
+   zr = zrt + zrdep
 
-   IF (STABLE) THEN
-      CALL VRTSBN (SZ, HE)
-   ELSE IF (UNSTAB .and. HE.LE.ZI) THEN
-      CALL VRTSBL (SZ, HE, ZI)
-   ELSE
-      FSUBZ = 0.0D0
-   END IF
+   if (stable) then
+      call vrtsbn (sz, he)
+   else if (unstab .and. he.le.zi) then
+      call vrtsbl (sz, he, zi)
+   else
+      fsubz = 0.0d0
+   end if
 
-   VWRAP = FSUBZ/UEFF
+   vwrap = fsubz/ueff
 
 !---- Calculate the contribution due to terrain-following plume, VLIFT
-   IF (ZRT .EQ. 0.0D0) THEN
+   if (zrt .eq. 0.0d0) then
 !----    Effective receptor heights are equal, therefore VLIFT = VWRAP
-      VLIFT = VWRAP
-   ELSE IF (FOPT .EQ. 1.0D0) THEN
-      VLIFT = 0.0D0
-   ELSE
+      vlift = vwrap
+   else if (fopt .eq. 1.0d0) then
+      vlift = 0.0d0
+   else
 !        Assign receptor height for vertical term calculations
-      ZR = ZRDEP
-      IF (STABLE) THEN
-         CALL VRTSBN (SZ, HE)
-      ELSE IF (UNSTAB .and. HE.LE.ZI) THEN
-         CALL VRTSBL (SZ, HE, ZI)
-      ELSE
-         FSUBZ = 0.0D0
-      END IF
-      VLIFT = FSUBZ/UEFF
-   END IF
+      zr = zrdep
+      if (stable) then
+         call vrtsbn (sz, he)
+      else if (unstab .and. he.le.zi) then
+         call vrtsbl (sz, he, zi)
+      else
+         fsubz = 0.0d0
+      end if
+      vlift = fsubz/ueff
+   end if
 
 !     Blend horizontal and terrain-responding components of integral
-   PRM_F2INT = FOPT * VWRAP + (1.0D0 - FOPT) * VLIFT
+   prm_f2int = fopt * vwrap + (1.0d0 - fopt) * vlift
 
 !     Reassign receptor elevation and height scales
-   ZELEV = ZETMP
-   ZHILL = ZHTMP
+   zelev = zetmp
+   zhill = zhtmp
 
-   RETURN
-END
+   return
+end
 
 !-----------------------------------------------------------------------
 subroutine qatr2(xl,xu,eps,ndim,fct,y,ier,i,aux)
@@ -9329,30 +9329,30 @@ subroutine qatr2(xl,xu,eps,ndim,fct,y,ier,i,aux)
 !              to INTEGER*4, but for most applications, 30000 to 60000
 !              points ought to be sufficient for evaluating an integral.
 
-   IMPLICIT NONE
+   implicit none
 
-   INTEGER :: NDIM, IER
-   DOUBLE PRECISION :: Y, EPS, XU, XL, AUX(NDIM), HALF, FCT, H, HH,&
+   integer :: ndim, ier
+   double precision :: y, eps, xu, xl, aux(ndim), half, fct, h, hh,&
 !     JAT 7/22/21 D065, DELT1 NOT USED
 !     &                    DELT2, P, DELT1, HD, X, SM, Q
-   &DELT2, P, HD, X, SM, Q
-   EXTERNAL fct
+   &delt2, p, hd, x, sm, q
+   external fct
    integer i,ii,ji,j,jj
-   half=0.5D0
+   half=0.5d0
 
 !     Preparations for Romberg loop
    aux(1)=half*(fct(xl)+fct(xu))
    h=xu-xl
 
-   if(h .EQ. 0.0D0 .or. aux(1) .EQ. 0.0D0) then
+   if(h .eq. 0.0d0 .or. aux(1) .eq. 0.0d0) then
       ier=0
-      y = 0.0D0
+      y = 0.0d0
       return
    end if
 
    hh=h
-   delt2=0.0D0
-   p=1.0D0
+   delt2=0.0d0
+   p=1.0d0
    jj=1
 
    do i=2,ndim
@@ -9363,7 +9363,7 @@ subroutine qatr2(xl,xu,eps,ndim,fct,y,ier,i,aux)
       hh=half*hh
       p=half*p
       x=xl+hh
-      sm=0.0D0
+      sm=0.0d0
 
       do j=1,jj
          sm=sm+fct(x)
@@ -9376,32 +9376,32 @@ subroutine qatr2(xl,xu,eps,ndim,fct,y,ier,i,aux)
 
 !  Start of Rombergs extrapolation method
 
-      q=1.0D0
+      q=1.0d0
       ji=i-1
       do j=1,ji
          ii=i-j
          q=q+q
          q=q+q
-         aux(ii)=aux(ii+1)+(aux(ii+1)-aux(ii))/(q-1.0D0)
+         aux(ii)=aux(ii+1)+(aux(ii+1)-aux(ii))/(q-1.0d0)
       end do
 
 !  End of Romberg step
 
-      delt2=DABS(y-aux(1))
+      delt2=dabs(y-aux(1))
 
-      if (i .GE. 3) then
+      if (i .ge. 3) then
 !  Modification for cases in which function = 0 over interval
 !rwb        add lower threshold convergence test
-         if (aux(1) .LT. 1.0D-10) then
+         if (aux(1) .lt. 1.0d-10) then
             ier=0
             y=h*aux(1)
             return
-         elseif (delt2 .LE. eps*DABS(aux(1)) ) then
+         elseif (delt2 .le. eps*dabs(aux(1)) ) then
             ier=0
             y=h*aux(1)
             return
 !rwb        add lower limit on "delta-x" of 1.0m
-         elseif (hh .LT. 1.0D0) then
+         elseif (hh .lt. 1.0d0) then
             ier=0
             y=h*aux(1)
             return
@@ -9422,7 +9422,7 @@ end
 
 
 
-SUBROUTINE QG2D2(XL,XU,FCT,Y)
+subroutine qg2d2(xl,xu,fct,y)
 !     ..................................................................
 !
 !        SUBROUTINE QG2D2
@@ -9458,20 +9458,20 @@ SUBROUTINE QG2D2(XL,XU,FCT,Y)
 !     ..................................................................
 !
 !
-   IMPLICIT NONE
+   implicit none
 
-   DOUBLE PRECISION :: A, B, Y, XL, XU, FCT
-   EXTERNAL FCT
+   double precision :: a, b, y, xl, xu, fct
+   external fct
 
-   A = 0.5D0*(XU+XL)
-   B = XU-XL
-   Y = 0.2886751D0*B
-   Y = 0.5D0*B*(FCT(A+Y)+FCT(A-Y))
+   a = 0.5d0*(xu+xl)
+   b = xu-xl
+   y = 0.2886751d0*b
+   y = 0.5d0*b*(fct(a+y)+fct(a-y))
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE OLM_CALC
+subroutine olm_calc
 !***********************************************************************
 !             OLM_CALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -9500,341 +9500,341 @@ SUBROUTINE OLM_CALC
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12, BLNK8*8
-   INTEGER :: IASTAT
+   use main1
+   implicit none
+   character modnam*12, blnk8*8
+   integer :: iastat
 ! --- Declare allocatable arrays that are needed if OLMGROUPs
 !     are used
-   DOUBLE PRECISION, ALLOCATABLE :: OLMVAL(:,:),&
-   &NO2VAL(:), NO_VAL(:),&
+   double precision, allocatable :: olmval(:,:),&
+   &no2val(:), no_val(:),&
    &OLMGrp_PercentNO2(:)
 !     JAT 7/22/21 D065, BCKGRD AND DUMVAL NOT USED
-   DOUBLE PRECISION :: NO2, NO, OLMTEMP, PercentNO2
+   double precision :: no2, no, olmtemp, PercentNO2
 !      DOUBLE PRECISION :: NO2, NO, OLMTEMP, PercentNO2, BCKGRD,
 !     &                                                  DUMVAL
 
 !     Variable Initializations
-   MODNAM = 'OLM_CALC'
+   modnam = 'OLM_CALC'
 !     JAT 7/22/21 D065, BCKGRD AND DUMVAL NOT USED
 !      BCKGRD = 0.0D0
 !      DUMVAL = 0.0D0
-   HRVAL(:) = 0.0D0
-   IASTAT = 0
-   BLNK8  = '        '
+   hrval(:) = 0.0d0
+   iastat = 0
+   blnk8  = '        '
 
 
 ! --- Allocate OLMGROUP arrays if needed for OLMGROUPs
-   IF( NUMOLM .GE. 1 )THEN
-      IF( .NOT.ALLOCATED(OLMVAL) )THEN
-         ALLOCATE( OLMVAL(NUMOLM,NUMTYP),&
-         &STAT=IASTAT )
-      ENDIF
-      IF( .NOT.ALLOCATED(NO2VAL) )THEN
-         ALLOCATE( NO2VAL(NUMOLM),&
-         &STAT=IASTAT )
-      ENDIF
-      IF( .NOT.ALLOCATED(NO_VAL) )THEN
-         ALLOCATE( NO_VAL(NUMOLM),&
-         &STAT=IASTAT )
-      ENDIF
-      IF( .NOT.ALLOCATED(OLMGrp_PercentNO2) )THEN
-         ALLOCATE( OLMGrp_PercentNO2(NUMOLM),&
-         &STAT=IASTAT )
+   if( numolm .ge. 1 )then
+      if( .not.allocated(olmval) )then
+         allocate( olmval(numolm,numtyp),&
+         &stat=iastat )
+      endif
+      if( .not.allocated(no2val) )then
+         allocate( no2val(numolm),&
+         &stat=iastat )
+      endif
+      if( .not.allocated(no_val) )then
+         allocate( no_val(numolm),&
+         &stat=iastat )
+      endif
+      if( .not.allocated(OLMGrp_PercentNO2) )then
+         allocate( OLMGrp_PercentNO2(numolm),&
+         &stat=iastat )
 
-      ENDIF
-      IF (IASTAT .NE. 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','409','OLMGROUP')
-         ALLOC_ERR = .TRUE.
-         WRITE(IOUNIT,*) '  Error Occurred During Allocation ',&
+      endif
+      if (iastat .ne. 0) then
+         call errhdl(path,modnam,'E','409','OLMGROUP')
+         alloc_err = .true.
+         write(iounit,*) '  Error Occurred During Allocation ',&
          &'Arrays for OLM_CALC!'
-         RETURN
-      END IF
-   END IF
+         return
+      end if
+   end if
 
 !     Initialize scalar variables
-   IOLM = 0
-   NO2  = 0.0D0
-   NO   = 0.0D0
-   OLMTEMP = 0.0D0
+   iolm = 0
+   no2  = 0.0d0
+   no   = 0.0d0
+   olmtemp = 0.0d0
 
 !     Initialize NO2VAL(NUMOLM) and NO_VAL(NUMOLM) arrays, if allocated
-   IF (ALLOCATED(NO2VAL)) NO2VAL(:) = 0.0D0
-   IF (ALLOCATED(NO_VAL)) NO_VAL(:) = 0.0D0
+   if (allocated(no2val)) no2val(:) = 0.0d0
+   if (allocated(no_val)) no_val(:) = 0.0d0
 !     Initialize OLMVAL(NUMOLM,NUMTYP) array, if allocated
-   IF (ALLOCATED(OLMVAL)) OLMVAL(:,:) = 0.0D0
-   IF (ALLOCATED(OLMGrp_PercentNO2)) OLMGrp_PercentNO2(:) = 0.0D0
+   if (allocated(olmval)) olmval(:,:) = 0.0d0
+   if (allocated(OLMGrp_PercentNO2)) OLMGrp_PercentNO2(:) = 0.0d0
 
 ! --- Begin Receptor LOOP
-   RECEPTOR_LOOP: DO IREC = 1, NUMREC
+   receptor_loop: do irec = 1, numrec
 !        Reinitialize the scalar variables
-      NO2 = 0.0D0
-      NO  = 0.0D0
-      OLMTEMP = 0.0D0
-      PercentNO2 = 0.0D0
+      no2 = 0.0d0
+      no  = 0.0d0
+      olmtemp = 0.0d0
+      PercentNO2 = 0.0d0
 !        Reinitialize the NO2VAL, NO_VAL, and OLMVAL arrays
-      IF (ALLOCATED(NO2VAL)) NO2VAL(:) = 0.0D0
-      IF (ALLOCATED(NO_VAL)) NO_VAL(:) = 0.0D0
-      IF (ALLOCATED(OLMVAL)) OLMVAL(:,:) = 0.0D0
-      IF (ALLOCATED(OLMGrp_PercentNO2)) OLMGrp_PercentNO2(:) = 0.0D0
+      if (allocated(no2val)) no2val(:) = 0.0d0
+      if (allocated(no_val)) no_val(:) = 0.0d0
+      if (allocated(olmval)) olmval(:,:) = 0.0d0
+      if (allocated(OLMGrp_PercentNO2)) OLMGrp_PercentNO2(:) = 0.0d0
 
 ! ---    First determine whether OLMGROUP(s) are being used;
 !        if OLMGROUPs then first calculate the OLMGROUP-specific
 !        PercentNO2 value(s) for all OLMGROUP(s)
-      IF (NUMOLM .GE. 1) THEN
+      if (numolm .ge. 1) then
 ! ---       Loop through all OLMGROUPs to determine OLMGrp_PercentNO2 for each OLMGRP
-         OLMGRP_LOOP: DO IOLM = 1, NUMOLM
+         olmgrp_loop: do iolm = 1, numolm
 !              Loop through SOURCEs to determine NO2VAL, NO_VAL, and OLMVAL for each
 !              OLMGRP
-            SOURCE_LOOP: DO ISRC = 1, NUMSRC
-               IF (L_OLMGRP(ISRC)) THEN
-                  IF (IGRP_OLM(ISRC,IOLM) .EQ. 1) THEN
+            source_loop: do isrc = 1, numsrc
+               if (l_olmgrp(isrc)) then
+                  if (igrp_olm(isrc,iolm) .eq. 1) then
 
 ! ---                Source is included in this OLMGRoup;
 !                    Calculate NO2 and NO CONV Values for OLMGROUP
-                     NO2VAL(IOLM) = NO2VAL(IOLM) +&
-                     &ANO2_RATIO(ISRC)* CHI(IREC,ISRC,1)
-                     NO_VAL(IOLM) = NO_VAL(IOLM) +&
-                     &(1.0D0-ANO2_RATIO(ISRC))*CHI(IREC,ISRC,1)*&
-                     &(30.0D0/46.0D0)
-                     DO ITYP = 1, NUMTYP
+                     no2val(iolm) = no2val(iolm) +&
+                     &ano2_ratio(isrc)* chi(irec,isrc,1)
+                     no_val(iolm) = no_val(iolm) +&
+                     &(1.0d0-ano2_ratio(isrc))*chi(irec,isrc,1)*&
+                     &(30.0d0/46.0d0)
+                     do ityp = 1, numtyp
 !                       Calculate Hourly Values (Full Conversion) for OLMGROUP
-                        OLMVAL(IOLM,ITYP) = OLMVAL(IOLM,ITYP) +&
-                        &CHI(IREC,ISRC,ITYP)
-                     END DO
-                  END IF
-               END IF
-            END DO SOURCE_LOOP
+                        olmval(iolm,ityp) = olmval(iolm,ityp) +&
+                        &chi(irec,isrc,ityp)
+                     end do
+                  end if
+               end if
+            end do source_loop
 !              Determine if combined plume is O3 limited, and assign
 !              PercentNO2 to OLMGroup for CONC (ITYP=1); Apply full
 !              conversion if O3MISS
-            IF (.NOT. O3MISS .and. (O3CONC/48.0D0) .LT.&
-            &((NO_VAL(IOLM))/30.0D0)) THEN
+            if (.not. o3miss .and. (o3conc/48.0d0) .lt.&
+            &((no_val(iolm))/30.0d0)) then
 ! ---             .NOT. O3MISS and NO2 conversion is O3-limited;
 !                 compute O3-limited NO2 concentration (OLMTEMP)
 !                 and then compute PercentNO2 conversion for this
 !                 OLMGroup
-               OLMTEMP  = NO2VAL(IOLM)+(O3CONC*(46.0D0/48.0D0))
-               IF (OLMVAL(IOLM,1) .GT. 0.0D0) THEN
-                  OLMGrp_PercentNO2(IOLM) = OLMTEMP/OLMVAL(IOLM,1)
-               ELSE
-                  OLMGrp_PercentNO2(IOLM) = NO2Equil
-               END IF
-            ELSE
+               olmtemp  = no2val(iolm)+(o3conc*(46.0d0/48.0d0))
+               if (olmval(iolm,1) .gt. 0.0d0) then
+                  OLMGrp_PercentNO2(iolm) = olmtemp/olmval(iolm,1)
+               else
+                  OLMGrp_PercentNO2(iolm) = NO2Equil
+               end if
+            else
 ! ---             O3MISS or not O3-limited; apply full conversion
 !                 (subject later to equilibrium ratio)
-               OLMGrp_PercentNO2(IOLM) = 1.0D0
-            END IF
+               OLMGrp_PercentNO2(iolm) = 1.0d0
+            end if
 
-            OLMGrp_PercentNO2(IOLM) = MIN( OLMGrp_PercentNO2(IOLM),&
-            &1.0D0 )
+            OLMGrp_PercentNO2(iolm) = min( OLMGrp_PercentNO2(iolm),&
+            &1.0d0 )
 !              Limit to equilibrium concentration of NO2 (default set at 90 percent)
-            IF (OLMGrp_PercentNO2(IOLM) .GT. NO2Equil) THEN
-               OLMGrp_PercentNO2(IOLM) = NO2Equil
-            END IF
-         END DO OLMGRP_LOOP
-      END IF
+            if (OLMGrp_PercentNO2(iolm) .gt. NO2Equil) then
+               OLMGrp_PercentNO2(iolm) = NO2Equil
+            end if
+         end do olmgrp_loop
+      end if
 
-      IF( .NOT.EVONLY )THEN
+      if( .not.evonly )then
 ! ---      Begin processing for NON-EVENT application
 
 ! ---      Begin Source Group LOOP to sum values
-         GROUP_LOOP: DO IGRP = 1, NUMGRP
+         group_loop: do igrp = 1, numgrp
 
 ! ---      Loop through all SOURCEs again to apply OLMGrp_PercentNO2
 !          as appropriate and sum values for this source group
-            SOURCE_LOOP2: DO ISRC = 1, NUMSRC
+            source_loop2: do isrc = 1, numsrc
 
-               IF( IGROUP(ISRC,IGRP) .NE. 1 )THEN
+               if( igroup(isrc,igrp) .ne. 1 )then
 ! ---          This source is not included in the current SRCGROUP
-                  CYCLE SOURCE_LOOP2
-               ENDIF
+                  cycle source_loop2
+               endif
 
-               IF( L_OLMGRP(ISRC) )THEN
+               if( l_olmgrp(isrc) )then
 ! ---          This source is included in the current SRCGROUP and is also
 !              included in an OLMGROUP; apply appropriate OLMGrp_PercentNO2
-                  OLMGRP_LOOP2: DO IOLM = 1, NUMOLM
-                     IF( IGRP_OLM(ISRC,IOLM) .EQ. 1 )THEN
+                  olmgrp_loop2: do iolm = 1, numolm
+                     if( igrp_olm(isrc,iolm) .eq. 1 )then
 !                    Apply equivalent PercentNO2 to all ITYPs (CONC, DDEP, WDEP or DEPOS)
-                        DO ITYP = 1, NUMTYP
-                           HRVAL(ITYP) = OLMGrp_PercentNO2(IOLM) *&
-                           &CHI(IREC,ISRC,ITYP)
+                        do ityp = 1, numtyp
+                           hrval(ityp) = OLMGrp_PercentNO2(iolm) *&
+                           &chi(irec,isrc,ityp)
 !! Added for TTRM2
 !! Perform comparison of calculated hourly NO2 values between OLM and TTRM
-                           IF (RUNTTRM2) THEN
-                              IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
-                                 WRITE(TTRM2TMP(2),PSTFRM,ERR=85) AXR(IREC),&
-                                 &AYR(IREC), HRVAL(1), AZELEV(IREC),&
-                                 &AZHILL(IREC), AZFLAG(IREC), CHRAVE(1),&
-                                 &GRPID(IGRP), KURDAT, SRCID(ISRC)
-                                 GO TO 885
-85                               WRITE(DUMMY,'("PSTFL",I4.4)') TTRM2TMP(2)
-                                 CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-                                 RUNERR = .TRUE.
-885                              CONTINUE
-                              ENDIF
-                              IF (TTRMCOMPARE(IGRP,ISRC,IREC,ITYP) .LT. HRVAL(ITYP)) THEN
-                                 HRVAL(ITYP) = TTRMCOMPARE(IGRP,ISRC,IREC,ITYP)
-                              ENDIF
-                              IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
-                                 WRITE(TTRM2TMP(3),PSTFRM,ERR=95) AXR(IREC),&
-                                 &AYR(IREC), HRVAL(1), AZELEV(IREC),&
-                                 &AZHILL(IREC), AZFLAG(IREC), CHRAVE(1),&
-                                 &GRPID(IGRP), KURDAT, SRCID(ISRC)
-                                 GO TO 895
-95                               WRITE(DUMMY,'("PSTFL",I4.4)') TTRM2TMP(3)
-                                 CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-                                 RUNERR = .TRUE.
-895                              CONTINUE
-                              ENDIF
-                           ENDIF
+                           if (runttrm2) then
+                              if (ttrm2dbg .and. (cmeth .lt. 3)) then
+                                 write(ttrm2tmp(2),pstfrm,err=85) axr(irec),&
+                                 &ayr(irec), hrval(1), azelev(irec),&
+                                 &azhill(irec), azflag(irec), chrave(1),&
+                                 &grpid(igrp), kurdat, srcid(isrc)
+                                 go to 885
+85                               write(dummy,'("PSTFL",I4.4)') ttrm2tmp(2)
+                                 call errhdl(path,modnam,'E','520',dummy)
+                                 runerr = .true.
+885                              continue
+                              endif
+                              if (ttrmcompare(igrp,isrc,irec,ityp) .lt. hrval(ityp)) then
+                                 hrval(ityp) = ttrmcompare(igrp,isrc,irec,ityp)
+                              endif
+                              if (ttrm2dbg .and. (cmeth .lt. 3)) then
+                                 write(ttrm2tmp(3),pstfrm,err=95) axr(irec),&
+                                 &ayr(irec), hrval(1), azelev(irec),&
+                                 &azhill(irec), azflag(irec), chrave(1),&
+                                 &grpid(igrp), kurdat, srcid(isrc)
+                                 go to 895
+95                               write(dummy,'("PSTFL",I4.4)') ttrm2tmp(3)
+                                 call errhdl(path,modnam,'E','520',dummy)
+                                 runerr = .true.
+895                              continue
+                              endif
+                           endif
 !! End of TTRM2 insert; Nov. 2021
-                        END DO
+                        end do
 ! ---                Exit OLMGRP_LOOP2 since a source can only be in one OLMGRP
-                        EXIT OLMGRP_LOOP2
-                     ENDIF
-                  ENDDO OLMGRP_LOOP2
+                        exit olmgrp_loop2
+                     endif
+                  enddo olmgrp_loop2
 
 ! ---          Call SUMVAL to add current source's contribution to AVEVAL
-                  CALL SUMVAL
+                  call sumval
 
 ! ---          Write data to OLM debugging file
-                  if (OLMDEBUG) then
-                     if (IGROUP(ISRC,IGRP) .EQ. 1) then
-                        write(OLMDBG,9988,ERR=999) kurdat, irec,&
+                  if (olmdebug) then
+                     if (igroup(isrc,igrp) .eq. 1) then
+                        write(olmdbg,9988,err=999) kurdat, irec,&
                         &grpid(igrp),  isrc, srcid(isrc), iolm,&
                         &olmid(iolm), o3conc,&
-                        &olmval(iolm,1), ANO2_RATIO(isrc),&
+                        &olmval(iolm,1), ano2_ratio(isrc),&
                         &no2val(iolm), no_val(iolm),&
                         &chi(irec,isrc,1),&
-                        &OLMGrp_PercentNO2(IOLM), hrval(1),&
+                        &OLMGrp_PercentNO2(iolm), hrval(1),&
                         &aveval(irec,igrp,1,1)
                      end if
 9988                 format(1x,i8.8,i6,2x,a8,i6,2x,a12,2x,i4,2x,a8,&
                      &9(1x,e12.5:))
                   end if
 
-               ELSE
+               else
 ! ---          Source is in this SRCGROUP, but NOT in an OLMGROUP;
 !              apply OLM to individual source
-                  NO2 = ANO2_RATIO(ISRC) * CHI(IREC,ISRC,1)
-                  NO  = (1.0D0-ANO2_RATIO(ISRC))*CHI(IREC,ISRC,1)*&
-                  &(30.0D0/46.0D0)
+                  no2 = ano2_ratio(isrc) * chi(irec,isrc,1)
+                  no  = (1.0d0-ano2_ratio(isrc))*chi(irec,isrc,1)*&
+                  &(30.0d0/46.0d0)
 
 ! ---          Determine if CONC is O3-limited; if not, then no conversion needed
 !              First check for missing O3 data (O3MISS) and apply full conversion
 !              (subject to equilibrium ratio)
-                  IF (.NOT. O3MISS .and. (O3CONC/48.0D0) .LT.&
-                  &(NO/30.0D0)) THEN
+                  if (.not. o3miss .and. (o3conc/48.0d0) .lt.&
+                  &(no/30.0d0)) then
 ! ---             .NOT. O3MISS and NO2 conversion is O3-limited;
 !                 compute O3-limited NO2 concentration (OLMTEMP)
 !                 and then compute PercentNO2 conversion for this
 !                 OLMGroup
-                     HRVAL(1) = NO2 + (O3CONC*(46.0D0/48.0D0))
-                  ELSE
+                     hrval(1) = no2 + (o3conc*(46.0d0/48.0d0))
+                  else
 ! ---             HRVAL is NOT O3-limited
-                     HRVAL(1) = CHI(IREC,ISRC,1)
-                  END IF
+                     hrval(1) = chi(irec,isrc,1)
+                  end if
 
-                  IF (CHI(IREC,ISRC,1) .GT. 0.0D0) THEN
+                  if (chi(irec,isrc,1) .gt. 0.0d0) then
 !                 Calculate an equivalent Percent NO2 for CONC
-                     PercentNO2 = HRVAL(1)/CHI(IREC,ISRC,1)
-                  ELSE
+                     PercentNO2 = hrval(1)/chi(irec,isrc,1)
+                  else
                      PercentNO2 = NO2Equil
-                  END IF
+                  end if
 
 ! ---          Ensure the PercentNO2 is not > 1.0
-                  PercentNO2 = MIN( PercentNO2, 1.0D0 )
+                  PercentNO2 = min( PercentNO2, 1.0d0 )
 
 !              Limit PercentNO2 to equilibrium concentration of NO2 (default=90 percent)
-                  IF (PercentNO2 .GT. NO2Equil) PercentNO2 = NO2Equil
+                  if (PercentNO2 .gt. NO2Equil) PercentNO2 = NO2Equil
 
 !              Apply equivalent PercentNO2 to all ITYPs (CONC, DDEP, WDEP or DEPOS)
-                  DO ITYP = 1, NUMTYP
-                     HRVAL(ITYP) = PercentNO2 * CHI(IREC,ISRC,ITYP)
+                  do ityp = 1, numtyp
+                     hrval(ityp) = PercentNO2 * chi(irec,isrc,ityp)
 !! Added for TTRM2
 !! Perform comparison of calculated hourly NO2 values between OLM and TTRM
-                     IF (RUNTTRM2) THEN
-                        IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
-                           WRITE(TTRM2TMP(2),PSTFRM,ERR=86) AXR(IREC),&
-                           &AYR(IREC), HRVAL(1),  AZELEV(IREC),&
-                           &AZHILL(IREC), AZFLAG(IREC), CHRAVE(1),&
-                           &GRPID(IGRP), KURDAT, SRCID(ISRC)
-                           GO TO 886
-86                         WRITE(DUMMY,'("PSTFL",I4.4)') TTRM2TMP(2)
-                           CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-                           RUNERR = .TRUE.
-886                        CONTINUE
-                        ENDIF
-                        IF (TTRMCOMPARE(IGRP,ISRC,IREC,ITYP) .LT. HRVAL(ITYP)) THEN
-                           HRVAL(ITYP) = TTRMCOMPARE(IGRP,ISRC,IREC,ITYP)
-                        ENDIF
-                        IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
-                           WRITE(TTRM2TMP(3),PSTFRM,ERR=96) AXR(IREC),&
-                           &AYR(IREC), HRVAL(1), AZELEV(IREC),&
-                           &AZHILL(IREC), AZFLAG(IREC), CHRAVE(1),&
-                           &GRPID(IGRP), KURDAT, SRCID(ISRC)
-                           GO TO 896
-96                         WRITE(DUMMY,'("PSTFL",I4.4)') TTRM2TMP(3)
-                           CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-                           RUNERR = .TRUE.
-896                        CONTINUE
-                        ENDIF
-                     ENDIF
+                     if (runttrm2) then
+                        if (ttrm2dbg .and. (cmeth .lt. 3)) then
+                           write(ttrm2tmp(2),pstfrm,err=86) axr(irec),&
+                           &ayr(irec), hrval(1),  azelev(irec),&
+                           &azhill(irec), azflag(irec), chrave(1),&
+                           &grpid(igrp), kurdat, srcid(isrc)
+                           go to 886
+86                         write(dummy,'("PSTFL",I4.4)') ttrm2tmp(2)
+                           call errhdl(path,modnam,'E','520',dummy)
+                           runerr = .true.
+886                        continue
+                        endif
+                        if (ttrmcompare(igrp,isrc,irec,ityp) .lt. hrval(ityp)) then
+                           hrval(ityp) = ttrmcompare(igrp,isrc,irec,ityp)
+                        endif
+                        if (ttrm2dbg .and. (cmeth .lt. 3)) then
+                           write(ttrm2tmp(3),pstfrm,err=96) axr(irec),&
+                           &ayr(irec), hrval(1), azelev(irec),&
+                           &azhill(irec), azflag(irec), chrave(1),&
+                           &grpid(igrp), kurdat, srcid(isrc)
+                           go to 896
+96                         write(dummy,'("PSTFL",I4.4)') ttrm2tmp(3)
+                           call errhdl(path,modnam,'E','520',dummy)
+                           runerr = .true.
+896                        continue
+                        endif
+                     endif
 !! End of TTRM2 insert; Nov. 2021
-                  END DO
+                  end do
 
 ! ---          Call SUMVAL to add current source's contribution to AVEVAL
-                  CALL SUMVAL
+                  call sumval
 
 ! ---          Write data to OLM debugging file; since this source is
 !              NOT in an OLMGROUP, assign IOLM = 0 and use no_val, no2val,
 !              olmval, and PercentNO2 scalar variables; also use BLNK8 field
 !              instead of OLMID
-                  IOLM = 0
-                  if (OLMDEBUG) then
-                     if (IGROUP(ISRC,IGRP) .EQ. 1) then
-                        write(OLMDBG,9988,ERR=9981) kurdat, irec,&
+                  iolm = 0
+                  if (olmdebug) then
+                     if (igroup(isrc,igrp) .eq. 1) then
+                        write(olmdbg,9988,err=9981) kurdat, irec,&
                         &grpid(igrp), isrc, srcid(isrc), iolm,&
-                        &BLNK8, o3conc, chi(irec,isrc,1),&
-                        &ANO2_RATIO(isrc), no2, no, chi(irec,isrc,1),&
+                        &blnk8, o3conc, chi(irec,isrc,1),&
+                        &ano2_ratio(isrc), no2, no, chi(irec,isrc,1),&
                         &PercentNO2, hrval(1), aveval(irec,igrp,1,1)
                      end if
                   end if
 
-               END IF    ! source not in olmgrp
+               end if    ! source not in olmgrp
 
                go to 1234
-9981           CALL ERRHDL(PATH,MODNAM,'E','520','OLMDEBUG')
+9981           call errhdl(path,modnam,'E','520','OLMDEBUG')
 1234           continue
 
-               IF (EVAL(ISRC)) THEN
+               if (eval(isrc)) then
 !              Check ARC centerline values for EVALFILE
 !              output                              ---   CALL EVALCK
-                  CALL EVALCK
-               END IF
+                  call evalck
+               end if
 
-            END DO SOURCE_LOOP2
+            end do source_loop2
 
-            IF (GRP_BACK(IGRP)) THEN
+            if (grp_back(igrp)) then
 ! ---         Call SUMBACK_NO2 to update BACKGROUND contributions
-               CALL SUMBACK_NO2
+               call sumback_no2
 
-               if (OLMDEBUG) then
+               if (olmdebug) then
 ! ---            Include BACKGROUND contribution in OLM debug file
-                  write(OLMDBG,99872,ERR=999) kurdat, irec,&
-                  &grpid(IGRP), 'BACKGROUND',&
+                  write(olmdbg,99872,err=999) kurdat, irec,&
+                  &grpid(igrp), 'BACKGROUND',&
                   &bgconc, aveval(irec,igrp,1,1)
 99872             format(1x,i8.8,i6,2x,a8,8x,a10,109x,&
                   &2(1x,e12.5))
                end if
 
-            END IF
+            end if
 
-         END DO GROUP_LOOP
+         end do group_loop
 ! ---     End of .NOT.EVONLY processing
 
-      ELSE IF (EVONLY) THEN
+      else if (evonly) then
 ! ---      Check for inclusion of BACKGROUND in this EVENT and add to DEBUG file
 !          as a separate "source" contribution
          isrc = 0
@@ -9842,171 +9842,171 @@ SUBROUTINE OLM_CALC
 
 ! ---      Loop through all SOURCEs again to apply OLMGrp_PercentNO2
 !          as appropriate and sum values for this group
-         EV_SOURCE_LOOP: DO ISRC = 1, NUMSRC
+         ev_source_loop: do isrc = 1, numsrc
 
-            ITYP = 1
+            ityp = 1
 
-            IF( IGROUP(ISRC,IDXEV(IEVENT)) .NE. 1 )THEN
+            if( igroup(isrc,idxev(ievent)) .ne. 1 )then
 ! ---          This source is not included in the current SRCGROUP
-               CYCLE EV_SOURCE_LOOP
-            ENDIF
+               cycle ev_source_loop
+            endif
 
-            IF( L_OLMGRP(ISRC) )THEN
+            if( l_olmgrp(isrc) )then
 ! ---         This source is included in an OLMGROUP; apply appropriate OLMGrp_PercentNO2
-               EV_OLMGRP_LOOP: DO IOLM = 1, NUMOLM
-                  IF( IGRP_OLM(ISRC,IOLM) .EQ. 1 )THEN
+               ev_olmgrp_loop: do iolm = 1, numolm
+                  if( igrp_olm(isrc,iolm) .eq. 1 )then
 !                   Apply equivalent PercentNO2 to all ITYPs (CONC, DDEP, WDEP or DEPOS)
-                     DO ITYP = 1, NUMTYP
-                        HRVAL(ITYP) = OLMGrp_PercentNO2(IOLM) *&
-                        &CHI(1,ISRC,ITYP)
+                     do ityp = 1, numtyp
+                        hrval(ityp) = OLMGrp_PercentNO2(iolm) *&
+                        &chi(1,isrc,ityp)
 !! Added for TTRM2
 !! Perform comparison of calculated hourly NO2 values between OLM and TTRM
-                        IF (RUNTTRM2) THEN
-                           IF (TTRMCOMPARE(IGRP,ISRC,1,ITYP) .LT. HRVAL(ITYP)) THEN
-                              HRVAL(ITYP) = TTRMCOMPARE(IGRP,ISRC,1,ITYP) !! <----- for EVENT, lock receptor
-                           ENDIF
-                        ENDIF
+                        if (runttrm2) then
+                           if (ttrmcompare(igrp,isrc,1,ityp) .lt. hrval(ityp)) then
+                              hrval(ityp) = ttrmcompare(igrp,isrc,1,ityp) !! <----- for EVENT, lock receptor
+                           endif
+                        endif
 !! End of TTRM2 insert; Nov. 2021
-                     END DO
-                     EXIT EV_OLMGRP_LOOP
-                  ENDIF
-               ENDDO EV_OLMGRP_LOOP
+                     end do
+                     exit ev_olmgrp_loop
+                  endif
+               enddo ev_olmgrp_loop
 
 ! ---         Call EV_SUMVAL to add current source's contribution to
 !             EV_AVEVAL, GRPAVE, etc.
-               CALL EV_SUMVAL
+               call ev_sumval
 
 ! ---         Write data to OLM debugging file
-               if (OLMDEBUG) then
-                  if (IGROUP(ISRC,IDXEV(IEVENT)) .EQ. 1) then
-                     write(OLMDBG,9987,ERR=998) kurdat, ievent,&
-                     &EVNAME(IEVENT), EVAPER(IEVENT),&
-                     &grpid(IDXEV(IEVENT)), isrc, srcid(isrc),&
+               if (olmdebug) then
+                  if (igroup(isrc,idxev(ievent)) .eq. 1) then
+                     write(olmdbg,9987,err=998) kurdat, ievent,&
+                     &evname(ievent), evaper(ievent),&
+                     &grpid(idxev(ievent)), isrc, srcid(isrc),&
                      &iolm, olmid(iolm), o3conc,&
-                     &olmval(iolm,1), ANO2_RATIO(isrc),&
+                     &olmval(iolm,1), ano2_ratio(isrc),&
                      &no2val(iolm), no_val(iolm),&
                      &chi(1,isrc,1),&
-                     &OLMGrp_PercentNO2(IOLM), hrval(1),&
-                     &grpave(IDXEV(IEVENT))
+                     &OLMGrp_PercentNO2(iolm), hrval(1),&
+                     &grpave(idxev(ievent))
                   end if
 9987              format(1x,i8.8,i6,2x,a10,2x,i3,2x,a8,i6,2x,a12,2x,&
                   &i4,2x,a8,1x,9(1x,e12.5))
                end if
 
-            ELSE
+            else
 ! ---          Source is NOT in and OLMGROUP; apply OLM to individual source
-               NO2 = ANO2_RATIO(ISRC) * CHI(1,ISRC,1)
-               NO  = (1.0D0-ANO2_RATIO(ISRC))*CHI(1,ISRC,1)*&
-               &(30.0D0/46.0D0)
+               no2 = ano2_ratio(isrc) * chi(1,isrc,1)
+               no  = (1.0d0-ano2_ratio(isrc))*chi(1,isrc,1)*&
+               &(30.0d0/46.0d0)
 
 ! ---          Determine if CONC is O3-limited; if not, then no conversion needed
 !              First check for missing O3 data (O3MISS) and apply full conversion
 !              (subject to equilibrium ratio)
-               IF (.NOT. O3MISS .and. (O3CONC/48.0D0) .LT.&
-               &(NO/30.0D0)) THEN
+               if (.not. o3miss .and. (o3conc/48.0d0) .lt.&
+               &(no/30.0d0)) then
 ! ---             .NOT. O3MISS and NO2 conversion is O3-limited;
 !                 compute O3-limited NO2 concentration (OLMTEMP)
 !                 and then compute PercentNO2 conversion for this
 !                 OLMGroup
-                  HRVAL(1) = NO2 + (O3CONC*(46.0D0/48.0D0))
-               ELSE
+                  hrval(1) = no2 + (o3conc*(46.0d0/48.0d0))
+               else
 ! ---             HRVAL is NOT O3-limited
-                  HRVAL(1) = CHI(1,ISRC,1)
-               END IF
+                  hrval(1) = chi(1,isrc,1)
+               end if
 
-               IF (CHI(1,ISRC,1) .GT. 0.0D0) THEN
+               if (chi(1,isrc,1) .gt. 0.0d0) then
 !                 Calculate an equivalent Percent NO2 for CONC
-                  PercentNO2 = HRVAL(1)/CHI(1,ISRC,1)
-               ELSE
+                  PercentNO2 = hrval(1)/chi(1,isrc,1)
+               else
                   PercentNO2 = NO2Equil
-               END IF
+               end if
 
 ! ---          Ensure the PercentNO2 is not > 1.0
-               PercentNO2 = MIN( PercentNO2, 1.0D0 )
+               PercentNO2 = min( PercentNO2, 1.0d0 )
 
 !              Limit PercentNO2 to equilibrium concentration of NO2 (default=90 percent)
-               IF (PercentNO2 .GT. NO2Equil) PercentNO2 = NO2Equil
+               if (PercentNO2 .gt. NO2Equil) PercentNO2 = NO2Equil
 
 !              Apply equivalent PercentNO2 to all ITYPs (CONC, DDEP, WDEP or DEPOS)
-               DO ITYP = 1, NUMTYP
-                  HRVAL(ITYP) = PercentNO2 * CHI(1,ISRC,ITYP)
+               do ityp = 1, numtyp
+                  hrval(ityp) = PercentNO2 * chi(1,isrc,ityp)
 !! Added for TTRM2
 !! Perform comparison of calculated hourly NO2 values between OLM and TTRM
-                  IF (RUNTTRM2) THEN
-                     IF (TTRMCOMPARE(IGRP,ISRC,1,ITYP) .LT. HRVAL(ITYP)) THEN
-                        HRVAL(ITYP) = TTRMCOMPARE(IGRP,ISRC,1,ITYP)  !! <---- for EVENT processing, locking receptor
-                     ENDIF
-                  ENDIF
+                  if (runttrm2) then
+                     if (ttrmcompare(igrp,isrc,1,ityp) .lt. hrval(ityp)) then
+                        hrval(ityp) = ttrmcompare(igrp,isrc,1,ityp)  !! <---- for EVENT processing, locking receptor
+                     endif
+                  endif
 !! End of TTRM2 insert; Nov. 2021
-               END DO
+               end do
 
 ! ---          Call EV_SUMVAL to add current source's contribution to
 !              EV_AVEVAL, GRPAVE, etc.
-               CALL EV_SUMVAL
+               call ev_sumval
 
 ! ---          Write data to OLM debugging file; since this source is
 !              NOT in an OLMGROUP, assign IOLM = 0 and use no_val, no2val,
 !              olmval, and PercentNO2 scalar variables; also use BLNK8 field
 !              instead of OLMID
-               IOLM = 0
-               if (OLMDEBUG) then
-                  if (IGROUP(ISRC,IDXEV(IEVENT)) .EQ. 1) then
-                     write(OLMDBG,9987,ERR=998) kurdat, ievent,&
-                     &EVNAME(IEVENT), EVAPER(IEVENT),&
-                     &grpid(IDXEV(IEVENT)), isrc,&
-                     &srcid(isrc), iolm, BLNK8, o3conc,&
-                     &chi(1,isrc,1), ANO2_RATIO(isrc), no2,&
+               iolm = 0
+               if (olmdebug) then
+                  if (igroup(isrc,idxev(ievent)) .eq. 1) then
+                     write(olmdbg,9987,err=998) kurdat, ievent,&
+                     &evname(ievent), evaper(ievent),&
+                     &grpid(idxev(ievent)), isrc,&
+                     &srcid(isrc), iolm, blnk8, o3conc,&
+                     &chi(1,isrc,1), ano2_ratio(isrc), no2,&
                      &no, chi(1,isrc,1),&
                      &PercentNO2, hrval(1),&
-                     &grpave(IDXEV(IEVENT))
+                     &grpave(idxev(ievent))
                   end if
                end if
 
-            END IF    ! source not in olmgrp IF-THEN block
+            end if    ! source not in olmgrp IF-THEN block
 
             go to 2345
-998         CALL ERRHDL(PATH,MODNAM,'E','520','OLMDEBUG')
+998         call errhdl(path,modnam,'E','520','OLMDEBUG')
 2345        continue
 
-            IF (EVAL(ISRC)) THEN
+            if (eval(isrc)) then
 !              Check ARC centerline values for EVALFILE
 !              output                              ---   CALL EVALCK
-               CALL EVALCK
-            END IF
+               call evalck
+            end if
 
-         END DO EV_SOURCE_LOOP
+         end do ev_source_loop
 ! ---      End of EVENT Source Loop
 
-         IF ( GRP_BACK(IDXEV(IEVENT)) ) THEN
+         if ( grp_back(idxev(ievent)) ) then
 ! ---         Call EV_SUMBACK to update BACKGROUND contributions
-            CALL EV_SUMBACK
-            if (OLMDEBUG) then
+            call ev_sumback
+            if (olmdebug) then
 ! ---            Include BACKGROUND contribution in OLM debug file
-               write(OLMDBG,99873,ERR=999) kurdat, ievent,&
-               &EVNAME(IEVENT), EVAPER(IEVENT),&
-               &grpid(IDXEV(IEVENT)), 'BACKGROUND',&
-               &EV_BGCONC(IHOUR), grpave(IDXEV(IEVENT))
+               write(olmdbg,99873,err=999) kurdat, ievent,&
+               &evname(ievent), evaper(ievent),&
+               &grpid(idxev(ievent)), 'BACKGROUND',&
+               &ev_bgconc(ihour), grpave(idxev(ievent))
 99873          format(1x,i8.8,i6,2x,a10,2x,i3,2x,a8,8x,a10,110x,&
                &2(1x,e12.5))
             end if
-         END IF
-      END IF
+         end if
+      end if
 
 !       ReInitialize __VAL arrays (1:NUMTYP)
-      HRVAL  = 0.0D0
+      hrval  = 0.0d0
 
-   END DO RECEPTOR_LOOP
+   end do receptor_loop
 !     End Receptor LOOP
 
    go to 3456
-999 CALL ERRHDL(PATH,MODNAM,'E','520','OLMDEBUG')
+999 call errhdl(path,modnam,'E','520','OLMDEBUG')
 3456 continue
 
-   RETURN
-END
+   return
+end
 
 
-SUBROUTINE TTRM_CALC
+subroutine ttrm_calc
 !***********************************************************************
 !             TTRM_CALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -10027,11 +10027,11 @@ SUBROUTINE TTRM_CALC
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 !     JAT 7/22/21 D065, BLNK8 NOT USED
 !      CHARACTER MODNAM*12, BLNK8*8
-   CHARACTER MODNAM*12
+   character modnam*12
 !     JAT 7/22/21 D065, IASTAT NOT USED
 !      INTEGER :: IASTAT
 
@@ -10039,542 +10039,542 @@ SUBROUTINE TTRM_CALC
 !     &                    O3PPB, KO3, DUMVAL
 !     JAT 7/22/21 D065, BCKGRD AND DUMVAL NOT USED
 !      DOUBLE PRECISION :: NO2, NOX, BCKGRD, O3PPB, KO3, DUMVAL
-   DOUBLE PRECISION :: NO2, NOX, O3PPB, KO3
+   double precision :: no2, nox, o3ppb, ko3
 
 !     Variable Initializations
-   MODNAM = 'TTRM_CALC'
+   modnam = 'TTRM_CALC'
 !     JAT 7/22/21 D065, BCKGRD AND DUMVAL NOT USED
 !      BCKGRD = 0.0D0
 !      DUMVAL = 0.0D0
-   HRVAL(:) = 0.0D0
+   hrval(:) = 0.0d0
 !     JAT 7/22/21 D065, IASTAT AND BLNK8 NOT USED
 !      IASTAT = 0
 !      BLNK8  = '        '
 
 !     Initialize scalar variables
-   ITTRM = 0
-   NO2 = 0.0D0
-   NOX = 0.0D0
-   TTRMTIME = 0.0D0
-   TTRMTIME_PRM = 0.0D0
-   GAMF = 0.0D0
+   ittrm = 0
+   no2 = 0.0d0
+   nox = 0.0d0
+   ttrmtime = 0.0d0
+   ttrmtime_prm = 0.0d0
+   gamf = 0.0d0
 
 !     Initialize TTRMVAL(NUMTYP) array
-   TTRMINST(:) = 0.0D0
-   TTRMFRAC(:) = 0.0D0
-   TTRMFRAC_PRM(:) = 0.0D0
-   TTRMFRAC_AER(:) = 0.0D0
-   TTRMNO2(:)  = 0.0D0
-   TTRMSUB(:)  = 0.0D0
+   ttrminst(:) = 0.0d0
+   ttrmfrac(:) = 0.0d0
+   ttrmfrac_prm(:) = 0.0d0
+   ttrmfrac_aer(:) = 0.0d0
+   ttrmno2(:)  = 0.0d0
+   ttrmsub(:)  = 0.0d0
 
 ! --- Begin Receptor LOOP
-   RECEPTOR_LOOP: DO IREC = 1, NUMREC
+   receptor_loop: do irec = 1, numrec
 !        Reinitialize the scalar variables
-      NO2 = 0.0D0
-      NOX = 0.0D0
-      TTRMTIME = 0.0D0
-      TTRMTIME_PRM = 0.0D0
+      no2 = 0.0d0
+      nox = 0.0d0
+      ttrmtime = 0.0d0
+      ttrmtime_prm = 0.0d0
 
-      IF( .NOT.EVONLY )THEN
+      if( .not.evonly )then
 ! ---      Begin processing for NON-EVENT application
 
 ! ---      Begin Source Group LOOP to sum values
-         GROUP_LOOP: DO IGRP = 1, NUMGRP
+         group_loop: do igrp = 1, numgrp
 
 ! ---      Loop through all SOURCEs
 !          as appropriate and sum values for this source group
-            SOURCE_LOOPTTRM: DO ISRC = 1, NUMSRC
+            source_loopttrm: do isrc = 1, numsrc
 
-               IF( IGROUP(ISRC,IGRP) .NE. 1 )THEN
+               if( igroup(isrc,igrp) .ne. 1 )then
 ! ---          This source is not included in the current SRCGROUP
-                  CYCLE SOURCE_LOOPTTRM
-               ENDIF
+                  cycle source_loopttrm
+               endif
 
 ! Calculate hourly k1 value (units: ppb^-1 sec^-1)
-               k1 = (15.33 / TA)*DEXP(-1450.0 / TA)
+               k1 = (15.33 / ta)*dexp(-1450.0 / ta)
 ! Convert hourly ozone value back to ppb
-               O3PPB = O3CONC / O3_PPB
+               o3ppb = o3conc / o3_ppb
 ! Calculate the coefficient of time
-               KO3 = -1.0*k1*O3PPB
+               ko3 = -1.0*k1*o3ppb
 
 ! Save hourly data to TTRM debug file
-               IF (TTRMDBG) THEN
-                  TTRMOUT(IREC,ISRC,1) = KURDAT
-                  TTRMOUT(IREC,ISRC,2) = AXR(IREC)
-                  TTRMOUT(IREC,ISRC,3) = AYR(IREC)
-                  TTRMOUT(IREC,ISRC,4) = O3PPB ! O3 (in PPB)
-                  TTRMOUT(IREC,ISRC,5) = TA ! ambient temperature
-                  TTRMOUT(IREC,ISRC,6) = k1
-               ENDIF
+               if (ttrmdbg) then
+                  ttrmout(irec,isrc,1) = kurdat
+                  ttrmout(irec,isrc,2) = axr(irec)
+                  ttrmout(irec,isrc,3) = ayr(irec)
+                  ttrmout(irec,isrc,4) = o3ppb ! O3 (in PPB)
+                  ttrmout(irec,isrc,5) = ta ! ambient temperature
+                  ttrmout(irec,isrc,6) = k1
+               endif
 
 ! ---          Source is in this SRCGROUP
 !              Calculate in-stack converted NO2 and available NOx
-               NO2 = ANO2_RATIO(ISRC) * CHI(IREC,ISRC,1)
-               NOX = (1.0D0-ANO2_RATIO(ISRC))*CHI(IREC,ISRC,1)  ! Total NO
+               no2 = ano2_ratio(isrc) * chi(irec,isrc,1)
+               nox = (1.0d0-ano2_ratio(isrc))*chi(irec,isrc,1)  ! Total NO
 
 !     Perform TTRM for POINT, VOLUME or AREA type sources
-               IF ((SRCTYP(ISRC)(1:5) .EQ. 'POINT') .or.&
-               &(SRCTYP(ISRC) .EQ. 'VOLUME') .or.&
-               &(SRCTYP(ISRC)(1:4) .EQ. 'AREA')) THEN
+               if ((srctyp(isrc)(1:5) .eq. 'POINT') .or.&
+               &(srctyp(isrc) .eq. 'VOLUME') .or.&
+               &(srctyp(isrc)(1:4) .eq. 'AREA')) then
 !                Calculate the final TTRM time based on the source type,
 !                stability and plume dispersion type
-                  CALL TTRM_STEP
+                  call ttrm_step
 ! ---            Determine if CONC is O3-limited; if not, then no conversion needed
 !                First check for missing O3 data (O3MISS) and apply full conversion
 !                (subject to equilibrium ratio)
-                  GAMF = TTRMOUT(IREC,ISRC,17) !Saved GAMFACT
-                  IF (.NOT. O3MISS) THEN !
-                     DO ITYP = 1, NUMTYP  ! Calculate TTRM for all ITYPs (CONC, DDEP, WDEP or DEPOS)
+                  gamf = ttrmout(irec,isrc,17) !Saved GAMFACT
+                  if (.not. o3miss) then !
+                     do ityp = 1, numtyp  ! Calculate TTRM for all ITYPs (CONC, DDEP, WDEP or DEPOS)
 !                       TTRMINST(ITYP) = NO2
-                        IF(TTRMTIME .GT. 0.0) THEN
-                           TTRMFRAC(ITYP) = (1.0 - DEXP(KO3*TTRMTIME))
-                        ELSE
-                           TTRMFRAC(ITYP) = 0.0
-                        ENDIF
+                        if(ttrmtime .gt. 0.0) then
+                           ttrmfrac(ityp) = (1.0 - dexp(ko3*ttrmtime))
+                        else
+                           ttrmfrac(ityp) = 0.0
+                        endif
 !                Check on whether the TTRM fraction is equal to or less than the NO2Equil (default set to 90%)
-                        IF (TTRMFRAC(ITYP) .GE. NO2Equil) THEN
-                           TTRMFRAC(ITYP) = NO2Equil
-                           HRVAL(ITYP)   = NO2Equil*CHI(IREC,ISRC,ITYP)
-                           NO2           = 0.0
-                           NOX           = CHI(IREC,ISRC,ITYP) ! Total NO
-                           TTRMSUB(ITYP)  = HRVAL(ITYP)
-                        ELSE
-                           TTRMNO2(ITYP)  = TTRMFRAC(ITYP)*NOX
-                           HRVAL(ITYP)   = TTRMNO2(ITYP) + NO2
-                           TTRMSUB(ITYP)  = HRVAL(ITYP)
-                        END IF
+                        if (ttrmfrac(ityp) .ge. NO2Equil) then
+                           ttrmfrac(ityp) = NO2Equil
+                           hrval(ityp)   = NO2Equil*chi(irec,isrc,ityp)
+                           no2           = 0.0
+                           nox           = chi(irec,isrc,ityp) ! Total NO
+                           ttrmsub(ityp)  = hrval(ityp)
+                        else
+                           ttrmno2(ityp)  = ttrmfrac(ityp)*nox
+                           hrval(ityp)   = ttrmno2(ityp) + no2
+                           ttrmsub(ityp)  = hrval(ityp)
+                        end if
 ! Calculate for downwash cases
-                        IF (WAKE .and. (STABLE .or. HS.LE.ZI)) THEN
-                           TTRMFRAC_AER(ITYP) = TTRMFRAC(ITYP)
+                        if (wake .and. (stable .or. hs.le.zi)) then
+                           ttrmfrac_aer(ityp) = ttrmfrac(ityp)
 !   Calculate Prime contribution (using travel time for downwash)
-                           IF (TTRMTIME_PRM .GT. 0.0) THEN
-                              TTRMFRAC_PRM(ITYP) = (1.0 - DEXP(KO3*&
-                              &TTRMTIME_PRM))
-                              IF (TTRMFRAC_PRM(ITYP) .GE. NO2Equil) THEN
-                                 TTRMFRAC_PRM(ITYP) = NO2Equil
-                              ENDIF
-                           ELSE
-                              TTRMFRAC_PRM(ITYP) = 0.0
-                           ENDIF
-                           TTRMFRAC(ITYP) = GAMF*TTRMFRAC_PRM(ITYP) +&
-                           &(1.0D0 - GAMF)*TTRMFRAC_AER(ITYP)
-                           TTRMNO2(ITYP)  = TTRMFRAC(ITYP)*NOX
-                           HRVAL(ITYP)   = TTRMNO2(ITYP) + NO2
-                           TTRMSUB(ITYP)  = HRVAL(ITYP)
-                        ENDIF
+                           if (ttrmtime_prm .gt. 0.0) then
+                              ttrmfrac_prm(ityp) = (1.0 - dexp(ko3*&
+                              &ttrmtime_prm))
+                              if (ttrmfrac_prm(ityp) .ge. NO2Equil) then
+                                 ttrmfrac_prm(ityp) = NO2Equil
+                              endif
+                           else
+                              ttrmfrac_prm(ityp) = 0.0
+                           endif
+                           ttrmfrac(ityp) = gamf*ttrmfrac_prm(ityp) +&
+                           &(1.0d0 - gamf)*ttrmfrac_aer(ityp)
+                           ttrmno2(ityp)  = ttrmfrac(ityp)*nox
+                           hrval(ityp)   = ttrmno2(ityp) + no2
+                           ttrmsub(ityp)  = hrval(ityp)
+                        endif
 !! Added for TTRM2;
-                        IF (RUNTTRM2) THEN
-                           TTRMCOMPARE(IGRP,ISRC,IREC,ITYP) = HRVAL(ITYP)
-                        ENDIF
+                        if (runttrm2) then
+                           ttrmcompare(igrp,isrc,irec,ityp) = hrval(ityp)
+                        endif
 !! End of TTRM2 insert; Nov. 2021
-                     END DO
-                  ELSE
+                     end do
+                  else
 ! ---               For missing O3, scale by default NO2Equil (0.9)
-                     DO ITYP = 1, NUMTYP
-                        HRVAL(ITYP)  = NO2Equil*CHI(IREC,ISRC,ITYP)
-                        TTRMSUB(ITYP) = HRVAL(ITYP)
+                     do ityp = 1, numtyp
+                        hrval(ityp)  = NO2Equil*chi(irec,isrc,ityp)
+                        ttrmsub(ityp) = hrval(ityp)
 !! Added for TTRM2
-                        IF (RUNTTRM2) THEN
-                           TTRMCOMPARE(IGRP,ISRC,IREC,ITYP) = HRVAL(ITYP)
-                        ENDIF
-                     ENDDO
+                        if (runttrm2) then
+                           ttrmcompare(igrp,isrc,irec,ityp) = hrval(ityp)
+                        endif
+                     enddo
 !! End of TTRM2 insert; Nov. 2021
-                  END IF
-               ELSE
+                  end if
+               else
 !              For LINE, BUOYLINE, OPENPIT and RLINE sources
 !              scale by default NO2Equil (0.9) and issue warning
-                  DO ITYP = 1, NUMTYP
-                     HRVAL(ITYP)  = NO2Equil*CHI(IREC,ISRC,ITYP)
-                     TTRMSUB(ITYP)  = HRVAL(ITYP)
+                  do ityp = 1, numtyp
+                     hrval(ityp)  = NO2Equil*chi(irec,isrc,ityp)
+                     ttrmsub(ityp)  = hrval(ityp)
 !! Added for TTRM2
-                     IF (RUNTTRM2) THEN
-                        TTRMCOMPARE(IGRP,ISRC,IREC,ITYP) = HRVAL(ITYP)
-                     ENDIF
+                     if (runttrm2) then
+                        ttrmcompare(igrp,isrc,irec,ityp) = hrval(ityp)
+                     endif
 !! End of TTRM2 insert; Nov. 2021
-                     IF (.NOT. L_TTRMSRCTYP(ISRC)) THEN
+                     if (.not. l_ttrmsrctyp(isrc)) then
 !                     Write Warning Message: TTRM not configured for source type
-                        CALL ERRHDL(PATH,MODNAM,'W','710',SRCID(ISRC))
-                        L_TTRMSRCTYP(ISRC) = .TRUE.
-                     END IF
-                  ENDDO
-               END IF
+                        call errhdl(path,modnam,'W','710',srcid(isrc))
+                        l_ttrmsrctyp(isrc) = .true.
+                     end if
+                  enddo
+               end if
 ! Save values for TTRM2 evaluation file, if requested
-               IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
-                  WRITE(TTRM2TMP(1),PSTFRM,ERR=77) AXR(IREC), AYR(IREC),&
-                  &TTRMCOMPARE(IGRP,ISRC,IREC,1),&
-                  &AZELEV(IREC), AZHILL(IREC),&
-                  &AZFLAG(IREC), CHRAVE(1),&
-                  &GRPID(IGRP), KURDAT, SRCID(ISRC)
-                  GO TO 877
-77                WRITE(DUMMY,'("PSTFL",I3.3)') TTRM2TMP(1)
-                  CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-                  RUNERR = .TRUE.
-877               CONTINUE
-               ENDIF
+               if (ttrm2dbg .and. (cmeth .lt. 3)) then
+                  write(ttrm2tmp(1),pstfrm,err=77) axr(irec), ayr(irec),&
+                  &ttrmcompare(igrp,isrc,irec,1),&
+                  &azelev(irec), azhill(irec),&
+                  &azflag(irec), chrave(1),&
+                  &grpid(igrp), kurdat, srcid(isrc)
+                  go to 877
+77                write(dummy,'("PSTFL",I3.3)') ttrm2tmp(1)
+                  call errhdl(path,modnam,'E','520',dummy)
+                  runerr = .true.
+877               continue
+               endif
 
 ! Once all the sources in a group are complete, if requested, write output to debug file
-               IF (IGROUP(ISRC,IGRP) .EQ. 1) THEN
-                  IF (TTRMDBG .and. (CMETH .LT. 3)) THEN
-                     IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
-                        write(TTRMUNT,77882,ERR=7781) kurdat, AXR(IREC),&
-                        &AYR(IREC), grpid(igrp), srcid(isrc), O3CONC,&
-                        &O3PPB, TA, k1, KO3,   TTRMOUT(IREC,ISRC,7),&
-                        &TTRMOUT(IREC,ISRC,8),  TTRMOUT(IREC,ISRC,9),&
-                        &TTRMOUT(IREC,ISRC,24), TTRMOUT(IREC,ISRC,25),&
-                        &TTRMSRC(IREC,ISRC),&
-                        &TTRMOUT(IREC,ISRC,10), TTRMOUT(IREC,ISRC,11),&
-                        &TTRMOUT(IREC,ISRC,20), TTRMOUT(IREC,ISRC,12),&
-                        &TTRMOUT(IREC,ISRC,13), TTRMOUT(IREC,ISRC,14),&
-                        &TTRMOUT(IREC,ISRC,15), TTRMOUT(IREC,ISRC,16),&
-                        &TTRMOUT(IREC,ISRC,17), TTRMOUT(IREC,ISRC,18),&
-                        &TTRMOUT(IREC,ISRC,19), CHI(IREC,ISRC,1), NO2, NOX,&
-                        &TTRMFRAC(1), TTRMNO2(1), TTRMSUB(1)
+               if (igroup(isrc,igrp) .eq. 1) then
+                  if (ttrmdbg .and. (cmeth .lt. 3)) then
+                     if (srctyp(isrc)(1:5) .eq. 'POINT') then
+                        write(ttrmunt,77882,err=7781) kurdat, axr(irec),&
+                        &ayr(irec), grpid(igrp), srcid(isrc), o3conc,&
+                        &o3ppb, ta, k1, ko3,   ttrmout(irec,isrc,7),&
+                        &ttrmout(irec,isrc,8),  ttrmout(irec,isrc,9),&
+                        &ttrmout(irec,isrc,24), ttrmout(irec,isrc,25),&
+                        &ttrmsrc(irec,isrc),&
+                        &ttrmout(irec,isrc,10), ttrmout(irec,isrc,11),&
+                        &ttrmout(irec,isrc,20), ttrmout(irec,isrc,12),&
+                        &ttrmout(irec,isrc,13), ttrmout(irec,isrc,14),&
+                        &ttrmout(irec,isrc,15), ttrmout(irec,isrc,16),&
+                        &ttrmout(irec,isrc,17), ttrmout(irec,isrc,18),&
+                        &ttrmout(irec,isrc,19), chi(irec,isrc,1), no2, nox,&
+                        &ttrmfrac(1), ttrmno2(1), ttrmsub(1)
 
-77882                   format(1x,I8.8,',',F9.2,',',F10.2,',',A8,',',A10,',',&
-                        &F7.2,',',F7.3,',',F5.1,',',E8.2,',',E8.2,',',&
-                        &F10.4,',',F9.4,',',F9.3,',',F9.4,',',F9.3,',',&
-                        &A10,',',F8.2,',',&
-                        &F8.2,',',F8.2,',',F5.2,',',F5.2,',',F5.2,',',&
-                        &F5.3,',',F5.3,',',F5.3,',',F8.3,',',F8.3,',',&
-                        &F8.3,',',F8.3,',',F8.3,',',F8.3,',',F8.3,',',&
-                        &F8.3)
+77882                   format(1x,i8.8,',',f9.2,',',f10.2,',',a8,',',a10,',',&
+                        &f7.2,',',f7.3,',',f5.1,',',e8.2,',',e8.2,',',&
+                        &f10.4,',',f9.4,',',f9.3,',',f9.4,',',f9.3,',',&
+                        &a10,',',f8.2,',',&
+                        &f8.2,',',f8.2,',',f5.2,',',f5.2,',',f5.2,',',&
+                        &f5.3,',',f5.3,',',f5.3,',',f8.3,',',f8.3,',',&
+                        &f8.3,',',f8.3,',',f8.3,',',f8.3,',',f8.3,',',&
+                        &f8.3)
                         go to 5678
-7781                    CALL ERRHDL(PATH,MODNAM,'W','720','TTRMDEBUG')
+7781                    call errhdl(path,modnam,'W','720','TTRMDEBUG')
 5678                    continue
-                     ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME') THEN
+                     else if (srctyp(isrc) .eq. 'VOLUME') then
 ! ---          Write data to TTRM debugging file
-                        write(TTRMUNT,77782,ERR=7771) kurdat, AXR(IREC),&
-                        &AYR(IREC), grpid(igrp), srcid(isrc), O3CONC,&
-                        &O3PPB, TA, k1, KO3,   TTRMOUT(IREC,ISRC,7),&
-                        &TTRMOUT(IREC,ISRC,8),  TTRMOUT(IREC,ISRC,9),&
-                        &TTRMSRC(IREC,ISRC),&
-                        &TTRMOUT(IREC,ISRC,10), TTRMOUT(IREC,ISRC,11),&
-                        &TTRMOUT(IREC,ISRC,20), TTRMOUT(IREC,ISRC,12),&
-                        &TTRMOUT(IREC,ISRC,13),&
-                        &TTRMOUT(IREC,ISRC,15),&
-                        &CHI(IREC,ISRC,1), NO2, NOX,&
-                        &TTRMFRAC(1), TTRMNO2(1), TTRMSUB(1)
+                        write(ttrmunt,77782,err=7771) kurdat, axr(irec),&
+                        &ayr(irec), grpid(igrp), srcid(isrc), o3conc,&
+                        &o3ppb, ta, k1, ko3,   ttrmout(irec,isrc,7),&
+                        &ttrmout(irec,isrc,8),  ttrmout(irec,isrc,9),&
+                        &ttrmsrc(irec,isrc),&
+                        &ttrmout(irec,isrc,10), ttrmout(irec,isrc,11),&
+                        &ttrmout(irec,isrc,20), ttrmout(irec,isrc,12),&
+                        &ttrmout(irec,isrc,13),&
+                        &ttrmout(irec,isrc,15),&
+                        &chi(irec,isrc,1), no2, nox,&
+                        &ttrmfrac(1), ttrmno2(1), ttrmsub(1)
 
-77782                   format(1x,I8.8,',',F9.2,',',F10.2,',',A8,',',A10,',',&
-                        &F7.2,',',F7.3,',',F5.1,',',E8.2,',',E8.2,',',&
-                        &F10.4,',',F9.4,',',F9.3,',',A10,',',F8.2,',',&
-                        &F8.2,',',F8.2,',',F5.2,',',F5.2,',','n/a',',',&
-                        &F5.3,',','n/a',',','n/a',',','n/a',',','n/a',&
-                        &',',F8.3,',',F8.3,',',F8.3,',',F8.3,',',F8.3,&
-                        &',',F8.3)
+77782                   format(1x,i8.8,',',f9.2,',',f10.2,',',a8,',',a10,',',&
+                        &f7.2,',',f7.3,',',f5.1,',',e8.2,',',e8.2,',',&
+                        &f10.4,',',f9.4,',',f9.3,',',a10,',',f8.2,',',&
+                        &f8.2,',',f8.2,',',f5.2,',',f5.2,',','n/a',',',&
+                        &f5.3,',','n/a',',','n/a',',','n/a',',','n/a',&
+                        &',',f8.3,',',f8.3,',',f8.3,',',f8.3,',',f8.3,&
+                        &',',f8.3)
                         go to 5778
-7771                    CALL ERRHDL(PATH,MODNAM,'W','720','TTRMDEBUG')
+7771                    call errhdl(path,modnam,'W','720','TTRMDEBUG')
 5778                    continue
-                     ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA') THEN
+                     else if (srctyp(isrc)(1:4) .eq. 'AREA') then
 ! ---          Write data to TTRM debugging file for AREA, AREAPOLY or AREACIRC sources
-                        write(TTRMUNT,77772,ERR=7772) kurdat, AXR(IREC),&
-                        &AYR(IREC), grpid(igrp), srcid(isrc), O3CONC,&
-                        &O3PPB, TA, k1, KO3,   TTRMOUT(IREC,ISRC,7),&
-                        &TTRMOUT(IREC,ISRC,8),  TTRMOUT(IREC,ISRC,9),&
-                        &TTRMSRC(IREC,ISRC),&
-                        &TTRMOUT(IREC,ISRC,11), TTRMOUT(IREC,ISRC,12),&
-                        &TTRMOUT(IREC,ISRC,13),&
-                        &CHI(IREC,ISRC,1), NO2, NOX,&
-                        &TTRMFRAC(1), TTRMNO2(1), TTRMSUB(1)
+                        write(ttrmunt,77772,err=7772) kurdat, axr(irec),&
+                        &ayr(irec), grpid(igrp), srcid(isrc), o3conc,&
+                        &o3ppb, ta, k1, ko3,   ttrmout(irec,isrc,7),&
+                        &ttrmout(irec,isrc,8),  ttrmout(irec,isrc,9),&
+                        &ttrmsrc(irec,isrc),&
+                        &ttrmout(irec,isrc,11), ttrmout(irec,isrc,12),&
+                        &ttrmout(irec,isrc,13),&
+                        &chi(irec,isrc,1), no2, nox,&
+                        &ttrmfrac(1), ttrmno2(1), ttrmsub(1)
 
-77772                   format(1x,I8.8,',',F9.2,',',F10.2,',',A8,',',A10,',',&
-                        &F7.2,',',F7.3,',',F5.1,',',E8.2,',',E8.2,',',&
-                        &F10.4,',',F9.4,',',F9.3,',',A10,',n/a,',F8.2,&
-                        &',n/a,',F5.2,',',F5.2,',','n/a',',','n/a',',',&
-                        &'n/a',',','n/a',',','n/a',',','n/a',',',F8.3,',',&
-                        &F8.3,',',F8.3,',',F8.3,',',F8.3,',',F8.3)
+77772                   format(1x,i8.8,',',f9.2,',',f10.2,',',a8,',',a10,',',&
+                        &f7.2,',',f7.3,',',f5.1,',',e8.2,',',e8.2,',',&
+                        &f10.4,',',f9.4,',',f9.3,',',a10,',n/a,',f8.2,&
+                        &',n/a,',f5.2,',',f5.2,',','n/a',',','n/a',',',&
+                        &'n/a',',','n/a',',','n/a',',','n/a',',',f8.3,',',&
+                        &f8.3,',',f8.3,',',f8.3,',',f8.3,',',f8.3)
                         go to 7778
-7772                    CALL ERRHDL(PATH,MODNAM,'W','720','TTRMDEBUG')
+7772                    call errhdl(path,modnam,'W','720','TTRMDEBUG')
 7778                    continue
-                     ELSE
+                     else
 ! ---          For all other (non-supported) type of sources
-                        write(TTRMUNT,77773,ERR=7773) kurdat, AXR(IREC),&
-                        &AYR(IREC), grpid(igrp), srcid(isrc)
+                        write(ttrmunt,77773,err=7773) kurdat, axr(irec),&
+                        &ayr(irec), grpid(igrp), srcid(isrc)
 
-77773                   format(1x,I8.8,',',F9.2,',',F10.2,',',A8,',',A10,&
+77773                   format(1x,i8.8,',',f9.2,',',f10.2,',',a8,',',a10,&
                         &18(',n/a'))
                         go to 7779
-7773                    CALL ERRHDL(PATH,MODNAM,'W','720','TTRMDEBUG')
+7773                    call errhdl(path,modnam,'W','720','TTRMDEBUG')
 7779                    continue
-                     END IF
-                  END IF
-               END IF
+                     end if
+                  end if
+               end if
 
 ! ---          Call SUMVAL to add current source's contribution to AVEVAL
-               IF (.NOT. RUNTTRM2) THEN
-                  CALL SUMVAL
-               ENDIF
+               if (.not. runttrm2) then
+                  call sumval
+               endif
 
-               IF (EVAL(ISRC)) THEN
+               if (eval(isrc)) then
 !              Check ARC centerline values for EVALFILE
 !              output                              ---   CALL EVALCK
-                  CALL EVALCK
-               END IF
+                  call evalck
+               end if
 
-            END DO SOURCE_LOOPTTRM
+            end do source_loopttrm
 
-            IF (GRP_BACK(IGRP)) THEN
+            if (grp_back(igrp)) then
 ! ---         Call SUMBACK_NO2 to update BACKGROUND contributions
-               IF (.NOT. RUNTTRM2) THEN
-                  CALL SUMBACK_NO2
-               ENDIF
-            END IF
+               if (.not. runttrm2) then
+                  call sumback_no2
+               endif
+            end if
 
-         END DO GROUP_LOOP
-      ELSE IF (EVONLY) THEN
+         end do group_loop
+      else if (evonly) then
 ! ---      Check for inclusion of BACKGROUND in this EVENT
 !C ---      Begin Source Group LOOP to sum values
 !           EV_GROUP_LOOP: DO IGRP = 1, NUMGRP
 
 ! ---      Loop through all SOURCEs
 !          as appropriate and sum values for this source group
-         EV_SOURCE_LOOPTTRM: DO ISRC = 1, NUMSRC
-            ITYP = 1
+         ev_source_loopttrm: do isrc = 1, numsrc
+            ityp = 1
 
-            IF( IGROUP(ISRC,IGRP) .NE. 1 )THEN
+            if( igroup(isrc,igrp) .ne. 1 )then
 ! ---          This source is not included in the current SRCGROUP
-               CYCLE EV_SOURCE_LOOPTTRM
-            ENDIF
+               cycle ev_source_loopttrm
+            endif
 
 ! Calculate hourly k1 value (units: ppb^-1 sec^-1)
-            k1 = (15.33 / TA)*DEXP(-1450.0 / TA)
+            k1 = (15.33 / ta)*dexp(-1450.0 / ta)
 ! Convert hourly ozone value back to ppb
-            O3PPB = O3CONC / O3_PPB
+            o3ppb = o3conc / o3_ppb
 ! Calculate the coefficient of time
-            KO3 = -1.0*k1*O3PPB
+            ko3 = -1.0*k1*o3ppb
 
 ! Save hourly data to TTRM debug file
-            IF (TTRMDBG) THEN
-               TTRMOUT(IREC,ISRC,1) = KURDAT
-               TTRMOUT(IREC,ISRC,2) = AXR(1)
-               TTRMOUT(IREC,ISRC,3) = AYR(1)
-               TTRMOUT(IREC,ISRC,4) = O3PPB ! O3 (in PPB)
-               TTRMOUT(IREC,ISRC,5) = TA ! ambient temperature
-               TTRMOUT(IREC,ISRC,6) = k1
-            ENDIF
+            if (ttrmdbg) then
+               ttrmout(irec,isrc,1) = kurdat
+               ttrmout(irec,isrc,2) = axr(1)
+               ttrmout(irec,isrc,3) = ayr(1)
+               ttrmout(irec,isrc,4) = o3ppb ! O3 (in PPB)
+               ttrmout(irec,isrc,5) = ta ! ambient temperature
+               ttrmout(irec,isrc,6) = k1
+            endif
 
 ! ---          Source is in this SRCGROUP
 !              Calculate in-stack converted NO2 and available NOx
-            NO2 = ANO2_RATIO(ISRC) * CHI(1,ISRC,1)
-            NOX = (1.0D0-ANO2_RATIO(ISRC))*CHI(1,ISRC,1) ! Total NO
+            no2 = ano2_ratio(isrc) * chi(1,isrc,1)
+            nox = (1.0d0-ano2_ratio(isrc))*chi(1,isrc,1) ! Total NO
 !
 !     Perform TTRM for POINT, VOLUME or AREA type sources
-            IF ((SRCTYP(ISRC)(1:5) .EQ. 'POINT') .or.&
-            &(SRCTYP(ISRC) .EQ. 'VOLUME') .or.&
-            &(SRCTYP(ISRC)(1:4) .EQ. 'AREA')) THEN
+            if ((srctyp(isrc)(1:5) .eq. 'POINT') .or.&
+            &(srctyp(isrc) .eq. 'VOLUME') .or.&
+            &(srctyp(isrc)(1:4) .eq. 'AREA')) then
 !                Calculate the final TTRM time based on the source type,
 !                stability and plume dispersion type
-               CALL TTRM_STEP
+               call ttrm_step
 ! ---            Determine if CONC is O3-limited; if not, then no conversion needed
 !                First check for missing O3 data (O3MISS) and apply full conversion
 !                (subject to equilibrium ratio)
-               IF (.NOT. O3MISS) THEN !
-                  DO ITYP = 1, NUMTYP  ! Calculate TTRM for all ITYPs (CONC, DDEP, WDEP or DEPOS)
+               if (.not. o3miss) then !
+                  do ityp = 1, numtyp  ! Calculate TTRM for all ITYPs (CONC, DDEP, WDEP or DEPOS)
 !                       TTRMINST(ITYP) = NO2
-                     IF(TTRMTIME .GT. 0.0) THEN
-                        TTRMFRAC(ITYP) = (1.0 - DEXP(KO3*TTRMTIME))
-                     ELSE
-                        TTRMFRAC(ITYP) = 0.0
-                     ENDIF
+                     if(ttrmtime .gt. 0.0) then
+                        ttrmfrac(ityp) = (1.0 - dexp(ko3*ttrmtime))
+                     else
+                        ttrmfrac(ityp) = 0.0
+                     endif
 !                Check on whether the TTRM fraction is equal to or less than the NO2Equil (default set to 90%)
-                     IF (TTRMFRAC(ITYP) .GE. NO2Equil) THEN
-                        TTRMFRAC(ITYP) = NO2Equil
-                        HRVAL(ITYP)   = NO2Equil*CHI(1,ISRC,1)
-                        NO2           = 0.0
-                        NOX           = CHI(1,ISRC,1) ! Total NO
-                        TTRMSUB(ITYP)  = HRVAL(ITYP)
-                     ELSE
-                        TTRMNO2(ITYP)  = TTRMFRAC(ITYP)*NOX
-                        HRVAL(ITYP)   = TTRMNO2(ITYP) + NO2
-                        TTRMSUB(ITYP)  = HRVAL(ITYP)
-                     END IF
+                     if (ttrmfrac(ityp) .ge. NO2Equil) then
+                        ttrmfrac(ityp) = NO2Equil
+                        hrval(ityp)   = NO2Equil*chi(1,isrc,1)
+                        no2           = 0.0
+                        nox           = chi(1,isrc,1) ! Total NO
+                        ttrmsub(ityp)  = hrval(ityp)
+                     else
+                        ttrmno2(ityp)  = ttrmfrac(ityp)*nox
+                        hrval(ityp)   = ttrmno2(ityp) + no2
+                        ttrmsub(ityp)  = hrval(ityp)
+                     end if
 ! Calculate for downwash cases
-                     IF (WAKE .and. (STABLE .or. HS.LE.ZI)) THEN
-                        TTRMFRAC_AER(ITYP) = TTRMFRAC(ITYP)
+                     if (wake .and. (stable .or. hs.le.zi)) then
+                        ttrmfrac_aer(ityp) = ttrmfrac(ityp)
 !   Calculate Prime contribution (using travel time for downwash)
-                        IF (TTRMTIME_PRM .GT. 0.0) THEN
-                           TTRMFRAC_PRM(ITYP) = (1.0 - DEXP(KO3*&
-                           &TTRMTIME_PRM))
-                           IF (TTRMFRAC_PRM(ITYP) .GE. NO2Equil) THEN
-                              TTRMFRAC_PRM(ITYP) = NO2Equil
-                           ENDIF
-                        ELSE
-                           TTRMFRAC_PRM(ITYP) = 0.0
-                        ENDIF
-                        TTRMFRAC(ITYP) = GAMF*TTRMFRAC_PRM(ITYP) +&
-                        &(1.0D0 - GAMF)*TTRMFRAC_AER(ITYP)
-                        TTRMNO2(ITYP)  = TTRMFRAC(ITYP)*NOX
-                        HRVAL(ITYP)   = TTRMNO2(ITYP) + NO2
-                        TTRMSUB(ITYP)  = HRVAL(ITYP)
-                     ENDIF
+                        if (ttrmtime_prm .gt. 0.0) then
+                           ttrmfrac_prm(ityp) = (1.0 - dexp(ko3*&
+                           &ttrmtime_prm))
+                           if (ttrmfrac_prm(ityp) .ge. NO2Equil) then
+                              ttrmfrac_prm(ityp) = NO2Equil
+                           endif
+                        else
+                           ttrmfrac_prm(ityp) = 0.0
+                        endif
+                        ttrmfrac(ityp) = gamf*ttrmfrac_prm(ityp) +&
+                        &(1.0d0 - gamf)*ttrmfrac_aer(ityp)
+                        ttrmno2(ityp)  = ttrmfrac(ityp)*nox
+                        hrval(ityp)   = ttrmno2(ityp) + no2
+                        ttrmsub(ityp)  = hrval(ityp)
+                     endif
 !! Added for TTRM2
-                     IF (RUNTTRM2) THEN
-                        TTRMCOMPARE(IGRP,ISRC,1,ITYP) = HRVAL(ITYP)
-                     ENDIF
+                     if (runttrm2) then
+                        ttrmcompare(igrp,isrc,1,ityp) = hrval(ityp)
+                     endif
 !! End of TTRM2 insert; Nov. 2021
-                  END DO
-               ELSE
+                  end do
+               else
 ! ---               For missing O3, scale by default NO2Equil (0.9)
-                  DO ITYP = 1, NUMTYP
-                     HRVAL(ITYP)  = NO2Equil*CHI(1,ISRC,ITYP)
-                     TTRMSUB(ITYP) = HRVAL(ITYP)
+                  do ityp = 1, numtyp
+                     hrval(ityp)  = NO2Equil*chi(1,isrc,ityp)
+                     ttrmsub(ityp) = hrval(ityp)
 !! Added for TTRM2
-                     IF (RUNTTRM2) THEN
-                        TTRMCOMPARE(IGRP,ISRC,1,ITYP) = HRVAL(ITYP)
-                     ENDIF
-                  ENDDO
+                     if (runttrm2) then
+                        ttrmcompare(igrp,isrc,1,ityp) = hrval(ityp)
+                     endif
+                  enddo
 !! End of TTRM2 insert; Nov. 2021
-               END IF
-            ELSE
+               end if
+            else
 !              For LINE, BUOYLINE, OPENPIT and RLINE sources
 !              scale by default NO2Equil (0.9) and issue warning
-               DO ITYP = 1, NUMTYP
-                  HRVAL(ITYP)  = NO2Equil*CHI(1,ISRC,ITYP)
-                  TTRMSUB(ITYP) = HRVAL(ITYP)
+               do ityp = 1, numtyp
+                  hrval(ityp)  = NO2Equil*chi(1,isrc,ityp)
+                  ttrmsub(ityp) = hrval(ityp)
 !! Added for TTRM2
-                  IF (RUNTTRM2) THEN
-                     TTRMCOMPARE(IGRP,ISRC,1,ITYP) = HRVAL(ITYP)
-                  ENDIF
-               ENDDO
+                  if (runttrm2) then
+                     ttrmcompare(igrp,isrc,1,ityp) = hrval(ityp)
+                  endif
+               enddo
 !! End of TTRM2 insert; Nov. 2021
-               IF (.NOT. L_TTRMSRCTYP(ISRC)) THEN
+               if (.not. l_ttrmsrctyp(isrc)) then
 !                   Write Warning Message: TTRM not configured for source type
-                  CALL ERRHDL(PATH,MODNAM,'W','710',SRCID(ISRC))
-                  L_TTRMSRCTYP(ISRC) = .TRUE.
-               END IF
-            END IF
+                  call errhdl(path,modnam,'W','710',srcid(isrc))
+                  l_ttrmsrctyp(isrc) = .true.
+               end if
+            end if
 
 ! ---          Call EV_SUMVAL to add current source's contribution to
 !              EV_AVEVAL, GRPAVE, etc.
-            IF (.NOT. RUNTTRM2) THEN
-               CALL EV_SUMVAL
-            ENDIF
+            if (.not. runttrm2) then
+               call ev_sumval
+            endif
 !               CALL EV_SUMVAL
 
 ! If requested, write output to debug file
-            IF (IGROUP(ISRC,IGRP) .EQ. 1) THEN
-               IF (TTRMDBG .and. (CMETH .LT. 3)) THEN
-                  IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
-                     write(TTRMUNT,97882,ERR=9781) kurdat,&
-                     &ievent, EVNAME(IEVENT), EVAPER(IEVENT),&
-                     &grpid(igrp), srcid(isrc), O3CONC,&
-                     &O3PPB, TA, k1, KO3,   TTRMOUT(1,ISRC,7),&
-                     &TTRMOUT(1,ISRC,8),  TTRMOUT(1,ISRC,9),&
-                     &TTRMOUT(IREC,ISRC,24), TTRMOUT(IREC,ISRC,25),&
-                     &TTRMSRC(IREC,ISRC),&
-                     &TTRMOUT(1,ISRC,10), TTRMOUT(1,ISRC,11),&
-                     &TTRMOUT(1,ISRC,20), TTRMOUT(1,ISRC,12),&
-                     &TTRMOUT(1,ISRC,13), TTRMOUT(1,ISRC,14),&
-                     &TTRMOUT(1,ISRC,15), TTRMOUT(1,ISRC,16),&
-                     &TTRMOUT(1,ISRC,17), TTRMOUT(1,ISRC,18),&
-                     &TTRMOUT(1,ISRC,19), CHI(1,ISRC,1), NO2, NOX,&
-                     &TTRMFRAC(1), TTRMNO2(1), TTRMSUB(1)
+            if (igroup(isrc,igrp) .eq. 1) then
+               if (ttrmdbg .and. (cmeth .lt. 3)) then
+                  if (srctyp(isrc)(1:5) .eq. 'POINT') then
+                     write(ttrmunt,97882,err=9781) kurdat,&
+                     &ievent, evname(ievent), evaper(ievent),&
+                     &grpid(igrp), srcid(isrc), o3conc,&
+                     &o3ppb, ta, k1, ko3,   ttrmout(1,isrc,7),&
+                     &ttrmout(1,isrc,8),  ttrmout(1,isrc,9),&
+                     &ttrmout(irec,isrc,24), ttrmout(irec,isrc,25),&
+                     &ttrmsrc(irec,isrc),&
+                     &ttrmout(1,isrc,10), ttrmout(1,isrc,11),&
+                     &ttrmout(1,isrc,20), ttrmout(1,isrc,12),&
+                     &ttrmout(1,isrc,13), ttrmout(1,isrc,14),&
+                     &ttrmout(1,isrc,15), ttrmout(1,isrc,16),&
+                     &ttrmout(1,isrc,17), ttrmout(1,isrc,18),&
+                     &ttrmout(1,isrc,19), chi(1,isrc,1), no2, nox,&
+                     &ttrmfrac(1), ttrmno2(1), ttrmsub(1)
 
-97882                format(1x,I8.8,',',i6,',',a10,',',&
-                     &i3,',',A8,',',A10,',',&
-                     &F7.2,',',F7.3,',',F5.1,',',E8.2,',',E8.2,',',&
-                     &F10.4,',',F9.4,',',F9.3,',',F9.4,',',F9.3,',',&
-                     &A10,',',F8.2,',',&
-                     &F8.2,',',F8.2,',',F5.2,',',F5.2,',',F5.2,',',&
-                     &F5.3,',',F5.3,',',F5.3,',',F8.3,',',F8.3,',',&
-                     &F8.3,',',F8.3,',',F8.3,',',F8.3,',',F8.3,',',&
-                     &F8.3)
+97882                format(1x,i8.8,',',i6,',',a10,',',&
+                     &i3,',',a8,',',a10,',',&
+                     &f7.2,',',f7.3,',',f5.1,',',e8.2,',',e8.2,',',&
+                     &f10.4,',',f9.4,',',f9.3,',',f9.4,',',f9.3,',',&
+                     &a10,',',f8.2,',',&
+                     &f8.2,',',f8.2,',',f5.2,',',f5.2,',',f5.2,',',&
+                     &f5.3,',',f5.3,',',f5.3,',',f8.3,',',f8.3,',',&
+                     &f8.3,',',f8.3,',',f8.3,',',f8.3,',',f8.3,',',&
+                     &f8.3)
                      go to 56789
-9781                 CALL ERRHDL(PATH,MODNAM,'W','720','TTRMDEBUG')
+9781                 call errhdl(path,modnam,'W','720','TTRMDEBUG')
 56789                continue
-                  ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME') THEN
+                  else if (srctyp(isrc) .eq. 'VOLUME') then
 ! ---          Write data to TTRM debugging file
-                     write(TTRMUNT,97782,ERR=9771) kurdat,&
-                     &ievent, EVNAME(IEVENT), EVAPER(IEVENT),&
-                     &grpid(igrp), srcid(isrc), O3CONC,&
-                     &O3PPB, TA, k1, KO3,TTRMOUT(1,ISRC,7),&
-                     &TTRMOUT(1,ISRC,8),  TTRMOUT(1,ISRC,9),&
-                     &TTRMSRC(IREC,ISRC),&
-                     &TTRMOUT(1,ISRC,10), TTRMOUT(1,ISRC,11),&
-                     &TTRMOUT(1,ISRC,20), TTRMOUT(1,ISRC,12),&
-                     &TTRMOUT(1,ISRC,13),&
-                     &TTRMOUT(1,ISRC,15),&
-                     &CHI(1,ISRC,1), NO2, NOX,&
-                     &TTRMFRAC(1), TTRMNO2(1), TTRMSUB(1)
+                     write(ttrmunt,97782,err=9771) kurdat,&
+                     &ievent, evname(ievent), evaper(ievent),&
+                     &grpid(igrp), srcid(isrc), o3conc,&
+                     &o3ppb, ta, k1, ko3,ttrmout(1,isrc,7),&
+                     &ttrmout(1,isrc,8),  ttrmout(1,isrc,9),&
+                     &ttrmsrc(irec,isrc),&
+                     &ttrmout(1,isrc,10), ttrmout(1,isrc,11),&
+                     &ttrmout(1,isrc,20), ttrmout(1,isrc,12),&
+                     &ttrmout(1,isrc,13),&
+                     &ttrmout(1,isrc,15),&
+                     &chi(1,isrc,1), no2, nox,&
+                     &ttrmfrac(1), ttrmno2(1), ttrmsub(1)
 
-97782                format(1x,I8.8,',',i6,',',a10,',',&
-                     &i3,',',A8,',',A10,',',&
-                     &F7.2,',',F7.3,',',F5.1,',',E8.2,',',E8.2,',',&
-                     &F10.4,',',F9.4,',',F9.3,',',A10,',',F8.2,',',&
-                     &F8.2,',',F8.2,',',F5.2,',',F5.2,',','n/a',',',&
-                     &F5.3,',','n/a',',','n/a',',','n/a',',','n/a',&
-                     &',',F8.3,',',F8.3,',',F8.3,',',F8.3,',',F8.3,&
-                     &',',F8.3)
+97782                format(1x,i8.8,',',i6,',',a10,',',&
+                     &i3,',',a8,',',a10,',',&
+                     &f7.2,',',f7.3,',',f5.1,',',e8.2,',',e8.2,',',&
+                     &f10.4,',',f9.4,',',f9.3,',',a10,',',f8.2,',',&
+                     &f8.2,',',f8.2,',',f5.2,',',f5.2,',','n/a',',',&
+                     &f5.3,',','n/a',',','n/a',',','n/a',',','n/a',&
+                     &',',f8.3,',',f8.3,',',f8.3,',',f8.3,',',f8.3,&
+                     &',',f8.3)
                      go to 57789
-9771                 CALL ERRHDL(PATH,MODNAM,'W','720','TTRMDEBUG')
+9771                 call errhdl(path,modnam,'W','720','TTRMDEBUG')
 57789                continue
-                  ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA') THEN
+                  else if (srctyp(isrc)(1:4) .eq. 'AREA') then
 ! ---          Write data to TTRM debugging file for AREA, AREAPOLY or AREACIRC sources
-                     write(TTRMUNT,97772,ERR=9772) kurdat,&
-                     &ievent, EVNAME(IEVENT), EVAPER(IEVENT),&
-                     &grpid(igrp), srcid(isrc), O3CONC,&
-                     &O3PPB, TA, k1, KO3,   TTRMOUT(1,ISRC,7),&
-                     &TTRMOUT(1,ISRC,8),  TTRMOUT(1,ISRC,9),&
-                     &TTRMSRC(IREC,ISRC),&
-                     &TTRMOUT(1,ISRC,11), TTRMOUT(1,ISRC,12),&
-                     &TTRMOUT(1,ISRC,13),&
-                     &CHI(1,ISRC,1), NO2, NOX,&
-                     &TTRMFRAC(1), TTRMNO2(1), TTRMSUB(1)
+                     write(ttrmunt,97772,err=9772) kurdat,&
+                     &ievent, evname(ievent), evaper(ievent),&
+                     &grpid(igrp), srcid(isrc), o3conc,&
+                     &o3ppb, ta, k1, ko3,   ttrmout(1,isrc,7),&
+                     &ttrmout(1,isrc,8),  ttrmout(1,isrc,9),&
+                     &ttrmsrc(irec,isrc),&
+                     &ttrmout(1,isrc,11), ttrmout(1,isrc,12),&
+                     &ttrmout(1,isrc,13),&
+                     &chi(1,isrc,1), no2, nox,&
+                     &ttrmfrac(1), ttrmno2(1), ttrmsub(1)
 
-97772                format(1x,I8.8,',',i6,',',a10,',',&
-                     &i3,',',A8,',',A10,',',&
-                     &F7.2,',',F7.3,',',F5.1,',',E8.2,',',E8.2,',',&
-                     &F10.4,',',F9.4,',',F9.3,',',A10,',n/a,',F8.2,&
-                     &',n/a,',F5.2,',',F5.2,',','n/a',',','n/a',',',&
-                     &'n/a',',','n/a',',','n/a',',','n/a',',',F8.3,',',&
-                     &F8.3,',',F8.3,',',F8.3,',',F8.3,',',F8.3)
+97772                format(1x,i8.8,',',i6,',',a10,',',&
+                     &i3,',',a8,',',a10,',',&
+                     &f7.2,',',f7.3,',',f5.1,',',e8.2,',',e8.2,',',&
+                     &f10.4,',',f9.4,',',f9.3,',',a10,',n/a,',f8.2,&
+                     &',n/a,',f5.2,',',f5.2,',','n/a',',','n/a',',',&
+                     &'n/a',',','n/a',',','n/a',',','n/a',',',f8.3,',',&
+                     &f8.3,',',f8.3,',',f8.3,',',f8.3,',',f8.3)
                      go to 77789
-9772                 CALL ERRHDL(PATH,MODNAM,'W','720','TTRMDEBUG')
+9772                 call errhdl(path,modnam,'W','720','TTRMDEBUG')
 77789                continue
 
-                  ELSE
+                  else
 ! ---          for all other (non-supported) source types
-                     write(TTRMUNT,97773,ERR=9773) kurdat,&
-                     &ievent, EVNAME(IEVENT), EVAPER(IEVENT),&
+                     write(ttrmunt,97773,err=9773) kurdat,&
+                     &ievent, evname(ievent), evaper(ievent),&
                      &grpid(igrp), srcid(isrc)
 
-97773                format(1x,I8.8,',',i6,',',a10,',',&
-                     &i3,',',A8,',',A10,18(',n/a'))
+97773                format(1x,i8.8,',',i6,',',a10,',',&
+                     &i3,',',a8,',',a10,18(',n/a'))
                      go to 77790
-9773                 CALL ERRHDL(PATH,MODNAM,'W','720','TTRMDEBUG')
+9773                 call errhdl(path,modnam,'W','720','TTRMDEBUG')
 77790                continue
 
-                  END IF
-               END IF
-            END IF
+                  end if
+               end if
+            end if
 
-            IF (EVAL(ISRC)) THEN
+            if (eval(isrc)) then
 !              Check ARC centerline values for EVALFILE
 !              output                              ---   CALL EVALCK
-               CALL EVALCK
-            END IF
+               call evalck
+            end if
 
-         END DO EV_SOURCE_LOOPTTRM
+         end do ev_source_loopttrm
 ! ---      End of EVENT Source Loop
 
-         IF ( GRP_BACK(IDXEV(IEVENT)) ) THEN
+         if ( grp_back(idxev(ievent)) ) then
 ! ---         Call EV_SUMBACK to update BACKGROUND contributions
-            IF (.NOT. RUNTTRM2) THEN
-               CALL EV_SUMBACK
-            ENDIF
-         END IF
-      END IF !  End of Event_or_Non-Event IF BLOCK
+            if (.not. runttrm2) then
+               call ev_sumback
+            endif
+         end if
+      end if !  End of Event_or_Non-Event IF BLOCK
 
 !       ReInitialize __VAL arrays (1:NUMTYP)
-      HRVAL  = 0.0D0
+      hrval  = 0.0d0
 
-   END DO RECEPTOR_LOOP
+   end do receptor_loop
 !     End Receptor LOOP
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE TTRM_STEP
+subroutine ttrm_step
 !***********************************************************************
 !             TTRM_STEP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -10597,10 +10597,10 @@ SUBROUTINE TTRM_STEP
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 !      CHARACTER MODNAM*12, BLNK8*8
-   CHARACTER MODNAM*12
+   character modnam*12
 !      INTEGER :: IASTAT
 
 !      DOUBLE PRECISION :: NO2, NOX, BCKGRD, CHIN, CHID,
@@ -10609,20 +10609,20 @@ SUBROUTINE TTRM_STEP
 !      DOUBLE PRECISION :: TTRMNO2(NUMTYPE)
 
 !     Variable Initializations
-   MODNAM = 'TTRM_STEP'
+   modnam = 'TTRM_STEP'
 
 !     Perform TTRM calculations based on SRCTYPE, dominant plume dispersion type and stability
-   IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
+   if (srctyp(isrc)(1:5) .eq. 'POINT') then
 !       Calculate travel time if POINT source is subject to downwash
-      IF (WAKE .and. (STABLE .or. HS.LE.ZI)) THEN
-         IF(TTRMOUT(IREC,ISRC,24) .GT. 0.0) THEN
-            TTRMTIME_PRM = DABS(TTRMOUT(IREC,ISRC,10) /&
-            &TTRMOUT(IREC,ISRC,24)) ! X / UEFFe ! Use downwind distance and wind speed for downwash (UEFFe)
-         ELSE
-            TTRMTIME_PRM = 0.0
-         ENDIF
-         TTRMOUT(IREC,ISRC,25) = TTRMTIME_PRM
-      ENDIF
+      if (wake .and. (stable .or. hs.le.zi)) then
+         if(ttrmout(irec,isrc,24) .gt. 0.0) then
+            ttrmtime_prm = dabs(ttrmout(irec,isrc,10) /&
+            &ttrmout(irec,isrc,24)) ! X / UEFFe ! Use downwind distance and wind speed for downwash (UEFFe)
+         else
+            ttrmtime_prm = 0.0
+         endif
+         ttrmout(irec,isrc,25) = ttrmtime_prm
+      endif
 !       Calculate travel time for portion of plume not subject to downwash
 !     Calculate the travel time conservatively based on the radial distance (DISTR) and effective wind speed (ueff)
 !!!         The effective wind speed based on the meander fraction; stability and plume type:
@@ -10634,360 +10634,360 @@ SUBROUTINE TTRM_STEP
 !!!         Else for FRAN > 0.5
 !!!           If STABLE use [ueff]
 !!!           Else use [ueffd]
-      IF (TTRMOUT(IREC,ISRC,15) .GE. 0.5) THEN !MEANDER FRACTION >= 0.5
-         IF (STABLE) THEN
-            IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-               TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11) /&
-               &TTRMOUT(IREC,ISRC,12)) ! DISTR / UEFF ! Use radial distance: TTRMOUT(IREC,ISRC,11)
-            ELSE
-               TTRMTIME = 0.
-            ENDIF
-            IF (TTRMDBG) THEN
-               TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-               TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFF
-               TTRMOUT(IREC,ISRC,9) = TTRMTIME
-               TTRMSRC(IREC,ISRC) = 'STAB-M-GAU'
-            END IF
-         ELSE
-            IF (TTRMOUT(IREC,ISRC,16) .GE. 0.5) THEN ! For partial penetrated dominant meander plume
-               IF(TTRMOUT(IREC,ISRC,14) .GT. 0.0) THEN
-                  TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11) /&
-                  &TTRMOUT(IREC,ISRC,14)) ! DISTR / UEFF3
-               ELSE
-                  TTRMTIME = 0.
-               ENDIF
-               IF (TTRMDBG) THEN
-                  TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-                  TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,14) ! UEFF3
-                  TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                  TTRMSRC(IREC,ISRC) = 'UNST-M-PEN'
-               END IF
-            ELSE IF (TTRMOUT(IREC,ISRC,19) .GE.&
-            &TTRMOUT(IREC,ISRC,18)) THEN! CHID >= CHIN; For direct dominant meander plume
-               IF(TTRMOUT(IREC,ISRC,13) .GT. 0.0) THEN
-                  TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11) /&
-                  &TTRMOUT(IREC,ISRC,13)) ! DISTR / UEFFD
-               ELSE
-                  TTRMTIME = 0.
-               ENDIF
-               IF (TTRMDBG) THEN
-                  TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-                  TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,13) ! UEFFD
-                  TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                  TTRMSRC(IREC,ISRC) = 'UNST-M-DIR'
-               END IF
-            ELSE ! for indirect dominant meander plume
-               IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-                  TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11) /&
-                  &TTRMOUT(IREC,ISRC,12)) ! DISTR / UEFF
-               ELSE
-                  TTRMTIME = 0.
-               ENDIF
-               IF (TTRMDBG) THEN
-                  TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-                  TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFF
-                  TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                  TTRMSRC(IREC,ISRC) = 'UNST-M-IND'
-               END IF
-            END IF
-         END IF
-      ELSE ! For the COHERENT Plume
-         IF (TTRMOUT(IREC,ISRC,10) .GE. 0.) THEN ! If the downwind distance is >= 0 use downwind distance
-            IF (STABLE) THEN
-               IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-                  TTRMTIME = DABS(TTRMOUT(IREC,ISRC,10) /&
-                  &TTRMOUT(IREC,ISRC,12)) ! X / UEFF ! Use downwind distance: TTRMOUT(IREC,ISRC,10)
-               ELSE
-                  TTRMTIME = 0.
-               ENDIF
-               IF (TTRMDBG) THEN
-                  TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,10) ! X
-                  TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFF
-                  TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                  TTRMSRC(IREC,ISRC) = 'STAB-C-GAU'
-               END IF
-            ELSE
-               IF (TTRMOUT(IREC,ISRC,16) .GE. 0.5) THEN ! For partial penetrated dominant COHERENT plume
-                  IF(TTRMOUT(IREC,ISRC,14) .GT. 0.0) THEN
-                     TTRMTIME = DABS(TTRMOUT(IREC,ISRC,10)/&
-                     &TTRMOUT(IREC,ISRC,14)) ! X / UEFF3
-                  ELSE
-                     TTRMTIME = 0.
-                  ENDIF
-                  IF (TTRMDBG) THEN
-                     TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,10) ! X
-                     TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,14) ! UEFF3
-                     TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                     TTRMSRC(IREC,ISRC) = 'UNST-C-PEN'
-                  END IF
-               ELSE IF (TTRMOUT(IREC,ISRC,19) .GE.&
-               &TTRMOUT(IREC,ISRC,18)) THEN! CHID >= CHIN; For direct dominant COHERENT plume
-                  IF(TTRMOUT(IREC,ISRC,13) .GT. 0.0) THEN
-                     TTRMTIME = DABS(TTRMOUT(IREC,ISRC,10)/&
-                     &TTRMOUT(IREC,ISRC,13)) ! X / UEFFD
-                  ELSE
-                     TTRMTIME = 0.
-                  ENDIF
-                  IF (TTRMDBG) THEN
-                     TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,10) ! X
-                     TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,13) ! UEFFD
-                     TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                     TTRMSRC(IREC,ISRC) = 'UNST-C-DIR'
-                  END IF
-               ELSE ! for indirect dominant COHERENT plume
-                  IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-                     TTRMTIME = DABS(TTRMOUT(IREC,ISRC,10)/&
-                     &TTRMOUT(IREC,ISRC,12)) ! X / UEFF
-                  ELSE
-                     TTRMTIME = 0.
-                  ENDIF
-                  IF (TTRMDBG) THEN
-                     TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,10) ! X
-                     TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFF
-                     TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                     TTRMSRC(IREC,ISRC) = 'UNST-C-IND'
-                  END IF
-               END IF
-            END IF
-         ELSE ! If the downwind distance is < 0, use the RADIAL distance
-            IF (STABLE) THEN
-               IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-                  TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11) /&
-                  &TTRMOUT(IREC,ISRC,12)) ! DISTR / UEFF ! Use downwind distance: TTRMOUT(IREC,ISRC,10)
-               ELSE
-                  TTRMTIME = 0.
-               ENDIF
-               IF (TTRMDBG) THEN
-                  TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-                  TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFF
-                  TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                  TTRMSRC(IREC,ISRC) = 'STAB-m-GAU'
-               END IF
-            ELSE
-               IF (TTRMOUT(IREC,ISRC,16) .GE. 0.5) THEN ! For partial penetrated dominant COHERENT plume
-                  IF(TTRMOUT(IREC,ISRC,14) .GT. 0.0) THEN
-                     TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11)/&
-                     &TTRMOUT(IREC,ISRC,14)) ! DISTR / UEFF3
-                  ELSE
-                     TTRMTIME = 0.
-                  ENDIF
-                  IF (TTRMDBG) THEN
-                     TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-                     TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,14) ! UEFF3
-                     TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                     TTRMSRC(IREC,ISRC) = 'UNST-m-PEN'
-                  END IF
-               ELSE IF (TTRMOUT(IREC,ISRC,19) .GE.&
-               &TTRMOUT(IREC,ISRC,18)) THEN! CHID >= CHIN; For direct dominant COHERENT plume
-                  IF(TTRMOUT(IREC,ISRC,13) .GT. 0.0) THEN
-                     TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11)/&
-                     &TTRMOUT(IREC,ISRC,13)) ! DISTR / UEFFD
-                  ELSE
-                     TTRMTIME = 0.
-                  ENDIF
-                  IF (TTRMDBG) THEN
-                     TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-                     TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,13) ! UEFFD
-                     TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                     TTRMSRC(IREC,ISRC) = 'UNST-m-DIR'
-                  END IF
-               ELSE ! for indirect dominant COHERENT plume
-                  IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-                     TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11)/&
-                     &TTRMOUT(IREC,ISRC,12)) ! DISTR / UEFF
-                  ELSE
-                     TTRMTIME = 0.
-                  ENDIF
-                  IF (TTRMDBG) THEN
-                     TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-                     TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFF
-                     TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                     TTRMSRC(IREC,ISRC) = 'UNST-m-IND'
-                  END IF
-               END IF
-            END IF
-         ENDIF
-      ENDIF
-   ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME') THEN
-      IF (TTRMOUT(IREC,ISRC,15) .GE. 0.5) THEN ! Meander plume; Use RADIAL distance (DISTR)
-         IF (STABLE) THEN ! Use  eff. wspd (UEFF)
-            IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-               TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11) /&
-               &TTRMOUT(IREC,ISRC,12)) ! DISTR / UEFF
-            ELSE
-               TTRMTIME = 0.
-            ENDIF
-            IF (TTRMDBG) THEN
-               TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-               TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFFD
-               TTRMOUT(IREC,ISRC,9) = TTRMTIME
-               TTRMSRC(IREC,ISRC) = 'STAB-M-UEF'
-            END IF
-         ELSE IF (TTRMOUT(IREC,ISRC,13) .GT.&
-         &TTRMOUT(IREC,ISRC,12)) THEN ! If UEFFD > UEFF: Direct meander plume
-            IF(TTRMOUT(IREC,ISRC,13) .GT. 0.0) THEN
-               TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11) /&
-               &TTRMOUT(IREC,ISRC,13)) ! DISTR / UEFFD
-            ELSE
-               TTRMTIME = 0.
-            ENDIF
-            IF (TTRMDBG) THEN
-               TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-               TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,13) ! UEFFD
-               TTRMOUT(IREC,ISRC,9) = TTRMTIME
-               TTRMSRC(IREC,ISRC) = 'UNST-M-DIR'
-            END IF
-         ELSE ! If UEFFD < UEFF: INDIRECT Meander plume
-            IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-               TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11) /&
-               &TTRMOUT(IREC,ISRC,12)) ! DISTR / UEFF
-            ELSE
-               TTRMTIME = 0.
-            ENDIF
-            IF (TTRMDBG) THEN
-               TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-               TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFF
-               TTRMOUT(IREC,ISRC,9) = TTRMTIME
-               TTRMSRC(IREC,ISRC) = 'UNST-M-IND'
-            END IF
-         END IF
-      ELSE ! for COHERENT plume
-         IF (TTRMOUT(IREC,ISRC,10) .GE. 0.0) THEN ! For downwind distances >= 0.0 use the DOWNWIND distance
-            IF (STABLE) THEN ! Use  eff. wspd (UEFF)
-               IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-                  TTRMTIME = DABS(TTRMOUT(IREC,ISRC,10)/&
-                  &TTRMOUT(IREC,ISRC,12)) ! X / UEFF
-               ELSE
-                  TTRMTIME = 0.
-               ENDIF
-               IF (TTRMDBG) THEN
-                  TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,10) ! X
-                  TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFF
-                  TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                  TTRMSRC(IREC,ISRC) = 'STAB-C-UEF'
-               END IF
-            ELSE IF (TTRMOUT(IREC,ISRC,13) .GT.&
-            &TTRMOUT(IREC,ISRC,12)) THEN ! IF UEFFD > UEFF: DIRECT COHERENT
-               IF(TTRMOUT(IREC,ISRC,13) .GT. 0.0) THEN
-                  TTRMTIME = DABS(TTRMOUT(IREC,ISRC,10)/&
-                  &TTRMOUT(IREC,ISRC,13)) ! X / UEFFD
-               ELSE
-                  TTRMTIME = 0.
-               ENDIF
-               IF (TTRMDBG) THEN
-                  TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,10) ! X
-                  TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,13) ! UEFFD
-                  TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                  TTRMSRC(IREC,ISRC) = 'UNST-C-DIR'
-               END IF
-            ELSE ! UEFFD < UEFF: INDIRECT COHERENT
-               IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-                  TTRMTIME = DABS(TTRMOUT(IREC,ISRC,10)/&
-                  &TTRMOUT(IREC,ISRC,12)) ! X / UEFF
-               ELSE
-                  TTRMTIME = 0.
-               ENDIF
-               IF (TTRMDBG) THEN
-                  TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,10) ! X
-                  TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFF
-                  TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                  TTRMSRC(IREC,ISRC) = 'UNST-C-IND'
-               END IF
-            END IF
-         ELSE ! for DOWNWIND distance < 0, use RADIAL distance
-            IF (STABLE) THEN ! Use  eff. wspd (UEFFD)
-               IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-                  TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11)/&
-                  &TTRMOUT(IREC,ISRC,12)) ! DISTR / UEFF
-               ELSE
-                  TTRMTIME = 0.
-               ENDIF
-               IF (TTRMDBG) THEN
-                  TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-                  TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFF
-                  TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                  TTRMSRC(IREC,ISRC) = 'STAB-m-UEF'
-               END IF
-            ELSE IF (TTRMOUT(IREC,ISRC,13) .GT.&
-            &TTRMOUT(IREC,ISRC,12)) THEN ! IF UEFFD > UEFF: DIRECT COHERENT
-               IF(TTRMOUT(IREC,ISRC,13) .GT. 0.0) THEN
-                  TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11)/&
-                  &TTRMOUT(IREC,ISRC,13)) ! DISTR / UEFFD
-               ELSE
-                  TTRMTIME = 0.
-               ENDIF
-               IF (TTRMDBG) THEN
-                  TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! X
-                  TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,13) ! UEFFD
-                  TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                  TTRMSRC(IREC,ISRC) = 'UNST-m-DIR'
-               END IF
-            ELSE ! UEFFD < UEFF: INDIRECT COHERENT
-               IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-                  TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11)/&
-                  &TTRMOUT(IREC,ISRC,12)) ! DISTR / UEFF
-               ELSE
-                  TTRMTIME = 0.
-               ENDIF
-               IF (TTRMDBG) THEN
-                  TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-                  TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFF
-                  TTRMOUT(IREC,ISRC,9) = TTRMTIME
-                  TTRMSRC(IREC,ISRC) = 'UNST-m-IND'
-               END IF
-            END IF
-         END IF
-      END IF
-   ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA') THEN
+      if (ttrmout(irec,isrc,15) .ge. 0.5) then !MEANDER FRACTION >= 0.5
+         if (stable) then
+            if(ttrmout(irec,isrc,12) .gt. 0.0) then
+               ttrmtime = dabs(ttrmout(irec,isrc,11) /&
+               &ttrmout(irec,isrc,12)) ! DISTR / UEFF ! Use radial distance: TTRMOUT(IREC,ISRC,11)
+            else
+               ttrmtime = 0.
+            endif
+            if (ttrmdbg) then
+               ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+               ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFF
+               ttrmout(irec,isrc,9) = ttrmtime
+               ttrmsrc(irec,isrc) = 'STAB-M-GAU'
+            end if
+         else
+            if (ttrmout(irec,isrc,16) .ge. 0.5) then ! For partial penetrated dominant meander plume
+               if(ttrmout(irec,isrc,14) .gt. 0.0) then
+                  ttrmtime = dabs(ttrmout(irec,isrc,11) /&
+                  &ttrmout(irec,isrc,14)) ! DISTR / UEFF3
+               else
+                  ttrmtime = 0.
+               endif
+               if (ttrmdbg) then
+                  ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+                  ttrmout(irec,isrc,8) = ttrmout(irec,isrc,14) ! UEFF3
+                  ttrmout(irec,isrc,9) = ttrmtime
+                  ttrmsrc(irec,isrc) = 'UNST-M-PEN'
+               end if
+            else if (ttrmout(irec,isrc,19) .ge.&
+            &ttrmout(irec,isrc,18)) then! CHID >= CHIN; For direct dominant meander plume
+               if(ttrmout(irec,isrc,13) .gt. 0.0) then
+                  ttrmtime = dabs(ttrmout(irec,isrc,11) /&
+                  &ttrmout(irec,isrc,13)) ! DISTR / UEFFD
+               else
+                  ttrmtime = 0.
+               endif
+               if (ttrmdbg) then
+                  ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+                  ttrmout(irec,isrc,8) = ttrmout(irec,isrc,13) ! UEFFD
+                  ttrmout(irec,isrc,9) = ttrmtime
+                  ttrmsrc(irec,isrc) = 'UNST-M-DIR'
+               end if
+            else ! for indirect dominant meander plume
+               if(ttrmout(irec,isrc,12) .gt. 0.0) then
+                  ttrmtime = dabs(ttrmout(irec,isrc,11) /&
+                  &ttrmout(irec,isrc,12)) ! DISTR / UEFF
+               else
+                  ttrmtime = 0.
+               endif
+               if (ttrmdbg) then
+                  ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+                  ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFF
+                  ttrmout(irec,isrc,9) = ttrmtime
+                  ttrmsrc(irec,isrc) = 'UNST-M-IND'
+               end if
+            end if
+         end if
+      else ! For the COHERENT Plume
+         if (ttrmout(irec,isrc,10) .ge. 0.) then ! If the downwind distance is >= 0 use downwind distance
+            if (stable) then
+               if(ttrmout(irec,isrc,12) .gt. 0.0) then
+                  ttrmtime = dabs(ttrmout(irec,isrc,10) /&
+                  &ttrmout(irec,isrc,12)) ! X / UEFF ! Use downwind distance: TTRMOUT(IREC,ISRC,10)
+               else
+                  ttrmtime = 0.
+               endif
+               if (ttrmdbg) then
+                  ttrmout(irec,isrc,7) = ttrmout(irec,isrc,10) ! X
+                  ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFF
+                  ttrmout(irec,isrc,9) = ttrmtime
+                  ttrmsrc(irec,isrc) = 'STAB-C-GAU'
+               end if
+            else
+               if (ttrmout(irec,isrc,16) .ge. 0.5) then ! For partial penetrated dominant COHERENT plume
+                  if(ttrmout(irec,isrc,14) .gt. 0.0) then
+                     ttrmtime = dabs(ttrmout(irec,isrc,10)/&
+                     &ttrmout(irec,isrc,14)) ! X / UEFF3
+                  else
+                     ttrmtime = 0.
+                  endif
+                  if (ttrmdbg) then
+                     ttrmout(irec,isrc,7) = ttrmout(irec,isrc,10) ! X
+                     ttrmout(irec,isrc,8) = ttrmout(irec,isrc,14) ! UEFF3
+                     ttrmout(irec,isrc,9) = ttrmtime
+                     ttrmsrc(irec,isrc) = 'UNST-C-PEN'
+                  end if
+               else if (ttrmout(irec,isrc,19) .ge.&
+               &ttrmout(irec,isrc,18)) then! CHID >= CHIN; For direct dominant COHERENT plume
+                  if(ttrmout(irec,isrc,13) .gt. 0.0) then
+                     ttrmtime = dabs(ttrmout(irec,isrc,10)/&
+                     &ttrmout(irec,isrc,13)) ! X / UEFFD
+                  else
+                     ttrmtime = 0.
+                  endif
+                  if (ttrmdbg) then
+                     ttrmout(irec,isrc,7) = ttrmout(irec,isrc,10) ! X
+                     ttrmout(irec,isrc,8) = ttrmout(irec,isrc,13) ! UEFFD
+                     ttrmout(irec,isrc,9) = ttrmtime
+                     ttrmsrc(irec,isrc) = 'UNST-C-DIR'
+                  end if
+               else ! for indirect dominant COHERENT plume
+                  if(ttrmout(irec,isrc,12) .gt. 0.0) then
+                     ttrmtime = dabs(ttrmout(irec,isrc,10)/&
+                     &ttrmout(irec,isrc,12)) ! X / UEFF
+                  else
+                     ttrmtime = 0.
+                  endif
+                  if (ttrmdbg) then
+                     ttrmout(irec,isrc,7) = ttrmout(irec,isrc,10) ! X
+                     ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFF
+                     ttrmout(irec,isrc,9) = ttrmtime
+                     ttrmsrc(irec,isrc) = 'UNST-C-IND'
+                  end if
+               end if
+            end if
+         else ! If the downwind distance is < 0, use the RADIAL distance
+            if (stable) then
+               if(ttrmout(irec,isrc,12) .gt. 0.0) then
+                  ttrmtime = dabs(ttrmout(irec,isrc,11) /&
+                  &ttrmout(irec,isrc,12)) ! DISTR / UEFF ! Use downwind distance: TTRMOUT(IREC,ISRC,10)
+               else
+                  ttrmtime = 0.
+               endif
+               if (ttrmdbg) then
+                  ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+                  ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFF
+                  ttrmout(irec,isrc,9) = ttrmtime
+                  ttrmsrc(irec,isrc) = 'STAB-m-GAU'
+               end if
+            else
+               if (ttrmout(irec,isrc,16) .ge. 0.5) then ! For partial penetrated dominant COHERENT plume
+                  if(ttrmout(irec,isrc,14) .gt. 0.0) then
+                     ttrmtime = dabs(ttrmout(irec,isrc,11)/&
+                     &ttrmout(irec,isrc,14)) ! DISTR / UEFF3
+                  else
+                     ttrmtime = 0.
+                  endif
+                  if (ttrmdbg) then
+                     ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+                     ttrmout(irec,isrc,8) = ttrmout(irec,isrc,14) ! UEFF3
+                     ttrmout(irec,isrc,9) = ttrmtime
+                     ttrmsrc(irec,isrc) = 'UNST-m-PEN'
+                  end if
+               else if (ttrmout(irec,isrc,19) .ge.&
+               &ttrmout(irec,isrc,18)) then! CHID >= CHIN; For direct dominant COHERENT plume
+                  if(ttrmout(irec,isrc,13) .gt. 0.0) then
+                     ttrmtime = dabs(ttrmout(irec,isrc,11)/&
+                     &ttrmout(irec,isrc,13)) ! DISTR / UEFFD
+                  else
+                     ttrmtime = 0.
+                  endif
+                  if (ttrmdbg) then
+                     ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+                     ttrmout(irec,isrc,8) = ttrmout(irec,isrc,13) ! UEFFD
+                     ttrmout(irec,isrc,9) = ttrmtime
+                     ttrmsrc(irec,isrc) = 'UNST-m-DIR'
+                  end if
+               else ! for indirect dominant COHERENT plume
+                  if(ttrmout(irec,isrc,12) .gt. 0.0) then
+                     ttrmtime = dabs(ttrmout(irec,isrc,11)/&
+                     &ttrmout(irec,isrc,12)) ! DISTR / UEFF
+                  else
+                     ttrmtime = 0.
+                  endif
+                  if (ttrmdbg) then
+                     ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+                     ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFF
+                     ttrmout(irec,isrc,9) = ttrmtime
+                     ttrmsrc(irec,isrc) = 'UNST-m-IND'
+                  end if
+               end if
+            end if
+         endif
+      endif
+   else if (srctyp(isrc) .eq. 'VOLUME') then
+      if (ttrmout(irec,isrc,15) .ge. 0.5) then ! Meander plume; Use RADIAL distance (DISTR)
+         if (stable) then ! Use  eff. wspd (UEFF)
+            if(ttrmout(irec,isrc,12) .gt. 0.0) then
+               ttrmtime = dabs(ttrmout(irec,isrc,11) /&
+               &ttrmout(irec,isrc,12)) ! DISTR / UEFF
+            else
+               ttrmtime = 0.
+            endif
+            if (ttrmdbg) then
+               ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+               ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFFD
+               ttrmout(irec,isrc,9) = ttrmtime
+               ttrmsrc(irec,isrc) = 'STAB-M-UEF'
+            end if
+         else if (ttrmout(irec,isrc,13) .gt.&
+         &ttrmout(irec,isrc,12)) then ! If UEFFD > UEFF: Direct meander plume
+            if(ttrmout(irec,isrc,13) .gt. 0.0) then
+               ttrmtime = dabs(ttrmout(irec,isrc,11) /&
+               &ttrmout(irec,isrc,13)) ! DISTR / UEFFD
+            else
+               ttrmtime = 0.
+            endif
+            if (ttrmdbg) then
+               ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+               ttrmout(irec,isrc,8) = ttrmout(irec,isrc,13) ! UEFFD
+               ttrmout(irec,isrc,9) = ttrmtime
+               ttrmsrc(irec,isrc) = 'UNST-M-DIR'
+            end if
+         else ! If UEFFD < UEFF: INDIRECT Meander plume
+            if(ttrmout(irec,isrc,12) .gt. 0.0) then
+               ttrmtime = dabs(ttrmout(irec,isrc,11) /&
+               &ttrmout(irec,isrc,12)) ! DISTR / UEFF
+            else
+               ttrmtime = 0.
+            endif
+            if (ttrmdbg) then
+               ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+               ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFF
+               ttrmout(irec,isrc,9) = ttrmtime
+               ttrmsrc(irec,isrc) = 'UNST-M-IND'
+            end if
+         end if
+      else ! for COHERENT plume
+         if (ttrmout(irec,isrc,10) .ge. 0.0) then ! For downwind distances >= 0.0 use the DOWNWIND distance
+            if (stable) then ! Use  eff. wspd (UEFF)
+               if(ttrmout(irec,isrc,12) .gt. 0.0) then
+                  ttrmtime = dabs(ttrmout(irec,isrc,10)/&
+                  &ttrmout(irec,isrc,12)) ! X / UEFF
+               else
+                  ttrmtime = 0.
+               endif
+               if (ttrmdbg) then
+                  ttrmout(irec,isrc,7) = ttrmout(irec,isrc,10) ! X
+                  ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFF
+                  ttrmout(irec,isrc,9) = ttrmtime
+                  ttrmsrc(irec,isrc) = 'STAB-C-UEF'
+               end if
+            else if (ttrmout(irec,isrc,13) .gt.&
+            &ttrmout(irec,isrc,12)) then ! IF UEFFD > UEFF: DIRECT COHERENT
+               if(ttrmout(irec,isrc,13) .gt. 0.0) then
+                  ttrmtime = dabs(ttrmout(irec,isrc,10)/&
+                  &ttrmout(irec,isrc,13)) ! X / UEFFD
+               else
+                  ttrmtime = 0.
+               endif
+               if (ttrmdbg) then
+                  ttrmout(irec,isrc,7) = ttrmout(irec,isrc,10) ! X
+                  ttrmout(irec,isrc,8) = ttrmout(irec,isrc,13) ! UEFFD
+                  ttrmout(irec,isrc,9) = ttrmtime
+                  ttrmsrc(irec,isrc) = 'UNST-C-DIR'
+               end if
+            else ! UEFFD < UEFF: INDIRECT COHERENT
+               if(ttrmout(irec,isrc,12) .gt. 0.0) then
+                  ttrmtime = dabs(ttrmout(irec,isrc,10)/&
+                  &ttrmout(irec,isrc,12)) ! X / UEFF
+               else
+                  ttrmtime = 0.
+               endif
+               if (ttrmdbg) then
+                  ttrmout(irec,isrc,7) = ttrmout(irec,isrc,10) ! X
+                  ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFF
+                  ttrmout(irec,isrc,9) = ttrmtime
+                  ttrmsrc(irec,isrc) = 'UNST-C-IND'
+               end if
+            end if
+         else ! for DOWNWIND distance < 0, use RADIAL distance
+            if (stable) then ! Use  eff. wspd (UEFFD)
+               if(ttrmout(irec,isrc,12) .gt. 0.0) then
+                  ttrmtime = dabs(ttrmout(irec,isrc,11)/&
+                  &ttrmout(irec,isrc,12)) ! DISTR / UEFF
+               else
+                  ttrmtime = 0.
+               endif
+               if (ttrmdbg) then
+                  ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+                  ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFF
+                  ttrmout(irec,isrc,9) = ttrmtime
+                  ttrmsrc(irec,isrc) = 'STAB-m-UEF'
+               end if
+            else if (ttrmout(irec,isrc,13) .gt.&
+            &ttrmout(irec,isrc,12)) then ! IF UEFFD > UEFF: DIRECT COHERENT
+               if(ttrmout(irec,isrc,13) .gt. 0.0) then
+                  ttrmtime = dabs(ttrmout(irec,isrc,11)/&
+                  &ttrmout(irec,isrc,13)) ! DISTR / UEFFD
+               else
+                  ttrmtime = 0.
+               endif
+               if (ttrmdbg) then
+                  ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! X
+                  ttrmout(irec,isrc,8) = ttrmout(irec,isrc,13) ! UEFFD
+                  ttrmout(irec,isrc,9) = ttrmtime
+                  ttrmsrc(irec,isrc) = 'UNST-m-DIR'
+               end if
+            else ! UEFFD < UEFF: INDIRECT COHERENT
+               if(ttrmout(irec,isrc,12) .gt. 0.0) then
+                  ttrmtime = dabs(ttrmout(irec,isrc,11)/&
+                  &ttrmout(irec,isrc,12)) ! DISTR / UEFF
+               else
+                  ttrmtime = 0.
+               endif
+               if (ttrmdbg) then
+                  ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+                  ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFF
+                  ttrmout(irec,isrc,9) = ttrmtime
+                  ttrmsrc(irec,isrc) = 'UNST-m-IND'
+               end if
+            end if
+         end if
+      end if
+   else if (srctyp(isrc)(1:4) .eq. 'AREA') then
 !     Perform TTRM calcs for AREA, AREAPOLY or AREACIRC sources
-      IF (STABLE) THEN ! Use  eff. wspd (UEFF)
-         IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-            TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11)/&
-            &TTRMOUT(IREC,ISRC,12)) ! DISTR / UEFF
-         ELSE
-            TTRMTIME = 0.
-         ENDIF
-         IF (TTRMDBG) THEN
-            TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-            TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFF
-            TTRMOUT(IREC,ISRC,9) = TTRMTIME
-            TTRMSRC(IREC,ISRC) = 'AREA-STAB'
-         END IF
-      ELSE IF (TTRMOUT(IREC,ISRC,13) .GT.&
-      &TTRMOUT(IREC,ISRC,12)) THEN ! IF UEFFD > UEFF: DIRECT COHERENT
-         IF(TTRMOUT(IREC,ISRC,13) .GT. 0.0) THEN
-            TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11)/&
-            &TTRMOUT(IREC,ISRC,13)) ! DISTR / UEFFD
-         ELSE
-            TTRMTIME = 0.
-         ENDIF
-         IF (TTRMDBG) THEN
-            TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-            TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,13) ! UEFFD
-            TTRMOUT(IREC,ISRC,9) = TTRMTIME
-            TTRMSRC(IREC,ISRC) = 'AREA-U-DIR'
-         END IF
-      ELSE ! UEFFD < UEFF: INDIRECT COHERENT
-         IF(TTRMOUT(IREC,ISRC,12) .GT. 0.0) THEN
-            TTRMTIME = DABS(TTRMOUT(IREC,ISRC,11)/&
-            &TTRMOUT(IREC,ISRC,12)) ! DISTR / UEFF
-         ELSE
-            TTRMTIME = 0.
-         ENDIF
-         IF (TTRMDBG) THEN
-            TTRMOUT(IREC,ISRC,7) = TTRMOUT(IREC,ISRC,11) ! DISTR
-            TTRMOUT(IREC,ISRC,8) = TTRMOUT(IREC,ISRC,12) ! UEFF
-            TTRMOUT(IREC,ISRC,9) = TTRMTIME
-            TTRMSRC(IREC,ISRC) = 'AREA-U-IND'
-         END IF
-      END IF
-   END IF
+      if (stable) then ! Use  eff. wspd (UEFF)
+         if(ttrmout(irec,isrc,12) .gt. 0.0) then
+            ttrmtime = dabs(ttrmout(irec,isrc,11)/&
+            &ttrmout(irec,isrc,12)) ! DISTR / UEFF
+         else
+            ttrmtime = 0.
+         endif
+         if (ttrmdbg) then
+            ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+            ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFF
+            ttrmout(irec,isrc,9) = ttrmtime
+            ttrmsrc(irec,isrc) = 'AREA-STAB'
+         end if
+      else if (ttrmout(irec,isrc,13) .gt.&
+      &ttrmout(irec,isrc,12)) then ! IF UEFFD > UEFF: DIRECT COHERENT
+         if(ttrmout(irec,isrc,13) .gt. 0.0) then
+            ttrmtime = dabs(ttrmout(irec,isrc,11)/&
+            &ttrmout(irec,isrc,13)) ! DISTR / UEFFD
+         else
+            ttrmtime = 0.
+         endif
+         if (ttrmdbg) then
+            ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+            ttrmout(irec,isrc,8) = ttrmout(irec,isrc,13) ! UEFFD
+            ttrmout(irec,isrc,9) = ttrmtime
+            ttrmsrc(irec,isrc) = 'AREA-U-DIR'
+         end if
+      else ! UEFFD < UEFF: INDIRECT COHERENT
+         if(ttrmout(irec,isrc,12) .gt. 0.0) then
+            ttrmtime = dabs(ttrmout(irec,isrc,11)/&
+            &ttrmout(irec,isrc,12)) ! DISTR / UEFF
+         else
+            ttrmtime = 0.
+         endif
+         if (ttrmdbg) then
+            ttrmout(irec,isrc,7) = ttrmout(irec,isrc,11) ! DISTR
+            ttrmout(irec,isrc,8) = ttrmout(irec,isrc,12) ! UEFF
+            ttrmout(irec,isrc,9) = ttrmtime
+            ttrmsrc(irec,isrc) = 'AREA-U-IND'
+         end if
+      end if
+   end if
 
-   RETURN
-END
+   return
+end
 
 
-SUBROUTINE ARM2_CALC
+subroutine arm2_calc
 !***********************************************************************
 !             ARM2_CALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -11008,232 +11008,232 @@ SUBROUTINE ARM2_CALC
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: ARM2_Coef(7)
-   DOUBLE PRECISION :: NOXCONC(NUMREC,NUMTYP)
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: ARM2_Coef(7)
+   double precision :: noxconc(numrec,numtyp)
 
 !     Variable Initializations
-   DATA ARM2_Coef / -1.1723D-17, 4.2795D-14, 5.8345D-11, 3.4555D-08,&
-   &5.6062D-06, 2.7383D-03, 1.2441D+00 /
+   data ARM2_Coef / -1.1723d-17, 4.2795d-14, 5.8345d-11, 3.4555d-08,&
+   &5.6062d-06, 2.7383d-03, 1.2441d+00 /
 
-   MODNAM = 'ARM2_CALC'
-   NOXCONC(:,:) = 0.0D0
-   HRVAL(:)     = 0.0D0
-   RatioARM2    = 0.0D0
+   modnam = 'ARM2_CALC'
+   noxconc(:,:) = 0.0d0
+   hrval(:)     = 0.0d0
+   RatioARM2    = 0.0d0
 
-   IF (.NOT.EVONLY) THEN
+   if (.not.evonly) then
 ! ---    Non-EVENT processing mode
 
 ! ---    Calculate total NOXCONC for each receptor from all sources
 !        based on the CHI(IREC,ISRC,ITYP) array
-      NOXCONC(:,:) = SUM(CHI,DIM=2)
+      noxconc(:,:) = sum(chi,dim=2)
 
 ! ---    Begin Receptor LOOP
-      RECEPTOR_LOOP: DO IREC = 1, NUMREC
+      receptor_loop: do irec = 1, numrec
 
 ! ---       Initialize ARM2 Ratio for this receptor
-         RatioARM2 = 0.0D0
+         RatioARM2 = 0.0d0
 
 !           Calculate ARM2 ratio, RatioARM2, based on NOXCONC for this receptor for ITYP=1
-         RatioARM2 = (ARM2_Coef(1)*NOXCONC(IREC,1)**6) +&
-         &(ARM2_Coef(2)*NOXCONC(IREC,1)**5) -&
-         &(ARM2_Coef(3)*NOXCONC(IREC,1)**4) +&
-         &(ARM2_Coef(4)*NOXCONC(IREC,1)**3) -&
-         &(ARM2_Coef(5)*NOXCONC(IREC,1)**2) -&
-         &ARM2_Coef(6)*NOXCONC(IREC,1) + ARM2_Coef(7)
+         RatioARM2 = (ARM2_Coef(1)*noxconc(irec,1)**6) +&
+         &(ARM2_Coef(2)*noxconc(irec,1)**5) -&
+         &(ARM2_Coef(3)*noxconc(irec,1)**4) +&
+         &(ARM2_Coef(4)*noxconc(irec,1)**3) -&
+         &(ARM2_Coef(5)*noxconc(irec,1)**2) -&
+         &ARM2_Coef(6)*noxconc(irec,1) + ARM2_Coef(7)
 
 !           Adjust RatioARM2 if needed based on ARM2_Max and ARM2_min
-         IF( RatioARM2 .gt. ARM2_Max )THEN
+         if( RatioARM2 .gt. ARM2_Max )then
             RatioARM2 = ARM2_Max
-         ELSEIF( RatioARM2 .lt. ARM2_min )THEN
+         elseif( RatioARM2 .lt. ARM2_min )then
             RatioARM2 = ARM2_min
-         ENDIF
+         endif
 
 ! ---       Begin Source Group Loop
-         GROUP_LOOP: DO IGRP = 1, NUMGRP
+         group_loop: do igrp = 1, numgrp
 
 ! ---        Begin Source Loop
-            SOURCE_LOOP: DO ISRC = 1, NUMSRC
+            source_loop: do isrc = 1, numsrc
 
-               DO ITYP = 1, NUMTYP
+               do ityp = 1, numtyp
 
 ! ---             Assign CHI value adjusted by RatioARM2 to HRVAL
-                  HRVAL(ITYP) = CHI(IREC,ISRC,ITYP) * RatioARM2
+                  hrval(ityp) = chi(irec,isrc,ityp) * RatioARM2
 !! Added for TTRM2
-                  IF (RUNTTRM2) THEN
-                     IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
-                        WRITE(TTRM2TMP(2),PSTFRM,ERR=87) AXR(IREC), AYR(IREC),&
-                        &HRVAL(1),&
-                        &AZELEV(IREC), AZHILL(IREC), AZFLAG(IREC),&
-                        &CHRAVE(1), GRPID(IGRP), KURDAT, SRCID(ISRC)
-                        GO TO 887
-87                      WRITE(DUMMY,'("PSTFL",I4.4)') TTRM2TMP(2)
-                        CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-                        RUNERR = .TRUE.
-887                     CONTINUE
-                     ENDIF
-                     IF (TTRMCOMPARE(IGRP,ISRC,IREC,ITYP) .LT. HRVAL(ITYP)) THEN
-                        HRVAL(ITYP) = TTRMCOMPARE(IGRP,ISRC,IREC,ITYP)
-                     ENDIF
-                     IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
-                        WRITE(TTRM2TMP(3),PSTFRM,ERR=97) AXR(IREC), AYR(IREC),&
-                        &HRVAL(1),&
-                        &AZELEV(IREC), AZHILL(IREC), AZFLAG(IREC),&
-                        &CHRAVE(1), GRPID(IGRP), KURDAT, SRCID(ISRC)
-                        GO TO 897
-97                      WRITE(DUMMY,'("PSTFL",I4.4)') TTRM2TMP(3)
-                        CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-                        RUNERR = .TRUE.
-897                     CONTINUE
-                     ENDIF
-                  ENDIF
+                  if (runttrm2) then
+                     if (ttrm2dbg .and. (cmeth .lt. 3)) then
+                        write(ttrm2tmp(2),pstfrm,err=87) axr(irec), ayr(irec),&
+                        &hrval(1),&
+                        &azelev(irec), azhill(irec), azflag(irec),&
+                        &chrave(1), grpid(igrp), kurdat, srcid(isrc)
+                        go to 887
+87                      write(dummy,'("PSTFL",I4.4)') ttrm2tmp(2)
+                        call errhdl(path,modnam,'E','520',dummy)
+                        runerr = .true.
+887                     continue
+                     endif
+                     if (ttrmcompare(igrp,isrc,irec,ityp) .lt. hrval(ityp)) then
+                        hrval(ityp) = ttrmcompare(igrp,isrc,irec,ityp)
+                     endif
+                     if (ttrm2dbg .and. (cmeth .lt. 3)) then
+                        write(ttrm2tmp(3),pstfrm,err=97) axr(irec), ayr(irec),&
+                        &hrval(1),&
+                        &azelev(irec), azhill(irec), azflag(irec),&
+                        &chrave(1), grpid(igrp), kurdat, srcid(isrc)
+                        go to 897
+97                      write(dummy,'("PSTFL",I4.4)') ttrm2tmp(3)
+                        call errhdl(path,modnam,'E','520',dummy)
+                        runerr = .true.
+897                     continue
+                     endif
+                  endif
 !! End of TTRM2 insert; Nov. 2021
-               END DO
+               end do
 
 !              Call SUMVAL to update AVEVAL, ANNVAL, and SHVALS Arrays          ---   CALL SUMVAL
-               CALL SUMVAL
+               call sumval
 
 ! ---          Write data to ARM2 debugging file if needed
-               if (ARM2DEBUG) then
-                  if (IGROUP(ISRC,IGRP) .EQ. 1) then
-                     write(ARM2DBG,9987,ERR=998) kurdat, irec,&
+               if (arm2debug) then
+                  if (igroup(isrc,igrp) .eq. 1) then
+                     write(arm2dbg,9987,err=998) kurdat, irec,&
                      &grpid(igrp), isrc, srcid(isrc),&
-                     &NOXCONC(IREC,1), CHI(IREC,ISRC,1),&
-                     &RatioARM2, HRVAL(1),&
-                     &AVEVAL(IREC,IGRP,1,1)
+                     &noxconc(irec,1), chi(irec,isrc,1),&
+                     &RatioARM2, hrval(1),&
+                     &aveval(irec,igrp,1,1)
 9987                 format(1x,i8.8,i6,2x,a8,i6,2x,a12,2x,&
                      &5(1x,e12.5))
                   end if
                end if
 
                go to 1234
-998            CALL ERRHDL(PATH,MODNAM,'E','520','ARM2DEBUG')
-               RUNERR = .TRUE.
+998            call errhdl(path,modnam,'E','520','ARM2DEBUG')
+               runerr = .true.
 1234           continue
 
-            END DO SOURCE_LOOP
+            end do source_loop
 
-            IF (GRP_BACK(IGRP)) THEN
+            if (grp_back(igrp)) then
 
-               CALL SUMBACK_NO2
+               call sumback_no2
 
 ! ---          Write data to ARM2 debugging file
-               if (ARM2DEBUG) then
-                  write(ARM2DBG,99871,ERR=9981) kurdat, irec,&
-                  &grpid(IGRP), 'BACKGROUND',&
-                  &BGCONC, AVEVAL(IREC,IGRP,1,1)
+               if (arm2debug) then
+                  write(arm2dbg,99871,err=9981) kurdat, irec,&
+                  &grpid(igrp), 'BACKGROUND',&
+                  &bgconc, aveval(irec,igrp,1,1)
 99871             format(1x,i8.8,i6,2x,a8,8x,a10,43x,2(1x,e12.5))
                end if
 
-               GO TO 2345
+               go to 2345
 ! ---          Issue error message for writing to ARMDEBUG file
-9981           CALL ERRHDL(PATH,MODNAM,'E','520','ARMDEBUG')
-               RUNERR = .TRUE.
-2345           CONTINUE
+9981           call errhdl(path,modnam,'E','520','ARMDEBUG')
+               runerr = .true.
+2345           continue
 
-            END IF
+            end if
 
-         END DO GROUP_LOOP
+         end do group_loop
 
-      END DO RECEPTOR_LOOP
+      end do receptor_loop
 
-   ELSE IF (EVONLY) THEN
+   else if (evonly) then
 ! ---    EVENT Processing; initialize arrays
-      EV_AVEVAL(:) = 0.0D0
+      ev_aveval(:) = 0.0d0
 ! ---    Initialize ARM2 Ratio to 0.0D0
-      RatioARM2    = 0.0D0
+      RatioARM2    = 0.0d0
 
 ! ---    Calculate total NOXCONC for this EVENT from all sources
 !        based on the CHI(IREC,ISRC,ITYP) array
-      NOXCONC = SUM(CHI,DIM=2)
+      noxconc = sum(chi,dim=2)
 
 !        Calculate ARM2 ratio, RatioARM2, based on NOXCONC
-      RatioARM2 = (ARM2_Coef(1)*NOXCONC(1,1)**6) +&
-      &(ARM2_Coef(2)*NOXCONC(1,1)**5) -&
-      &(ARM2_Coef(3)*NOXCONC(1,1)**4) +&
-      &(ARM2_Coef(4)*NOXCONC(1,1)**3) -&
-      &(ARM2_Coef(5)*NOXCONC(1,1)**2) -&
-      &ARM2_Coef(6)*NOXCONC(1,1) + ARM2_Coef(7)
+      RatioARM2 = (ARM2_Coef(1)*noxconc(1,1)**6) +&
+      &(ARM2_Coef(2)*noxconc(1,1)**5) -&
+      &(ARM2_Coef(3)*noxconc(1,1)**4) +&
+      &(ARM2_Coef(4)*noxconc(1,1)**3) -&
+      &(ARM2_Coef(5)*noxconc(1,1)**2) -&
+      &ARM2_Coef(6)*noxconc(1,1) + ARM2_Coef(7)
 
 !        Adjust RatioARM2 if needed based on ARM2_Max and ARM2_min
-      IF (RatioARM2 .gt. ARM2_Max) THEN
+      if (RatioARM2 .gt. ARM2_Max) then
          RatioARM2 = ARM2_Max
-      ELSE IF (RatioARM2 .lt. ARM2_min) THEN
+      else if (RatioARM2 .lt. ARM2_min) then
          RatioARM2 = ARM2_min
-      END IF
+      end if
 
 ! ---    Begin Source Loop
-      EV_SOURCE_LOOP: DO ISRC = 1, NUMSRC
+      ev_source_loop: do isrc = 1, numsrc
 
-         ITYP = 1
+         ityp = 1
 
 ! ---       Apply RatioARM2 to hourly value from CHI array and
 !           assign to HRVAL array; then call EV_SUMVAL
-         HRVAL(ITYP) = CHI(1,ISRC,ITYP) * RatioARM2
+         hrval(ityp) = chi(1,isrc,ityp) * RatioARM2
 !! Added for TTRM2
-         IF (RUNTTRM2) THEN
-            IF (TTRMCOMPARE(IGRP,ISRC,1,ITYP) .LT. HRVAL(ITYP)) THEN
-               HRVAL(ITYP) = TTRMCOMPARE(IGRP,ISRC,1,ITYP)
-            ENDIF
-         ENDIF
+         if (runttrm2) then
+            if (ttrmcompare(igrp,isrc,1,ityp) .lt. hrval(ityp)) then
+               hrval(ityp) = ttrmcompare(igrp,isrc,1,ityp)
+            endif
+         endif
 !! End of TTRM2 insert; Nov. 2021
 !           Sum HRVAL to HRVALS and EV_AVEVAL    ---   CALL EV_SUMVAL
-         IF (IGROUP(ISRC,IDXEV(IEVENT)) .EQ. 1) THEN
-            CALL EV_SUMVAL
+         if (igroup(isrc,idxev(ievent)) .eq. 1) then
+            call ev_sumval
 
 ! ---          Write data to ARM2 debugging file
-            if (ARM2DEBUG) then
-               if (IGROUP(ISRC,IDXEV(IEVENT)) .EQ. 1) then
-                  write(ARM2DBG,99872,ERR=999) kurdat, ievent,&
-                  &EVNAME(IEVENT), EVAPER(IEVENT),&
-                  &grpid(IDXEV(IEVENT)), isrc, srcid(isrc),&
-                  &NOXCONC(1,1), CHI(1,ISRC,1), RatioARM2,&
-                  &HRVAL(1), GRPAVE(IDXEV(IEVENT))
+            if (arm2debug) then
+               if (igroup(isrc,idxev(ievent)) .eq. 1) then
+                  write(arm2dbg,99872,err=999) kurdat, ievent,&
+                  &evname(ievent), evaper(ievent),&
+                  &grpid(idxev(ievent)), isrc, srcid(isrc),&
+                  &noxconc(1,1), chi(1,isrc,1), RatioARM2,&
+                  &hrval(1), grpave(idxev(ievent))
                end if
             end if
 99872       format(1x,i8.8,i6,2x,a10,i5,2x,a8,1x,i5,2x,a12,2x,&
             &5(1x,e12.5))
 
-         END IF
+         end if
 
          go to 3456
-999      CALL ERRHDL(PATH,MODNAM,'E','520','ARM2DEBUG')
-         RUNERR = .TRUE.
+999      call errhdl(path,modnam,'E','520','ARM2DEBUG')
+         runerr = .true.
 3456     continue
 
-      END DO EV_SOURCE_LOOP
+      end do ev_source_loop
 
 !        Sum BACKGRND to HRVALS, EV_AVEVAL, GRPVAL and GRPAV Arrays ---   CALL EV_SUMBACK
-      IF (IDXEV(IEVENT) .EQ. IGRP .and.&
-      &GRP_BACK(IDXEV(IEVENT))) THEN
-         CALL EV_SUMBACK
+      if (idxev(ievent) .eq. igrp .and.&
+      &grp_back(idxev(ievent))) then
+         call ev_sumback
 
 ! ---       Write data to ARM2 debugging file
-         if (ARM2DEBUG) then
-            write(ARM2DBG,99881,ERR=9991) kurdat, ievent,&
-            &EVNAME(IEVENT), EVAPER(IEVENT),&
-            &grpid(IDXEV(IEVENT)), 'BACKGROUND',&
-            &EV_BGCONC(IHOUR), GRPAVE(IDXEV(IEVENT))
+         if (arm2debug) then
+            write(arm2dbg,99881,err=9991) kurdat, ievent,&
+            &evname(ievent), evaper(ievent),&
+            &grpid(idxev(ievent)), 'BACKGROUND',&
+            &ev_bgconc(ihour), grpave(idxev(ievent))
 99881       format(1x,i8.8,i6,2x,a10,1x,i4,2x,a8,8x,a10,43x,&
             &2(1x,e12.5))
          end if
 
-         GO TO 4567
+         go to 4567
 ! ---       Issue error message for writing to ARM2DEBUG file
-9991     CALL ERRHDL(PATH,MODNAM,'E','520','ARM2DEBUG')
-         RUNERR = .TRUE.
-4567     CONTINUE
+9991     call errhdl(path,modnam,'E','520','ARM2DEBUG')
+         runerr = .true.
+4567     continue
 
-      END IF
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE PVMRM_CALC(SRCS2USE)
+subroutine pvmrm_calc(srcs2use)
 !***********************************************************************
 !             PVMRM_CALC Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -11279,113 +11279,113 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER SRCS2USE*7
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   character srcs2use*7
+   character modnam*12
 
-   DOUBLE PRECISION :: MAXCHI(NUMREC,NUMTYP), MAXCONC
-   DOUBLE PRECISION :: BVERT,BVERT3, BHORIZ,BHORIZ3, VOLDOM,VOLSUM,&
+   double precision :: maxchi(numrec,numtyp), maxconc
+   double precision :: bvert,bvert3, bhoriz,bhoriz3, voldom,volsum,&
 !     JAT 7/22/21 YDOM NOT USED
 !     &                    XDOM, YDOM, DISTDOM, UDOM, FDOM
-   &XDOM, DISTDOM, UDOM, FDOM
-   DOUBLE PRECISION :: domO3moles, sumO3moles, domNOxmoles,&
+   &xdom, distdom, udom, fdom
+   double precision :: domO3moles, sumO3moles, domNOxmoles,&
    &sumNOxmoles, domConverted, sumConverted,&
    &PercentNO2
-   DOUBLE PRECISION :: AVE_NO2RATIO, AVE_NO2RATIO3
-   DOUBLE PRECISION :: ZCORR, PCORR, TCORR, PTZ, TAP
-   DOUBLE PRECISION :: XDEP, WIDTH, LENGTH, XMINR, XMAXR
-   DOUBLE PRECISION :: QPTOT
-   INTEGER :: DOMIDX(NUMREC,NUMTYP), IDOM, NDXBLZ
+   double precision :: ave_no2ratio, ave_no2ratio3
+   double precision :: zcorr, pcorr, tcorr, ptz, tap
+   double precision :: xdep, width, length, xminr, xmaxr
+   double precision :: qptot
+   integer :: domidx(numrec,numtyp), idom, ndxblz
 
 !     Variable Initializations
-   MODNAM = 'PVMRM_CALC'
-   WIDTH  = 0.0D0
-   LENGTH = 0.0D0
-   BHORIZ = 0.0D0
-   BHORIZ3= 0.0D0
-   BVERT  = 0.0D0
-   BVERT3 = 0.0D0
+   modnam = 'PVMRM_CALC'
+   width  = 0.0d0
+   length = 0.0d0
+   bhoriz = 0.0d0
+   bhoriz3= 0.0d0
+   bvert  = 0.0d0
+   bvert3 = 0.0d0
 
 ! --- Initialize AVE_NO2RATIO and other variables:
-   AVE_NO2RATIO = 0.0D0
-   AVE_NO2RATIO3= 0.0D0
-   domO3moles   = 0.0D0
-   sumO3moles   = 0.0D0
-   domNOxmoles  = 0.0D0
-   sumNOxmoles  = 0.0D0
-   domConverted = 0.0D0
-   sumConverted = 0.0D0
-   PercentNO2   = 0.0D0
+   ave_no2ratio = 0.0d0
+   ave_no2ratio3= 0.0d0
+   domO3moles   = 0.0d0
+   sumO3moles   = 0.0d0
+   domNOxmoles  = 0.0d0
+   sumNOxmoles  = 0.0d0
+   domConverted = 0.0d0
+   sumConverted = 0.0d0
+   PercentNO2   = 0.0d0
 
 ! --- Initialize MAXCHI and DOMIDX?
-   MAXCHI = 0.0D0
-   DOMIDX = 0
+   maxchi = 0.0d0
+   domidx = 0
 
 !     Determine maximum values and corresponding index by receptor
-   IF (TRIM(SRCS2USE) .EQ. 'ALLSRCS') THEN
+   if (trim(srcs2use) .eq. 'ALLSRCS') then
 !        Standard (Non-PSDCREDIT) run; use the global array operators
 !        MAXVAL and MAXLOC to determine max chi val and receptor index
-      MAXCHI = MAXVAL(CHI,DIM=2)
-      DOMIDX = MAXLOC(CHI,DIM=2)
-   ELSE
+      maxchi = maxval(chi,dim=2)
+      domidx = maxloc(chi,dim=2)
+   else
 !        PSDCREDIT run; use the routine AERMAX to limit which sources to
 !        use in determining the dominant and major contributing sources
-      CALL AERMAX(SRCS2USE,MAXCHI,DOMIDX)
-   END IF
+      call aermax(srcs2use,maxchi,domidx)
+   end if
 
 !     Begin Receptor LOOP
-   RECEPTOR_LOOP: DO IREC = 1, NUMREC
+   receptor_loop: do irec = 1, numrec
 
 !        Get max concentration and index for dominant source for
 !        this receptor
-      MAXCONC = MAXCHI(IREC,1)
-      IDOM    = DOMIDX(IREC,1)
-      IF (MAXCONC .EQ. 0.0D0) THEN
+      maxconc = maxchi(irec,1)
+      idom    = domidx(irec,1)
+      if (maxconc .eq. 0.0d0) then
 !           No impacts, cycle to next receptor
-         HRVAL  = 0.0D0
-         AERVAL = 0.0D0
-         CYCLE RECEPTOR_LOOP
-      END IF
+         hrval  = 0.0d0
+         aerval = 0.0d0
+         cycle receptor_loop
+      end if
 
 !        Assign effective wind speed and terrain weighting factor
 !        for dominant source, IDOM
-      UDOM = UEFFS(IREC,IDOM)
-      FDOM = FOPTS(IREC,IDOM)
+      udom = ueffs(irec,idom)
+      fdom = fopts(irec,idom)
 
 !        Assign wind direction based on dominant source
-      WDSIN = AWDSIN(IDOM)
-      WDCOS = AWDCOS(IDOM)
-      AFV   = AAFV(IDOM)
+      wdsin = awdsin(idom)
+      wdcos = awdcos(idom)
+      afv   = aafv(idom)
 
 !        Determine extent of major contributing sources;
 !        first initialize variables
-      HMNT  =   1.0D10
-      HMXT  =  -1.0D10
-      HMNH  =   1.0D10
-      HMXH  =  -1.0D10
-      HMNT3 =   1.0D10
-      HMXT3 =  -1.0D10
-      HMNH3 =   1.0D10
-      HMXH3 =  -1.0D10
-      CWMIN =   1.0D20
-      CWMAX =  -1.0D20
-      CWMIN3=   1.0D20
-      CWMAX3=  -1.0D20
-      DWMIN =   1.0D20
-      DWMAX =  -1.0D20
-      DWMIN3=   1.0D20
-      DWMAX3=  -1.0D20
-      XMINR =   1.0D20
-      XMAXR =  -1.0D20
-      WIDTH  =  0.0D0
-      LENGTH =  0.0D0
-      BHORIZ =  0.0D0
-      BHORIZ3=  0.0D0
-      BVERT  =  0.0D0
-      BVERT3 =  0.0D0
+      hmnt  =   1.0d10
+      hmxt  =  -1.0d10
+      hmnh  =   1.0d10
+      hmxh  =  -1.0d10
+      hmnt3 =   1.0d10
+      hmxt3 =  -1.0d10
+      hmnh3 =   1.0d10
+      hmxh3 =  -1.0d10
+      cwmin =   1.0d20
+      cwmax =  -1.0d20
+      cwmin3=   1.0d20
+      cwmax3=  -1.0d20
+      dwmin =   1.0d20
+      dwmax =  -1.0d20
+      dwmin3=   1.0d20
+      dwmax3=  -1.0d20
+      xminr =   1.0d20
+      xmaxr =  -1.0d20
+      width  =  0.0d0
+      length =  0.0d0
+      bhoriz =  0.0d0
+      bhoriz3=  0.0d0
+      bvert  =  0.0d0
+      bvert3 =  0.0d0
 
-      NUMCONT = 0
+      numcont = 0
 ! ---    Loop through sources to obtain major contributing sources
 !        Consideration given as to whether this is an emission credit run
 !         'ALLSRCS' = full PVMRM run
@@ -11395,454 +11395,454 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
 !        MAJOR_CONT subroutine also defines the lateral (crosswind)
 !        and longitudinal (alongwind) extent of major contributing
 !        sources, through CWMIN/CWMAX and DWMIN/DWMAX
-      SOURCE_LOOP1: DO ISRC = 1, NUMSRC
+      source_loop1: do isrc = 1, numsrc
 
-         IF (.NOT. PSDCREDIT) THEN
+         if (.not. psdcredit) then
 !              Full PVMRM run
 !              Included FDOM fraction in call to MAJOR_CONT (via IDOM srcid)
-            CALL MAJOR_CONT(MAXCONC,IDOM)
+            call major_cont(maxconc,idom)
 
-         ELSE IF (PSDCREDIT .and. TRIM(SRCS2USE) .EQ. 'NAAQSRC') THEN
+         else if (psdcredit .and. trim(srcs2use) .eq. 'NAAQSRC') then
 !              Emission credit run: Increment Consumption+Nonretired Baseline=NAAQS
-            IF (PSDSRCTYP(ISRC) .EQ. 'IC' .or.&
-            &PSDSRCTYP(ISRC) .EQ. 'NB') THEN
-               CALL MAJOR_CONT(MAXCONC,IDOM)
-            ELSE
-               CYCLE SOURCE_LOOP1
-            END IF
+            if (psdsrctyp(isrc) .eq. 'IC' .or.&
+            &psdsrctyp(isrc) .eq. 'NB') then
+               call major_cont(maxconc,idom)
+            else
+               cycle source_loop1
+            end if
 
-         ELSE IF (PSDCREDIT .and. TRIM(SRCS2USE) .EQ. 'ALLBASE') THEN
+         else if (psdcredit .and. trim(srcs2use) .eq. 'ALLBASE') then
 !              Emission credit run: Nonretired Baseline and Retired Baseline
-            IF (PSDSRCTYP(ISRC) .EQ. 'NB' .or.&
-            &PSDSRCTYP(ISRC) .EQ. 'RB') THEN
-               CALL MAJOR_CONT(MAXCONC,IDOM)
-            ELSE
-               CYCLE SOURCE_LOOP1
-            END IF
-         END IF
+            if (psdsrctyp(isrc) .eq. 'NB' .or.&
+            &psdsrctyp(isrc) .eq. 'RB') then
+               call major_cont(maxconc,idom)
+            else
+               cycle source_loop1
+            end if
+         end if
 
-      END DO SOURCE_LOOP1
+      end do source_loop1
 
 !        Set vertical dimensions of "box" for major cont. sources.
 !        Use terrain weighting factor for dominant source (FDOM) to
 !        combine heights for horizontal and terrain responding plumes.
-      BVERT = FDOM*(HMXH - HMNH) + (1.0D0-FDOM)*(HMXT - HMNT)
-      IF (UNSTAB .and. PPFACT(IREC,IDOM) .GT. 0.0D0) THEN
-         BVERT3 = FDOM*(HMXH3 - HMNH3) + (1.0D0-FDOM)*(HMXT3 - HMNT3)
-      ELSE
-         BVERT3 = 0.0D0
-      END IF
+      bvert = fdom*(hmxh - hmnh) + (1.0d0-fdom)*(hmxt - hmnt)
+      if (unstab .and. ppfact(irec,idom) .gt. 0.0d0) then
+         bvert3 = fdom*(hmxh3 - hmnh3) + (1.0d0-fdom)*(hmxt3 - hmnt3)
+      else
+         bvert3 = 0.0d0
+      end if
 
 !        Set horizontal dimensions of "box" for major cont. sources.
-      IF (CWMAX .GT. CWMIN) THEN
-         BHORIZ = CWMAX - CWMIN
-      ELSE
-         BHORIZ = 0.0D0
-      END IF
+      if (cwmax .gt. cwmin) then
+         bhoriz = cwmax - cwmin
+      else
+         bhoriz = 0.0d0
+      end if
 
 !        Set horizontal dimensions of "box" for major cont. sources.
 !        for penetrated plumes
-      IF (CWMAX3 .GT. CWMIN3) THEN
-         BHORIZ3 = CWMAX3 - CWMIN3
-      ELSE
-         BHORIZ3 = 0.0D0
-      END IF
+      if (cwmax3 .gt. cwmin3) then
+         bhoriz3 = cwmax3 - cwmin3
+      else
+         bhoriz3 = 0.0d0
+      end if
 
 ! ---    Assign temporary global source index based on dominant source
-      ISRC = IDOM
+      isrc = idom
 
 ! ---    Calculate Distance from Dominant Source (and other parameters)
-      IF (SRCTYP(IDOM)(1:4) .EQ. 'AREA' .or.&
-      &SRCTYP(IDOM) .EQ. 'LINE') THEN
+      if (srctyp(idom)(1:4) .eq. 'AREA' .or.&
+      &srctyp(idom) .eq. 'LINE') then
 ! ---       Calculations for AREA source types
-         CALL SETSRC
-         CALL EMFACT(QS)
+         call setsrc
+         call emfact(qs)
 
-         IF (EVONLY) THEN
-            CALL ARDIST(IEVENT,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-         ELSE
-            CALL ARDIST(IREC,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-         END IF
+         if (evonly) then
+            call ardist(ievent,xdep,width,length,xminr,xmaxr)
+         else
+            call ardist(irec,xdep,width,length,xminr,xmaxr)
+         end if
 !           Assign downwind distance (XDOM) and crosswind distance (YDOM) based on
 !           distance from center of AREA/LINE source
-         XDOM = X
+         xdom = x
 !     JAT 7/22/21 YDOM NOT USED
 !            YDOM = Y
 
 ! ---       Use maximum of downwind distance from center of source to
 !           receptor (X) and 1m for PVMRM option
-         DISTDOM = MAX( X, 1.0D0 )
+         distdom = max( x, 1.0d0 )
 
 ! ---       Apply maximum value of 4.3*SY (based on distance from center of
 !           the source) for WIDTH of AREA/LINE source for the PVMRM option;
 !           otherwise use full projected WIDTH of source
-         IF (PVMRM) THEN
-            CALL ADISY(DISTDOM)
-            IF (4.3D0*SY .LT. WIDTH) THEN
-               WIDTH = 4.3D0*SY
-            ENDIF
-         END IF
+         if (pvmrm) then
+            call adisy(distdom)
+            if (4.3d0*sy .lt. width) then
+               width = 4.3d0*sy
+            endif
+         end if
 
 !           Calculate volume of dominant plume, passing WIDTH for BHORIZ
-         CALL PLUME_VOL(DISTDOM,IREC,IDOM,0.0D0,0.0D0,WIDTH,&
-         &0.0D0,VOLDOM)
+         call plume_vol(distdom,irec,idom,0.0d0,0.0d0,width,&
+         &0.0d0,voldom)
 
-      ELSE IF (SRCTYP(IDOM) .EQ. 'OPENPIT') THEN
+      else if (srctyp(idom) .eq. 'OPENPIT') then
 ! ---       Calculations for OPENPIT sources
-         CALL SETSRC
+         call setsrc
 !*          Determine the AlongWind Length of the OPENPIT Source  ---   CALL LWIND
-         CALL LWIND
+         call lwind
 
 !*          Calculate the Relative Depth of the OPENPIT Source    ---   CALL PDEPTH
-         CALL PDEPTH
+         call pdepth
 
 !*          Calculate the Fractional Size of the
 !*          Effective Pit Area (PITFRA)                           ---   CALL PTFRAC
-         CALL PTFRAC
+         call ptfrac
 
 !*          Determine the Coordinates of the Effective Pit Area
 !*          in Wind Direction Coordinate System                   ---   CALL PITEFF
-         CALL PITEFF
+         call piteff
 
 !*          Calculate the adusted Emission Rate per unit area (QEFF) for the
 !*          Effective Pit Area (PITFRA)                           ---   CALL PITEMI
 !*          First assign source emission rate to QPTOT to get adjusted
 !*          emission rate per unit area of effective source
-         QPTOT = QS
-         CALL PITEMI(QPTOT)
-         CALL EMFACT(QEFF)
+         qptot = qs
+         call pitemi(qptot)
+         call emfact(qeff)
 
-         IF (EVONLY) THEN
-            CALL ARDIST(IEVENT,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-         ELSE
-            CALL ARDIST(IREC,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-         END IF
+         if (evonly) then
+            call ardist(ievent,xdep,width,length,xminr,xmaxr)
+         else
+            call ardist(irec,xdep,width,length,xminr,xmaxr)
+         end if
 !           Assign downwind distance (XDOM) and crosswind distance (YDOM) based on
 !           distance from center of area source
-         XDOM = X
+         xdom = x
 !     JAT 7/22/21 YDOM NOT USED
 !            YDOM = Y
 
 ! ---       Use maximum of downwind distance from center of source to
 !           receptor (X) and 1m for PVMRM option
-         DISTDOM = MAX( X, 1.0D0 )
+         distdom = max( x, 1.0d0 )
 
 ! ---       Apply maximum value of 4.3*SY (based on distance from center of
 !           the source) for WIDTH of OPENPIT source for the new PVMRM option;
 !           otherwise use full projected WIDTH of source
-         IF (PVMRM) THEN
-            CALL ADISY(DISTDOM)
-            IF (4.3D0*SY .LT. WIDTH) THEN
-               WIDTH = 4.3D0*SY
-            ENDIF
-         END IF
+         if (pvmrm) then
+            call adisy(distdom)
+            if (4.3d0*sy .lt. width) then
+               width = 4.3d0*sy
+            endif
+         end if
 
 !           Calculate volume of dominant plume, passing WIDTH for BHORIZ
-         CALL PLUME_VOL(DISTDOM,IREC,IDOM,0.0D0,0.0D0,WIDTH,&
-         &0.0D0,VOLDOM)
+         call plume_vol(distdom,irec,idom,0.0d0,0.0d0,width,&
+         &0.0d0,voldom)
 
-      ELSE
+      else
 ! ---       Calculations for POINT or VOLUME sources
-         CALL SETSRC
-         CALL EMFACT(QS)
+         call setsrc
+         call emfact(qs)
 
-         IF (EVONLY) THEN
-            CALL XYDIST(IEVENT)
-         ELSE
-            CALL XYDIST(IREC)
-         END IF
+         if (evonly) then
+            call xydist(ievent)
+         else
+            call xydist(irec)
+         end if
 
-         IF( SRCTYP(IDOM) .EQ. 'VOLUME' )THEN
+         if( srctyp(idom) .eq. 'VOLUME' )then
 ! ---          Assign XDOM, based on X, and WIDTH for VOLUME source
-            XDOM  = MAX( X, 1.0D0 )
+            xdom  = max( x, 1.0d0 )
 !              Assign WIDTH for VOLUME source based on initial sigma-y
-            WIDTH = 4.3D0*ASYINI(IDOM)
-         ELSE
+            width = 4.3d0*asyini(idom)
+         else
 ! ---          Assign XDOM, based on X, and WIDTH for POINT source
-            XDOM  = MAX( X, 1.0D0 )
-            WIDTH = 0.0D0
-         END IF
+            xdom  = max( x, 1.0d0 )
+            width = 0.0d0
+         end if
 ! ---       Assign YDOM based on Y
 !     JAT 7/22/21 YDOM NOT USED
 !           YDOM = Y
 
 ! ---       Use maximum of downwind distance to receptor (X) and 1m for PVMRM option
-         DISTDOM = MAX( XDOM, 1.0D0 )
+         distdom = max( xdom, 1.0d0 )
 
 !           Calculate volume of dominant plume
-         CALL PLUME_VOL(DISTDOM,IREC,IDOM,0.0D0,0.0D0,WIDTH,&
-         &0.0D0,VOLDOM)
-      END IF
+         call plume_vol(distdom,irec,idom,0.0d0,0.0d0,width,&
+         &0.0d0,voldom)
+      end if
 
-      IF (UNSTAB .and. DISTDOM .GE. XMIXED) THEN
+      if (unstab .and. distdom .ge. xmixed) then
 ! ---       Set BVERT = 0.0 if X is >/= distance to uniform vertical mixing
-         BVERT = 0.0D0
-      ELSE
-         BVERT = FDOM*(HMXH - HMNH) + (1.0D0-FDOM)*(HMXT - HMNT)
-      END IF
+         bvert = 0.0d0
+      else
+         bvert = fdom*(hmxh - hmnh) + (1.0d0-fdom)*(hmxt - hmnt)
+      end if
 
-      IF (BVERT .GT. 0.0D0 .or. BVERT3 .GT. 0.0D0 .or.&
-      &BHORIZ .GT. 0.0D0 .or. BHORIZ3 .GT. 0.0D0) THEN
+      if (bvert .gt. 0.0d0 .or. bvert3 .gt. 0.0d0 .or.&
+      &bhoriz .gt. 0.0d0 .or. bhoriz3 .gt. 0.0d0) then
 !           Calculate volume of dominant plus major contributing sources
-         CALL PLUME_VOL(DISTDOM,IREC,IDOM,BVERT,BVERT3,&
-         &BHORIZ,BHORIZ3,VOLSUM)
-      ELSE
-         VOLSUM = VOLDOM
-      END IF
+         call plume_vol(distdom,irec,idom,bvert,bvert3,&
+         &bhoriz,bhoriz3,volsum)
+      else
+         volsum = voldom
+      end if
 
 !        Re-Assign wind direction based on dominant source, since values
 !        are overwritten in SUB. PLUME_VOL (call to METINI).
-      WDSIN = AWDSIN(IDOM)
-      WDCOS = AWDCOS(IDOM)
-      AFV   = AAFV(IDOM)          ! Add AAFV array
+      wdsin = awdsin(idom)
+      wdcos = awdcos(idom)
+      afv   = aafv(idom)          ! Add AAFV array
 
 !        Correct plume volume to conditions of standard temperature
 !        and pressure (Hanrahan, 1999)
 !        0.028966 is the average kg/mole of air
 
 !        First obtain a height to use in the correction
-      ZCORR = AZS(IDOM) + HECNTR(IREC,IDOM)
+      zcorr = azs(idom) + hecntr(irec,idom)
 
 !        Calculate ambient temperature at plume height from pot. temp. profile
-      CALL LOCATE(GRIDHT, 1, MXGLVL, ZCORR, NDXBLZ)
-      IF (NDXBLZ .GE. 1) THEN
+      call locate(gridht, 1, mxglvl, zcorr, ndxblz)
+      if (ndxblz .ge. 1) then
 !----       Potential temperature
-         CALL GINTRP( GRIDHT(NDXBLZ), GRIDPT(NDXBLZ),&
-         &GRIDHT(NDXBLZ+1), GRIDPT(NDXBLZ+1),&
-         &ZCORR, PTZ )
-      ELSE
+         call gintrp( gridht(ndxblz), gridpt(ndxblz),&
+         &gridht(ndxblz+1), gridpt(ndxblz+1),&
+         &zcorr, ptz )
+      else
 !           Use GRID value for lowest level
-         PTZ = GRIDPT(1)
-      END IF
-      TAP = PTZ - GOVRCP * ZCORR
+         ptz = gridpt(1)
+      end if
+      tap = ptz - govrcp * zcorr
 
-      PCORR = DEXP(-G * 0.028966D0 * ZCORR / ( RGAS * TAP))
-      TCORR = 273.15D0 / TAP
+      pcorr = dexp(-g * 0.028966d0 * zcorr / ( rgas * tap))
+      tcorr = 273.15d0 / tap
 
-      VOLDOM = VOLDOM * PCORR * TCORR
-      VOLSUM = VOLSUM * PCORR * TCORR
+      voldom = voldom * pcorr * tcorr
+      volsum = volsum * pcorr * tcorr
 
 ! ---    Check for O3MISS and adjust calculations
-      IF (.NOT. O3MISS) THEN
+      if (.not. o3miss) then
 !           get moles of ozone in dominant plume
 !           O3CONC expressed in ug/m3
-         domO3moles= VOLdom * O3CONC/(1.0D6 * 48.0D0)
+         domO3moles= VOLdom * o3conc/(1.0d6 * 48.0d0)
 
 !           get moles of ozone in the combined plume
-         sumO3moles= VOLsum * O3CONC/(1.0D6 * 48.0D0)
-      ELSE
+         sumO3moles= VOLsum * o3conc/(1.0d6 * 48.0d0)
+      else
 ! ---       Assign domO3moles and sumO3moles = 0.0 for full conversion
 !           if O3MISS
-         domO3moles= 0.0D0
-         sumO3moles= 0.0D0
-      END IF
+         domO3moles= 0.0d0
+         sumO3moles= 0.0d0
+      end if
 
 !        get moles of NOx in the dominant plume
 !        Use molecular weight of NO2 (46) since emission calcs are based on NO2
-      IF (SRCTYP(IDOM) .EQ. 'AREA' .or.&
-      &SRCTYP(IDOM) .EQ. 'AREAPOLY' .or.&
-      &SRCTYP(IDOM) .EQ. 'LINE') THEN
-         domNOxmoles = QTK*XINIT*YINIT *&
-         &(1.0D0-ANO2_RATIO(IDOM)) * DISTDOM/(UDOM*46.0D0)
-      ELSE IF (SRCTYP(IDOM) .EQ. 'AREACIRC') THEN
-         domNOxmoles = QTK*PI*RADIUS(IDOM)*RADIUS(IDOM) *&
-         &(1.0D0-ANO2_RATIO(IDOM))*DISTDOM/(UDOM*46.0D0)
-      ELSE IF (SRCTYP(IDOM) .EQ. 'OPENPIT') THEN
-         domNOxmoles = QEFF*XINIT*YINIT *&
-         &(1.0D0-ANO2_RATIO(IDOM)) * DISTDOM/(UDOM*46.0D0)
-      ELSE
+      if (srctyp(idom) .eq. 'AREA' .or.&
+      &srctyp(idom) .eq. 'AREAPOLY' .or.&
+      &srctyp(idom) .eq. 'LINE') then
+         domNOxmoles = qtk*xinit*yinit *&
+         &(1.0d0-ano2_ratio(idom)) * distdom/(udom*46.0d0)
+      else if (srctyp(idom) .eq. 'AREACIRC') then
+         domNOxmoles = qtk*pi*radius(idom)*radius(idom) *&
+         &(1.0d0-ano2_ratio(idom))*distdom/(udom*46.0d0)
+      else if (srctyp(idom) .eq. 'OPENPIT') then
+         domNOxmoles = qeff*xinit*yinit *&
+         &(1.0d0-ano2_ratio(idom)) * distdom/(udom*46.0d0)
+      else
 ! ---       Calculate domNOxmoles for POINT and VOLUME sources
-         domNOxmoles = QTK * (1.0D0-ANO2_RATIO(IDOM)) *&
-         &DISTDOM/(UDOM * 46.0D0)
-      END IF
+         domNOxmoles = qtk * (1.0d0-ano2_ratio(idom)) *&
+         &distdom/(udom * 46.0d0)
+      end if
 
 !        get moles of NOx in the merged plume
 !        Sum emissions for sources within projected width of major
 !        contributing sources
-      QSUM   = 0.0D0
-      QSUM3  = 0.0D0
-      SUM_NO2RAT  = 0.0D0
-      SUM3_NO2RAT = 0.0D0
+      qsum   = 0.0d0
+      qsum3  = 0.0d0
+      sum_no2rat  = 0.0d0
+      sum3_no2rat = 0.0d0
 
-      SOURCE_LOOP2: DO ISRC = 1, NUMSRC
+      source_loop2: do isrc = 1, numsrc
 ! ---       Loop through sources to determine the moles of NOx emitted by all
 !           sources located within the box defined laterally and vertically
 !           by the major contributing sources
 
-         IF (.NOT. PSDCREDIT) THEN
+         if (.not. psdcredit) then
 !              Full PVMRM run
-            CALL MOLES_NOX(IDOM)
+            call moles_nox(idom)
 
-         ELSE IF (PSDCREDIT .and. TRIM(SRCS2USE) .EQ. 'NAAQSRC') THEN
+         else if (psdcredit .and. trim(srcs2use) .eq. 'NAAQSRC') then
 !              Emission credit run: Increment Consumption+Nonretired Baseline=NAAQS
-            IF (PSDSRCTYP(ISRC) .EQ. 'IC' .or.&
-            &PSDSRCTYP(ISRC) .EQ. 'NB') THEN
-               CALL MOLES_NOX(IDOM)
-            ELSE
-               CYCLE SOURCE_LOOP2
-            END IF
+            if (psdsrctyp(isrc) .eq. 'IC' .or.&
+            &psdsrctyp(isrc) .eq. 'NB') then
+               call moles_nox(idom)
+            else
+               cycle source_loop2
+            end if
 
-         ELSE IF (PSDCREDIT .and. TRIM(SRCS2USE) .EQ. 'ALLBASE') THEN
+         else if (psdcredit .and. trim(srcs2use) .eq. 'ALLBASE') then
 !              Emission credit run: Nonretired Baseline and Retired Basline
-            IF (PSDSRCTYP(ISRC) .EQ. 'NB' .or.&
-            &PSDSRCTYP(ISRC) .EQ. 'RB') THEN
-               CALL MOLES_NOX(IDOM)
-            ELSE
-               CYCLE SOURCE_LOOP2
-            END IF
-         END IF
+            if (psdsrctyp(isrc) .eq. 'NB' .or.&
+            &psdsrctyp(isrc) .eq. 'RB') then
+               call moles_nox(idom)
+            else
+               cycle source_loop2
+            end if
+         end if
 
-      END DO SOURCE_LOOP2
+      end do source_loop2
 
 !----    Check for QSUM = 0.0 error (i.e., dominant source not inc. in sum)
 !        This condition should never be encountered.
-      IF (QSUM .EQ. 0.0D0 .and. QSUM3 .EQ. 0.0D0) THEN
+      if (qsum .eq. 0.0d0 .and. qsum3 .eq. 0.0d0) then
 ! ---      Issue warning messages for cases with QSUM = 0.0
-         IF (EVONLY) THEN
-            IF (IEVENT .LE. 999) THEN
-               WRITE(DUMMY,'(I3.3,1X,I8.8)') IEVENT, KURDAT
-            ELSE IF (IEVENT .LE. 9999) THEN
-               WRITE(DUMMY,'(I4.4,I8.8)') IEVENT, KURDAT
-            ELSE
-               WRITE(DUMMY,'(''000'',1X,I8.8)') KURDAT
-            END IF
-            CALL ERRHDL(PATH,MODNAM,'W','412',EVNAME(IEVENT))
-         ELSE
-            IF (IREC .LE. 999) THEN
-               WRITE(DUMMY,'(I3.3,1X,I8.8)') IREC, KURDAT
-            ELSE IF (IREC .LE. 9999) THEN
-               WRITE(DUMMY,'(I4.4,I8.8)') IREC, KURDAT
-            ELSE
-               WRITE(DUMMY,'(''000'',1X,I8.8)') KURDAT
-            END IF
-            CALL ERRHDL(PATH,MODNAM,'W','411',DUMMY)
-         END IF
+         if (evonly) then
+            if (ievent .le. 999) then
+               write(dummy,'(I3.3,1X,I8.8)') ievent, kurdat
+            else if (ievent .le. 9999) then
+               write(dummy,'(I4.4,I8.8)') ievent, kurdat
+            else
+               write(dummy,'(''000'',1X,I8.8)') kurdat
+            end if
+            call errhdl(path,modnam,'W','412',evname(ievent))
+         else
+            if (irec .le. 999) then
+               write(dummy,'(I3.3,1X,I8.8)') irec, kurdat
+            else if (irec .le. 9999) then
+               write(dummy,'(I4.4,I8.8)') irec, kurdat
+            else
+               write(dummy,'(''000'',1X,I8.8)') kurdat
+            end if
+            call errhdl(path,modnam,'W','411',dummy)
+         end if
 !          Assign 0.0 to AVE_NO2RATIO
-         AVE_NO2RATIO = 0.0D0
+         ave_no2ratio = 0.0d0
 ! ---      Assign 0.0 to HRVAL and AERVAL, CYCLE RECEPTOR_LOOP unless
 !          this is the last receptor, otherwise RETURN
-         HRVAL(:)  = 0.0D0
-         AERVAL(:) = 0.0D0
-         IF (IREC .LT. NUMREC) THEN
-            CYCLE RECEPTOR_LOOP
-         ELSE
-            RETURN
-         END IF
-      END IF
+         hrval(:)  = 0.0d0
+         aerval(:) = 0.0d0
+         if (irec .lt. numrec) then
+            cycle receptor_loop
+         else
+            return
+         end if
+      end if
 
 !        Calculate NOx moles for combined plume, and average in-stack ratio
 !        Use molecular weight of NO2 (46) since emission calcs are based on NO2;
 !        Use XDOM (downwind distance), which better reflects transport time from
 !        source to receptor, instead of DISTDOM (radial distance)
-      IF( QSUM .GT. 0.0D0 )THEN
-         AVE_NO2RATIO = SUM_NO2RAT/QSUM
-      ELSE
-         AVE_NO2RATIO = 0.0D0
-      ENDIF
+      if( qsum .gt. 0.0d0 )then
+         ave_no2ratio = sum_no2rat/qsum
+      else
+         ave_no2ratio = 0.0d0
+      endif
 
-      IF( QSUM3 .GT. 0.0D0 )THEN
-         AVE_NO2RATIO3 = SUM3_NO2RAT/QSUM3
-      ELSE
-         AVE_NO2RATIO3 = 0.0D0
-      ENDIF
+      if( qsum3 .gt. 0.0d0 )then
+         ave_no2ratio3 = sum3_no2rat/qsum3
+      else
+         ave_no2ratio3 = 0.0d0
+      endif
 
-      sumNOxmoles = QSUM * (1.0D0-AVE_NO2RATIO) *&
-      &DISTDOM/(UDOM * 46.0D0)&
-      &+ QSUM3* (1.0D0-AVE_NO2RATIO3) *&
-      &DISTDOM/(UDOM * 46.0D0)
+      sumNOxmoles = qsum * (1.0d0-ave_no2ratio) *&
+      &distdom/(udom * 46.0d0)&
+      &+ qsum3* (1.0d0-ave_no2ratio3) *&
+      &distdom/(udom * 46.0d0)
 
 ! ---    Calculate NOx conversion ratios for dominant plume and combined plume;
 !        excluding in-stack NO2/NOx ratio(s)
 !        Ensure that conversion ratios do not exceed 1.0
-      IF( domNOxmoles .GT. 0.0D0 )THEN
-         domConverted = MIN( domO3moles/domNOxmoles, 1.0D0 )
-      ELSE
-         domConverted = 0.0D0
-      ENDIF
-      IF( sumNOxmoles .GT. 0.0D0 )THEN
-         sumConverted = MIN( sumO3moles/sumNOxmoles, 1.0D0 )
-      ELSE
-         sumConverted = 0.0D0
-      ENDIF
+      if( domNOxmoles .gt. 0.0d0 )then
+         domConverted = min( domO3moles/domNOxmoles, 1.0d0 )
+      else
+         domConverted = 0.0d0
+      endif
+      if( sumNOxmoles .gt. 0.0d0 )then
+         sumConverted = min( sumO3moles/sumNOxmoles, 1.0d0 )
+      else
+         sumConverted = 0.0d0
+      endif
 
 ! ---    Find which is more important -- the dominant plume or the combined plume;
 !        also include appropriate in-stack NO2/NOx contribution.
 !        Select the minimum conversion since the conversion for combined plumes
 !        should not be any larger than conversion for the single dominant plume.
 ! ---    Set PercentNO2 = 1.0 if O3MISS, subject to NO2Equil
-      IF (O3MISS) THEN
-         PercentNO2 = 1.0D0
-      ELSE
+      if (o3miss) then
+         PercentNO2 = 1.0d0
+      else
 ! ---       Calculate PercentNO2 based on the lessor of domConverted or
 !           sumConverted (accounting for in-stack NO2 ratios)
-         IF ( (domConverted + ANO2_RATIO(IDOM)) .LE.&
-         &(sumConverted + AVE_NO2RATIO) ) THEN
-            PercentNO2 = domConverted + ANO2_RATIO(IDOM)
-         ELSE
-            PercentNO2 = sumConverted + AVE_NO2RATIO
-         END IF
-      END IF
+         if ( (domConverted + ano2_ratio(idom)) .le.&
+         &(sumConverted + ave_no2ratio) ) then
+            PercentNO2 = domConverted + ano2_ratio(idom)
+         else
+            PercentNO2 = sumConverted + ave_no2ratio
+         end if
+      end if
 
 ! ---    Limit conversion to equilibrium concentration of NO2 (default set at 90 percent)
-      IF (PercentNO2 .gt. NO2Equil) PercentNO2 = NO2Equil
+      if (PercentNO2 .gt. NO2Equil) PercentNO2 = NO2Equil
 
 !        Update HRVAL, AVEVAL and ANNVAL Arrays                         ! jop, 9/30/06
-      IF (.NOT. PSDCREDIT) THEN
+      if (.not. psdcredit) then
 ! ---      Non-PSDCREDIT run; loop through srcgrps and sources for this receptor and
 !          this hour or event; also output results to PVMRM debug files if needed
 
-         GROUP_LOOP: DO IGRP = 1, NUMGRP
+         group_loop: do igrp = 1, numgrp
 
-            SOURCE_LOOP3: DO ISRC = 1, NUMSRC
+            source_loop3: do isrc = 1, numsrc
 ! ---          Loop through sources again, and apply PercentNO2 to the hourly
 !              values before summing the group/event values
-               DO ITYP = 1, NUMTYP
-                  HRVAL(ITYP) = CHI(IREC,ISRC,ITYP) * PercentNO2
+               do ityp = 1, numtyp
+                  hrval(ityp) = chi(irec,isrc,ityp) * PercentNO2
 !! Added for TTRM2
 !! Perform comparison of calculated hourly NO2 values between PVMRM and TTRM
-                  IF (RUNTTRM2) THEN
-                     IF(TTRM2DBG .and. (CMETH .LT. 3)) THEN
-                        WRITE(TTRM2TMP(2),PSTFRM,ERR=47) AXR(IREC), AYR(IREC),&
-                        &HRVAL(1),&
-                        &AZELEV(IREC), AZHILL(IREC), AZFLAG(IREC),&
-                        &CHRAVE(1), GRPID(IGRP), KURDAT, SRCID(ISRC)
-                        GO TO 847
-47                      WRITE(DUMMY,'("PSTFL",I4.4)') TTRM2TMP(2)
-                        CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-                        RUNERR = .TRUE.
-847                     CONTINUE
-                     ENDIF
-                     IF (TTRMCOMPARE(IGRP,ISRC,IREC,ITYP) .LT. HRVAL(ITYP)) THEN
-                        HRVAL(ITYP) = TTRMCOMPARE(IGRP,ISRC,IREC,ITYP)
-                     ENDIF
-                     IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
-                        WRITE(TTRM2TMP(3),PSTFRM,ERR=37) AXR(IREC), AYR(IREC),&
-                        &HRVAL(1),&
-                        &AZELEV(IREC), AZHILL(IREC), AZFLAG(IREC),&
-                        &CHRAVE(1), GRPID(IGRP), KURDAT, SRCID(ISRC)
-                        GO TO 837
-37                      WRITE(DUMMY,'("PSTFL",I4.4)') TTRM2TMP(3)
-                        CALL ERRHDL(PATH,MODNAM,'E','520',DUMMY)
-                        RUNERR = .TRUE.
-837                     CONTINUE
-                     ENDIF
-                  ENDIF
+                  if (runttrm2) then
+                     if(ttrm2dbg .and. (cmeth .lt. 3)) then
+                        write(ttrm2tmp(2),pstfrm,err=47) axr(irec), ayr(irec),&
+                        &hrval(1),&
+                        &azelev(irec), azhill(irec), azflag(irec),&
+                        &chrave(1), grpid(igrp), kurdat, srcid(isrc)
+                        go to 847
+47                      write(dummy,'("PSTFL",I4.4)') ttrm2tmp(2)
+                        call errhdl(path,modnam,'E','520',dummy)
+                        runerr = .true.
+847                     continue
+                     endif
+                     if (ttrmcompare(igrp,isrc,irec,ityp) .lt. hrval(ityp)) then
+                        hrval(ityp) = ttrmcompare(igrp,isrc,irec,ityp)
+                     endif
+                     if (ttrm2dbg .and. (cmeth .lt. 3)) then
+                        write(ttrm2tmp(3),pstfrm,err=37) axr(irec), ayr(irec),&
+                        &hrval(1),&
+                        &azelev(irec), azhill(irec), azflag(irec),&
+                        &chrave(1), grpid(igrp), kurdat, srcid(isrc)
+                        go to 837
+37                      write(dummy,'("PSTFL",I4.4)') ttrm2tmp(3)
+                        call errhdl(path,modnam,'E','520',dummy)
+                        runerr = .true.
+837                     continue
+                     endif
+                  endif
 !! End of TTRM2 insert; Nov. 2021
-               END DO
+               end do
 
-               IF (EVONLY) THEN
+               if (evonly) then
 !                 Sum HRVAL to EV_AVEVAL, GRPVAL and GRPAVE Arrays  ---   CALL EV_SUMVAL
 
-                  IF (IDXEV(IEVENT) .EQ. IGRP .and.&
-                  &IGROUP(ISRC,IGRP) .EQ. 1) THEN
-                     CALL EV_SUMVAL
+                  if (idxev(ievent) .eq. igrp .and.&
+                  &igroup(isrc,igrp) .eq. 1) then
+                     call ev_sumval
 
 ! ---                Write data to PVMRM debug output file
 !                    Check whether dominant plume or combined plume is controlling
-                     if (PVMRMDBG) then
-                        IF ( (domConverted + ANO2_RATIO(IDOM)) .LE.&
-                        &(sumConverted + AVE_NO2RATIO) ) THEN
-                           write(PVMDBG,9987) 'DOM: ',srcid(idom), kurdat,&
+                     if (pvmrmdbg) then
+                        if ( (domConverted + ano2_ratio(idom)) .le.&
+                        &(sumConverted + ave_no2ratio) ) then
+                           write(pvmdbg,9987) 'DOM: ',srcid(idom), kurdat,&
                            &ievent, evname(ievent), evaper(ievent),&
                            &grpid(idxev(ievent)),isrc, srcid(isrc),&
                            &numcont, distdom, maxconc, o3conc,&
@@ -11850,7 +11850,7 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
                            &bvert3, voldom, chi(1,isrc,1), percentno2,&
                            &hrval(1), grpave(idxev(ievent))
                         else
-                           write(PVMDBG,9987) 'SUM: ',srcid(idom), kurdat,&
+                           write(pvmdbg,9987) 'SUM: ',srcid(idom), kurdat,&
                            &ievent, evname(ievent), evaper(ievent),&
                            &grpid(idxev(ievent)),isrc, srcid(isrc),&
                            &numcont, distdom, maxconc, o3conc,&
@@ -11862,20 +11862,20 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
 9987                 format(1x,a5,1x,a12,2x,i8.8,1x,i5,2x,a12,1x,&
                      &i5,2x,a8,1x,i5,2x,a12,1x,i4,13(2x,e12.5))
 
-                  END IF
+                  end if
 
-               ELSE IF (.NOT. EVONLY) THEN
+               else if (.not. evonly) then
 ! ---             Sum HRVAL to AVEVAL, ANNVAL and SHVALS Arrays     ---   CALL SUMVAL
 
-                  if (IGROUP(ISRC,IGRP) .EQ. 1) then
-                     CALL SUMVAL
+                  if (igroup(isrc,igrp) .eq. 1) then
+                     call sumval
 
 ! ---               Write data to PVMRM debug output file
 !                   Check whether dominant plume or combined plume is controlling
-                     if (PVMRMDBG) then
-                        IF ( (domConverted + ANO2_RATIO(IDOM)) .LE.&
-                        &(sumConverted + AVE_NO2RATIO) ) THEN
-                           write(PVMDBG,99871) 'DOM: ',srcid(idom), kurdat,&
+                     if (pvmrmdbg) then
+                        if ( (domConverted + ano2_ratio(idom)) .le.&
+                        &(sumConverted + ave_no2ratio) ) then
+                           write(pvmdbg,99871) 'DOM: ',srcid(idom), kurdat,&
                            &irec, grpid(igrp), isrc, srcid(isrc),&
                            &numcont, distdom, maxconc, o3conc,&
                            &domo3moles, domnoxmoles, bhoriz, bvert,&
@@ -11883,7 +11883,7 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
                            &voldom, chi(irec,isrc,1), percentno2,&
                            &hrval(1), aveval(irec,igrp,1,1)
                         else
-                           write(PVMDBG,99871) 'SUM: ',srcid(idom), kurdat,&
+                           write(pvmdbg,99871) 'SUM: ',srcid(idom), kurdat,&
                            &irec, grpid(igrp), isrc, srcid(isrc),&
                            &numcont, distdom, maxconc, o3conc,&
                            &sumo3moles, sumnoxmoles, bhoriz, bvert,&
@@ -11896,116 +11896,116 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
 
                      end if
                   end if
-               END IF
-               IF (EVAL(ISRC)) THEN
+               end if
+               if (eval(isrc)) then
 !                 Check ARC centerline values for EVALFILE output   ---   CALL EVALCK
-                  CALL EVALCK
-               END IF
+                  call evalck
+               end if
 
-            END DO SOURCE_LOOP3
+            end do source_loop3
 
-            IF (EVONLY) THEN
+            if (evonly) then
 ! --          Include BACKGROUND contributions in PVMRM debug files
 !             in needed
 
-               IF (IDXEV(IEVENT) .EQ. IGRP .and.&
-               &GRP_BACK(idxev(ievent)) )THEN
+               if (idxev(ievent) .eq. igrp .and.&
+               &grp_back(idxev(ievent)) )then
 ! ---            This SRCGROUP includes BACKGROUND; Call EV_SUMBACK which
 !                sums values for the current EVENT
-                  CALL EV_SUMBACK
-                  if (PVMRMDBG) then
-                     IF ( (domConverted + ANO2_RATIO(IDOM)) .LE.&
-                     &(sumConverted + AVE_NO2RATIO) ) THEN
-                        write(PVMDBG,99872) 'DOM: ',srcid(idom), kurdat,&
+                  call ev_sumback
+                  if (pvmrmdbg) then
+                     if ( (domConverted + ano2_ratio(idom)) .le.&
+                     &(sumConverted + ave_no2ratio) ) then
+                        write(pvmdbg,99872) 'DOM: ',srcid(idom), kurdat,&
                         &ievent, evname(ievent), evaper(ievent),&
                         &grpid(idxev(ievent)), 'BACKGROUND',&
-                        &EV_BGCONC(IHOUR), grpave(IDXEV(IEVENT))
+                        &ev_bgconc(ihour), grpave(idxev(ievent))
 
                      else
-                        write(PVMDBG,99872) 'SUM: ', srcid(idom), kurdat,&
+                        write(pvmdbg,99872) 'SUM: ', srcid(idom), kurdat,&
                         &ievent, evname(ievent), evaper(ievent),&
                         &grpid(idxev(ievent)), 'BACKGROUND',&
-                        &EV_BGCONC(IHOUR), grpave(IDXEV(IEVENT))
+                        &ev_bgconc(ihour), grpave(idxev(ievent))
                      end if
                   end if
 99872             format(1x,a5,1x,a12,2x,i8.8,i6,4x,a10,i6,2x,a8,&
                   &8x,a10,161x,2(2x,e12.5))
-               END IF
+               end if
 
-            ELSEIF (.NOT. EVONLY) THEN
+            elseif (.not. evonly) then
 
-               IF (GRP_BACK(IGRP)) THEN
+               if (grp_back(igrp)) then
 ! ---             This SRCGROUP includes BACKGROUND; Call SUMBACK_NO2 which
 !                 sums values for the current receptor only, whereas sub SUMBACK
 !                 sums values across the full receptor network
-                  CALL SUMBACK_NO2
-                  if (PVMRMDBG) then
-                     IF ( (domConverted + ANO2_RATIO(IDOM)) .LE.&
-                     &(sumConverted + AVE_NO2RATIO) ) THEN
-                        write(PVMDBG,99873) 'DOM: ',srcid(idom), kurdat,&
+                  call sumback_no2
+                  if (pvmrmdbg) then
+                     if ( (domConverted + ano2_ratio(idom)) .le.&
+                     &(sumConverted + ave_no2ratio) ) then
+                        write(pvmdbg,99873) 'DOM: ',srcid(idom), kurdat,&
                         &irec, grpid(igrp), 'BACKGROUND',&
-                        &BGCONC, AVEVAL(IREC,IGRP,1,1)
+                        &bgconc, aveval(irec,igrp,1,1)
                      else
-                        write(PVMDBG,99873) 'SUM: ',srcid(idom), kurdat,&
+                        write(pvmdbg,99873) 'SUM: ',srcid(idom), kurdat,&
                         &irec, grpid(igrp), 'BACKGROUND',&
-                        &BGCONC, AVEVAL(IREC,IGRP,1,1)
+                        &bgconc, aveval(irec,igrp,1,1)
                      end if
                   end if
 99873             format(1x,a5,1x,a12,2x,i8.8,i6,2x,a8,8x,a10,165x,&
                   &2(2x,e12.5))
-               END IF
+               end if
 
-            END IF
+            end if
 
-         END DO GROUP_LOOP
+         end do group_loop
 
-      ELSE IF (PSDCREDIT .and. TRIM(SRCS2USE) .EQ. 'NAAQSRC') THEN
+      else if (psdcredit .and. trim(srcs2use) .eq. 'NAAQSRC') then
 !           IC = increment consuming source
 !           NB = nonretired baseline source
 !           Use ABVAL to store combined results rather than HRVAL
-         DO ISRC = 1, NUMSRC
-            DO ITYP = 1, NUMTYP
-               IF( PSDSRCTYP(ISRC) .EQ. 'IC' .or.&
-               &PSDSRCTYP(ISRC) .EQ. 'NB' )THEN
-                  ABVAL(IREC,ITYP) = ABVAL(IREC,ITYP) +&
-                  &CHI(IREC,ISRC,ITYP) * PercentNO2
-               END IF
-            END DO
-         END DO
+         do isrc = 1, numsrc
+            do ityp = 1, numtyp
+               if( psdsrctyp(isrc) .eq. 'IC' .or.&
+               &psdsrctyp(isrc) .eq. 'NB' )then
+                  abval(irec,ityp) = abval(irec,ityp) +&
+                  &chi(irec,isrc,ityp) * PercentNO2
+               end if
+            end do
+         end do
 
 !           Sum ABVAL to AVEVAL and ANNVAL Arrays  ---   CALL SUMVALPSD
-         CALL SUMVALPSD(SRCS2USE)
+         call sumvalpsd(srcs2use)
 
-      ELSE IF (PSDCREDIT .and. TRIM(SRCS2USE) .EQ. 'ALLBASE') THEN
+      else if (psdcredit .and. trim(srcs2use) .eq. 'ALLBASE') then
 !           NB = nonretired baseline source
 !           RB =    retired baseline source
 !           Use BCVAL to store combined results rather than HRVAL
-         DO ISRC = 1, NUMSRC
-            DO ITYP = 1, NUMTYP
-               IF( PSDSRCTYP(ISRC) .EQ. 'NB' .or.&
-               &PSDSRCTYP(ISRC) .EQ. 'RB' )THEN
-                  BCVAL(IREC,ITYP) = BCVAL(IREC,ITYP) +&
-                  &CHI(IREC,ISRC,ITYP) * PercentNO2
-               END IF
-            END DO
-         END DO
+         do isrc = 1, numsrc
+            do ityp = 1, numtyp
+               if( psdsrctyp(isrc) .eq. 'NB' .or.&
+               &psdsrctyp(isrc) .eq. 'RB' )then
+                  bcval(irec,ityp) = bcval(irec,ityp) +&
+                  &chi(irec,isrc,ityp) * PercentNO2
+               end if
+            end do
+         end do
 
 !           Sum ABVAL-BCVAL to AVEVAL and ANNVAL Arrays  ---   CALL SUMVALPSD
-         CALL SUMVALPSD(SRCS2USE)
+         call sumvalpsd(srcs2use)
 
-      END IF
+      end if
 
 !        Initialize __VAL arrays (1:NUMTYP)
-      HRVAL   = 0.0D0
-      AERVAL  = 0.0D0
+      hrval   = 0.0d0
+      aerval  = 0.0d0
 
-   END DO RECEPTOR_LOOP
+   end do receptor_loop
 !     End Receptor LOOP
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE MAJOR_CONT(MAXCONC,IDOM)
+subroutine major_cont(maxconc,idom)
 !***********************************************************************
 !             MAJOR_CONT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -12037,169 +12037,169 @@ SUBROUTINE MAJOR_CONT(MAXCONC,IDOM)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   character modnam*12
 
 ! --- Define threshold for major contributing sources,
 !     based on sources which contribute at least 0.5 times
 !     the contribution from the dominant source, for each
 !     receptor
-   DOUBLE PRECISION, PARAMETER :: MAJCONT_THRESH = 0.5D0
+   double precision, parameter :: majcont_thresh = 0.5d0
 
-   DOUBLE PRECISION :: MAXCONC, WIDTH, LENGTH, XMINR, XMAXR
-   DOUBLE PRECISION :: XDEP
+   double precision :: maxconc, width, length, xminr, xmaxr
+   double precision :: xdep
 ! Unused: DOUBLE PRECISION :: XAREA
 
-   INTEGER          :: IDOM
+   integer          :: idom
 
 !     Variable Initializations
-   MODNAM = 'MAJOR_CONT'
+   modnam = 'MAJOR_CONT'
 
-   IF (CHI(IREC,ISRC,1) .GE. MAJCONT_THRESH*MAXCONC) THEN
+   if (chi(irec,isrc,1) .ge. majcont_thresh*maxconc) then
 ! ---    This is a major contributing source
-      IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .or.&
-      &SRCTYP(ISRC) .EQ. 'LINE') THEN
-         CALL SETSRC
+      if (srctyp(isrc)(1:4) .eq. 'AREA' .or.&
+      &srctyp(isrc) .eq. 'LINE') then
+         call setsrc
 !           Calls to ARDIST modified to include XMINR, minimum downwind distance
 !           from the source to the receptor
-         IF (EVONLY) THEN
-            CALL ARDIST(IEVENT,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-         ELSE
-            CALL ARDIST(IREC,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-         END IF
+         if (evonly) then
+            call ardist(ievent,xdep,width,length,xminr,xmaxr)
+         else
+            call ardist(irec,xdep,width,length,xminr,xmaxr)
+         end if
 
 ! ---       Check for receptor > MAXDIST from source
-         IF( DISTR .GT. MAXDIST )THEN
-            RETURN
-         ELSE
-            NUMCONT = NUMCONT + 1
+         if( distr .gt. maxdist )then
+            return
+         else
+            numcont = numcont + 1
 !              Store max and min values of crosswind and downwind distances
-            CWMAX = MAX( CWMAX, Y )
-            CWMIN = MIN( CWMIN, Y )
-            DWMAX = MAX( DWMAX, X )
-            DWMIN = MIN( DWMIN, X )
+            cwmax = max( cwmax, y )
+            cwmin = min( cwmin, y )
+            dwmax = max( dwmax, x )
+            dwmin = min( dwmin, x )
 !              Apply lower limit of 1.0 on DWMIN and DWMAX for PVMRM option
-            IF( DWMAX .LT. 1.0D0 ) DWMAX = 1.0D0
-            IF( DWMIN .LT. 1.0D0 ) DWMIN = 1.0D0
-         ENDIF
-      ELSE IF (SRCTYP(ISRC) .EQ. 'OPENPIT') THEN
-         CALL SETSRC
+            if( dwmax .lt. 1.0d0 ) dwmax = 1.0d0
+            if( dwmin .lt. 1.0d0 ) dwmin = 1.0d0
+         endif
+      else if (srctyp(isrc) .eq. 'OPENPIT') then
+         call setsrc
 !*          Determine the AlongWind Length of the OPENPIT Source  ---   CALL LWIND
-         CALL LWIND
+         call lwind
 
 !*          Calculate the Relative Depth of the OPENPIT Source    ---   CALL PDEPTH
-         CALL PDEPTH
+         call pdepth
 
 !*          Calculate the Fractional Size of the
 !*          Effective Pit Area (PITFRA)                           ---   CALL PTFRAC
-         CALL PTFRAC
+         call ptfrac
 
 !*          Determine the Coordinates of the Effective Pit Area
 !*          in Wind Direction Coordinate System                   ---   CALL PITEFF
-         CALL PITEFF
+         call piteff
 
-         IF (EVONLY) THEN
-            CALL ARDIST(IEVENT,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-         ELSE
-            CALL ARDIST(IREC,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-         END IF
+         if (evonly) then
+            call ardist(ievent,xdep,width,length,xminr,xmaxr)
+         else
+            call ardist(irec,xdep,width,length,xminr,xmaxr)
+         end if
 
-         IF( DISTR .GT. MAXDIST )THEN
-            RETURN
-         ELSE
-            NUMCONT = NUMCONT + 1
+         if( distr .gt. maxdist )then
+            return
+         else
+            numcont = numcont + 1
 !              Store max and min values of crosswind and downwind distances
 ! ---          Use distance from center of source for PVMRM option
-            CWMAX = MAX( CWMAX, Y )
-            CWMIN = MIN( CWMIN, Y )
-            DWMAX = MAX( DWMAX, X )
-            DWMIN = MIN( DWMIN, X )
+            cwmax = max( cwmax, y )
+            cwmin = min( cwmin, y )
+            dwmax = max( dwmax, x )
+            dwmin = min( dwmin, x )
 !              Apply lower limit of 1.0 on DWMIN and DWMAX for PVMRM option
-            IF( DWMAX .LT. 1.0D0 ) DWMAX = 1.0D0
-            IF( DWMIN .LT. 1.0D0 ) DWMIN = 1.0D0
-         ENDIF
-      ELSE
+            if( dwmax .lt. 1.0d0 ) dwmax = 1.0d0
+            if( dwmin .lt. 1.0d0 ) dwmin = 1.0d0
+         endif
+      else
 ! ---       POINT or VOLUME Source
-         CALL SETSRC
-         IF (EVONLY) THEN
-            CALL XYDIST(IEVENT)
-         ELSE
-            CALL XYDIST(IREC)
-         END IF
+         call setsrc
+         if (evonly) then
+            call xydist(ievent)
+         else
+            call xydist(irec)
+         end if
 
-         IF( DISTR .GT. MAXDIST )THEN
-            RETURN
+         if( distr .gt. maxdist )then
+            return
 
-         ELSE
-            NUMCONT = NUMCONT + 1
+         else
+            numcont = numcont + 1
 !              Store max and min values of crosswind and downwind distances
-            CWMAX = MAX( CWMAX, Y )
-            CWMIN = MIN( CWMIN, Y )
-            DWMAX = MAX( DWMAX, X )
-            DWMIN = MIN( DWMIN, X )
+            cwmax = max( cwmax, y )
+            cwmin = min( cwmin, y )
+            dwmax = max( dwmax, x )
+            dwmin = min( dwmin, x )
 !              Apply lower limit of 1.0 on DWMIN and DWMAX for PVMRM option
-            IF( DWMAX .LT. 1.0D0 ) DWMAX = 1.0D0
-            IF( DWMIN .LT. 1.0D0 ) DWMIN = 1.0D0
-            IF (PPFACT(IREC,ISRC) .GT. 0.0D0) THEN
+            if( dwmax .lt. 1.0d0 ) dwmax = 1.0d0
+            if( dwmin .lt. 1.0d0 ) dwmin = 1.0d0
+            if (ppfact(irec,isrc) .gt. 0.0d0) then
 !                 Include lateral extent of penetrated plume
-               CWMAX3 = MAX( CWMAX3, Y )
-               CWMIN3 = MIN( CWMIN3, Y )
-               DWMAX3 = MAX( DWMAX3, X )
-               DWMIN3 = MIN( DWMIN3, X )
+               cwmax3 = max( cwmax3, y )
+               cwmin3 = min( cwmin3, y )
+               dwmax3 = max( dwmax3, x )
+               dwmin3 = min( dwmin3, x )
 !                 Apply lower limit of 1.0 on DWMIN3 and DWMAX3 for PVMRM option
-               IF( DWMAX3 .LT. 1.0D0 ) DWMAX3 = 1.0D0
-               IF( DWMIN3 .LT. 1.0D0 ) DWMIN3 = 1.0D0
-            ENDIF
-         ENDIF
+               if( dwmax3 .lt. 1.0d0 ) dwmax3 = 1.0d0
+               if( dwmin3 .lt. 1.0d0 ) dwmin3 = 1.0d0
+            endif
+         endif
 
-      END IF
+      end if
 
 !        Assign receptor height above stack base for dominant source
-      IF (L_FLATSRC(IDOM)) THEN
-         ZRT = ZFLAG
-      ELSE
-         ZRT = ZELEV - AZS(IDOM) + ZFLAG
-      END IF
+      if (l_flatsrc(idom)) then
+         zrt = zflag
+      else
+         zrt = zelev - azs(idom) + zflag
+      end if
 
 !        Check min/max plume height ranges for terrain-responding (HMNT/HMXT)
 !        and horizontal (HMNH/HMXH) plumes
-      IF (HECNTR(IREC,ISRC) .LT. HMNT) THEN
-         HMNT = HECNTR(IREC,ISRC)
-      ENDIF
-      IF (HECNTR(IREC,ISRC) .GT. HMXT) THEN
-         HMXT = HECNTR(IREC,ISRC)
-      ENDIF
+      if (hecntr(irec,isrc) .lt. hmnt) then
+         hmnt = hecntr(irec,isrc)
+      endif
+      if (hecntr(irec,isrc) .gt. hmxt) then
+         hmxt = hecntr(irec,isrc)
+      endif
 
-      IF ( (HECNTR(IREC,ISRC)-ZRT) .LT. HMNH) THEN
-         HMNH = HECNTR(IREC,ISRC) - ZRT
-      ENDIF
-      IF ( (HECNTR(IREC,ISRC)-ZRT) .GT. HMXH) THEN
-         HMXH = HECNTR(IREC,ISRC) - ZRT
-      ENDIF
+      if ( (hecntr(irec,isrc)-zrt) .lt. hmnh) then
+         hmnh = hecntr(irec,isrc) - zrt
+      endif
+      if ( (hecntr(irec,isrc)-zrt) .gt. hmxh) then
+         hmxh = hecntr(irec,isrc) - zrt
+      endif
 
-      IF (PPFACT(IREC,ISRC) .GT. 0.0D0) THEN
-         IF (HECNTR3(IREC,ISRC).LT.HMNT3) THEN
-            HMNT3 = HECNTR3(IREC,ISRC)
-         ENDIF
-         IF (HECNTR3(IREC,ISRC).GT.HMXT3) THEN
-            HMXT3 = HECNTR3(IREC,ISRC)
-         ENDIF
+      if (ppfact(irec,isrc) .gt. 0.0d0) then
+         if (hecntr3(irec,isrc).lt.hmnt3) then
+            hmnt3 = hecntr3(irec,isrc)
+         endif
+         if (hecntr3(irec,isrc).gt.hmxt3) then
+            hmxt3 = hecntr3(irec,isrc)
+         endif
 
-         IF ( (HECNTR3(IREC,ISRC)-ZRT) .LT. HMNH3) THEN
-            HMNH3 = HECNTR3(IREC,ISRC) - ZRT
-         ENDIF
-         IF ( (HECNTR3(IREC,ISRC)-ZRT) .GT. HMXH3) THEN
-            HMXH3 = HECNTR3(IREC,ISRC) - ZRT
-         ENDIF
+         if ( (hecntr3(irec,isrc)-zrt) .lt. hmnh3) then
+            hmnh3 = hecntr3(irec,isrc) - zrt
+         endif
+         if ( (hecntr3(irec,isrc)-zrt) .gt. hmxh3) then
+            hmxh3 = hecntr3(irec,isrc) - zrt
+         endif
 
-      END IF
-   END IF
+      end if
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE MOLES_NOX(IDOM)
+subroutine moles_nox(idom)
 !***********************************************************************
 !             MOLES_NOX Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -12232,196 +12232,196 @@ SUBROUTINE MOLES_NOX(IDOM)
 !        CALLED FROM:   PVMRM_CALC
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
+   use main1
+   implicit none
+   character modnam*12
 
-   DOUBLE PRECISION, PARAMETER :: EPS = 1.0D-5
-   DOUBLE PRECISION :: WIDTH, LENGTH, XMINR, XMAXR
-   DOUBLE PRECISION :: CWDIST, DWDIST
-   DOUBLE PRECISION :: QAREA, XDEP
-   DOUBLE PRECISION :: QPTOT, FDOM
-   INTEGER          :: IDOM
+   double precision, parameter :: eps = 1.0d-5
+   double precision :: width, length, xminr, xmaxr
+   double precision :: cwdist, dwdist
+   double precision :: qarea, xdep
+   double precision :: qptot, fdom
+   integer          :: idom
 
 !     Variable Initializations
-   MODNAM = 'MOLES_NOX'
+   modnam = 'MOLES_NOX'
 
-   IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .or.&
-   &SRCTYP(ISRC) .EQ. 'LINE') THEN
+   if (srctyp(isrc)(1:4) .eq. 'AREA' .or.&
+   &srctyp(isrc) .eq. 'LINE') then
 ! ---    Determine NOX moles for AREA, AREACIRC, AREAPOLY,
 !        and LINE sources
-      CALL SETSRC
-      CALL EMFACT(QS)
-      IF (EVONLY) THEN
-         CALL ARDIST(IEVENT,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-      ELSE
-         CALL ARDIST(IREC,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-      END IF
+      call setsrc
+      call emfact(qs)
+      if (evonly) then
+         call ardist(ievent,xdep,width,length,xminr,xmaxr)
+      else
+         call ardist(irec,xdep,width,length,xminr,xmaxr)
+      end if
 !        Assign Y and X to CWDIST and DWDIST based on distance from
 !        center of area source to receptor.  If center of area source
 !        is within "box" of major contributing sources, then include
 !        it's emissions in calculation of NOx moles.
-      CWDIST = Y
-      DWDIST = MAX( X, 1.0D0 )
-   ELSE IF (SRCTYP(ISRC) .EQ. 'OPENPIT') THEN
+      cwdist = y
+      dwdist = max( x, 1.0d0 )
+   else if (srctyp(isrc) .eq. 'OPENPIT') then
 ! ---    Determine NOX moles for OPENPIT sources
-      CALL SETSRC
+      call setsrc
 !*       Determine the AlongWind Length of the OPENPIT Source  ---   CALL LWIND
-      CALL LWIND
+      call lwind
 
 !*       Calculate the Relative Depth of the OPENPIT Source    ---   CALL PDEPTH
-      CALL PDEPTH
+      call pdepth
 
 !*       Calculate the Fractional Size of the
 !*       Effective Pit Area (PITFRA)                           ---   CALL PTFRAC
-      CALL PTFRAC
+      call ptfrac
 
 !*       Determine the Coordinates of the Effective Pit Area
 !*       in Wind Direction Coordinate System                   ---   CALL PITEFF
-      CALL PITEFF
+      call piteff
 
 !*       Calculate the adusted Emission Rate per unit area (QEFF) for the
 !*       Effective Pit Area (PITFRA)                           ---   CALL PITEMI
 !*       First assign source emission rate to QPTOT to get adjusted
 !*       emission rate per unit area of effective source
-      QPTOT = QS
-      CALL PITEMI(QPTOT)
-      CALL EMFACT(QEFF)
+      qptot = qs
+      call pitemi(qptot)
+      call emfact(qeff)
 
-      IF (EVONLY) THEN
-         CALL ARDIST(IEVENT,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-      ELSE
-         CALL ARDIST(IREC,XDEP,WIDTH,LENGTH,XMINR,XMAXR)
-      END IF
+      if (evonly) then
+         call ardist(ievent,xdep,width,length,xminr,xmaxr)
+      else
+         call ardist(irec,xdep,width,length,xminr,xmaxr)
+      end if
 
 !        Assign Y and X to CWDIST and DWDIST based on distance from
 !        center of OPENPIT source to receptor.  If center of effective
 !        source is within "box" of major contributing sources, then
 !        include it's emissions in calculation of NOx moles.
-      CWDIST = Y
-      DWDIST = MAX( X, 1.0D0 )
-   ELSE
+      cwdist = y
+      dwdist = max( x, 1.0d0 )
+   else
 ! ---    Determine NOX moles for POINT and VOLUME sources
-      CALL SETSRC
-      CALL EMFACT(QS)
-      IF (EVONLY) THEN
-         CALL XYDIST(IEVENT)
-      ELSE
-         CALL XYDIST(IREC)
-      END IF
+      call setsrc
+      call emfact(qs)
+      if (evonly) then
+         call xydist(ievent)
+      else
+         call xydist(irec)
+      end if
 !        Assign Y and X to CWDIST and DWDIST based on distance from
 !        center of POINT or VOLUME source to receptor.  If center of
 !        source is within "box" of major contributing sources, then
 !        include it's emissions in calculation of NOx moles.
-      CWDIST = Y
-      DWDIST = MAX( X, 1.0D0 )
-   END IF
+      cwdist = y
+      dwdist = max( x, 1.0d0 )
+   end if
 
 ! --- Get FDOM based on dominant source
-   FDOM = FOPTS(IREC,IDOM)
+   fdom = fopts(irec,idom)
 
 !     Check for crosswind distance between MIN and MAX of projected width
 !     and for downwind distance between MIN and MAX of downwind distances
 !     of major contributing sources
-   IF( (CWDIST .GE. CWMIN-EPS .and. CWDIST .LE. CWMAX+EPS) .and.&
-   &(DWDIST .GE. DWMIN-EPS .and. DWDIST .LE. DWMAX+EPS) )THEN
+   if( (cwdist .ge. cwmin-eps .and. cwdist .le. cwmax+eps) .and.&
+   &(dwdist .ge. dwmin-eps .and. dwdist .le. dwmax+eps) )then
 !           Source is located within the horizontal "box" of major contributing sources;
 !           Also check min/max plume height ranges for terrain-responding (HMNT/HMXT)
 !           and horizontal (HMNH/HMXH) plumes
-      IF( HECNTR(IREC,ISRC) .GE. HMNT-EPS .and.&
-      &HECNTR(IREC,ISRC) .LE. HMXT+EPS )THEN
-         IF (SRCTYP(ISRC).EQ.'AREA' .or.&
-         &SRCTYP(ISRC).EQ.'AREAPOLY' .or.&
-         &SRCTYP(ISRC).EQ.'LINE') THEN
+      if( hecntr(irec,isrc) .ge. hmnt-eps .and.&
+      &hecntr(irec,isrc) .le. hmxt+eps )then
+         if (srctyp(isrc).eq.'AREA' .or.&
+         &srctyp(isrc).eq.'AREAPOLY' .or.&
+         &srctyp(isrc).eq.'LINE') then
 ! ---           Add contribution from AREA, AREAPOLY, and LINE sources
 ! ---           Note that XINIT and YINIT are "effective" dimensions for
 !               AREAPOLY sources that are used to define the area of the
 !               source.
-            QAREA = QTK*XINIT*YINIT
-            QSUM  = QSUM + QAREA*(1.0D0-FDOM)
-            SUM_NO2RAT = SUM_NO2RAT + ANO2_RATIO(ISRC)*QAREA*&
-            &(1.0D0-FDOM)
-         ELSE IF (SRCTYP(ISRC) .EQ. 'AREACIRC') THEN
+            qarea = qtk*xinit*yinit
+            qsum  = qsum + qarea*(1.0d0-fdom)
+            sum_no2rat = sum_no2rat + ano2_ratio(isrc)*qarea*&
+            &(1.0d0-fdom)
+         else if (srctyp(isrc) .eq. 'AREACIRC') then
 ! ---           Add contribution from AREACIRC sources
-            QAREA = QTK*PI*RADIUS(ISRC)*RADIUS(ISRC)
-            QSUM  = QSUM + QAREA*(1.0D0-FDOM)
-            SUM_NO2RAT = SUM_NO2RAT + ANO2_RATIO(ISRC)*QAREA*&
-            &(1.0D0-FDOM)
-         ELSE IF (SRCTYP(ISRC).EQ.'OPENPIT') THEN
+            qarea = qtk*pi*radius(isrc)*radius(isrc)
+            qsum  = qsum + qarea*(1.0d0-fdom)
+            sum_no2rat = sum_no2rat + ano2_ratio(isrc)*qarea*&
+            &(1.0d0-fdom)
+         else if (srctyp(isrc).eq.'OPENPIT') then
 ! ---           Add contribution from OPENPIT sources
-            QAREA = QEFF*XINIT*YINIT
-            QSUM  = QSUM + QAREA*(1.0D0-FDOM)
-            SUM_NO2RAT = SUM_NO2RAT + ANO2_RATIO(ISRC)*QAREA*&
-            &(1.0D0-FDOM)
-         ELSE
+            qarea = qeff*xinit*yinit
+            qsum  = qsum + qarea*(1.0d0-fdom)
+            sum_no2rat = sum_no2rat + ano2_ratio(isrc)*qarea*&
+            &(1.0d0-fdom)
+         else
 ! ---           Add contribution from POINT and VOLUME sources
-            QSUM = QSUM + QTK*(1.0D0-PPFACT(IREC,ISRC))*(1.0D0-FDOM)
-            SUM_NO2RAT = SUM_NO2RAT + ANO2_RATIO(ISRC)*QTK*&
-            &(1.0D0-PPFACT(IREC,ISRC))*&
-            &(1.0D0-FDOM)
-         END IF
-      ENDIF
+            qsum = qsum + qtk*(1.0d0-ppfact(irec,isrc))*(1.0d0-fdom)
+            sum_no2rat = sum_no2rat + ano2_ratio(isrc)*qtk*&
+            &(1.0d0-ppfact(irec,isrc))*&
+            &(1.0d0-fdom)
+         end if
+      endif
 
-      IF( (HECNTR(IREC,ISRC)-ZRT) .GE. HMNH-EPS .and.&
-      &(HECNTR(IREC,ISRC)-ZRT) .LE. HMXH+EPS )THEN
-         IF (SRCTYP(ISRC).EQ.'AREA' .or.&
-         &SRCTYP(ISRC).EQ.'AREAPOLY' .or.&
-         &SRCTYP(ISRC).EQ.'LINE') THEN
+      if( (hecntr(irec,isrc)-zrt) .ge. hmnh-eps .and.&
+      &(hecntr(irec,isrc)-zrt) .le. hmxh+eps )then
+         if (srctyp(isrc).eq.'AREA' .or.&
+         &srctyp(isrc).eq.'AREAPOLY' .or.&
+         &srctyp(isrc).eq.'LINE') then
 ! ---           Add contribution from AREA, AREAPOLY, and LINE sources
 ! ---           Note that XINIT and YINIT are "effective" dimensions for
 !               AREAPOLY sources that are used to define the area of the
 !               source.
-            QAREA = QTK*XINIT*YINIT
-            QSUM  = QSUM + QAREA*FDOM
-            SUM_NO2RAT = SUM_NO2RAT + ANO2_RATIO(ISRC)*QAREA*FDOM
-         ELSE IF (SRCTYP(ISRC) .EQ. 'AREACIRC') THEN
+            qarea = qtk*xinit*yinit
+            qsum  = qsum + qarea*fdom
+            sum_no2rat = sum_no2rat + ano2_ratio(isrc)*qarea*fdom
+         else if (srctyp(isrc) .eq. 'AREACIRC') then
 ! ---           Add contribution from AREACIRC sources
-            QAREA = QTK*PI*RADIUS(ISRC)*RADIUS(ISRC)
-            QSUM  = QSUM + QAREA*FDOM
-            SUM_NO2RAT = SUM_NO2RAT + ANO2_RATIO(ISRC)*QAREA*FDOM
-         ELSE IF (SRCTYP(ISRC).EQ.'OPENPIT') THEN
+            qarea = qtk*pi*radius(isrc)*radius(isrc)
+            qsum  = qsum + qarea*fdom
+            sum_no2rat = sum_no2rat + ano2_ratio(isrc)*qarea*fdom
+         else if (srctyp(isrc).eq.'OPENPIT') then
 ! ---           Add contribution from OPENPIT sources
-            QAREA = QEFF*XINIT*YINIT
-            QSUM  = QSUM + QAREA*FDOM
-            SUM_NO2RAT = SUM_NO2RAT + ANO2_RATIO(ISRC)*QAREA*FDOM
-         ELSE
+            qarea = qeff*xinit*yinit
+            qsum  = qsum + qarea*fdom
+            sum_no2rat = sum_no2rat + ano2_ratio(isrc)*qarea*fdom
+         else
 ! ---           Add contribution from POINT and VOLUME sources
-            QSUM = QSUM + QTK*(1.0D0-PPFACT(IREC,ISRC))*FDOM
-            SUM_NO2RAT = SUM_NO2RAT + ANO2_RATIO(ISRC)*QTK*&
-            &(1.0D0-PPFACT(IREC,ISRC))*FDOM
-         END IF
-      ENDIF
-   ENDIF
+            qsum = qsum + qtk*(1.0d0-ppfact(irec,isrc))*fdom
+            sum_no2rat = sum_no2rat + ano2_ratio(isrc)*qtk*&
+            &(1.0d0-ppfact(irec,isrc))*fdom
+         end if
+      endif
+   endif
 
-   IF( (CWDIST .GE. CWMIN3-EPS .and. CWDIST .LE. CWMAX3+EPS) .and.&
-   &(DWDIST .GE. DWMIN3-EPS .and. DWDIST .LE. DWMAX3+EPS) )THEN
-      IF( HECNTR3(IREC,ISRC) .GE. HMNT3-EPS .and.&
-      &HECNTR3(IREC,ISRC) .LE. HMXT3+EPS )THEN
-         IF( SRCTYP(ISRC)(1:5) .EQ. 'POINT' )THEN
+   if( (cwdist .ge. cwmin3-eps .and. cwdist .le. cwmax3+eps) .and.&
+   &(dwdist .ge. dwmin3-eps .and. dwdist .le. dwmax3+eps) )then
+      if( hecntr3(irec,isrc) .ge. hmnt3-eps .and.&
+      &hecntr3(irec,isrc) .le. hmxt3+eps )then
+         if( srctyp(isrc)(1:5) .eq. 'POINT' )then
 ! ---            Add contribution from POINT and VOLUME sources
-            QSUM3 = QSUM3 + QTK*PPFACT(IREC,ISRC)*(1.0D0-FDOM)
-            SUM3_NO2RAT = SUM3_NO2RAT + ANO2_RATIO(ISRC)*QTK*&
-            &PPFACT(IREC,ISRC)*(1.0D0-FDOM)
-         END IF
-      ENDIF
+            qsum3 = qsum3 + qtk*ppfact(irec,isrc)*(1.0d0-fdom)
+            sum3_no2rat = sum3_no2rat + ano2_ratio(isrc)*qtk*&
+            &ppfact(irec,isrc)*(1.0d0-fdom)
+         end if
+      endif
 
-      IF( (HECNTR3(IREC,ISRC)-ZRT) .GE. HMNH3-EPS .and.&
-      &(HECNTR3(IREC,ISRC)-ZRT) .LE. HMXH3+EPS )THEN
-         IF( SRCTYP(ISRC)(1:5) .EQ. 'POINT' )THEN
+      if( (hecntr3(irec,isrc)-zrt) .ge. hmnh3-eps .and.&
+      &(hecntr3(irec,isrc)-zrt) .le. hmxh3+eps )then
+         if( srctyp(isrc)(1:5) .eq. 'POINT' )then
 ! ---            Add contribution from POINT and VOLUME sources
-            QSUM3 = QSUM3 + QTK*PPFACT(IREC,ISRC)*FDOM
-            SUM3_NO2RAT = SUM3_NO2RAT + ANO2_RATIO(ISRC)*QTK*&
-            &PPFACT(IREC,ISRC)*FDOM
-         END IF
-      ENDIF
+            qsum3 = qsum3 + qtk*ppfact(irec,isrc)*fdom
+            sum3_no2rat = sum3_no2rat + ano2_ratio(isrc)*qtk*&
+            &ppfact(irec,isrc)*fdom
+         end if
+      endif
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
-&BHARG,BHARG3,VOLOUT)
+subroutine plume_vol(xarg,irdx,isdx,bvarg,bvarg3,&
+&bharg,bharg3,volout)
 !***********************************************************************
 !             PLUME_VOL Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -12460,10 +12460,10 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   INTEGER, PARAMETER :: NTAB = 59
+   use main1
+   implicit none
+   character modnam*12
+   integer, parameter :: ntab = 59
 !---  Declare parameters for the number of sigma-z's to define the volume of
 !     of the plume for stable (NSUMZS) and unstable (NSUMZU) conditions,
 !     and for the minimum values of sigma-r for stable (SRMINS) and unstable
@@ -12472,66 +12472,66 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 
 ! --- Declare NSUBZS (number of sigma's to define the plume volume) and SRMINS (minimum value of sigma-r)
 !     for STABLE conditions based on use of "total" dispersion
-   DOUBLE PRECISION, PARAMETER :: NSUBZS = 1.282D0, SRMINS = 15.0D0         ! NSUBZS = approx 80% of plume
+   double precision, parameter :: nsubzs = 1.282d0, srmins = 15.0d0         ! NSUBZS = approx 80% of plume
 
 ! --- Declare NSUBZU (number of sigma's to define the plume volume) and
 !     SRMINU (minimum value of sigma-r) for UNSTABLE conditions under the new PVMRM option:
-   DOUBLE PRECISION, PARAMETER :: NSUBZU = 2.58D0,  SRMINU =  9.0D0         ! NSUBZU = approx 99% of plume
+   double precision, parameter :: nsubzu = 2.58d0,  srminu =  9.0d0         ! NSUBZU = approx 99% of plume
 
-   DOUBLE PRECISION ::  NSUBZ, SRMIN, SRMIN3
+   double precision ::  nsubz, srmin, srmin3
 !     JAT 7/22/21 DO65 FRAN3 NOT USED
 !      DOUBLE PRECISION ::  FRAN, FRAN3
-   DOUBLE PRECISION ::  FRAN
-   DOUBLE PRECISION ::  XARG, BVARG, BVARG3, BHARG, BHARG3,&
-   &VERT, VERT3, VOLOUT, SUM, SUM3
-   DOUBLE PRECISION ::  XTABLE(NTAB), SR(NTAB), SR3(NTAB), SIGR,&
+   double precision ::  fran
+   double precision ::  xarg, bvarg, bvarg3, bharg, bharg3,&
+   &vert, vert3, volout, sum, sum3
+   double precision ::  xtable(ntab), sr(ntab), sr3(ntab), sigr,&
 !     JAT 7/22/21 DO65 SZTMP NOT USED
 !     &                     SIGR3, SZTMP
-   &SIGR3
-   DOUBLE PRECISION ::  XTAB, XINP, DELTAX, BVTMP, SIGRZTMP
-   INTEGER ::  I, ISDX, IRDX
-   INTEGER ::  KITER, NDXZPL
-   DOUBLE PRECISION :: HSPRIM, ZPLM, DHFOLD, SVPM, UPM, TGPM, PTPM,&
-   &PTP !, SVPM2
-   DOUBLE PRECISION :: VSEQ
-   DOUBLE PRECISION :: SWPM                           ! Added for ARISE; UNC-IE
+   &sigr3
+   double precision ::  xtab, xinp, deltax, bvtmp, sigrztmp
+   integer ::  i, isdx, irdx
+   integer ::  kiter, ndxzpl
+   double precision :: hsprim, zplm, dhfold, svpm, upm, tgpm, ptpm,&
+   &ptp !, SVPM2
+   double precision :: vseq
+   double precision :: swpm                           ! Added for ARISE; UNC-IE
 
 ! --- Variable Initializations:
 !     Distance table for plume volume calculation, XTABLE
-   DATA XTABLE/&
-   &10.D0,20.D0,30.D0,40.D0,50.D0,60.D0,70.D0,80.D0,90.D0,100.D0,&
-   &120.D0,140.D0,160.D0,180.D0,200.D0,&
-   &250.D0,300.D0,350.D0,400.D0,450.D0,500.D0,&
-   &600.D0,700.D0,800.D0,900.D0,1000.D0,&
-   &1200.D0,1400.D0,1600.D0,1800.D0,2000.D0,&
-   &2500.D0,3000.D0,3500.D0,4000.D0,4500.D0,5000.D0,&
-   &6000.D0,7000.D0,8000.D0,9000.D0,10000.D0,&
-   &12000.D0,14000.D0,16000.D0,18000.D0,20000.D0,&
-   &25000.D0,30000.D0,35000.D0,40000.D0,45000.D0,50000.D0,&
-   &60000.D0,70000.D0,80000.D0,90000.D0,100000.D0,&
-   &500000.D0/
+   data xtable/&
+   &10.d0,20.d0,30.d0,40.d0,50.d0,60.d0,70.d0,80.d0,90.d0,100.d0,&
+   &120.d0,140.d0,160.d0,180.d0,200.d0,&
+   &250.d0,300.d0,350.d0,400.d0,450.d0,500.d0,&
+   &600.d0,700.d0,800.d0,900.d0,1000.d0,&
+   &1200.d0,1400.d0,1600.d0,1800.d0,2000.d0,&
+   &2500.d0,3000.d0,3500.d0,4000.d0,4500.d0,5000.d0,&
+   &6000.d0,7000.d0,8000.d0,9000.d0,10000.d0,&
+   &12000.d0,14000.d0,16000.d0,18000.d0,20000.d0,&
+   &25000.d0,30000.d0,35000.d0,40000.d0,45000.d0,50000.d0,&
+   &60000.d0,70000.d0,80000.d0,90000.d0,100000.d0,&
+   &500000.d0/
 
-   DATA SR/NTAB*0.0D0/, SR3/NTAB*0.0D0/
+   data sr/ntab*0.0d0/, sr3/ntab*0.0d0/
 
-   MODNAM = 'PLUME_VOL'
+   modnam = 'PLUME_VOL'
 
 !     Assign source index to global variable
-   ISRC   = ISDX
-   IREC   = IRDX
-   SUM    = 0.0D0
-   SUM3   = 0.0D0
+   isrc   = isdx
+   irec   = irdx
+   sum    = 0.0d0
+   sum3   = 0.0d0
 ! --- Initialize SR and SR3 arrays
-   SR(:)  = 0.0D0
-   SR3(:) = 0.0D0
-   SIGR   = 0.0D0
-   SIGR3  = 0.0D0
+   sr(:)  = 0.0d0
+   sr3(:) = 0.0d0
+   sigr   = 0.0d0
+   sigr3  = 0.0d0
 !     JAT 7/22/21 DO65 SZTMP NOT USED
 !      SZTMP  = 0.0D0
 
-   VERT   = 0.0D0
-   VERT3  = 0.0D0
+   vert   = 0.0d0
+   vert3  = 0.0d0
 
-   FRAN   = 0.0D0
+   fran   = 0.0d0
 !     JAT 7/22/21 DO65 FRAN3 NOT USED
 !      FRAN3  = 0.0D0
 
@@ -12540,206 +12540,206 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 !     and uses "relative" dispersion coefficients for UNSTABLE conditions.
 !     Assign SRMIN and NSUBZ based on stability:
 !     Use HS based on ISDX
-   IF (STABLE .or. (UNSTAB .and. (AHS(ISDX) .GE. ZI))) THEN
+   if (stable .or. (unstab .and. (ahs(isdx) .ge. zi))) then
 ! ---    Assign SRMIN and NSUBZ for STABLE or UNSTAB and HS .ge. ZI
-      SRMIN = SRMINS
-      NSUBZ = NSUBZS
-   ELSE
+      srmin = srmins
+      nsubz = nsubzs
+   else
 ! ---    Assign SRMIN and NSUBZ for UNSTAB and HS .lt. ZI
-      SRMIN = SRMINU
-      NSUBZ = NSUBZU
-   END IF
+      srmin = srminu
+      nsubz = nsubzu
+   end if
 
-   if( PVMRMDBG .and. DEBUG .and. KURDAT .GT. 0 )then
+   if( pvmrmdbg .and. debug .and. kurdat .gt. 0 )then
 ! ---    PVMRM and MODEL DEBUG options have been selected; include the
 !        RELDISP Calcs in the MODEL DEBUG file
-      write(RDISPUNT,*)
-      write(RDISPUNT,*) 'RELDISP Calcs: '
-      if( EVONLY )then
-         write(RDISPUNT,*) ' DATE: ' ,KURDAT,'  IEVT: ',IEVENT
+      write(rdispunt,*)
+      write(rdispunt,*) 'RELDISP Calcs: '
+      if( evonly )then
+         write(rdispunt,*) ' DATE: ' ,kurdat,'  IEVT: ',ievent
       else
-         write(RDISPUNT,*) ' DATE: ' ,KURDAT,'  IREC: ',IREC
+         write(rdispunt,*) ' DATE: ' ,kurdat,'  IREC: ',irec
       endif
-      write(RDISPUNT,*)&
+      write(rdispunt,*)&
       &'  DOM SRCID   IDX      DIST       SR(IDX)      SR3(IDX)',&
       &'      SIGR        SRMIN'
    endif
 
 !     Set Mixing Height and Profiles for Urban Option if Needed
-   IF (URBSRC(ISRC) .EQ. 'Y') THEN
+   if (urbsrc(isrc) .eq. 'Y') then
 !        Find Urban Area Index for This Source
-      DO I = 1, NUMURB
-         IF (IURBGRP(ISRC,I) .EQ. 1) THEN
-            IURB = I
-            EXIT
-         END IF
-      END DO
-      IF (STABLE .or. L_MorningTrans(IURB)) THEN
-         URBSTAB = .TRUE.
-         ZI = MAX( ZIURB(IURB), ZIMECH )
-         GRIDSV = GRDSVU(1:MXGLVL,IURB)
-         GRIDSW = GRDSWU(1:MXGLVL,IURB)
-         GRIDTG = GRDTGU(1:MXGLVL,IURB)
-         GRIDPT = GRDPTU(1:MXGLVL,IURB)
-         OBULEN = URBOBULEN(IURB)
-         USTAR  = URBUSTR(IURB)
-      ELSE
-         URBSTAB = .FALSE.
-         ZI = ZIRUR
-         GRIDSV = GRDSVR
-         GRIDSW = GRDSWR
-         GRIDTG = GRDTGR
-         GRIDPT = GRDPTR
-         OBULEN = RUROBULEN
-         USTAR  = RURUSTR
-      END IF
-   ELSE IF (URBAN .and. URBSRC(ISRC) .EQ. 'N') THEN
-      URBSTAB = .FALSE.
-      ZI = ZIRUR
-      GRIDSV = GRDSVR
-      GRIDSW = GRDSWR
-      GRIDTG = GRDTGR
-      GRIDPT = GRDPTR
-      OBULEN = RUROBULEN
-      USTAR  = RURUSTR
-   ELSE
+      do i = 1, numurb
+         if (iurbgrp(isrc,i) .eq. 1) then
+            iurb = i
+            exit
+         end if
+      end do
+      if (stable .or. L_MorningTrans(iurb)) then
+         urbstab = .true.
+         zi = max( ziurb(iurb), zimech )
+         gridsv = grdsvu(1:mxglvl,iurb)
+         gridsw = grdswu(1:mxglvl,iurb)
+         gridtg = grdtgu(1:mxglvl,iurb)
+         gridpt = grdptu(1:mxglvl,iurb)
+         obulen = urbobulen(iurb)
+         ustar  = urbustr(iurb)
+      else
+         urbstab = .false.
+         zi = zirur
+         gridsv = grdsvr
+         gridsw = grdswr
+         gridtg = grdtgr
+         gridpt = grdptr
+         obulen = rurobulen
+         ustar  = rurustr
+      end if
+   else if (urban .and. urbsrc(isrc) .eq. 'N') then
+      urbstab = .false.
+      zi = zirur
+      gridsv = grdsvr
+      gridsw = grdswr
+      gridtg = grdtgr
+      gridpt = grdptr
+      obulen = rurobulen
+      ustar  = rurustr
+   else
 ! ---    Rural
-      URBSTAB = .FALSE.
-   END IF
+      urbstab = .false.
+   end if
 
 !     Set the Source Variables for This Source           ---   CALL SETSRC
-   CALL SETSRC
+   call setsrc
 
 !     Calculate the initial meteorological variables     ---   CALL METINI
-   CALL METINI
+   call metini
 
-   IF ((SRCTYP(ISRC) .EQ. 'VOLUME' .and. AFTSRC(ISRC) .EQ. 'N').or.&  ! Added for Aircraft; UNC-IE
-   &SRCTYP(ISRC) .EQ. 'LINE' .or.&
-   &(SRCTYP(ISRC)(1:4) .EQ. 'AREA'.and.AFTSRC(ISRC).EQ.'N') .or.&  ! Added for Aircraft; UNC-IE
-   &SRCTYP(ISRC) .EQ. 'OPENPIT') THEN
-      FB  = 0.0D0
-      FM  = 0.0D0
-      PPF = 0.0D0
-      HSP = HS
-      DHP  = 0.0D0
-      DHP1 = 0.0D0
-      DHP2 = 0.0D0
-      DHP3 = 0.0D0
-      DHCRIT = 0.0D0
-      XFINAL = 0.0D0
-      XMIXED = ZI * UAVG / SWAVG
-      IF(XMIXED .LT. XFINAL) XMIXED = XFINAL
-      ZMIDMX = 0.5D0 * ZI
+   if ((srctyp(isrc) .eq. 'VOLUME' .and. aftsrc(isrc) .eq. 'N').or.&  ! Added for Aircraft; UNC-IE
+   &srctyp(isrc) .eq. 'LINE' .or.&
+   &(srctyp(isrc)(1:4) .eq. 'AREA'.and.aftsrc(isrc).eq.'N') .or.&  ! Added for Aircraft; UNC-IE
+   &srctyp(isrc) .eq. 'OPENPIT') then
+      fb  = 0.0d0
+      fm  = 0.0d0
+      ppf = 0.0d0
+      hsp = hs
+      dhp  = 0.0d0
+      dhp1 = 0.0d0
+      dhp2 = 0.0d0
+      dhp3 = 0.0d0
+      dhcrit = 0.0d0
+      xfinal = 0.0d0
+      xmixed = zi * uavg / swavg
+      if(xmixed .lt. xfinal) xmixed = xfinal
+      zmidmx = 0.5d0 * zi
 !        Define temporary values of CENTER and SURFAC based on HS
 !        to account for non-POINT sources
-      CENTER = HECNTR(IREC,ISRC)
-      IF( CENTER .LT. 0.1D0*ZI )THEN
-         SURFAC = .TRUE.
-      ELSE
-         SURFAC = .FALSE.
-      END IF
+      center = hecntr(irec,isrc)
+      if( center .lt. 0.1d0*zi )then
+         surfac = .true.
+      else
+         surfac = .false.
+      end if
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .or.&
-   &SRCTYP(ISRC) .EQ. 'AREA'  .and.&
-   &AFTSRC(ISRC) .EQ. 'Y') THEN
+   else if (srctyp(isrc) .eq. 'VOLUME' .or.&
+   &srctyp(isrc) .eq. 'AREA'  .and.&
+   &aftsrc(isrc) .eq. 'Y') then
 !        Calculate Buoyancy Flux                            ---   CALL AFLUXES
-      CALL AFLUXES
-      FM  = 0.0D0
+      call afluxes
+      fm  = 0.0d0
 
 !        Define temporary values of CENTER and SURFAC based on HS
-      CENTER = HECNTR(IREC,ISRC)
-      IF( CENTER .LT. 0.1D0*ZI )THEN
-         SURFAC = .TRUE.
-      ELSE
-         SURFAC = .FALSE.
-      END IF
+      center = hecntr(irec,isrc)
+      if( center .lt. 0.1d0*zi )then
+         surfac = .true.
+      else
+         surfac = .false.
+      end if
 
-      HSP = HS
+      hsp = hs
 !        Calculate Distance to Final Rise                   ---   CALL ADISTF
-      CALL ADISTF
+      call adistf
 
 !        Calculate the plume penetration factor             ---   CALL PENFCT
-      CALL PENFCT
+      call penfct
 
-      IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+      if (stable .or. (unstab.and.(hs.ge.zi))) then
 !           Use iterative approach to stable plume rise calculations
-         KITER = 0
-150      ZPLM = HSP + 0.5D0 * DHFAER
-         DHFOLD = DHFAER
+         kiter = 0
+150      zplm = hsp + 0.5d0 * dhfaer
+         dhfold = dhfaer
 
 !----       Locate index below ZPLM
 
-         CALL LOCATE(GRIDHT, 1, MXGLVL, ZPLM, NDXZPL)
+         call locate(gridht, 1, mxglvl, zplm, ndxzpl)
 
 !----       Get Wind speed at ZPLM; replace UP, SVP, SWP.  Also, replace TGP,
 !           vertical potential temperature gradient, if stable.
 
-         CALL GINTRP( GRIDHT(NDXZPL), GRIDSV(NDXZPL),&
-         &GRIDHT(NDXZPL+1), GRIDSV(NDXZPL+1), ZPLM, SVPM )
-         CALL GINTRP( GRIDHT(NDXZPL), GRIDSW(NDXZPL),&
-         &GRIDHT(NDXZPL+1), GRIDSW(NDXZPL+1),&
-         &ZPLM, SWPM )
-         CALL GINTRP( GRIDHT(NDXZPL), GRIDWS(NDXZPL),&
-         &GRIDHT(NDXZPL+1), GRIDWS(NDXZPL+1), ZPLM, UPM )
+         call gintrp( gridht(ndxzpl), gridsv(ndxzpl),&
+         &gridht(ndxzpl+1), gridsv(ndxzpl+1), zplm, svpm )
+         call gintrp( gridht(ndxzpl), gridsw(ndxzpl),&
+         &gridht(ndxzpl+1), gridsw(ndxzpl+1),&
+         &zplm, swpm )
+         call gintrp( gridht(ndxzpl), gridws(ndxzpl),&
+         &gridht(ndxzpl+1), gridws(ndxzpl+1), zplm, upm )
 
-         SVPM = MAX( SVPM, SVMIN, SVUMIN*UPM )
-         SWPM = MAX( SWPM, SWMIN )
+         svpm = max( svpm, svmin, svumin*upm )
+         swpm = max( swpm, swmin )
 
-         IF( L_VECTORWS )THEN
-            UPM = DSQRT( UPM*UPM + 2.0D0*SVPM*SVPM )
-         ENDIF
-         UPM  = MAX( UPM, WSMIN )
+         if( l_vectorws )then
+            upm = dsqrt( upm*upm + 2.0d0*svpm*svpm )
+         endif
+         upm  = max( upm, wsmin )
 
 
 !RWB        Use average of stack top and midpoint wind speeds and others.
-         UP = 0.5D0 * (US + UPM)
-         SVP = 0.5D0 * (SVS + SVPM)
-         SWP = 0.5D0 * (SWS + SWPM)
+         up = 0.5d0 * (us + upm)
+         svp = 0.5d0 * (svs + svpm)
+         swp = 0.5d0 * (sws + swpm)
 
-         CALL GINTRP( GRIDHT(NDXZPL), GRIDTG(NDXZPL),&
-         &GRIDHT(NDXZPL+1), GRIDTG(NDXZPL+1), ZPLM, TGPM )
-         CALL GINTRP( GRIDHT(NDXZPL), GRIDPT(NDXZPL),&
-         &GRIDHT(NDXZPL+1), GRIDPT(NDXZPL+1), ZPLM, PTPM )
+         call gintrp( gridht(ndxzpl), gridtg(ndxzpl),&
+         &gridht(ndxzpl+1), gridtg(ndxzpl+1), zplm, tgpm )
+         call gintrp( gridht(ndxzpl), gridpt(ndxzpl),&
+         &gridht(ndxzpl+1), gridpt(ndxzpl+1), zplm, ptpm )
 !RWB        Use average of stack top and midpoint temperature gradients.
-         TGP = 0.5D0 * (TGS + TGPM)
-         PTP = 0.5D0 * (PTS + PTPM)
-         BVF = DSQRT( G * TGP / PTP )
-         IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
-         BVPRIM  = 0.7D0 * BVF
+         tgp = 0.5d0 * (tgs + tgpm)
+         ptp = 0.5d0 * (pts + ptpm)
+         bvf = dsqrt( g * tgp / ptp )
+         if(bvf .lt. 1.0d-10) bvf = 1.0d-10
+         bvprim  = 0.7d0 * bvf
 
-         CALL ADISTF
+         call adistf
 
-         KITER = KITER + 1
+         kiter = kiter + 1
 
 !           Check for convergence
-         IF(DABS((DHFOLD - DHFAER)/DHFAER) .LT. 0.01D0) GO TO 160
+         if(dabs((dhfold - dhfaer)/dhfaer) .lt. 0.01d0) go to 160
 
-         IF(KITER .GE. 5) THEN
-            DHFAER = 0.5D0 * (DHFAER + DHFOLD)
-            GO TO 160
-         ELSE
-            GO TO 150
-         END IF
+         if(kiter .ge. 5) then
+            dhfaer = 0.5d0 * (dhfaer + dhfold)
+            go to 160
+         else
+            go to 150
+         end if
 
-160      CONTINUE
+160      continue
 
 !RWB        After completing iteration, reset UP, SVP, SWP and TGP to stack top
 !RWB        values for subsequent distance-dependent plume rise calcs.
-         UP = US
-         SVP = SVS
-         SWP = SWS
-         TGP = TGS
-         PTP = PTS
-         BVF = DSQRT( G * TGP / PTP )
-         IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
-         BVPRIM  = 0.7D0 * BVF
-      END IF
+         up = us
+         svp = svs
+         swp = sws
+         tgp = tgs
+         ptp = pts
+         bvf = dsqrt( g * tgp / ptp )
+         if(bvf .lt. 1.0d-10) bvf = 1.0d-10
+         bvprim  = 0.7d0 * bvf
+      end if
 
 !        Initialize PRM_FSTREC Logical Switch for First Receptor of Loop;
-      PRM_FSTREC = .TRUE.
+      prm_fstrec = .true.
 
-      ZMIDMX = 0.5D0 * ZI
+      zmidmx = 0.5d0 * zi
 
 !RJP
 !RJP     Calculate distance to uniformly mixed plume within the
@@ -12752,129 +12752,129 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 !RJP     First, get refined estimate of final rise and distance to final
 !RJP     rise if downwash conditions prevail.
 !RJP
-      XFINAL = XMAX
-      DHCRIT = DHFAER
-      XMIXED = ZI * UAVG / SWAVG
-      IF (UNSTAB .and. HS.LT.ZI) THEN
+      xfinal = xmax
+      dhcrit = dhfaer
+      xmixed = zi * uavg / swavg
+      if (unstab .and. hs.lt.zi) then
 !           Check for XMIXED smaller than 1.25*XFINAL
-         IF (XMIXED .LT. 1.25D0*XFINAL) THEN
-            XFINAL = 0.8D0 * XMIXED
-            CALL ACBLPRD (XFINAL)
-            DHCRIT = DHP1
-         END IF
-      END IF
+         if (xmixed .lt. 1.25d0*xfinal) then
+            xfinal = 0.8d0 * xmixed
+            call acblprd (xfinal)
+            dhcrit = dhp1
+         end if
+      end if
 !**  End Aircraft Plume Rise insert; April 2023
 
-   ELSE IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
+   else if (srctyp(isrc)(1:5) .eq. 'POINT') then
 !        Calculate Buoyancy and Momentum Fluxes             ---   CALL FLUXES
-      CALL FLUXES(VSEQ)
+      call fluxes(vseq)
 
 !        Set Wake and Building Type Switches                ---   CALL WAKFLG
 ! ---    NOTE:  WAKFLG sets building dimensions based on wind
 !        direction at stack top.
 ! ---    WAKE is set to false for purposes of calculating plume volume,
 !        since minimum volume is intended
-      WAKE = .FALSE.
+      wake = .false.
 
 !        Define temporary values of CENTER and SURFAC based on HS
-      CENTER = HECNTR(IREC,ISRC)
-      IF( CENTER .LT. 0.1D0*ZI )THEN
-         SURFAC = .TRUE.
-      ELSE
-         SURFAC = .FALSE.
-      END IF
+      center = hecntr(irec,isrc)
+      if( center .lt. 0.1d0*zi )then
+         surfac = .true.
+      else
+         surfac = .false.
+      end if
 
 ! ---    Apply HSP for POINTCAP and POINTHOR first to avoid NOSTD option
 !        overriding POINTCAP
-      IF (SRCTYP(ISRC) .EQ. 'POINTCAP') THEN
+      if (srctyp(isrc) .eq. 'POINTCAP') then
 !           Apply stack-tip downwash for capped stacks with VS = 0.001m/s
-         HSP = HSPRIM ( US, VSEQ, HS, DS )
-      ELSE IF (SRCTYP(ISRC) .EQ. 'POINTHOR') THEN
+         hsp = hsprim ( us, vseq, hs, ds )
+      else if (srctyp(isrc) .eq. 'POINTHOR') then
 !           Do not apply stack-tip downwash for horizontal releases
-         HSP = HS
-      ELSE IF( NOSTD )THEN
+         hsp = hs
+      else if( nostd )then
 !           No stack-tip downwash, no adjustments necessary
-         HSP = HS
-      ELSE
+         hsp = hs
+      else
 !           Make adjustments for stack-tip downwash
-         HSP = HSPRIM ( US, VS, HS, DS )
-      END IF
+         hsp = hsprim ( us, vs, hs, ds )
+      end if
 
 !        Calculate Distance to Final Rise                   ---   CALL DISTF
-      CALL DISTF
+      call distf
 
 !        Calculate the plume penetration factor             ---   CALL PENFCT
-      CALL PENFCT
+      call penfct
 
-      IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+      if (stable .or. (unstab.and.(hs.ge.zi))) then
 !           Use iterative approach to stable plume rise calculations
-         KITER = 0
-50       ZPLM = HSP + 0.5D0 * DHFAER
-         DHFOLD = DHFAER
+         kiter = 0
+50       zplm = hsp + 0.5d0 * dhfaer
+         dhfold = dhfaer
 
 !----       Locate index below ZPLM
 
-         CALL LOCATE(GRIDHT, 1, MXGLVL, ZPLM, NDXZPL)
+         call locate(gridht, 1, mxglvl, zplm, ndxzpl)
 
 !----       Get Wind speed at ZPLM; replace UP.  Also, replace TGP,
 !           vertical potential temperature gradient, if stable.
 
-         CALL GINTRP( GRIDHT(NDXZPL), GRIDSV(NDXZPL),&
-         &GRIDHT(NDXZPL+1), GRIDSV(NDXZPL+1), ZPLM, SVPM )
-         CALL GINTRP( GRIDHT(NDXZPL), GRIDWS(NDXZPL),&
-         &GRIDHT(NDXZPL+1), GRIDWS(NDXZPL+1), ZPLM, UPM )
+         call gintrp( gridht(ndxzpl), gridsv(ndxzpl),&
+         &gridht(ndxzpl+1), gridsv(ndxzpl+1), zplm, svpm )
+         call gintrp( gridht(ndxzpl), gridws(ndxzpl),&
+         &gridht(ndxzpl+1), gridws(ndxzpl+1), zplm, upm )
 
-         SVPM = MAX( SVPM, SVMIN, SVUMIN*UPM )
-         IF( L_VECTORWS )THEN
-            UPM = DSQRT( UPM*UPM + 2.0D0*SVPM*SVPM )
-         ENDIF
-         UPM  = MAX( UPM, WSMIN )
+         svpm = max( svpm, svmin, svumin*upm )
+         if( l_vectorws )then
+            upm = dsqrt( upm*upm + 2.0d0*svpm*svpm )
+         endif
+         upm  = max( upm, wsmin )
 
 
 !RWB        Use average of stack top and midpoint wind speeds.
-         UP = 0.5D0 * (US + UPM)
+         up = 0.5d0 * (us + upm)
 
-         CALL GINTRP( GRIDHT(NDXZPL), GRIDTG(NDXZPL),&
-         &GRIDHT(NDXZPL+1), GRIDTG(NDXZPL+1), ZPLM, TGPM )
-         CALL GINTRP( GRIDHT(NDXZPL), GRIDPT(NDXZPL),&
-         &GRIDHT(NDXZPL+1), GRIDPT(NDXZPL+1), ZPLM, PTPM )
+         call gintrp( gridht(ndxzpl), gridtg(ndxzpl),&
+         &gridht(ndxzpl+1), gridtg(ndxzpl+1), zplm, tgpm )
+         call gintrp( gridht(ndxzpl), gridpt(ndxzpl),&
+         &gridht(ndxzpl+1), gridpt(ndxzpl+1), zplm, ptpm )
 !RWB        Use average of stack top and midpoint temperature gradients.
-         TGP = 0.5D0 * (TGS + TGPM)
-         PTP = 0.5D0 * (PTS + PTPM)
-         BVF = DSQRT( G * TGP / PTP )
-         IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
-         BVPRIM  = 0.7D0 * BVF
+         tgp = 0.5d0 * (tgs + tgpm)
+         ptp = 0.5d0 * (pts + ptpm)
+         bvf = dsqrt( g * tgp / ptp )
+         if(bvf .lt. 1.0d-10) bvf = 1.0d-10
+         bvprim  = 0.7d0 * bvf
 
-         CALL DISTF
+         call distf
 
-         KITER = KITER + 1
+         kiter = kiter + 1
 
 !           Check for convergence
-         IF(DABS((DHFOLD - DHFAER)/DHFAER) .LT. 0.01D0) GO TO 60
+         if(dabs((dhfold - dhfaer)/dhfaer) .lt. 0.01d0) go to 60
 
-         IF(KITER .GE. 5) THEN
-            DHFAER = 0.5D0 * (DHFAER + DHFOLD)
-            GO TO 60
-         ELSE
-            GO TO 50
-         END IF
+         if(kiter .ge. 5) then
+            dhfaer = 0.5d0 * (dhfaer + dhfold)
+            go to 60
+         else
+            go to 50
+         end if
 
-60       CONTINUE
+60       continue
 
 !RWB        After completing iteration, reset UP and TGP to stack top
 !RWB        values for subsequent distance-dependent plume rise calcs.
-         UP = US
-         TGP = TGS
-         PTP = PTS
-         BVF = DSQRT( G * TGP / PTP )
-         IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
-         BVPRIM  = 0.7D0 * BVF
-      END IF
+         up = us
+         tgp = tgs
+         ptp = pts
+         bvf = dsqrt( g * tgp / ptp )
+         if(bvf .lt. 1.0d-10) bvf = 1.0d-10
+         bvprim  = 0.7d0 * bvf
+      end if
 
 !        Initialize PRM_FSTREC Logical Switch for First Receptor of Loop;
-      PRM_FSTREC = .TRUE.
+      prm_fstrec = .true.
 
-      ZMIDMX = 0.5D0 * ZI
+      zmidmx = 0.5d0 * zi
 
 !RJP
 !RJP     Calculate distance to uniformly mixed plume within the
@@ -12887,263 +12887,263 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 !RJP     First, get refined estimate of final rise and distance to final
 !RJP     rise if downwash conditions prevail.
 !RJP
-      XFINAL = XMAX
-      DHCRIT = DHFAER
-      XMIXED = ZI * UAVG / SWAVG
-      IF (UNSTAB .and. HS.LT.ZI) THEN
+      xfinal = xmax
+      dhcrit = dhfaer
+      xmixed = zi * uavg / swavg
+      if (unstab .and. hs.lt.zi) then
 !           Check for XMIXED smaller than 1.25*XFINAL
-         IF (XMIXED .LT. 1.25D0*XFINAL) THEN
-            XFINAL = 0.8D0 * XMIXED
-            CALL CBLPRD (XFINAL)
-            DHCRIT = DHP1
-         END IF
-      END IF
+         if (xmixed .lt. 1.25d0*xfinal) then
+            xfinal = 0.8d0 * xmixed
+            call cblprd (xfinal)
+            dhcrit = dhp1
+         end if
+      end if
 
-   END IF
+   end if
 
 !     First build table of relative dispersion coefficients for
 !     dominant source (source index = ISDX)
-   DO I = 1, NTAB
+   do i = 1, ntab
 
-      XTAB = XTABLE(I)
+      xtab = xtable(i)
 
 ! ---    Assign XINP depending on whether XARG (src-rec dist) is
 !        greater or less than current table value (XTAB)
-      IF (XARG .GT. XTAB) THEN
-         XINP = XTAB
-         IF (I .GT. 1) THEN
-            DELTAX = XTABLE(I) - XTABLE(I-1)
-         ELSE
-            DELTAX = XTABLE(1)
-         END IF
-      ELSE
-         XINP = XARG
-         IF (I .GT. 1) THEN
-            DELTAX = XARG - XTABLE(I-1)
-         ELSE
-            DELTAX = XARG
-         END IF
-      END IF
+      if (xarg .gt. xtab) then
+         xinp = xtab
+         if (i .gt. 1) then
+            deltax = xtable(i) - xtable(i-1)
+         else
+            deltax = xtable(1)
+         end if
+      else
+         xinp = xarg
+         if (i .gt. 1) then
+            deltax = xarg - xtable(i-1)
+         else
+            deltax = xarg
+         end if
+      end if
 
 !        Receptor distance is > current table value, XTAB; calculate values at XTAB
 !        Define plume centroid height (CENTER) for use in
 !        inhomogeneity calculations
-      CALL CENTROID ( XINP )
+      call centroid ( xinp )
 
-      IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
+      if (srctyp(isrc)(1:5) .eq. 'POINT') then
 !           Calculate the plume rise                  ---   CALL DELTAH
-         CALL DELTAH ( XINP )
+         call deltah ( xinp )
 !**  Added for Aircraft Plume Rise; UNC-IE
-      ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and.&
-      &AFTSRC(ISRC) .EQ. 'Y') THEN
+      else if (srctyp(isrc) .eq. 'VOLUME' .and.&
+      &aftsrc(isrc) .eq. 'Y') then
 !           Calculate the plume rise                  ---   CALL ADELTAH
-         CALL ADELTAH ( XINP )
-      ELSE IF (SRCTYP(ISRC) (1:4) .EQ. 'AREA' .and.&
-      &AFTSRC(ISRC) .EQ. 'Y') THEN
+         call adeltah ( xinp )
+      else if (srctyp(isrc) (1:4) .eq. 'AREA' .and.&
+      &aftsrc(isrc) .eq. 'Y') then
 !           Calculate the plume rise                  ---   CALL ADELTAH
-         CALL ADELTAH ( XINP )
+         call adeltah ( xinp )
 !**  End Aircraft Plume Rise insert; April 2023
-      ELSE
+      else
 ! ---       Assign 0.0 to DHP plume rise variables for non-POINT sources
-         DHP  = 0.0D0
-         DHP1 = 0.0D0
-         DHP2 = 0.0D0
-         DHP3 = 0.0D0
-      END IF
+         dhp  = 0.0d0
+         dhp1 = 0.0d0
+         dhp2 = 0.0d0
+         dhp3 = 0.0d0
+      end if
 
 !        If the atmosphere is unstable and the stack
 !        top is below the mixing height, calculate
 !        the CBL PDF coefficients                     ---   CALL PDF
-      IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
-         CALL PDF
-      END IF
+      if( unstab  .and.  (hs .lt. zi) ) then
+         call pdf
+      end if
 
 !        Determine Effective Plume Height             ---   CALL HEFF
-      CALL HEFF ( XINP )
+      call heff ( xinp )
 
 !        Compute effective parameters using an
 !        average through plume rise layer
-      CALL IBLVAL ( XINP )
+      call iblval ( xinp )
 
 !        Call PDF & HEFF again for final CBL plume heights
-      IF (UNSTAB .and. (HS.LT.ZI) ) THEN
-         CALL PDF
-         CALL HEFF ( XINP )
-      END IF
+      if (unstab .and. (hs.lt.zi) ) then
+         call pdf
+         call heff ( xinp )
+      end if
 
-      IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT' .and. .NOT.NOBID) THEN
+      if (srctyp(isrc)(1:5) .eq. 'POINT' .and. .not.nobid) then
 !           Call BID to get buoyancy-induced dispersion terms
-         CALL BID
+         call bid
 !**  Added for Aircraft Plume Rise; UNC-IE
-      ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and. .NOT.NOBID .and.&
-      &AFTSRC(ISRC) .EQ. 'Y') THEN
+      else if (srctyp(isrc) .eq. 'VOLUME' .and. .not.nobid .and.&
+      &aftsrc(isrc) .eq. 'Y') then
 !           Call BID to get buoyancy-induced dispersion terms
-         CALL BID
-      ELSE IF (SRCTYP(ISRC) (1:4) .EQ. 'AREA'.and..NOT.NOBID .and.&
-      &AFTSRC(ISRC) .EQ. 'Y') THEN
+         call bid
+      else if (srctyp(isrc) (1:4) .eq. 'AREA'.and..not.nobid .and.&
+      &aftsrc(isrc) .eq. 'Y') then
 !           Call BID to get buoyancy-induced dispersion terms
-         CALL BID
+         call bid
 !**  End Aircraft Plume Rise insert; April 2023
-      ELSE
+      else
 !           Set BID Terms to 0.0
-         IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
-            SYB = 0.0D0
-            SZB = 0.0D0
+         if( stable  .or.  (unstab .and. (hs .ge. zi) ) )then
+            syb = 0.0d0
+            szb = 0.0d0
 
-         ELSE IF( UNSTAB )THEN
-            SYB  = 0.0D0
-            SZBD = 0.0D0
-            SZBN = 0.0D0
-            SYB3 = 0.0D0
-            SZB3 = 0.0D0
+         else if( unstab )then
+            syb  = 0.0d0
+            szbd = 0.0d0
+            szbn = 0.0d0
+            syb3 = 0.0d0
+            szb3 = 0.0d0
 
-         END IF
-      END IF
+         end if
+      end if
 
 ! ---    Calculate "total" dispersion coefficients for STABLE conditions
 !        and UNSTAB conditions with HS .GE. ZI and use "relative"
 !        dispersion coefficients for UNSTAB conditions with HS .LT. ZI
 !
-      IF (STABLE .or. (UNSTAB  .and.  (HS .GE. ZI)) )THEN
-         IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
+      if (stable .or. (unstab  .and.  (hs .ge. zi)) )then
+         if (srctyp(isrc)(1:5) .eq. 'POINT') then
 ! ---         Call PDIS to get SY and SZ for POINT sources
-            CALL PDIS( XINP )
+            call pdis( xinp )
 ! ---         Assign geometric mean of SY and SZ for SR
-            SR(I) = DSQRT( SZ*SY )
+            sr(i) = dsqrt( sz*sy )
 
 ! ---         Set SR3 = 0.0 for "stable" plume
-            SR3(I) = 0.0D0
-         ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME') THEN
+            sr3(i) = 0.0d0
+         else if (srctyp(isrc) .eq. 'VOLUME') then
 ! ---         Call VDIS to get SY and SZ for VOLUME sources
-            CALL VDIS( XINP )
+            call vdis( xinp )
 ! ---         Assign geometric mean of SY and SZ for SR
-            SR(I) = DSQRT( SY*SZ )
+            sr(i) = dsqrt( sy*sz )
 
 ! ---         Assign SR3 = 0.0 for non-POINT sources
-            SR3(I) = 0.0D0
-         ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .or.&
-         &SRCTYP(ISRC)      .EQ. 'OPENPIT') THEN
+            sr3(i) = 0.0d0
+         else if (srctyp(isrc)(1:4) .eq. 'AREA' .or.&
+         &srctyp(isrc)      .eq. 'OPENPIT') then
 ! ---         Call ADISY and ADISZ to get SY and SZ for AREA and OPENPIT sources
-            CALL ADISY( XINP )
-            CALL ADISZ( XINP )
+            call adisy( xinp )
+            call adisz( xinp )
 ! ---         Assign geometric mean of SY and SZ for SR
-            SR(I) = DSQRT( SY*SZ )
+            sr(i) = dsqrt( sy*sz )
 
 ! ---         Assign SR3 = 0.0 for non-POINT sources?
-            SR3(I) = 0.0D0
-         END IF
+            sr3(i) = 0.0d0
+         end if
 
 !          First calculate the "effective" sigma-y value that
 !          replicates the centerline concentration with the effect
 !          of horizontal meander, but based on a "coherent" plume
-         CALL MEANDR( UEFF, SVEFF, FRAN )
+         call meandr( ueff, sveff, fran )
 
 ! ---      Calculate effective sigma-y associated with non-DFAULT FASTALL option (EFFSIGY)
-         SYEFF = 1.0D0/((FRAN/(SRT2PI*XINP)) + (1.0D0-FRAN)/SY)
+         syeff = 1.0d0/((fran/(srt2pi*xinp)) + (1.0d0-fran)/sy)
 
 ! ---      Use the value of NSUBZ based on original Hanrahan value of 1.282 (NSUBZS),
 !          adjusted by the ratio of SYEFF/SY to account for meander, or a value of 2.15,
 !          whichever is lower
-         NSUBZ = MIN( 2.15D0,  NSUBZS*(SYEFF/SY) )
+         nsubz = min( 2.15d0,  nsubzs*(syeff/sy) )
 
 ! ---      Adjust SRMIN based on SYEFF/SY ratio for stable conditions
-         SRMIN = SRMINS * (1.282D0/NSUBZ)
+         srmin = srmins * (1.282d0/nsubz)
 
-         IF (I .GT. 1) THEN
-            SIGR = MAX( SRMIN, 0.5D0 * (SR(I) + SR(I-1)) )
-         ELSE
-            SIGR = MAX( SRMIN, 0.5D0 * SR(I) )
-         END IF
+         if (i .gt. 1) then
+            sigr = max( srmin, 0.5d0 * (sr(i) + sr(i-1)) )
+         else
+            sigr = max( srmin, 0.5d0 * sr(i) )
+         end if
 
-      ELSE
+      else
 
 ! ---      Use relative dispersion coefficients for UNSTABLE conditions with HS < ZI;
 !          Determine Relative Dispersion Parameters     ---   CALL RELDISP
-         CALL RELDISP ( XINP, SR(I), SR3(I) )
+         call reldisp ( xinp, sr(i), sr3(i) )
 
-         IF (I .GT. 1) THEN
-            SIGR = MAX( SRMIN, 0.5D0 * (SR(I) + SR(I-1)) )
-         ELSE
-            SIGR = MAX( SRMIN, 0.5D0 * SR(I) )
-         END IF
+         if (i .gt. 1) then
+            sigr = max( srmin, 0.5d0 * (sr(i) + sr(i-1)) )
+         else
+            sigr = max( srmin, 0.5d0 * sr(i) )
+         end if
 
 ! ---      Use PPF-weighted average of SRMINS and SRMINU for SRMIN3
 !          penetrated plumes
-         IF( PPFACT(IREC,ISRC) .GT. 0.0D0 )THEN
-            PPF = PPFACT(IREC,ISRC)
-            SRMIN3 = PPF*SRMINS + (1.0D0-PPF)*SRMINU
-         ENDIF
+         if( ppfact(irec,isrc) .gt. 0.0d0 )then
+            ppf = ppfact(irec,isrc)
+            srmin3 = ppf*srmins + (1.0d0-ppf)*srminu
+         endif
 
-         IF (PPFACT(IREC,ISRC) .GT. 0.0D0) THEN
-            IF (I .GT. 1) THEN
-               SIGR3 = MAX( SRMIN3, (0.5D0 * (SR3(I) + SR3(I-1))) )
-            ELSE
-               SIGR3 = MAX( SRMIN3, (0.5D0 * SR3(I)) )
-            END IF
-         ELSE
-            SIGR3 = 0.0D0
-         END IF
+         if (ppfact(irec,isrc) .gt. 0.0d0) then
+            if (i .gt. 1) then
+               sigr3 = max( srmin3, (0.5d0 * (sr3(i) + sr3(i-1))) )
+            else
+               sigr3 = max( srmin3, (0.5d0 * sr3(i)) )
+            end if
+         else
+            sigr3 = 0.0d0
+         end if
 
-      END IF
+      end if
 
-      if( PVMRMDBG .and. DEBUG )then
+      if( pvmrmdbg .and. debug )then
 ! ---       PVMRM and MODEL DEBUG options have been selected; include the
 !           RELDISP Calcs in the MODEL DEBUG file
-         write(RDISPUNT,111) SRCID(ISRC), I, XINP, SR(I), SR3(I),&
-         &SIGR, SRMIN
-111      format(2x,a12,i4,5(2x,E11.5))
+         write(rdispunt,111) srcid(isrc), i, xinp, sr(i), sr3(i),&
+         &sigr, srmin
+111      format(2x,a12,i4,5(2x,e11.5))
       endif
 
 !        Calculate vertical dimension (VERT) taking into account ZI limit
-      VERT = BVARG + 2.0D0*NSUBZ*SIGR
-      IF (UNSTAB .and. VERT .GT. ZI) THEN
-         VERT  = ZI
-         BVTMP = MAX( 0.0D0, ZI-2.0D0*NSUBZ*SIGR )
-         IF (2.0D0*NSUBZ*SIGR .GT. ZI) THEN
-            SIGRZTMP = ZI/(2.0D0*NSUBZ)
-         ELSE
-            SIGRZTMP = SIGR
-         END IF
-      ELSE
-         BVTMP = BVARG
-         SIGRZTMP = SIGR
-      END IF
+      vert = bvarg + 2.0d0*nsubz*sigr
+      if (unstab .and. vert .gt. zi) then
+         vert  = zi
+         bvtmp = max( 0.0d0, zi-2.0d0*nsubz*sigr )
+         if (2.0d0*nsubz*sigr .gt. zi) then
+            sigrztmp = zi/(2.0d0*nsubz)
+         else
+            sigrztmp = sigr
+         end if
+      else
+         bvtmp = bvarg
+         sigrztmp = sigr
+      end if
 
 !        Plume volume calculation based on rectangle with rounded corners
 !        First component is for major contributing plume only
-      SUM = SUM + (PI*(NSUBZ*SIGR)*(NSUBZ*SIGRZTMP) +&
-      &VERT*BHARG +&
-      &2.0D0*NSUBZ*SIGR*BVTMP) * DELTAX
+      sum = sum + (pi*(nsubz*sigr)*(nsubz*sigrztmp) +&
+      &vert*bharg +&
+      &2.0d0*nsubz*sigr*bvtmp) * deltax
 
-      IF (UNSTAB .and. PPFACT(IREC,ISRC) .GT. 0.0D0) THEN
+      if (unstab .and. ppfact(irec,isrc) .gt. 0.0d0) then
 ! ---       Compute SUM3 for penetrated source plume if needed
 
 ! ---       Use a PPF-weighted average of NSUBZS and NSUBZU for penetrated plumes
-         NSUBZ = PPF*NSUBZS + (1.0D0-PPF)*NSUBZU
+         nsubz = ppf*nsubzs + (1.0d0-ppf)*nsubzu
 
-         VERT3 = BVARG3 + 2.0D0*NSUBZ*SIGR3
+         vert3 = bvarg3 + 2.0d0*nsubz*sigr3
 
-         SUM3  = SUM3 + (PI*(NSUBZ*SIGR3)*(NSUBZ*SIGR3) +&
-         &VERT3*BHARG3 +&
-         &2.0D0*NSUBZ*SIGR3*BVARG3) * DELTAX
+         sum3  = sum3 + (pi*(nsubz*sigr3)*(nsubz*sigr3) +&
+         &vert3*bharg3 +&
+         &2.0d0*nsubz*sigr3*bvarg3) * deltax
 
-      ELSE
+      else
 
-         SUM3 = 0.0D0
-      END IF
+         sum3 = 0.0d0
+      end if
 
 ! ---    Check for XARG .LE. XTAB, then volume calc is done; exit DO loop
-      IF (XARG .LE. XTAB) EXIT
+      if (xarg .le. xtab) exit
 
-   END DO    ! End of loop on distance table
+   end do    ! End of loop on distance table
 
 !     Combine volume for "direct" plume volume and penetrated plume volume
-   VOLOUT = SUM*(1.0D0-PPFACT(IREC,ISRC)) + SUM3*PPFACT(IREC,ISRC)
+   volout = sum*(1.0d0-ppfact(irec,isrc)) + sum3*ppfact(irec,isrc)
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE RELDISP(XARG,SROUT,SROUT3)
+subroutine reldisp(xarg,srout,srout3)
 !***********************************************************************
 !             RELDISP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -13171,70 +13171,70 @@ SUBROUTINE RELDISP(XARG,SROUT,SROUT3)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION, PARAMETER :: A1 = 0.57D0, A2 = 0.62D0*A1,&
-   &AR1 = 0.46D0
-   DOUBLE PRECISION :: XARG, SROUT, SROUT3, SRAMB, SRAMB3, TLR, VSIGR
+   use main1
+   implicit none
+   character modnam*12
+   double precision, parameter :: a1 = 0.57d0, a2 = 0.62d0*a1,&
+   &ar1 = 0.46d0
+   double precision :: xarg, srout, srout3, sramb, sramb3, tlr, vsigr
 
 !     Variable Initializations
-   MODNAM = 'RELDISP'
+   modnam = 'RELDISP'
 
 ! --- Use square root of the product of lateral and vertical initial sigmas
 !     to define the effective virtual source initial sigma, VSIGR;
 !     however, need to check for one or the other being zero, e.g., for
 !     area source types, szinit may be non-zero but syinit is zero.
-   IF (SZINIT .GE. 1.0D-8) THEN
-      IF (SYINIT .GE. 1.0D-8) THEN
-         VSIGR = DSQRT(SYINIT*SZINIT)
-      ELSE
-         VSIGR = SZINIT
-      END IF
-   ELSE IF (SZINIT .LT. 1.0D-8) THEN
-      IF (SYINIT .GE. 1.0D-8) THEN
-         VSIGR = SYINIT
-      ELSE
-         VSIGR = 0.0D0
-      END IF
-   ELSE
-      VSIGR = 0.0D0
-   END IF
+   if (szinit .ge. 1.0d-8) then
+      if (syinit .ge. 1.0d-8) then
+         vsigr = dsqrt(syinit*szinit)
+      else
+         vsigr = szinit
+      end if
+   else if (szinit .lt. 1.0d-8) then
+      if (syinit .ge. 1.0d-8) then
+         vsigr = syinit
+      else
+         vsigr = 0.0d0
+      end if
+   else
+      vsigr = 0.0d0
+   end if
 
-   IF( STABLE .or. (UNSTAB .and. (HS .GE. ZI)) )THEN
+   if( stable .or. (unstab .and. (hs .ge. zi)) )then
 !        The atmosphere is stable or the release is above the CBL mixing ht.
-      TLR = AR1 * ZI/SWEFF
-      SRAMB = (A1 * DSQRT(EPSEFF) * (XARG/UEFF)**1.5D0)/&
-      &(1.0D0 + A2 * XARG/(UEFF*TLR))
-      SROUT = (SRAMB**3 + SZB**3 + VSIGR**3)**THIRD
+      tlr = ar1 * zi/sweff
+      sramb = (a1 * dsqrt(epseff) * (xarg/ueff)**1.5d0)/&
+      &(1.0d0 + a2 * xarg/(ueff*tlr))
+      srout = (sramb**3 + szb**3 + vsigr**3)**third
 
 ! ---    Assign SROUT3 = 0.0 for stable or injected plume
-      SROUT3 = 0.0D0
+      srout3 = 0.0d0
 
-   ELSEIF( UNSTAB )then
+   elseif( unstab )then
 !        The atmosphere is unstable and the release is below the CBL mixing ht.
-      TLR = AR1 * ZI/SWEFFD
-      SRAMB = (A1 * DSQRT(EPSEFFD) * (XARG/UEFFD)**1.5D0)/&
-      &(1.0D0 + A2 * XARG/(UEFFD*TLR))
-      SROUT = (SRAMB**3 + SZBD**3 + VSIGR**3)**THIRD
+      tlr = ar1 * zi/sweffd
+      sramb = (a1 * dsqrt(epseffd) * (xarg/ueffd)**1.5d0)/&
+      &(1.0d0 + a2 * xarg/(ueffd*tlr))
+      srout = (sramb**3 + szbd**3 + vsigr**3)**third
 
 !        Calculate relative dispersion for a penetrated plume, SROUT3
-      IF( PPFACT(IREC,ISRC) .GT. 0.0D0 )THEN
-         TLR = AR1 * ZI/SWEFF3
-         SRAMB3 = (A1 * DSQRT(EPSEFF3) * (XARG/UEFF3)**1.5D0)/&
-         &(1.0D0 + A2 * XARG/(UEFF3*TLR))
-         SROUT3 = (SRAMB3**3 + SZB3**3 + VSIGR**3)**THIRD
+      if( ppfact(irec,isrc) .gt. 0.0d0 )then
+         tlr = ar1 * zi/sweff3
+         sramb3 = (a1 * dsqrt(epseff3) * (xarg/ueff3)**1.5d0)/&
+         &(1.0d0 + a2 * xarg/(ueff3*tlr))
+         srout3 = (sramb3**3 + szb3**3 + vsigr**3)**third
 
-      ELSE
-         SROUT3 = 0.0D0
-      END IF
+      else
+         srout3 = 0.0d0
+      end if
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE AERMAX(SRCS2USE,MAXARG,DOMARG)
+subroutine aermax(srcs2use,maxarg,domarg)
 !***********************************************************************
 !             AERMAX Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -13253,62 +13253,62 @@ SUBROUTINE AERMAX(SRCS2USE,MAXARG,DOMARG)
 !        CALLED FROM:   PVMRM_CALC
 !***********************************************************************
 
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 
-   DOUBLE PRECISION :: MAXARG(NUMREC,NUMTYP)
-   INTEGER :: DOMARG(NUMREC,NUMTYP)
-   INTEGER :: I, J, K
-   CHARACTER SRCS2USE*7
-   CHARACTER MODNAM*12
+   double precision :: maxarg(numrec,numtyp)
+   integer :: domarg(numrec,numtyp)
+   integer :: i, j, k
+   character srcs2use*7
+   character modnam*12
 
-   MODNAM = 'AERMAX'
+   modnam = 'AERMAX'
 
 !     Initialize MAXARG(NUMREC,NUMTYP) and DOMARG(NUMREC,NUMYTP) arrays
-   MAXARG = 0.0D0
-   DOMARG = 0
+   maxarg = 0.0d0
+   domarg = 0
 
-   IF (TRIM(SRCS2USE) .EQ. 'NAAQSRC') THEN
+   if (trim(srcs2use) .eq. 'NAAQSRC') then
 !        Emission credit run: Increment Consumption+Nonretired Baseline=NAAQS
-      DO I = 1, NUMTYP
-         DO J = 1, NUMREC
-            DO K = 1, NUMSRC
-               IF (PSDSRCTYP(K) .EQ. 'IC' .or.&
-               &PSDSRCTYP(K) .EQ. 'NB') THEN
-                  IF(CHI(J,K,I) .GT. MAXARG(J,I) )THEN
-                     MAXARG(J,I) = CHI(J,K,I)
-                     DOMARG(J,I) = K
-                  END IF
-               END IF
-            END DO
-         END DO
-      END DO
+      do i = 1, numtyp
+         do j = 1, numrec
+            do k = 1, numsrc
+               if (psdsrctyp(k) .eq. 'IC' .or.&
+               &psdsrctyp(k) .eq. 'NB') then
+                  if(chi(j,k,i) .gt. maxarg(j,i) )then
+                     maxarg(j,i) = chi(j,k,i)
+                     domarg(j,i) = k
+                  end if
+               end if
+            end do
+         end do
+      end do
 
-   ELSE IF (TRIM(SRCS2USE) .EQ. 'ALLBASE') THEN
+   else if (trim(srcs2use) .eq. 'ALLBASE') then
 !        Emission credit run: Nonretired Baseline and Retired Baseline
-      DO I = 1, NUMTYP
-         DO J = 1, NUMREC
-            DO K = 1, NUMSRC
-               IF (PSDSRCTYP(K) .EQ. 'NB' .or.&
-               &PSDSRCTYP(K) .EQ. 'RB') THEN
-                  IF(CHI(J,K,I) .GT. MAXARG(J,I) )THEN
-                     MAXARG(J,I) = CHI(J,K,I)
-                     DOMARG(J,I) = K
-                  END IF
-               END IF
-            END DO
-         END DO
-      END DO
+      do i = 1, numtyp
+         do j = 1, numrec
+            do k = 1, numsrc
+               if (psdsrctyp(k) .eq. 'NB' .or.&
+               &psdsrctyp(k) .eq. 'RB') then
+                  if(chi(j,k,i) .gt. maxarg(j,i) )then
+                     maxarg(j,i) = chi(j,k,i)
+                     domarg(j,i) = k
+                  end if
+               end if
+            end do
+         end do
+      end do
 
-   END IF
+   end if
 
-   RETURN
-END
+   return
+end
 
 !CRT   D063
 !***** BEGIN OCD PLATFORM ADDITIONS ************************************
 
-SUBROUTINE PLAT_DOWNWASH(XD,HB,W,HE,SIGZ0,SIGY0)
+subroutine plat_downwash(xd,hb,w,he,sigz0,sigy0)
 !***********************************************************************
 !             PLAT_DOWNWASH Subroutine
 !
@@ -13335,74 +13335,74 @@ SUBROUTINE PLAT_DOWNWASH(XD,HB,W,HE,SIGZ0,SIGY0)
 !        CALLED FROM:   AERCALC
 !***********************************************************************
 
-   USE MAIN1, ONLY: PLATFMDBG, PLATFMDBUNT
-   IMPLICIT NONE
+   use main1, only: platfmdbg, platfmdbunt
+   implicit none
 
 !     Variable Declarations
-   DOUBLE PRECISION, INTENT(IN)  :: XD, HB, W, HE
-   DOUBLE PRECISION, INTENT(OUT) :: SIGZ0, SIGY0
+   double precision, intent(in)  :: xd, hb, w, he
+   double precision, intent(out) :: sigz0, sigy0
 
 !     Local Variable Declarations
-   DOUBLE PRECISION  :: A, LY, LZ, CHK, X, SYOP, SZOP
-   DOUBLE PRECISION, PARAMETER ::&
-   &AY = 1.9D0, BY = 48.2D0, CY = -1.4D0,&
-   &AZ = 3.0D0, BZ = 40.2D0, CZ = -1.4D0
+   double precision  :: a, ly, lz, chk, x, syop, szop
+   double precision, parameter ::&
+   &ay = 1.9d0, by = 48.2d0, cy = -1.4d0,&
+   &az = 3.0d0, bz = 40.2d0, cz = -1.4d0
 
-   SIGZ0 = 0.0D0
-   SIGY0 = 0.0D0
+   sigz0 = 0.0d0
+   sigy0 = 0.0d0
 
-   LY = W/2.0D0
-   LZ = HB
-   CHK = XD/HB
+   ly = w/2.0d0
+   lz = hb
+   chk = xd/hb
 
-   IF( CHK .LT. 2.2D0) THEN
-      X = 2.2D0*HB
-      SYOP = 0.071D0*X*DSQRT(AY+(BY*(X/LY)**CY)-1.0D0)
+   if( chk .lt. 2.2d0) then
+      x = 2.2d0*hb
+      syop = 0.071d0*x*dsqrt(ay+(by*(x/ly)**cy)-1.0d0)
 !   3.915 = SQRT PORTION OF SZOP EQ. SOLVED USING X/LZ = 2.2
-      SZOP = (.11D0*X**0.81D0)*3.915D0
-   ELSEIF( CHK .GT. 12.6D0) THEN
-      X = 12.6D0*HB
-      SYOP = 0.071D0*X*DSQRT(AY+(BY*(X/LY)**CY)-1.0D0)
+      szop = (.11d0*x**0.81d0)*3.915d0
+   elseif( chk .gt. 12.6d0) then
+      x = 12.6d0*hb
+      syop = 0.071d0*x*dsqrt(ay+(by*(x/ly)**cy)-1.0d0)
 !   3.915 = SQRT PORTION OF SZOP EQ. SOLVED USING X/LZ = 12.6
-      SZOP = (.11D0*X**.81D0)*1.777D0
-   ELSE
-      SYOP = 0.071D0*XD*DSQRT(AY+(BY*(XD/LY)**CY)-1.0D0)
-      SZOP = 0.11D0*((XD)**0.81D0)*DSQRT(AZ+(BZ*(XD/LZ)**CZ)-1.0D0)
-   ENDIF
+      szop = (.11d0*x**.81d0)*1.777d0
+   else
+      syop = 0.071d0*xd*dsqrt(ay+(by*(xd/ly)**cy)-1.0d0)
+      szop = 0.11d0*((xd)**0.81d0)*dsqrt(az+(bz*(xd/lz)**cz)-1.0d0)
+   endif
 
-   A =HE/HB
-   IF( A .GT. 3.0D0 ) THEN
-      SIGY0 = 0.0D0
-      SIGZ0 = 0.0D0
-   ELSEIF( (1.2D0 .LT. A) .and. (A .LE. 3.0D0) ) THEN
-      SIGY0 = 0.0D0
-      SIGZ0 = 0.5D0*(3.0D0-A)*SZOP
-   ELSEIF( (1.0D0 .LT. A) .and. (A.LE. 1.2D0) ) THEN
-      SIGY0 = 0.5D0*(6.0D0-5.0D0*A)*SYOP
-      SIGZ0 = 0.5D0*(3.0D0-A)*SZOP
-   ELSE
-      SIGY0 = SYOP
-      SIGZ0 = SZOP
-   ENDIF
+   a =he/hb
+   if( a .gt. 3.0d0 ) then
+      sigy0 = 0.0d0
+      sigz0 = 0.0d0
+   elseif( (1.2d0 .lt. a) .and. (a .le. 3.0d0) ) then
+      sigy0 = 0.0d0
+      sigz0 = 0.5d0*(3.0d0-a)*szop
+   elseif( (1.0d0 .lt. a) .and. (a.le. 1.2d0) ) then
+      sigy0 = 0.5d0*(6.0d0-5.0d0*a)*syop
+      sigz0 = 0.5d0*(3.0d0-a)*szop
+   else
+      sigy0 = syop
+      sigz0 = szop
+   endif
 
-   IF (PLATFMDBG) THEN
-      WRITE(PLATFMDBUNT,'(A, 4(A, 2X, F10.2),5(A, 2X, F8.5))')&
+   if (platfmdbg) then
+      write(platfmdbunt,'(A, 4(A, 2X, F10.2),5(A, 2X, F8.5))')&
       &'calc1.f/PLAT_DOWNWASH: ',&
-      &' XD = ', XD,&
-      &' HB = ', HB,&
-      &' W = ', W,&
-      &' HE = ', HE,&
-      &' SZOP = ', SZOP,&
-      &' SYOP = ', SYOP,&
-      &' A = ', A,&
-      &' SIGZ0 = ', SIGZ0,&
-      &' SIGY0 = ', SIGY0
-   END IF
+      &' XD = ', xd,&
+      &' HB = ', hb,&
+      &' W = ', w,&
+      &' HE = ', he,&
+      &' SZOP = ', szop,&
+      &' SYOP = ', syop,&
+      &' A = ', a,&
+      &' SIGZ0 = ', sigz0,&
+      &' SIGY0 = ', sigy0
+   end if
 
-   RETURN
-END
+   return
+end
 
-DOUBLE PRECISION FUNCTION PLAT_GRADPLUMADJ( XARG )
+double precision function plat_gradplumadj( xarg )
 !***********************************************************************
 !        PLAT_GRADPLUMADJ Function
 !
@@ -13425,21 +13425,21 @@ DOUBLE PRECISION FUNCTION PLAT_GRADPLUMADJ( XARG )
 !
 !        CALLED FROM:   AERCALC
 !***********************************************************************
-   USE MAIN1, ONLY: FB, UP, AC, BC, DHP, DHP1, STABLE, UNSTAB, HS,&
-   &ZI, XMAX, PLATFMDBG, PLATFMDBUNT
-   IMPLICIT NONE
+   use main1, only: fb, up, ac, bc, dhp, dhp1, stable, unstab, hs,&
+   &zi, xmax, platfmdbg, platfmdbunt
+   implicit none
 
 !     Variable declarations - input
-   DOUBLE PRECISION, INTENT(IN)    :: XARG      ! Downwind distance (input)
+   double precision, intent(in)    :: xarg      ! Downwind distance (input)
 
 !     Local variables
-   DOUBLE PRECISION    :: DELH  ! Plume rise adjustment from PLAT_CUBIC
-   DOUBLE PRECISION    :: CC    ! Distance-dependent 3rd coefficient of CUBIC
-   DOUBLE PRECISION    :: SCOEFF  ! check before CUBIC
-   DOUBLE PRECISION, PARAMETER  :: TOL =   1.0D-4 !Set tolerance for CUBIC eqn solution
+   double precision    :: delh  ! Plume rise adjustment from PLAT_CUBIC
+   double precision    :: cc    ! Distance-dependent 3rd coefficient of CUBIC
+   double precision    :: scoeff  ! check before CUBIC
+   double precision, parameter  :: tol =   1.0d-4 !Set tolerance for CUBIC eqn solution
 
 !     External Functions:
-   DOUBLE PRECISION, EXTERNAL  :: PLAT_CUBIC
+   double precision, external  :: plat_cubic
 
 ! ----------------------------------------------------------------------
 !                    OCD Gradual Plume Rise Adjustment
@@ -13462,40 +13462,40 @@ DOUBLE PRECISION FUNCTION PLAT_GRADPLUMADJ( XARG )
 !           C**3 = 4.096 * Fb * x**2 / u**3
 ! ----------------------------------------------------------------------
 
-   DELH = 0.0D0 !intitalize
+   delh = 0.0d0 !intitalize
 
-   IF (STABLE  .or.  (UNSTAB  .and.  (HS .GE. ZI))) THEN
-      CC = -1.0D0 * DHP * DHP * DHP !OCD PRI01260 & PRI01620; AERMOD calculates distance-dependent DHP in prise.f/SBLRIS, Neutral limit is applied in SBLRIS
-      SCOEFF=AC+BC+CC !AC & BC are distance independent (MAIN1) and computed in calc1.f/PCALC
-      IF((SCOEFF.NE.0.0D0) .and. (XARG < XMAX)) THEN
-         DELH = PLAT_CUBIC(AC,BC,CC,DHP,TOL)
-      END IF
-   ELSE !modify direct plume downdraft (DHP1) only
-      CC = -4.096D0*FB*XARG*XARG/(UP*UP*UP) !OCD REC00970, but XARG in meters see note above.
-      SCOEFF=AC+BC+CC !AC & BC are distance independent (MAIN1) and computed in calc1.f/PCALC
-      IF(SCOEFF.NE.0.0D0) THEN
-         DELH = PLAT_CUBIC(AC,BC,CC,DHP1,TOL)
-      END IF
-   END IF
+   if (stable  .or.  (unstab  .and.  (hs .ge. zi))) then
+      cc = -1.0d0 * dhp * dhp * dhp !OCD PRI01260 & PRI01620; AERMOD calculates distance-dependent DHP in prise.f/SBLRIS, Neutral limit is applied in SBLRIS
+      scoeff=ac+bc+cc !AC & BC are distance independent (MAIN1) and computed in calc1.f/PCALC
+      if((scoeff.ne.0.0d0) .and. (xarg < xmax)) then
+         delh = plat_cubic(ac,bc,cc,dhp,tol)
+      end if
+   else !modify direct plume downdraft (DHP1) only
+      cc = -4.096d0*fb*xarg*xarg/(up*up*up) !OCD REC00970, but XARG in meters see note above.
+      scoeff=ac+bc+cc !AC & BC are distance independent (MAIN1) and computed in calc1.f/PCALC
+      if(scoeff.ne.0.0d0) then
+         delh = plat_cubic(ac,bc,cc,dhp1,tol)
+      end if
+   end if
 
-   IF (PLATFMDBG) THEN
-      WRITE(PLATFMDBUNT,'(A, 7(A, 2X, F10.2))')&
+   if (platfmdbg) then
+      write(platfmdbunt,'(A, 7(A, 2X, F10.2))')&
       &'calc1.f/PLAT_GRADPLUMADJ: ',&
-      &' XARG = ', XARG,&
-      &' XMAX = ', XMAX,&
-      &' FB = ', FB,&
-      &' UP = ', UP,&
-      &' CC = ', CC,&
-      &' SCOEFF = ', SCOEFF,&
-      &' DELH = ', DELH
-   END IF
+      &' XARG = ', xarg,&
+      &' XMAX = ', xmax,&
+      &' FB = ', fb,&
+      &' UP = ', up,&
+      &' CC = ', cc,&
+      &' SCOEFF = ', scoeff,&
+      &' DELH = ', delh
+   end if
 
-   PLAT_GRADPLUMADJ = DELH
+   plat_gradplumadj = delh
 
-   RETURN
-END
+   return
+end
 
-DOUBLE PRECISION FUNCTION PLAT_CUBIC(A,B,C,ZINIT,TOL)
+double precision function plat_cubic(a,b,c,zinit,tol)
 !***********************************************************************
 !             CUBIC Module of the AMS/EPA Regulatory Model
 !             (Adapted from AERMOD v.98314)
@@ -13523,46 +13523,46 @@ DOUBLE PRECISION FUNCTION PLAT_CUBIC(A,B,C,ZINIT,TOL)
 !        CALLED FROM:   PLAT_GRADPLUMADJ
 !***********************************************************************
 
-   IMPLICIT NONE
+   implicit none
 
 !     Variable Declarations
 
-   DOUBLE PRECISION, INTENT(IN)   :: A, B, C, ZINIT, TOL
-   DOUBLE PRECISION   :: Z(25), FZ, FP
-   INTEGER            :: N                      ! Loop counter
+   double precision, intent(in)   :: a, b, c, zinit, tol
+   double precision   :: z(25), fz, fp
+   integer            :: n                      ! Loop counter
 
 !     Assign Initial Guess to Z(1)
-   Z(1) = ZINIT
+   z(1) = zinit
 
 !     Begin Iterative LOOP (24 iterations)
-   DO 20 N = 1, 24
+   do 20 n = 1, 24
 !        Calculate Cubic Function and First Derivative With Current Guess
-      FZ = Z(N)*Z(N)*Z(N) + A*Z(N)*Z(N) + B*Z(N) + C
-      FP = 3.0D0*Z(N)*Z(N) + 2.0D0*A*Z(N) + B
+      fz = z(n)*z(n)*z(n) + a*z(n)*z(n) + b*z(n) + c
+      fp = 3.0d0*z(n)*z(n) + 2.0d0*a*z(n) + b
 
 !        Calculate New Guess
-      Z(N+1) = Z(N) - FZ/FP
+      z(n+1) = z(n) - fz/fp
 
 !        Check successive iterations for specified tolerance level
-      IF (ABS(Z(N+1) - Z(N)) .LE. TOL) THEN
-         PLAT_CUBIC = Z(N+1)
+      if (abs(z(n+1) - z(n)) .le. tol) then
+         plat_cubic = z(n+1)
 !           Convergence, thus Exit Loop
-         GO TO 999
-      END IF
+         go to 999
+      end if
 
-20 CONTINUE
+20 continue
 !     End Iterative LOOP
 
 !     If No Convergence In Loop, Then Use Average of Last Two Estimates,
-   PLAT_CUBIC = 0.5D0 * (Z(24) + Z(25))
+   plat_cubic = 0.5d0 * (z(24) + z(25))
 
-999 RETURN
-END
+999 return
+end
 
 !***** END OCD PLATFORM ADDITIONS **************************************
 
 !WSP --- Begin: Moved to end of calc1.f - D174 WSP 7/25/2023
-SUBROUTINE SWCALC
+subroutine swcalc
 !***********************************************************************
 !        PURPOSE: Calculates concentration or deposition values
 !                 for SIDEWASH Point sources
@@ -13582,97 +13582,97 @@ SUBROUTINE SWCALC
 !
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   INTEGER :: NDXZHS, NDXZBH
-   DOUBLE PRECISION :: STKWD, STKWS, SWEPSILON,& ! Now global: THETA_P & THETA_SW
-   &CHISW,&                   ! Now global: SX1, SY1, SZW, CONC_P and CONC_SW
-   &WTSF,&                    ! Added wind tunnel scaling factor
-   &TMPTHETA,&                ! Temporary variable for storing SWTHETA
-   &CONC_FULL
+   use main1
+   implicit none
+   character modnam*12
+   integer :: ndxzhs, ndxzbh
+   double precision :: stkwd, stkws, swepsilon,& ! Now global: THETA_P & THETA_SW
+   &chisw,&                   ! Now global: SX1, SY1, SZW, CONC_P and CONC_SW
+   &wtsf,&                    ! Added wind tunnel scaling factor
+   &tmptheta,&                ! Temporary variable for storing SWTHETA
+   &conc_full
 ! Added for Sidewash; temporary variables to save translated receptors
-   DOUBLE PRECISION :: SWXT(NREC), SWYT(NREC)
+   double precision :: swxt(nrec), swyt(nrec)
 ! End sidewash insert
 !     Variable Initializations
-   MODNAM = 'SWCALC'
+   modnam = 'SWCALC'
 
 !     Set the Source Variables for This Source              ---   CALL SETSRC
-   CALL SETSRC
+   call setsrc
 ! Initialize wind tunnel scaling factor and scaled building dimensions and stack height
-   WTSF = 150.0D0
-   BHS = BH/WTSF
-   BWS = BW/WTSF
-   BLS = BL/WTSF
-   HSS = HS/WTSF
+   wtsf = 150.0d0
+   bhs = bh/wtsf
+   bws = bw/wtsf
+   bls = bl/wtsf
+   hss = hs/wtsf
 !     Apply Variable Emission Rate Factors                  ---   CALL EMFACT
 !     CALL EMFACT(QS)                                    <----   Not yet implemented
 
 !---- Locate index below (actual) stack height  ! updated April 2022
-   CALL LOCATE(GRIDHT, 1, MXGLVL, HS, NDXZHS)
+   call locate(gridht, 1, mxglvl, hs, ndxzhs)
 !----    Get Wind direction at stack height ! updated April 2022
-   CALL GINTRP( GRIDHT(NDXZHS), GRIDWD(NDXZHS),&
-   &GRIDHT(NDXZHS+1), GRIDWD(NDXZHS+1), HS, STKWD )
+   call gintrp( gridht(ndxzhs), gridwd(ndxzhs),&
+   &gridht(ndxzhs+1), gridwd(ndxzhs+1), hs, stkwd )
 !---- Locate index below (actual) building height  ! updated April 19, 2022
-   CALL LOCATE(GRIDHT, 1, MXGLVL, BH, NDXZBH)
+   call locate(gridht, 1, mxglvl, bh, ndxzbh)
 !----    Get Wind speed at building height ! updated April 19, 2022
-   CALL GINTRP( GRIDHT(NDXZBH), GRIDWS(NDXZBH),&
-   &GRIDHT(NDXZBH+1), GRIDWS(NDXZBH+1), BH, STKWS )
+   call gintrp( gridht(ndxzbh), gridws(ndxzbh),&
+   &gridht(ndxzbh+1), gridws(ndxzbh+1), bh, stkws )
 
-   U_AMB = STKWS
+   u_amb = stkws
 !     Check for WDIR > 360 or < 0
-   IF (STKWD .GT. 360.0D0) THEN
-      STKWD = STKWD - 360.0D0
-   ELSE IF (STKWD .LE. 0.0D0) THEN
-      STKWD = STKWD + 360.0D0
-   END IF
+   if (stkwd .gt. 360.0d0) then
+      stkwd = stkwd - 360.0d0
+   else if (stkwd .le. 0.0d0) then
+      stkwd = stkwd + 360.0d0
+   end if
 
 ! Calculate wind angle on building face
-   SWTHETA = BA - (90.-(360. - STKWD))
+   swtheta = ba - (90.-(360. - stkwd))
 
 !     Check for if SWTHETA  > 360 or < 0
-   IF (SWTHETA .GE. 359.9D0) THEN
-      SWTHETA = SWTHETA - 360.0D0
-   ELSE IF (SWTHETA .LT. 0.0D0) THEN
-      SWTHETA = SWTHETA + 360.0D0
-   END IF
+   if (swtheta .ge. 359.9d0) then
+      swtheta = swtheta - 360.0d0
+   else if (swtheta .lt. 0.0d0) then
+      swtheta = swtheta + 360.0d0
+   end if
 
-   IF (SWDBG) THEN
+   if (swdbg) then
 !        *** Write out building dimensions, stack height ***
 !        *** ambient wind speed and emission rate        ***
-      WRITE(SWDBGUNT,*)
-      WRITE(SWDBGUNT,*)('OUTPUT FOR GAUSSIAN DISPERSION EQUATION')
-      WRITE(SWDBGUNT,*)('***************************************')
-      WRITE(SWDBGUNT,*)('Definitions:')
-      WRITE(SWDBGUNT,*)('SWCALC:     Final Sidewash Calc.')
-      WRITE(SWDBGUNT,*)('CHISW:      Sidewash Chi Conc.')
-      WRITE(SWDBGUNT,*)('***************************************')
+      write(swdbgunt,*)
+      write(swdbgunt,*)('OUTPUT FOR GAUSSIAN DISPERSION EQUATION')
+      write(swdbgunt,*)('***************************************')
+      write(swdbgunt,*)('Definitions:')
+      write(swdbgunt,*)('SWCALC:     Final Sidewash Calc.')
+      write(swdbgunt,*)('CHISW:      Sidewash Chi Conc.')
+      write(swdbgunt,*)('***************************************')
 !
 !        *** Write out header for input data ***
-      WRITE(SWDBGUNT,887)
-887   FORMAT(//,'Building ','Building ','Building ','Stack ',&
+      write(swdbgunt,887)
+887   format(//,'Building ','Building ','Building ','Stack ',&
       &'    Ambient        Stack-top  Emission')
 
-      WRITE(SWDBGUNT,897)
-897   FORMAT('Height m ','Length m ','Width m ',' Height m ',&
+      write(swdbgunt,897)
+897   format('Height m ','Length m ','Width m ',' Height m ',&
       &' Wind Speed m/s Wind Dir.  g/s')
 
-      WRITE(SWDBGUNT,852)
-852   FORMAT(72('-'))
+      write(swdbgunt,852)
+852   format(72('-'))
 !        *** Write out values of building dimensions          ***
 !        *** stack height,ambient wind speed and emisson rate ***
-      WRITE(SWDBGUNT,810)BH,BL,BW,HS,U_AMB,STKWD,QS
-810   FORMAT(1X,F4.1,6X,F4.1,2x,F6.1,5X,F6.3,3X,F5.2,10X,F5.1,6x,&
-      &F8.5)
+      write(swdbgunt,810)bh,bl,bw,hs,u_amb,stkwd,qs
+810   format(1x,f4.1,6x,f4.1,2x,f6.1,5x,f6.3,3x,f5.2,10x,f5.1,6x,&
+      &f8.5)
 !
-      WRITE(SWDBGUNT,*)
-      WRITE(SWDBGUNT,850)
-850   FORMAT(72('*'))
-      WRITE(SWDBGUNT,*)
-   END IF
+      write(swdbgunt,*)
+      write(swdbgunt,850)
+850   format(72('*'))
+      write(swdbgunt,*)
+   end if
 
 ! --- Begin Receptor LOOP
-   RECEPTOR_LOOP: DO IREC = 1, NUMREC
+   receptor_loop: do irec = 1, numrec
 
 !        Added for Sidewash; Adjust and save copy of receptor grid in local coordinates
 !        rotated such that the building angle (BA) is 0 degrees
@@ -13680,512 +13680,512 @@ SUBROUTINE SWCALC
 !        Shift receptor based on X,Y of each sidewash source (AXS, AYS)
 !        Note: the SWXR & SWYR arrays for non-sidewash sources are set but
 !        not used by AERMOD.
-      SWXT(IREC) = AXR(IREC) - AXS(ISRC)
-      SWYT(IREC) = AYR(IREC) - AYS(ISRC)
+      swxt(irec) = axr(irec) - axs(isrc)
+      swyt(irec) = ayr(irec) - ays(isrc)
 
 !        ROTATION
 !        Rotate the translated X,Y such that flow across the building length is rotated
 !        aligned with the X-axis based on the input building angle (BA).
 !        Wind direction for sidewash is simarly rotated in sub.SWCALC in calc1.f
-      SWXR(IREC) = SWXT(IREC) * DCOS((270.0D0 - STKWD)*DTORAD) +&
-      &SWYT(IREC) * DSIN((270.0D0 - STKWD)*DTORAD)
-      SWYR(IREC) = SWYT(IREC) * DCOS((270.0D0 - STKWD)*DTORAD) -&
-      &SWXT(IREC) * DSIN((270.0D0 - STKWD)*DTORAD)
+      swxr(irec) = swxt(irec) * dcos((270.0d0 - stkwd)*dtorad) +&
+      &swyt(irec) * dsin((270.0d0 - stkwd)*dtorad)
+      swyr(irec) = swyt(irec) * dcos((270.0d0 - stkwd)*dtorad) -&
+      &swxt(irec) * dsin((270.0d0 - stkwd)*dtorad)
 
 
-      SX1 = SWXR(IREC)/BH         ! changed from AXR(IREC)
+      sx1 = swxr(irec)/bh         ! changed from AXR(IREC)
 
-      IF(SX1 .EQ. 0.00D0) THEN
-         SX1 = 1.0D-08
-      ENDIF
+      if(sx1 .eq. 0.00d0) then
+         sx1 = 1.0d-08
+      endif
 
-      SY1 = SWYR(IREC)/WTSF       ! changed from AYR(IREC)
-      SWZ = AZELEV(IREC)/WTSF     ! changed from AZELEV(IREC)
+      sy1 = swyr(irec)/wtsf       ! changed from AYR(IREC)
+      swz = azelev(irec)/wtsf     ! changed from AZELEV(IREC)
 
-      IF (SWDBG) THEN
+      if (swdbg) then
 
 !           *** Write out header of distance and modifiers of ***
-         WRITE(SWDBGUNT,*)
-         WRITE(SWDBGUNT,855) IREC
-855      FORMAT('Receptor No: ',I5)
-         WRITE(SWDBGUNT,812)
-812      FORMAT('Orig. X (m) Orig. Y (m) Adj. X1 (m) Adj. Y1 (m)',&
+         write(swdbgunt,*)
+         write(swdbgunt,855) irec
+855      format('Receptor No: ',i5)
+         write(swdbgunt,812)
+812      format('Orig. X (m) Orig. Y (m) Adj. X1 (m) Adj. Y1 (m)',&
          &'     Z1 (m)      W/H         X1/H    Bld. Angle',&
          &'  Theta')
-         WRITE(SWDBGUNT,851)
-851      FORMAT(102('-'))
-         WRITE(SWDBGUNT,816) AXR(IREC),AYR(IREC),SX1,SY1,SWZ,BW/BH,&
-         &SX1/BH,BA,SWTHETA
-816      FORMAT(7(F10.4,2x),F5.1,7x,F5.1)
-         WRITE(SWDBGUNT,*)
-      END IF
+         write(swdbgunt,851)
+851      format(102('-'))
+         write(swdbgunt,816) axr(irec),ayr(irec),sx1,sy1,swz,bw/bh,&
+         &sx1/bh,ba,swtheta
+816      format(7(f10.4,2x),f5.1,7x,f5.1)
+         write(swdbgunt,*)
+      end if
 
 !        Initialize SWCONC and CHISW
-      SWCONC = 0.0D0
-      CHISW  = 0.0D0
+      swconc = 0.0d0
+      chisw  = 0.0d0
 
 !        Wind angle cases:
 !        April, 2022; Added symmetric conditions between 300 - 360 degrees
-      IF ((SWTHETA .EQ. 0.0D0) .or.&
-      &(SWTHETA .EQ. 360.0D0)) THEN
+      if ((swtheta .eq. 0.0d0) .or.&
+      &(swtheta .eq. 360.0d0)) then
 
 !            CALL PERPEN(BHS, BLS, BWS, HSS, SX1, SY1, SWZ, SWTHETA,
 !     &                  U_AMB, QS, SWCONC)
-         CALL PERPEN
+         call perpen
 
-      ELSEIF ((SWTHETA .GE. 15.0D0) .and.&
-      &(SWTHETA .LE. 60.0D0)) THEN
+      elseif ((swtheta .ge. 15.0d0) .and.&
+      &(swtheta .le. 60.0d0)) then
 
 !            CALL OBLIQUE(BHS, BLS, BWS, HSS, SX1, SY1, SWZ, SWTHETA,
 !     &                   U_AMB, QS, SWCONC)
-         CALL OBLIQUE
+         call oblique
 
-      ELSEIF ((SWTHETA .GT. 0.0D0) .and.&
-      &(SWTHETA .LT. 15.0D0)) THEN
+      elseif ((swtheta .gt. 0.0d0) .and.&
+      &(swtheta .lt. 15.0d0)) then
 
 !           Initialize variables
-         TMPTHETA = SWTHETA ! Store calculated SWTHETA in temp variable
-         CONC_P   = 0.0D0
-         CONC_SW  = 0.0D0
-         THETA_P  = 0.0D0
-         THETA_SW = 15.0D0
-         SWEPSILON = 1.0D0-((TMPTHETA-THETA_P)/(THETA_SW-THETA_P))
-         SWTHETA = THETA_P
+         tmptheta = swtheta ! Store calculated SWTHETA in temp variable
+         conc_p   = 0.0d0
+         conc_sw  = 0.0d0
+         theta_p  = 0.0d0
+         theta_sw = 15.0d0
+         swepsilon = 1.0d0-((tmptheta-theta_p)/(theta_sw-theta_p))
+         swtheta = theta_p
 
 !            CALL PERPEN(BHS, BLS, BWS, HSS, SX1, SY1, SWZ, SWTHETA,
 !     &                         U_AMB, QS, SWCONC)
-         CALL PERPEN
+         call perpen
 
-         CONC_P = SWCONC
-         SWCONC = 0.0D0
-         SWTHETA = THETA_SW
-
-!            CALL OBLIQUE(BHS, BLS, BWS, HSS, SX1, SY1, SWZ, SWTHETA,
-!     &                   U_AMB, QS, SWCONC)
-         CALL OBLIQUE
-
-         CONC_SW = SWCONC
-         SWTHETA = TMPTHETA ! Restore calculated SWTHETA value
-         SWCONC = CONC_P*SWEPSILON + CONC_SW*(1-SWEPSILON)
-
-      ELSEIF ((SWTHETA .GE. 300.0D0) .and.&
-      &(SWTHETA .LE. 345.0D0)) THEN
-
-         SY1 = -1.0D0*SY1
-         TMPTHETA = SWTHETA ! Store calculated SWTHETA in temp variable
-         SWTHETA = 360.0D0 - SWTHETA
+         conc_p = swconc
+         swconc = 0.0d0
+         swtheta = theta_sw
 
 !            CALL OBLIQUE(BHS, BLS, BWS, HSS, SX1, SY1, SWZ, SWTHETA,
 !     &                   U_AMB, QS, SWCONC)
-         CALL OBLIQUE
+         call oblique
 
-         SWTHETA = TMPTHETA ! Restore calculated SWTHETA value
+         conc_sw = swconc
+         swtheta = tmptheta ! Restore calculated SWTHETA value
+         swconc = conc_p*swepsilon + conc_sw*(1-swepsilon)
 
-      ELSEIF ((SWTHETA .GT. 345.0D0) .and.&
-      &(SWTHETA .LT. 360.0D0)) THEN
+      elseif ((swtheta .ge. 300.0d0) .and.&
+      &(swtheta .le. 345.0d0)) then
+
+         sy1 = -1.0d0*sy1
+         tmptheta = swtheta ! Store calculated SWTHETA in temp variable
+         swtheta = 360.0d0 - swtheta
+
+!            CALL OBLIQUE(BHS, BLS, BWS, HSS, SX1, SY1, SWZ, SWTHETA,
+!     &                   U_AMB, QS, SWCONC)
+         call oblique
+
+         swtheta = tmptheta ! Restore calculated SWTHETA value
+
+      elseif ((swtheta .gt. 345.0d0) .and.&
+      &(swtheta .lt. 360.0d0)) then
 
 !           Initialize variables
-         SY1 = -1.0D0*SY1
-         TMPTHETA = SWTHETA ! Store calculated SWTHETA in temp variable
-         CONC_P   = 0.0D0
-         CONC_SW  = 0.0D0
-         THETA_P  = 360.0D0
-         THETA_SW = 345.0D0
-         SWEPSILON = 1.0D0-((TMPTHETA-THETA_P)/(THETA_SW-THETA_P))
-         SWTHETA = THETA_P
+         sy1 = -1.0d0*sy1
+         tmptheta = swtheta ! Store calculated SWTHETA in temp variable
+         conc_p   = 0.0d0
+         conc_sw  = 0.0d0
+         theta_p  = 360.0d0
+         theta_sw = 345.0d0
+         swepsilon = 1.0d0-((tmptheta-theta_p)/(theta_sw-theta_p))
+         swtheta = theta_p
 
 !            CALL PERPEN(BHS, BLS, BWS, HSS, SX1, SY1, SWZ, SWTHETA,
 !     &                  U_AMB, QS, SWCONC)
-         CALL PERPEN
+         call perpen
 
-         CONC_P = SWCONC
-         SWCONC = 0.0D0
-         SWTHETA = 360.0D0 - THETA_SW ! Should equal 15
+         conc_p = swconc
+         swconc = 0.0d0
+         swtheta = 360.0d0 - theta_sw ! Should equal 15
 
 !            CALL OBLIQUE(BHS, BLS, BWS, HSS, SX1, SY1, SWZ, SWTHETA,
 !     &                   U_AMB, QS, SWCONC)
-         CALL OBLIQUE
+         call oblique
 
-         CONC_SW = SWCONC
-         SWTHETA = TMPTHETA ! Restore calculated SWTHETA value
-         SWCONC = CONC_P*SWEPSILON + CONC_SW*(1.0D0-SWEPSILON)
+         conc_sw = swconc
+         swtheta = tmptheta ! Restore calculated SWTHETA value
+         swconc = conc_p*swepsilon + conc_sw*(1.0d0-swepsilon)
 
 !        Added April 2022
-      ELSE ! For SWTHETA greater than 60 degrees
-         SWCONC = 0.0D0
-      ENDIF
+      else ! For SWTHETA greater than 60 degrees
+         swconc = 0.0d0
+      endif
 
 
 !        Calculate CHI for sidewash (April 2022)
-      CHISW = SWCONC*U_AMB*BHS**2.0/QS             ! Normailized (unitless) Adjusted for wind tunnel scaling
-      HRVAL = 1.0D06*CHISW*QS/(U_AMB*BH**2.0)      ! Adjusted for wind tunnel scaling; scale from g/m3 to ug/3
+      chisw = swconc*u_amb*bhs**2.0/qs             ! Normailized (unitless) Adjusted for wind tunnel scaling
+      hrval = 1.0d06*chisw*qs/(u_amb*bh**2.0)      ! Adjusted for wind tunnel scaling; scale from g/m3 to ug/3
 
-      IF (SWDBG) THEN
+      if (swdbg) then
 
-         WRITE(SWDBGUNT,*)
-         WRITE(SWDBGUNT,833)
-833      FORMAT(32X,'HRVAL ug/m3',2X,'SWCONC g/m3',2X,'CHI')
+         write(swdbgunt,*)
+         write(swdbgunt,833)
+833      format(32x,'HRVAL ug/m3',2x,'SWCONC g/m3',2x,'CHI')
 
 !           *** Write out total concentration ***
-         WRITE(SWDBGUNT,834) HRVAL, SWCONC, CHISW
-834      FORMAT('SIDEWASH CONCENTRATIONS = ', 3(F12.4,1X))
+         write(swdbgunt,834) hrval, swconc, chisw
+834      format('SIDEWASH CONCENTRATIONS = ', 3(f12.4,1x))
 
-         WRITE(SWDBGUNT,*)
-         WRITE(SWDBGUNT,*)
-         WRITE(SWDBGUNT,*)
+         write(swdbgunt,*)
+         write(swdbgunt,*)
+         write(swdbgunt,*)
 
-      END IF
+      end if
 
 !        CRT 4/20/2022 D113 Sidewash
 !        If concentration is negative, set to zero and write warning message
-      IF (SWCONC .LT. 0.0D0) THEN
-         WRITE(DUMMY,'(I12)') KURDAT
-         CALL ERRHDL(PATH, MODNAM, 'W','650',DUMMY)
-         HRVAL = 0.0D0
-      END IF
+      if (swconc .lt. 0.0d0) then
+         write(dummy,'(I12)') kurdat
+         call errhdl(path, modnam, 'W','650',dummy)
+         hrval = 0.0d0
+      end if
 
 !        Call AERMOD averaging
-      DO IGRP = 1, NUMGRP
-         CALL SUMVAL
-      END DO
+      do igrp = 1, numgrp
+         call sumval
+      end do
 
 !        Initialize __VAL arrays (1:NUMTYP)
-      HRVAL   = 0.0D0
+      hrval   = 0.0d0
 
-   END DO RECEPTOR_LOOP
+   end do receptor_loop
 
-   RETURN
-END
+   return
+end
 
-SUBROUTINE PERPEN!(BH,BL,BW,HS,SX1,SY1,SWZ,SWTHETA,U_AMB,QS,SWCONC)
+subroutine perpen!(BH,BL,BW,HS,SX1,SY1,SWZ,SWTHETA,U_AMB,QS,SWCONC)
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: BETA_B_U_C1, BETA_B_U_C2, BETA_B_SIG_Y1_C1,&
-   &BETA_B_SIG_Z1, BETA_B_MU_Z1_C1, U, SIG_Y1,&
-   &SIG_Z1, SIG_Y2, SIG_Z2, RHO, TERM1, TERM2,&
-   &TERM2A, TERM2B, TERM2C, TERM2D, TERM3,&
-   &TERM3B, TERM3C, TERM3D, TERM4, TERM5A, TERM5B,&
-   &TERM5C, TERM51, TERM52, TERM5 !, SX1, SY1, SWZ  <-- global April 2022
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: beta_b_u_c1, beta_b_u_c2, beta_b_sig_y1_c1,&
+   &beta_b_sig_z1, beta_b_mu_z1_c1, u, sig_y1,&
+   &sig_z1, sig_y2, sig_z2, rho, term1, term2,&
+   &term2a, term2b, term2c, term2d, term3,&
+   &term3b, term3c, term3d, term4, term5a, term5b,&
+   &term5c, term51, term52, term5 !, SX1, SY1, SWZ  <-- global April 2022
 
 !     Variable Initializations
-   MODNAM = 'PERPEN'
+   modnam = 'PERPEN'
 
-   IF (SX1 .LT. 0.0) THEN
-      SWCONC = 0.0
-      GOTO 899
-   ENDIF
+   if (sx1 .lt. 0.0) then
+      swconc = 0.0
+      goto 899
+   endif
 
-   BETA_B_U_C1      = (-0.0555D0*(BWS/BHS))
-   BETA_B_U_C2      = 0.975993D0
-   BETA_B_SIG_Y1_C1 =  0.0141D0 + 0.0006D0*(BWS/BHS)
-   BETA_B_SIG_Z1    = 1.5D0* (0.0172D0 +(0.0003D0*(BWS/BHS)))
-   BETA_B_MU_Z1_C1  = -0.0217D0 + (0.0016D0*(BWS/BHS))
+   beta_b_u_c1      = (-0.0555d0*(bws/bhs))
+   beta_b_u_c2      = 0.975993d0
+   beta_b_sig_y1_c1 =  0.0141d0 + 0.0006d0*(bws/bhs)
+   beta_b_sig_z1    = 1.5d0* (0.0172d0 +(0.0003d0*(bws/bhs)))
+   beta_b_mu_z1_c1  = -0.0217d0 + (0.0016d0*(bws/bhs))
 
-   U      = BETA_B_U_C1 + BETA_B_U_C2*U_AMB
-   LAMBDA = 1.0D0
-   SIG_Y1 = BETA_B_SIG_Y1_C1*SX1
-   SIG_Z1 = BETA_B_SIG_Z1*SX1
-   SIG_Y2 = 1.0D0
-   SIG_Z2 = 1.0D0
-   MU_Y1  = 0.0D0
-   MU_Z1  = HSS + BETA_B_MU_Z1_C1*SX1
-   MU_Y2  = 0.0D0
-   MU_Z2  = 0.0D0
-   RHO    = 0.0D0
+   u      = beta_b_u_c1 + beta_b_u_c2*u_amb
+   lambda = 1.0d0
+   sig_y1 = beta_b_sig_y1_c1*sx1
+   sig_z1 = beta_b_sig_z1*sx1
+   sig_y2 = 1.0d0
+   sig_z2 = 1.0d0
+   mu_y1  = 0.0d0
+   mu_z1  = hss + beta_b_mu_z1_c1*sx1
+   mu_y2  = 0.0d0
+   mu_z2  = 0.0d0
+   rho    = 0.0d0
 
-   IF (SWDBG) THEN
+   if (swdbg) then
 
 !        *** CHECK SECOND SET OF VALUES ***
-      WRITE(SWDBGUNT,*) ('PERPENDICULAR:')
+      write(swdbgunt,*) ('PERPENDICULAR:')
 
 !        *** WRITE OUT LAMBDA RHO AND U_AMB ***
-      WRITE(SWDBGUNT,818)LAMBDA,RHO,U
-818   FORMAT('LAMBDA = ',F7.5,3x,'RHO = ',F7.5,3x,'U =',F5.3)
+      write(swdbgunt,818)lambda,rho,u
+818   format('LAMBDA = ',f7.5,3x,'RHO = ',f7.5,3x,'U =',f5.3)
 
 !        ************ WRITE OUT SIG AND MU VALUES *************
 !        *** Write out header for sigma values ***
-      WRITE(SWDBGUNT,*)('SIG Y1     SIG Z1    SIG Y2    SIG Z2')
+      write(swdbgunt,*)('SIG Y1     SIG Z1    SIG Y2    SIG Z2')
 
 !        *** Write our values of sigma values ***
-      WRITE(SWDBGUNT,820)SIG_Y1,SIG_Z1,SIG_Y2,SIG_Z2
-820   FORMAT(4(F8.6,2x))
+      write(swdbgunt,820)sig_y1,sig_z1,sig_y2,sig_z2
+820   format(4(f8.6,2x))
 
 !        *** Write out header for MU values
-      WRITE(SWDBGUNT,*)('MU Y1      MU Z1     MU Y2      MU Z2')
+      write(swdbgunt,*)('MU Y1      MU Z1     MU Y2      MU Z2')
 
 !        *** Write out values for MU values
-      WRITE(SWDBGUNT,822)MU_Y1,MU_Z1,MU_Y2,MU_Z2
-822   FORMAT(4(F8.6,2X))
+      write(swdbgunt,822)mu_y1,mu_z1,mu_y2,mu_z2
+822   format(4(f8.6,2x))
 
-   END IF
+   end if
 
-   TERM1 =(LAMBDA*QS)/((2*PI*U*SIG_Y1*SIG_Z1)*(SQRT(1.0D0-(RHO**2))))
+   term1 =(lambda*qs)/((2*pi*u*sig_y1*sig_z1)*(sqrt(1.0d0-(rho**2))))
 !
 !     *** Second Term, parts A,B,C,D and full TERM2  ***
-   TERM2A = (-1.0D0)/(2.0D0*(1.0D0-(RHO**2)))
-   TERM2B = ((SY1-MU_Y1)**2)/(SIG_Y1**2)
-   TERM2C = ((SWZ-MU_Z1)**2)/(SIG_Z1**2)
-   TERM2D = (2.0D0*RHO*(SY1-MU_Y1)*(SWZ-MU_Z1))/(SIG_Y1*SIG_Z1)
-   TERM2 = DEXP(TERM2A*(TERM2B + TERM2C - TERM2D))
+   term2a = (-1.0d0)/(2.0d0*(1.0d0-(rho**2)))
+   term2b = ((sy1-mu_y1)**2)/(sig_y1**2)
+   term2c = ((swz-mu_z1)**2)/(sig_z1**2)
+   term2d = (2.0d0*rho*(sy1-mu_y1)*(swz-mu_z1))/(sig_y1*sig_z1)
+   term2 = dexp(term2a*(term2b + term2c - term2d))
 
-   IF (SWDBG) THEN
+   if (swdbg) then
 
-      WRITE(SWDBGUNT,*)
+      write(swdbgunt,*)
 
 !        *** Write out TERM1 and parts A,B,C,D and full of TERM2 ***
-      WRITE(SWDBGUNT,824) TERM1
-824   FORMAT( 'TERM1 = ',F14.6)
+      write(swdbgunt,824) term1
+824   format( 'TERM1 = ',f14.6)
 
-      WRITE(SWDBGUNT,*)
-      WRITE(SWDBGUNT,*)'TERM2A    TERM2B     TERM2C     TERM2D',&
+      write(swdbgunt,*)
+      write(swdbgunt,*)'TERM2A    TERM2B     TERM2C     TERM2D',&
       &'     TM2'
-      WRITE(SWDBGUNT,826)TERM2A,TERM2B,TERM2C,TERM2D,TERM2
-826   FORMAT(2(F9.6,1X),F9.3,2X,2(F9.4,1X))
+      write(swdbgunt,826)term2a,term2b,term2c,term2d,term2
+826   format(2(f9.6,1x),f9.3,2x,2(f9.4,1x))
 
-   END IF
+   end if
 !
 !     *** Third Term ***
-   TERM2A = (-1.0D0/(2.0D0*(1-RHO**2)))
-   TERM3B = ((SY1-MU_Y1)**2)/(SIG_Y1**2)
-   TERM3C = ((SWZ+MU_Z1)**2)/(SIG_Z1**2)
-   TERM3D = (2.0D0*RHO*(SY1-MU_Y1)*(SWZ+MU_Z1))/(SIG_Y1*SIG_Z1)
-   TERM3 = DEXP(TERM2A*(TERM3B + TERM3C - TERM3D))
+   term2a = (-1.0d0/(2.0d0*(1-rho**2)))
+   term3b = ((sy1-mu_y1)**2)/(sig_y1**2)
+   term3c = ((swz+mu_z1)**2)/(sig_z1**2)
+   term3d = (2.0d0*rho*(sy1-mu_y1)*(swz+mu_z1))/(sig_y1*sig_z1)
+   term3 = dexp(term2a*(term3b + term3c - term3d))
 
-   IF (SWDBG) THEN
+   if (swdbg) then
 
-      WRITE(SWDBGUNT,*)
+      write(swdbgunt,*)
 
 !        *** Write out TERM2A and parts B,C,D and full TERM3 ***
-      WRITE(SWDBGUNT,*)'TERM2A    TERM3B     TERM3C     TERM3D',&
+      write(swdbgunt,*)'TERM2A    TERM3B     TERM3C     TERM3D',&
       &'     TM3'
-      WRITE(SWDBGUNT,828)TERM2A,TERM3B,TERM3C,TERM3D,TERM3
-828   FORMAT(2(F9.6,1X),F9.3,2X,2(F9.4,1X))
+      write(swdbgunt,828)term2a,term3b,term3c,term3d,term3
+828   format(2(f9.6,1x),f9.3,2x,2(f9.4,1x))
 
-   END IF
+   end if
 !
 !     *** Fourth Term ***
-   TERM4 = ((1.0D0 - LAMBDA)*QS)/((2*PI*U*SIG_Y2*SIG_Z2))
+   term4 = ((1.0d0 - lambda)*qs)/((2*pi*u*sig_y2*sig_z2))
 
-   IF (SWDBG) THEN
+   if (swdbg) then
 
-      WRITE(SWDBGUNT,*)
+      write(swdbgunt,*)
 
 !        *** Write out TERM4 ***
-      WRITE(SWDBGUNT,830)TERM4
-830   FORMAT( 'TERM4 = ',F14.6)
+      write(swdbgunt,830)term4
+830   format( 'TERM4 = ',f14.6)
 
-   END IF
+   end if
 !
 !     *** Fifth Term ***
-   TERM5A = ((SY1 - MU_Y2)**2)/(SIG_Y2**2)
-   TERM5B = ((SWZ - MU_Z2)**2)/(SIG_Z2**2)
-   TERM5C = ((SWZ + MU_Z2)**2)/(SIG_Z2**2)
-   TERM51 = DEXP((-0.5D0*(TERM5A + TERM5B)))
-   TERM52 = DEXP((-0.5D0*(TERM5A + TERM5C)))
-   TERM5 = TERM51 + TERM52
+   term5a = ((sy1 - mu_y2)**2)/(sig_y2**2)
+   term5b = ((swz - mu_z2)**2)/(sig_z2**2)
+   term5c = ((swz + mu_z2)**2)/(sig_z2**2)
+   term51 = dexp((-0.5d0*(term5a + term5b)))
+   term52 = dexp((-0.5d0*(term5a + term5c)))
+   term5 = term51 + term52
 
-   IF (SWDBG) THEN
+   if (swdbg) then
 
-      WRITE(SWDBGUNT,*)
+      write(swdbgunt,*)
 
 !        *** Write out parts A,B,C,1,2 and full TERM5 ***
-      WRITE(SWDBGUNT,831)
-831   FORMAT('TERM5A',7X,'TM5B',8X,'TM5C',5X,'T51',7X,'T52',7X,'T5')
+      write(swdbgunt,831)
+831   format('TERM5A',7x,'TM5B',8x,'TM5C',5x,'T51',7x,'T52',7x,'T5')
 
-      WRITE(SWDBGUNT,832) TERM5A,TERM5B,TERM5C,TERM51,TERM52,TERM5
-832   FORMAT(F9.6,1X,2(F10.4,2X),3(F9.6,1X))
+      write(swdbgunt,832) term5a,term5b,term5c,term51,term52,term5
+832   format(f9.6,1x,2(f10.4,2x),3(f9.6,1x))
 
-   END IF
+   end if
 
 !     ************* Calculate the total concentration ***********
 !
-   SWCONC = (TERM1*(TERM2+TERM3)) + (TERM4*(TERM5))
-899 CONTINUE
-   RETURN
-END
+   swconc = (term1*(term2+term3)) + (term4*(term5))
+899 continue
+   return
+end
 
 subroutine oblique!(BH,BL,BW,HS,SX1,SY1,SWZ,SWTHETA,U_AMB,QS,SWCONC)
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER MODNAM*12
-   DOUBLE PRECISION :: BETA_B_U_C1, BETA_B_U_C2, BETA_B_LAMBDA,&
-   &BETA_B_SIG_Y1_C1, BETA_B_SIG_Y1_C2,&
-   &BETA_B_SIG_Z1, BETA_B_SIG_Y2,&
-   &BETA_B_SIG_Z2_C1, BETA_B_SIG_Z2_C2,&
-   &BETA_B_MU_Y1_C1, BETA_B_MU_Y1_C2,&
-   &BETA_B_MU_Z1_C1, BETA_B_MU_Z1_C2,&
-   &BETA_B_MU_Y2, BETA_B_MU_Z2,&
-   &BETA_B_RHO_C1, BETA_B_RHO_C2,&
-   &U, SIG_Y1,&
-   &SIG_Z1, SIG_Y2, SIG_Z2, RHO, TERM1, TERM2,&
-   &TERM2A, TERM2B, TERM2C, TERM2D, TERM3,&
-   &TERM3B, TERM3C, TERM3D, TERM4, TERM5A, TERM5B,&
-   &TERM5C, TERM51, TERM52, TERM5!, SX1, SY1, SWZ  <-- global, April 2022
+   use main1
+   implicit none
+   character modnam*12
+   double precision :: beta_b_u_c1, beta_b_u_c2, beta_b_lambda,&
+   &beta_b_sig_y1_c1, beta_b_sig_y1_c2,&
+   &beta_b_sig_z1, beta_b_sig_y2,&
+   &beta_b_sig_z2_c1, beta_b_sig_z2_c2,&
+   &beta_b_mu_y1_c1, beta_b_mu_y1_c2,&
+   &beta_b_mu_z1_c1, beta_b_mu_z1_c2,&
+   &beta_b_mu_y2, beta_b_mu_z2,&
+   &beta_b_rho_c1, beta_b_rho_c2,&
+   &u, sig_y1,&
+   &sig_z1, sig_y2, sig_z2, rho, term1, term2,&
+   &term2a, term2b, term2c, term2d, term3,&
+   &term3b, term3c, term3d, term4, term5a, term5b,&
+   &term5c, term51, term52, term5!, SX1, SY1, SWZ  <-- global, April 2022
 
 !     Variable Initializations
-   MODNAM = 'OBLIQUE'
+   modnam = 'OBLIQUE'
 
-   IF (SX1 .LT. 0.0D0) THEN
-      SWCONC = 0.0D0
-      GOTO 898
-   ENDIF
+   if (sx1 .lt. 0.0d0) then
+      swconc = 0.0d0
+      goto 898
+   endif
 
-   BETA_B_U_C1 = (-0.0555D0*(BWS/BHS))
-   BETA_B_U_C2 = 0.975993D0
-   BETA_B_LAMBDA = -0.416614D0 + (0.003644D0*SWTHETA) +&
-   &(-0.012852D0*(BWS/BHS))
-   BETA_B_SIG_Y1_C1 = 0.026233D0
-   BETA_B_SIG_Y1_C2 = -0.00117D0
-   BETA_B_SIG_Z1 = 1.83D-02 + (-3.83D-05*SWTHETA) +&
-   &(-5.81D-04*(BWS/BHS))
-   BETA_B_SIG_Y2 = 2.67D-02 + (-8.50D-05*SWTHETA) +&
-   &(4.93D-04*(BWS/BHS))
-   BETA_B_SIG_Z2_C1 = 0.0385D0 + (-0.000171D0*SWTHETA) +&
-   &(-0.0014D0*(BWS/BHS))
-   BETA_B_SIG_Z2_C2 = -0.00191D0 + (0.0000108D0*SWTHETA) +&
-   &(0.000118D0*(BWS/BHS))
-   BETA_B_MU_Y1_C1 = 0.015081D0 + (0.000243D0*SWTHETA) +&
-   &(-0.0031D0*(BWS/BHS))
-   BETA_B_MU_Y1_C2 = -0.00175D0 + (-0.0000178D0*SWTHETA) +&
-   &(0.000331D0*(BWS/BHS))
-   BETA_B_MU_Z1_C1 = -0.03578D0 + (-0.00029D0*SWTHETA) +&
-   &(0.00224D0*(BWS/BHS))
-   BETA_B_MU_Z1_C2 = 0.00186D0 + (0.00000833D0*SWTHETA) +&
-   &(-0.000116D0*(BWS/BHS))
-   BETA_B_MU_Y2 = 2.21D-02 + (-1.82D-04*SWTHETA) +&
-   &(9.71D-04*(BWS/BHS))
-   BETA_B_MU_Z2 = -0.357069D0 + (0.002894D0*SWTHETA) +&
-   &(0.002252D0*(BWS/BHS))
-   BETA_B_RHO_C1 = 0.012006D0
-   BETA_B_RHO_C2 = -0.00039D0
+   beta_b_u_c1 = (-0.0555d0*(bws/bhs))
+   beta_b_u_c2 = 0.975993d0
+   beta_b_lambda = -0.416614d0 + (0.003644d0*swtheta) +&
+   &(-0.012852d0*(bws/bhs))
+   beta_b_sig_y1_c1 = 0.026233d0
+   beta_b_sig_y1_c2 = -0.00117d0
+   beta_b_sig_z1 = 1.83d-02 + (-3.83d-05*swtheta) +&
+   &(-5.81d-04*(bws/bhs))
+   beta_b_sig_y2 = 2.67d-02 + (-8.50d-05*swtheta) +&
+   &(4.93d-04*(bws/bhs))
+   beta_b_sig_z2_c1 = 0.0385d0 + (-0.000171d0*swtheta) +&
+   &(-0.0014d0*(bws/bhs))
+   beta_b_sig_z2_c2 = -0.00191d0 + (0.0000108d0*swtheta) +&
+   &(0.000118d0*(bws/bhs))
+   beta_b_mu_y1_c1 = 0.015081d0 + (0.000243d0*swtheta) +&
+   &(-0.0031d0*(bws/bhs))
+   beta_b_mu_y1_c2 = -0.00175d0 + (-0.0000178d0*swtheta) +&
+   &(0.000331d0*(bws/bhs))
+   beta_b_mu_z1_c1 = -0.03578d0 + (-0.00029d0*swtheta) +&
+   &(0.00224d0*(bws/bhs))
+   beta_b_mu_z1_c2 = 0.00186d0 + (0.00000833d0*swtheta) +&
+   &(-0.000116d0*(bws/bhs))
+   beta_b_mu_y2 = 2.21d-02 + (-1.82d-04*swtheta) +&
+   &(9.71d-04*(bws/bhs))
+   beta_b_mu_z2 = -0.357069d0 + (0.002894d0*swtheta) +&
+   &(0.002252d0*(bws/bhs))
+   beta_b_rho_c1 = 0.012006d0
+   beta_b_rho_c2 = -0.00039d0
 !
 !     *** Start defining terms in Gaussian Dispersion Equation ***
 !     *** according to Beta_a(x)
-   U = BETA_B_U_C1 + BETA_B_U_C2*U_AMB
-   LAMBDA = DEXP(BETA_B_LAMBDA*SX1)
-   SIG_Y1 = BETA_B_SIG_Y1_C1*SX1 + BETA_B_SIG_Y1_C2*(SX1**2)
-   SIG_Z1 = BETA_B_SIG_Z1*SX1
-   SIG_Y2 = BETA_B_SIG_Y2*SX1
-   SIG_Z2 = BETA_B_SIG_Z2_C1*SX1 + BETA_B_SIG_Z2_C2*(SX1**2)
-   MU_Y1 = BETA_B_MU_Y1_C1*SX1 + BETA_B_MU_Y1_C2*(SX1**2)
-   MU_Z1 = HSS + BETA_B_MU_Z1_C1*SX1 + BETA_B_MU_Z1_C2*(SX1**2)
-   MU_Y2 = BETA_B_MU_Y2*SX1
-   MU_Z2 = BHS*DEXP(BETA_B_MU_Z2*SX1)
-   RHO = BETA_B_RHO_C1*SX1 + BETA_B_RHO_C2*(SX1**2)
+   u = beta_b_u_c1 + beta_b_u_c2*u_amb
+   lambda = dexp(beta_b_lambda*sx1)
+   sig_y1 = beta_b_sig_y1_c1*sx1 + beta_b_sig_y1_c2*(sx1**2)
+   sig_z1 = beta_b_sig_z1*sx1
+   sig_y2 = beta_b_sig_y2*sx1
+   sig_z2 = beta_b_sig_z2_c1*sx1 + beta_b_sig_z2_c2*(sx1**2)
+   mu_y1 = beta_b_mu_y1_c1*sx1 + beta_b_mu_y1_c2*(sx1**2)
+   mu_z1 = hss + beta_b_mu_z1_c1*sx1 + beta_b_mu_z1_c2*(sx1**2)
+   mu_y2 = beta_b_mu_y2*sx1
+   mu_z2 = bhs*dexp(beta_b_mu_z2*sx1)
+   rho = beta_b_rho_c1*sx1 + beta_b_rho_c2*(sx1**2)
 
-   IF (SWDBG) THEN
+   if (swdbg) then
 
 !        *** CHECK SECOND SET OF VALUES ***
-      WRITE(SWDBGUNT,*) ('OBLIQUE:')
+      write(swdbgunt,*) ('OBLIQUE:')
 
 !        *** WRITE OUT LAMBDA RHO AND U_AMB ***
-      WRITE(SWDBGUNT,818)LAMBDA,RHO,U
-818   FORMAT('LAMBDA = ',F7.5,3x,'RHO = ',F7.5,3x,'U =',F5.3)
+      write(swdbgunt,818)lambda,rho,u
+818   format('LAMBDA = ',f7.5,3x,'RHO = ',f7.5,3x,'U =',f5.3)
 
 !        ************ WRITE OUT SIG AND MU VALUES *************
 !        *** Write out header for sigma values ***
-      WRITE(SWDBGUNT,*) 'SIG Y1     SIG Z1    SIG Y2    SIG Z2'
+      write(swdbgunt,*) 'SIG Y1     SIG Z1    SIG Y2    SIG Z2'
 
 !        *** Write our values of sigma values ***
-      WRITE(SWDBGUNT,820)SIG_Y1,SIG_Z1,SIG_Y2,SIG_Z2
-820   FORMAT(4(F8.6,2x))
+      write(swdbgunt,820)sig_y1,sig_z1,sig_y2,sig_z2
+820   format(4(f8.6,2x))
 
 !        *** Write out header for MU values
-      WRITE(SWDBGUNT,*) 'MU Y1      MU Z1     MU Y2      MU Z2'
+      write(swdbgunt,*) 'MU Y1      MU Z1     MU Y2      MU Z2'
 
 !        *** Write out values for MU values
-      WRITE(SWDBGUNT,822)MU_Y1,MU_Z1,MU_Y2,MU_Z2
-822   FORMAT(4(F8.6,2X))
+      write(swdbgunt,822)mu_y1,mu_z1,mu_y2,mu_z2
+822   format(4(f8.6,2x))
 
-   END IF
+   end if
 
-   TERM1 =(LAMBDA*QS)/((2*PI*U*SIG_Y1*SIG_Z1)*(SQRT(1-(RHO**2))))
+   term1 =(lambda*qs)/((2*pi*u*sig_y1*sig_z1)*(sqrt(1-(rho**2))))
 !
 !     *** Second Term, parts A,B,C,D and full TERM2  ***
-   TERM2A = (-1.0D0)/(2.0D0*(1-(RHO**2)))
-   TERM2B = ((SY1-MU_Y1)**2)/(SIG_Y1**2)
-   TERM2C = ((SWZ-MU_Z1)**2)/(SIG_Z1**2)
-   TERM2D = (2.0D0*RHO*(SY1-MU_Y1)*(SWZ-MU_Z1))/(SIG_Y1*SIG_Z1)
-   TERM2 = DEXP(TERM2A*(TERM2B + TERM2C - TERM2D))
+   term2a = (-1.0d0)/(2.0d0*(1-(rho**2)))
+   term2b = ((sy1-mu_y1)**2)/(sig_y1**2)
+   term2c = ((swz-mu_z1)**2)/(sig_z1**2)
+   term2d = (2.0d0*rho*(sy1-mu_y1)*(swz-mu_z1))/(sig_y1*sig_z1)
+   term2 = dexp(term2a*(term2b + term2c - term2d))
 
-   IF (SWDBG) THEN
+   if (swdbg) then
 
-      WRITE(SWDBGUNT,*)
+      write(swdbgunt,*)
 
 !        *** Write out TERM1 and parts A,B,C,D and full of TERM2 ***
-      WRITE(SWDBGUNT,824)TERM1
-824   FORMAT( 'TERM1 = ',F14.6)
+      write(swdbgunt,824)term1
+824   format( 'TERM1 = ',f14.6)
 
-      WRITE(SWDBGUNT,*)
-      WRITE(SWDBGUNT,*) 'TERM2A    TERM2B     TERM2C     TERM2D',&
+      write(swdbgunt,*)
+      write(swdbgunt,*) 'TERM2A    TERM2B     TERM2C     TERM2D',&
       &'     TM2'
-      WRITE(SWDBGUNT,826)TERM2A,TERM2B,TERM2C,TERM2D,TERM2
-826   FORMAT(2(F9.6,1X),F9.3,2X,2(F9.4,1X))
+      write(swdbgunt,826)term2a,term2b,term2c,term2d,term2
+826   format(2(f9.6,1x),f9.3,2x,2(f9.4,1x))
 
-   END IF
+   end if
 
 !     *** Third Term ***
-   TERM2A = (-1.0D0/(2.0D0*(1-RHO**2)))
-   TERM3B = ((SY1-MU_Y1)**2)/(SIG_Y1**2)
-   TERM3C = ((SWZ+MU_Z1)**2)/(SIG_Z1**2)
-   TERM3D = (2.0D0*RHO*(SY1-MU_Y1)*(SWZ+MU_Z1))/(SIG_Y1*SIG_Z1)
-   TERM3 = DEXP(TERM2A*(TERM3B + TERM3C - TERM3D))
+   term2a = (-1.0d0/(2.0d0*(1-rho**2)))
+   term3b = ((sy1-mu_y1)**2)/(sig_y1**2)
+   term3c = ((swz+mu_z1)**2)/(sig_z1**2)
+   term3d = (2.0d0*rho*(sy1-mu_y1)*(swz+mu_z1))/(sig_y1*sig_z1)
+   term3 = dexp(term2a*(term3b + term3c - term3d))
 
-   IF (SWDBG) THEN
+   if (swdbg) then
 
-      WRITE(SWDBGUNT,*)
+      write(swdbgunt,*)
 
 !        *** Write out TERM2A and parts B,C,D and full TERM3 ***
-      WRITE(SWDBGUNT,*) 'TERM2A    TERM3B     TERM3C     TERM3D',&
+      write(swdbgunt,*) 'TERM2A    TERM3B     TERM3C     TERM3D',&
       &'     TM3'
-      WRITE(SWDBGUNT,828)TERM2A,TERM3B,TERM3C,TERM3D,TERM3
-828   FORMAT(2(F9.6,1X),F9.3,2X,2(F9.4,1X))
+      write(swdbgunt,828)term2a,term3b,term3c,term3d,term3
+828   format(2(f9.6,1x),f9.3,2x,2(f9.4,1x))
 
-   END IF
+   end if
 !
 !     *** Fourth Term ***
-   TERM4 = ((1.0 - LAMBDA)*QS)/((2*PI*U*SIG_Y2*SIG_Z2))
+   term4 = ((1.0 - lambda)*qs)/((2*pi*u*sig_y2*sig_z2))
 
-   IF (SWDBG) THEN
+   if (swdbg) then
 
-      WRITE(SWDBGUNT,*)
+      write(swdbgunt,*)
 
 !        *** Write out TERM4 ***
-      WRITE(SWDBGUNT,830)TERM4
-830   FORMAT( 'TERM4 = ',F14.6)
+      write(swdbgunt,830)term4
+830   format( 'TERM4 = ',f14.6)
 
-   END IF
+   end if
 
 !     *** Fifth Term ***
-   TERM5A = ((SY1 - MU_Y2)**2)/(SIG_Y2**2)
-   TERM5B = ((SWZ - MU_Z2)**2)/(SIG_Z2**2)
-   TERM5C = ((SWZ + MU_Z2)**2)/(SIG_Z2**2)
-   TERM51 = DEXP((-0.5D0*(TERM5A + TERM5B)))
-   TERM52 = DEXP((-0.5D0*(TERM5A + TERM5C)))
-   TERM5 = TERM51 + TERM52
+   term5a = ((sy1 - mu_y2)**2)/(sig_y2**2)
+   term5b = ((swz - mu_z2)**2)/(sig_z2**2)
+   term5c = ((swz + mu_z2)**2)/(sig_z2**2)
+   term51 = dexp((-0.5d0*(term5a + term5b)))
+   term52 = dexp((-0.5d0*(term5a + term5c)))
+   term5 = term51 + term52
 
-   IF (SWDBG) THEN
+   if (swdbg) then
 
-      WRITE(SWDBGUNT,*)
+      write(swdbgunt,*)
 
 !        *** Write out parts A,B,C,1,2 and full TERM5 ***
-      WRITE(SWDBGUNT,831)
-831   FORMAT('TERM5A',7X,'TM5B',8X,'TM5C',5X,'T51',7X,'T52',7X,'T5')
+      write(swdbgunt,831)
+831   format('TERM5A',7x,'TM5B',8x,'TM5C',5x,'T51',7x,'T52',7x,'T5')
 
-      WRITE(SWDBGUNT,832) TERM5A,TERM5B,TERM5C,TERM51,TERM52,TERM5
-832   FORMAT(F9.6,1X,2(F10.4,2X),3(F9.6,1X))
+      write(swdbgunt,832) term5a,term5b,term5c,term51,term52,term5
+832   format(f9.6,1x,2(f10.4,2x),3(f9.6,1x))
 
-   END IF
+   end if
 
 !     ************* Calculate the total concentration ***********
 !
-   SWCONC = (TERM1*(TERM2+TERM3)) + (TERM4*(TERM5))
-898 CONTINUE
-   RETURN
-END
+   swconc = (term1*(term2+term3)) + (term4*(term5))
+898 continue
+   return
+end
 !WSP --- End: Moved to end of calc1.f - D174 WSP 7/25/2023

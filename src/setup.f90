@@ -1,4 +1,4 @@
-SUBROUTINE SETUP
+subroutine setup
 !***********************************************************************
 !                 SETUP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -47,200 +47,200 @@ SUBROUTINE SETUP
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 !     JAT D065 8/9/21 NOPS AND ILEN SET BUT NOT USED
 !      INTEGER :: NOPS, ILEN
 !     JAT D065 8/9/21 MOD_LEN SET BUT NOT USED
 !      INTEGER :: MOD_Len
 
-   INTEGER :: I, IFSTAT
-   LOGICAL :: NOPATH, NOKEY
-   LOGICAL :: NOCOMMENTECHO
-   CHARACTER :: RDFRM*20
+   integer :: i, ifstat
+   logical :: nopath, nokey
+   logical :: nocommentecho
+   character :: rdfrm*20
 ! JAT 06/22/21 D065
 ! REMOVE INPFLD AS UNUSED VARIABLE
 !      CHARACTER INPFLD*2, PATHWY(6)*2
-   CHARACTER :: PATHWY(6)*2
-   INTERFACE
-      SUBROUTINE EXPATH(INPFLD,PATHWY,IPN,NOPATH)
-         CHARACTER (LEN=2), INTENT(IN) :: INPFLD
-         CHARACTER (LEN=2), INTENT(IN), DIMENSION(:) :: PATHWY
-         INTEGER, INTENT(IN) :: IPN
-         LOGICAL, INTENT(OUT) :: NOPATH
-      END SUBROUTINE EXPATH
-   END INTERFACE
+   character :: pathwy(6)*2
+   interface
+      subroutine expath(inpfld,pathwy,ipn,nopath)
+         character (len=2), intent(in) :: inpfld
+         character (len=2), intent(in), dimension(:) :: pathwy
+         integer, intent(in) :: ipn
+         logical, intent(out) :: nopath
+      end subroutine expath
+   end interface
 
 
 !     Variable Initializations
-   MODNAM = 'SETUP'
-   PATH  = '  '
-   PPATH = '  '
+   modnam = 'SETUP'
+   path  = '  '
+   ppath = '  '
 !     JAT D065 8/9/21 MOD_LEN SET BUT NOT USED
 !      MOD_Len = 0
-   EOF = .FALSE.
-   NOCOMMENTECHO = .FALSE.
+   eof = .false.
+   nocommentecho = .false.
 
 !     Initialize line counters: ILINE for met file; IQLINE for HOUREMIS file; IOLINE for OZONEFIL;
 !     INOXLINE for NOX_FILE
-   ILINE  = 0
-   IQLINE = 0
-   IOLINE = 0
-   IBLINE = 0
-   INOXLINE = 0
+   iline  = 0
+   iqline = 0
+   ioline = 0
+   ibline = 0
+   inoxline = 0
 !     JAT D065 8/9/21 NOPS SET BUT NOT USED
 !      NOPS = 0
 !     JAT D065 8/9/21 ILEN SET BUT NOT USED
 !      ILEN = 0
 ! --- Initialize counters for arrays to store met data for MAXDCONT option
-   IHR_NDX = 0
-   IYR_NDX = 0
+   ihr_ndx = 0
+   iyr_ndx = 0
 
 !     Initialize PATHWY array
-   PATHWY(1) = 'CO'
-   PATHWY(2) = 'SO'
-   PATHWY(3) = 'RE'
-   PATHWY(4) = 'ME'
-   PATHWY(5) = 'OU'
-   PATHWY(6) = '**'
+   pathwy(1) = 'CO'
+   pathwy(2) = 'SO'
+   pathwy(3) = 'RE'
+   pathwy(4) = 'ME'
+   pathwy(5) = 'OU'
+   pathwy(6) = '**'
 
 !     Setup READ format and ECHO format for runstream record,
 !     based on the ISTRG PARAMETER (set in MAIN1)
-   WRITE(RDFRM,9100) ISTRG, ISTRG
-9100 FORMAT('(A',I4.4,',T1,',I4.4,'A1)')
+   write(rdfrm,9100) istrg, istrg
+9100 format('(A',i4.4,',T1,',i4.4,'A1)')
 
 !     LOOP Through Input Runstream Records
-   DO WHILE (.NOT. EOF)
+   do while (.not. eof)
 
 !        Increment the Line Counter
-      ILINE = ILINE + 1
+      iline = iline + 1
 
 !        READ Record to Buffers, as A'num' and 'num'A1, where 'num' = ISTRG
 !        Length of ISTRG is Set in PARAMETER Statement in MAIN1
-      READ (INUNIT,RDFRM,END=999) RUNST1, (RUNST(I), I = 1, ISTRG)
+      read (inunit,rdfrm,end=999) runst1, (runst(i), i = 1, istrg)
 
 !        Check for blank input record; echo the blank record to the
 !        output file and the Temporary Event File and then cycle to
 !        the next record; unless PATH = 'RE' for EVENT
-      IF (LEN_TRIM(RUNST1) == 0) THEN
-         WRITE(IOUNIT,*)
-         IF (PATH /= 'RE' .and. PATH /= 'OU') THEN
+      if (len_trim(runst1) == 0) then
+         write(iounit,*)
+         if (path /= 'RE' .and. path /= 'OU') then
 !              Skip echo of blank field to Event file for RE pathway
-            WRITE(ITEVUT,*)
-         END IF
-         CYCLE
-      END IF
+            write(itevut,*)
+         end if
+         cycle
+      end if
 
 !        Convert Lower Case to Upper Case Letters           ---   CALL LWRUPR
-      CALL LWRUPR
+      call lwrupr
 
 !        Define Fields on Card                              ---   CALL DEFINE
-      CALL DEFINE
+      call define
 
 !        Get the Contents of the Fields                     ---   CALL GETFLD
-      CALL GETFLD
+      call getfld
 
-      IF (ECHO .and.&
-      &(FIELD(1)=='OU' .and. FIELD(2)=='FINISHED')) THEN
+      if (echo .and.&
+      &(field(1)=='OU' .and. field(2)=='FINISHED')) then
 !           Echo Last Input Card to Output File (Use Character Substring to
 !           Avoid Echoing ^Z Which May Appear at "End of File" for Some
 !           Editors).  Also, Allow for Shift in the Input Runstream File of
 !           Up to 3 Columns.
-         IF (LOCB(1) == 1) THEN
-            WRITE(IOUNIT,9200) RUNST1(1:11)
-9200        FORMAT(A11)
-         ELSE IF (LOCB(1) == 2) THEN
-            WRITE(IOUNIT,9210) RUNST1(1:12)
-9210        FORMAT(A12)
-         ELSE IF (LOCB(1) == 3) THEN
-            WRITE(IOUNIT,9220) RUNST1(1:13)
-9220        FORMAT(A13)
-         ELSE IF (LOCB(1) == 4) THEN
-            WRITE(IOUNIT,9230) RUNST1(1:14)
-9230        FORMAT(A14)
-         END IF
-      ELSE IF (ECHO) THEN
+         if (locb(1) == 1) then
+            write(iounit,9200) runst1(1:11)
+9200        format(a11)
+         else if (locb(1) == 2) then
+            write(iounit,9210) runst1(1:12)
+9210        format(a12)
+         else if (locb(1) == 3) then
+            write(iounit,9220) runst1(1:13)
+9220        format(a13)
+         else if (locb(1) == 4) then
+            write(iounit,9230) runst1(1:14)
+9230        format(a14)
+         end if
+      else if (echo) then
 !           Echo Full Input Card to Output File
-         WRITE(IOUNIT,'(a:)') RUNST1(1:LEN_TRIM(RUNST1))
-      END IF
+         write(iounit,'(a:)') runst1(1:len_trim(runst1))
+      end if
 
 !        Check for 'NO ECHO' In First Two Fields
-      IF (FIELD(1) == 'NO' .and. FIELD(2) == 'ECHO') THEN
-         ECHO = .FALSE.
-         CYCLE
-      END IF
+      if (field(1) == 'NO' .and. field(2) == 'ECHO') then
+         echo = .false.
+         cycle
+      end if
 
 !        Extract Pathway ID From Field 1                    ---   CALL EXPATH
-      CALL EXPATH(FIELD(1),PATHWY,6,NOPATH)
+      call expath(field(1),pathwy,6,nopath)
 
 !        For Invalid Pathway and Comment Lines Skip to Next Record
-      IF (NOPATH) THEN
+      if (nopath) then
 !           WRITE Error Message    ! Invalid Pathway ID
-         CALL ERRHDL(PPATH,MODNAM,'E','100',PATH)
-         PATH = PPATH
-         CYCLE
-      ELSE IF (PATH == 'RE') THEN
-         NOCOMMENTECHO = .TRUE.
-      ELSE IF (PATH == 'ME') THEN
-         NOCOMMENTECHO = .FALSE.
-      ELSE IF (PATH == 'OU') THEN
-         NOCOMMENTECHO = .TRUE.
-      END IF
+         call errhdl(ppath,modnam,'E','100',path)
+         path = ppath
+         cycle
+      else if (path == 'RE') then
+         nocommentecho = .true.
+      else if (path == 'ME') then
+         nocommentecho = .false.
+      else if (path == 'OU') then
+         nocommentecho = .true.
+      end if
 
-      IF (PATH == '**') THEN
-         IF (NOCOMMENTECHO) THEN
+      if (path == '**') then
+         if (nocommentecho) then
 ! ---          Skip echo to temporary event file and cycle
-            CYCLE
-         ELSE
+            cycle
+         else
 ! ---          "Echo" the comment record to the Temporary Event File
 !              and then CYCLE to the next record
-            WRITE(ITEVUT,'(a:)') RUNST1(1:LEN_TRIM(RUNST1))
-            CYCLE
-         END IF
-      END IF
+            write(itevut,'(a:)') runst1(1:len_trim(runst1))
+            cycle
+         end if
+      end if
 
 !        Extract Keyword From Field 2                       ---   CALL EXKEY
-      CALL EXKEY(FIELD(2),NOKEY)
+      call exkey(field(2),nokey)
 
 ! Multiple_BuoyLines_D41_Wood
 !        Removed logic that BLPGROUP was not operational in v19191
-      IF (NOKEY) THEN
+      if (nokey) then
 !           WRITE Error Message    ! Invalid Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','105',KEYWRD)
-         PKEYWD = KEYWRD
-         CYCLE
-      END IF
+         call errhdl(path,modnam,'E','105',keywrd)
+         pkeywd = keywrd
+         cycle
+      end if
 
 !        Check for Proper Order of Setup Cards              ---   CALL SETORD
-      CALL SETORD
+      call setord
 
 !        Process Input Card Based on Pathway
-      IF (PATH == 'CO') THEN
+      if (path == 'CO') then
 !           Process COntrol Pathway Cards                   ---   CALL COCARD
-         CALL COCARD
+         call cocard
 ! ---       Echo Runstream Image to Temporary Event File (Except EVENTFIL,
 !           SAVEFILE, INITFILE & MULTYEAR)
-         IF (KEYWRD/='EVENTFIL' .and. KEYWRD/='SAVEFILE' .and.&
-         &KEYWRD/='INITFILE' .and. KEYWRD/='MULTYEAR') THEN
-            WRITE(ITEVUT,'(a:)') RUNST1(1:LEN_TRIM(RUNST1))
-         END IF
-      ELSE IF (PATH == 'SO') THEN
+         if (keywrd/='EVENTFIL' .and. keywrd/='SAVEFILE' .and.&
+         &keywrd/='INITFILE' .and. keywrd/='MULTYEAR') then
+            write(itevut,'(a:)') runst1(1:len_trim(runst1))
+         end if
+      else if (path == 'SO') then
 !           Echo Runstream Image to Temporary Event File
-         WRITE(ITEVUT,'(a)') RUNST1(1:LEN_TRIM(RUNST1))
+         write(itevut,'(a)') runst1(1:len_trim(runst1))
 !           Process SOurce Pathway Cards                    ---   CALL SOCARD
-         CALL SOCARD
-      ELSE IF (PATH == 'RE') THEN
+         call socard
+      else if (path == 'RE') then
 !           Process REceptor Pathway Cards                  ---   CALL RECARD
-         CALL RECARD
-      ELSE IF (PATH == 'ME') THEN
+         call recard
+      else if (path == 'ME') then
 !           Process MEteorology Pathway Cards               ---   CALL MECARD
-         CALL MECARD
+         call mecard
 !           Echo Runstream Image to Temporary Event File (Except STARTEND
 !           & DAYRANGE)
-         IF (KEYWRD/='STARTEND' .and. KEYWRD/='DAYRANGE') THEN
-            WRITE(ITEVUT,'(a:)') RUNST1(1:LEN_TRIM(RUNST1))
-         END IF
+         if (keywrd/='STARTEND' .and. keywrd/='DAYRANGE') then
+            write(itevut,'(a:)') runst1(1:len_trim(runst1))
+         end if
 
 ! ---       Create a character string that includes only those modeling
 !           options (MODOPS) that are applicable for this model run
@@ -251,72 +251,72 @@ SUBROUTINE SETUP
 !            MOD_LEN = 0
 
 ! ---       Loop through the 30 different options that are flagged
-         DO I = 1, 30
-            IF (LEN_TRIM(MODOPS(I)) > 0) THEN
+         do i = 1, 30
+            if (len_trim(modops(i)) > 0) then
 !                 JAT D065 8/9/21 MOD_LEN SET BUT NOT USED
 !                  MOD_LEN = LEN_TRIM(MODOPS(I))
                MODOPS_String =&
-               &MODOPS_String(1:LEN_TRIM(MODOPS_String))//'  '//&
-               &MODOPS(I)(1:LEN_TRIM(MODOPS(I)))
-            END IF
-         END DO
+               &MODOPS_String(1:len_trim(MODOPS_String))//'  '//&
+               &modops(i)(1:len_trim(modops(i)))
+            end if
+         end do
 
-      ELSE IF (PATH == 'OU') THEN
+      else if (path == 'OU') then
 !           Process OUtput Pathway Cards                    ---   CALL OUCARD
-         CALL OUCARD
-      END IF
+         call oucard
+      end if
 
 !        Store the Current Keyword as the Previous Keyword
-      PKEYWD = KEYWRD
+      pkeywd = keywrd
 
 !        Check for 'OU FINISHED' Card.  Exit DO WHILE Loop By Branching
 !        to Statement 999 in Order to Avoid Reading a ^Z "End of File"
 !        Marker That May Be Present For Some Editors.
-      IF (PATH == 'OU' .and. KEYWRD == 'FINISHED') THEN
-         GO TO 999
-      END IF
+      if (path == 'OU' .and. keywrd == 'FINISHED') then
+         go to 999
+      end if
 
-      GO TO 11
-999   EOF = .TRUE.
-11    CONTINUE
-   END DO
+      go to 11
+999   eof = .true.
+11    continue
+   end do
 
 !     Reinitialize Line Number Counter to Count Meteorology Data
-   ILINE = 0
+   iline = 0
 
 !     Check That All Pathways Were Finished
-   IF (ICSTAT(50)/=1 .or. ISSTAT(50)/=1 .or. IRSTAT(50)/=1 .or.&
-   &IMSTAT(50)/=1 .or. IOSTAT(50)/=1) THEN
+   if (icstat(50)/=1 .or. isstat(50)/=1 .or. irstat(50)/=1 .or.&
+   &imstat(50)/=1 .or. iostat(50)/=1) then
 !        Runstream File Incomplete, Save I?STAT to IFSTAT and Write Message
-      IFSTAT = ICSTAT(50)*10000 + ISSTAT(50)*1000 + IRSTAT(50)*100 +&
-      &IMSTAT(50)*10 + IOSTAT(50)
-      WRITE(DUMMY,'(I5.5)') IFSTAT
-      CALL ERRHDL(PATH,MODNAM,'E','125',DUMMY)
+      ifstat = icstat(50)*10000 + isstat(50)*1000 + irstat(50)*100 +&
+      &imstat(50)*10 + iostat(50)
+      write(dummy,'(I5.5)') ifstat
+      call errhdl(path,modnam,'E','125',dummy)
 ! ---    Check for IFSTAT = 0, indicating an empty input file;
 !        issue error message to 'aermod.out' file and abort
-      IF (IFSTAT == 0) THEN
-         WRITE(IOUNIT,9990)
-9990     FORMAT(/1X,'All AERMOD input pathways missing! ',&
+      if (ifstat == 0) then
+         write(iounit,9990)
+9990     format(/1x,'All AERMOD input pathways missing! ',&
          &'Processing aborted!!!')
 ! ---       Also issue error message to "screen"
-         WRITE(*,9990)
-         STOP
-      END IF
-   END IF
+         write(*,9990)
+         stop
+      end if
+   end if
 
 ! --- Check for non-DFAULT options for "optimized" area source,
 !     FASTAREA, or for all source types, FASTALL; set MAXDIST = 80KM
 !     if FASTALL or FASTAREA, otherwise MAXDIST = 1.0D20
-   IF (FASTALL .or. FASTAREA) THEN
-      MAXDIST = 8.0D04
-   ELSE
-      MAXDIST = 1.0D20
-   END IF
+   if (fastall .or. fastarea) then
+      maxdist = 8.0d04
+   else
+      maxdist = 1.0d20
+   end if
 
-   RETURN
-END SUBROUTINE SETUP
+   return
+end subroutine setup
 
-SUBROUTINE LWRUPR
+subroutine lwrupr
 !***********************************************************************
 !                 LWRUPR Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -339,33 +339,33 @@ SUBROUTINE LWRUPR
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, INDCHK
-   CHARACTER :: UPCASE*26
-   CHARACTER :: LWCASE*26
+   integer :: i, indchk
+   character :: upcase*26
+   character :: lwcase*26
 
 !     Variable Initializations
-   DATA UPCASE/'ABCDEFGHIJKLMNOPQRSTUVWXYZ'/
-   DATA LWCASE/'abcdefghijklmnopqrstuvwxyz'/
-   MODNAM = 'LWRUPR'
-   INDCHK = 0
+   data upcase/'ABCDEFGHIJKLMNOPQRSTUVWXYZ'/
+   data lwcase/'abcdefghijklmnopqrstuvwxyz'/
+   modnam = 'LWRUPR'
+   indchk = 0
 
-   DO I = 1, ISTRG
-      IF (RUNST(I) /= ' ') THEN
-         INDCHK = INDEX(LWCASE,RUNST(I))
-         IF (INDCHK /= 0) THEN
-            RUNST(I) = UPCASE(INDCHK:INDCHK)
-         END IF
-      END IF
-   END DO
+   do i = 1, istrg
+      if (runst(i) /= ' ') then
+         indchk = index(lwcase,runst(i))
+         if (indchk /= 0) then
+            runst(i) = upcase(indchk:indchk)
+         end if
+      end if
+   end do
 
-   RETURN
-END SUBROUTINE LWRUPR
+   return
+end subroutine lwrupr
 
-SUBROUTINE DEFINE
+subroutine define
 !***********************************************************************
 !                 DEFINE Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -393,120 +393,120 @@ SUBROUTINE DEFINE
 !
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   LOGICAL :: INQUOTE
+   logical :: inquote
 
-   INTEGER :: I
+   integer :: i
 
 !     Variable Initializations
-   MODNAM = 'DEFINE'
-   LOCB(3:IFMAX) = 0
-   LOCE(3:IFMAX) = 0
+   modnam = 'DEFINE'
+   locb(3:ifmax) = 0
+   loce(3:ifmax) = 0
 
 !     Initialize the Blank Line and In-field Status Indicators
-   BLINE = .TRUE.
-   INFLD = .FALSE.
-   INQUOTE = .FALSE.
+   bline = .true.
+   infld = .false.
+   inquote = .false.
 
-   IF (ILINE == 1) THEN
+   if (iline == 1) then
 !        Define the Starting Column for the Input File In Case File Is Shifted.
 !        Allow for Shift of Up to 3 Columns
-      LOCB(1) = 0
-      IF (RUNST(1) /= ' ') THEN
-         LOCB(1) = 1
-      ELSE IF (RUNST(2) /= ' ') THEN
-         LOCB(1) = 2
-      ELSE IF (RUNST(3) /= ' ') THEN
-         LOCB(1) = 3
-      ELSE IF (RUNST(4) /= ' ') THEN
-         LOCB(1) = 4
-      ELSE
-         LOCB(1) = 1
-      END IF
-      LOCE(1) = LOCB(1) + 1
-      LOCB(2) = LOCB(1) + 3
-      LOCE(2) = LOCB(1) + 10
-   END IF
+      locb(1) = 0
+      if (runst(1) /= ' ') then
+         locb(1) = 1
+      else if (runst(2) /= ' ') then
+         locb(1) = 2
+      else if (runst(3) /= ' ') then
+         locb(1) = 3
+      else if (runst(4) /= ' ') then
+         locb(1) = 4
+      else
+         locb(1) = 1
+      end if
+      loce(1) = locb(1) + 1
+      locb(2) = locb(1) + 3
+      loce(2) = locb(1) + 10
+   end if
 
-   IFC = 2
+   ifc = 2
 
 !     Check RUNST1 (full input record string) for Blank Line
-   IF (LEN_TRIM(RUNST1) > 0) THEN
-      BLINE = .FALSE.
-   ELSE
-      RETURN
-   END IF
+   if (len_trim(runst1) > 0) then
+      bline = .false.
+   else
+      return
+   end if
 
 !     Loop through the Data Fields
-   DO I = LOCB(1)+12, ISTRG
+   do i = locb(1)+12, istrg
 
-      IF (.NOT.INFLD .and. RUNST(I)=='"') THEN
+      if (.not.infld .and. runst(i)=='"') then
 !           Location is the Beginning of a Field using "'s
 !           Set Mark of not Blank Line
-         BLINE = .FALSE.
+         bline = .false.
 !           Set Mark of in a Field
-         INFLD = .TRUE.
+         infld = .true.
 !           Set Mark of in a Quote Field
-         INQUOTE = .TRUE.
+         inquote = .true.
 !           Increment the Field Counter
-         IFC = IFC + 1
+         ifc = ifc + 1
 !           Check for number of fields > IFMAX parameter
-         IF (IFC > IFMAX) THEN
+         if (ifc > ifmax) then
 !              WRITE Error Message: Too many fields specified
-            WRITE(DUMMY,'(I8)') IFMAX
-            CALL ERRHDL(PPATH,MODNAM,'E','109',DUMMY)
-            EXIT
-         END IF
+            write(dummy,'(I8)') ifmax
+            call errhdl(ppath,modnam,'E','109',dummy)
+            exit
+         end if
 !           Record the Location of Beginning of the Field
-         LOCB(IFC) = I + 1
-      ELSE IF (.NOT.INFLD .and. RUNST(I)/=' ') THEN
+         locb(ifc) = i + 1
+      else if (.not.infld .and. runst(i)/=' ') then
 !           Location is the Beginning of a Field
 !           Set Mark of not Blank Line
-         BLINE = .FALSE.
+         bline = .false.
 !           Set Mark of in a Field
-         INFLD = .TRUE.
+         infld = .true.
 !           Increment the Field Counter
-         IFC = IFC + 1
+         ifc = ifc + 1
 !           Check for number of fields > IFMAX parameter
-         IF (IFC > IFMAX) THEN
+         if (ifc > ifmax) then
 !              WRITE Error Message: Too many fields specified
-            WRITE(DUMMY,'(I8)') IFMAX
-            CALL ERRHDL(PPATH,MODNAM,'E','109',DUMMY)
-            EXIT
-         END IF
+            write(dummy,'(I8)') ifmax
+            call errhdl(ppath,modnam,'E','109',dummy)
+            exit
+         end if
 !           Record the Location of Beginning of the Field
-         LOCB(IFC) = I
-      ELSE IF (INQUOTE .and. RUNST(I)=='"') THEN
+         locb(ifc) = i
+      else if (inquote .and. runst(i)=='"') then
 !           Location is the End of a Field
 !           Set Mark of Not In a field
-         INFLD = .FALSE.
+         infld = .false.
 !           Set Mark of Not in a Quote Field
-         INQUOTE = .FALSE.
+         inquote = .false.
 !           Record the Location of Ending of the Field
-         LOCE(IFC) = I - 1
-      ELSE IF (.NOT.INQUOTE .and. INFLD .and. RUNST(I)==' ') THEN
+         loce(ifc) = i - 1
+      else if (.not.inquote .and. infld .and. runst(i)==' ') then
 !           Location is the End of a Field
 !           Set Mark of Not In a field
-         INFLD = .FALSE.
+         infld = .false.
 !           Record the Location of Ending of the Field
-         LOCE(IFC) = I - 1
-      END IF
+         loce(ifc) = i - 1
+      end if
 
 !        Check for End of Input String
 !        (Length of ISTRG is Set as a PARAMETER in MAIN1)
-      IF (INFLD .and. I==ISTRG) THEN
-         LOCE(IFC) = ISTRG
-      END IF
+      if (infld .and. i==istrg) then
+         loce(ifc) = istrg
+      end if
 
-   END DO
+   end do
 
-   RETURN
-END SUBROUTINE DEFINE
+   return
+end subroutine define
 
-SUBROUTINE GETFLD
+subroutine getfld
 !***********************************************************************
 !                 GETFLD Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -524,40 +524,40 @@ SUBROUTINE GETFLD
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J
-   CHARACTER :: WRTFRM*20
+   integer :: i, j
+   character :: wrtfrm*20
 
 !     Variable Initializations
-   MODNAM = 'GETFLD'
-   FIELD(:) = ''
+   modnam = 'GETFLD'
+   field(:) = ''
 
 !     Setup WRITE format for internal write to FIELD
 !     based on the ILEN_FLD PARAMETER (set in MAIN1)
-   WRITE(WRTFRM,9004) ILEN_FLD
-9004 FORMAT('(',I4.4,'(A1:))')
+   write(wrtfrm,9004) ilen_fld
+9004 format('(',i4.4,'(A1:))')
 
-   DO I = 1, IFC
+   do i = 1, ifc
 ! ---    Skip processing of fields if IFC > IFMAX
-      IF (I > IFMAX) EXIT
-      IF (LOCE(I)-LOCB(I) <= (ILEN_FLD - 1) ) THEN
+      if (i > ifmax) exit
+      if (loce(i)-locb(i) <= (ilen_fld - 1) ) then
 !           Field Satisfies Limit of ILEN_FLD Characters (set in MAIN1)
-         WRITE(FIELD(I),WRTFRM) (RUNST(J),J=LOCB(I),LOCE(I))
-      ELSE
+         write(field(i),wrtfrm) (runst(j),j=locb(i),loce(i))
+      else
 !           Field Exceeds ILEN_FLD Character Limit
 !           Truncate Field at ILEN_FLD Characters
-         WRITE(FIELD(I),WRTFRM) (RUNST(J),J=LOCB(I),&
-         &LOCB(I)+ILEN_FLD-1)
-      END IF
-   END DO
+         write(field(i),wrtfrm) (runst(j),j=locb(i),&
+         &locb(i)+ilen_fld-1)
+      end if
+   end do
 
-   RETURN
-END SUBROUTINE GETFLD
+   return
+end subroutine getfld
 
-SUBROUTINE EXPATH(INPFLD,PATHWY,IPN,NOPATH)
+subroutine expath(inpfld,pathwy,ipn,nopath)
 !***********************************************************************
 !                 EXPATH Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -576,44 +576,44 @@ SUBROUTINE EXPATH(INPFLD,PATHWY,IPN,NOPATH)
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I
-   CHARACTER (LEN=2), INTENT(IN) :: INPFLD
-   CHARACTER (LEN=2), INTENT(IN), DIMENSION(:) :: PATHWY
-   INTEGER, INTENT(IN) :: IPN
-   LOGICAL, INTENT(OUT) :: NOPATH
+   integer :: i
+   character (len=2), intent(in) :: inpfld
+   character (len=2), intent(in), dimension(:) :: pathwy
+   integer, intent(in) :: ipn
+   logical, intent(out) :: nopath
 
 !     Variable Initializations
-   NOPATH = .TRUE.
-   MODNAM = 'EXPATH'
+   nopath = .true.
+   modnam = 'EXPATH'
 
 !     Begin The Processing
-   IF (INPFLD /= '  ') THEN
+   if (inpfld /= '  ') then
 !        Check the Read-in Pathway
-      PATH = INPFLD
-      DO I = 1, IPN
+      path = inpfld
+      do i = 1, ipn
 !           In Case of Match Set NOPATH to FALSE and Set Path Number, IPNUM
-         IF (INPFLD == PATHWY(I)) THEN
-            NOPATH = .FALSE.
-            IPNUM = I
+         if (inpfld == pathwy(i)) then
+            nopath = .false.
+            ipnum = i
 !              Exit to END
-            GO TO 999
-         END IF
-      END DO
-   ELSE
+            go to 999
+         end if
+      end do
+   else
 !        In Case of Blank Field Set Pathway to Previous Pathway
-      NOPATH = .FALSE.
-      PATH   = PPATH
-      IPNUM  = IPPNUM
-   END IF
+      nopath = .false.
+      path   = ppath
+      ipnum  = ippnum
+   end if
 
-999 RETURN
-END SUBROUTINE EXPATH
+999 return
+end subroutine expath
 
-SUBROUTINE EXKEY(INPFLD,NOKEY)
+subroutine exkey(inpfld,nokey)
 !***********************************************************************
 !                 EXKEY Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -633,46 +633,46 @@ SUBROUTINE EXKEY(INPFLD,NOKEY)
 !
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I
-   CHARACTER (LEN=8) :: INPFLD
-   LOGICAL :: NOKEY
+   integer :: i
+   character (len=8) :: inpfld
+   logical :: nokey
 
 !     Variable Initializations
-   NOKEY  = .TRUE.
-   MODNAM = 'EXKEY'
+   nokey  = .true.
+   modnam = 'EXKEY'
 
 !     Begin The Processing
-   IF (INPFLD /= '        ') THEN
+   if (inpfld /= '        ') then
 !        Check the Read-in Keyword
-      KEYWRD = INPFLD
-      DO I = 1, IKN
+      keywrd = inpfld
+      do i = 1, ikn
 !           In Case of Match Set NOKEY to FALSE
-         IF (INPFLD == KEYWD(I)) THEN
-            NOKEY = .FALSE.
+         if (inpfld == keywd(i)) then
+            nokey = .false.
 !              Exit to END
-            GO TO 999
-         END IF
-      END DO
-   ELSE IF (PKEYWD /= 'STARTING') THEN
+            go to 999
+         end if
+      end do
+   else if (pkeywd /= 'STARTING') then
 !        In Case of Blank Field, Keyword Is Set to Previous Keyword
 !        unless previous keyword is 'STARTING'
-      NOKEY  = .FALSE.
-      KEYWRD = PKEYWD
-   ELSE
+      nokey  = .false.
+      keywrd = pkeywd
+   else
 !        No Keyword is available; keyword field is blank and the
 !        previous keyword is 'STARTING'
-      NOKEY  = .TRUE.
-      KEYWRD = 'blank   '
-   END IF
+      nokey  = .true.
+      keywrd = 'blank   '
+   end if
 
-999 RETURN
-END SUBROUTINE EXKEY
+999 return
+end subroutine exkey
 
-SUBROUTINE SETORD
+subroutine setord
 !***********************************************************************
 !                 SETORD Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -694,53 +694,53 @@ SUBROUTINE SETORD
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'SETORD'
+   modnam = 'SETORD'
 
-   IF (KEYWRD == 'STARTING') THEN
-      IF (ISTART .or. .NOT.IFINIS) THEN
+   if (keywrd == 'STARTING') then
+      if (istart .or. .not.ifinis) then
 !           WRITE Error Message: Starting Out of Order
-         CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
-      ELSE IF (IPNUM /= IPPNUM+1) THEN
+         call errhdl(ppath,modnam,'E','119',path)
+      else if (ipnum /= ippnum+1) then
 !           WRITE Error Message: Pathway Out of Order
-         CALL ERRHDL(PPATH,MODNAM,'E','120',PATH)
-      END IF
+         call errhdl(ppath,modnam,'E','120',path)
+      end if
 !        Set Starting Indicator
-      ISTART = .TRUE.
+      istart = .true.
 !        Set Finished Indicator
-      IFINIS = .FALSE.
-   ELSE IF (KEYWRD == 'FINISHED') THEN
-      IF (IFINIS .or. .NOT.ISTART) THEN
+      ifinis = .false.
+   else if (keywrd == 'FINISHED') then
+      if (ifinis .or. .not.istart) then
 !           WRITE Error Message: Finished Out of Order
-         CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
-      ELSE IF (ISTART .and. PATH/=PPATH) THEN
+         call errhdl(ppath,modnam,'E','119',path)
+      else if (istart .and. path/=ppath) then
 !           WRITE Warning Message: Pathway Out of Order
-         CALL ERRHDL(PPATH,MODNAM,'E','120',PATH)
-      END IF
+         call errhdl(ppath,modnam,'E','120',path)
+      end if
 !        Reset Starting Indicator
-      ISTART = .FALSE.
+      istart = .false.
 !        Set Finished Indicator
-      IFINIS = .TRUE.
-   ELSE IF (.NOT.ISTART .or. IFINIS) THEN
+      ifinis = .true.
+   else if (.not.istart .or. ifinis) then
 !        WRITE Error Message: Starting or Finished Out of Order
-      CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
-   ELSE IF (ISTART .and. PATH/=PPATH) THEN
+      call errhdl(ppath,modnam,'E','119',path)
+   else if (istart .and. path/=ppath) then
 !        WRITE Warning Message: Pathway Out of Order
-      CALL ERRHDL(PPATH,MODNAM,'E','120',PATH)
-   END IF
+      call errhdl(ppath,modnam,'E','120',path)
+   end if
 
 !     Save Current Path and Path Number as Previous Path and Number
-   PPATH = PATH
-   IPPNUM = IPNUM
+   ppath = path
+   ippnum = ipnum
 
-   RETURN
-END SUBROUTINE SETORD
+   return
+end subroutine setord
 
-SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
+subroutine stonum(strvar,length,fnum,imuti)
 !***********************************************************************
 !                 STONUM Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -759,110 +759,110 @@ SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
 !***********************************************************************
 !
 !     Variable Declarations
-   IMPLICIT NONE
+   implicit none
 
-   CHARACTER :: STRVAR*(*), CHK, MODNAM*6, NUMS*10
-   INTEGER :: I, IMUTI, LENGTH
-   REAL    :: FNUM, CNUM, FDEC, FDC1, HEAD
-   LOGICAL :: MEND, IN, NMARK, PMARK, DMARK, MMARK, EMARK
+   character :: strvar*(*), chk, modnam*6, nums*10
+   integer :: i, imuti, length
+   real    :: fnum, cnum, fdec, fdc1, head
+   logical :: mend, in, nmark, pmark, dmark, mmark, emark
 
 !     Variable Initialization
-   MODNAM = 'STONUM'
-   NUMS = '0123456789'
-   I = 1
-   MEND = .FALSE.
-   IN = .FALSE.
-   NMARK = .FALSE.
-   PMARK = .FALSE.
-   DMARK = .FALSE.
-   MMARK = .FALSE.
-   EMARK = .FALSE.
-   CNUM  = 0.0
-   HEAD  = 0.0
-   IMUTI = 1
-   FDEC  = 1.
+   modnam = 'STONUM'
+   nums = '0123456789'
+   i = 1
+   mend = .false.
+   in = .false.
+   nmark = .false.
+   pmark = .false.
+   dmark = .false.
+   mmark = .false.
+   emark = .false.
+   cnum  = 0.0
+   head  = 0.0
+   imuti = 1
+   fdec  = 1.
 
 !     Beginning the Processing
-   DO WHILE (.NOT.MEND .and. I<=LENGTH)
-      CHK = STRVAR(I:I)
-      IF (CHK /= ' ') THEN
-         IN = .TRUE.
-         IF (CHK>='0' .and. CHK<='9') THEN
+   do while (.not.mend .and. i<=length)
+      chk = strvar(i:i)
+      if (chk /= ' ') then
+         in = .true.
+         if (chk>='0' .and. chk<='9') then
 !              CHK is a Number, Assign a Value
-            IF (.NOT. DMARK) THEN
-               CNUM = CNUM*10.+FLOAT(INDEX(NUMS,CHK)-1)
-            ELSE
-               FDEC = FDEC/10.
-               FDC1 = FDEC*FLOAT(INDEX(NUMS,CHK)-1)
-               CNUM = CNUM+FDC1
-            END IF
-         ELSE
+            if (.not. dmark) then
+               cnum = cnum*10.+float(index(nums,chk)-1)
+            else
+               fdec = fdec/10.
+               fdc1 = fdec*float(index(nums,chk)-1)
+               cnum = cnum+fdc1
+            end if
+         else
 !              Handle The E-Type Real Number
-            IF (DMARK .and. .NOT.EMARK .and. CHK=='E') THEN
-               EMARK = .TRUE.
-               IF (.NOT.NMARK) THEN
-                  HEAD = CNUM
-               ELSE
-                  HEAD = -CNUM
-               END IF
-               DMARK = .FALSE.
-               NMARK = .FALSE.
-               CNUM = 0.0
-            ELSE IF (.NOT.PMARK .and. CHK=='+') THEN
+            if (dmark .and. .not.emark .and. chk=='E') then
+               emark = .true.
+               if (.not.nmark) then
+                  head = cnum
+               else
+                  head = -cnum
+               end if
+               dmark = .false.
+               nmark = .false.
+               cnum = 0.0
+            else if (.not.pmark .and. chk=='+') then
 !                 Set Positive Indicator
-               PMARK = .TRUE.
-            ELSE IF (.NOT.NMARK .and. CHK=='-') THEN
+               pmark = .true.
+            else if (.not.nmark .and. chk=='-') then
 !                 Set Negative Indicator
-               NMARK = .TRUE.
-            ELSE IF (.NOT.DMARK .and. CHK=='.') THEN
+               nmark = .true.
+            else if (.not.dmark .and. chk=='.') then
 !                 Set Decimal Indicator
-               DMARK = .TRUE.
-            ELSE IF (.NOT.MMARK .and. CHK=='*' .and.&
-            &.NOT.NMARK) THEN
+               dmark = .true.
+            else if (.not.mmark .and. chk=='*' .and.&
+            &.not.nmark) then
 !                 Set Repeat Number
-               MMARK = .TRUE.
-               IMUTI = NINT(CNUM)
-               CNUM = 0.0
-            ELSE
+               mmark = .true.
+               imuti = nint(cnum)
+               cnum = 0.0
+            else
 !                 Error Occurs, Set Switch and Exit Out Of The Subroutine
-               GO TO 9999
-            END IF
-         END IF
-      ELSE IF (IN .and. CHK==' ') THEN
-         MEND = .TRUE.
-      END IF
-      I = I + 1
-   END DO
+               go to 9999
+            end if
+         end if
+      else if (in .and. chk==' ') then
+         mend = .true.
+      end if
+      i = i + 1
+   end do
 
-   FNUM = CNUM
+   fnum = cnum
 
 !     In Case Of Negative Field, Value Set to Negative
-   IF (NMARK) THEN
-      FNUM = -FNUM
-   END IF
+   if (nmark) then
+      fnum = -fnum
+   end if
 
 !     In Case of E-Format, Check for Exponents Out of Range
-   IF (EMARK .and. ABS(FNUM) <= 30.) THEN
-      FNUM = HEAD*10.0**(FNUM)
-   ELSE IF (EMARK .and. ABS(FNUM) > 30.) THEN
-      IF (FNUM < 0.0) THEN
-         FNUM = 0.0
-      ELSE IF (FNUM > 0.0) THEN
-         FNUM = HEAD * 10.**30.
-      END IF
-      GO TO 9999
-   END IF
+   if (emark .and. abs(fnum) <= 30.) then
+      fnum = head*10.0**(fnum)
+   else if (emark .and. abs(fnum) > 30.) then
+      if (fnum < 0.0) then
+         fnum = 0.0
+      else if (fnum > 0.0) then
+         fnum = head * 10.**30.
+      end if
+      go to 9999
+   end if
 
-   GO TO 1000
+   go to 1000
 
 !     Set Error Switch for Illegal Numerical Field (WRITE Message and Handle
 !     Error in Calling Routine)
-9999 IMUTI = -1
+9999 imuti = -1
 
-1000 RETURN
-END SUBROUTINE STONUM
+1000 return
+end subroutine stonum
 
-SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
+subroutine stodbl(strvar,len,fnum,imuti)
 !***********************************************************************
 !                 Subroutine STODBL
 !
@@ -885,112 +885,112 @@ SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
 !***********************************************************************
 !
 !     Variable Declarations
-   IMPLICIT NONE
+   implicit none
 
-   CHARACTER :: STRVAR*(*), CHK, MODNAM*6, NUMS*10
-   INTEGER :: IMUTI, LEN, I
-   DOUBLE PRECISION :: FDEC, FDC1, HEAD
-   DOUBLE PRECISION :: FNUM, CNUM
-   LOGICAL :: MEND, IN, NMARK, PMARK, DMARK, MMARK, EMARK
+   character :: strvar*(*), chk, modnam*6, nums*10
+   integer :: imuti, len, i
+   double precision :: fdec, fdc1, head
+   double precision :: fnum, cnum
+   logical :: mend, in, nmark, pmark, dmark, mmark, emark
 
 !     Variable Initialization
-   MODNAM = 'STODBL'
-   NUMS = '0123456789'
-   I = 1
-   MEND = .FALSE.
-   IN = .FALSE.
-   NMARK = .FALSE.
-   PMARK = .FALSE.
-   DMARK = .FALSE.
-   MMARK = .FALSE.
-   EMARK = .FALSE.
-   CNUM = 0.0D0
-   HEAD = 0.0D0
-   FDEC = 1.0D0
-   IMUTI = 1
+   modnam = 'STODBL'
+   nums = '0123456789'
+   i = 1
+   mend = .false.
+   in = .false.
+   nmark = .false.
+   pmark = .false.
+   dmark = .false.
+   mmark = .false.
+   emark = .false.
+   cnum = 0.0d0
+   head = 0.0d0
+   fdec = 1.0d0
+   imuti = 1
 
 !     Beginning the Processing
-   DO WHILE (.NOT.MEND .and. I<=LEN)
-      CHK = STRVAR(I:I)
-      IF (CHK /= ' ') THEN
-         IN = .TRUE.
-         IF (CHK>='0' .and. CHK<='9') THEN
+   do while (.not.mend .and. i<=len)
+      chk = strvar(i:i)
+      if (chk /= ' ') then
+         in = .true.
+         if (chk>='0' .and. chk<='9') then
 !              CHK is a Number, Assign a Value
-            IF (.NOT. DMARK) THEN
-               CNUM = CNUM*10.0D0+DBLE(INDEX(NUMS,CHK)-1)
-            ELSE
-               FDEC = FDEC/10.0D0
-               FDC1 = FDEC*DBLE(INDEX(NUMS,CHK)-1)
-               CNUM = CNUM+FDC1
-            END IF
-         ELSE
+            if (.not. dmark) then
+               cnum = cnum*10.0d0+dble(index(nums,chk)-1)
+            else
+               fdec = fdec/10.0d0
+               fdc1 = fdec*dble(index(nums,chk)-1)
+               cnum = cnum+fdc1
+            end if
+         else
 !              Handle The E-Type (or D-Type) Real Number
-            IF ((DMARK .and. .NOT.EMARK .and. CHK=='E') .or.&
-            &(DMARK .and. .NOT.EMARK .and. CHK=='D')) THEN
-               EMARK = .TRUE.
-               IF (.NOT.NMARK) THEN
-                  HEAD = CNUM
-               ELSE
-                  HEAD = -CNUM
-               END IF
-               DMARK = .FALSE.
-               NMARK = .FALSE.
-               CNUM = 0.0D0
-            ELSE IF (.NOT.PMARK .and. CHK=='+') THEN
+            if ((dmark .and. .not.emark .and. chk=='E') .or.&
+            &(dmark .and. .not.emark .and. chk=='D')) then
+               emark = .true.
+               if (.not.nmark) then
+                  head = cnum
+               else
+                  head = -cnum
+               end if
+               dmark = .false.
+               nmark = .false.
+               cnum = 0.0d0
+            else if (.not.pmark .and. chk=='+') then
 !                 Set Positive Indicator
-               PMARK = .TRUE.
-            ELSE IF (.NOT.NMARK .and. CHK=='-') THEN
+               pmark = .true.
+            else if (.not.nmark .and. chk=='-') then
 !                 Set Negative Indicator
-               NMARK = .TRUE.
-            ELSE IF (.NOT.DMARK .and. CHK=='.') THEN
+               nmark = .true.
+            else if (.not.dmark .and. chk=='.') then
 !                 Set Decimal Indicator
-               DMARK = .TRUE.
-            ELSE IF (.NOT.MMARK .and. CHK=='*' .and.&
-            &.NOT.NMARK) THEN
+               dmark = .true.
+            else if (.not.mmark .and. chk=='*' .and.&
+            &.not.nmark) then
 !                 Set Repeat Indicator
-               MMARK = .TRUE.
-               IMUTI = IDNINT(CNUM)
-               CNUM = 0.0D0
-            ELSE
+               mmark = .true.
+               imuti = idnint(cnum)
+               cnum = 0.0d0
+            else
 !                 Error Occurs, Set Switch and Exit Out Of The Subroutine
-               GO TO 9999
-            END IF
-         END IF
-      ELSE IF (IN .and. CHK==' ') THEN
-         MEND = .TRUE.
-      END IF
-      I = I + 1
-   END DO
+               go to 9999
+            end if
+         end if
+      else if (in .and. chk==' ') then
+         mend = .true.
+      end if
+      i = i + 1
+   end do
 
-   FNUM = CNUM
+   fnum = cnum
 
 !     In Case Of Negative Field, Value set to Negative
-   IF (NMARK) THEN
-      FNUM = -FNUM
-   END IF
+   if (nmark) then
+      fnum = -fnum
+   end if
 
 !     In Case of *E* Format, Check for Exponents Out of Range
-   IF (EMARK .and. DABS(FNUM) <= 30.0D0) THEN
-      FNUM = HEAD*10.0D0**(FNUM)
-   ELSE IF (EMARK .and. DABS(FNUM) > 30.0D0) THEN
-      IF (FNUM < 0.0D0) THEN
-         FNUM = 0.0D0
-      ELSE IF (FNUM > 0.0D0) THEN
-         FNUM = HEAD * 10.0D0**30.0D0
-      END IF
-      GO TO 9999
-   END IF
+   if (emark .and. dabs(fnum) <= 30.0d0) then
+      fnum = head*10.0d0**(fnum)
+   else if (emark .and. dabs(fnum) > 30.0d0) then
+      if (fnum < 0.0d0) then
+         fnum = 0.0d0
+      else if (fnum > 0.0d0) then
+         fnum = head * 10.0d0**30.0d0
+      end if
+      go to 9999
+   end if
 
-   GO TO 1000
+   go to 1000
 
 !     Set Error Switch for Illegal Numerical Field (WRITE Message and Handle
 !     Error in Calling Routine)
-9999 IMUTI = -1
+9999 imuti = -1
 
-1000 RETURN
-END SUBROUTINE STODBL
+1000 return
+end subroutine stodbl
 
-SUBROUTINE SINDEX(ARRIN,IDIM,ELEM,INDEXS,FOUND)
+subroutine sindex(arrin,idim,elem,indexs,found)
 !***********************************************************************
 !                 SINDEX Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1008,32 +1008,32 @@ SUBROUTINE SINDEX(ARRIN,IDIM,ELEM,INDEXS,FOUND)
 !***********************************************************************
 !
 !     Variable Declarations
-   IMPLICIT NONE
+   implicit none
 
-   INTEGER :: I, IDIM, INDEXS
-   CHARACTER (LEN=*) :: ARRIN(IDIM), ELEM
-   CHARACTER :: MODNAM*6
-   LOGICAL :: FOUND
+   integer :: i, idim, indexs
+   character (len=*) :: arrin(idim), elem
+   character :: modnam*6
+   logical :: found
 
 !     Variable Initializations
-   MODNAM = 'SINDEX'
-   FOUND = .FALSE.
-   I = 1
-   INDEXS = 0
+   modnam = 'SINDEX'
+   found = .false.
+   i = 1
+   indexs = 0
 
-   DO WHILE (.NOT.FOUND .and. I<=IDIM)
-      IF (ELEM == ARRIN(I)) THEN
-         FOUND = .TRUE.
-         INDEXS = I
-      END IF
-      I = I + 1
-   END DO
+   do while (.not.found .and. i<=idim)
+      if (elem == arrin(i)) then
+         found = .true.
+         indexs = i
+      end if
+      i = i + 1
+   end do
 
-   RETURN
-END SUBROUTINE SINDEX
+   return
+end subroutine sindex
 
-SUBROUTINE FSPLIT(PATHIN,KEYIN,INPFLD,LENGTH,DELIM,LFLAG,&
-&BEGFLD,ENDFLD)
+subroutine fsplit(pathin,keyin,inpfld,length,delim,lflag,&
+&begfld,endfld)
 !***********************************************************************
 !                 FSPLIT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1059,70 +1059,70 @@ SUBROUTINE FSPLIT(PATHIN,KEYIN,INPFLD,LENGTH,DELIM,LFLAG,&
 !***********************************************************************
 
 !     Variable Declarations
-   IMPLICIT NONE
+   implicit none
 
-   INTEGER :: I, LENGTH, IDELM
-   CHARACTER :: CHK, INPFLD*(*), BEGFLD*(*), ENDFLD*(*),&
-   &DELIM*1, MODNAM*12, PATHIN*2, KEYIN*8
-   LOGICAL :: LFLAG, MEND, IN
+   integer :: i, length, idelm
+   character :: chk, inpfld*(*), begfld*(*), endfld*(*),&
+   &delim*1, modnam*12, pathin*2, keyin*8
+   logical :: lflag, mend, in
 
 !     Variable Initialization
-   MODNAM = 'FSPLIT'
-   I = LENGTH
-   IDELM = LENGTH
-   BEGFLD = ' '
-   ENDFLD = ' '
-   MEND  = .FALSE.
-   IN    = .FALSE.
-   LFLAG = .FALSE.
+   modnam = 'FSPLIT'
+   i = length
+   idelm = length
+   begfld = ' '
+   endfld = ' '
+   mend  = .false.
+   in    = .false.
+   lflag = .false.
 
 !     Begin the Processing
-   DO WHILE (.NOT.MEND .and. I>=1)
-      CHK = INPFLD(I:I)
-      IF (CHK /= ' ') THEN
-         IN = .TRUE.
+   do while (.not.mend .and. i>=1)
+      chk = inpfld(i:i)
+      if (chk /= ' ') then
+         in = .true.
 !           Check for the Group Delimiter
-         IF (.NOT.LFLAG .and. CHK==DELIM) THEN
-            LFLAG = .TRUE.
-            IDELM = I
-            ENDFLD = INPFLD(I+1:LENGTH)
-            IF (I == 1) THEN
+         if (.not.lflag .and. chk==delim) then
+            lflag = .true.
+            idelm = i
+            endfld = inpfld(i+1:length)
+            if (i == 1) then
 !                 Write Error Message for Invalid Range Parameter
-               CALL ERRHDL(PATHIN,MODNAM,'E','203',KEYIN)
-               GO TO 999
-            END IF
-         ELSE IF (LFLAG .and. CHK==DELIM) THEN
+               call errhdl(pathin,modnam,'E','203',keyin)
+               go to 999
+            end if
+         else if (lflag .and. chk==delim) then
 !              WRITE Error Message  ! More Than One Delimiter in a Field
-            CALL ERRHDL(PATHIN,MODNAM,'E','217',KEYIN)
-         END IF
-      ELSE IF (IN .and. CHK==' ') THEN
-         MEND = .TRUE.
-         IF (LFLAG) THEN
-            BEGFLD = INPFLD(1:IDELM-1)
-         ELSE
-            BEGFLD = INPFLD
-         END IF
-      END IF
-      I = I - 1
-   END DO
+            call errhdl(pathin,modnam,'E','217',keyin)
+         end if
+      else if (in .and. chk==' ') then
+         mend = .true.
+         if (lflag) then
+            begfld = inpfld(1:idelm-1)
+         else
+            begfld = inpfld
+         end if
+      end if
+      i = i - 1
+   end do
 
-   IF (.NOT. MEND) THEN
-      IF (LFLAG) THEN
-         BEGFLD = INPFLD(1:IDELM-1)
-      ELSE
-         BEGFLD = INPFLD
-      END IF
-   END IF
+   if (.not. mend) then
+      if (lflag) then
+         begfld = inpfld(1:idelm-1)
+      else
+         begfld = inpfld
+      end if
+   end if
 
 !     In Case Of No Delimiter, Set ENDFLD = BEGFLD
-   IF (.NOT. LFLAG) THEN
-      ENDFLD = BEGFLD
-   END IF
+   if (.not. lflag) then
+      endfld = begfld
+   end if
 
-999 RETURN
-END SUBROUTINE FSPLIT
+999 return
+end subroutine fsplit
 
-SUBROUTINE VARINI
+subroutine varini
 !***********************************************************************
 !                 VARINI Module of the AMS/EPA Regulatory Model - AERMOD
 ! ----------------------------------------------------------------------
@@ -1170,135 +1170,135 @@ SUBROUTINE VARINI
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE BUOYANT_LINE
+   use main1
+   use buoyant_line
 
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   implicit none
+   character :: modnam*12
 
 ! Unused: INTEGER :: I, J, K
 
 !     Variable Initializations
-   MODNAM = 'VARINI'
+   modnam = 'VARINI'
 
 ! --- Initialize double precision constants based on PI
-   PI      = 4.0D0*DATAN(1.0D0)
-   TWOPI   = 2.0D0*PI
-   RTOFPI  = DSQRT(PI)
-   SRT2PI  = DSQRT(TWOPI)
-   RTOF2   = DSQRT(2.0D0)
-   RTPIBY2 = DSQRT(PI/2.0D0)
-   RT2BYPI = DSQRT(2.0D0/PI)
-   DTORAD  = PI/180.0D0
-   RTODEG  = 180.0D0/PI
+   pi      = 4.0d0*datan(1.0d0)
+   twopi   = 2.0d0*pi
+   rtofpi  = dsqrt(pi)
+   srt2pi  = dsqrt(twopi)
+   rtof2   = dsqrt(2.0d0)
+   rtpiby2 = dsqrt(pi/2.0d0)
+   rt2bypi = dsqrt(2.0d0/pi)
+   dtorad  = pi/180.0d0
+   rtodeg  = 180.0d0/pi
 
 ! --- Initialize constant for 1/3 used as exponent
-   THIRD = 1.0D0/3.0D0
-   TWOTHIRDS = 2.0D0/3.0D0
+   third = 1.0d0/3.0d0
+   twothirds = 2.0d0/3.0d0
 
 ! --- Initialize counters to zero
-   IPNUM  = 0
-   IPPNUM = 0
-   NDUMP  = 0
+   ipnum  = 0
+   ippnum = 0
+   ndump  = 0
 ! --- Initialize counter for old met data warning message
-   IMETMSG = 0
+   imetmsg = 0
 
 ! --- Initialize pollutant ID, POLLUT*8
-   POLLUT = 'undefine'
+   pollut = 'undefine'
 
 !     Initialize the Logical Control Variables
-   ISTART = .FALSE.
-   IFINIS = .TRUE.
-   ERRLST = .FALSE.
-   DFAULT = .FALSE.
-   CONC   = .FALSE.
-   DEPOS  = .FALSE.
+   istart = .false.
+   ifinis = .true.
+   errlst = .false.
+   dfault = .false.
+   conc   = .false.
+   depos  = .false.
 !     Add logicals to output just wet or just dry deposition fluxes
-   DDEP   = .FALSE.
-   WDEP   = .FALSE.
-   RURAL  = .FALSE.
-   URBAN  = .FALSE.
-   GRDRIS = .FALSE.
-   NOSTD  = .FALSE.
-   NOBID  = .FALSE.
-   NOWARN = .FALSE.
-   MSGPRO = .TRUE.
-   CLMPRO = .TRUE.
-   PERIOD = .FALSE.
-   ANNUAL = .FALSE.
-   MONTH  = .FALSE.
-   FLAT   = .FALSE.
-   ELEV   = .TRUE.
-   FLGPOL = .FALSE.
-   RUN    = .FALSE.
-   EVENTS = .FALSE.
-   RSTSAV = .FALSE.
-   RSTINP = .FALSE.
-   MULTYR = .FALSE.
-   DAYTAB = .FALSE.
-   MXFILE = .FALSE.
-   PPFILE = .FALSE.
-   PLFILE = .FALSE.
-   SUMMFILE = .FALSE.
-   ARCFT  = .FALSE.                                                 !  Added for Aircraft; UNC-IE
+   ddep   = .false.
+   wdep   = .false.
+   rural  = .false.
+   urban  = .false.
+   grdris = .false.
+   nostd  = .false.
+   nobid  = .false.
+   nowarn = .false.
+   msgpro = .true.
+   clmpro = .true.
+   period = .false.
+   annual = .false.
+   month  = .false.
+   flat   = .false.
+   elev   = .true.
+   flgpol = .false.
+   run    = .false.
+   events = .false.
+   rstsav = .false.
+   rstinp = .false.
+   multyr = .false.
+   daytab = .false.
+   mxfile = .false.
+   ppfile = .false.
+   plfile = .false.
+   summfile = .false.
+   arcft  = .false.                                                 !  Added for Aircraft; UNC-IE
 !     Add TXFILE Variable for the TOXXFILE Option, 9/29/92
-   TXFILE = .FALSE.
-   RKFILE = .FALSE.
-   ANPOST = .FALSE.
-   ANPLOT = .FALSE.
-   RECERR = .FALSE.
-   PFLERR = .FALSE.
-   IF (ALLOCATED(L_MorningTrans)) L_MorningTrans(:) = .FALSE.
-   L_UrbanTransition = .TRUE.
-   ENDMON = .FALSE.
-   CALCS  = .FALSE.
-   SURFAC = .FALSE.
-   DEBUG  = .FALSE.
-   METEORDBG = .FALSE.
-   AREADBG  = .FALSE.
-   PRIMEDBG = .FALSE.
-   OLMDEBUG = .FALSE.
-   ARM2DEBUG= .FALSE.
-   PVMRMDBG = .FALSE.
-   GRSMDEBUG = .FALSE.
-   DEPOSDBG = .FALSE.
+   txfile = .false.
+   rkfile = .false.
+   anpost = .false.
+   anplot = .false.
+   recerr = .false.
+   pflerr = .false.
+   if (allocated(L_MorningTrans)) L_MorningTrans(:) = .false.
+   L_UrbanTransition = .true.
+   endmon = .false.
+   calcs  = .false.
+   surfac = .false.
+   debug  = .false.
+   meteordbg = .false.
+   areadbg  = .false.
+   primedbg = .false.
+   olmdebug = .false.
+   arm2debug= .false.
+   pvmrmdbg = .false.
+   grsmdebug = .false.
+   deposdbg = .false.
 !CRT  D063 Platform Downwash Debug
-   PLATFMDBG  = .FALSE.
-   WAKE   = .FALSE.
-   ECHO   = .TRUE.
-   SCREEN = .FALSE.
-   HOURLY = .FALSE.
-   ARCFTDEBUG = .FALSE.                                              ! Added for Aircraft; UNC-IE
-   L_BLHOURLY = .FALSE.                                              ! Multiple_BuoyLines_D41_Wood
+   platfmdbg  = .false.
+   wake   = .false.
+   echo   = .true.
+   screen = .false.
+   hourly = .false.
+   arcftdebug = .false.                                              ! Added for Aircraft; UNC-IE
+   l_blhourly = .false.                                              ! Multiple_BuoyLines_D41_Wood
 
 !     JAT 05/08/20 ADDED FROM 19191
 !     Initialized AWMADWDBG to false
-   AWMADWDBG=.FALSE.
+   awmadwdbg=.false.
 
 !     Add logicals to identify use wet and dry removal information
-   LDPART  = .FALSE.
-   LWPART  = .FALSE.
-   LWGAS   = .FALSE.
-   LDGAS   = .FALSE.
+   ldpart  = .false.
+   lwpart  = .false.
+   lwgas   = .false.
+   ldgas   = .false.
 !     Add logicals to control use of Wet & Dry plume depletion
 !     Initialize dry and wet depletion to .F. for now, but if
 !     deposition algorithms are used then depletion will be assumed
-   DDPLETE   = .FALSE.
-   WDPLETE   = .FALSE.
-   ARDPLETE  = .FALSE.
+   ddplete   = .false.
+   wdplete   = .false.
+   ardplete  = .false.
 !     Initialize logicals for user-specified depletion options
-   WETDPLT   = .FALSE.
-   DRYDPLT   = .FALSE.
+   wetdplt   = .false.
+   drydplt   = .false.
 !     Initialize logicals for user-specified override of depletion
-   NOWETDPLT = .FALSE.
-   NODRYDPLT = .FALSE.
+   nowetdplt = .false.
+   nodrydplt = .false.
 
 ! --- Initialize EVENT processing output options
-   SOCONT = .FALSE.
-   DETAIL = .FALSE.
+   socont = .false.
+   detail = .false.
 
 ! --- Initialize logical for use of vector mean wind speeds, L_VECTORWS
-   L_VECTORWS = .FALSE.
+   l_vectorws = .false.
 
 ! --- Initialize logical for use of ALPHA option for low-wind-speed
 !     modifications.
@@ -1308,28 +1308,28 @@ SUBROUTINE VARINI
 !CRT      LOW_WIND = .FALSE.
 
 !CRT  4/12/2022 Initialize logical variables for LOW_WIND options
-   L_UserSVmin = .FALSE.
-   L_UserWSmin = .FALSE.
-   L_UserFRANmax = .FALSE.
-   L_UserSWmin = .FALSE.
-   L_UserBigT = .FALSE.
-   L_UserFRANmin = .FALSE.
-   L_PBal = .FALSE.
+   L_UserSVmin = .false.
+   L_UserWSmin = .false.
+   L_UserFRANmax = .false.
+   L_UserSWmin = .false.
+   L_UserBigT = .false.
+   L_UserFRANmin = .false.
+   L_PBal = .false.
 
 !     Added for TTRM; AECOM
 !     Initialize logicals for ozone response rate (TTRM)
-   RUNTTRM = .FALSE.
-   TTRMDBG = .FALSE.
-   RUNTTRM2 = .FALSE.
-   TTRM2DBG = .FALSE.
+   runttrm = .false.
+   ttrmdbg = .false.
+   runttrm2 = .false.
+   ttrm2dbg = .false.
 !     End TTRM insert, Nov. 2021
 ! Added for HBP & HBPDEBUG; Jan. 2023
 !     Initialize logicals for running HBP and HBP debug file
-   HBPLUME = .FALSE.
-   HBPDBG = .FALSE.
+   hbplume = .false.
+   hbpdbg = .false.
 ! End insert for HBP & HBPDBG
-   URBDBUG = .FALSE.
-   BLPDBUG = .FALSE.
+   urbdbug = .false.
+   blpdbug = .false.
 ! --- Initialize logicals to indicate various met data options used,
 !     including the 'ADJ_U*' and 'BULKRN' options in AERMET, and the
 !     use of MMIF-generated met inputs directly from MMIF or processed
@@ -1339,94 +1339,94 @@ SUBROUTINE VARINI
 !     data based on profile heights exceeding 999m, absent information
 !     in the SURFACE file header record.
 !     8/9/2023, CRT - D176 COARE BETA Check (L_COARE)
-   L_AdjUstar     = .FALSE.
-   L_BULKRN       = .FALSE.
-   L_MMIF_Data    = .FALSE.
-   L_MMIF_Profile = .FALSE.
-   L_TurbData     = .FALSE.
-   L_COARE        = .FALSE.
+   L_AdjUstar     = .false.
+   l_bulkrn       = .false.
+   L_MMIF_Data    = .false.
+   L_MMIF_Profile = .false.
+   L_TurbData     = .false.
+   l_coare        = .false.
 
 !     Add logical to control user-specified deposition velocity for gases
-   LUSERVD  = .FALSE.
-   SCIM     = .FALSE.
-   SCIMOUT  = .FALSE.
-   SCIMHR   = .FALSE.
-   SEASONHR = .FALSE.
-   BETA     = .FALSE.
+   luservd  = .false.
+   scim     = .false.
+   scimout  = .false.
+   scimhr   = .false.
+   seasonhr = .false.
+   beta     = .false.
 
 ! --- Initialize logicals for processing design values based on ranked
 !     values averaged across years, 24-hr PM2.5, 1-hr NO2 and 1-hr SO2
-   PM25AVE = .FALSE.
-   NO2AVE  = .FALSE.
-   SO2AVE  = .FALSE.
-   L_NO_PM25AVE = .FALSE.
-   L_NO_NO2AVE  = .FALSE.
-   L_NO_SO2AVE  = .FALSE.
+   pm25ave = .false.
+   no2ave  = .false.
+   so2ave  = .false.
+   l_no_pm25ave = .false.
+   l_no_no2ave  = .false.
+   l_no_so2ave  = .false.
 
 ! --- Initialize logicals for background ozone, NOx and concentrations
-   L_O3File(:)   = .FALSE.
-   L_O3Hourly    = .FALSE.
-   L_O3VAL(:)    = .FALSE.
-   L_O3VALUES(:) = .FALSE.
-   L_BACKGRND    = .FALSE.
-   L_BGHourly    = .FALSE.
-   L_BGFile(:)   = .FALSE.
-   L_BGValues(:) = .FALSE.
-   L_NOXVALUE(:) = .FALSE.
-   L_NOX_VALS(:) = .FALSE.
-   L_NOxHourly   = .FALSE.
-   L_NOxFile(:)  = .FALSE.
-   L_CalcNOXFromNO2 = .FALSE.
+   L_O3File(:)   = .false.
+   L_O3Hourly    = .false.
+   l_o3val(:)    = .false.
+   l_o3values(:) = .false.
+   l_backgrnd    = .false.
+   L_BGHourly    = .false.
+   L_BGFile(:)   = .false.
+   L_BGValues(:) = .false.
+   l_noxvalue(:) = .false.
+   l_nox_vals(:) = .false.
+   L_NOxHourly   = .false.
+   L_NOxFile(:)  = .false.
+   L_CalcNOXFromNO2 = .false.
 
 ! --- Initialize array index counter for temporally-varying background
 !     concentrations (other than hourly file) to zero
-   IBKGRD(:) = 0
+   ibkgrd(:) = 0
 ! --- Initialize logical for day-of-week options
-   L_DayOfWeekOpts  = .FALSE.
+   L_DayOfWeekOpts  = .false.
 
 !     Add logical for MAXDAILY output file option
-   MXDAILY  = .FALSE.
-   L_MAXDCONT = .FALSE.
-   MXDAILY_BYYR  = .FALSE.
+   mxdaily  = .false.
+   l_maxdcont = .false.
+   mxdaily_byyr  = .false.
 !     Initialize variable to skip messages during MAXDCONT processing
-   L_SkipMessages = .FALSE.
+   L_SkipMessages = .false.
 
 ! --- Set logical flag for whether "New" met data are being used, based
 !     on version 11059 or later of AERMET, using the wind data source
 !     and adjustment flags introduced with version 11059 ('NAD' or 'ADJ')
-   L_NAD_ADJ_Flags = .FALSE.
+   L_NAD_ADJ_Flags = .false.
 ! --- Set logical flag for use of "old" met data, i.e., v06341 of AERMET,
 !     which is allowed for now, with a warning message
-   L_OldMetVer = .FALSE.
+   L_OldMetVer = .false.
 
 !     Non-DFAULT option for optimized area source, formerly controlled by
 !     TOXICS option, which is now obsolete
-   FASTAREA  = .FALSE.
+   fastarea  = .false.
 !     Non-DFAULT option for optimized meander for POINT and VOLUME sources based
 !     on effective sigma-y; also activates the FASTAREA option
-   FASTALL   = .FALSE.
+   fastall   = .false.
 !     Logical flag for optimized meander for POINT and VOLUME sources based
 !     on effective sigma-y under non-DFAULT FASTALL option
-   L_EFFSIGY = .FALSE.
+   l_effsigy = .false.
 
 ! --- Logical flag to indicate whether non-DFAULT options are specified
 !     when DFAULT is not specified. This is used to set the option label
 !     in the file headers.
-   L_NonDFAULT = .FALSE.
+   L_NonDFAULT = .false.
 
 ! --- Initialize options for checking date sequence in meteorological data
-   NOCHKD     = .FALSE.
-   L_WARNCHKD = .FALSE.
+   nochkd     = .false.
+   l_warnchkd = .false.
 
 ! --- Initialize logical variables used to flag EVENT or MAXDCONT inconsistency
 !     warnings in order to issue a warning to the default output unit at the
 !     end of the run.
-   L_EVENT_OrigConc_Warning    = .FALSE.
-   L_MAXDCONT_OrigConc_Warning = .FALSE.
+   L_EVENT_OrigConc_Warning    = .false.
+   L_MAXDCONT_OrigConc_Warning = .false.
 
 !     JAT 1/29/21 D070 TURBULENCE OPTIONS
 !     INITIALIZE TURBOPTS TO FALSE
-   TURBOPTS=.FALSE.
+   turbopts=.false.
 !*----
 !*#
 
@@ -1436,429 +1436,429 @@ SUBROUTINE VARINI
 !     default = 'FIX' for fixed-format outputs; 'EXP' indicates user specified
 !     use of exponential-format outputs.  This variable applies to
 !     MAXIFILE, PLOTFILE, POSTFILE (plot-formatted), RANKFILE, and SEASONHR outputs
-   IF (FILE_FORMAT /= 'EXP') THEN
-      FILE_FORMAT = 'FIX'
-   END IF
+   if (file_format /= 'EXP') then
+      file_format = 'FIX'
+   end if
 
 ! --- Initialize REELEV character variable to 'METERS' for default elevation units
-   REELEV = 'METERS'
+   reelev = 'METERS'
 ! --- Initialize SOELEV character variable to 'METERS' for default elevation units
-   SOELEV = 'METERS'
+   soelev = 'METERS'
 
 !     Initialize Decay Coefficient to 0.0 (Urban SO2 Default Set in POLLUT)
-   DECOEF = 0.0D0
+   decoef = 0.0d0
 
 !     Initialize variables to hold two previous hours of precipitation
-   PREC1  = 0.0D0
-   PREC2  = 0.0D0
-   IF (ALLOCATED(APREC1)) APREC1 = 0.0D0
-   IF (ALLOCATED(APREC2)) APREC2 = 0.0D0
+   prec1  = 0.0d0
+   prec2  = 0.0d0
+   if (allocated(aprec1)) aprec1 = 0.0d0
+   if (allocated(aprec2)) aprec2 = 0.0d0
 ! --- Initialize variable for total precipitation
-   TOTAL_PRECIP = 0.0D0
+   total_precip = 0.0d0
 
 !     Initialize variables used to calculate canopy stomatal resistance, Rs
-   Wold = 180.0D0
-   f2   = Wold/200.0D0
+   Wold = 180.0d0
+   f2   = Wold/200.0d0
 
 !     Initialize defaults for Fo, FSEAS2, and FSEAS5 (may be input by user
 !     on the CO GASDEPDF card).
-   Fo     = 0.0D0
-   FSEAS2 = 0.5D0
-   FSEAS5 = 0.25D0
+   Fo     = 0.0d0
+   fseas2 = 0.5d0
+   fseas5 = 0.25d0
 
 !     Initialize the Source Arrays
-   ISRC = 0
-   AXS(:) = 0.0D0
-   AYS(:) = 0.0D0
-   AZS(:) = 0.0D0
-   AQS(:) = 0.0D0
-   AHS(:) = 0.0D0
-   ADS(:) = 0.0D0
-   AVS(:) = 0.0D0
-   ATS(:) = 0.0D0
-   ASYINI(:) = 0.0D0
-   ASZINI(:) = 0.0D0
+   isrc = 0
+   axs(:) = 0.0d0
+   ays(:) = 0.0d0
+   azs(:) = 0.0d0
+   aqs(:) = 0.0d0
+   ahs(:) = 0.0d0
+   ads(:) = 0.0d0
+   avs(:) = 0.0d0
+   ats(:) = 0.0d0
+   asyini(:) = 0.0d0
+   aszini(:) = 0.0d0
 !**  Added for Aircraft Plume Rise; UNC-IE
-   AMFUEL(:)  = 0.0D0
-   ATHRUST(:) = 0.0D0
-   AVAA(:)    = 0.0D0
-   AAFR(:)    = 0.0D0
-   ABYPR(:)   = 0.0D0
-   ARPWR(:)   = 0.0D0
-   ASRCANGLE(:) = 0.0D0
+   amfuel(:)  = 0.0d0
+   athrust(:) = 0.0d0
+   avaa(:)    = 0.0d0
+   aafr(:)    = 0.0d0
+   abypr(:)   = 0.0d0
+   arpwr(:)   = 0.0d0
+   asrcangle(:) = 0.0d0
 !**  End Aircraft Plume Rise insert; April 2023
-   IF (ALLOCATED(AXINIT)) AXINIT(:) = 0.0D0
-   IF (ALLOCATED(AYINIT)) AYINIT(:) = 0.0D0
-   IF (ALLOCATED(AANGLE)) AANGLE(:) = 0.0D0
-   IF (ALLOCATED(RADIUS)) RADIUS(:) = 0.0D0
-   IF (ALLOCATED(AXCNTR)) AXCNTR(:) = 0.0D0
-   IF (ALLOCATED(AYCNTR)) AYCNTR(:) = 0.0D0
-   IF (ALLOCATED(AALPHA)) AALPHA(:) = 0.0D0
-   IF (ALLOCATED(APDEFF)) APDEFF(:) = 0.0D0
-   IF (ALLOCATED(AVOLUM)) AVOLUM(:) = 0.0D0
-   SOPCRD(:) = 'N'
-   SOGAS(:)  = 'N'
-   URBSRC(:) = 'N'
-   AFTSRC(:) = 'N'                                                  !  Added for Aircraft; UNC-IE
-   SRCID(:)  = ' '
-   SRCTYP(:) = ' '
-   QFLAG(:)  = ' '
-   INPD(:)   = 0
-   IF (ALLOCATED(NVERTS)) NVERTS(:) = 0
-   IELUNT(:) = 0
-   EVAL(:) = .FALSE.
-   EVLFIL(:) = ' '
-   L_FLATSRC(:) = .FALSE.
-   L_HRLYSIG(:) = .FALSE.
-   GRP_BACK(:)  = .FALSE.
-   L_WakeMessage(:) = .FALSE.
+   if (allocated(axinit)) axinit(:) = 0.0d0
+   if (allocated(ayinit)) ayinit(:) = 0.0d0
+   if (allocated(aangle)) aangle(:) = 0.0d0
+   if (allocated(radius)) radius(:) = 0.0d0
+   if (allocated(axcntr)) axcntr(:) = 0.0d0
+   if (allocated(aycntr)) aycntr(:) = 0.0d0
+   if (allocated(aalpha)) aalpha(:) = 0.0d0
+   if (allocated(apdeff)) apdeff(:) = 0.0d0
+   if (allocated(avolum)) avolum(:) = 0.0d0
+   sopcrd(:) = 'N'
+   sogas(:)  = 'N'
+   urbsrc(:) = 'N'
+   aftsrc(:) = 'N'                                                  !  Added for Aircraft; UNC-IE
+   srcid(:)  = ' '
+   srctyp(:) = ' '
+   qflag(:)  = ' '
+   inpd(:)   = 0
+   if (allocated(nverts)) nverts(:) = 0
+   ielunt(:) = 0
+   eval(:) = .false.
+   evlfil(:) = ' '
+   l_flatsrc(:) = .false.
+   l_hrlysig(:) = .false.
+   grp_back(:)  = .false.
+   L_WakeMessage(:) = .false.
 
 ! --- 1/20/2012, CRT: D063 Intialize platform parameters
-   OSPLAT(:) = .FALSE.  ! Source subject to platform downwash
-   PLATELV(:) = 0.0D0   ! Platform base elev. above ocean surface
-   PLATHB(:) = 0.0D0    ! Plaform building height above platform base
-   PLATWB(:) = 0.0D0    ! Platform building width
+   osplat(:) = .false.  ! Source subject to platform downwash
+   platelv(:) = 0.0d0   ! Platform base elev. above ocean surface
+   plathb(:) = 0.0d0    ! Plaform building height above platform base
+   platwb(:) = 0.0d0    ! Platform building width
 
 ! --- Initialize BFLAG for BACKGRND concentrations
-   BFLAG(:) = ' '
+   bflag(:) = ' '
 
 !     Add gas dry deposition parameters
-   IF (ALLOCATED(PDIFF))      PDIFF(:)  = 0.0D0
-   IF (ALLOCATED(PDIFFW))     PDIFFW(:) = 0.0D0
-   IF (ALLOCATED(ALPHAS))     ALPHAS(:) = 0.0D0
-   IF (ALLOCATED(REACT))      REACT(:)  = 0.0D0
-   IF (ALLOCATED(HENRY))      HENRY(:)  = 0.0D0
-   IF (ALLOCATED(RCLI))       RCLI(:)   = 0.0D0
-   IF (ALLOCATED(L_METHOD2))  L_METHOD2(:) = .FALSE.
+   if (allocated(pdiff))      pdiff(:)  = 0.0d0
+   if (allocated(pdiffw))     pdiffw(:) = 0.0d0
+   if (allocated(alphas))     alphas(:) = 0.0d0
+   if (allocated(react))      react(:)  = 0.0d0
+   if (allocated(henry))      henry(:)  = 0.0d0
+   if (allocated(rcli))       rcli(:)   = 0.0d0
+   if (allocated(l_method2))  l_method2(:) = .false.
 
-   IF (ALLOCATED(ADSBH))   ADSBH(:,:)   = 0.0D0
-   IF (ALLOCATED(ADSBW))   ADSBW(:,:)   = 0.0D0
-   IF (ALLOCATED(ADSBL))   ADSBL(:,:)   = 0.0D0
-   IF (ALLOCATED(ADSXADJ)) ADSXADJ(:,:) = 0.0D0
-   IF (ALLOCATED(ADSYADJ)) ADSYADJ(:,:) = 0.0D0
-   IF (ALLOCATED(AXVERT))  AXVERT(:,:)  = 0.0D0
-   IF (ALLOCATED(AYVERT))  AYVERT(:,:)  = 0.0D0
+   if (allocated(adsbh))   adsbh(:,:)   = 0.0d0
+   if (allocated(adsbw))   adsbw(:,:)   = 0.0d0
+   if (allocated(adsbl))   adsbl(:,:)   = 0.0d0
+   if (allocated(adsxadj)) adsxadj(:,:) = 0.0d0
+   if (allocated(adsyadj)) adsyadj(:,:) = 0.0d0
+   if (allocated(axvert))  axvert(:,:)  = 0.0d0
+   if (allocated(ayvert))  ayvert(:,:)  = 0.0d0
 
-   IF (ALLOCATED(QFACT))   QFACT(:,:)   = 0.0D0
+   if (allocated(qfact))   qfact(:,:)   = 0.0d0
 
 ! --- Initialize NUMO3Sects, NUMBGSects and NUMNOxSects to 1
-   IF (.NOT. L_O3Sector) NUMO3Sects = 1
-   IF (.NOT. L_BGSector) NUMBGSects = 1
-   IF (.NOT. L_NOxSector) NUMNOxSects = 1
+   if (.not. L_O3Sector) NUMO3Sects = 1
+   if (.not. L_BGSector) NUMBGSects = 1
+   if (.not. L_NOxSector) NUMNOxSects = 1
 ! --- Initialize counter for number of missing BGHrVal substitutions
    NSubBGHOUR = 0
 
 ! --- Initialize O3VARY and NOXVARY arrays across all sectors to -99.0 to facilitate QA
 !     checks on completeness of the inputs
-   IF (ALLOCATED(O3VARY))  O3VARY(:,:) = -99.0D0
-   IF (ALLOCATED(NOXVARY))  NOXVARY(:,:) = -99.0D0
+   if (allocated(o3vary))  o3vary(:,:) = -99.0d0
+   if (allocated(noxvary))  noxvary(:,:) = -99.0d0
 
-   O3FLAG(:) = ''
-   BFLAG(:)  = ''
-   NOXFLAG(:) = ''
-   IO3MAX(:) = 0
-   IBGMAX(:) = 0
-   INOXMAX(:) = 0
+   o3flag(:) = ''
+   bflag(:)  = ''
+   noxflag(:) = ''
+   io3max(:) = 0
+   ibgmax(:) = 0
+   inoxmax(:) = 0
 
-   IF (ALLOCATED(BACKGRND)) BACKGRND(:,:) = 0.0D0
-   IF (ALLOCATED(BACKAVE)) BACKAVE(:) = 0.0D0
-   IF (ALLOCATED(IGROUP)) IGROUP(:,:) = 0
-   IF (ALLOCATED(CHI)) CHI(:,:,:) = 0.0D0
-   IF(GRSM)THEN
-      CHI_TTRAVPLM = 0.0D0
-      CHI_TTRAVPAN = 0.0D0
-      CHI_TTRAVAER = 0.0D0
-      CHI_TTRAVPRM = 0.0D0
-      CHI_TTRAVCHM(:,:) = 0.0D0
-      BLDFAC(:,:) = 0.0D0
-      TTRAVCHM(:) = 0.0D0
-      PRMVAL_Src1 = 0.0D0
-   END IF
-   IF (OLM) THEN
-      OLMID(:) = ' '
-      IGRP_OLM(:,:) = 0
-      L_OLMGRP(:) = .FALSE.
-   END IF
-   IF (PVMRM .or. OLM .or. GRSM) THEN
-      ANO2_RATIO(:) = -9.0D0
-      IF (PSDCREDIT) THEN
-         PSDSRCTYP(:)  = '  '
-         L_PSDGRP(:)   = .FALSE.
-         IGRP_PSD(:,:) = 0
-      END IF
-      IF (PVMRM .or. GRSM) THEN
-         PPFACT(:,:)  = 0.0D0
-         HECNTR(:,:)  = 0.0D0
-         HECNTR3(:,:) = 0.0D0
-         UEFFS(:,:)   = 0.0D0
-         UEFF3S(:,:)  = 0.0D0
-         EPSEF(:,:)   = 0.0D0
-         EPSEF3(:,:)  = 0.0D0
-         FOPTS(:,:)   = 0.0D0
-      END IF
-   END IF
+   if (allocated(backgrnd)) backgrnd(:,:) = 0.0d0
+   if (allocated(backave)) backave(:) = 0.0d0
+   if (allocated(igroup)) igroup(:,:) = 0
+   if (allocated(chi)) chi(:,:,:) = 0.0d0
+   if(grsm)then
+      chi_ttravplm = 0.0d0
+      chi_ttravpan = 0.0d0
+      chi_ttravaer = 0.0d0
+      chi_ttravprm = 0.0d0
+      chi_ttravchm(:,:) = 0.0d0
+      bldfac(:,:) = 0.0d0
+      ttravchm(:) = 0.0d0
+      PRMVAL_Src1 = 0.0d0
+   end if
+   if (olm) then
+      olmid(:) = ' '
+      igrp_olm(:,:) = 0
+      l_olmgrp(:) = .false.
+   end if
+   if (pvmrm .or. olm .or. grsm) then
+      ano2_ratio(:) = -9.0d0
+      if (psdcredit) then
+         psdsrctyp(:)  = '  '
+         l_psdgrp(:)   = .false.
+         igrp_psd(:,:) = 0
+      end if
+      if (pvmrm .or. grsm) then
+         ppfact(:,:)  = 0.0d0
+         hecntr(:,:)  = 0.0d0
+         hecntr3(:,:) = 0.0d0
+         ueffs(:,:)   = 0.0d0
+         ueff3s(:,:)  = 0.0d0
+         epsef(:,:)   = 0.0d0
+         epsef3(:,:)  = 0.0d0
+         fopts(:,:)   = 0.0d0
+      end if
+   end if
 
-   IF (PSDCREDIT) THEN
-      PSDID(:) = ' '
-      ABVAL(:,:) = 0.0D0
-      BCVAL(:,:) = 0.0D0
-   END IF
+   if (psdcredit) then
+      psdid(:) = ' '
+      abval(:,:) = 0.0d0
+      bcval(:,:) = 0.0d0
+   end if
 
 ! Added for TTRM; Nov. 2021
-   IF (RUNTTRM) THEN
-      TTRMSRC(:,:) = ' '
-   END IF
+   if (runttrm) then
+      ttrmsrc(:,:) = ' '
+   end if
 ! End of TTRM insert
 
 !     Initialize arrays for deposition; first check if ALLOCATED
-   IF (ALLOCATED(APDIAM))   APDIAM   = 0.0D0
-   IF (ALLOCATED(APHI))     APHI     = 0.0D0
-   IF (ALLOCATED(APDENS))   APDENS   = 0.0D0
-   IF (ALLOCATED(AVGRAV))   AVGRAV   = 0.0D0
-   IF (ALLOCATED(ATSTOP))   ATSTOP   = 0.0D0
-   IF (ALLOCATED(EFRAC))    EFRAC    = 0.0D0
-   IF (ALLOCATED(QPART))    QPART    = 0.0D0
-   IF (ALLOCATED(PDIAM))    PDIAM    = 0.0D0
-   IF (ALLOCATED(PHI))      PHI      = 0.0D0
-   IF (ALLOCATED(PDENS))    PDENS    = 0.0D0
-   IF (ALLOCATED(VGRAV))    VGRAV    = 0.0D0
-   IF (ALLOCATED(TSTOP))    TSTOP    = 0.0D0
-   IF (ALLOCATED(SCHMIDT))  SCHMIDT  = 0.0D0
-   IF (ALLOCATED(VDEP))     VDEP     = 0.0D0
-   IF (ALLOCATED(SCF))      SCF      = 0.0D0
-   IF (ALLOCATED(PSCVRT))   PSCVRT   = 0.0D0
-   IF (ALLOCATED(WASHOUT))  WASHOUT  = 0.0D0
-   IF (ALLOCATED(ECOLL))    ECOLL    = 0.0D0
-   IF (ALLOCATED(finemass)) finemass = 0.0D0
+   if (allocated(apdiam))   apdiam   = 0.0d0
+   if (allocated(aphi))     aphi     = 0.0d0
+   if (allocated(apdens))   apdens   = 0.0d0
+   if (allocated(avgrav))   avgrav   = 0.0d0
+   if (allocated(atstop))   atstop   = 0.0d0
+   if (allocated(efrac))    efrac    = 0.0d0
+   if (allocated(qpart))    qpart    = 0.0d0
+   if (allocated(pdiam))    pdiam    = 0.0d0
+   if (allocated(phi))      phi      = 0.0d0
+   if (allocated(pdens))    pdens    = 0.0d0
+   if (allocated(vgrav))    vgrav    = 0.0d0
+   if (allocated(tstop))    tstop    = 0.0d0
+   if (allocated(schmidt))  schmidt  = 0.0d0
+   if (allocated(vdep))     vdep     = 0.0d0
+   if (allocated(scf))      scf      = 0.0d0
+   if (allocated(pscvrt))   pscvrt   = 0.0d0
+   if (allocated(washout))  washout  = 0.0d0
+   if (allocated(ecoll))    ecoll    = 0.0d0
+   if (allocated(finemass)) finemass = 0.0d0
 
 !     Initialize URBAN arrays
-   IF (ALLOCATED(IURBGRP))   IURBGRP   = 0
-   IF (ALLOCATED(URBID))     URBID     = ' '
-   IF (ALLOCATED(URBNAM))    URBNAM    = ' '
-   IF (ALLOCATED(URBPOP))    URBPOP    = 0.0D0
-   IF (ALLOCATED(URBZ0))     URBZ0     = 0.0D0
-   IF (ALLOCATED(ZIURB))     ZIURB     = 0.0D0
-   IF (ALLOCATED(URBWSTR))   URBWSTR   = 0.0D0
-   IF (ALLOCATED(URBUSTR))   URBUSTR   = 0.0D0
-   IF (ALLOCATED(URBOBULEN)) URBOBULEN = 0.0D0
-   IF (ALLOCATED(GRDSWU))    GRDSWU    = 0.0D0
-   IF (ALLOCATED(GRDSVU))    GRDSVU    = 0.0D0
-   IF (ALLOCATED(GRDTGU))    GRDTGU    = 0.0D0
-   IF (ALLOCATED(GRDPTU))    GRDPTU    = 0.0D0
+   if (allocated(iurbgrp))   iurbgrp   = 0
+   if (allocated(urbid))     urbid     = ' '
+   if (allocated(urbnam))    urbnam    = ' '
+   if (allocated(urbpop))    urbpop    = 0.0d0
+   if (allocated(urbz0))     urbz0     = 0.0d0
+   if (allocated(ziurb))     ziurb     = 0.0d0
+   if (allocated(urbwstr))   urbwstr   = 0.0d0
+   if (allocated(urbustr))   urbustr   = 0.0d0
+   if (allocated(urbobulen)) urbobulen = 0.0d0
+   if (allocated(grdswu))    grdswu    = 0.0d0
+   if (allocated(grdsvu))    grdsvu    = 0.0d0
+   if (allocated(grdtgu))    grdtgu    = 0.0d0
+   if (allocated(grdptu))    grdptu    = 0.0d0
 
 !**  Added for Airport ID for Aircraft Sources; UNC-IE
-   IF (ALLOCATED(AFTID)) AFTID  = ' '
+   if (allocated(aftid)) aftid  = ' '
 !**  End Aircraft Plume Rise insert; April 2023
 
 !     Initialize source depletion factors to unity.
-   DQCORG = 1.0D0
-   WQCORG = 1.0D0
-   IF (ALLOCATED(WQCOR)) WQCOR = 1.0D0
-   IF (ALLOCATED(DQCOR)) DQCOR = 1.0D0
+   dqcorg = 1.0d0
+   wqcorg = 1.0d0
+   if (allocated(wqcor)) wqcor = 1.0d0
+   if (allocated(dqcor)) dqcor = 1.0d0
 
 !     Counters for the Receptor Groups
-   IREC = 0
-   ISTA = .FALSE.
-   IEND = .FALSE.
-   IRXR = 0
-   IRYR = 0
-   IRZE = 0
-   IRZH = 0
-   IRZF = 0
-   NEWID = .TRUE.
+   irec = 0
+   ista = .false.
+   iend = .false.
+   irxr = 0
+   iryr = 0
+   irze = 0
+   irzh = 0
+   irzf = 0
+   newid = .true.
 !     Initialize ITAB, NXTOX, NYTOX Variables for the TOXXFILE Option, 9/29/92
-   ITAB  = -9
-   NXTOX = 0
-   NYTOX = 0
+   itab  = -9
+   nxtox = 0
+   nytox = 0
 
 !     Initialize Variables Associated with the Meteorology Data
-   ISJDAY = 0
-   IEJDAY = 366
-   ISDATE = 0
+   isjday = 0
+   iejday = 366
+   isdate = 0
 !     Initialize End Date as largest valid date for a 4-byte integer.
-   IEDATE = 2147123124
-   ISYR   = 0
-   ISMN   = 0
-   ISDY   = 0
-   ISHR   = 0
-   IEYR   = 9999
-   IEMN   = 99
-   IEDY   = 99
-   IEHR   = 24
-   IPDATE = 0
-   IPHOUR = 0
-   IMONTH = 0
-   IDAY   = 0
-   IHOUR  = 0
-   IYEAR  = 0
-   NUMYRS = 0
-   NREMAIN= 0
-   IHR_NDX= 0
-   IYR_NDX= 0
-   INCRST = 1
-   SFX = 0.0D0
-   SFY = 0.0D0
-   UAX = 0.0D0
-   UAY = 0.0D0
-   ROTANG = 0.0D0
-   O3MISS = .FALSE.
-   O3BACK = -999.0D0
-   O3CONC = -999.0D0
-   NO2Equil = 0.90D0
+   iedate = 2147123124
+   isyr   = 0
+   ismn   = 0
+   isdy   = 0
+   ishr   = 0
+   ieyr   = 9999
+   iemn   = 99
+   iedy   = 99
+   iehr   = 24
+   ipdate = 0
+   iphour = 0
+   imonth = 0
+   iday   = 0
+   ihour  = 0
+   iyear  = 0
+   numyrs = 0
+   nremain= 0
+   ihr_ndx= 0
+   iyr_ndx= 0
+   incrst = 1
+   sfx = 0.0d0
+   sfy = 0.0d0
+   uax = 0.0d0
+   uay = 0.0d0
+   rotang = 0.0d0
+   o3miss = .false.
+   o3back = -999.0d0
+   o3conc = -999.0d0
+   NO2Equil = 0.90d0
 !      NO2Stack = 0.10D0 !D040 remove default NO2Stack value WSP 2/3/23
-   NO2Stack = -9.0D0  ! D040 CRT 4/10/2023 initialize to a negative value outside of acceptable range.
-   IOLM = 0
-   NOXMISS = .FALSE.
-   NOXBACK = -999.0D0
-   NOXBGCONC = -999.0D0
-   ITTRM = 0
+   NO2Stack = -9.0d0  ! D040 CRT 4/10/2023 initialize to a negative value outside of acceptable range.
+   iolm = 0
+   noxmiss = .false.
+   noxback = -999.0d0
+   noxbgconc = -999.0d0
+   ittrm = 0
 
 !     Initialize Met Data Filenames and Formats
-   METINP = ' '
-   PROINP = ' '
-   METFRM = 'FREE'
-   PROFRM = 'FREE'
+   metinp = ' '
+   proinp = ' '
+   metfrm = 'FREE'
+   profrm = 'FREE'
 
 ! --- Initialize EVENT processing arrays
-   IF (EVONLY) THEN
-      AXR(:)    = 0.0D0
-      AYR(:)    = 0.0D0
-      AZELEV(:) = 0.0D0
-      AZHILL(:) = 0.0D0
-      AZFLAG(:) = 0.0D0
-      EVAPER(:) = 0
-      EVDATE(:) = 0
-      EVJDAY(:) = 0
-      IDXEV(:)  = 0
-      EVNAME(:) = ' '
-      EVGRP(:)  = ' '
-      EV_OrigConc(:) = 0.0D0
-      EV_HRQS(:,:) = 0.0D0
-      EV_HRTS(:,:) = 0.0D0
-      EV_HRVS(:,:) = 0.0D0
-      EV_HRSY(:,:) = 0.0D0
-      EV_HRSZ(:,:) = 0.0D0
+   if (evonly) then
+      axr(:)    = 0.0d0
+      ayr(:)    = 0.0d0
+      azelev(:) = 0.0d0
+      azhill(:) = 0.0d0
+      azflag(:) = 0.0d0
+      evaper(:) = 0
+      evdate(:) = 0
+      evjday(:) = 0
+      idxev(:)  = 0
+      evname(:) = ' '
+      evgrp(:)  = ' '
+      EV_OrigConc(:) = 0.0d0
+      ev_hrqs(:,:) = 0.0d0
+      ev_hrts(:,:) = 0.0d0
+      ev_hrvs(:,:) = 0.0d0
+      ev_hrsy(:,:) = 0.0d0
+      ev_hrsz(:,:) = 0.0d0
 !**  Added for Aircraft Plume Rise; UNC-IE
-      EV_HRMFUEL(:,:)  = 0.0D0
-      EV_HRVAA(:,:)    = 0.0D0
-      EV_HRTHRUST(:,:) = 0.0D0
-      EV_HRBYPR(:,:)   = 0.0D0
-      EV_HRAFR(:,:)    = 0.0D0
-      EV_HRRPWR(:,:)   = 0.0D0
-      EV_HRSRCANGLE(:,:)=0.0D0
+      ev_hrmfuel(:,:)  = 0.0d0
+      ev_hrvaa(:,:)    = 0.0d0
+      ev_hrthrust(:,:) = 0.0d0
+      ev_hrbypr(:,:)   = 0.0d0
+      ev_hrafr(:,:)    = 0.0d0
+      ev_hrrpwr(:,:)   = 0.0d0
+      ev_hrsrcangle(:,:)=0.0d0
 !**  End Aircraft Plume Rise insert; April 2023
-   ELSE IF (.NOT. EVONLY) THEN
+   else if (.not. evonly) then
 ! ---    Initialize Receptor arrays
-      AXR(:)    = 0.0D0
-      AYR(:)    = 0.0D0
-      AZELEV(:) = 0.0D0
-      AZHILL(:) = 0.0D0
-      AZFLAG(:) = 0.0D0
-      IF (ALLOCATED(XR_SCS)) XR_SCS(:,:) = 0.0D0                     ! Multiple_BuoyLines_D41_Wood
-      IF (ALLOCATED(YR_SCS)) YR_SCS(:,:) = 0.0D0                     ! Multiple_BuoyLines_D41_Wood
-      IF (ALLOCATED(XR_RCS)) XR_RCS(:) = 0.0D0
-      IF (ALLOCATED(YR_RCS)) YR_RCS(:) = 0.0D0
-      IREF(:)   = 0
-      NETID(:)  = ' '
-      RECTYP(:) = ' '
-      NDXARC(:) = 0
-      XORIG(:)  = 0.0D0
-      YORIG(:)  = 0.0D0
-      NUMXPT(:) = 0
-      NUMYPT(:) = 0
-      NETSTA(:) = 0
-      NETEND(:) = 0
-      NTID(:)   = ' '
-      NTTYP(:)  = ' '
-      XCOORD(:,:) = 0.0D0
-      YCOORD(:,:) = 0.0D0
-      XINT = 0.0D0
-      YINT = 0.0D0
-   END IF
+      axr(:)    = 0.0d0
+      ayr(:)    = 0.0d0
+      azelev(:) = 0.0d0
+      azhill(:) = 0.0d0
+      azflag(:) = 0.0d0
+      if (allocated(xr_scs)) xr_scs(:,:) = 0.0d0                     ! Multiple_BuoyLines_D41_Wood
+      if (allocated(yr_scs)) yr_scs(:,:) = 0.0d0                     ! Multiple_BuoyLines_D41_Wood
+      if (allocated(xr_rcs)) xr_rcs(:) = 0.0d0
+      if (allocated(yr_rcs)) yr_rcs(:) = 0.0d0
+      iref(:)   = 0
+      netid(:)  = ' '
+      rectyp(:) = ' '
+      ndxarc(:) = 0
+      xorig(:)  = 0.0d0
+      yorig(:)  = 0.0d0
+      numxpt(:) = 0
+      numypt(:) = 0
+      netsta(:) = 0
+      netend(:) = 0
+      ntid(:)   = ' '
+      nttyp(:)  = ' '
+      xcoord(:,:) = 0.0d0
+      ycoord(:,:) = 0.0d0
+      xint = 0.0d0
+      yint = 0.0d0
+   end if
 
-   KAVE(:) = 0
+   kave(:) = 0
 
 !     Initialize the Outputs
-   TITLE1 = ' '
-   TITLE2 = ' '
-   IPAGE  = 0
-   IPGSUM = 0
-   NHIVAL = 0
-   NMXVAL = 0
-   THRFRM ='(1X,I3,1X,A8,1X,I8.8,2(1X,F13.5),3(1X,F7.2),1X,F13.5)'
-   PSTFRM ='(3(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,I8.8,2X,A8)'
-   PLTFRM ='(3(1X,F13.5),3(1X,F8.2),3X,A5,2X,A8,2X,A5,5X,A8,2X,I8)'
-   RNKFRM ='(1X,I6,1X,F13.5,1X,I8.8,2(1X,F13.5),3(1X,F7.2),2X,A8)'
-   MXDFRM ='(3(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,I4,2X,I3,2X,I8.8,&
+   title1 = ' '
+   title2 = ' '
+   ipage  = 0
+   ipgsum = 0
+   nhival = 0
+   nmxval = 0
+   thrfrm ='(1X,I3,1X,A8,1X,I8.8,2(1X,F13.5),3(1X,F7.2),1X,F13.5)'
+   pstfrm ='(3(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,I8.8,2X,A8)'
+   pltfrm ='(3(1X,F13.5),3(1X,F8.2),3X,A5,2X,A8,2X,A5,5X,A8,2X,I8)'
+   rnkfrm ='(1X,I6,1X,F13.5,1X,I8.8,2(1X,F13.5),3(1X,F7.2),2X,A8)'
+   mxdfrm ='(3(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,I4,2X,I3,2X,I8.8,&
    &2X,A8)'
-   INHI(:)   = 0
-   IDYTAB(:) = 0
-   MAXAVE(:) = 0
-   IMXVAL(:) = 0
-   ITOXFL(:) = 0
-   ITXUNT(:) = 0
-   IRNKFL(:) = 0
-   IRKVAL(:) = 0
-   IRKUNT(:) = 0
-   TOXTHR(:) = 0.0D0
-   TOXFIL(:) = ' '
-   RNKFIL(:) = ' '
-   IDCONC(:,:) = 0
-   TXCONC(:,:) = 0.0D0
-   NHIAVE(:,:) = 0
-   MAXFLE(:,:) = 0
-   IPSTFL(:,:) = 0
-   IMXUNT(:,:) = 0
-   IPSUNT(:,:) = 0
-   IPSFRM(:,:) = 0
-   THRESH(:,:) = 0.0D0
-   THRFIL(:,:) = ' '
-   PSTFIL(:,:) = ' '
-   IPLTFL(:,:,:) = 0
-   IPLUNT(:,:,:) = 0
-   PLTFIL(:,:,:) = ' '
-   GRPID(:)  = ' '
-   IANPST(:) = 0
-   IANFRM(:) = 0
-   IANPLT(:) = 0
-   IAPUNT(:) = 0
-   IPPUNT(:) = 0
-   ISHUNT(:) = 0
-   ISEAHR(:) = 0
-   ANNPST(:) = ' '
-   ANNPLT(:) = ' '
-   IMXDLY(:) = 0
-   IMDUNT(:) = 0
-   MAXDLY(:) = ' '
-   MAXDCONT(:) = 0
-   IMXDLY_BYYR(:) = 0
-   IMDUNT_BYYR(:) = 0
-   MAXDLY_BYYR(:) = ' '
-   MAXDCONT_FILE(:) = ' '
-   MXD_RANK(:,:) = 0
-   MAXD_THRESH(:) = 0.0D0
+   inhi(:)   = 0
+   idytab(:) = 0
+   maxave(:) = 0
+   imxval(:) = 0
+   itoxfl(:) = 0
+   itxunt(:) = 0
+   irnkfl(:) = 0
+   irkval(:) = 0
+   irkunt(:) = 0
+   toxthr(:) = 0.0d0
+   toxfil(:) = ' '
+   rnkfil(:) = ' '
+   idconc(:,:) = 0
+   txconc(:,:) = 0.0d0
+   nhiave(:,:) = 0
+   maxfle(:,:) = 0
+   ipstfl(:,:) = 0
+   imxunt(:,:) = 0
+   ipsunt(:,:) = 0
+   ipsfrm(:,:) = 0
+   thresh(:,:) = 0.0d0
+   thrfil(:,:) = ' '
+   pstfil(:,:) = ' '
+   ipltfl(:,:,:) = 0
+   iplunt(:,:,:) = 0
+   pltfil(:,:,:) = ' '
+   grpid(:)  = ' '
+   ianpst(:) = 0
+   ianfrm(:) = 0
+   ianplt(:) = 0
+   iapunt(:) = 0
+   ippunt(:) = 0
+   ishunt(:) = 0
+   iseahr(:) = 0
+   annpst(:) = ' '
+   annplt(:) = ' '
+   imxdly(:) = 0
+   imdunt(:) = 0
+   maxdly(:) = ' '
+   maxdcont(:) = 0
+   imxdly_byyr(:) = 0
+   imdunt_byyr(:) = 0
+   maxdly_byyr(:) = ' '
+   maxdcont_file(:) = ' '
+   mxd_rank(:,:) = 0
+   maxd_thresh(:) = 0.0d0
 
 !     Initialize filenames
-   SAVFIL = ' '
-   MSGFIL = ' '
-   EVFILE = ' '
-   SUMFIL = ' '
+   savfil = ' '
+   msgfil = ' '
+   evfile = ' '
+   sumfil = ' '
 
    BKGRND_File(:) = ' '
-   OZONFL(:) = ' '
-   NOXFL(:) = ' '
+   ozonfl(:) = ' '
+   noxfl(:) = ' '
 
 !     Initialize the Number of Error/Warning/Informational Messages, and
 !     The Number of Fatal Errors.
-   IERROR = 0
-   NFATAL = 0
-   NWARN  = 0
+   ierror = 0
+   nfatal = 0
+   nwarn  = 0
 
-   RETURN
-END SUBROUTINE VARINI
+   return
+end subroutine varini
 
 
-SUBROUTINE INCLUD
+subroutine includ
 !***********************************************************************
 !*                INCLUD Module of AERMOD Model
 !*
@@ -1883,201 +1883,201 @@ SUBROUTINE INCLUD
 !***********************************************************************
 
 !*    Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, ITEMPL
-   LOGICAL :: NOPATH, NOKEY
-   CHARACTER :: RDFRM*20
+   integer :: i, itempl
+   logical :: nopath, nokey
+   character :: rdfrm*20
 ! JAT 06/22/21 D065
 ! REMOVE INPFLD AS UNUSED VARIABLE
 !      CHARACTER INPFLD*2, PATHWY(7)*2
-   CHARACTER :: PATHWY(7)*2
-   INTERFACE
-      SUBROUTINE EXPATH(INPFLD,PATHWY,IPN,NOPATH)
-         CHARACTER (LEN=2), INTENT(IN) :: INPFLD
-         CHARACTER (LEN=2), INTENT(IN), DIMENSION(:) :: PATHWY
-         INTEGER, INTENT(IN) :: IPN
-         LOGICAL, INTENT(OUT) :: NOPATH
-      END SUBROUTINE EXPATH
-   END INTERFACE
+   character :: pathwy(7)*2
+   interface
+      subroutine expath(inpfld,pathwy,ipn,nopath)
+         character (len=2), intent(in) :: inpfld
+         character (len=2), intent(in), dimension(:) :: pathwy
+         integer, intent(in) :: ipn
+         logical, intent(out) :: nopath
+      end subroutine expath
+   end interface
 
 !*    Variable Initializations
-   MODNAM = 'INCLUD'
-   EOF = .FALSE.
-   ILINE  = 0
-   ITEMPL = 0
+   modnam = 'INCLUD'
+   eof = .false.
+   iline  = 0
+   itempl = 0
 
 !     Initialize PATHWY array
-   PATHWY(1) = 'CO'
-   PATHWY(2) = 'SO'
-   PATHWY(3) = 'RE'
-   PATHWY(4) = 'ME'
-   PATHWY(5) = 'OU'
-   PATHWY(6) = '**'
-   PATHWY(7) = 'EV'
+   pathwy(1) = 'CO'
+   pathwy(2) = 'SO'
+   pathwy(3) = 'RE'
+   pathwy(4) = 'ME'
+   pathwy(5) = 'OU'
+   pathwy(6) = '**'
+   pathwy(7) = 'EV'
 
 !     Setup READ format and ECHO format for runstream record,
 !     based on the ISTRG PARAMETER (set in MAIN1)
-   WRITE(RDFRM,9100) ISTRG, ISTRG
-9100 FORMAT('(A',I4.4,',T1,',I4.4,'A1)')
+   write(rdfrm,9100) istrg, istrg
+9100 format('(A',i4.4,',T1,',i4.4,'A1)')
 
-   IF (IFC == 3) THEN
+   if (ifc == 3) then
 !        Retrieve Included Filename as Character Substring to Maintain Case
-      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
+      if ((loce(3)-locb(3)) <= (ilen_fld - 1) ) then
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
-         INCFIL = RUNST1(LOCB(3):LOCE(3))
-         OPEN (INCUNT,FILE=INCFIL,ACTION='READ',STATUS='OLD',ERR=99)
-      ELSE
+         incfil = runst1(locb(3):loce(3))
+         open (incunt,file=incfil,action='READ',status='OLD',err=99)
+      else
 !           WRITE Error Message:  INCFIL Field is Too Long
-         WRITE(DUMMY,'(I8)') ILEN_FLD
-         CALL ERRHDL(PATH,MODNAM,'E','291',DUMMY)
-         RETURN
-      END IF
+         write(dummy,'(I8)') ilen_fld
+         call errhdl(path,modnam,'E','291',dummy)
+         return
+      end if
 
-   ELSE IF (IFC > 4) THEN
+   else if (ifc > 4) then
 !        WRITE Error Message           ! Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-   ELSE
+      call errhdl(path,modnam,'E','202',keywrd)
+   else
 !        WRITE Error Message         ! No Parameters Specified
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','200',keywrd)
+   end if
 
-   GO TO 1001
+   go to 1001
 
 !     Write Out Error Message for File OPEN Error
-99 CALL ERRHDL(PATH,MODNAM,'E','500','INCFILE ')
-   RETURN
+99 call errhdl(path,modnam,'E','500','INCFILE ')
+   return
 
-1001 CONTINUE
+1001 continue
 
 
 !     LOOP Through Input Runstream Records
-   DO WHILE (.NOT. EOF)
+   do while (.not. eof)
 
 !        Increment the Line Counter.  It was Initially Set to 1, to Handle
 !        the Code in Subroutine DEFINE
-      ILINE = ILINE + 1
+      iline = iline + 1
 
 !        READ Record to Buffers, as A'num' and 'num'A1, where 'num' = ISTRG
 !        Length of ISTRG is Set in PARAMETER Statement in MAIN1
-      READ (INCUNT,RDFRM,END=999,ERR=888) RUNST1,&
-      &(RUNST(I), I = 1, ISTRG)
+      read (incunt,rdfrm,end=999,err=888) runst1,&
+      &(runst(i), i = 1, istrg)
 
 !        Check for blank input record and cycle
-      IF (LEN_TRIM(RUNST1) == 0) CYCLE
+      if (len_trim(runst1) == 0) cycle
 
 !        Convert Lower Case to Upper Case Letters           ---   CALL LWRUPR
-      CALL LWRUPR
+      call lwrupr
 
 !        If ILINE=1, reset ILINE temporarily to avoid the
 !        check for column shift in subroutine DEFINE
-      IF (ILINE == 1) THEN
-         ILINE  = 2
-         ITEMPL = 1
-      END IF
+      if (iline == 1) then
+         iline  = 2
+         itempl = 1
+      end if
 
 !        Define Fields on Card                              ---   CALL DEFINE
-      CALL DEFINE
+      call define
 
 !        Reset ILINE if needed
-      IF (ITEMPL == 1) THEN
-         ILINE  = 1
-         ITEMPL = 0
-      END IF
+      if (itempl == 1) then
+         iline  = 1
+         itempl = 0
+      end if
 
 !        Get the Contents of the Fields                     ---   CALL GETFLD
-      CALL GETFLD
+      call getfld
 
 !        Check for 'NO ECHO' In First Two Fields
-      IF (FIELD(1) == 'NO' .and. FIELD(2) == 'ECHO') THEN
+      if (field(1) == 'NO' .and. field(2) == 'ECHO') then
 !           Skip record with NO ECHO in INCLUDED file, but leave ECHO "on"
-         CYCLE
-      END IF
+         cycle
+      end if
 
 !        Extract Pathway ID From Field 1                    ---   CALL EXPATH
-      CALL EXPATH(FIELD(1),PATHWY,7,NOPATH)
+      call expath(field(1),pathwy,7,nopath)
 
 !        For Invalid Pathway and Comment Lines Skip to Next Record
-      IF (NOPATH) THEN
+      if (nopath) then
 !           WRITE Error Message    ! Invalid Pathway ID
-         CALL ERRHDL(PPATH,MODNAM,'E','100',PATH)
-         PATH = PPATH
-         CYCLE
-      ELSE IF (PATH == '**') THEN
-         CYCLE
-      END IF
+         call errhdl(ppath,modnam,'E','100',path)
+         path = ppath
+         cycle
+      else if (path == '**') then
+         cycle
+      end if
 
 !        Extract Keyword From Field 2                       ---   CALL EXKEY
-      CALL EXKEY(FIELD(2),NOKEY)
+      call exkey(field(2),nokey)
 
-      IF (NOKEY) THEN
+      if (nokey) then
 !           WRITE Error Message    ! Invalid Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','105',KEYWRD)
-         PKEYWD = KEYWRD
-         CYCLE
-      END IF
+         call errhdl(path,modnam,'E','105',keywrd)
+         pkeywd = keywrd
+         cycle
+      end if
 
 ! ---    Check for Proper Order of Setup Cards              ---   CALL SETORD
 !        Only call SETORD if not STARTING or FINISHED
 !        since these keywords are not allowed in INCLUDED files.
 !        This also allows INCLUD to be used for standard
 !        processing and EVENT processing.
-      IF (KEYWRD /= 'STARTING' .and.&
-      &KEYWRD /= 'FINISHED') CALL SETORD
+      if (keywrd /= 'STARTING' .and.&
+      &keywrd /= 'FINISHED') call setord
 
 !        First Check for Invalid Keywords (STARTING, FINISHED, INCLUDED)
-      IF (KEYWRD == 'STARTING') THEN
+      if (keywrd == 'STARTING') then
 !           Cannot Use the STARTING keyword in the INCLUDED file
-         CALL ERRHDL(PATH,MODNAM,'E','140',KEYWRD)
+         call errhdl(path,modnam,'E','140',keywrd)
 
-      ELSE IF (KEYWRD == 'INCLUDED') THEN
+      else if (keywrd == 'INCLUDED') then
 !           Cannot Recurse the INCLUDED Keyword in the INCLUDED file
 !           Write Error Message: Repeat INCLUDED In Same Pathway
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
+         call errhdl(path,modnam,'E','135',keywrd)
 
-      ELSE IF (KEYWRD == 'FINISHED') THEN
+      else if (keywrd == 'FINISHED') then
 !           Cannot Use the FINISHED Keyword in the INCLUDED File
-         CALL ERRHDL(PATH,MODNAM,'E','140',KEYWRD)
+         call errhdl(path,modnam,'E','140',keywrd)
 
 !        Process Input Card Based on Pathway
-      ELSE IF (PATH == 'SO') THEN
+      else if (path == 'SO') then
 !           Process SOurce Pathway Cards                    ---   CALL SOCARD
-         CALL SOCARD
-      ELSE IF (PATH == 'RE') THEN
+         call socard
+      else if (path == 'RE') then
 !           Process REceptor Pathway Cards                  ---   CALL RECARD
-         CALL RECARD
-      ELSE IF (PATH == 'EV') THEN
+         call recard
+      else if (path == 'EV') then
 !           Process EVent Pathway Cards                     ---   CALL EVCARD
-         CALL EVCARD
+         call evcard
 
-      END IF
+      end if
 
 !        Store the Current Keyword as the Previous Keyword
-      PKEYWD = KEYWRD
+      pkeywd = keywrd
 
 !        Cycle to next record
-      CYCLE
+      cycle
 
-999   EOF = .TRUE.
-      CONTINUE
+999   eof = .true.
+      continue
 
-   END DO
-   EOF = .FALSE.
+   end do
+   eof = .false.
 
-   GO TO 1002
+   go to 1002
 
-888 CONTINUE
+888 continue
 ! --- Error occurred reading the included file, issue error message
-   CALL ERRHDL(PATH,MODNAM,'E','510','INCLUDED')
-   RUNERR = .TRUE.
+   call errhdl(path,modnam,'E','510','INCLUDED')
+   runerr = .true.
 
-1002 CONTINUE
+1002 continue
 
 !     Close the INCLUDED File
-   CLOSE (INCUNT)
+   close (incunt)
 
-   RETURN
-END SUBROUTINE INCLUD
+   return
+end subroutine includ

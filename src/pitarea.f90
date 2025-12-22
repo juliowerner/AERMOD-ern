@@ -1,4 +1,4 @@
-SUBROUTINE AVERTS(XVIN,YVIN,XWD,YWD,NUMV)
+subroutine averts(xvin,yvin,xwd,ywd,numv)
 !***********************************************************************
 !*                AVERTS Module of AERMOD Model
 !*
@@ -19,27 +19,27 @@ SUBROUTINE AVERTS(XVIN,YVIN,XWD,YWD,NUMV)
 !***********************************************************************
 
 !*    Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: NUMV, NSP
+   integer :: numv, nsp
 
-   DOUBLE PRECISION :: XVIN(NVMAX), YVIN(NVMAX)
-   DOUBLE PRECISION :: XWD(NVMAX),  YWD(NVMAX)
+   double precision :: xvin(nvmax), yvin(nvmax)
+   double precision :: xwd(nvmax),  ywd(nvmax)
 
 !*    Variable Initializations
-   MODNAM = 'AVERTS'
+   modnam = 'AVERTS'
 
-   DO NSP = 1, NUMV
-      XWD(NSP) = -(XVIN(NSP)*WDSIN + YVIN(NSP)*WDCOS)
-      YWD(NSP) =   XVIN(NSP)*WDCOS - YVIN(NSP)*WDSIN
-   END DO
+   do nsp = 1, numv
+      xwd(nsp) = -(xvin(nsp)*wdsin + yvin(nsp)*wdcos)
+      ywd(nsp) =   xvin(nsp)*wdcos - yvin(nsp)*wdsin
+   end do
 
-   RETURN
-END SUBROUTINE AVERTS
+   return
+end subroutine averts
 
-SUBROUTINE AREAIN
+subroutine areain
 !***********************************************************************
 !                 AREAIN Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -72,170 +72,170 @@ SUBROUTINE AREAIN
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
    integer :: i
-   INTEGER :: KSIDE, NCP, KSP, KS
-   DOUBLE PRECISION :: UCRIT, UA, UB, VA, VB, VNMIN, VNMAX, WA, VNORM
-   DOUBLE PRECISION :: VAL, DVAL
-   LOGICAL :: QGO
+   integer :: kside, ncp, ksp, ks
+   double precision :: ucrit, ua, ub, va, vb, vnmin, vnmax, wa, vnorm
+   double precision :: val, dval
+   logical :: qgo
 
 !     Variable Initializations
-   MODNAM = 'AREAIN'
+   modnam = 'AREAIN'
 
 !     INITIALIZE VARIABLES FOR INTEGRATION PROCEDURE.
-   UCRIT = 1.01D0
-   VAL   = 0.0D0
-   UVERT = 0.0D0
-   VVERT = 0.0D0
-   KSIDE = 0
+   ucrit = 1.01d0
+   val   = 0.0d0
+   uvert = 0.0d0
+   vvert = 0.0d0
+   kside = 0
 
-   DO ncp = 1, NVERT
-      ua = SPA(ncp,1)
-      ub = SPA(ncp+1,1)
-      va = SPA(ncp,2)
-      vb = SPA(ncp+1,2)
-      IF (ua >= ucrit) THEN
+   do ncp = 1, nvert
+      ua = spa(ncp,1)
+      ub = spa(ncp+1,1)
+      va = spa(ncp,2)
+      vb = spa(ncp+1,2)
+      if (ua >= ucrit) then
          kside = kside + 1
 
-         IF (kside <= NVMAX+1) THEN
+         if (kside <= nvmax+1) then
             uvert(kside) = ua
             vvert(kside) = va
-         ELSE
+         else
 !              Write Error Message:  Number of "sides" exceeds NVMAX
-            CALL ERRHDL(PATH,MODNAM,'E','406',SRCID(ISRC))
-            RUNERR = .TRUE.
-            RETURN
-         END IF
-      END IF
-      IF ((ua >= ucrit .and. ub < ucrit) .or.&
-      &(ua < ucrit .and. ub >= ucrit)) THEN
+            call errhdl(path,modnam,'E','406',srcid(isrc))
+            runerr = .true.
+            return
+         end if
+      end if
+      if ((ua >= ucrit .and. ub < ucrit) .or.&
+      &(ua < ucrit .and. ub >= ucrit)) then
          kside = kside+1
-         IF (kside <= NVMAX+1) THEN
+         if (kside <= nvmax+1) then
             uvert(kside) = ucrit
             vvert(kside) = va+(ucrit-ua)*(vb-va)/(ub-ua)
-         ELSE
+         else
 !              Write Error Message:  Number of "sides" exceeds NVMAX
-            CALL ERRHDL(PATH,MODNAM,'E','406',SRCID(ISRC))
-            RUNERR = .TRUE.
-            RETURN
-         END IF
-      END IF
-   END DO
+            call errhdl(path,modnam,'E','406',srcid(isrc))
+            runerr = .true.
+            return
+         end if
+      end if
+   end do
 
-   if( AREADBG )then
-      if( .NOT. EVONLY )then
+   if( areadbg )then
+      if( .not. evonly )then
 ! ---       Non-EVENT processing
-         write(AREADBUNT,100) KURDAT, SRCID(ISRC), kside
-100      format(/1x,'AREA Debug Sub_AREAIN:   YYMMDDHH = ',I8.8,&
-         &//1x, A12,' kside= ',i3,//&
+         write(areadbunt,100) kurdat, srcid(isrc), kside
+100      format(/1x,'AREA Debug Sub_AREAIN:   YYMMDDHH = ',i8.8,&
+         &//1x, a12,' kside= ',i3,//&
          &'  I          UVERT           VVERT' )
       else
 ! ---      EVENT processing
-         write(AREADBUNT,1001) EVDATE(IEVENT), SRCID(ISRC), kside
-1001     format(/1x,'AREA Debug Sub_AREAIN:   YYMMDDHH = ',I8.8,&
-         &//1x, A12,' kside= ',i3,//&
+         write(areadbunt,1001) evdate(ievent), srcid(isrc), kside
+1001     format(/1x,'AREA Debug Sub_AREAIN:   YYMMDDHH = ',i8.8,&
+         &//1x, a12,' kside= ',i3,//&
          &'  I          UVERT           VVERT' )
       endif
       do i=1,kside
-         write(AREADBUNT,101) i, uvert(i), vvert(i)
+         write(areadbunt,101) i, uvert(i), vvert(i)
 101      format(1x, i2, 2(2x,f15.6))
       enddo
    endif
 
-   QGO = .FALSE.
-   IF (kside > 2) THEN
-      QGO = .TRUE.
-      vnmin=  3.9D0
-      vnmax= -3.9D0
-      DO ncp = 1, kside
+   qgo = .false.
+   if (kside > 2) then
+      qgo = .true.
+      vnmin=  3.9d0
+      vnmax= -3.9d0
+      do ncp = 1, kside
          ua = uvert(ncp)
          va = vvert(ncp)
          call pwidth(ua,va,vnorm,wa)
          vnvert(ncp) = vnorm
          wvert(ncp)  = wa
-         vnmax = MAX(vnorm,vnmax)
-         vnmin = MIN(vnorm,vnmin)
-      END DO
-      IF (vnmin >= 3.9D0 .or. vnmax <= -3.9D0) QGO = .FALSE.
+         vnmax = max(vnorm,vnmax)
+         vnmin = min(vnorm,vnmin)
+      end do
+      if (vnmin >= 3.9d0 .or. vnmax <= -3.9d0) qgo = .false.
 
-      if( AREADBG )then
-         write(AREADBUNT,*)
-         write(AREADBUNT,*) ' I          VNVERT           WVERT'
+      if( areadbg )then
+         write(areadbunt,*)
+         write(areadbunt,*) ' I          VNVERT           WVERT'
          do i=1,kside
-            write(AREADBUNT,101) i,vnvert(i),wvert(i)
+            write(areadbunt,101) i,vnvert(i),wvert(i)
          enddo
-         write(AREADBUNT,*)
-         write(AREADBUNT,102) vnmin, vnmax, qgo
+         write(areadbunt,*)
+         write(areadbunt,102) vnmin, vnmax, qgo
 102      format(' VNMIN= ',f15.6,'; VNMAX= ',f15.6,'; QGO= ',l2/)
       end if
-   END IF
+   end if
 
 !     Integrate Between Vertices u(1),u(2) THEN u(2),u(3); etc.
-   IF (QGO) THEN
+   if (qgo) then
 !        MAKE 1st Point Same as Last
       ksp = kside+1
-      IF (ksp <= NVMAX+1) THEN
+      if (ksp <= nvmax+1) then
          uvert(ksp)  = uvert(1)
          vvert(ksp)  = vvert(1)
          vnvert(ksp) = vnvert(1)
          wvert(ksp)  = wvert(1)
-      ELSE
+      else
 !           Write Error Message:  Number of "sides" exceeds NVMAX
-         CALL ERRHDL(PATH,MODNAM,'E','406',SRCID(ISRC))
-         RUNERR = .TRUE.
-         RETURN
-      END IF
+         call errhdl(path,modnam,'E','406',srcid(isrc))
+         runerr = .true.
+         return
+      end if
       nsegs = 0
-      LSEG = .FALSE.
-      DO ks = 1, kside
-         QGO = .TRUE.
+      lseg = .false.
+      do ks = 1, kside
+         qgo = .true.
          ivert = ks
          ua = uvert(ks)
          ub = uvert(ks+1)
-         dval  = 0.0D0
-         IF (DABS(ua-ub) < 0.01D0) QGO = .FALSE.
-         IF (QGO .and. FASTAREA) THEN
+         dval  = 0.0d0
+         if (dabs(ua-ub) < 0.01d0) qgo = .false.
+         if (qgo .and. fastarea) then
             call pside_tox(ua,ub,dval)
-         ELSE IF (QGO) THEN
+         else if (qgo) then
             call pside(ua,ub,dval)
-         END IF
+         end if
          val  = val + dval
-      END DO
-      IF (nsegs > 0) THEN
-         LSEG = .TRUE.
-         IF (FASTAREA) THEN
+      end do
+      if (nsegs > 0) then
+         lseg = .true.
+         if (fastarea) then
             call pside2_tox(dval)
-         ELSE
+         else
             call pside2(dval)
-         END IF
+         end if
          val  = val + dval
-      END IF
+      end if
 
 !----    Calculate hourly value, HRVAL
 !----    Note that 1/U term is now included in VAL.
 !----    Added 1/(2pi) when calculating meander/pancake plume Wood 5/5/22
-      IF (L_APLUME) THEN
-         HRVAL(ITYP) = DABS(VAL)*QTK*EMIFAC(ITYP)
-      ELSE
-         HRVAL(ITYP) = DABS(VAL)*QTK*EMIFAC(ITYP)*(1.0D0/TWOPI)
-      END IF
-   ELSE
+      if (l_aplume) then
+         hrval(ityp) = dabs(val)*qtk*emifac(ityp)
+      else
+         hrval(ityp) = dabs(val)*qtk*emifac(ityp)*(1.0d0/twopi)
+      end if
+   else
 
-      HRVAL(ITYP)  = 0.0D0
-   END IF
+      hrval(ityp)  = 0.0d0
+   end if
 
-   IF (DEBUG) THEN
+   if (debug) then
 !        Print Out Debugging Information                    ---   CALL DEBOUT
-      CALL DEBOUT
-   END IF
+      call debout
+   end if
 
-   RETURN
-END SUBROUTINE AREAIN
+   return
+end subroutine areain
 
-SUBROUTINE PLUMEF(XARG,POUT)
+subroutine plumef(xarg,pout)
 !***********************************************************************
 !                 PLUMEF Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -276,183 +276,183 @@ SUBROUTINE PLUMEF(XARG,POUT)
 !        CALLED FROM:   TRAPZD
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Declare Local Variables
-   INTEGER :: J
-   DOUBLE PRECISION :: XARG, POUT, PTMP, VAL, VT, VN, ADJ
+   integer :: j
+   double precision :: xarg, pout, ptmp, val, vt, vn, adj
 
 !     Variable Initializations
-   MODNAM = 'PLUMEF'
+   modnam = 'PLUMEF'
 
-   PTMP  = 0.0D0
-   POUT  = 0.0D0
+   ptmp  = 0.0d0
+   pout  = 0.0d0
 
 ! --- Assign XDIST for use in dry depletion (FUNCTION F2INT)
-   XDIST = XARG
+   xdist = xarg
 
 !     Determine Deposition Correction Factors
-   IF (NPD == 0 .and. .NOT.ARDPLETE .and. (LDGAS .or. LWGAS)) THEN
-      CALL PDEPG (XARG)
-   ELSE IF (.NOT.ARDPLETE) THEN
-      DQCORG = 1.0D0
-      WQCORG = 1.0D0
-   END IF
-   IF (.NOT.ARDPLETE .and. (LDPART .or. LWPART)) THEN
-      CALL PDEP (XARG)
-   ELSE IF (.NOT.ARDPLETE .and. NPD > 0) THEN
+   if (npd == 0 .and. .not.ardplete .and. (ldgas .or. lwgas)) then
+      call pdepg (xarg)
+   else if (.not.ardplete) then
+      dqcorg = 1.0d0
+      wqcorg = 1.0d0
+   end if
+   if (.not.ardplete .and. (ldpart .or. lwpart)) then
+      call pdep (xarg)
+   else if (.not.ardplete .and. npd > 0) then
 !        Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
-      DQCOR = 1.0D0
-      WQCOR = 1.0D0
-   ENDIF
+      dqcor = 1.0d0
+      wqcor = 1.0d0
+   endif
 
 !     Define plume centroid height (CENTER) for use in
 !     inhomogeniety calculations
-   CALL CENTROID (XARG)
+   call centroid (xarg)
 
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                              ---   CALL PDF
-   IF( UNSTAB  .and.  (HS < ZI) ) THEN
-      CALL PDF
-   ENDIF
+   if( unstab  .and.  (hs < zi) ) then
+      call pdf
+   endif
 
 !     Determine Effective Plume Height                      ---   CALL HEFF
 !**   Added for Aircraft Plume Rise; UNC-IE
-   IF (AFTSRC(ISRC) == 'Y') THEN
+   if (aftsrc(isrc) == 'Y') then
 !      Find Aircraft Index for This Source
 !       Calculate Buoyancy Flux                             ---   CALL AFLUXES
-      CALL AFLUXES
+      call afluxes
 !        Calculate Distance to Final Rise                   ---   CALL ADELTAH
-      CALL ADELTAH ( XARG )
-      CALL HEFF ( XARG )
-   ELSE
-      CALL HEFF ( XARG )
-   END IF
+      call adeltah ( xarg )
+      call heff ( xarg )
+   else
+      call heff ( xarg )
+   end if
 !**  End Aircraft Plume Rise insert; April 2023
 !     Iterative average through plume rise layer
-   CALL IBLVAL (XARG)
+   call iblval (xarg)
 
 !     Call PDF & HEFF again for final CBL plume heights
-   IF (UNSTAB .and. (HS<ZI) ) THEN
-      CALL PDF
+   if (unstab .and. (hs<zi) ) then
+      call pdf
 !**  Added for Aircraft Plume Rise; UNC-IE
-      IF (AFTSRC(ISRC) == 'Y') THEN
+      if (aftsrc(isrc) == 'Y') then
 !       Find Aircraft Index for This Source
 !       Calculate Buoyancy Flux                             --- CALL AFLUXES
-         CALL AFLUXES
+         call afluxes
 !        Calculate Distance to Final Rise                   --- CALL ADELTAH
-         CALL ADELTAH ( XARG )
-         CALL HEFF ( XARG )
-      ELSE
-         CALL HEFF ( XARG )
-      END IF
+         call adeltah ( xarg )
+         call heff ( xarg )
+      else
+         call heff ( xarg )
+      end if
 !**  End Aircraft Plume Rise insert; April 2023
-   END IF
+   end if
 
 ! --- Determine lateral term, VAL
 !     MODIFIED to NOT compute vn, val for cases with val=1.0, uses LSEG,
 !     a logical variable set in PSIDE2, AREAIN to establish case
-   IF (LSEG) THEN
+   if (lseg) then
 !        Calculate vertical dispersion coefficients, SZ
 !        Lateral dispersion coefficient not needed since VAL = 1.0
-      CALL ADISZ(XARG)
-      VAL = 1.0D0
-   ELSE
+      call adisz(xarg)
+      val = 1.0d0
+   else
 !        Determine width area covered by the plume
-      CALL XWIDTH(XARG,VT)
-      CALL PWIDTH(XARG,VT,VN,VAL)
+      call xwidth(xarg,vt)
+      call pwidth(xarg,vt,vn,val)
 !        Calculate vertical dispersion coefficient, SZ
-      CALL ADISZ(XARG)
-   END IF
+      call adisz(xarg)
+   end if
 
-   IF (NPD == 0) THEN
+   if (npd == 0) then
 !        Perform calculations for gases
 !        Assign plume tilt, HV = 0.0
-      HV = 0.0D0
+      hv = 0.0d0
 
-      ADJ = DQCORG * WQCORG
+      adj = dqcorg * wqcorg
 
-      IF (STABLE .or. (UNSTAB.and.(HS>=ZI))) THEN
+      if (stable .or. (unstab.and.(hs>=zi))) then
 !           Calculate height of the "effective reflecting surface"
 !**  Added for Aircraft Plume Rise; UNC-IE
-         IF (AFTSRC(ISRC) == 'Y') THEN
-            CALL REFL_HT (HE, XARG, SZB, VSIGZ, HSBL)
-         ELSE
+         if (aftsrc(isrc) == 'Y') then
+            call refl_ht (he, xarg, szb, vsigz, hsbl)
+         else
 !**  End Aircraft Plume Rise insert; April 2023
-            CALL REFL_HT (HE, XARG, 0.0D0, VSIGZ, HSBL)
-         END IF
-      ELSEIF ( UNSTAB ) THEN
-         HSBL = 0.0D0
-      ENDIF
+            call refl_ht (he, xarg, 0.0d0, vsigz, hsbl)
+         end if
+      elseif ( unstab ) then
+         hsbl = 0.0d0
+      endif
 
 !        Determine the CRITical Dividing Streamline---   CALL CRITDS
-      CALL CRITDS (HE)
+      call critds (he)
 
 !        Calculate the fraction of plume below
 !        HCRIT, PHEE                               ---   CALL PFRACT
-      CALL PFRACT (HE)
+      call pfract (he)
 
 !        Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-      CALL FTERM
+      call fterm
 
 !        Calculate Concentration
-      CALL AER_ACHI( XARG, ADJ, VDEPG, 0, VAL, POUT )
+      call aer_achi( xarg, adj, vdepg, 0, val, pout )
 
-   ELSE
+   else
 !        Perform calculations for particles, loop through particle sizes
 
-      DO J = 1, NPD
+      do j = 1, npd
 
 !           Calculate Plume Tilt Due to Settling, HV
-         HV = (XARG/US) * VGRAV(J)
+         hv = (xarg/us) * vgrav(j)
 
 !           Adjust Jth contribution by mass fraction and source
 !           depletion
-         ADJ = PHI(J) * DQCOR(J) * WQCOR(J)
+         adj = phi(j) * dqcor(j) * wqcor(j)
 
-         IF (STABLE .or. (UNSTAB.and.(HS>=ZI))) THEN
+         if (stable .or. (unstab.and.(hs>=zi))) then
 !              Calculate height of the "effective reflecting surface"
 !              Calculate Settled Plume Height(s), HESETL
-            HESETL = MAX( 0.0D0, HE - HV )
+            hesetl = max( 0.0d0, he - hv )
 !**  Added for Aircraft Plume Rise; UNC-IE
-            IF (AFTSRC(ISRC) == 'Y') THEN
-               CALL REFL_HT (HESETL, XARG, SZB, VSIGZ, HSBL)
-            ELSE
+            if (aftsrc(isrc) == 'Y') then
+               call refl_ht (hesetl, xarg, szb, vsigz, hsbl)
+            else
 !**  End Aircraft Plume Rise insert; April 2023
-               CALL REFL_HT (HESETL, XARG, 0.0D0, VSIGZ, HSBL)
-            END IF
-         ELSE IF ( UNSTAB ) THEN
+               call refl_ht (hesetl, xarg, 0.0d0, vsigz, hsbl)
+            end if
+         else if ( unstab ) then
 !              Calculate Settled Plume Height(s), HESETL
-            HESETL = MAX( 0.0D0, 0.5D0*(HED1+HED2) - HV )
-            HSBL = 0.0D0
-         END IF
+            hesetl = max( 0.0d0, 0.5d0*(hed1+hed2) - hv )
+            hsbl = 0.0d0
+         end if
 
 !           Determine the CRITical Dividing Streamline---   CALL CRITDS
-         CALL CRITDS (HESETL)
+         call critds (hesetl)
 
 !           Calculate the fraction of plume below
 !           HCRIT, PHEE                               ---   CALL PFRACT
-         CALL PFRACT (HESETL)
+         call pfract (hesetl)
 
 !           Calculate FOPT = f(PHEE)                  ---   CALL FTERM
-         CALL FTERM
+         call fterm
 
 !           Calculate Concentration
-         CALL AER_ACHI( XARG, ADJ, VDEP(J), J, VAL, PTMP )
-         POUT  = POUT + PTMP
+         call aer_achi( xarg, adj, vdep(j), j, val, ptmp )
+         pout  = pout + ptmp
 
-      END DO
+      end do
 
-   END IF
+   end if
 
-   RETURN
-END SUBROUTINE PLUMEF
+   return
+end subroutine plumef
 
 
-SUBROUTINE PSIDE(U1,U2,DVAL)
+subroutine pside(u1,u2,dval)
 !***********************************************************************
 !                 PSIDE Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -507,9 +507,9 @@ SUBROUTINE PSIDE(U1,U2,DVAL)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !---- Set convergence criteria for calls to QATR3:
 !         NDIM = maximum number of integration steps
@@ -517,58 +517,58 @@ SUBROUTINE PSIDE(U1,U2,DVAL)
 !         EPSR = relative error tolerance for integral
 !         EPST = minimum value threshold for integral
 !----
-   INTEGER, PARAMETER :: NDIM = 12, IMIN = 5
-   DOUBLE PRECISION, PARAMETER :: EPSR = 1.0D-2, EPST = 1.0D-5
+   integer, parameter :: ndim = 12, imin = 5
+   double precision, parameter :: epsr = 1.0d-2, epst = 1.0d-5
 
    integer :: icase
-   INTEGER :: I, KS, IMINUS, IPLUS, NOUT, ICON
-   DOUBLE PRECISION :: DVAL, U1, U2, UMINUS, UPLUS, AUX(NDIM),&
+   integer :: i, ks, iminus, iplus, nout, icon
+   double precision :: dval, u1, u2, uminus, uplus, aux(ndim),&
 !     JAT DO65 8/29/21, V1 AND W SET BUT NEVER USED
 !     &                    u(2), v1(2), vn(2), w(2)
    &u(2), vn(2)
 
 !     Variable Initializations
-   MODNAM = 'PSIDE'
+   modnam = 'PSIDE'
 
 !     NSEG = number of segments; set to 0 in AREAIN
 !     for each source/rcvr/time step
-   dval  = 0.0D0
+   dval  = 0.0d0
 !     JAT DO65 8/29/21, V1 AND W SET BUT NEVER USED
-   DO i =  1,2
+   do i =  1,2
       ks    = ivert + i-1
       u(i)  = uvert(ks)
 !         v1(i) = vvert(ks)
       vn(i) = vnvert(ks)
 !         w(i)  = wvert(ks)
-   END DO
+   end do
 
    iminus = 0
    iplus  = 0
-   uminus = -1.0D0
-   uplus  = -1.0D0
-   DO i = 1,2
-      IF (vn(i) < -3.9D0) iminus = i + iminus
-      IF (vn(i) >  3.9D0) iplus  = i + iplus
-   END DO
+   uminus = -1.0d0
+   uplus  = -1.0d0
+   do i = 1,2
+      if (vn(i) < -3.9d0) iminus = i + iminus
+      if (vn(i) >  3.9d0) iplus  = i + iplus
+   end do
 
-   IF (iplus==1 .or. iplus==2) THEN
-      call zbrent( 1,u(1),u(2),vn(1),vn(2),1.0D-3,uplus)
-   END IF
-   IF (iminus==1 .or. iminus==2) THEN
-      call zbrent(-1,u(1),u(2),vn(1),vn(2),1.0D-3,uminus)
-   END IF
+   if (iplus==1 .or. iplus==2) then
+      call zbrent( 1,u(1),u(2),vn(1),vn(2),1.0d-3,uplus)
+   end if
+   if (iminus==1 .or. iminus==2) then
+      call zbrent(-1,u(1),u(2),vn(1),vn(2),1.0d-3,uminus)
+   end if
 
-   if( AREADBG) then
-      write(AREADBUNT,*)
-      write(AREADBUNT,*) 'AREA Debug Sub_PSIDE: '
-      write(AREADBUNT,*) '  ISRC   = ',isrc
+   if( areadbg) then
+      write(areadbunt,*)
+      write(areadbunt,*) 'AREA Debug Sub_PSIDE: '
+      write(areadbunt,*) '  ISRC   = ',isrc
 ! ---
-      IF( EVONLY )THEN
-         write(AREADBUNT,*) '  IEVT   = ',ievent
-      ELSE
-         write(AREADBUNT,*) '  IREC   = ',irec
-      ENDIF
-      write(AREADBUNT,*) ' iplus  iminus  case'
+      if( evonly )then
+         write(areadbunt,*) '  IEVT   = ',ievent
+      else
+         write(areadbunt,*) '  IREC   = ',irec
+      endif
+      write(areadbunt,*) ' iplus  iminus  case'
       if( iplus==0 .and. iminus==0 )then
          icase = 1
       elseif( iplus==0 .and. iminus==3 )then
@@ -588,90 +588,90 @@ SUBROUTINE PSIDE(U1,U2,DVAL)
       elseif( iplus==3 .and. iminus==0 )then
          icase = 3
       endif
-      write(AREADBUNT,'(I5,I7,I6)') iplus, iminus, icase
-      write(AREADBUNT,*)
+      write(areadbunt,'(I5,I7,I6)') iplus, iminus, icase
+      write(areadbunt,*)
    endif
 
 !---- CASE DEPENDs on iplus, iminus
-   IF (iplus == 0) THEN
-      IF (iminus == 0) THEN
+   if (iplus == 0) then
+      if (iminus == 0) then
 !                                             iplus  iminus  case
 !                                               0     0       1
          call qatr3(u1,u2,epsr,epst,ndim,imin,dval,&
          &icon,nout,aux)
-      ELSE IF (iminus == 3) THEN
+      else if (iminus == 3) then
 !                                               0     3       2
-         dval = 0.0D0
-      ELSE IF (iminus == 1) THEN
+         dval = 0.0d0
+      else if (iminus == 1) then
 !                                               0     1       4
          call qatr3(uminus,u2,epsr,epst,ndim,imin,dval,&
          &icon,nout,aux)
-      ELSE
+      else
 !                                               0     2       5
          call qatr3(u1,uminus,epsr,epst,ndim,imin,dval,&
          &icon,nout,aux)
-      END IF
+      end if
 
-   ELSE IF (iplus == 1) THEN
+   else if (iplus == 1) then
       nsegs = nsegs+1
       uasegs(nsegs) = u1
       ubsegs(nsegs) = uplus
-      IF (iminus == 0) THEN
+      if (iminus == 0) then
 !                                               1     0       7
          call qatr3(uplus,u2,epsr,epst,ndim,imin,dval,&
          &icon,nout,aux)
-      ELSE
+      else
 !                                               1     2       9
          call qatr3(uplus,uminus,epsr,epst,ndim,imin,dval,&
          &icon,nout,aux)
-      END IF
+      end if
 
-   ELSE IF (iplus == 2) THEN
+   else if (iplus == 2) then
       nsegs = nsegs+1
       uasegs(nsegs) = uplus
       ubsegs(nsegs) = u2
-      IF (iminus == 0) THEN
+      if (iminus == 0) then
 !                                               2     0       6
          call qatr3(u1,uplus,epsr,epst,ndim,imin,dval,&
          &icon,nout,aux)
-      ELSE
+      else
 !                                               2     1       8
          call qatr3(uminus,uplus,epsr,epst,ndim,imin,dval,&
          &icon,nout,aux)
-      END IF
+      end if
 
-   ELSE
+   else
 !                                               3     0       3
       nsegs = nsegs+1
       uasegs(nsegs) = u1
       ubsegs(nsegs) = u2
-   END IF
+   end if
 
-   if( AREADBG )then
-      write(AREADBUNT,*)
-      write(AREADBUNT,*) '  ISRC   = ',isrc
+   if( areadbg )then
+      write(areadbunt,*)
+      write(areadbunt,*) '  ISRC   = ',isrc
 
-      IF( EVONLY )THEN
-         write(AREADBUNT,*) '  IEVT   = ',ievent
-      ELSE
-         write(AREADBUNT,*) '  IREC   = ',irec
-      ENDIF
-
-      write(AREADBUNT,*) '  NSEGS  = ',nsegs
-      if( nsegs > 0 )then
-         write(AREADBUNT,*) '  UASEGS = ',uasegs(nsegs)
-         write(AREADBUNT,*) '  UBSEGS = ',ubsegs(nsegs)
+      if( evonly )then
+         write(areadbunt,*) '  IEVT   = ',ievent
       else
-         write(AREADBUNT,*) '  UASEGS = NA'
-         write(AREADBUNT,*) '  UBSEGS = NA'
+         write(areadbunt,*) '  IREC   = ',irec
       endif
-      write(AREADBUNT,*) '  DVAL   = ',dval
+
+      write(areadbunt,*) '  NSEGS  = ',nsegs
+      if( nsegs > 0 )then
+         write(areadbunt,*) '  UASEGS = ',uasegs(nsegs)
+         write(areadbunt,*) '  UBSEGS = ',ubsegs(nsegs)
+      else
+         write(areadbunt,*) '  UASEGS = NA'
+         write(areadbunt,*) '  UBSEGS = NA'
+      endif
+      write(areadbunt,*) '  DVAL   = ',dval
    endif
 
-   RETURN
-END SUBROUTINE PSIDE
+   return
+end subroutine pside
 
-SUBROUTINE XWIDTH(U,XOUT)
+subroutine xwidth(u,xout)
 !***********************************************************************
 !                 XWIDTH Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -693,25 +693,25 @@ SUBROUTINE XWIDTH(U,XOUT)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION :: XOUT, U, U1, U2, V1, V2
+   double precision :: xout, u, u1, u2, v1, v2
 
 !     Variable Initializations
-   MODNAM = 'XWIDTH'
+   modnam = 'XWIDTH'
 
-   U1 = UVERT(IVERT)
-   U2 = UVERT(IVERT+1)
-   V1 = VVERT(IVERT)
-   V2 = VVERT(IVERT+1)
-   XOUT = V1+(U-U1)*(V2-V1)/(U2-U1)
+   u1 = uvert(ivert)
+   u2 = uvert(ivert+1)
+   v1 = vvert(ivert)
+   v2 = vvert(ivert+1)
+   xout = v1+(u-u1)*(v2-v1)/(u2-u1)
 
-   RETURN
-END SUBROUTINE XWIDTH
+   return
+end subroutine xwidth
 
-SUBROUTINE PWIDTH(XARG,V1,VN,WIDTH)
+subroutine pwidth(xarg,v1,vn,width)
 !***********************************************************************
 !                 PWIDTH Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -745,97 +745,97 @@ SUBROUTINE PWIDTH(XARG,V1,VN,WIDTH)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ITEMP
-   DOUBLE PRECISION :: XARG, WIDTH, VN, V1, TEMP, GA(79)
+   integer :: itemp
+   double precision :: xarg, width, vn, v1, temp, ga(79)
 
 !     Variable Initializations
 !     GA ARE VALUES OF THE CUMULATIVE NORMAL DISTRIBUTION IN
 !     INCREMENTS OF 0.1 S.
-   DATA GA/0.0D0,.0001D0,.0001D0,.0002D0,.0002D0,.0003D0,.0005D0,&
-   &.0007D0,.0010D0,.0013D0,.0019D0,.0026D0,.0035D0,.0047D0,.0062D0,&
-   &.0082D0,.0107D0,.0139D0,.0179D0,.0227D0,.0287D0,.0359D0,.0446D0,&
-   &.0548D0,.0668D0,.0808D0,.0968D0,.1151D0,.1357D0,.1587D0,.1841D0,&
-   &.2119D0,.2420D0,.2742D0,.3085D0,.3445D0,.3821D0,.4207D0,.4602D0,&
-   &.5000D0,.5398D0,.5793D0,.6179D0,.6555D0,.6915D0,.7258D0,.7580D0,&
-   &.7881D0,.8159D0,.8413D0,.8643D0,.8849D0,.9032D0,.9192D0,.9332D0,&
-   &.9452D0,.9554D0,.9641D0,.9713D0,.9773D0,.9821D0,.9861D0,.9893D0,&
-   &.9918D0,.9938D0,.9953D0,.9965D0,.9974D0,.9981D0,.9987D0,.9990D0,&
-   &.9993D0,.9995D0,.9997D0,.9998D0,.9998D0,.9999D0,.9999D0,1.000D0/
+   data ga/0.0d0,.0001d0,.0001d0,.0002d0,.0002d0,.0003d0,.0005d0,&
+   &.0007d0,.0010d0,.0013d0,.0019d0,.0026d0,.0035d0,.0047d0,.0062d0,&
+   &.0082d0,.0107d0,.0139d0,.0179d0,.0227d0,.0287d0,.0359d0,.0446d0,&
+   &.0548d0,.0668d0,.0808d0,.0968d0,.1151d0,.1357d0,.1587d0,.1841d0,&
+   &.2119d0,.2420d0,.2742d0,.3085d0,.3445d0,.3821d0,.4207d0,.4602d0,&
+   &.5000d0,.5398d0,.5793d0,.6179d0,.6555d0,.6915d0,.7258d0,.7580d0,&
+   &.7881d0,.8159d0,.8413d0,.8643d0,.8849d0,.9032d0,.9192d0,.9332d0,&
+   &.9452d0,.9554d0,.9641d0,.9713d0,.9773d0,.9821d0,.9861d0,.9893d0,&
+   &.9918d0,.9938d0,.9953d0,.9965d0,.9974d0,.9981d0,.9987d0,.9990d0,&
+   &.9993d0,.9995d0,.9997d0,.9998d0,.9998d0,.9999d0,.9999d0,1.000d0/
 
-   MODNAM = 'PWIDTH'
+   modnam = 'PWIDTH'
 
 !    Initialized variables that are not updated with calculating meander/pancake plume Wood 6/3/22
-   WIDTH = 0.0D0
-   VN = 0.0D0
+   width = 0.0d0
+   vn = 0.0d0
 
-   IF (XARG == 0.0D0) THEN
-      SY = 1.0D0
-      VN = V1
-      WIDTH = VN
+   if (xarg == 0.0d0) then
+      sy = 1.0d0
+      vn = v1
+      width = vn
 !        Exit Routine
-      GO TO 999
-   END IF
+      go to 999
+   end if
 
 !     Added calculation for Sigmay if calculating meander 5/4/22 Wood
 !     XARG is the approximate distance from the receptor to the downwind distance of the source
-   IF (.NOT. L_APLUME) THEN
-      WIDTH = DLOG(V1 +DSQRT(XARG*XARG + V1*V1))
-      RETURN
-   END IF
+   if (.not. l_aplume) then
+      width = dlog(v1 +dsqrt(xarg*xarg + v1*v1))
+      return
+   end if
 
 !     Define plume centroid height (CENTER) for use in
 !     inhomogeniety calculations                            ---   CALL CENTROID
-   CALL CENTROID (XARG)
+   call centroid (xarg)
 
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                              ---   CALL PDF
-   IF( UNSTAB  .and.  (HS < ZI) ) THEN
-      CALL PDF
-   ENDIF
+   if( unstab  .and.  (hs < zi) ) then
+      call pdf
+   endif
 
 !     Determine Effective Plume Height                      ---   CALL HEFF
 !**  Added for Aircraft Plume Rise; UNC-IE
-   IF (AFTSRC(ISRC) == 'Y') THEN
+   if (aftsrc(isrc) == 'Y') then
 !      Find Aircraft Index for This Source
 !      Calculate Buoyancy Flux                              ---   CALL AFLUXES
-      CALL AFLUXES
+      call afluxes
 !        Calculate Distance to Final Rise                   ---   CALL ADELTAH
-      CALL ADELTAH ( XARG )
-      CALL HEFF ( XARG )
-   ELSE
-      CALL HEFF ( XARG )
-   END IF
+      call adeltah ( xarg )
+      call heff ( xarg )
+   else
+      call heff ( xarg )
+   end if
 !**  End Aircraft Plume Rise insert; April 2023
 
 !     Iterative average through plume rise layer
-   CALL IBLVAL (XARG)
+   call iblval (xarg)
 
 !     Calculate lateral dispersion coefficient, SY          ---   CALL ADISY
-   CALL ADISY (XARG)
+   call adisy (xarg)
 
-   VN = V1/SY
-   TEMP = 10.0D0*VN + 40.0D0
-   ITEMP = IDINT(TEMP)
-   WIDTH = 0.0D0
+   vn = v1/sy
+   temp = 10.0d0*vn + 40.0d0
+   itemp = idint(temp)
+   width = 0.0d0
 
-   IF (ITEMP > 78) THEN
-      WIDTH = 1.0000D0
-   ELSE
-      IF (ITEMP >= 1) THEN
-         WIDTH = GA(ITEMP)+(TEMP-DBLE(ITEMP))*&
-         &(GA(ITEMP+1)-GA(ITEMP))
-      END IF
-   END IF
+   if (itemp > 78) then
+      width = 1.0000d0
+   else
+      if (itemp >= 1) then
+         width = ga(itemp)+(temp-dble(itemp))*&
+         &(ga(itemp+1)-ga(itemp))
+      end if
+   end if
 
-999 RETURN
-END SUBROUTINE PWIDTH
+999 return
+end subroutine pwidth
 
-SUBROUTINE ZBRENT(IFD,X1,X2,VN1,VN2,TOL,OUTVAL)
+subroutine zbrent(ifd,x1,x2,vn1,vn2,tol,outval)
 !***********************************************************************
 !                 ZBRENT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -860,93 +860,93 @@ SUBROUTINE ZBRENT(IFD,X1,X2,VN1,VN2,TOL,OUTVAL)
 !***********************************************************************
 
 !     Variable Declarations
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   implicit none
+   character :: modnam*12
 
-   INTEGER, PARAMETER :: ITMAX = 10
-   DOUBLE PRECISION, PARAMETER :: EPSZ  = 1.0D-3
-   INTEGER :: IFD, ITER
-   DOUBLE PRECISION :: OUTVAL, TOL, X1, X2, A1, B1, V1, W1, VN, FA,&
-   &FB, FC, C1, D1, E1, TOL1, XM, P1, Q1, R1, S1, VN1, VN2
+   integer, parameter :: itmax = 10
+   double precision, parameter :: epsz  = 1.0d-3
+   integer :: ifd, iter
+   double precision :: outval, tol, x1, x2, a1, b1, v1, w1, vn, fa,&
+   &fb, fc, c1, d1, e1, tol1, xm, p1, q1, r1, s1, vn1, vn2
 
 !     Variable Initializations
-   MODNAM = 'ZBRENT'
+   modnam = 'ZBRENT'
 
 !CRT  Initialize variables, 12/27/2017
-   e1 = 0.0D0
-   c1 = 0.0D0
+   e1 = 0.0d0
+   c1 = 0.0d0
 
    a1 = x1
    b1 = x2
-   fa = vn1-DBLE(ifd)*3.9D0
-   fb = vn2-DBLE(ifd)*3.9D0
+   fa = vn1-dble(ifd)*3.9d0
+   fb = vn2-dble(ifd)*3.9d0
 
-   IF (fb*fa <= 0.0D0) THEN
+   if (fb*fa <= 0.0d0) then
       fc = fb
-      DO iter = 1, itmax
-         IF (fb*fc > 0.0D0) THEN
+      do iter = 1, itmax
+         if (fb*fc > 0.0d0) then
             c1 = a1
             fc = fa
             d1 = b1-a1
             e1 = d1
-         END IF
-         IF (DABS(fc) < DABS(fb)) THEN
+         end if
+         if (dabs(fc) < dabs(fb)) then
             a1 = b1
             b1 = c1
             c1 = a1
             fa = fb
             fb = fc
             fc = fa
-         END IF
-         tol1 = 2.0D0*epsz*DABS(b1)+0.5D0*tol
-         xm = 0.5D0*(c1-b1)
-         IF (DABS(xm)<=tol1  .or. fb == 0.0D0) THEN
+         end if
+         tol1 = 2.0d0*epsz*dabs(b1)+0.5d0*tol
+         xm = 0.5d0*(c1-b1)
+         if (dabs(xm)<=tol1  .or. fb == 0.0d0) then
             outval = b1
-            RETURN
-         END IF
-         IF (DABS(e1)>=tol1 .and. DABS(fa)>DABS(fb)) THEN
+            return
+         end if
+         if (dabs(e1)>=tol1 .and. dabs(fa)>dabs(fb)) then
             s1 = fb/fa
-            IF (a1 == c1) THEN
-               p1 = 2.0D0*xm*s1
-               q1 = 1.0D0-s1
-            ELSE
+            if (a1 == c1) then
+               p1 = 2.0d0*xm*s1
+               q1 = 1.0d0-s1
+            else
                q1 = fa/fc
                r1 = fb/fc
-               p1 = s1*(2.0D0*xm*q1*(q1-r1)-(b1-a1)*(r1-1.0D0))
-               q1 = (q1-1.0D0)*(r1-1.0D0)*(s1-1.0D0)
-            END IF
-            IF(p1 > 0.0D0) q1 = -q1
-            p1 = DABS(p1)
-            IF (2.0D0*p1<min(3.0D0*xm*q1-&
-            &DABS(tol1*q1),DABS(e1-q1))) THEN
+               p1 = s1*(2.0d0*xm*q1*(q1-r1)-(b1-a1)*(r1-1.0d0))
+               q1 = (q1-1.0d0)*(r1-1.0d0)*(s1-1.0d0)
+            end if
+            if(p1 > 0.0d0) q1 = -q1
+            p1 = dabs(p1)
+            if (2.0d0*p1<min(3.0d0*xm*q1-&
+            &dabs(tol1*q1),dabs(e1-q1))) then
                e1 = d1
                d1 = p1/q1
-            ELSE
+            else
                d1 = xm
                e1 = d1
-            END IF
-         ELSE
+            end if
+         else
             d1 = xm
             e1 = d1
-         END IF
+         end if
          a1 = b1
          fa = fb
-         IF (DABS(d1)> tol1) THEN
+         if (dabs(d1)> tol1) then
             b1 = b1+d1
-         ELSE
+         else
             b1 = b1+dsign(tol1,xm)
-         END IF
+         end if
          call xwidth(b1,v1)
          call pwidth(b1,v1,vn,w1)
-         fb = vn-DBLE(ifd)*3.9D0
-      END DO
+         fb = vn-dble(ifd)*3.9d0
+      end do
       outval = b1
-   END IF
+   end if
 
-   RETURN
-END SUBROUTINE ZBRENT
+   return
+end subroutine zbrent
 
-SUBROUTINE PSIDE2(DVAL)
+subroutine pside2(dval)
 !***********************************************************************
 !                 PSIDE2 Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -967,9 +967,9 @@ SUBROUTINE PSIDE2(DVAL)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !---- Set convergence criteria for call to QATR3:
 !         NDIM = maximum number of integration steps
@@ -977,120 +977,120 @@ SUBROUTINE PSIDE2(DVAL)
 !         EPSR = relative error tolerance for integral
 !         EPST = minimum value threshold for integral
 !----
-   INTEGER, PARAMETER :: NDIM = 12, IMIN = 5
-   DOUBLE PRECISION, PARAMETER :: EPSR = 1.0D-2, EPST = 1.0D-5
+   integer, parameter :: ndim = 12, imin = 5
+   double precision, parameter :: epsr = 1.0d-2, epst = 1.0d-5
 
-   INTEGER :: I, J, ISEG, NPTS, NOUT, ICON
-   DOUBLE PRECISION :: DVAL, TEMP, U1, U2, UAV, UBV, TMPVAL,&
-   &AUX(NDIM)
-   DOUBLE PRECISION :: ulist(nvmax2), useg(nvmax,2)
+   integer :: i, j, iseg, npts, nout, icon
+   double precision :: dval, temp, u1, u2, uav, ubv, tmpval,&
+   &aux(ndim)
+   double precision :: ulist(nvmax2), useg(nvmax,2)
    integer :: usign(nvmax), ufac, usegf(nvmax)
-   LOGICAL :: Ltest1,Ltest2
+   logical :: Ltest1,Ltest2
 
 !     Variable Initializations
-   MODNAM = 'PSIDE2'
+   modnam = 'PSIDE2'
 
    j = 1
-   DO i = 1, nsegs
+   do i = 1, nsegs
       ulist(j) = uasegs(i)
       j = j+1
       ulist(j) = ubsegs(i)
       j = j+1
-   END DO
+   end do
    npts = 2*nsegs
 
    call hpsort(npts,ulist,nvmax2)
 
-   DO i = 1, nsegs
+   do i = 1, nsegs
       usign(i) = 1
-      IF (uasegs(i) > ubsegs(i)) THEN
+      if (uasegs(i) > ubsegs(i)) then
          usign(i) = -1
          temp = uasegs(i)
          uasegs(i) = ubsegs(i)
          ubsegs(i) = temp
-      END IF
-      IF (uasegs(i) == ubsegs(i)) usign(i) = 0
-   END DO
+      end if
+      if (uasegs(i) == ubsegs(i)) usign(i) = 0
+   end do
    iseg = 0
 
-   DO i = 2,npts
+   do i = 2,npts
       u1 = ulist(i-1)
       u2 = ulist(i)
       ufac = 0
 !*****
 !           compare segment [u1,u2] against each ua,ub
 !*****
-      IF (u1 /= u2) THEN
-         DO j = 1, nsegs
-            IF (u1>=uasegs(j) .and. u2 <= ubsegs(j)) THEN
+      if (u1 /= u2) then
+         do j = 1, nsegs
+            if (u1>=uasegs(j) .and. u2 <= ubsegs(j)) then
                ufac = ufac + usign(j)
-            END IF
-         END DO
+            end if
+         end do
 !*****
 !              make table of segments and factors
 !*****
-         IF (ufac /= 0) THEN
+         if (ufac /= 0) then
             iseg = iseg+1
             useg(iseg,1) = u1
             useg(iseg,2) = u2
             usegf(iseg) = ufac
-         END IF
-      END IF
-   END DO
+         end if
+      end if
+   end do
 !*****
 !            CONSOLIDATE SEGMENTS IF iseg>1
 !*****
    nsegs = iseg
-   IF (nsegs > 1) THEN
-      DO iseg = 2, nsegs
+   if (nsegs > 1) then
+      do iseg = 2, nsegs
          Ltest1 = useg(iseg,1) == useg(iseg-1,2)
          Ltest2 = usegf(iseg)*usegf(iseg-1) > 0
-         IF (Ltest1 .and. Ltest2) THEN
+         if (Ltest1 .and. Ltest2) then
             usegf(iseg-1) = 0
             useg(iseg,1) = useg(iseg-1,1)
-         END IF
-      END DO
-   END IF
-   dval  = 0.0D0
-   IF (nsegs > 0) THEN
-      DO iseg = 1, nsegs
-         IF (usegf(iseg) /= 0) THEN
+         end if
+      end do
+   end if
+   dval  = 0.0d0
+   if (nsegs > 0) then
+      do iseg = 1, nsegs
+         if (usegf(iseg) /= 0) then
             uav = useg(iseg,1)
             ubv = useg(iseg,2)
             ufac = usegf(iseg)
             call qatr3(uav,ubv,epsr,epst,ndim,imin,tmpval,&
             &icon,nout,aux)
-            dval  = dval + DBLE(ufac)*tmpval
-         END IF
-      END DO
-   END IF
+            dval  = dval + dble(ufac)*tmpval
+         end if
+      end do
+   end if
 
-   if( AREADBG )then
-      write(AREADBUNT,*)
-      write(AREADBUNT,*) 'AREA Debug Sub_PSIDE2: '
-      write(AREADBUNT,*) '  ISRC   = ',isrc
+   if( areadbg )then
+      write(areadbunt,*)
+      write(areadbunt,*) 'AREA Debug Sub_PSIDE2: '
+      write(areadbunt,*) '  ISRC   = ',isrc
 
-      IF( EVONLY )THEN
-         write(AREADBUNT,*) '  IEVT   = ',ievent
-      ELSE
-         write(AREADBUNT,*) '  IREC   = ',irec
-      ENDIF
-
-      write(AREADBUNT,*) '  NSEGS  = ',nsegs
-      if( nsegs > 0 )then
-         write(AREADBUNT,*) '  UASEGS = ',uasegs(nsegs)
-         write(AREADBUNT,*) '  UBSEGS = ',ubsegs(nsegs)
+      if( evonly )then
+         write(areadbunt,*) '  IEVT   = ',ievent
       else
-         write(AREADBUNT,*) '  UASEGS = NA'
-         write(AREADBUNT,*) '  UBSEGS = NA'
+         write(areadbunt,*) '  IREC   = ',irec
       endif
-      write(AREADBUNT,*) '  DVAL   = ',dval
+
+      write(areadbunt,*) '  NSEGS  = ',nsegs
+      if( nsegs > 0 )then
+         write(areadbunt,*) '  UASEGS = ',uasegs(nsegs)
+         write(areadbunt,*) '  UBSEGS = ',ubsegs(nsegs)
+      else
+         write(areadbunt,*) '  UASEGS = NA'
+         write(areadbunt,*) '  UBSEGS = NA'
+      endif
+      write(areadbunt,*) '  DVAL   = ',dval
    endif
 
-   RETURN
-END SUBROUTINE PSIDE2
+   return
+end subroutine pside2
 
-SUBROUTINE HPSORT(NVAR,UVAR,IDIM)
+subroutine hpsort(nvar,uvar,idim)
 !***********************************************************************
 !                 HPSORT Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1113,57 +1113,57 @@ SUBROUTINE HPSORT(NVAR,UVAR,IDIM)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, IDIM, NVAR, ILMID, IR
-   DOUBLE PRECISION :: RU, UVAR(IDIM)
+   integer :: i, j, idim, nvar, ilmid, ir
+   double precision :: ru, uvar(idim)
 
 !     Variable Initializations
-   MODNAM = 'HPSORT'
+   modnam = 'HPSORT'
 
-   ILMID = NVAR/2 + 1
-   IR = NVAR
+   ilmid = nvar/2 + 1
+   ir = nvar
 
-10 CONTINUE
+10 continue
 
-   IF (ilmid>1) THEN
+   if (ilmid>1) then
       ilmid = ilmid-1
       ru = uvar(ilmid)
-   ELSE
+   else
       ru = uvar(ir)
       uvar(ir) = uvar(1)
       ir = ir-1
-      IF (ir == 1)THEN
+      if (ir == 1)then
          uvar(1) = ru
 !           Processing is done
-         GO TO 999
-      END IF
-   END IF
+         go to 999
+      end if
+   end if
 
    i = ilmid
    j = ilmid+ilmid
 
-   DO WHILE (j<= ir)
-      IF (j< ir) THEN
-         IF (uvar(j)<uvar(j+1) ) j = j+1
-      END IF
-      IF (ru<uvar(j)) THEN
+   do while (j<= ir)
+      if (j< ir) then
+         if (uvar(j)<uvar(j+1) ) j = j+1
+      end if
+      if (ru<uvar(j)) then
          uvar(i) = uvar(j)
          i = j
          j = 2*j
-      ELSE
+      else
          j = ir+1
-      END IF
-   END DO
+      end if
+   end do
 
    uvar(i) = ru
 
-   GO TO 10
+   go to 10
 
-999 RETURN
-END SUBROUTINE HPSORT
+999 return
+end subroutine hpsort
 
 !***  End new code for area source numerical integration algorithm - 7/7/93
 
@@ -1172,7 +1172,7 @@ END SUBROUTINE HPSORT
 !***  Subroutines for OPENPIT Source algorithms - 7/19/94
 
 
-SUBROUTINE ESCAPE(ICAT)
+subroutine escape(icat)
 !***********************************************************************
 !*                ESCAPE Module of the AMS/EPA Regulatory Model - AERMOD
 !*
@@ -1196,21 +1196,21 @@ SUBROUTINE ESCAPE(ICAT)
 !***********************************************************************
 
 !*    Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ICAT
+   integer :: icat
 !*    Variable Initializations
-   MODNAM = 'ESCAPE'
+   modnam = 'ESCAPE'
 
-   EFRAC(ICAT) = 1.0D0/(1.0D0 + VGRAV(ICAT) / (ALPHA * UREF10) )
+   efrac(icat) = 1.0d0/(1.0d0 + vgrav(icat) / (alpha * uref10) )
 
-   RETURN
-END SUBROUTINE ESCAPE
+   return
+end subroutine escape
 
 
-SUBROUTINE ADJEMI(ICAT,QPTOT)
+subroutine adjemi(icat,qptot)
 !***********************************************************************
 !*                ADJEMI Module of the AMS/EPA Regulatory Model - AERMOD
 !*
@@ -1234,23 +1234,23 @@ SUBROUTINE ADJEMI(ICAT,QPTOT)
 !***********************************************************************
 
 !*    Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ICAT
-   DOUBLE PRECISION :: QPTOT
+   integer :: icat
+   double precision :: qptot
 !*    Variable Initializations
-   MODNAM = 'ADJEMI'
+   modnam = 'ADJEMI'
 
-   QPART(ICAT) = EFRAC(ICAT) * PHI(ICAT) * QS
-   QPTOT = QPTOT + QPART(ICAT)
+   qpart(icat) = efrac(icat) * phi(icat) * qs
+   qptot = qptot + qpart(icat)
 
-   RETURN
-END SUBROUTINE ADJEMI
+   return
+end subroutine adjemi
 
 
-SUBROUTINE AMFRAC(QPTOT)
+subroutine amfrac(qptot)
 !***********************************************************************
 !*                AMFRAC Module of the AMS/EPA Regulatory Model - AERMOD
 !*
@@ -1271,24 +1271,24 @@ SUBROUTINE AMFRAC(QPTOT)
 !***********************************************************************
 
 !*    Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ICAT
-   DOUBLE PRECISION :: QPTOT
+   integer :: icat
+   double precision :: qptot
 !*    Variable Initializations
-   MODNAM = 'AMFRAC'
+   modnam = 'AMFRAC'
 
-   DO ICAT = 1,NPD
-      PHI(ICAT) = QPART(ICAT)/QPTOT
-   END DO
+   do icat = 1,npd
+      phi(icat) = qpart(icat)/qptot
+   end do
 
-   RETURN
-END SUBROUTINE AMFRAC
+   return
+end subroutine amfrac
 
 
-SUBROUTINE LWIND
+subroutine lwind
 !***********************************************************************
 !*                LWIND Module of the AMS/EPA Regulatory Model - AERMOD
 !*
@@ -1310,29 +1310,29 @@ SUBROUTINE LWIND
 !***********************************************************************
 
 !*    Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   DOUBLE PRECISION :: THOUT
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   double precision :: thout
+   character :: modnam*12
 
 !*    Variable Initializations
-   MODNAM = 'LWIND'
-   THOUT = 0.0D0
+   modnam = 'LWIND'
+   thout = 0.0d0
 
 !*    Determine the Wind Direction Angle Relative to the Long
 !*    Axis of the OpenPit
-   CALL CTHETA(AFV,PALPHA,THOUT)
+   call ctheta(afv,palpha,thout)
 !*    Assign THOUT to global variable, THETA
-   THETA = THOUT
+   theta = thout
 
 !*    Determine the Along-Wind Length of the OPENPIT
-   PITL = PITLEN * (1.0D0 - THETA/90.D0) + PITWID * (THETA / 90.D0)
+   pitl = pitlen * (1.0d0 - theta/90.d0) + pitwid * (theta / 90.d0)
 
-   RETURN
-END SUBROUTINE LWIND
+   return
+end subroutine lwind
 
 
-SUBROUTINE PDEPTH
+subroutine pdepth
 !***********************************************************************
 !*                PDEPTH Module of the AMS/EPA Regulatory Model - AERMOD
 !*
@@ -1352,20 +1352,20 @@ SUBROUTINE PDEPTH
 !***********************************************************************
 
 !*    Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !*    Variable Initializations
-   MODNAM = 'PDEPTH'
+   modnam = 'PDEPTH'
 
-   PDREL = (PDEFF-EMIHGT) / PITL
+   pdrel = (pdeff-emihgt) / pitl
 
-   RETURN
-END SUBROUTINE PDEPTH
+   return
+end subroutine pdepth
 
 
-SUBROUTINE PTFRAC
+subroutine ptfrac
 !***********************************************************************
 !*                PTFRAC Module of the AMS/EPA Regulatory Model - AERMOD
 !*
@@ -1385,24 +1385,24 @@ SUBROUTINE PTFRAC
 !***********************************************************************
 
 !*    Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !*    Variable Initializations
-   MODNAM = 'PTFRAC'
+   modnam = 'PTFRAC'
 
-   IF (PDREL >= 0.2D0) THEN
-      PITFRA = 0.08D0
-   ELSE
-      PITFRA = DSQRT(1.0D0 - 1.7D0*(PDREL**THIRD) )
-   ENDIF
+   if (pdrel >= 0.2d0) then
+      pitfra = 0.08d0
+   else
+      pitfra = dsqrt(1.0d0 - 1.7d0*(pdrel**third) )
+   endif
 
-   RETURN
-END SUBROUTINE PTFRAC
+   return
+end subroutine ptfrac
 
 
-SUBROUTINE PITEFF
+subroutine piteff
 !**************************************3********************************
 !*                PITEFF Module of the AMS/EPA Regulatory Model - AERMOD
 !*
@@ -1429,80 +1429,80 @@ SUBROUTINE PITEFF
 !***********************************************************************
 
 !*    Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, II, IUPWND
-   DOUBLE PRECISION :: SPAMIN, EFFANG, EFFWID, EFFLEN
-   DOUBLE PRECISION :: XTEMP(NVMAX), YTEMP(NVMAX)
-   DOUBLE PRECISION, PARAMETER :: EPSLON = 1.0D-05
+   integer :: i, ii, iupwnd
+   double precision :: spamin, effang, effwid, efflen
+   double precision :: xtemp(nvmax), ytemp(nvmax)
+   double precision, parameter :: epslon = 1.0d-05
 
 !*    Variable Initializations
-   MODNAM = 'PITEFF'
-   XTEMP(:) = 0.0D0
-   YTEMP(:) = 0.0D0
+   modnam = 'PITEFF'
+   xtemp(:) = 0.0d0
+   ytemp(:) = 0.0d0
 
 !*    Get Vertices of Actual Pit in WD-Coordinate System    ---   CALL AVERTS
-   CALL AVERTS(XVERT,YVERT,XTEMP,YTEMP,NVERT+1)
+   call averts(xvert,yvert,xtemp,ytemp,nvert+1)
 
 !*    Find the Upwind Vertex of the Pit (one with minimum X)
-   SPAMIN = 1.0D+20
-   IUPWND = 0
-   DO IVERT = 1,NVERT
-      IF (XTEMP(IVERT) < SPAMIN) THEN
-         IUPWND = IVERT
-         SPAMIN = XTEMP(IVERT)-EPSLON
-      ENDIF
-   END DO
+   spamin = 1.0d+20
+   iupwnd = 0
+   do ivert = 1,nvert
+      if (xtemp(ivert) < spamin) then
+         iupwnd = ivert
+         spamin = xtemp(ivert)-epslon
+      endif
+   end do
 
 !*    If DEBUG Requested, Write Out Pit Info; include in AREA debug file if
 !     specified, otherwise in the MODEL debug file
-   IF (AREADBG) THEN
-      WRITE (AREADBUNT,*)
-      WRITE (AREADBUNT,*) 'ACTUAL PIT COORDINATES:'
-      WRITE (AREADBUNT,*) '----------------------'
-      WRITE (AREADBUNT,8009)
-8009  FORMAT (' SYSTEM        X1        Y1        X2        Y2',&
+   if (areadbg) then
+      write (areadbunt,*)
+      write (areadbunt,*) 'ACTUAL PIT COORDINATES:'
+      write (areadbunt,*) '----------------------'
+      write (areadbunt,8009)
+8009  format (' SYSTEM        X1        Y1        X2        Y2',&
       &'        X3        Y3        X4        Y4'/&
       &' ---------  -------- ---------  -------- ---------',&
       &'  -------- ---------  -------- ---------')
-      WRITE (AREADBUNT,8000) (XVERT(II), YVERT(II), II=1,NVERT)
-      WRITE (AREADBUNT,8100) (XTEMP(II), YTEMP(II), II=1,NVERT)
-      WRITE (AREADBUNT,*)
-      WRITE (AREADBUNT,*) ' UPWIND VERTEX OF THE PIT        = ',&
-      &IUPWND
-      WRITE (AREADBUNT,*) ' WIND DIR W.R.T. PIT LONG AXIS   = ',&
-      &THETA
-      WRITE (AREADBUNT,*) ' ALONGWIND LENGTH OF THE PIT     = ',&
-      &PITL
-      WRITE (AREADBUNT,*) ' RELATIVE DEPTH OF THE PIT       = ',&
-      &PDREL
-      WRITE (AREADBUNT,*)
-8000  FORMAT (1X,'User      ',8(f9.0,1x))
-8100  FORMAT (1X,'Wind-Dir  ',8(f9.0,1x))
-   ELSEIF (DEBUG) THEN
-      WRITE (DBGUNT,*)
-      WRITE (DBGUNT,*) 'ACTUAL PIT COORDINATES:'
-      WRITE (DBGUNT,*) '----------------------'
-      WRITE (DBGUNT,8009)
-      WRITE (DBGUNT,8000) (XVERT(II), YVERT(II), II=1,NVERT)
-      WRITE (DBGUNT,8100) (XTEMP(II), YTEMP(II), II=1,NVERT)
-      WRITE (DBGUNT,*)
-      WRITE (DBGUNT,*) ' UPWIND VERTEX OF THE PIT        = ', IUPWND
-      WRITE (DBGUNT,*) ' WIND DIR W.R.T. PIT LONG AXIS   = ', THETA
-      WRITE (DBGUNT,*) ' ALONGWIND LENGTH OF THE PIT     = ', PITL
-      WRITE (DBGUNT,*) ' RELATIVE DEPTH OF THE PIT       = ', PDREL
-      WRITE (DBGUNT,*)
-   ENDIF
+      write (areadbunt,8000) (xvert(ii), yvert(ii), ii=1,nvert)
+      write (areadbunt,8100) (xtemp(ii), ytemp(ii), ii=1,nvert)
+      write (areadbunt,*)
+      write (areadbunt,*) ' UPWIND VERTEX OF THE PIT        = ',&
+      &iupwnd
+      write (areadbunt,*) ' WIND DIR W.R.T. PIT LONG AXIS   = ',&
+      &theta
+      write (areadbunt,*) ' ALONGWIND LENGTH OF THE PIT     = ',&
+      &pitl
+      write (areadbunt,*) ' RELATIVE DEPTH OF THE PIT       = ',&
+      &pdrel
+      write (areadbunt,*)
+8000  format (1x,'User      ',8(f9.0,1x))
+8100  format (1x,'Wind-Dir  ',8(f9.0,1x))
+   elseif (debug) then
+      write (dbgunt,*)
+      write (dbgunt,*) 'ACTUAL PIT COORDINATES:'
+      write (dbgunt,*) '----------------------'
+      write (dbgunt,8009)
+      write (dbgunt,8000) (xvert(ii), yvert(ii), ii=1,nvert)
+      write (dbgunt,8100) (xtemp(ii), ytemp(ii), ii=1,nvert)
+      write (dbgunt,*)
+      write (dbgunt,*) ' UPWIND VERTEX OF THE PIT        = ', iupwnd
+      write (dbgunt,*) ' WIND DIR W.R.T. PIT LONG AXIS   = ', theta
+      write (dbgunt,*) ' ALONGWIND LENGTH OF THE PIT     = ', pitl
+      write (dbgunt,*) ' RELATIVE DEPTH OF THE PIT       = ', pdrel
+      write (dbgunt,*)
+   endif
 
 !*    Determine the Angle of the Effective Pit Relative to North
-   EFFANG = ANGLE + (90.D0*DBLE(IUPWND - 1))
+   effang = angle + (90.d0*dble(iupwnd - 1))
 
 !*    Determine Length and Width Dimensions of the
 !*    Effective Pit Area
-   EFFWID = PITFRA**(1.0D0 - (DCOS(THETA*DTORAD))**2)*PITWID
-   EFFLEN = PITFRA**((DCOS(THETA*DTORAD))**2)*PITLEN
+   effwid = pitfra**(1.0d0 - (dcos(theta*dtorad))**2)*pitwid
+   efflen = pitfra**((dcos(theta*dtorad))**2)*pitlen
 
 !*    Calculate the Coordinates of the Vertices of the Effective Pit Area
 !*    Set Coordinates of Vertices for Rectangular Area (in Kilometers).
@@ -1513,114 +1513,114 @@ SUBROUTINE PITEFF
 !*    First determine proper 'x-dim' and 'y-dim' for effective area,
 !*    taking into account angle of orientation and relation to actual pit.
 
-   IF (XINIT <= YINIT .and. (IUPWND==1 .or. IUPWND==3)) THEN
-      XEFF = EFFWID
-      YEFF = EFFLEN
-   ELSE IF (XINIT<=YINIT .and. (IUPWND==2 .or. IUPWND==4)) THEN
-      XEFF = EFFLEN
-      YEFF = EFFWID
-   ELSE IF (XINIT>YINIT .and. (IUPWND==1 .or. IUPWND==3)) THEN
-      XEFF = EFFLEN
-      YEFF = EFFWID
-   ELSE IF (XINIT>YINIT .and. (IUPWND==2 .or. IUPWND==4)) THEN
-      XEFF = EFFWID
-      YEFF = EFFLEN
-   END IF
+   if (xinit <= yinit .and. (iupwnd==1 .or. iupwnd==3)) then
+      xeff = effwid
+      yeff = efflen
+   else if (xinit<=yinit .and. (iupwnd==2 .or. iupwnd==4)) then
+      xeff = efflen
+      yeff = effwid
+   else if (xinit>yinit .and. (iupwnd==1 .or. iupwnd==3)) then
+      xeff = efflen
+      yeff = effwid
+   else if (xinit>yinit .and. (iupwnd==2 .or. iupwnd==4)) then
+      xeff = effwid
+      yeff = efflen
+   end if
 
-   XTEMP(1) = XVERT(IUPWND)
-   YTEMP(1) = YVERT(IUPWND)
+   xtemp(1) = xvert(iupwnd)
+   ytemp(1) = yvert(iupwnd)
 
-   XTEMP(2) = XTEMP(1) + (YEFF*DSIN(EFFANG*DTORAD))
-   YTEMP(2) = YTEMP(1) + (YEFF*DCOS(EFFANG*DTORAD))
+   xtemp(2) = xtemp(1) + (yeff*dsin(effang*dtorad))
+   ytemp(2) = ytemp(1) + (yeff*dcos(effang*dtorad))
 
-   XTEMP(3) = XTEMP(2) + (XEFF*DCOS(EFFANG*DTORAD))
-   YTEMP(3) = YTEMP(2) - (XEFF*DSIN(EFFANG*DTORAD))
+   xtemp(3) = xtemp(2) + (xeff*dcos(effang*dtorad))
+   ytemp(3) = ytemp(2) - (xeff*dsin(effang*dtorad))
 
-   XTEMP(4) = XTEMP(3) - (YEFF*DSIN(EFFANG*DTORAD))
-   YTEMP(4) = YTEMP(3) - (YEFF*DCOS(EFFANG*DTORAD))
+   xtemp(4) = xtemp(3) - (yeff*dsin(effang*dtorad))
+   ytemp(4) = ytemp(3) - (yeff*dcos(effang*dtorad))
 
-   XTEMP(5) = XVERT(IUPWND)
-   YTEMP(5) = YVERT(IUPWND)
+   xtemp(5) = xvert(iupwnd)
+   ytemp(5) = yvert(iupwnd)
 
 
 !*    Calculate Coordinates of the Effective Pit Area in
 !*    Wind Direction Coordinate System                      ---   CALL AVERTS
-   CALL AVERTS(XTEMP,YTEMP,XVERT,YVERT,NVERT+1)
+   call averts(xtemp,ytemp,xvert,yvert,nvert+1)
 
 !*    If DEBUG Requested, Write Out Pit Info; include in AREA debug file if
 !     specified, otherwise in the MODEL debug file
-   IF (AREADBG) THEN
-      WRITE (AREADBUNT,*)
-      WRITE (AREADBUNT,*) 'EFFECTIVE PIT COORDINATES:'
-      WRITE (AREADBUNT,*) '-------------------------'
-      WRITE (AREADBUNT,8009)
+   if (areadbg) then
+      write (areadbunt,*)
+      write (areadbunt,*) 'EFFECTIVE PIT COORDINATES:'
+      write (areadbunt,*) '-------------------------'
+      write (areadbunt,8009)
 
-      WRITE (AREADBUNT,8000) (XTEMP(II), YTEMP(II), II=1,NVERT)
-      WRITE (AREADBUNT,8100) (XVERT(II), YVERT(II), II=1,NVERT)
-      WRITE (AREADBUNT,*)
+      write (areadbunt,8000) (xtemp(ii), ytemp(ii), ii=1,nvert)
+      write (areadbunt,8100) (xvert(ii), yvert(ii), ii=1,nvert)
+      write (areadbunt,*)
 
-      WRITE (AREADBUNT,*) ' EFFECTIVE PIT LENGTH            = ',&
-      &EFFLEN
-      WRITE (AREADBUNT,*) ' EFFECTIVE PIT WIDTH             = ',&
-      &EFFWID
-      WRITE (AREADBUNT,*) ' ORIENTATION RELATIVE TO NORTH   = ',&
-      &EFFANG
-      WRITE (AREADBUNT,*) ' FRACTIONAL SIZE OF EFF PIT AREA = ',&
-      &PITFRA
-   ELSEIF (DEBUG) THEN
-      WRITE (DBGUNT,*)
-      WRITE (DBGUNT,*) 'EFFECTIVE PIT COORDINATES:'
-      WRITE (DBGUNT,*) '-------------------------'
-      WRITE (DBGUNT,8009)
+      write (areadbunt,*) ' EFFECTIVE PIT LENGTH            = ',&
+      &efflen
+      write (areadbunt,*) ' EFFECTIVE PIT WIDTH             = ',&
+      &effwid
+      write (areadbunt,*) ' ORIENTATION RELATIVE TO NORTH   = ',&
+      &effang
+      write (areadbunt,*) ' FRACTIONAL SIZE OF EFF PIT AREA = ',&
+      &pitfra
+   elseif (debug) then
+      write (dbgunt,*)
+      write (dbgunt,*) 'EFFECTIVE PIT COORDINATES:'
+      write (dbgunt,*) '-------------------------'
+      write (dbgunt,8009)
 
-      WRITE (DBGUNT,8000) (XTEMP(II), YTEMP(II), II=1,NVERT)
-      WRITE (DBGUNT,8100) (XVERT(II), YVERT(II), II=1,NVERT)
-      WRITE (DBGUNT,*)
+      write (dbgunt,8000) (xtemp(ii), ytemp(ii), ii=1,nvert)
+      write (dbgunt,8100) (xvert(ii), yvert(ii), ii=1,nvert)
+      write (dbgunt,*)
 
-      WRITE (DBGUNT,*) ' EFFECTIVE PIT LENGTH            = ', EFFLEN
-      WRITE (DBGUNT,*) ' EFFECTIVE PIT WIDTH             = ', EFFWID
-      WRITE (DBGUNT,*) ' ORIENTATION RELATIVE TO NORTH   = ', EFFANG
-      WRITE (DBGUNT,*) ' FRACTIONAL SIZE OF EFF PIT AREA = ', PITFRA
-   ENDIF
+      write (dbgunt,*) ' EFFECTIVE PIT LENGTH            = ', efflen
+      write (dbgunt,*) ' EFFECTIVE PIT WIDTH             = ', effwid
+      write (dbgunt,*) ' ORIENTATION RELATIVE TO NORTH   = ', effang
+      write (dbgunt,*) ' FRACTIONAL SIZE OF EFF PIT AREA = ', pitfra
+   endif
 
 !     Reassign Effective Area Coordinates to Global Arrays for Subsequent Calcs.
-   DO I = 1, 5
-      XVERT(I) = XTEMP(I)
-      YVERT(I) = YTEMP(I)
-   END DO
+   do i = 1, 5
+      xvert(i) = xtemp(i)
+      yvert(i) = ytemp(i)
+   end do
 
 ! --- Calculate coordinates for center of the effective pit source
 !     (formerly done in subroutine ARDIST)
-   XCNTR = 0.0D0
-   YCNTR = 0.0D0
-   DO I = 1, NVERT
-      XCNTR = XCNTR + XVERT(I)
-      YCNTR = YCNTR + YVERT(I)
-   END DO
-   XCNTR = XCNTR/DBLE(NVERT)
-   YCNTR = YCNTR/DBLE(NVERT)
+   xcntr = 0.0d0
+   ycntr = 0.0d0
+   do i = 1, nvert
+      xcntr = xcntr + xvert(i)
+      ycntr = ycntr + yvert(i)
+   end do
+   xcntr = xcntr/dble(nvert)
+   ycntr = ycntr/dble(nvert)
 
 !*    If DEBUG Requested, Write Out coordinates for center of effective pit source;
 !     include in AREA debug file if specified, otherwise in the MODEL debug file
-   IF (AREADBG) THEN
-      WRITE (AREADBUNT,*)
-      WRITE (AREADBUNT,*) ' X-COORD FOR CENTER OF EFF PIT   = ',&
-      &XCNTR
-      WRITE (AREADBUNT,*) ' Y-COORD FOR CENTER OF EFF PIT   = ',&
-      &YCNTR
-   ELSEIF (DEBUG) THEN
-      WRITE (DBGUNT,*)
-      WRITE (DBGUNT,*) ' X-COORD FOR CENTER OF EFF PIT   = ',&
-      &XCNTR
-      WRITE (DBGUNT,*) ' Y-COORD FOR CENTER OF EFF PIT   = ',&
-      &YCNTR
-   ENDIF
+   if (areadbg) then
+      write (areadbunt,*)
+      write (areadbunt,*) ' X-COORD FOR CENTER OF EFF PIT   = ',&
+      &xcntr
+      write (areadbunt,*) ' Y-COORD FOR CENTER OF EFF PIT   = ',&
+      &ycntr
+   elseif (debug) then
+      write (dbgunt,*)
+      write (dbgunt,*) ' X-COORD FOR CENTER OF EFF PIT   = ',&
+      &xcntr
+      write (dbgunt,*) ' Y-COORD FOR CENTER OF EFF PIT   = ',&
+      &ycntr
+   endif
 
-   RETURN
-END SUBROUTINE PITEFF
+   return
+end subroutine piteff
 
 
-SUBROUTINE PITEMI(QPTOT)
+subroutine pitemi(qptot)
 !***********************************************************************
 !*                PITEMI Module of the AMS/EPA Regulatory Model - AERMOD
 !*
@@ -1642,21 +1642,21 @@ SUBROUTINE PITEMI(QPTOT)
 !***********************************************************************
 
 !*    Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   DOUBLE PRECISION :: QPTOT
+   double precision :: qptot
 !*    Variable Initializations
-   MODNAM = 'PITEMI'
+   modnam = 'PITEMI'
 
-   QEFF = QPTOT / PITFRA
+   qeff = qptot / pitfra
 
-   RETURN
-END SUBROUTINE PITEMI
+   return
+end subroutine pitemi
 
 
-SUBROUTINE CTHETA(AFVIN,ALFIN,THOUT)
+subroutine ctheta(afvin,alfin,thout)
 !***********************************************************************
 !*                CTHETA Module of the AMS/EPA Regulatory Model - AERMOD
 !*
@@ -1677,40 +1677,40 @@ SUBROUTINE CTHETA(AFVIN,ALFIN,THOUT)
 !*       CALLED FROM:   LWIND
 !***********************************************************************
 
-   IMPLICIT NONE
+   implicit none
 
-   DOUBLE PRECISION :: THOUT, ALFIN, AFVIN, THETA
+   double precision :: thout, alfin, afvin, theta
 
-   if (dabs(AFVIN-ALFIN) <= 90.0D0) then
-      THOUT = dabs(AFVIN-ALFIN)
-   else if (AFVIN > ALFIN) then
-      theta = AFVIN - ALFIN
-      if (theta > 90.0D0) then
-         theta = AFVIN-180.0D0 - ALFIN
+   if (dabs(afvin-alfin) <= 90.0d0) then
+      thout = dabs(afvin-alfin)
+   else if (afvin > alfin) then
+      theta = afvin - alfin
+      if (theta > 90.0d0) then
+         theta = afvin-180.0d0 - alfin
       endif
-      if (theta > 90.0D0) then
-         theta = AFVIN-360.0D0 - ALFIN
+      if (theta > 90.0d0) then
+         theta = afvin-360.0d0 - alfin
       endif
-      if (theta > 90.0D0) then
-         theta = AFVIN-540.0D0 - ALFIN
+      if (theta > 90.0d0) then
+         theta = afvin-540.0d0 - alfin
       endif
-      THOUT = dabs(theta)
-   else if (AFVIN < ALFIN) then
-      theta = AFVIN - ALFIN
-      if (theta < -90.0D0) then
-         theta = AFVIN + 180.0D0 - ALFIN
+      thout = dabs(theta)
+   else if (afvin < alfin) then
+      theta = afvin - alfin
+      if (theta < -90.0d0) then
+         theta = afvin + 180.0d0 - alfin
       endif
-      if (theta < -90.0D0) then
-         theta = AFVIN + 360.0D0 - ALFIN
+      if (theta < -90.0d0) then
+         theta = afvin + 360.0d0 - alfin
       endif
-      if (theta < -90.0D0) then
-         theta = AFVIN + 540.0D0 - ALFIN
+      if (theta < -90.0d0) then
+         theta = afvin + 540.0d0 - alfin
       endif
-      THOUT = dabs(theta)
+      thout = dabs(theta)
    endif
 
-   RETURN
-end subroutine CTHETA
+   return
+end subroutine ctheta
 
 !-----------------------------------------------------------------------
 subroutine qatr3(xl,xu,eps,epst,ndim,imin,y,ier,i,aux)
@@ -1745,34 +1745,34 @@ subroutine qatr3(xl,xu,eps,epst,ndim,imin,y,ier,i,aux)
 !               ier=2   value of integral did not converge to within
 !                       eps before ndim limit was reached
 
-   IMPLICIT NONE
+   implicit none
 
-   INTEGER :: NDIM, IMIN, IER
-   DOUBLE PRECISION :: Y, EPS, EPST, XU, XL, H, HH, DELT2, P,&
+   integer :: ndim, imin, ier
+   double precision :: y, eps, epst, xu, xl, h, hh, delt2, p,&
 !     JAT D065 8/9/21 DELT1 SET BUT NOT USED
 !     &           DELT1, HD, X, SM, Q, AUX(NDIM),
-   &HD, X, SM, Q, AUX(NDIM),&
-   &P1, P2
+   &hd, x, sm, q, aux(ndim),&
+   &p1, p2
    integer :: i, ii, ji, j, jj
 
 !---  Initialize AUX array
-   AUX(:)  = 0.0D0
+   aux(:)  = 0.0d0
 
 !---  Preparations for Romberg loop
-   CALL PLUMEF(XL,P1)
-   CALL PLUMEF(XU,P2)
-   aux(1) = 0.5D0 * (P1+P2)
+   call plumef(xl,p1)
+   call plumef(xu,p2)
+   aux(1) = 0.5d0 * (p1+p2)
    h = xu - xl
 
-   if(h == 0.0D0 .or. aux(1) == 0.0D0) then
+   if(h == 0.0d0 .or. aux(1) == 0.0d0) then
       ier=0
-      y  = 0.0D0
+      y  = 0.0d0
       return
    endif
 
    hh = h
-   delt2 = 0.D0
-   p  = 1.0D0
+   delt2 = 0.d0
+   p  = 1.0d0
    jj = 1
 
 !     JAT D065 8/9/21 DELT1 SET BUT NOT USED
@@ -1780,50 +1780,50 @@ subroutine qatr3(xl,xu,eps,epst,ndim,imin,y,ier,i,aux)
       y = aux(1)
 !         delt1 = delt2
       hd = hh
-      hh = 0.5D0 * hh
-      p  = 0.5D0 * p
+      hh = 0.5d0 * hh
+      p  = 0.5d0 * p
       x  = xl + hh
-      sm  = 0.0D0
+      sm  = 0.0d0
 
       do j = 1, jj
-         CALL PLUMEF(X,P1)
-         sm  = sm + P1
+         call plumef(x,p1)
+         sm  = sm + p1
          x   = x + hd
       end do
 
 !----    A new approximation to the integral is computed by means
 !        of the trapezoidal rule
-      aux(i)  = 0.5D0*aux(i-1) + p*sm
+      aux(i)  = 0.5d0*aux(i-1) + p*sm
 
 !----    Start of Rombergs extrapolation method
 
-      q  = 1.0D0
+      q  = 1.0d0
       ji = i-1
       do j = 1, ji
          ii = i-j
          q  = q+q
          q  = q+q
-         aux(ii)  = aux(ii+1) + (aux(ii+1)-aux(ii))/(q-1.0D0)
+         aux(ii)  = aux(ii+1) + (aux(ii+1)-aux(ii))/(q-1.0d0)
       end do
 
 !----    End of Romberg step
 
 !        Compute absolute error, delt2
-      delt2 = DABS(y-aux(1))
+      delt2 = dabs(y-aux(1))
 
       if (i >= imin) then
 !           Check for covergence of algorithm
-         if (DABS(aux(1)) < epst) then
+         if (dabs(aux(1)) < epst) then
 !              Lower threshold convergence test
             ier = 0
             y  = h*aux(1)
             return
-         else if (delt2 <= eps*DABS(aux(1)) ) then
+         else if (delt2 <= eps*dabs(aux(1)) ) then
 !              Relative error convergence test
             ier = 0
             y  = h*aux(1)
             return
-         else if (dabs(hh) < 1.0D0) then
+         else if (dabs(hh) < 1.0d0) then
 !              Minimum "delta-x" convergence test; < 1.0m
             ier = 0
             y  = h*aux(1)
@@ -1841,7 +1841,7 @@ subroutine qatr3(xl,xu,eps,epst,ndim,imin,y,ier,i,aux)
    return
 end subroutine qatr3
 
-SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
+subroutine pside_tox(u1,u2,dval)
 !***********************************************************************
 !                 PSIDE_TOX Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1900,9 +1900,9 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !---- Set convergence criteria for calls to QATR3:
 !         NDIM = maximum number of integration steps
@@ -1910,64 +1910,64 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
 !         EPSR = relative error tolerance for integral
 !         EPST = minimum value threshold for integral
 !----
-   INTEGER, PARAMETER :: NDIM = 10, IMIN = 4
-   DOUBLE PRECISION, PARAMETER :: EPSR = 2.0D-2, EPST = 1.0D-5
+   integer, parameter :: ndim = 10, imin = 4
+   double precision, parameter :: epsr = 2.0d-2, epst = 1.0d-5
 
 !---- Set distance factor for switching to Gaussian Quadrature, QG_FACT
 !     If Xmax - Xmin is .LT. QG_FACT*Xmin, then use QG2, where
 !     Xmax and Xmin are the distances to the endpoints of the side.
-   DOUBLE PRECISION, PARAMETER :: QG_FACT = 5.0D0
+   double precision, parameter :: qg_fact = 5.0d0
 
    integer :: icase
-   INTEGER :: I, KS, IMINUS, IPLUS, NOUT, ICON
-   DOUBLE PRECISION :: DVAL, U1, U2, UMINUS, UPLUS, AUX(NDIM),&
+   integer :: i, ks, iminus, iplus, nout, icon
+   double precision :: dval, u1, u2, uminus, uplus, aux(ndim),&
 !     JAT DO65 8/29/21, V1 AND W SET BUT NEVER USED
 !     &                    u(2), v1(2), vn(2), w(2)
    &u(2), vn(2)
 
 !     Variable Initializations
-   MODNAM = 'PSIDE_TOX'
+   modnam = 'PSIDE_TOX'
 
 !     NSEG = number of segments; set to 0 in AREAIN
 !     for each source/rcvr/time step
-   dval  = 0.0D0
+   dval  = 0.0d0
 !     JAT DO65 8/29/21, V1 AND W SET BUT NEVER USED
-   DO i =  1,2
+   do i =  1,2
       ks    = ivert + i-1
       u(i)  = uvert(ks)
 !         v1(i) = vvert(ks)
       vn(i) = vnvert(ks)
 !         w(i)  = wvert(ks)
-   END DO
+   end do
 
    iminus = 0
    iplus  = 0
-   uminus = -1.0D0
-   uplus  = -1.0D0
-   DO i = 1,2
-      IF (vn(i) < -3.9D0) iminus = i + iminus
-      IF (vn(i) >  3.9D0) iplus  = i + iplus
-   END DO
+   uminus = -1.0d0
+   uplus  = -1.0d0
+   do i = 1,2
+      if (vn(i) < -3.9d0) iminus = i + iminus
+      if (vn(i) >  3.9d0) iplus  = i + iplus
+   end do
 
-   IF (iplus==1 .or. iplus==2) THEN
-      call zbrent( 1,u(1),u(2),vn(1),vn(2),1.0D-3,uplus)
-   END IF
-   IF (iminus==1 .or. iminus==2) THEN
-      call zbrent(-1,u(1),u(2),vn(1),vn(2),1.0D-3,uminus)
-   END IF
+   if (iplus==1 .or. iplus==2) then
+      call zbrent( 1,u(1),u(2),vn(1),vn(2),1.0d-3,uplus)
+   end if
+   if (iminus==1 .or. iminus==2) then
+      call zbrent(-1,u(1),u(2),vn(1),vn(2),1.0d-3,uminus)
+   end if
 
-   if( AREADBG) then
-      write(AREADBUNT,*)
-      write(AREADBUNT,*) 'AREA Debug Sub_PSIDE_TOX: '
-      write(AREADBUNT,*) '  ISRC   = ',isrc
+   if( areadbg) then
+      write(areadbunt,*)
+      write(areadbunt,*) 'AREA Debug Sub_PSIDE_TOX: '
+      write(areadbunt,*) '  ISRC   = ',isrc
 
-      IF( EVONLY )THEN
-         write(AREADBUNT,*) '  IEVT   = ',ievent
-      ELSE
-         write(AREADBUNT,*) '  IREC   = ',irec
-      ENDIF
+      if( evonly )then
+         write(areadbunt,*) '  IEVT   = ',ievent
+      else
+         write(areadbunt,*) '  IREC   = ',irec
+      endif
 
-      write(AREADBUNT,*) ' iplus  iminus  case'
+      write(areadbunt,*) ' iplus  iminus  case'
       if( iplus==0 .and. iminus==0 )then
          icase = 1
       elseif( iplus==0 .and. iminus==3 )then
@@ -1987,117 +1987,117 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
       elseif( iplus==3 .and. iminus==0 )then
          icase = 3
       endif
-      write(AREADBUNT,'(I5,I7,I6)') iplus, iminus, icase
-      write(AREADBUNT,*)
+      write(areadbunt,'(I5,I7,I6)') iplus, iminus, icase
+      write(areadbunt,*)
    endif
 
 !---- CASE DEPENDs on iplus, iminus
-   IF (iplus == 0) THEN
-      IF (iminus == 0) THEN
+   if (iplus == 0) then
+      if (iminus == 0) then
 !                                             iplus  iminus  case
 !                                               0     0       1
-         if (DABS(u2-u1) < QG_FACT*min(u1,u2)) then
+         if (dabs(u2-u1) < qg_fact*min(u1,u2)) then
             call qg2(u1,u2,dval)
          else
             call qatr3(u1,u2,epsr,epst,ndim,imin,dval,&
             &icon,nout,aux)
          end if
-      ELSE IF (iminus == 3) THEN
+      else if (iminus == 3) then
 !                                               0     3       2
-         dval = 0.0D0
-      ELSE IF (iminus == 1) THEN
+         dval = 0.0d0
+      else if (iminus == 1) then
 !                                               0     1       4
-         if (DABS(u2-uminus) < QG_FACT*min(uminus,u2)) then
+         if (dabs(u2-uminus) < qg_fact*min(uminus,u2)) then
             call qg2(uminus,u2,dval)
          else
             call qatr3(uminus,u2,epsr,epst,ndim,imin,dval,&
             &icon,nout,aux)
          end if
-      ELSE
+      else
 !                                               0     2       5
-         if (dabs(uminus-u1) < QG_FACT*min(u1,uminus)) then
+         if (dabs(uminus-u1) < qg_fact*min(u1,uminus)) then
             call qg2(u1,uminus,dval)
          else
             call qatr3(u1,uminus,epsr,epst,ndim,imin,dval,&
             &icon,nout,aux)
          end if
-      END IF
+      end if
 
-   ELSE IF (iplus == 1) THEN
+   else if (iplus == 1) then
       nsegs = nsegs+1
       uasegs(nsegs) = u1
       ubsegs(nsegs) = uplus
-      IF (iminus == 0) THEN
+      if (iminus == 0) then
 !                                               1     0       7
-         if (DABS(u2-uplus) < QG_FACT*min(uplus,u2)) then
+         if (dabs(u2-uplus) < qg_fact*min(uplus,u2)) then
             call qg2(uplus,u2,dval)
          else
             call qatr3(uplus,u2,epsr,epst,ndim,imin,dval,&
             &icon,nout,aux)
          end if
-      ELSE
+      else
 !                                               1     2       9
-         if (DABS(uminus-uplus) < QG_FACT*min(uplus,uminus)) then
+         if (dabs(uminus-uplus) < qg_fact*min(uplus,uminus)) then
             call qg2(uplus,uminus,dval)
          else
             call qatr3(uplus,uminus,epsr,epst,ndim,imin,dval,&
             &icon,nout,aux)
          end if
-      END IF
+      end if
 
-   ELSE IF (iplus == 2) THEN
+   else if (iplus == 2) then
       nsegs = nsegs+1
       uasegs(nsegs) = uplus
       ubsegs(nsegs) = u2
-      IF (iminus == 0) THEN
+      if (iminus == 0) then
 !                                               2     0       6
-         if (DABS(uplus-u1) < QG_FACT*min(u1,uplus)) then
+         if (dabs(uplus-u1) < qg_fact*min(u1,uplus)) then
             call qg2(u1,uplus,dval)
          else
             call qatr3(u1,uplus,epsr,epst,ndim,imin,dval,&
             &icon,nout,aux)
          end if
-      ELSE
+      else
 !                                               2     1       8
-         if (DABS(uplus-uminus) < QG_FACT*min(uminus,uplus)) then
+         if (dabs(uplus-uminus) < qg_fact*min(uminus,uplus)) then
             call qg2(uminus,uplus,dval)
          else
             call qatr3(uminus,uplus,epsr,epst,ndim,imin,dval,&
             &icon,nout,aux)
          end if
-      END IF
+      end if
 
-   ELSE
+   else
 !                                               3     0       3
       nsegs = nsegs+1
       uasegs(nsegs) = u1
       ubsegs(nsegs) = u2
-   END IF
+   end if
 
-   if( AREADBG )then
-      write(AREADBUNT,*)
-      write(AREADBUNT,*) '  ISRC   = ',isrc
+   if( areadbg )then
+      write(areadbunt,*)
+      write(areadbunt,*) '  ISRC   = ',isrc
 
-      IF( EVONLY )THEN
-         write(AREADBUNT,*) '  IEVT   = ',ievent
-      ELSE
-         write(AREADBUNT,*) '  IREC   = ',irec
-      ENDIF
-      write(AREADBUNT,*) '  NSEGS  = ',nsegs
-      if( nsegs > 0 )then
-         write(AREADBUNT,*) '  UASEGS = ',uasegs(nsegs)
-         write(AREADBUNT,*) '  UBSEGS = ',ubsegs(nsegs)
+      if( evonly )then
+         write(areadbunt,*) '  IEVT   = ',ievent
       else
-         write(AREADBUNT,*) '  UASEGS = NA'
-         write(AREADBUNT,*) '  UBSEGS = NA'
+         write(areadbunt,*) '  IREC   = ',irec
       endif
-      write(AREADBUNT,*) '  DVAL   = ',dval
+      write(areadbunt,*) '  NSEGS  = ',nsegs
+      if( nsegs > 0 )then
+         write(areadbunt,*) '  UASEGS = ',uasegs(nsegs)
+         write(areadbunt,*) '  UBSEGS = ',ubsegs(nsegs)
+      else
+         write(areadbunt,*) '  UASEGS = NA'
+         write(areadbunt,*) '  UBSEGS = NA'
+      endif
+      write(areadbunt,*) '  DVAL   = ',dval
    endif
 
-   RETURN
-END SUBROUTINE PSIDE_TOX
+   return
+end subroutine pside_tox
 
-SUBROUTINE PSIDE2_TOX(DVAL)
+subroutine pside2_tox(dval)
 !***********************************************************************
 !                 PSIDE2_TOX Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -2122,9 +2122,9 @@ SUBROUTINE PSIDE2_TOX(DVAL)
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !---- Set convergence criteria for call to QATR3:
 !         NDIM = maximum number of integration steps
@@ -2132,126 +2132,126 @@ SUBROUTINE PSIDE2_TOX(DVAL)
 !         EPSR = relative error tolerance for integral
 !         EPST = minimum value threshold for integral
 !----
-   INTEGER, PARAMETER :: NDIM = 10, IMIN = 4
-   DOUBLE PRECISION, PARAMETER :: EPSR = 2.0D-2, EPST = 1.0D-5
+   integer, parameter :: ndim = 10, imin = 4
+   double precision, parameter :: epsr = 2.0d-2, epst = 1.0d-5
 
 !---- Set distance factor for switching to Gaussian Quadrature, QG_FACT
 !     If Xmax - Xmin is .LT. QG_FACT*Xmin, then use QG2, where
 !     Xmax and Xmin are the distances to the endpoints of the side.
-   DOUBLE PRECISION, PARAMETER :: QG_FACT = 5.0D0
+   double precision, parameter :: qg_fact = 5.0d0
 
-   INTEGER :: I, J, ISEG, NPTS, NOUT, ICON
-   DOUBLE PRECISION :: DVAL, TEMP, U1, U2, UAV, UBV, TMPVAL,&
-   &AUX(NDIM)
-   DOUBLE PRECISION :: ulist(nvmax2), useg(nvmax,2)
+   integer :: i, j, iseg, npts, nout, icon
+   double precision :: dval, temp, u1, u2, uav, ubv, tmpval,&
+   &aux(ndim)
+   double precision :: ulist(nvmax2), useg(nvmax,2)
    integer :: usign(nvmax), ufac, usegf(nvmax)
-   LOGICAL :: Ltest1,Ltest2
+   logical :: Ltest1,Ltest2
 
 !     Variable Initializations
-   MODNAM = 'PSIDE2_TOX'
+   modnam = 'PSIDE2_TOX'
 
    j = 1
-   DO i = 1, nsegs
+   do i = 1, nsegs
       ulist(j) = uasegs(i)
       j = j+1
       ulist(j) = ubsegs(i)
       j = j+1
-   END DO
+   end do
    npts = 2*nsegs
 
    call hpsort(npts,ulist,nvmax2)
 
-   DO i = 1, nsegs
+   do i = 1, nsegs
       usign(i) = 1
-      IF (uasegs(i) > ubsegs(i)) THEN
+      if (uasegs(i) > ubsegs(i)) then
          usign(i) = -1
          temp = uasegs(i)
          uasegs(i) = ubsegs(i)
          ubsegs(i) = temp
-      END IF
-      IF (uasegs(i) == ubsegs(i)) usign(i) = 0
-   END DO
+      end if
+      if (uasegs(i) == ubsegs(i)) usign(i) = 0
+   end do
    iseg = 0
 
-   DO i = 2,npts
+   do i = 2,npts
       u1 = ulist(i-1)
       u2 = ulist(i)
       ufac = 0
 !*****
 !           compare segment [u1,u2] against each ua,ub
 !*****
-      IF (u1 /= u2) THEN
-         DO j = 1, nsegs
-            IF (u1>=uasegs(j) .and. u2 <= ubsegs(j)) THEN
+      if (u1 /= u2) then
+         do j = 1, nsegs
+            if (u1>=uasegs(j) .and. u2 <= ubsegs(j)) then
                ufac = ufac + usign(j)
-            END IF
-         END DO
+            end if
+         end do
 !*****
 !              make table of segments and factors
 !*****
-         IF (ufac /= 0) THEN
+         if (ufac /= 0) then
             iseg = iseg+1
             useg(iseg,1) = u1
             useg(iseg,2) = u2
             usegf(iseg) = ufac
-         END IF
-      END IF
-   END DO
+         end if
+      end if
+   end do
 !*****
 !            CONSOLIDATE SEGMENTS IF iseg>1
 !*****
    nsegs = iseg
-   IF (nsegs > 1) THEN
-      DO iseg = 2, nsegs
+   if (nsegs > 1) then
+      do iseg = 2, nsegs
          Ltest1 = useg(iseg,1) == useg(iseg-1,2)
          Ltest2 = usegf(iseg)*usegf(iseg-1) > 0
-         IF (Ltest1 .and. Ltest2) THEN
+         if (Ltest1 .and. Ltest2) then
             usegf(iseg-1) = 0
             useg(iseg,1) = useg(iseg-1,1)
-         END IF
-      END DO
-   END IF
-   dval  = 0.0D0
-   IF (nsegs > 0) THEN
-      DO iseg = 1, nsegs
-         IF (usegf(iseg) /= 0) THEN
+         end if
+      end do
+   end if
+   dval  = 0.0d0
+   if (nsegs > 0) then
+      do iseg = 1, nsegs
+         if (usegf(iseg) /= 0) then
             uav = useg(iseg,1)
             ubv = useg(iseg,2)
             ufac = usegf(iseg)
-            if (DABS(ubv-uav) < QG_FACT*min(uav,ubv)) then
+            if (dabs(ubv-uav) < qg_fact*min(uav,ubv)) then
                call qg2(uav,ubv,tmpval)
             else
                call qatr3(uav,ubv,epsr,epst,ndim,imin,tmpval,&
                &icon,nout,aux)
             end if
-            dval  = dval + DBLE(ufac)*tmpval
-         END IF
-      END DO
-   END IF
+            dval  = dval + dble(ufac)*tmpval
+         end if
+      end do
+   end if
 
-   if( AREADBG )then
-      write(AREADBUNT,*)
-      write(AREADBUNT,*) 'AREA Debug Sub_PSIDE2_TOX: '
-      write(AREADBUNT,*) '  ISRC   = ',isrc
+   if( areadbg )then
+      write(areadbunt,*)
+      write(areadbunt,*) 'AREA Debug Sub_PSIDE2_TOX: '
+      write(areadbunt,*) '  ISRC   = ',isrc
 
-      IF( EVONLY )THEN
-         write(AREADBUNT,*) '  IEVT   = ',ievent
-      ELSE
-         write(AREADBUNT,*) '  IREC   = ',irec
-      ENDIF
-      write(AREADBUNT,*) '  NSEGS  = ',nsegs
-      if( nsegs > 0 )then
-         write(AREADBUNT,*) '  UASEGS = ',uasegs(nsegs)
-         write(AREADBUNT,*) '  UBSEGS = ',ubsegs(nsegs)
+      if( evonly )then
+         write(areadbunt,*) '  IEVT   = ',ievent
       else
-         write(AREADBUNT,*) '  UASEGS = NA'
-         write(AREADBUNT,*) '  UBSEGS = NA'
+         write(areadbunt,*) '  IREC   = ',irec
       endif
-      write(AREADBUNT,*) '  DVAL   = ',dval
+      write(areadbunt,*) '  NSEGS  = ',nsegs
+      if( nsegs > 0 )then
+         write(areadbunt,*) '  UASEGS = ',uasegs(nsegs)
+         write(areadbunt,*) '  UBSEGS = ',ubsegs(nsegs)
+      else
+         write(areadbunt,*) '  UASEGS = NA'
+         write(areadbunt,*) '  UBSEGS = NA'
+      endif
+      write(areadbunt,*) '  DVAL   = ',dval
    endif
 
-   RETURN
-END SUBROUTINE PSIDE2_TOX
+   return
+end subroutine pside2_tox
 
 !
 !     ..................................................................
@@ -2288,19 +2288,19 @@ END SUBROUTINE PSIDE2_TOX
 !
 !     ..................................................................
 !
-SUBROUTINE QG2(XL,XU,Y)
+subroutine qg2(xl,xu,y)
 !
 !
-   IMPLICIT NONE
+   implicit none
 
-   DOUBLE PRECISION :: A, B, Y, XL, XU, P1, P2
+   double precision :: a, b, y, xl, xu, p1, p2
 
-   A = 0.5D0*(XU+XL)
-   B = XU-XL
-   Y = 0.2886751D0*B
-   CALL PLUMEF(A+Y,P1)
-   CALL PLUMEF(A-Y,P2)
-   Y = 0.5D0*B*(P1+P2)
+   a = 0.5d0*(xu+xl)
+   b = xu-xl
+   y = 0.2886751d0*b
+   call plumef(a+y,p1)
+   call plumef(a-y,p2)
+   y = 0.5d0*b*(p1+p2)
 
-   RETURN
-END SUBROUTINE QG2
+   return
+end subroutine qg2

@@ -22,7 +22,7 @@ subroutine uninam( prenam, defnam, comnam, lcom )
    lcom = lpre + 1 + ldef
    inquire( file=comnam, exist=jexist )
    if( jexist ) then
-      call DATE_AND_TIME( dfield, tfield )
+      call date_and_time( dfield, tfield )
       comnam = prenam // '_' // dfield // '_' // defnam
       lcom = lcom + 9
       inquire( file=comnam, exist=jexist )
@@ -38,7 +38,7 @@ subroutine uninam( prenam, defnam, comnam, lcom )
             i = 1
             inquire( file=comnam, exist=jexist )
             do while( jexist .and. i < nmax )
-               call DATE_AND_TIME( dfield, tfield )
+               call date_and_time( dfield, tfield )
                comnam = prenam // '_' // dfield // tfield // '_'&
                &// defnam
                i = i + 1

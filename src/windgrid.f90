@@ -1,4 +1,4 @@
-SUBROUTINE GRDWS
+subroutine grdws
 !=======================================================================
 !                GRDWS module of the AERMOD Dispersion Model
 !
@@ -27,12 +27,12 @@ SUBROUTINE GRDWS
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER (LEN=12) :: MODNAM
+   use main1
+   implicit none
+   character (len=12) :: modnam
 
-   INTEGER          :: PINDEX, GINDEX
-   DOUBLE PRECISION :: VBELOW, HTBELO
+   integer          :: pindex, gindex
+   double precision :: vbelow, htbelo
 !
 !---- Data definitions
 !        PINDEX    Array index for the profile of observed values
@@ -43,12 +43,12 @@ SUBROUTINE GRDWS
 !
 !---- Data initializations
 !
-   MODNAM = 'GRDWS       '
-   PATH   = 'MX'
+   modnam = 'GRDWS       '
+   path   = 'MX'
 !
-   GINDEX = 1
-   PINDEX = 1
-   VBELOW = -999.0D0
+   gindex = 1
+   pindex = 1
+   vbelow = -999.0d0
 !
 !     ------------------------------------------------------------------
 !     Loop over each grid level until a value is computed for each level
@@ -56,62 +56,62 @@ SUBROUTINE GRDWS
 !     profile exceeds the maximum number
 !     ------------------------------------------------------------------
 
-   DO WHILE( GINDEX <= MXGLVL )
+   do while( gindex <= mxglvl )
 
 
 !        -------------------------------------------
 !        Now begin looping over the observed profile
 !        -------------------------------------------
 !
-      DO WHILE( GRIDWS(GINDEX)<-90.0D0 .and. PINDEX<=NPLVLS )
+      do while( gridws(gindex)<-90.0d0 .and. pindex<=nplvls )
 !
-         IF( PFLWS(PINDEX) >= 0.0D0 )THEN
+         if( pflws(pindex) >= 0.0d0 )then
 !
 !              -------------------------------------------------
 !              Data at this level are not missing; determine its
 !              location relative to the height at which data are
 !              required and act accordingly.
 !              -------------------------------------------------
-            IF( DABS(PFLHT(PINDEX) - GRIDHT(GINDEX) )<=0.1D0 )THEN
+            if( dabs(pflht(pindex) - gridht(gindex) )<=0.1d0 )then
 !                 USE the parameter at this level
-               GRIDWS(GINDEX) = PFLWS(PINDEX)
+               gridws(gindex) = pflws(pindex)
 !
-            ELSEIF( GRIDHT(GINDEX)  >  PFLHT(PINDEX) )THEN
-               IF( PINDEX < NPLVLS )THEN
+            elseif( gridht(gindex)  >  pflht(pindex) )then
+               if( pindex < nplvls )then
 !                    SAVE value for possible interpolation
-                  VBELOW = PFLWS(PINDEX)
-                  HTBELO = PFLHT(PINDEX)
+                  vbelow = pflws(pindex)
+                  htbelo = pflht(pindex)
 
-               ELSE   ! this is the top level
+               else   ! this is the top level
 !                    PROFILE upward from this level        --- CALL XTRPWS
-                  CALL XTRPWS ( PFLHT(PINDEX), PFLWS(PINDEX),&
-                  &GRIDHT(GINDEX), GRIDWS(GINDEX) )
-               ENDIF
+                  call xtrpws ( pflht(pindex), pflws(pindex),&
+                  &gridht(gindex), gridws(gindex) )
+               endif
 !
-            ELSEIF( GRIDHT(GINDEX)  <  PFLHT(PINDEX) )THEN
-               IF( VBELOW >= 0.0D0 )THEN
+            elseif( gridht(gindex)  <  pflht(pindex) )then
+               if( vbelow >= 0.0d0 )then
 !                    INTERPOLATE between the two values    --- CALL NTRPWS
-                  CALL NTRPWS ( HTBELO, VBELOW, PFLHT(PINDEX),&
-                  &PFLWS(PINDEX), GRIDHT(GINDEX),&
-                  &GRIDWS(GINDEX) )
+                  call ntrpws ( htbelo, vbelow, pflht(pindex),&
+                  &pflws(pindex), gridht(gindex),&
+                  &gridws(gindex) )
 
-               ELSE   ! BELOW is missing
+               else   ! BELOW is missing
 !                    PROFILE down from this level          --- CALL XTRPWS
-                  CALL XTRPWS ( PFLHT(PINDEX), PFLWS(PINDEX),&
-                  &GRIDHT(GINDEX), GRIDWS(GINDEX) )
+                  call xtrpws ( pflht(pindex), pflws(pindex),&
+                  &gridht(gindex), gridws(gindex) )
 
-               ENDIF
+               endif
 !
-            ELSE
+            else
 !                 This section is for DEBUGging - the program should never
 !                 reach this point
-               PRINT *, ' ---> ERROR: The search for data to'
-               PRINT *, '             construct the gridded profile'
-               PRINT *, '    of speed failed on ', KURDAT
+               print *, ' ---> ERROR: The search for data to'
+               print *, '             construct the gridded profile'
+               print *, '    of speed failed on ', kurdat
 !
-            ENDIF
+            endif
 !
-         ELSE
+         else
 !
 !              -------------------------------------------------------
 !              The parameter at this level is missing - if this is not
@@ -119,24 +119,24 @@ SUBROUTINE GRDWS
 !              level, then make a computation.
 !              -------------------------------------------------------
 !
-            IF( PINDEX == NPLVLS )THEN
-               IF( VBELOW  >=  0.0D0 )THEN
+            if( pindex == nplvls )then
+               if( vbelow  >=  0.0d0 )then
 !                    PROFILE up from BELOW                 --- CALL XTRPWS
-                  CALL XTRPWS ( HTBELO, VBELOW,&
-                  &GRIDHT(GINDEX), GRIDWS(GINDEX) )
+                  call xtrpws ( htbelo, vbelow,&
+                  &gridht(gindex), gridws(gindex) )
 
-               ELSE   ! there are no data
+               else   ! there are no data
 !                    PROFILE up from BELOW with UREF       --- CALL XTRPWS
-                  CALL XTRPWS ( UREFHT, UREF,&
-                  &GRIDHT(GINDEX), GRIDWS(GINDEX) )
-               ENDIF
+                  call xtrpws ( urefht, uref,&
+                  &gridht(gindex), gridws(gindex) )
+               endif
 !
-            ELSE   ! this is not the top level, repeat loop
-               CONTINUE
+            else   ! this is not the top level, repeat loop
+               continue
 !
-            ENDIF
+            endif
 !
-         ENDIF   ! parameter (not) missing at this level
+         endif   ! parameter (not) missing at this level
 !
 !           ---------------------------------------------------------
 !           Increment the observed profile counter if a value at this
@@ -144,12 +144,12 @@ SUBROUTINE GRDWS
 !           processing
 !           ---------------------------------------------------------
 !
-         IF( (GRIDWS(GINDEX) < 0.0D0)  .and.&
-         &(PINDEX < NPLVLS) )THEN
-            PINDEX = PINDEX + 1
-         ENDIF
+         if( (gridws(gindex) < 0.0d0)  .and.&
+         &(pindex < nplvls) )then
+            pindex = pindex + 1
+         endif
 !
-      END DO   ! Loop over observed data profile
+      end do   ! Loop over observed data profile
 !
 !        ------------------------------------------------------------
 !        Increment the gridded profile counter and repeat the process
@@ -162,16 +162,16 @@ SUBROUTINE GRDWS
 !        UMINGR, a value defined in a PARAMETER  statement in
 !        MAIN1.INC, and taken to be 0.01 m/s for now
 
-      GRIDWS(GINDEX) = MAX( UMINGR, GRIDWS(GINDEX) )
+      gridws(gindex) = max( umingr, gridws(gindex) )
 
-      GINDEX = GINDEX + 1
+      gindex = gindex + 1
 !
-   END DO   ! Loop over gridded data profile
+   end do   ! Loop over gridded data profile
 !
-   RETURN
-END SUBROUTINE GRDWS
+   return
+end subroutine grdws
 
-SUBROUTINE REFWS( PRFLHT, UTHEOR )
+subroutine refws( prflht, utheor )
 !=======================================================================
 !                REFWS  Module of the AERMOD Dispersion Model
 !
@@ -213,11 +213,11 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
-   DOUBLE PRECISION :: UNSTU, STBLU, PRFLHT, UTHEOR, VLDLB, PIVALU,&
-   &KVALU, UFACT, UFACT2
+   use main1
+   implicit none
+   character :: modnam*12
+   double precision :: unstu, stblu, prflht, utheor, vldlb, pivalu,&
+   &kvalu, ufact, ufact2
 
 !
 !
@@ -231,15 +231,15 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !
 !---- Data initializations
 !
-   MODNAM = ' REFWS'
-   PIVALU = PI
-   KVALU  = VONKAR
+   modnam = ' REFWS'
+   pivalu = pi
+   kvalu  = vonkar
 !
 !
 !     Compute the minimum valid height (VLDLB) for these computations.
 !     ----------------------------------------------------------------
 !
-   VLDLB =  7.0D0 * SFCZ0
+   vldlb =  7.0d0 * sfcz0
 !
 !     -------------------------------------------------------------
 !     Check the location of the reference height and the height at
@@ -250,14 +250,14 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !     unstable amosphere, positive for a stable atmosphere).
 !     -------------------------------------------------------------
 !
-   IF( (UREFHT > VLDLB)  .and.  (UREFHT <= ZI) )THEN
+   if( (urefht > vldlb)  .and.  (urefht <= zi) )then
 !
 !        ----------------------------------------------------------
 !        The reference height is above the valid lower bound height
 !        and below the mixing height
 !        ----------------------------------------------------------
 !
-      IF( (PRFLHT > VLDLB)  .and.  (PRFLHT <= ZI) )THEN
+      if( (prflht > vldlb)  .and.  (prflht <= zi) )then
 !
 !           ---------------------------------------------------------
 !           The required height is above the valid lower bound height
@@ -265,14 +265,14 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !           required height
 !           ---------------------------------------------------------
 !
-         IF( OBULEN < 0.0D0 )THEN
-            UTHEOR = UNSTU( USTAR,PRFLHT,OBULEN,SFCZ0,&
-            &PIVALU, KVALU )
-         ELSE
-            UTHEOR = STBLU( USTAR,PRFLHT,OBULEN,SFCZ0,KVALU )
-         ENDIF
+         if( obulen < 0.0d0 )then
+            utheor = unstu( ustar,prflht,obulen,sfcz0,&
+            &pivalu, kvalu )
+         else
+            utheor = stblu( ustar,prflht,obulen,sfcz0,kvalu )
+         endif
 !
-      ELSEIF( PRFLHT <= VLDLB )THEN
+      elseif( prflht <= vldlb )then
 !
 !           ----------------------------------------------------------
 !           The required height is below the displacement height -
@@ -285,88 +285,88 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !
 !RJP        Add UFACT
 
-         UFACT = PRFLHT / VLDLB
+         ufact = prflht / vldlb
 
-         IF( OBULEN < 0.0D0 )THEN
-            UTHEOR = UNSTU( USTAR,VLDLB,OBULEN,SFCZ0,&
-            &PIVALU, KVALU ) * UFACT
-         ELSE
-            UTHEOR = STBLU( USTAR,VLDLB,OBULEN,&
-            &SFCZ0,KVALU ) * UFACT
-         ENDIF
+         if( obulen < 0.0d0 )then
+            utheor = unstu( ustar,vldlb,obulen,sfcz0,&
+            &pivalu, kvalu ) * ufact
+         else
+            utheor = stblu( ustar,vldlb,obulen,&
+            &sfcz0,kvalu ) * ufact
+         endif
 !
-      ELSEIF( PRFLHT > ZI )THEN
+      elseif( prflht > zi )then
 !
 !           --------------------------------------------------------
 !           The required height is above the mixing height - profile
 !           only to the mixing height and persist to the required ht
 !           --------------------------------------------------------
 !
-         IF( OBULEN < 0.0D0 )THEN
-            UTHEOR = UNSTU( USTAR,ZI,OBULEN,SFCZ0,&
-            &PIVALU, KVALU )
-         ELSE
-            UTHEOR = STBLU( USTAR,ZI,OBULEN,SFCZ0,KVALU )
-         ENDIF
+         if( obulen < 0.0d0 )then
+            utheor = unstu( ustar,zi,obulen,sfcz0,&
+            &pivalu, kvalu )
+         else
+            utheor = stblu( ustar,zi,obulen,sfcz0,kvalu )
+         endif
 !
-      ENDIF   ! required ht
+      endif   ! required ht
 !
-   ELSEIF( UREFHT > ZI )THEN
+   elseif( urefht > zi )then
 !
 !        -----------------------------------------------
 !        The reference height is above the mixing height
 !        -----------------------------------------------
 !
 
-      IF( (PRFLHT > VLDLB)  .and.  (PRFLHT <= ZI) )THEN
+      if( (prflht > vldlb)  .and.  (prflht <= zi) )then
 !
 !           ---------------------------------------------------------
 !           The required height is above the valid lower bound height
 !           and below the mixing height.
 !           ---------------------------------------------------------
 !
-         IF( OBULEN < 0.0D0 )THEN
-            UTHEOR = UNSTU( USTAR,PRFLHT,OBULEN,SFCZ0,&
-            &PIVALU, KVALU )
-         ELSE
-            UTHEOR = STBLU( USTAR,PRFLHT,OBULEN,SFCZ0,KVALU )
-         ENDIF
+         if( obulen < 0.0d0 )then
+            utheor = unstu( ustar,prflht,obulen,sfcz0,&
+            &pivalu, kvalu )
+         else
+            utheor = stblu( ustar,prflht,obulen,sfcz0,kvalu )
+         endif
 !
 !
-      ELSEIF( PRFLHT < VLDLB )THEN
+      elseif( prflht < vldlb )then
 !
 !           ---------------------------------------------------------
 !           The required height is below the valid lower bound height
 !           ---------------------------------------------------------
 !
-         IF( OBULEN < 0.0D0 )THEN
-            UTHEOR = UNSTU( USTAR,VLDLB,OBULEN,SFCZ0,&
-            &PIVALU, KVALU )
-         ELSE
-            UTHEOR = STBLU( USTAR,VLDLB,OBULEN,&
-            &SFCZ0, KVALU )
-         ENDIF
+         if( obulen < 0.0d0 )then
+            utheor = unstu( ustar,vldlb,obulen,sfcz0,&
+            &pivalu, kvalu )
+         else
+            utheor = stblu( ustar,vldlb,obulen,&
+            &sfcz0, kvalu )
+         endif
 !
-      ELSEIF( PRFLHT > ZI )THEN
+      elseif( prflht > zi )then
 !
 !           --------------------------------------------------------
 !           The required height is above the mixing height - use the
 !           value from the reference height
 !           --------------------------------------------------------
 !
-         IF( OBULEN < 0.0D0 )THEN
-            UTHEOR = UREF
-         ELSE
-            UTHEOR = UREF
-         ENDIF
+         if( obulen < 0.0d0 )then
+            utheor = uref
+         else
+            utheor = uref
+         endif
 !
-      ENDIF   ! required ht
+      endif   ! required ht
 
-   ELSEIF (UREFHT <= VLDLB) THEN
+   elseif (urefht <= vldlb) then
 !
-      UFACT2 = UREFHT/VLDLB
+      ufact2 = urefht/vldlb
 
-      IF( (PRFLHT > VLDLB)  .and.  (PRFLHT <= ZI) )THEN
+      if( (prflht > vldlb)  .and.  (prflht <= zi) )then
 !
 !           ---------------------------------------------------------
 !           The required height is above the valid lower bound height
@@ -374,14 +374,14 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !           required height
 !           ---------------------------------------------------------
 !
-         IF( OBULEN < 0.0D0 )THEN
-            UTHEOR = UNSTU( USTAR,PRFLHT,OBULEN,SFCZ0,&
-            &PIVALU, KVALU )
-         ELSE
-            UTHEOR = STBLU( USTAR,PRFLHT,OBULEN,SFCZ0,KVALU )
-         ENDIF
+         if( obulen < 0.0d0 )then
+            utheor = unstu( ustar,prflht,obulen,sfcz0,&
+            &pivalu, kvalu )
+         else
+            utheor = stblu( ustar,prflht,obulen,sfcz0,kvalu )
+         endif
 !
-      ELSEIF( PRFLHT <= VLDLB )THEN
+      elseif( prflht <= vldlb )then
 !
 !           ----------------------------------------------------------
 !           The required height is below the displacement height -
@@ -394,36 +394,36 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !
 !RJP        Add UFACT
 
-         UFACT = PRFLHT / VLDLB
+         ufact = prflht / vldlb
 
-         UTHEOR = UREF * UFACT / UFACT2
+         utheor = uref * ufact / ufact2
 
 !
-      ELSEIF( PRFLHT > ZI )THEN
+      elseif( prflht > zi )then
 !
 !           --------------------------------------------------------
 !           The required height is above the mixing height - profile
 !           only to the mixing height and persist to the required ht
 !           --------------------------------------------------------
 !
-         IF( OBULEN < 0.0D0 )THEN
-            UTHEOR = UNSTU( USTAR,ZI,OBULEN,SFCZ0,&
-            &PIVALU, KVALU )
-         ELSE
-            UTHEOR = STBLU( USTAR,ZI,OBULEN,SFCZ0,KVALU )
-         ENDIF
+         if( obulen < 0.0d0 )then
+            utheor = unstu( ustar,zi,obulen,sfcz0,&
+            &pivalu, kvalu )
+         else
+            utheor = stblu( ustar,zi,obulen,sfcz0,kvalu )
+         endif
 !
-      ENDIF   ! required ht
+      endif   ! required ht
 !
-   ENDIF   ! reference ht
-!
-!
-   RETURN
-END SUBROUTINE REFWS
+   endif   ! reference ht
 !
 !
-DOUBLE PRECISION FUNCTION UNSTU( USTR, Z, OBLEN, Z0, VALPI,&
-&VALK )
+   return
+end subroutine refws
+!
+!
+double precision function unstu( ustr, z, oblen, z0, valpi,&
+&valk )
 !=======================================================================
 !                UNSTU  Module of the AERMOD Dispersion Model
 !
@@ -461,10 +461,10 @@ DOUBLE PRECISION FUNCTION UNSTU( USTR, Z, OBLEN, Z0, VALPI,&
 !
 !---- Variable declarations
 !
-   IMPLICIT NONE
+   implicit none
 
-   DOUBLE PRECISION :: USTR, Z, OBLEN, Z0, X0, XZ0, PSIM,&
-   &PSIMZ0, VALPI, VALK
+   double precision :: ustr, z, oblen, z0, x0, xz0, psim,&
+   &psimz0, valpi, valk
 !
 !
 !---- Data dictionary
@@ -480,27 +480,27 @@ DOUBLE PRECISION FUNCTION UNSTU( USTR, Z, OBLEN, Z0, VALPI,&
 !.......................................................................
 !
 
-   X0  = ( 1.0D0 - 16.0D0 * Z / OBLEN ) ** 0.25D0
+   x0  = ( 1.0d0 - 16.0d0 * z / oblen ) ** 0.25d0
 
 !jop  Compute term for computation of PSI(Z0/L)
-   XZ0 = ( 1.0D0 - 16.0D0 * Z0/ OBLEN ) ** 0.25D0
+   xz0 = ( 1.0d0 - 16.0d0 * z0/ oblen ) ** 0.25d0
 !
-   PSIM   =  2.0D0 * DLOG( (1.0D0 + X0) / 2.0D0 )    +&
-   &DLOG( (1.0D0 + X0*X0) / 2.0D0 ) -&
-   &2.0D0 * DATAN( X0 ) + VALPI / 2.0D0
+   psim   =  2.0d0 * dlog( (1.0d0 + x0) / 2.0d0 )    +&
+   &dlog( (1.0d0 + x0*x0) / 2.0d0 ) -&
+   &2.0d0 * datan( x0 ) + valpi / 2.0d0
 
 !jop  Compute PSI(Z0/L)
-   PSIMZ0 =  2.0D0 * DLOG( (1.0D0 + XZ0) / 2.0D0 )     +&
-   &DLOG( (1.0D0 + XZ0*XZ0) / 2.0D0 ) -&
-   &2.0D0 * DATAN( XZ0 ) + VALPI / 2.0D0
+   psimz0 =  2.0d0 * dlog( (1.0d0 + xz0) / 2.0d0 )     +&
+   &dlog( (1.0d0 + xz0*xz0) / 2.0d0 ) -&
+   &2.0d0 * datan( xz0 ) + valpi / 2.0d0
 !
-   UNSTU = (USTR/VALK) * ( DLOG( Z / Z0 ) - PSIM + PSIMZ0 )
+   unstu = (ustr/valk) * ( dlog( z / z0 ) - psim + psimz0 )
 !
-   RETURN
-END FUNCTION UNSTU
+   return
+end function unstu
 !
 !
-DOUBLE PRECISION FUNCTION STBLU( USTR, Z, OBLEN, Z0, VALK )
+double precision function stblu( ustr, z, oblen, z0, valk )
 !=======================================================================
 !                STBLU  Module of the AERMOD Dispersion Model
 !
@@ -531,10 +531,10 @@ DOUBLE PRECISION FUNCTION STBLU( USTR, Z, OBLEN, Z0, VALK )
 !
 !---- Variable declarations
 !
-   IMPLICIT NONE
+   implicit none
 
-   DOUBLE PRECISION :: USTR, Z, OBLEN, Z0, PSIM, VALK,&
-   &PSIMZ0
+   double precision :: ustr, z, oblen, z0, psim, valk,&
+   &psimz0
 !
 !
 !---- Data dictionary
@@ -547,18 +547,18 @@ DOUBLE PRECISION FUNCTION STBLU( USTR, Z, OBLEN, Z0, VALK )
 !
 !.......................................................................
 !
-   PSIM   = -17.0D0 * ( 1.0D0 - DEXP( -0.29D0 * Z / OBLEN ) )
+   psim   = -17.0d0 * ( 1.0d0 - dexp( -0.29d0 * z / oblen ) )
 
 !jop  Compute PSI(Z0/L)
-   PSIMZ0 = -17.0D0 * ( 1.0D0 - DEXP( -0.29D0 * Z0 / OBLEN ) )
+   psimz0 = -17.0d0 * ( 1.0d0 - dexp( -0.29d0 * z0 / oblen ) )
 
-   STBLU = (USTR/VALK) * ( DLOG( Z / Z0 ) - PSIM + PSIMZ0 )
+   stblu = (ustr/valk) * ( dlog( z / z0 ) - psim + psimz0 )
 !
-   RETURN
-END FUNCTION STBLU
+   return
+end function stblu
 !
 !
-SUBROUTINE NTRPWS ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALOUT )
+subroutine ntrpws ( htbelo,vbelow, htabov,vabove, reqdht,valout )
 !=======================================================================
 !                NTRPWS Module of the AERMOD Dispersion Model
 !
@@ -594,10 +594,10 @@ SUBROUTINE NTRPWS ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALOUT )
 !
 !---- Variable declarations
 !
-   IMPLICIT NONE
+   implicit none
 
-   DOUBLE PRECISION :: REFABV, REFBLW, RATIO, VALOUT, VABOVE, HTABOV,&
-   &VBELOW, REQDHT, HTBELO, REFREQ, VALINT, REFINT
+   double precision :: refabv, refblw, ratio, valout, vabove, htabov,&
+   &vbelow, reqdht, htbelo, refreq, valint, refint
 !
 !---- Data dictionary
 !
@@ -616,32 +616,32 @@ SUBROUTINE NTRPWS ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALOUT )
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height below the requested height (REFBLW)    --- CALL REFWS
 !
-   CALL REFWS (  HTBELO, REFBLW )
+   call refws (  htbelo, refblw )
 
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height above the requested height (REFABV)    --- CALL REFWS
 !
-   CALL REFWS (  HTABOV, REFABV )
+   call refws (  htabov, refabv )
 !     COMPUTE the value of the parameter from the reference profile
 !     at the requested height (REFREQ)                     --- CALL REFWS
 !
-   CALL REFWS ( REQDHT, REFREQ )
+   call refws ( reqdht, refreq )
 
 !
 !     Linearly interpolate to REQDHT from observed and reference profiles
-   CALL GINTRP ( HTBELO,VBELOW, HTABOV, VABOVE, REQDHT,VALINT )
-   CALL GINTRP ( HTBELO,REFBLW, HTABOV, REFABV, REQDHT,REFINT )
+   call gintrp ( htbelo,vbelow, htabov, vabove, reqdht,valint )
+   call gintrp ( htbelo,refblw, htabov, refabv, reqdht,refint )
 !     REFREQ is value from REFerence profile at REQuired height
 !     REFINT is value from REFerence profile linearly INTerpolated to req ht
 !     VALINT is the observed VALue linearly INTerpolated to required height
 
-   RATIO  = REFREQ/REFINT
-   VALOUT = RATIO * VALINT
+   ratio  = refreq/refint
+   valout = ratio * valint
 
-   RETURN
-END SUBROUTINE NTRPWS
+   return
+end subroutine ntrpws
 
-SUBROUTINE XTRPWS ( PFLZ, PFLVAL, GRDZ, VALOUT )
+subroutine xtrpws ( pflz, pflval, grdz, valout )
 !=======================================================================
 !                XTRPWS Module of the AERMOD Dispersion Model
 !
@@ -673,10 +673,10 @@ SUBROUTINE XTRPWS ( PFLZ, PFLVAL, GRDZ, VALOUT )
 !
 !---- Variable declarations
 !
-   IMPLICIT NONE
+   implicit none
 
-   DOUBLE PRECISION :: PFLZ, PFLVAL, GRDZ, VALOUT, VALOBS, VALGRD,&
-   &RATIO
+   double precision :: pflz, pflval, grdz, valout, valobs, valgrd,&
+   &ratio
 !
 !---- Data dictionary
 !     VALOBS   Value returned from the reference profile at PFLZ
@@ -695,22 +695,22 @@ SUBROUTINE XTRPWS ( PFLZ, PFLVAL, GRDZ, VALOUT )
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height of the highest(lowest) observed value --- CALL REFWS
 !
-   CALL REFWS ( PFLZ, VALOBS )
+   call refws ( pflz, valobs )
 !
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height where a value is required             --- CALL REFWS
 !
-   CALL REFWS ( GRDZ, VALGRD )
+   call refws ( grdz, valgrd )
 !
-   RATIO  = VALGRD / VALOBS
+   ratio  = valgrd / valobs
 !
-   VALOUT = RATIO * PFLVAL
+   valout = ratio * pflval
 !
-   RETURN
-END SUBROUTINE XTRPWS
+   return
+end subroutine xtrpws
 
 
-SUBROUTINE GRDWD
+subroutine grdwd
 !=======================================================================
 !                GRDWD module of the AERMOD Dispersion Model
 !
@@ -742,12 +742,12 @@ SUBROUTINE GRDWD
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER          :: PINDEX, GINDEX
-   DOUBLE PRECISION :: VBELOW, HTBELO
+   integer          :: pindex, gindex
+   double precision :: vbelow, htbelo
 !
 !---- Data definitions
 !        PINDEX    Array index for the profile of observed values
@@ -758,11 +758,11 @@ SUBROUTINE GRDWD
 !
 !---- Data initializations
 !
-   MODNAM = 'GRDWD '
+   modnam = 'GRDWD '
 !
-   GINDEX = 1
-   PINDEX = 1
-   VBELOW = -999.0D0
+   gindex = 1
+   pindex = 1
+   vbelow = -999.0d0
 !
 !     ------------------------------------------------------------------
 !     Loop over each grid level until a value is computed for each level
@@ -771,71 +771,71 @@ SUBROUTINE GRDWD
 !     NOTE: There are 3 options for turning the wind with height.
 !     ------------------------------------------------------------------
 
-   DO WHILE( GINDEX <= MXGLVL )
+   do while( gindex <= mxglvl )
 
 !        -------------------------------------------
 !        Now begin looping over the observed profile
 !        -------------------------------------------
 !
-      DO WHILE( GRIDWD(GINDEX)<-90.0D0 .and. PINDEX<=NPLVLS )
+      do while( gridwd(gindex)<-90.0d0 .and. pindex<=nplvls )
 !
-         IF( PFLWD(PINDEX) >= 0.0D0 )THEN
+         if( pflwd(pindex) >= 0.0d0 )then
 !
 !              ----------------------------------------------------------
 !              Data at this level are not missing; determine its location
 !              relative to the height at which data are required and act
 !              accordingly.
 !              ----------------------------------------------------------
-            IF( DABS(PFLHT(PINDEX)-GRIDHT(GINDEX)) <= 0.1D0 )THEN
+            if( dabs(pflht(pindex)-gridht(gindex)) <= 0.1d0 )then
 !                 USE the parameter at this level
 
-               IF (PFLWD(PINDEX) > 360.0D0) THEN
-                  PFLWD(PINDEX) = PFLWD(PINDEX) - 360.0D0
-               ELSE IF (PFLWD(PINDEX) <= 0.0D0) THEN
-                  PFLWD(PINDEX) = PFLWD(PINDEX) + 360.0D0
-               END IF
+               if (pflwd(pindex) > 360.0d0) then
+                  pflwd(pindex) = pflwd(pindex) - 360.0d0
+               else if (pflwd(pindex) <= 0.0d0) then
+                  pflwd(pindex) = pflwd(pindex) + 360.0d0
+               end if
 
-               GRIDWD(GINDEX) = PFLWD(PINDEX)
+               gridwd(gindex) = pflwd(pindex)
 !
-            ELSEIF( GRIDHT(GINDEX)  >  PFLHT(PINDEX) )THEN
-               IF( PINDEX < NPLVLS )THEN
+            elseif( gridht(gindex)  >  pflht(pindex) )then
+               if( pindex < nplvls )then
 !                    SAVE value for possible interpolation
-                  VBELOW = PFLWD(PINDEX)
-                  HTBELO = PFLHT(PINDEX)
+                  vbelow = pflwd(pindex)
+                  htbelo = pflht(pindex)
 
-               ELSE   ! this is the top level
+               else   ! this is the top level
 !                    PROFILE upward from this level        --- CALL XTRPWD
 ! JAT 06/22/21 D065 REMOVE PFLHT AND GRIDHT AS UNUSED INPUT ARGUMENTS
 !                     CALL XTRPWD ( PFLHT(PINDEX), PFLWD(PINDEX),
 !     &                             GRIDHT(GINDEX), GRIDWD(GINDEX) )
-                  CALL XTRPWD (  PFLWD(PINDEX),GRIDWD(GINDEX) )
-               ENDIF
+                  call xtrpwd (  pflwd(pindex),gridwd(gindex) )
+               endif
 !
-            ELSEIF( GRIDHT(GINDEX)  <  PFLHT(PINDEX) )THEN
-               IF( VBELOW >= 0.0D0 )THEN
+            elseif( gridht(gindex)  <  pflht(pindex) )then
+               if( vbelow >= 0.0d0 )then
 !                    INTERPOLATE between the two values    --- CALL NTRPWD
-                  CALL NTRPWD ( HTBELO, VBELOW, PFLHT(PINDEX),&
-                  &PFLWD(PINDEX), GRIDHT(GINDEX),&
-                  &GRIDWD(GINDEX) )
+                  call ntrpwd ( htbelo, vbelow, pflht(pindex),&
+                  &pflwd(pindex), gridht(gindex),&
+                  &gridwd(gindex) )
 
-               ELSE   ! BELOW is missing
+               else   ! BELOW is missing
 !                    PROFILE down from this level          --- CALL XTRPWD
 ! JAT 06/22/21 D065 REMOVE PFLHT AND GRIDHT AS UNUSED INPUT ARGUMENTS
 !                     CALL XTRPWD ( PFLHT(PINDEX), PFLWD(PINDEX),
 !     &                             GRIDHT(GINDEX), GRIDWD(GINDEX) )
-                  CALL XTRPWD ( PFLWD(PINDEX),GRIDWD(GINDEX) )
-               ENDIF
+                  call xtrpwd ( pflwd(pindex),gridwd(gindex) )
+               endif
 !
-            ELSE
+            else
 !                 This section is for DEBUGging - the program should never
 !                 reach this point
-               PRINT *, ' ---> ERROR: The search for data to'
-               PRINT *, '             construct the gridded profile'
-               PRINT *, '      of WDIR failed on ', KURDAT
+               print *, ' ---> ERROR: The search for data to'
+               print *, '             construct the gridded profile'
+               print *, '      of WDIR failed on ', kurdat
 !
-            ENDIF
+            endif
 !
-         ELSE
+         else
 !
 !              -------------------------------------------------------
 !              The parameter at this level is missing - if this is not
@@ -843,41 +843,41 @@ SUBROUTINE GRDWD
 !              level, then make a computation.
 !              -------------------------------------------------------
 !
-            IF( PINDEX == NPLVLS )THEN
-               IF( VBELOW >= 0.0D0 )THEN
+            if( pindex == nplvls )then
+               if( vbelow >= 0.0d0 )then
 !                    PROFILE up from BELOW                 --- CALL XTRPWD
 ! JAT 06/22/21 REMOVE HTBELO AND GRIDHT AS UNUSED INPUT ARGUMENTS
 !                     CALL XTRPWD ( HTBELO, VBELOW,
 !     &                             GRIDHT(GINDEX), GRIDWD(GINDEX) )
-                  CALL XTRPWD ( VBELOW, GRIDWD(GINDEX) )
+                  call xtrpwd ( vbelow, gridwd(gindex) )
 
-               ELSE   ! there are no data
+               else   ! there are no data
 !                    PROFILE up from BELOW with WDREF      --- CALL XTRPWD
 ! JAT 06/22/21 REMOVE UREFHT AND GRIDHT AS UNUSED INPUT ARGUMENTS
 !                     CALL XTRPWD ( UREFHT, WDREF,
 !     &                             GRIDHT(GINDEX), GRIDWD(GINDEX) )
-                  CALL XTRPWD ( WDREF, GRIDWD(GINDEX) )
+                  call xtrpwd ( wdref, gridwd(gindex) )
 
-               ENDIF
+               endif
 !
-            ELSE   ! this is not the top level, repeat loop
-               CONTINUE
+            else   ! this is not the top level, repeat loop
+               continue
 !
-            ENDIF
+            endif
 !
-         ENDIF   ! parameter (not) missing at this level
+         endif   ! parameter (not) missing at this level
 !
 !           ---------------------------------------------------------
 !           Increment the observed profile counter if a value at this
 !           grid level was not computed on this pass
 !           ---------------------------------------------------------
 !
-         IF( (GRIDWD(GINDEX) < 0.0D0)  .and.&
-         &(PINDEX < NPLVLS) )THEN
-            PINDEX = PINDEX + 1
-         ENDIF
+         if( (gridwd(gindex) < 0.0d0)  .and.&
+         &(pindex < nplvls) )then
+            pindex = pindex + 1
+         endif
 !
-      END DO   ! Loop over observed data profile
+      end do   ! Loop over observed data profile
 !
 !        ------------------------------------------------------------
 !        Increment the gridded profile counter and repeat the process
@@ -885,14 +885,14 @@ SUBROUTINE GRDWD
 !        defined by PINDEX
 !        ------------------------------------------------------------
 !
-      GINDEX = GINDEX + 1
+      gindex = gindex + 1
 
-   END DO   ! Loop over gridded data profile
+   end do   ! Loop over gridded data profile
 !
-   RETURN
-END SUBROUTINE GRDWD
+   return
+end subroutine grdwd
 
-SUBROUTINE REFWD1( WDREQD )
+subroutine refwd1( wdreqd )
 !=======================================================================
 !                REFWD1 Module of the AERMOD Dispersion Model
 !
@@ -925,9 +925,9 @@ SUBROUTINE REFWD1( WDREQD )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
-   DOUBLE PRECISION :: WDREQD
+   use main1
+   implicit none
+   double precision :: wdreqd
 
 !
 !---- Data dictionary
@@ -935,12 +935,12 @@ SUBROUTINE REFWD1( WDREQD )
 !---- Data initializations
 !
 !
-   WDREQD = WDREF
+   wdreqd = wdref
 !
-   RETURN
-END SUBROUTINE REFWD1
+   return
+end subroutine refwd1
 
-SUBROUTINE NTRPWD ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALOUT )
+subroutine ntrpwd ( htbelo,vbelow, htabov,vabove, reqdht,valout )
 !=======================================================================
 !                NTRPWD Module of the AERMOD Dispersion Model
 !
@@ -978,17 +978,17 @@ SUBROUTINE NTRPWD ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALOUT )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 
-   DOUBLE PRECISION :: HTBELO, VBELOW, HTABOV, VABOVE, REQDHT,VALOUT,&
-   &VALABV, REFABV, REFBLW, RATIO, REFREQ, VALINT, REFINT
+   double precision :: htbelo, vbelow, htabov, vabove, reqdht,valout,&
+   &valabv, refabv, refblw, ratio, refreq, valint, refint
 !
 !---- Data dictionary
 !
 !
 !---- Data initializations
-   VALABV = VABOVE
+   valabv = vabove
 !
 !
 !.......................................................................
@@ -1002,47 +1002,47 @@ SUBROUTINE NTRPWD ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALOUT )
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height below the requested height (REFBLW)   --- CALL REFWD1
 
-   CALL REFWD1 ( REFBLW )
+   call refwd1 ( refblw )
 
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height above the requested height (REFABV)   --- CALL REFWD1
 
-   CALL REFWD1 ( REFABV )
+   call refwd1 ( refabv )
 
 !     COMPUTE the value of the parameter from the reference profile
 !     at the requested height (REFREQ)                    --- CALL REFWD1
 
-   CALL REFWD1 ( REFREQ )
+   call refwd1 ( refreq )
 
-   IF( (VALABV-VBELOW) < -180.0D0) THEN
-      VALABV = VALABV + 360.0D0
-   ELSE IF( (VALABV-VBELOW) > 180.0D0) THEN
-      VALABV = VALABV - 360.0D0
-   END IF
+   if( (valabv-vbelow) < -180.0d0) then
+      valabv = valabv + 360.0d0
+   else if( (valabv-vbelow) > 180.0d0) then
+      valabv = valabv - 360.0d0
+   end if
 
 !     Linearly interpolate to REQDHT from observed and reference profiles
-   CALL GINTRP ( HTBELO,VBELOW, HTABOV, VALABV, REQDHT,VALINT )
-   CALL GINTRP ( HTBELO,REFBLW, HTABOV, REFABV, REQDHT,REFINT )
+   call gintrp ( htbelo,vbelow, htabov, valabv, reqdht,valint )
+   call gintrp ( htbelo,refblw, htabov, refabv, reqdht,refint )
 !     REFREQ is value from REFerence profile at REQuired height
 !     REFINT is value from REFerence profile linearly INTerpolated to req ht
 !     VALINT is the observed VALue linearly INTerpolated to required height
-   RATIO  = REFREQ/REFINT
-   VALOUT = RATIO * VALINT
+   ratio  = refreq/refint
+   valout = ratio * valint
 
-   IF (VALOUT > 360.0D0) THEN
-      VALOUT = VALOUT - 360.0D0
-   ELSE IF (VALOUT <= 0.0D0) THEN
-      VALOUT = VALOUT + 360.0D0
-   END IF
+   if (valout > 360.0d0) then
+      valout = valout - 360.0d0
+   else if (valout <= 0.0d0) then
+      valout = valout + 360.0d0
+   end if
 
 !
-   RETURN
-END SUBROUTINE NTRPWD
+   return
+end subroutine ntrpwd
 
 ! JAT 06/22/21 D065
 ! REMOVE PFLZ AND GRDZ AS UNUSED INPUT ARGUMENTS
 !      SUBROUTINE XTRPWD ( PFLZ, PFLVAL, GRDZ, VALOUT )
-SUBROUTINE XTRPWD (  PFLVAL, VALOUT )
+subroutine xtrpwd (  pflval, valout )
 !=======================================================================
 !                XTRPWD Module of the AERMOD Dispersion Model
 !
@@ -1074,13 +1074,13 @@ SUBROUTINE XTRPWD (  PFLVAL, VALOUT )
 !
 !---- Variable declarations
 !
-   USE MAIN1
-   IMPLICIT NONE
+   use main1
+   implicit none
 ! JAT 06/22/21 D065
 ! REMOVE PFLZ AND GRDZ AS UNUSED VARIABLES
 !      DOUBLE PRECISION :: PFLZ, PFLVAL, GRDZ, VALOUT, RATIO, VALOBS,
-   DOUBLE PRECISION :: PFLVAL, VALOUT, RATIO, VALOBS,&
-   &VALGRD
+   double precision :: pflval, valout, ratio, valobs,&
+   &valgrd
 !
 !---- Data dictionary
 !
@@ -1100,24 +1100,24 @@ SUBROUTINE XTRPWD (  PFLVAL, VALOUT )
 !     COMPUTE the value of the parameter from the reference profile
 !     at height of the highest(lowest) observed value  --- CALL REFWD1
 
-   CALL REFWD1 ( VALOBS )
+   call refwd1 ( valobs )
 
 !     COMPUTE the value of the parameter from the reference profile
 !     at the height where a value is required          --- CALL REFWD1
 !
 
-   CALL REFWD1 ( VALGRD )
+   call refwd1 ( valgrd )
 
-   RATIO  = VALGRD / VALOBS
+   ratio  = valgrd / valobs
 !
-   VALOUT = RATIO * PFLVAL
+   valout = ratio * pflval
 
-   IF (VALOUT > 360.0D0) THEN
-      VALOUT = VALOUT - 360.0D0
-   ELSE IF (VALOUT <= 0.0D0) THEN
-      VALOUT = VALOUT + 360.0D0
-   END IF
+   if (valout > 360.0d0) then
+      valout = valout - 360.0d0
+   else if (valout <= 0.0d0) then
+      valout = valout + 360.0d0
+   end if
 
 !
-   RETURN
-END SUBROUTINE XTRPWD
+   return
+end subroutine xtrpwd

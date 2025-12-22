@@ -1,4 +1,4 @@
-MODULE MAIN1
+module main1
 !***********************************************************************
 !     MAIN1
 !     AERMOD Model Data - Parameter, Variable and Array Declarations
@@ -6,7 +6,7 @@ MODULE MAIN1
 !
 !***********************************************************************
 
-   IMPLICIT NONE
+   implicit none
 
 ! ----------------------------------------------------------------------
 ! --- AERMOD
@@ -25,11 +25,11 @@ MODULE MAIN1
 !***********************************************************************
 
 ! --- Most array limits for data storage are now allocated at runtime.
-   INTEGER, PARAMETER :: NWSCAT= 6, NKST= 6, NHR= 24,&
-   &NPAIR= 100, NHIANN= 10,&
-   &NMXPM= 10, MXPLVL=50, MXGLVL=87
+   integer, parameter :: nwscat= 6, nkst= 6, nhr= 24,&
+   &npair= 100, nhiann= 10,&
+   &nmxpm= 10, mxplvl=50, mxglvl=87
 
-   INTEGER :: NYEARS
+   integer :: nyears
 
 !**   NWSCAT = Number of Wind Speed Categories
 !**   NKST   = Number of Stability Categories
@@ -89,8 +89,8 @@ MODULE MAIN1
 !CRCO 2/18/2021 - need to check IKN and IERRN after merge
 !      INTEGER, PARAMETER :: IFMAX=150, IKN=117, ISTRG=512, ILEN_FLD=200,
 !     &                      IERRN=500
-   INTEGER, PARAMETER :: IFMAX=150, IKN=120, ISTRG=512, ILEN_FLD=200,&
-   &IERRN=500
+   integer, parameter :: ifmax=150, ikn=120, istrg=512, ilen_fld=200,&
+   &ierrn=500
 !**   IFMAX  = Max Number of Fields Per Runstream Record
 !**   IKN    = Number of Keywords
 !**   ISTRG  = Max Length of Runstream Image Record
@@ -103,25 +103,25 @@ MODULE MAIN1
 !     Model Constants Specified as Parameters
 !***********************************************************************
 
-   DOUBLE PRECISION, PARAMETER ::&
-   &G = 9.80616D0,       VONKAR = 0.4D0,&
-   &GOVRCP = 0.00977D0,  DCTODK = 273.16D0,&
-   &BETA1  = 0.6D0,      BETA2  = 0.4D0,&
-   &AT1PT2 = 1.2D0,      UMINGR = 0.01D0,&
-   &GSIGV  = 0.073864D0, EFOLDH = 0.44D0,&
+   double precision, parameter ::&
+   &g = 9.80616d0,       vonkar = 0.4d0,&
+   &govrcp = 0.00977d0,  dctodk = 273.16d0,&
+   &beta1  = 0.6d0,      beta2  = 0.4d0,&
+   &at1pt2 = 1.2d0,      umingr = 0.01d0,&
+   &gsigv  = 0.073864d0, efoldh = 0.44d0,&
 !**   CRT 9/11/2020, D062 User Minimum Sigma W
 !**     &                    SVUMIN = 0.05D0,     SWMIN  = 0.02D0,
-   &SVUMIN = 0.05D0,&
-   &XVAL   = 0.0D0,      SPTGMN = 0.002D0,&
-   &BSUBC  = 0.5D0,      ALPHAR = 1.4D0,&
-   &LAMDAY = 2.3D0,      ASUBE  = 0.1D0,&
-   &REFPOP = 2.0D+6,     DELTRUR= 12.0D0,&
-   &RGAS   = 8.3145D0,&
-   &AWMA_BETA_ENTRAINCOEFF = 0.35D0,&
+   &svumin = 0.05d0,&
+   &xval   = 0.0d0,      sptgmn = 0.002d0,&
+   &bsubc  = 0.5d0,      alphar = 1.4d0,&
+   &lamday = 2.3d0,      asube  = 0.1d0,&
+   &refpop = 2.0d+6,     deltrur= 12.0d0,&
+   &rgas   = 8.3145d0,&
+   &awma_beta_entraincoeff = 0.35d0,&
 !**  Added for Aircraft Plume Rise; UNC-IE
-   &R00 = 2.0D0, ALPHAM = 0.10D0,&
-   &PAA = 1.013D+5, RAA = 287.058D0,&
-   &HFUEL = 4.3D+7, CPA = 1003.0D0
+   &r00 = 2.0d0, alpham = 0.10d0,&
+   &paa = 1.013d+5, raa = 287.058d0,&
+   &hfuel = 4.3d+7, cpa = 1003.0d0
 !    Description of the variables/constants used in ARISE
 !    R00    = Aircraft Engine Exhaust Radius (m)(as Initial Plume Radius)
 !    ALPHAM = Entrainment Constant (Momentum Part of ARISE)
@@ -136,30 +136,30 @@ MODULE MAIN1
 !                  changes valuefrom m 0.60 for bet0 and betap when
 !                  ALPHA option AWMAEntrain is specified  (July 2020)
 
-   DOUBLE PRECISION :: SZCOEF    ! SZCOEF
+   double precision :: szcoef    ! SZCOEF
 
 !**   Declare SVMIN variable for minimum sigma-v, formerly specified as
 !**   PARAMETER SVMIN.  Default value of 0.2D0 is initialized in SUBROUTINE
 !**   MODOPT; (SVMIN was increased to 0.5D0 under the old LOWWIND1 BETA option,
 !**   and increased to 0.3D0 under the old LOWWIND2 and LOWWIND3 options)
 !**   optional user inputs under the CO LOW_WIND keyword.
-   DOUBLE PRECISION :: SVMIN
+   double precision :: svmin
 
 !**   Declare WSMIN variable for minimum wind speed, formerly set to 0.2828
 !**   based on SQRT(2*SVmin*SVmin), where SVmin was 0.2. The default value
 !**   of WSMIN is also set to 0.2828, but may be adjusted under the LOWWIND
 !**   BETA options using the CO LOW_WIND keyword.
-   DOUBLE PRECISION :: WSMIN
+   double precision :: wsmin
 
 !**   Declare FRANMAX variable for maximum meander factor, FRAN, used in
 !**   the LowWind2 BETA option.  The "default" value for the LowWind2
 !**   option is set at 0.95, but can be modified by the user under the
 !**   optional LOW_WIND keyword on the CO pathway, within a range of
 !**   0.50 to 1.0, inclusive.
-   DOUBLE PRECISION :: FRANMAX
+   double precision :: franmax
 
 !**   3/18/2022 D127 - add FRANMIN for meander testing -Wood
-   DOUBLE PRECISION :: FRANMIN
+   double precision :: franmin
 
 !**   CRT 9/11/2020, D062 User Minimum Sigma W
 !**   Declare SWMIN variable for user-defined minimum sigma-w formerly
@@ -168,7 +168,7 @@ MODULE MAIN1
 !**   the optional LOW_WIND keyword on the CO pathway within a range of
 !**   0.00 to 3.00 which is consistent with the default range check by
 !**   AERMET when SWnn is included as an onsite variable.
-   DOUBLE PRECISION :: SWMIN
+   double precision :: swmin
 
 !**   RCO 9/27/2020, D061 User BIGT values
 !**   Declare BIGT variable for user-defined BIGT value, formerly
@@ -176,7 +176,7 @@ MODULE MAIN1
 !**   the former parameter value = 12 hours, but can be modified under
 !**   the optional LOW_WIND keyword on the CO pathway within a range of
 !**   0.50 to 48.00. Previous LOWWIND2 option set at 12 hours, not
-   DOUBLE PRECISION :: BIGT
+   double precision :: bigt
 
 
 !**   Set concentration unit conversion factors for NO2, SO2, CO, and 03
@@ -185,17 +185,17 @@ MODULE MAIN1
 !**   based on reference temperature (25 C) and pressure (1013.25 mb).
 !**   Note that factors for NO2 and SO2 are PPB/(UG/M3) and PPM/(UG/M3),
 !**   and factors for CO and O3 are for (UG/M3)/PPB and (UG/M3)/PPM.
-   DOUBLE PRECISION, PARAMETER ::&
-   &NO2_PPB = 0.5319D0, NO2_PPM = 0.5319D-3,&
-   &SO2_PPB = 0.3823D0, SO2_PPM = 0.3823D-3,&
-   &CO_PPB  = 1.144D0,  CO_PPM  = 1.144D3,&
-   &O3_PPB  = 1.960D0,  O3_PPM  = 1.960D3
+   double precision, parameter ::&
+   &no2_ppb = 0.5319d0, no2_ppm = 0.5319d-3,&
+   &so2_ppb = 0.3823d0, so2_ppm = 0.3823d-3,&
+   &co_ppb  = 1.144d0,  co_ppm  = 1.144d3,&
+   &o3_ppb  = 1.960d0,  o3_ppm  = 1.960d3
 
 
-   DOUBLE PRECISION :: PI, TWOPI, RTOFPI, SRT2PI, RTOF2,&
-   &RTPIBY2, RT2BYPI,&
-   &DTORAD, RTODEG,&
-   &THIRD, TWOTHIRDS
+   double precision :: pi, twopi, rtofpi, srt2pi, rtof2,&
+   &rtpiby2, rt2bypi,&
+   &dtorad, rtodeg,&
+   &third, twothirds
 
 !**   PI     = PI               ! Initialized in sub.VARINI as 4.0D0*DATAN(1.0D0)
 !**   TWOPI  = 2.*PI            ! Initialized in sub.VARINI
@@ -241,14 +241,14 @@ MODULE MAIN1
 !**              FASTALL non-DFAULT option;
 !**              receptors more than NUMSYEFF*SYEFF off the plume
 !**              centerline are skipped to optimize runtime
-   DOUBLE PRECISION, PARAMETER :: NUMSYEFF  = 4.0D0
+   double precision, parameter :: numsyeff  = 4.0d0
 
 !**   MAXDIST = Maximum transport distance for calculation;
 !**             set to 80km for FASTALL or FASTAREA options;
 !**             this was formerly associated with the TOXICS
 !**             option, which is now obsolete.
 !**             Set to 1.0D20 for applications w/o FASTALL or FASTAREA
-   DOUBLE PRECISION :: MAXDIST
+   double precision :: maxdist
 
 
 !***********************************************************************
@@ -257,16 +257,16 @@ MODULE MAIN1
 
 !CRT  D063 Add Platform Downwash Debug PLATFMDBUNT
 !     Wood 10/10/22 added GRID_WS debug RLINEDBUNT_WS
-   INTEGER :: INUNIT, IOUNIT, MFUNIT, MPUNIT, IERUNT, IERWRT,&
-   &IDPUNT, IDPUN2, IRSUNT, IEVUNT, ITEVUT, IHREMI,&
-   &IBGUNT(6), IO3UNT(6), INCUNT, ISUMUNT, DBGUNT, DBMUNT,&
-   &AREADBUNT, GDEPDBG, PDEPDBG, PRMDBUNT, PVMDBG, OLMDBG,&
-   &ARM2DBG, RDISPUNT, AWMADWDBUNT, GRSMDBG, INOXUNT(6),&
-   &TTRMUNT, TTRM2TMP(3),&
-   &RLINEDBUNT, URBUNT, URBUNT1, URBUNT2, BLPUNT,&
-   &PLATFMDBUNT, SWDBGUNT, RLINEDBUNT_WS,&
-   &ARCFTDBG,&   ! Added for Aircraft Plume Rise; UNC-IE
-   &HBPUNT ! Added for HBPDEBUG
+   integer :: inunit, iounit, mfunit, mpunit, ierunt, ierwrt,&
+   &idpunt, idpun2, irsunt, ievunt, itevut, ihremi,&
+   &ibgunt(6), io3unt(6), incunt, isumunt, dbgunt, dbmunt,&
+   &areadbunt, gdepdbg, pdepdbg, prmdbunt, pvmdbg, olmdbg,&
+   &arm2dbg, rdispunt, awmadwdbunt, grsmdbg, inoxunt(6),&
+   &ttrmunt, ttrm2tmp(3),&
+   &rlinedbunt, urbunt, urbunt1, urbunt2, blpunt,&
+   &platfmdbunt, swdbgunt, rlinedbunt_ws,&
+   &arcftdbg,&   ! Added for Aircraft Plume Rise; UNC-IE
+   &hbpunt ! Added for HBPDEBUG
 
 !**   These input/output file units are initialized below in a DATA statement
 !**   INUNIT = Input Runstream File Unit (Initialized to 7)
@@ -314,44 +314,44 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for Runstream Data
 !***********************************************************************
 
-   LOGICAL :: BLINE, INFLD, MARK, ECHO
+   logical :: bline, infld, mark, echo
 
-   CHARACTER :: PATH*2, PPATH*2, KEYWRD*8, PKEYWD*8, KEYWD*8, KTYPE*5,&
-   &RUNST*1
+   character :: path*2, ppath*2, keywrd*8, pkeywd*8, keywd*8, ktype*5,&
+   &runst*1
 
-   CHARACTER (LEN=ILEN_FLD) :: FIELD, INPFIL, OUTFIL, INCFIL
-   CHARACTER (LEN=ISTRG)    :: RUNST1
+   character (len=ilen_fld) :: field, inpfil, outfil, incfil
+   character (len=istrg)    :: runst1
 
-   INTEGER ::  LOCB(IFMAX), LOCE(IFMAX), IFC, IDC1, IPNUM, IPPNUM
-   DIMENSION   FIELD(IFMAX), KEYWD(IKN), RUNST(ISTRG)
+   integer ::  locb(ifmax), loce(ifmax), ifc, idc1, ipnum, ippnum
+   dimension   field(ifmax), keywd(ikn), runst(istrg)
 
 
 !***********************************************************************
 !     This is The Global Variable Definition Block for Error Handling
 !***********************************************************************
 
-   LOGICAL :: FATAL, ISTART, IFINIS, RECERR, ERRLST, EOF, ALLOC_ERR
-   LOGICAL :: L_SkipMessages
+   logical :: fatal, istart, ifinis, recerr, errlst, eof, alloc_err
+   logical :: L_SkipMessages
 
-   REAL    :: STORE                ! Estimate of memory storage requirement
+   real    :: store                ! Estimate of memory storage requirement
 
-   CHARACTER :: ERRMSG*50, ERRCOD*3, VERSN*6
-   CHARACTER (LEN=6) :: C_METVER         ! Character string for met version
-   CHARACTER (LEN=ILEN_FLD) :: MSGFIL
+   character :: errmsg*50, errcod*3, versn*6
+   character (len=6) :: c_metver         ! Character string for met version
+   character (len=ilen_fld) :: msgfil
 
-   DIMENSION  ERRMSG(IERRN), ERRCOD(IERRN)
-   INTEGER :: ILINE, IQLINE, IBLINE, IOLINE, INOXLINE, IERROR, IFTL,&
-   &IWRN, INFO, ICLM, IMSG, NFATAL, NWARN, IPAGE, IPGSUM
+   dimension  errmsg(ierrn), errcod(ierrn)
+   integer :: iline, iqline, ibline, ioline, inoxline, ierror, iftl,&
+   &iwrn, info, iclm, imsg, nfatal, nwarn, ipage, ipgsum
 ! --- Met data array indices for use with MAXDCONT option
-   INTEGER :: IHR_NDX, IYR_NDX
-   DOUBLE PRECISION :: EXPLIM
+   integer :: ihr_ndx, iyr_ndx
+   double precision :: explim
 
-   INTEGER :: ICSTAT(50), ISSTAT(50), IRSTAT(50), IMSTAT(50),&
-   &IOSTAT(50), IESTAT(50)
-   INTEGER :: INCSET, IXYSET, IEVSET, IHLSET, IFGSET
+   integer :: icstat(50), isstat(50), irstat(50), imstat(50),&
+   &iostat(50), iestat(50)
+   integer :: incset, ixyset, ievset, ihlset, ifgset
 
 ! --- Include a variable to count number of header records in the surface file
-   INTEGER :: NumHeaders
+   integer :: NumHeaders
 
 
 
@@ -362,117 +362,117 @@ MODULE MAIN1
 !CRT  D063  Add Downwash Platform Debug PLATFMDBG
 !CRT  D113  Add Sidewash Debug SWDBG
 
-   LOGICAL :: DFAULT, CONC, DEPOS, DDEP, WDEP, RURAL, URBAN, GRDRIS,&
-   &NOSTD, NOBID, CLMPRO, MSGPRO, PERIOD, ANNUAL, MONTH,&
-   &FLAT, ELEV, FLATSRCS, FLGPOL, RUN, EVENTS, RSTSAV,&
-   &RSTINP, DAYTAB, MXFILE, PPFILE, PLFILE, ANPOST, ANPLOT,&
-   &STATOK, MULTYR, TXFILE, RKFILE, SEASONHR,&
-   &MXDAILY, MXDAILY_BYYR, L_MAXDCONT,&
-   &DDPLETE, WDPLETE, DRYDPLT, WETDPLT, NODRYDPLT, NOWETDPLT,&
-   &FSTCMP, EVONLY, SOCONT, DETAIL, NEWMET, ARDPLETE,&
-   &PM25AVE, NO2AVE, SO2AVE, L_NO_PM25AVE, L_NO_NO2AVE,&
-   &L_NO_SO2AVE, NOCHKD, NOWARN,&
-   &DEBUG, METEORDBG, AREADBG, PRIMEDBG, PVMRMDBG, OLMDEBUG,&
-   &ARM2DEBUG, GRSMDEBUG, DEPOSDBG, AWMADWDBG, RLINEDBG,&
-   &PLATFMDBG,&
-   &L_WARNCHKD, SCIM, SCIMHR,&
-   &FASTAREA, FASTALL, L_NonDFAULT,&
-   &SCREEN, URBSTAB, PRM_FSTREC, ROMBERG,&
-   &PVMRM, PSDCREDIT, OLM, L_MULTURB,&
-   &L_PRESET_URBAN, L_UrbanTransition, L_URBAN_ALL,&
+   logical :: dfault, conc, depos, ddep, wdep, rural, urban, grdris,&
+   &nostd, nobid, clmpro, msgpro, period, annual, month,&
+   &flat, elev, flatsrcs, flgpol, run, events, rstsav,&
+   &rstinp, daytab, mxfile, ppfile, plfile, anpost, anplot,&
+   &statok, multyr, txfile, rkfile, seasonhr,&
+   &mxdaily, mxdaily_byyr, l_maxdcont,&
+   &ddplete, wdplete, drydplt, wetdplt, nodrydplt, nowetdplt,&
+   &fstcmp, evonly, socont, detail, newmet, ardplete,&
+   &pm25ave, no2ave, so2ave, l_no_pm25ave, l_no_no2ave,&
+   &l_no_so2ave, nochkd, nowarn,&
+   &debug, meteordbg, areadbg, primedbg, pvmrmdbg, olmdebug,&
+   &arm2debug, grsmdebug, deposdbg, awmadwdbg, rlinedbg,&
+   &platfmdbg,&
+   &l_warnchkd, scim, scimhr,&
+   &fastarea, fastall, L_NonDFAULT,&
+   &screen, urbstab, prm_fstrec, romberg,&
+   &pvmrm, psdcredit, olm, l_multurb,&
+   &l_preset_urban, L_UrbanTransition, l_urban_all,&
    &L_Urban, L_Rural,&
-   &L_AWMADW,&
-   &L_STRMLN_BLDG, L_RECT_BLDG, L_AWMA_Ueff, L_AWMA_UTurb,&
-   &L_AWMA_ENTRAIN, L_ORDDW, L_AWMA_UTurbHX,&
+   &l_awmadw,&
+   &l_strmln_bldg, l_rect_bldg, L_AWMA_Ueff, L_AWMA_UTurb,&
+   &l_awma_entrain, l_orddw, L_AWMA_UTurbHX,&
    &L_ORD_Ueff, L_ORD_Turb, L_ORD_Cav,&
-   &ARM2, BETA, L_ALPHA, L_PREINC, GRSM,&
-   &RUNTTRM, TTRMDBG, URBDBUG, BLPDBUG, SWDBG,&
-   &RUNTTRM2, TTRM2DBG,& ! Added Nov. 2021; AECOM
-   &ARCFTDEBUG, ARCFT, L_PRESET_ARCFT, L_ARCFT_ALL, L_Arcft,& !Added for Aircraft Plume Rise; UNC-IE
-   &HBPLUME, HBPDBG, L_HBP_ALL,& ! Added for HBP & HBPDEBUG; Jan. 2023
-   &L_AREAMNDR !Added area meander flag to the alpha options Wood 6/3/22
+   &arm2, beta, l_alpha, l_preinc, grsm,&
+   &runttrm, ttrmdbg, urbdbug, blpdbug, swdbg,&
+   &runttrm2, ttrm2dbg,& ! Added Nov. 2021; AECOM
+   &arcftdebug, arcft, l_preset_arcft, l_arcft_all, L_Arcft,& !Added for Aircraft Plume Rise; UNC-IE
+   &hbplume, hbpdbg, l_hbp_all,& ! Added for HBP & HBPDEBUG; Jan. 2023
+   &l_areamndr !Added area meander flag to the alpha options Wood 6/3/22
 
 ! --- Logical variables used to track inconsistency between 'original'
 !     results and results calculated during the MAXDCONT option
 !     internal "post-processing" and between 'original' results and
 !     results calculated during the EVENT post-processing
-   LOGICAL :: L_EVENT_OrigConc_Warning, L_MAXDCONT_OrigConc_Warning
+   logical :: L_EVENT_OrigConc_Warning, L_MAXDCONT_OrigConc_Warning
 
 !CRT 3/23/2021, D061/D062 - Add logicals for SWmin and BigT low wind options
 !CRT 4/11/2022, D131 - FRAN Alpha Formulation - add logical for PBal (L_PBal)
 !    Wood 3/18/2022 D127 - added FRANMIN to LOW_WIND option
 !CRT 8/9/2023, D176 - COARE Beta Check - add logical to indicate met is from AERMET/COARE (L_COARE)
-   LOGICAL :: L_EFFSIGY,   L_VECTORWS,&
-   &L_AdjUstar,  L_BULKRN,&
+   logical :: l_effsigy,   l_vectorws,&
+   &L_AdjUstar,  l_bulkrn,&
    &L_MMIF_Data, L_MMIF_Profile,&
-   &LOW_WIND, L_UserSVmin, L_UserWSmin, L_UserFRANmax,&
+   &low_wind, L_UserSVmin, L_UserWSmin, L_UserFRANmax,&
    &L_UserSWmin, L_UserBigT,&
    &L_UserSZCoef,&
    &L_CCVR_Sub,  L_TEMP_Sub, L_TurbData,&
    &L_Got_SigA,  L_Got_SigW, L_PBal,&
-   &L_UserFRANmin, L_COARE
+   &L_UserFRANmin, l_coare
 
-   CHARACTER (LEN=ILEN_FLD) :: TITLE1, TITLE2
-   CHARACTER :: RUNDAT*8, RUNTIM*8
-   CHARACTER :: EVPARM*6, CHRAVE*5, CHIDEP*4, SOELEV*6, REELEV*6,&
-   &TGELEV*6, OUTTYP*5, NO2_FIELD4*3, SO2_FIELD4*3,&
-   &PM25_FIELD4*3
+   character (len=ilen_fld) :: title1, title2
+   character :: rundat*8, runtim*8
+   character :: evparm*6, chrave*5, chidep*4, soelev*6, reelev*6,&
+   &tgelev*6, outtyp*5, no2_field4*3, so2_field4*3,&
+   &pm25_field4*3
 
 !CRT  D063  Add Downwash Platform Debug PLATFMDBGFILE
 !CRT  D113  Add Sidewash Debug SWFIL
 
-   CHARACTER (LEN=ILEN_FLD) :: SAVFIL, SAVFL2, INIFIL, EVFILE,&
-   &DBGFIL, DBMFIL, DBAREAFIL, DBPVFIL,&
-   &RDISPFIL,&
-   &DBOLMFIL, DBPRMFIL, DBAwmaDwFIL,&
-   &DBARM2FIL, DBGRSMFIL, OZONFL(6),&
-   &O3FILUNITS, O3VALUNITS, O3FORM(6),&
-   &OzoneUnits, URBNAM, NOXVALUNITS,&
-   &NOxUnits, NOXFL(6), NOXFILUNITS,&
-   &NOXFORM(6), TTRMFIL, RLINEDBGFIL,&
-   &URBFIL,URBFIL1,URBFIL2,&
-   &BLPFIL,&
-   &PLATFMDBGFILE,&
-   &SWFIL, RLINEDBGFIL_WS,&   !Added RLINE gridded wind speed debug filename Wood 10/10/22
-   &DBARCFTFIL,& ! Added for Aircraft Plume Rise; UNC-IE
-   &HBPFIL ! Added for HBPDEBUG; Jan. 2023
+   character (len=ilen_fld) :: savfil, savfl2, inifil, evfile,&
+   &dbgfil, dbmfil, dbareafil, dbpvfil,&
+   &rdispfil,&
+   &dbolmfil, dbprmfil, DBAwmaDwFIL,&
+   &dbarm2fil, dbgrsmfil, ozonfl(6),&
+   &o3filunits, o3valunits, o3form(6),&
+   &OzoneUnits, urbnam, noxvalunits,&
+   &NOxUnits, noxfl(6), noxfilunits,&
+   &noxform(6), ttrmfil, rlinedbgfil,&
+   &urbfil,urbfil1,urbfil2,&
+   &blpfil,&
+   &platfmdbgfile,&
+   &swfil, rlinedbgfil_ws,&   !Added RLINE gridded wind speed debug filename Wood 10/10/22
+   &dbarcftfil,& ! Added for Aircraft Plume Rise; UNC-IE
+   &hbpfil ! Added for HBPDEBUG; Jan. 2023
 
 !    TTRMFIL is reserved for an unformatted POSTFILE for potential
 !    post-processing using TTRM
 !    end of TTRM insert
-   DOUBLE PRECISION ::  O3CONC, O3BACK(6), NO2Equil, NO2Stack,&
-   &EV_O3CONC(NHR), O3SECT(6), O3_Max24hr(NHR,6),&
+   double precision ::  o3conc, o3back(6), NO2Equil, NO2Stack,&
+   &ev_o3conc(nhr), o3sect(6), O3_Max24hr(nhr,6),&
    &ARM2_Min, ARM2_Max,&
    &RatioARM2
 
 ! --- Logical to determine if minimum ozone restriction will be enforced.
 !D074 1/7/2021
-   LOGICAL ::  O3MISS, L_O3Sector, L_O3Hourly, NOMINO3
-   LOGICAL ::  L_O3File(6), L_O3VAL(6), L_O3VALUES(6)
-   LOGICAL ::  L_AO3MISS(24)
+   logical ::  o3miss, L_O3Sector, L_O3Hourly, nomino3
+   logical ::  L_O3File(6), l_o3val(6), l_o3values(6)
+   logical ::  l_ao3miss(24)
 
 !     CERC 11/30/20
-   LOGICAL ::  NOXMISS, L_NOXSector, L_NOxHourly
-   LOGICAL ::  L_NOxFile(6), L_NOXVALUE(6), L_NOX_VALS(6)
-   LOGICAL ::  L_ANOXMISS(24)
-   LOGICAL ::  L_CalcNoxFromNO2
+   logical ::  noxmiss, L_NOXSector, L_NOxHourly
+   logical ::  L_NOxFile(6), l_noxvalue(6), l_nox_vals(6)
+   logical ::  l_anoxmiss(24)
+   logical ::  L_CalcNoxFromNO2
 
-   INTEGER ::  NUMO3Sects, IO3SECT
-   INTEGER ::  NHIVAL, NMXVAL, NDUMP, NHIMXDLY
+   integer ::  NUMO3Sects, io3sect
+   integer ::  nhival, nmxval, ndump, nhimxdly
 
-   INTEGER ::  NumNOxSects, INOXSECT
+   integer ::  NumNOxSects, inoxsect
 
-   DOUBLE PRECISION :: NOXBGCONC, NOXBACK(6), NOXSECT(6),&
-   &EV_NOXCONC(NHR)
+   double precision :: noxbgconc, noxback(6), noxsect(6),&
+   &ev_noxconc(nhr)
 
 ! --- Declare arrays for O3SECTs and ANOXSECTs by hour for EVENT processing
-   INTEGER ::  AO3SECT(NHR), ANOXSECT(NHR)
+   integer ::  ao3sect(nhr), anoxsect(nhr)
 
-   INTEGER ::  NSRC, NREC, NGRP, NAVE, NVAL, NTYP, NMAX,&
-   &NSEC, NQF, NBF, NO3F, NPDMAX, NNET, IXM, IYM,&
-   &NEVE, NUMEVE, IEVENT, NARC, NOLM, NURB, NPSD, NBLGRP,&
-   &IO3MAX(6), IBGMAX(6), INOXMAX(6), NNOXF,&
-   &NAFT                ! Added for Aircraft Plume Rise; UNC-IE
+   integer ::  nsrc, nrec, ngrp, nave, nval, ntyp, nmax,&
+   &nsec, nqf, nbf, no3f, npdmax, nnet, ixm, iym,&
+   &neve, numeve, ievent, narc, nolm, nurb, npsd, nblgrp,&
+   &io3max(6), ibgmax(6), inoxmax(6), nnoxf,&
+   &naft                ! Added for Aircraft Plume Rise; UNC-IE
 !**  NAFT = Maximum Number of Airports (Here, it is fixed as 1 in ARISE)
 
 !     NBLGRP  = Number of buoyant line groups defined by BLPGROUP records;
@@ -481,18 +481,18 @@ MODULE MAIN1
 !                (see also NUMBLGRPS in module buoyant_line -
 !                 incremented in subr.BLPGRP)
 
-   INTEGER ::  NUMCONT     ! Number of contributing sources for PVMRM
+   integer ::  numcont     ! Number of contributing sources for PVMRM
 
-   INTEGER, ALLOCATABLE :: KAVE(:)
+   integer, allocatable :: kave(:)
 
-   LOGICAL, ALLOCATABLE :: EVAL(:)
+   logical, allocatable :: eval(:)
 
-   ALLOCATABLE ::  CHRAVE(:), CHIDEP(:,:), OUTTYP(:), URBNAM(:)
+   allocatable ::  chrave(:), chidep(:,:), outtyp(:), urbnam(:)
 
 ! --- Declare character strings to hold modeling options, including a
 !     composite string that includes only options used in current run
-   CHARACTER (LEN=12)  :: MODOPS(30)
-   CHARACTER (LEN=250) :: MODOPS_String
+   character (len=12)  :: modops(30)
+   character (len=250) :: MODOPS_String
 
 
 !***********************************************************************
@@ -503,156 +503,156 @@ MODULE MAIN1
 !     NOTE: A similar variable, OSPLAT, is used to indicate the a source
 !     is subject to offshore platform downwash once platform params
 !     are validated.
-   CHARACTER :: SRCID*12, SRCTYP*8, SOPCRD*1, SOGAS*1, URBSRC*1,&
-   &GRPID*8, EMILBL*40, OUTLBL*40, POLLUT*8,&
-   &QFLAG*8, BFLAG(6)*8, O3FLAG(6)*8, PERLBL*40, OLMID*8,&
-   &URBID*8, PSDID*8, NOxFLAG(6)*8,  SOPLAT*1,&
-   &AFTSRC*1, AFTID*8,& !Added for Aircraft Plume Rise; UNC-IE
-   &HBPSRC*1  ! Added for HBP, JAN 2023
+   character :: srcid*12, srctyp*8, sopcrd*1, sogas*1, urbsrc*1,&
+   &grpid*8, emilbl*40, outlbl*40, pollut*8,&
+   &qflag*8, bflag(6)*8, o3flag(6)*8, perlbl*40, olmid*8,&
+   &urbid*8, psdid*8, NOxFLAG(6)*8,  soplat*1,&
+   &aftsrc*1, aftid*8,& !Added for Aircraft Plume Rise; UNC-IE
+   &hbpsrc*1  ! Added for HBP, JAN 2023
 
 !**  AFTSRC = Used in SOurce Pathway to read the Aircraft Source IDs
 !**  AFTID  = Used in COmmon Pathway for Airport ID (this is not used in
 !**             calculation)
 
-   CHARACTER (LEN=ILEN_FLD) :: HRFILE, BKGRND_File(6), BGFORM(6),&
+   character (len=ilen_fld) :: hrfile, BKGRND_File(6), bgform(6),&
    &BackUnits
 !*#
-   CHARACTER :: PREVSRCID*12
-   CHARACTER :: PREVGRPID*8
+   character :: prevsrcid*12
+   character :: prevgrpid*8
 
 ! --- Declare logicals related to deposition options applicable to output types;
 !     LDPART indicates that particle dry deposition is used
 !     LWPART indicates that particle wet deposition is used
 !     LDGAS  indicates that gaseous dry deposition is used
 !     LWGAS  indicates that gaseous wet deposition is used
-   LOGICAL :: LDPART, LWPART, LDGAS, LWGAS
+   logical :: ldpart, lwpart, ldgas, lwgas
 
 ! --- Declare logicals related to background concentration options:
 !     L_BACKGRND indicates generally that background concentration options are used
 !     L_BGHourly indicates generally that hourly background concentrations are used
 !     L_BGSector indicates generally that sector-varying background concs are used
-   LOGICAL :: L_BACKGRND, L_BGHourly, L_BGSector
+   logical :: l_backgrnd, L_BGHourly, L_BGSector
 ! --- Declare logicals related to sector-varying background concentration options:
 !     L_BGFile indicates that hourly background concentrations are used for given sector
 !     L_BGValues indicates that non-hourly background concs are available for given sector
-   LOGICAL :: L_BGFile(6), L_BGValues(6)
+   logical :: L_BGFile(6), L_BGValues(6)
 
-   LOGICAL, ALLOCATABLE :: GRP_BACK(:)
+   logical, allocatable :: grp_back(:)
 
-   DOUBLE PRECISION :: BGCONC, EV_BGCONC(NHR)
-   DOUBLE PRECISION :: BGBACK(6), BGSECT(6)
+   double precision :: bgconc, ev_bgconc(nhr)
+   double precision :: bgback(6), bgsect(6)
 
-   INTEGER ::  NUMBGSects, IBGSECT
-   INTEGER ::  NSubBGHOUR                      ! No. of BGHOUR subs
-   INTEGER ::  INDX_GRPALL                     ! Index for SrcGroup ALL for ARM/ARM2 options
+   integer ::  NUMBGSects, ibgsect
+   integer ::  NSubBGHOUR                      ! No. of BGHOUR subs
+   integer ::  indx_grpall                     ! Index for SrcGroup ALL for ARM/ARM2 options
 
 ! --- Declare array for BGSECTs by hour for EVENT processing
-   INTEGER ::  ABGSECT(NHR)
+   integer ::  abgsect(nhr)
 
-   DOUBLE PRECISION, ALLOCATABLE ::  AXS(:), AYS(:), AZS(:), AQS(:),&
-   &AHS(:), ATS(:), AVS(:), ADS(:),&
-   &ASYINI(:), ASZINI(:), ANO2_RATIO(:),&
-   &ADSFACT(:)
+   double precision, allocatable ::  axs(:), ays(:), azs(:), aqs(:),&
+   &ahs(:), ats(:), avs(:), ads(:),&
+   &asyini(:), aszini(:), ano2_ratio(:),&
+   &adsfact(:)
 
 !     CRT, 1/18/2012: D063 declare PLATFORM keyword parameters
 !     PLATELV = Platform base elevation, PLATHB = Platform building height
 !     PLATWB = Platform building width
-   DOUBLE PRECISION, ALLOCATABLE ::  PLATELV(:), PLATHB(:), PLATWB(:)
+   double precision, allocatable ::  platelv(:), plathb(:), platwb(:)
 
 !MGS  7/29/2021 Added AC and BC as distance independent parameters used in CUBIC when
 !MGS            computing plume rise adjustment
-   DOUBLE PRECISION :: AC, BC
+   double precision :: ac, bc
 
-   DOUBLE PRECISION, ALLOCATABLE :: AAQS(:,:,:), AAHS(:,:,:),&
-   &AATS(:,:,:), AAVS(:,:,:),&
-   &AASYINI(:,:,:), AASZINI(:,:,:)
+   double precision, allocatable :: aaqs(:,:,:), aahs(:,:,:),&
+   &aats(:,:,:), aavs(:,:,:),&
+   &aasyini(:,:,:), aaszini(:,:,:)
 
 !**  Added for Aircraft Plume Rise; UNC-IE
 !**---Aircraft Engine Parameters
-   DOUBLE PRECISION, ALLOCATABLE ::  AMFUEL(:), ATHRUST(:), AVAA(:),&
-   &AAFR(:), ABYPR(:),ASRCANGLE(:),&
-   &ARPWR(:)          ! For Shaft-Based Engines
-   DOUBLE PRECISION, ALLOCATABLE ::  AAMFUEL(:,:,:), AATHRUST(:,:,:),&
-   &AAVAA(:,:,:), AAAFR(:,:,:),&
-   &AABYPR(:,:,:),AASRCANGLE(:,:,:),&
-   &AARPWR(:,:,:)     ! For Shaft-Based Engines
+   double precision, allocatable ::  amfuel(:), athrust(:), avaa(:),&
+   &aafr(:), abypr(:),asrcangle(:),&
+   &arpwr(:)          ! For Shaft-Based Engines
+   double precision, allocatable ::  aamfuel(:,:,:), aathrust(:,:,:),&
+   &aavaa(:,:,:), aaafr(:,:,:),&
+   &aabypr(:,:,:),aasrcangle(:,:,:),&
+   &aarpwr(:,:,:)     ! For Shaft-Based Engines
 !**  End Aircraft Plume Rise insert; April 2023
 
-   DOUBLE PRECISION, ALLOCATABLE ::  ADSBH(:,:), ADSBW(:,:),&
-   &ADSBL(:,:), ADSXADJ(:,:), ADSYADJ(:,:)
+   double precision, allocatable ::  adsbh(:,:), adsbw(:,:),&
+   &adsbl(:,:), adsxadj(:,:), adsyadj(:,:)
 
 !*--- Added for LINE source
-   DOUBLE PRECISION, ALLOCATABLE ::  AWIDTH(:), AXS1(:), AYS1(:),&
-   &AXS2(:), AYS2(:)
+   double precision, allocatable ::  awidth(:), axs1(:), ays1(:),&
+   &axs2(:), ays2(:)
 
 !*--- Added for AREA source meander !Wood 4/14/22
-   LOGICAL :: L_APLUME
+   logical :: l_aplume
 
 !*--- Added for BUOYANT LINE source
 !     AFP = average buoyancy parameter
-   DOUBLE PRECISION, ALLOCATABLE ::  AFP(:), AAFP(:,:,:)
+   double precision, allocatable ::  afp(:), aafp(:,:,:)
 
-   INTEGER, ALLOCATABLE :: INPD(:), NDXSTK(:)
+   integer, allocatable :: inpd(:), ndxstk(:)
 
-   DOUBLE PRECISION, ALLOCATABLE ::  QFACT(:,:),&
-   &O3VARY(:,:),&
-   &BACKGRND(:,:),&
-   &NOXVARY(:,:)
-   DOUBLE PRECISION :: EMICON, HAFLIF, DECOEF, VAIRMS, ZRDEP, VDPHOR
-   DOUBLE PRECISION, ALLOCATABLE :: EMIFAC(:), APDIAM(:,:),&
-   &APHI(:,:), APDENS(:,:),&
-   &AVGRAV(:,:), ATSTOP(:,:)
+   double precision, allocatable ::  qfact(:,:),&
+   &o3vary(:,:),&
+   &backgrnd(:,:),&
+   &noxvary(:,:)
+   double precision :: emicon, haflif, decoef, vairms, zrdep, vdphor
+   double precision, allocatable :: emifac(:), apdiam(:,:),&
+   &aphi(:,:), apdens(:,:),&
+   &avgrav(:,:), atstop(:,:)
 
 !*--- Variables for hourly emissions
-   DOUBLE PRECISION ::  HRQS, HRTS, HRVS, HRHS, HRSY, HRSZ, HRFP
+   double precision ::  hrqs, hrts, hrvs, hrhs, hrsy, hrsz, hrfp
 !**  Added for Aircraft Plume Rise; UNC-IE
-   DOUBLE PRECISION ::  HRMFUEL, HRVAA, HRTHRUST, HRBYPR, HRAFR,&
-   &HRSRCANGLE, HRRPWR
+   double precision ::  hrmfuel, hrvaa, hrthrust, hrbypr, hrafr,&
+   &hrsrcangle, hrrpwr
 !**  End Aircraft Plume Rise insert; April 2023
 
-   DOUBLE PRECISION, ALLOCATABLE ::  EV_HRQS(:,:), EV_HRTS(:,:),&
-   &EV_HRVS(:,:), EV_HRHS(:,:),&
-   &EV_HRSY(:,:), EV_HRSZ(:,:),&
-   &EV_HRFP(:,:),&
-   &EV_HRMFUEL(:,:),EV_HRVAA(:,:),&   ! Added for Aircraft Plume Rise; UNC-IE
-   &EV_HRTHRUST(:,:),EV_HRBYPR(:,:),& ! Added for Aircraft Plume Rise; UNC-IE
-   &EV_HRAFR(:,:),EV_HRSRCANGLE(:,:),&! Added for Aircraft Plume Rise; UNC-IE
-   &EV_HRRPWR(:,:)                   ! Added for Aircraft Plume Rise; UNC-IE
+   double precision, allocatable ::  ev_hrqs(:,:), ev_hrts(:,:),&
+   &ev_hrvs(:,:), ev_hrhs(:,:),&
+   &ev_hrsy(:,:), ev_hrsz(:,:),&
+   &ev_hrfp(:,:),&
+   &ev_hrmfuel(:,:),ev_hrvaa(:,:),&   ! Added for Aircraft Plume Rise; UNC-IE
+   &ev_hrthrust(:,:),ev_hrbypr(:,:),& ! Added for Aircraft Plume Rise; UNC-IE
+   &ev_hrafr(:,:),ev_hrsrcangle(:,:),&! Added for Aircraft Plume Rise; UNC-IE
+   &ev_hrrpwr(:,:)                   ! Added for Aircraft Plume Rise; UNC-IE
 
 !     AECOM 4/12/2022 D113 Added for SIDEWASH
-   DOUBLE PRECISION :: CONC_P, CONC_SW, THETA_P, THETA_SW,&
-   &SX1, SY1, SWZ
-   DOUBLE PRECISION, ALLOCATABLE ::  ABW(:), ABL(:), ABH(:), ABA(:),&
-   &SWXS(:), SWYS(:), SWXR(:),&
-   &SWYR(:)
+   double precision :: conc_p, conc_sw, theta_p, theta_sw,&
+   &sx1, sy1, swz
+   double precision, allocatable ::  abw(:), abl(:), abh(:), aba(:),&
+   &swxs(:), swys(:), swxr(:),&
+   &swyr(:)
 !     End SIDEWASH insert, April 2022
 
-   INTEGER ::  FULLHRQ
+   integer ::  fullhrq
 !*----
 !*#
-   CHARACTER :: PSDSRCTYP*2
-   INTEGER, ALLOCATABLE :: IGROUP(:,:), IGRP_OLM(:,:), IGRP_PSD(:,:),&
-   &IURBGRP(:,:),&
-   &IGRP_BLP(:,:)               ! Multiple_BuoyLines_D41_Wood
+   character :: psdsrctyp*2
+   integer, allocatable :: igroup(:,:), igrp_olm(:,:), igrp_psd(:,:),&
+   &iurbgrp(:,:),&
+   &igrp_blp(:,:)               ! Multiple_BuoyLines_D41_Wood
 
 !    CRT, 1/18/2012: D063 add SOPLAT = SO PLATFORM keyword
-   ALLOCATABLE ::  SRCID(:), SRCTYP(:), SOPCRD(:), SOPLAT(:),&
-   &SOGAS(:), URBSRC(:),&
-   &GRPID(:), QFLAG(:), EMILBL(:),&
-   &OUTLBL(:),&
-   &PERLBL(:), OLMID(:), PSDID(:), URBID(:),&
-   &AFTSRC(:), AFTID(:),&                              ! Added for Aircraft Plume Rise; UNC-IE
-   &HBPSRC(:) ! Added for HBP, JAN 2023
+   allocatable ::  srcid(:), srctyp(:), sopcrd(:), soplat(:),&
+   &sogas(:), urbsrc(:),&
+   &grpid(:), qflag(:), emilbl(:),&
+   &outlbl(:),&
+   &perlbl(:), olmid(:), psdid(:), urbid(:),&
+   &aftsrc(:), aftid(:),&                              ! Added for Aircraft Plume Rise; UNC-IE
+   &hbpsrc(:) ! Added for HBP, JAN 2023
 
-   LOGICAL, ALLOCATABLE :: L_OLMGRP(:), L_PSDGRP(:)
-   LOGICAL, ALLOCATABLE :: L_HRLYSIG(:), L_FLATSRC(:),&
+   logical, allocatable :: l_olmgrp(:), l_psdgrp(:)
+   logical, allocatable :: l_hrlysig(:), l_flatsrc(:),&
    &L_WakeMessage(:),&
-   &L_TTRMSRCTYP(:)
+   &l_ttrmsrctyp(:)
 
-   ALLOCATABLE :: PSDSRCTYP(:)
-   DOUBLE PRECISION, ALLOCATABLE :: TTRMOUT(:,:,:)
-   CHARACTER :: TTRMSRC*10
-   ALLOCATABLE :: TTRMSRC(:,:)
+   allocatable :: psdsrctyp(:)
+   double precision, allocatable :: ttrmout(:,:,:)
+   character :: ttrmsrc*10
+   allocatable :: ttrmsrc(:,:)
 
 
 !**   NDXSTK   Index of the gridded height immediately below stack top
@@ -698,22 +698,22 @@ MODULE MAIN1
 !**   The NVPOLY parameter is assigned a value of 12, which should work
 !**   in most cases.  NVPOLY is added to NVMAX in subroutine SRCSIZ in
 !**   the 'aermod.f' source file.
-   INTEGER, PARAMETER :: NVPOLY = 12
+   integer, parameter :: nvpoly = 12
 
-   INTEGER :: IVERT, NVERT, NSEGS,&
-   &NVMAX, NVMAX2, NPIT, NPNT, NVOL, NLINE, NBLINE,&
-   &NAREA, NPOLY, NVTEMP, NCIRC, NSWP,&
-   &NPTEMP
-   DOUBLE PRECISION, ALLOCATABLE :: UVERT(:), VVERT(:), VNVERT(:),&
-   &WVERT(:), UASEGS(:), UBSEGS(:),&
-   &XVERT(:), YVERT(:)
-   DOUBLE PRECISION, ALLOCATABLE :: SPA(:,:)
-   DOUBLE PRECISION, ALLOCATABLE :: AXINIT(:), AYINIT(:), AANGLE(:),&
-   &AXVERT(:,:), AYVERT(:,:),&
-   &RADIUS(:), AXCNTR(:), AYCNTR(:)
-   INTEGER, ALLOCATABLE :: NVERTS(:)
+   integer :: ivert, nvert, nsegs,&
+   &nvmax, nvmax2, npit, npnt, nvol, nline, nbline,&
+   &narea, npoly, nvtemp, ncirc, nswp,&
+   &nptemp
+   double precision, allocatable :: uvert(:), vvert(:), vnvert(:),&
+   &wvert(:), uasegs(:), ubsegs(:),&
+   &xvert(:), yvert(:)
+   double precision, allocatable :: spa(:,:)
+   double precision, allocatable :: axinit(:), ayinit(:), aangle(:),&
+   &axvert(:,:), ayvert(:,:),&
+   &radius(:), axcntr(:), aycntr(:)
+   integer, allocatable :: nverts(:)
 
-   LOGICAL :: LSEG
+   logical :: lseg
 
 
 !***********************************************************************
@@ -722,11 +722,11 @@ MODULE MAIN1
 !***********************************************************************
 
 
-   DOUBLE PRECISION, PARAMETER   :: ALPHA = 0.029D0
-   DOUBLE PRECISION, ALLOCATABLE :: AALPHA(:), APDEFF(:), AVOLUM(:)
-   DOUBLE PRECISION, ALLOCATABLE :: EFRAC(:), QPART(:)
-   DOUBLE PRECISION :: PALPHA, THETA, PDEFF, PDREL, PITFRA, QEFF
-   DOUBLE PRECISION :: PITLEN, PITWID, PITL, EMIHGT, XEFF, YEFF
+   double precision, parameter   :: alpha = 0.029d0
+   double precision, allocatable :: aalpha(:), apdeff(:), avolum(:)
+   double precision, allocatable :: efrac(:), qpart(:)
+   double precision :: palpha, theta, pdeff, pdrel, pitfra, qeff
+   double precision :: pitlen, pitwid, pitl, emihgt, xeff, yeff
 
 
 !*    ALPHA     = Proportionality Constant for determining Escape Fraction
@@ -756,23 +756,23 @@ MODULE MAIN1
 ! --- COMMON BLOCK /DRYGAS/ -- Dry deposition parameters        CALPUFF
 !----------------------------------------------------------------------
 !
-   DOUBLE PRECISION, ALLOCATABLE :: pdiff(:),pdiffw(:),rmolwt(:),&
+   double precision, allocatable :: pdiff(:),pdiffw(:),rmolwt(:),&
    &alphas(:),react(:),henry(:),&
    &rcli(:),finemass(:), scf(:)
 
-   LOGICAL, ALLOCATABLE :: L_METHOD2(:)
+   logical, allocatable :: l_method2(:)
 
-   INTEGER :: ISEAS_GD(12), ILAND_GD(36), NCLOUD
+   integer :: iseas_gd(12), iland_gd(36), ncloud
 
-   DOUBLE PRECISION :: rm, rcut, qsw, xlai, vdepg, uservd, zsubp,&
-   &delta_z, FO, FSEAS2, FSEAS5, fracsat,&
+   double precision :: rm, rcut, qsw, xlai, vdepg, uservd, zsubp,&
+   &delta_z, fo, fseas2, fseas5, fracsat,&
    &liqcont, denom, xnu
 
-   DOUBLE PRECISION :: Wold, Wnew, f2, EsTa
+   double precision :: Wold, Wnew, f2, EsTa
 
-   CHARACTER (LEN = 40) ::  REFSPE
+   character (len = 40) ::  refspe
 
-   LOGICAL  :: LUSERVD
+   logical  :: luservd
 !
 !     REFSPE      - Reference Species (Default is SO2)
 !
@@ -808,23 +808,23 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for REceptor Pathway
 !***********************************************************************
 
-   LOGICAL :: ISTA, IEND, NEWID
+   logical :: ista, iend, newid
 
-   CHARACTER :: NETID*8, NETIDT*8, PNETID*8, NTID*8, NTTYP*8,&
-   &RECTYP*2, PXSOID*12, PESOID*12, ARCID*8
+   character :: netid*8, netidt*8, pnetid*8, ntid*8, nttyp*8,&
+   &rectyp*2, pxsoid*12, pesoid*12, arcid*8
 
-   DOUBLE PRECISION, ALLOCATABLE ::  AXR(:), AYR(:), AZELEV(:),&
-   &AZFLAG(:), AZHILL(:)
-   INTEGER, ALLOCATABLE :: IREF(:), NDXARC(:)
-   ALLOCATABLE ::  NETID(:), RECTYP(:), NTID(:),&
-   &NTTYP(:), ARCID(:)
-   INTEGER ::      ICOUNT, JCOUNT, IZE, IZH, IZF, IRZE, IRZH, IRZF,&
-   &IRXR, IRYR, IRHZ, INNET
-   DOUBLE PRECISION ::  XINT, YINT
-   DOUBLE PRECISION, ALLOCATABLE ::  XCOORD(:,:), YCOORD(:,:),&
-   &XORIG(:), YORIG(:)
-   INTEGER, ALLOCATABLE :: NETSTA(:), NETEND(:),&
-   &NUMXPT(:), NUMYPT(:)
+   double precision, allocatable ::  axr(:), ayr(:), azelev(:),&
+   &azflag(:), azhill(:)
+   integer, allocatable :: iref(:), ndxarc(:)
+   allocatable ::  netid(:), rectyp(:), ntid(:),&
+   &nttyp(:), arcid(:)
+   integer ::      icount, jcount, ize, izh, izf, irze, irzh, irzf,&
+   &irxr, iryr, irhz, innet
+   double precision ::  xint, yint
+   double precision, allocatable ::  xcoord(:,:), ycoord(:,:),&
+   &xorig(:), yorig(:)
+   integer, allocatable :: netsta(:), netend(:),&
+   &numxpt(:), numypt(:)
 
 !**  AZHILL Hill Height Associated with the Receptor
 !**  HCRIT  Critical dividing streamline associated with the receptor
@@ -834,14 +834,14 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for MEteorology Pathway
 !***********************************************************************
 
-   CHARACTER :: SFNAME*40, UANAME*40, ONNAME*40, ALAT*10, ALON*10
+   character :: sfname*40, uaname*40, onname*40, alat*10, alon*10
 
-   CHARACTER (LEN=ILEN_FLD) :: METINP, SCIM_SFCFIL, SCIM_PROFIL,&
-   &PROINP
-   CHARACTER (LEN=ILEN_FLD) :: METFRM, PROFRM
-   CHARACTER :: MMIF_Version*29  ! CRT 1/22/2021 D077, increase from 27 to 29
+   character (len=ilen_fld) :: metinp, scim_sfcfil, scim_profil,&
+   &proinp
+   character (len=ilen_fld) :: metfrm, profrm
+   character :: MMIF_Version*29  ! CRT 1/22/2021 D077, increase from 27 to 29
 
-   LOGICAL :: SCIMOUT
+   logical :: scimout
 
 ! JAT 01/29/21 ISSUE D070 TURBULENCE OPTIONS
 !     Logical flags for ignoring turbulence options
@@ -858,35 +858,35 @@ MODULE MAIN1
 !     NOTE: ONLY THE FIRST 2 CAN BE USED WITH THE DEFAULT OPTION; THE OTHERS
 !     ARE NON-DEFAULT. IF THOSE ARE ISSUED WITH THE DEFAULT KEYWORD, THE USER
 !     WILL GET A WARNING MESSAGE AND THEY WILL BE IGNORED.
-   LOGICAL :: TURBOPTS(9)
+   logical :: turbopts(9)
 
 !**** Logical flags for met data version, L_OldMetVer is used to flag
 !     an outdated met version date in the surface file header record;
 !     L_NAD_ADJ_Flags is used to flag cases where surface file header shows
 !     current met version date, but surface file lacks additional fields
 !     introduced with version 11059 for the wind data source/adjustment.
-   LOGICAL :: L_OldMetVer, L_NAD_ADJ_Flags
+   logical :: L_OldMetVer, L_NAD_ADJ_Flags
 
 !**** Include logical variable to track whether current year being
 !     processed is a leap year or not, in order to properly handle
 !     DAYRANGE inputs based on MN/DY for multiple-year met data
-   LOGICAL :: L_LeapYear
+   logical :: L_LeapYear
 
-   INTEGER :: ISDATE, IEDATE, ISYR, ISMN, ISDY, ISHR, IEYR,&
-   &IEMN, IEDY, IEHR, IPROC(366), IPROCL(366),&
-   &ISYEAR, IUYEAR, IOYEAR,&
-   &IDSURF, IDUAIR, IDSITE, ISJDAY, IEJDAY,&
-   &NDAYS, INCRST,&
-   &ISTRT_CENT, ISTRT_WIND,&
+   integer :: isdate, iedate, isyr, ismn, isdy, ishr, ieyr,&
+   &iemn, iedy, iehr, iproc(366), iprocl(366),&
+   &isyear, iuyear, ioyear,&
+   &idsurf, iduair, idsite, isjday, iejday,&
+   &ndays, incrst,&
+   &istrt_cent, istrt_wind,&
 !        RWB/MJ - allow for SCIM option - May, 1998.
-   &NREGSTART, NREGINT, IFIRSTHR, ISUNIT, IPUNIT,&
-   &NSKIPTOT, IMETMSG
+   &nregstart, nregint, ifirsthr, isunit, ipunit,&
+   &nskiptot, imetmsg
 
-   INTEGER :: FULL_YYMMDD, IEDATE_YYMMDD
+   integer :: full_yymmdd, iedate_yymmdd
 
-   DOUBLE PRECISION :: UCAT(5), ROTANG,&
-   &VIRTPNT_URB(NKST), VIRTPNT_RUR(NKST), VP_FACT
-   DOUBLE PRECISION :: SFX, SFY, UAX, UAY, ONX, ONY
+   double precision :: ucat(5), rotang,&
+   &virtpnt_urb(nkst), virtpnt_rur(nkst), vp_fact
+   double precision :: sfx, sfy, uax, uay, onx, ony
 
 
 !***********************************************************************
@@ -896,129 +896,129 @@ MODULE MAIN1
 !     JAT 1/29/21 D070 TURBULENCE OPTIONS
 !     ADD NEW LOGICAL VARIABLES TO DENOTE THAT SIGMA-THETA AND SIGMA-W
 !     WERE RESET
-   LOGICAL :: CLMHR, MSGHR, UNSTAB, NEUTRL, STABLE,&
-   &RUNERR, PFLERR, ENDMON, METHDR,&
-   &HOURLY, L_DayOfWeekOpts,reset_sa,reset_sw
+   logical :: clmhr, msghr, unstab, neutrl, stable,&
+   &runerr, pflerr, endmon, methdr,&
+   &hourly, L_DayOfWeekOpts,reset_sa,reset_sw
 
-   LOGICAL, ALLOCATABLE :: L_MorningTrans(:), AL_MorningTrans(:,:,:),&
-   &ACLMHR(:,:), AMSGHR(:,:),&
-   &ASTABLE(:,:), AUNSTAB(:,:),&
-   &AURBSTAB(:,:)
+   logical, allocatable :: L_MorningTrans(:), AL_MorningTrans(:,:,:),&
+   &aclmhr(:,:), amsghr(:,:),&
+   &astable(:,:), aunstab(:,:),&
+   &aurbstab(:,:)
 
-   INTEGER ::  KSTMSG
-   INTEGER ::  IHOUR, IYEAR, IMONTH, IDAY, KURDAT, JDAY, ISEAS,&
-   &KHOUR, KYEAR, KMONTH, KDAY, KURPFL, NTOTHRS,&
-   &IPHOUR, IPYEAR, IPDATE, IPCODE, KST,&
-   &IYR, IDAY_OF_WEEK, IDAY_OF_WEEK7, NPLVLS, NTGLVL,&
-   &IFLAG(MXPLVL)
-   INTEGER ::  JDAY_PREV
-   INTEGER ::  FULLDATE
-   DOUBLE PRECISION ::  SFCHF, USTAR, WSTAR, VPTGZI, ZICONV, ZIMECH,&
-   &OBULEN, SFCZ0, BOWEN, ALBEDO, UREF, WDREF,&
-   &UREFHT, TA, TREFHT, ZI, AFV,&
-   &BVF, BVPRIM, XLAT, TSIGN, ZIRUR,&
-   &PRATE, PREC1, PREC2, TOTAL_PRECIP,&
-   &UREF10, RURUSTR, RUROBULEN, RH, SFCP
+   integer ::  kstmsg
+   integer ::  ihour, iyear, imonth, iday, kurdat, jday, iseas,&
+   &khour, kyear, kmonth, kday, kurpfl, ntothrs,&
+   &iphour, ipyear, ipdate, ipcode, kst,&
+   &iyr, iday_of_week, iday_of_week7, nplvls, ntglvl,&
+   &iflag(mxplvl)
+   integer ::  jday_prev
+   integer ::  fulldate
+   double precision ::  sfchf, ustar, wstar, vptgzi, ziconv, zimech,&
+   &obulen, sfcz0, bowen, albedo, uref, wdref,&
+   &urefht, ta, trefht, zi, afv,&
+   &bvf, bvprim, xlat, tsign, zirur,&
+   &prate, prec1, prec2, total_precip,&
+   &uref10, rurustr, rurobulen, rh, sfcp
 !  ******************************** added code Jan. 2023 --kja
-   INTEGER :: NHBP
+   integer :: nhbp
 !  ** variables for next hour convective and mechanical mixing heights
-   DOUBLE PRECISION ::  ZICONVN, ZIMECHN
+   double precision ::  ziconvn, zimechn
 !  *******************************  added code end  --kja
 ! Added for HBP MAXDCONT and EVENT processing; Jan. 2023
-   DOUBLE PRECISION, ALLOCATABLE :: AZICONVN(:,:), AZIMECHN(:,:)
+   double precision, allocatable :: aziconvn(:,:), azimechn(:,:)
 ! End HBP addition
 
-   DOUBLE PRECISION, ALLOCATABLE :: URBPOP(:), URBZ0(:), ZIURB(:),&
-   &URBWSTR(:), URBUSTR(:),&
-   &URBOBULEN(:)
+   double precision, allocatable :: urbpop(:), urbz0(:), ziurb(:),&
+   &urbwstr(:), urbustr(:),&
+   &urbobulen(:)
 
-   INTEGER, ALLOCATABLE :: IKST(:,:), IAPCODE(:,:), NACLOUD(:,:)
+   integer, allocatable :: ikst(:,:), iapcode(:,:), nacloud(:,:)
 
-   DOUBLE PRECISION, ALLOCATABLE :: APRATE(:,:), AQSW(:,:),ARH(:,:),&
-   &ASFCP(:,:)
-   DOUBLE PRECISION, ALLOCATABLE :: ASFCHF(:,:), AUREF(:,:),&
-   &AUREFHT(:,:), ATA(:,:),&
-   &ATREFHT(:,:), AWDREF(:,:),&
-   &AUSTAR(:,:), AWSTAR(:,:),&
-   &AZICONV(:,:), AZIMECH(:,:),&
-   &AOBULEN(:,:), AVPTGZI(:,:),&
-   &ASFCZ0(:,:), ABOWEN(:,:),&
-   &AALBEDO(:,:), AWNEW(:,:),&
-   &AWOLD(:,:), AESTA(:,:),&
-   &AF2(:,:), APREC1(:,:),&
-   &APREC2(:,:),&
-   &AO3CONC(:,:), ABGCONC(:,:),&
-   &ANOXBGCONC(:,:),&
-   &AKST(:,:),ABLTA(:,:)
+   double precision, allocatable :: aprate(:,:), aqsw(:,:),arh(:,:),&
+   &asfcp(:,:)
+   double precision, allocatable :: asfchf(:,:), auref(:,:),&
+   &aurefht(:,:), ata(:,:),&
+   &atrefht(:,:), awdref(:,:),&
+   &austar(:,:), awstar(:,:),&
+   &aziconv(:,:), azimech(:,:),&
+   &aobulen(:,:), avptgzi(:,:),&
+   &asfcz0(:,:), abowen(:,:),&
+   &aalbedo(:,:), awnew(:,:),&
+   &awold(:,:), aesta(:,:),&
+   &af2(:,:), aprec1(:,:),&
+   &aprec2(:,:),&
+   &ao3conc(:,:), abgconc(:,:),&
+   &anoxbgconc(:,:),&
+   &akst(:,:),ablta(:,:)
 
-   INTEGER :: ISTRHOUR, ISTRDY, ISTRMN,&
-   &IENDHOUR, IENDDY, IENDMN, NUMYRS, NREMAIN, NDX4ZI
+   integer :: istrhour, istrdy, istrmn,&
+   &iendhour, ienddy, iendmn, numyrs, nremain, ndx4zi
 
-   INTEGER, ALLOCATABLE :: ANDX4ZI(:,:)
+   integer, allocatable :: andx4zi(:,:)
 
-   DOUBLE PRECISION :: PFLHT(MXPLVL), PFLWD(MXPLVL), PFLWS(MXPLVL),&
-   &PFLTA(MXPLVL), PFLSA(MXPLVL), PFLSW(MXPLVL),&
-   &PFLSV(MXPLVL), PFLTG(MXPLVL), PFLTGZ(MXPLVL)
+   double precision :: pflht(mxplvl), pflwd(mxplvl), pflws(mxplvl),&
+   &pflta(mxplvl), pflsa(mxplvl), pflsw(mxplvl),&
+   &pflsv(mxplvl), pfltg(mxplvl), pfltgz(mxplvl)
 
-   DOUBLE PRECISION, ALLOCATABLE :: APFLHT(:,:,:), APFLWD(:,:,:),&
-   &APFLWS(:,:,:), APFLTA(:,:,:),&
-   &APFLSA(:,:,:), APFLSW(:,:,:),&
-   &APFLSV(:,:,:), APFLTG(:,:,:),&
-   &APFLTGZ(:,:,:)
+   double precision, allocatable :: apflht(:,:,:), apflwd(:,:,:),&
+   &apflws(:,:,:), apflta(:,:,:),&
+   &apflsa(:,:,:), apflsw(:,:,:),&
+   &apflsv(:,:,:), apfltg(:,:,:),&
+   &apfltgz(:,:,:)
 
-   INTEGER, ALLOCATABLE :: AIFLAG(:,:,:)
+   integer, allocatable :: aiflag(:,:,:)
 
-   INTEGER, ALLOCATABLE :: ANPLVLS(:,:), ANTGLVL(:,:)
+   integer, allocatable :: anplvls(:,:), antglvl(:,:)
 
-   DOUBLE PRECISION :: GRIDHT(MXGLVL), GRIDWD(MXGLVL),&
-   &GRIDWS(MXGLVL), GRIDSW(MXGLVL),&
-   &GRIDSV(MXGLVL), GRIDTG(MXGLVL),&
-   &GRIDPT(MXGLVL),&
+   double precision :: gridht(mxglvl), gridwd(mxglvl),&
+   &gridws(mxglvl), gridsw(mxglvl),&
+   &gridsv(mxglvl), gridtg(mxglvl),&
+   &gridpt(mxglvl),&
 !---  Add density profile for PRIME
-   &GRIDRHO(MXGLVL),&
+   &gridrho(mxglvl),&
 !---  Add tubulence dissipation rate (epsilon) profile for PVMRM/GRSM
-   &GRIDEPS(MXGLVL),&
+   &grideps(mxglvl),&
 !     Added  RL_GRIDWS array for RLINE windspeeds when used in CRITDS - WOOD 6-28-2022
-   &RL_GRIDWS(MXGLVL,3)
-   DOUBLE PRECISION :: GRDSWR(MXGLVL), GRDSVR(MXGLVL),&
-   &GRDTGR(MXGLVL),&
-   &GRDPTR(MXGLVL)
+   &rl_gridws(mxglvl,3)
+   double precision :: grdswr(mxglvl), grdsvr(mxglvl),&
+   &grdtgr(mxglvl),&
+   &grdptr(mxglvl)
 
-   DOUBLE PRECISION, ALLOCATABLE :: GRDSWU(:,:), GRDSVU(:,:),&
-   &GRDTGU(:,:), GRDPTU(:,:)
+   double precision, allocatable :: grdswu(:,:), grdsvu(:,:),&
+   &grdtgu(:,:), grdptu(:,:)
 
-   DOUBLE PRECISION, ALLOCATABLE ::&
-   &AGRIDHT(:,:,:), AGRIDWD(:,:,:),&
-   &AGRIDWS(:,:,:), AGRIDSW(:,:,:),&
-   &AGRIDSV(:,:,:), AGRIDTG(:,:,:),&
-   &AGRIDPT(:,:,:),&
+   double precision, allocatable ::&
+   &agridht(:,:,:), agridwd(:,:,:),&
+   &agridws(:,:,:), agridsw(:,:,:),&
+   &agridsv(:,:,:), agridtg(:,:,:),&
+   &agridpt(:,:,:),&
 !---  Add density profile for PRIME
-   &AGRIDRHO(:,:,:),&
+   &agridrho(:,:,:),&
 !---  Add tubulence dissipation rate (epsilon) profile for PVMRM/GRSM
-   &AGRIDEPS(:,:,:)
-   DOUBLE PRECISION, ALLOCATABLE :: AGRDSWR(:,:,:), AGRDSVR(:,:,:),&
-   &AGRDTGR(:,:,:), AGRDPTR(:,:,:),&
-   &AUATZI(:,:),  ASVATZI(:,:),&
-   &ASWATZI(:,:), APTATZI(:,:),&
-   &AUAVG(:,:),  ASVAVG(:,:),&
-   &ASWAVG(:,:), APTAVG(:,:)
+   &agrideps(:,:,:)
+   double precision, allocatable :: agrdswr(:,:,:), agrdsvr(:,:,:),&
+   &agrdtgr(:,:,:), agrdptr(:,:,:),&
+   &auatzi(:,:),  asvatzi(:,:),&
+   &aswatzi(:,:), aptatzi(:,:),&
+   &auavg(:,:),  asvavg(:,:),&
+   &aswavg(:,:), aptavg(:,:)
 
-   DOUBLE PRECISION, ALLOCATABLE :: AGRDSWU(:,:,:,:),&
-   &AGRDSVU(:,:,:,:),&
-   &AGRDTGU(:,:,:,:),&
-   &AGRDPTU(:,:,:,:),&
-   &AZIURB(:,:,:),&
-   &AURBWSTR(:,:,:),&
-   &AURBUSTR(:,:,:),&
-   &AURBOBULEN(:,:,:),&
-   &ARURUSTR(:,:),&
-   &ARUROBULEN(:,:)
+   double precision, allocatable :: agrdswu(:,:,:,:),&
+   &agrdsvu(:,:,:,:),&
+   &agrdtgu(:,:,:,:),&
+   &agrdptu(:,:,:,:),&
+   &aziurb(:,:,:),&
+   &aurbwstr(:,:,:),&
+   &aurbustr(:,:,:),&
+   &aurbobulen(:,:,:),&
+   &arurustr(:,:),&
+   &arurobulen(:,:)
 
-   DOUBLE PRECISION :: TG4PFL, TG4XTR,&
-   &THSTAR, SVAVG, SWAVG, UAVG,&
-   &SVATZI, SWATZI, UATZI,&
-   &PTATZI, UATHE, SVATHE, SWATHE,&
-   &UAVH3, SVAVH3, SWAVH3, SWRMAX
+   double precision :: tg4pfl, tg4xtr,&
+   &thstar, svavg, swavg, uavg,&
+   &svatzi, swatzi, uatzi,&
+   &ptatzi, uathe, svathe, swathe,&
+   &uavh3, svavh3, swavh3, swrmax
 
 !**   BVF    = Brunt-Vaisala frequency
 !**   BVPRIM = 0.7*BVF
@@ -1091,41 +1091,41 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for Calculation
 !***********************************************************************
 
-   LOGICAL :: CALCS, WAKE
-   LOGICAL :: SURFAC
+   logical :: calcs, wake
+   logical :: surfac
 
-   DOUBLE PRECISION :: PHID1, PHID2, PHIN1, PHIN2
+   double precision :: phid1, phid2, phin1, phin2
 
-   INTEGER :: IREC,   ISRC,   IGRP,   IAVE,   ITYP,  ISET,&
-   &NUMREC, NUMSRC, NUMGRP, NUMAVE, NUMARC, NUMTYP,&
-   &NUMCAP, NUMHOR,&
+   integer :: irec,   isrc,   igrp,   iave,   ityp,  iset,&
+   &numrec, numsrc, numgrp, numave, numarc, numtyp,&
+   &numcap, numhor,&
 ! ---            Include counters for all source types
-   &NUMPNT, NUMVOL, NUMAREA, NUMLINE, NUMPIT,&
+   &numpnt, numvol, numarea, numline, numpit,&
 !                Add counter for SIDEWASH Point
-   &NUMSWP,&
-   &NUMFLAT, IBKGRD(6), IO3SET(6), INOXSET(6),&
-   &ICYEAR, NURBSRC, NUMURB, NPD, IFVSEC,&
-   &IUCAT, IOLM, NUMOLM, IPSD, NUMPSD, IURB,&
-   &ITTRM,&
+   &numswp,&
+   &numflat, ibkgrd(6), io3set(6), inoxset(6),&
+   &icyear, nurbsrc, numurb, npd, ifvsec,&
+   &iucat, iolm, numolm, ipsd, numpsd, iurb,&
+   &ittrm,&
 !! Added for TTRM2
-   &CMETH,&
+   &cmeth,&
 !! End of TTRM2 insert; Nov. 2021
 !**  Added for Aircraft Plume Rise; UNC-IE
-   &NAFTSRC
+   &naftsrc
 !**  NAFTSRC = Number of Aircraft Sources
 !**  End Aircraft Plume Rise insert; April 2023
 
-   DOUBLE PRECISION :: XS, YS, ZS, QS, HS, DS, VS, TS, SYINIT,&
-   &SZINIT, XINIT, YINIT, ANGLE, XCNTR, YCNTR,&
-   &DSFACT, DSBH, DSBW,&
+   double precision :: xs, ys, zs, qs, hs, ds, vs, ts, syinit,&
+   &szinit, xinit, yinit, angle, xcntr, ycntr,&
+   &dsfact, dsbh, dsbw,&
 ! --- PRIME Modification -------------------------------------------
-   &DSBL, XADJ, YADJ, B_SUBS, B_SUBL, RSCALE,&
+   &dsbl, xadj, yadj, b_subs, b_subl, rscale,&
 ! ------------------------------------------------------------------
-   &D, VD, E, WDRAD, WDSIN, WDCOS, ZBASE,&
+   &d, vd, e, wdrad, wdsin, wdcos, zbase,&
 !**  Added for Aircraft Plume Rise; UNC-IE
 !---- AIRCRAFT Plume Rise Modification -----------------------------
-   &MFUEL, THRUST, VAA, AFR, BYPR, SRCANGLE,&
-   &RPWR
+   &mfuel, thrust, vaa, afr, bypr, srcangle,&
+   &rpwr
 !**  Aircraft Engine Parameters
 !**    MFUEL    = Fuel Burn Rate (kg/s)
 !**    THRUST   = Thrust (N)
@@ -1137,39 +1137,39 @@ MODULE MAIN1
 !**  End Aircraft Plume Rise insert; April 2023
 
 !     AECOM 4/13/2022 D113 Added for SIDEWASH
-   DOUBLE PRECISION :: U_AMB,LAMBDA,MU_Y1, MU_Z1, MU_Y2, MU_Z2
-   DOUBLE PRECISION :: SWQS, SWHS,& !SWBH, SWBW, SWBL, SWBA,
-   &SWTHETA, BL, BW, BH, BA, SWCONC,&
-   &BHS, BLS, BWS, HSS  ! Scaled building dimensions and stack height
-   LOGICAL :: RUNSW
+   double precision :: u_amb,lambda,mu_y1, mu_z1, mu_y2, mu_z2
+   double precision :: swqs, swhs,& !SWBH, SWBW, SWBL, SWBA,
+   &swtheta, bl, bw, bh, ba, swconc,&
+   &bhs, bls, bws, hss  ! Scaled building dimensions and stack height
+   logical :: runsw
 !     End insert for SIDEWASH
-   DOUBLE PRECISION, ALLOCATABLE :: PDIAM(:), PHI(:), PDENS(:),&
-   &VGRAV(:), TSTOP(:), SCHMIDT(:),&
-   &VDEP(:), WQCOR(:), DQCOR(:),&
-   &PSCVRT(:), WASHOUT(:), ECOLL(:),&
-   &AWDSIN(:), AWDCOS(:),&
-   &AAFV(:)
+   double precision, allocatable :: pdiam(:), phi(:), pdens(:),&
+   &vgrav(:), tstop(:), schmidt(:),&
+   &vdep(:), wqcor(:), dqcor(:),&
+   &pscvrt(:), washout(:), ecoll(:),&
+   &awdsin(:), awdcos(:),&
+   &aafv(:)
 
 !     CRT, 1/20/2012: D063 add OSPLAT logical to indicate if source is
 !                     subject to offshore platform downwash
 !                     A similar variable, SOPLAT, is used to indicate the
 !                     the PLATFORM keyword was specified on the SO card
-   LOGICAL, ALLOCATABLE          :: OSPLAT(:)
+   logical, allocatable          :: osplat(:)
 
 !     CRT, 1/20/2012: add platform sigma-y and sigma-z
-   DOUBLE PRECISION :: PLATSY, PLATSZ      ! stable or unstable injected
-   DOUBLE PRECISION :: PLATSYD1, PLATSZD1  ! unstable, direct, updraft
-   DOUBLE PRECISION :: PLATSYD2, PLATSZD2  ! unstable, direct, downdraft
-   DOUBLE PRECISION :: PLATSYN1, PLATSZN1  ! unstable, indirect, updraft
-   DOUBLE PRECISION :: PLATSYN2, PLATSZN2  ! unstable, indirect, downdraft
-   DOUBLE PRECISION :: PLATSYP, PLATSZP    ! unstable, penetrated
-   DOUBLE PRECISION :: DHP3PLAT
+   double precision :: platsy, platsz      ! stable or unstable injected
+   double precision :: platsyd1, platszd1  ! unstable, direct, updraft
+   double precision :: platsyd2, platszd2  ! unstable, direct, downdraft
+   double precision :: platsyn1, platszn1  ! unstable, indirect, updraft
+   double precision :: platsyn2, platszn2  ! unstable, indirect, downdraft
+   double precision :: platsyp, platszp    ! unstable, penetrated
+   double precision :: dhp3plat
 
-   DOUBLE PRECISION, ALLOCATABLE :: TTRMINST(:), TTRMFRAC(:),&
-   &TTRMNO2(:), TTRMSUB(:),&
-   &TTRMCOMPARE(:,:,:,:),&
-   &TTRMFRAC_PRM(:),&
-   &TTRMFRAC_AER(:)
+   double precision, allocatable :: ttrminst(:), ttrmfrac(:),&
+   &ttrmno2(:), ttrmsub(:),&
+   &ttrmcompare(:,:,:,:),&
+   &ttrmfrac_prm(:),&
+   &ttrmfrac_aer(:)
 !     variables associated with the incremental NO2 calculations using
 !     the ozone response rate (TTRM) approach:
 !     TTRMINSTACK = concentration of source-s[ecific in-stack converted NO2
@@ -1178,64 +1178,64 @@ MODULE MAIN1
 !     TTRMSUBC    = sub-total of in-stack and fractional NO2
 !                  from either COHERENT, PRIME or PANCAKE contributions
 !     end TTRM insert AECOM, Feb. 2021
-   DOUBLE PRECISION :: WQCORG, GSCVRT, DQCORG, WASHOUTG, VSETL
-   DOUBLE PRECISION :: XR, YR, X, Y, ZELEV, ZFLAG, ZR, ZEFF, DISTR,&
-   &ZHILL, HCRIT, ZRT, XDIST
-   DOUBLE PRECISION :: HE, HSP, HEFLAT, HTER, HEMWAK, HEDHH, ZB, ZM,&
-   &HED1, HED2, HEN1, HEN2, HE3, HPEN, HED1M,&
-   &HED2M, HEN1M, HEN2M, HE3M, HSBL, QSUBN, QSUB3,&
-   &XY, XZ, SBID, FM, FB, DTDZ, DHF, DHFAER, DHP,&
-   &DHP1,DHP2, DHP3, DELT, DHPB, DHPM, XF, XMAX,&
-   &XFM, XFB, XRAD, WPB, DHCRIT, HTEFF, CENTER,&
-   &Z4GAMMA, XTR4GAMMA,&
+   double precision :: wqcorg, gscvrt, dqcorg, washoutg, vsetl
+   double precision :: xr, yr, x, y, zelev, zflag, zr, zeff, distr,&
+   &zhill, hcrit, zrt, xdist
+   double precision :: he, hsp, heflat, hter, hemwak, hedhh, zb, zm,&
+   &hed1, hed2, hen1, hen2, he3, hpen, hed1m,&
+   &hed2m, hen1m, hen2m, he3m, hsbl, qsubn, qsub3,&
+   &xy, xz, sbid, fm, fb, dtdz, dhf, dhfaer, dhp,&
+   &dhp1,dhp2, dhp3, delt, dhpb, dhpm, xf, xmax,&
+   &xfm, xfb, xrad, wpb, dhcrit, hteff, center,&
+   &z4gamma, xtr4gamma,&
 !**  Added for Aircraft Plume Rise; UNC-IE
 !**   HPM   = Horizontal Momentum Plume Rise (m)
 !**   HDISP = Horizontal Momentum Displacement for Airborne Source (m)
 !**   RP0   = Plume Radius (m)
-   &HPM, HDISP, RP0
+   &hpm, hdisp, rp0
 !** End Aircraft Plume Rise insert; April 2023
-   DOUBLE PRECISION :: HESETL, HE3SETL, HV
-   DOUBLE PRECISION :: US, SVS, SWS, TGS, TYS, PTS, UP, WDIR, DA,&
-   &ZLY, ZLB, RINIT, CB, CM, QTK, PPF, PSUBS, FHC,&
-   &SY, SYB, SYN, SY3, SZ, SZUPR, SYAMB, SZAMB,&
-   &SZAS, SZAD1, SZAD2, SZAN1, SZAN2, SYAN, SZA3,&
-   &SZB, SZBD, SZBN, SZ3, SZD1, SZD2, SZN1, SZN2,&
-   &SZEFF, SZSURF, SYA3, SYB3, SZB3, VSY3, VSIGY,&
-   &VSIGZ, VSYN, VSZD1,VSZD2, VSZN1, VSZN2, VSZ3,&
-   &SZD1M, SZD2M, SZN1M, SZN2M, SZ3M, U3, SV3,&
-   &SW3, TGP, SVP, SWP    ! SVP and SWP - Added for ARISE; UNC-IE
+   double precision :: hesetl, he3setl, hv
+   double precision :: us, svs, sws, tgs, tys, pts, up, wdir, da,&
+   &zly, zlb, rinit, cb, cm, qtk, ppf, psubs, fhc,&
+   &sy, syb, syn, sy3, sz, szupr, syamb, szamb,&
+   &szas, szad1, szad2, szan1, szan2, syan, sza3,&
+   &szb, szbd, szbn, sz3, szd1, szd2, szn1, szn2,&
+   &szeff, szsurf, sya3, syb3, szb3, vsy3, vsigy,&
+   &vsigz, vsyn, vszd1,vszd2, vszn1, vszn2, vsz3,&
+   &szd1m, szd2m, szn1m, szn2m, sz3m, u3, sv3,&
+   &sw3, tgp, svp, swp    ! SVP and SWP - Added for ARISE; UNC-IE
 
 !  ************************************  added code Jan. 2023 --kja
 !  ** penetrated plume factor below mixing height - Weil's Fq term
-   DOUBLE PRECISION ::  PPFN, ZIN, ZIAVG, HHTOP, HTOPDIF, HHBOT,PPWID
-   DOUBLE PRECISION ::  SZ3DBG
+   double precision ::  ppfn, zin, ziavg, hhtop, htopdif, hhbot,ppwid
+   double precision ::  sz3dbg
 !  ***********************************  added code end  --kja
 
-   DOUBLE PRECISION :: FSUBY, FSUBYD, FSUBYN, FSUBY3
-   DOUBLE PRECISION :: FSUBZ, FSUBZD, FSUBZN, FSUBZ3,&
-   &PHEE, FOPT, CWRAP, CLIFT, XMDBG,&
-   &CWRAPC, CLIFTC, FSUBYC, FSBY3C
-   DOUBLE PRECISION :: UEFF, SVEFF, SWEFF, TGEFF,&
-   &UEFFD, SVEFFD, SWEFFD,&
-   &UEFFN, SVEFFN, SWEFFN,&
-   &UEFF3, SVEFF3, SWEFF3, TGEFF3,&
-   &EPSEFF, EPSEFFD, EPSEFF3,&
-   &XMIXED, XFINAL, ZMIDMX,&
-   &SIGVEFF, SIGVEFFD,&
-   &SYEFF
-   DOUBLE PRECISION :: SKEW, R, ALPHPD, BETAPD, ASUB1, ASUB2,&
-   &BSUB1, BSUB2, LAMDA1, LAMDA2
-   DOUBLE PRECISION :: CHIW, CHIDW, CHINW, CHI3W,&
-   &CHIL, CHIDL, CHINL, CHI3L
-   DOUBLE PRECISION :: GAMFACT
+   double precision :: fsuby, fsubyd, fsubyn, fsuby3
+   double precision :: fsubz, fsubzd, fsubzn, fsubz3,&
+   &phee, fopt, cwrap, clift, xmdbg,&
+   &cwrapc, cliftc, fsubyc, fsby3c
+   double precision :: ueff, sveff, sweff, tgeff,&
+   &ueffd, sveffd, sweffd,&
+   &ueffn, sveffn, sweffn,&
+   &ueff3, sveff3, sweff3, tgeff3,&
+   &epseff, epseffd, epseff3,&
+   &xmixed, xfinal, zmidmx,&
+   &sigveff, sigveffd,&
+   &syeff
+   double precision :: skew, r, alphpd, betapd, asub1, asub2,&
+   &bsub1, bsub2, lamda1, lamda2
+   double precision :: chiw, chidw, chinw, chi3w,&
+   &chil, chidl, chinl, chi3l
+   double precision :: gamfact
 !     CERC 11/30/20:
-   DOUBLE PRECISION :: CHI_TTRAVPLM, CHI_TTRAVPAN,&
-   &CHI_TTRAVAER, CHI_TTRAVPRM
-   DOUBLE PRECISION, ALLOCATABLE :: CHI_TTRAVCHM(:,:), TTRAVCHM(:),&
-   &BLDFAC(:,:)
-   DOUBLE PRECISION :: UCHM, PRMVAL_Src1
+   double precision :: chi_ttravplm, chi_ttravpan,&
+   &chi_ttravaer, chi_ttravprm
+   double precision, allocatable :: chi_ttravchm(:,:), ttravchm(:),&
+   &bldfac(:,:)
+   double precision :: uchm, PRMVAL_Src1
 !     added for TTRM approach
-   DOUBLE PRECISION :: TTRMTIME, TTRMTIME_PRM, K1, GAMF
+   double precision :: ttrmtime, ttrmtime_prm, k1, gamf
 !     variable for calculating the transport time of NOx based on
 !     distance (downwind for coherent and prime, radial for meander) and
 !     effective wind speed
@@ -1286,23 +1286,23 @@ MODULE MAIN1
 !**   QSUM        = Sum of emissions for merged plumes in PVMRM option
 !**   SUM_NO2RAT  = Sum of NO2/NOx ratios for merged plumes in PVMRM
 
-   DOUBLE PRECISION :: QSUM,  SUM_NO2RAT
-   DOUBLE PRECISION :: QSUM3, SUM3_NO2RAT
+   double precision :: qsum,  sum_no2rat
+   double precision :: qsum3, sum3_no2rat
 
-   DOUBLE PRECISION :: CWMAX, CWMIN, CWMAX3, CWMIN3,&
-   &DWMAX, DWMIN, DWMAX3, DWMIN3
-   DOUBLE PRECISION :: HMNH,  HMXH,  HMNT,   HMXT,&
-   &HMNH3, HMXH3, HMNT3,  HMXT3
+   double precision :: cwmax, cwmin, cwmax3, cwmin3,&
+   &dwmax, dwmin, dwmax3, dwmin3
+   double precision :: hmnh,  hmxh,  hmnt,   hmxt,&
+   &hmnh3, hmxh3, hmnt3,  hmxt3
 
 !***********************************************************************
 !     This is The Global Variable Definition Block for EVent Pathway
 !***********************************************************************
 
-   CHARACTER :: EVNAME*10, EVGRP*8
-   INTEGER, ALLOCATABLE ::  EVAPER(:), EVDATE(:), EVJDAY(:),&
-   &IDXEV(:)
+   character :: evname*10, evgrp*8
+   integer, allocatable ::  evaper(:), evdate(:), evjday(:),&
+   &idxev(:)
 
-   ALLOCATABLE ::  EVNAME(:), EVGRP(:)
+   allocatable ::  evname(:), evgrp(:)
 
 
 
@@ -1311,48 +1311,48 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for OUtput Pathway
 !***********************************************************************
 
-   LOGICAL :: OUTPART, SUMMFILE, L_NoHeader(8), EVALFIL, TOXXFIL
+   logical :: outpart, summfile, L_NoHeader(8), evalfil, toxxfil
 
-   CHARACTER (LEN=ILEN_FLD) :: THRFIL, PSTFIL, PLTFIL, ANNPST,&
-   &ANNPLT, THRFRM, PSTFRM, PLTFRM,&
-   &TOXFIL, SEAHRS, RNKFIL, RNKFRM,&
-   &EVLFIL, SUMFIL, MXDFRM,&
-   &MAXDLY, MAXDLY_BYYR, MAXDCONT_FILE
+   character (len=ilen_fld) :: thrfil, pstfil, pltfil, annpst,&
+   &annplt, thrfrm, pstfrm, pltfrm,&
+   &toxfil, seahrs, rnkfil, rnkfrm,&
+   &evlfil, sumfil, mxdfrm,&
+   &maxdly, maxdly_byyr, maxdcont_file
 
 ! --- Variable for specifying format for file outputs (default = 'FIX')
-   CHARACTER (LEN = 3) :: FILE_FORMAT
+   character (len = 3) :: file_format
 
-   INTEGER, ALLOCATABLE :: NHIAVE(:,:), MAXAVE(:), IMXVAL(:),&
-   &IDYTAB(:), MAXFLE(:,:), IPSTFL(:,:),&
-   &IPLTFL(:,:,:), IANPST(:), IANPLT(:),&
-   &INHI(:), ITOXFL(:), ISEAHR(:),&
-   &IMXDLY(:), IMXDLY_BYYR(:), MAXDCONT(:),&
-   &IRNKFL(:), IRKVAL(:)
+   integer, allocatable :: nhiave(:,:), maxave(:), imxval(:),&
+   &idytab(:), maxfle(:,:), ipstfl(:,:),&
+   &ipltfl(:,:,:), ianpst(:), ianplt(:),&
+   &inhi(:), itoxfl(:), iseahr(:),&
+   &imxdly(:), imxdly_byyr(:), maxdcont(:),&
+   &irnkfl(:), irkval(:)
 
-   DOUBLE PRECISION, ALLOCATABLE :: THRESH(:,:), TOXTHR(:),&
-   &MAXD_THRESH(:)
+   double precision, allocatable :: thresh(:,:), toxthr(:),&
+   &maxd_thresh(:)
 
-   DOUBLE PRECISION, ALLOCATABLE :: AXR_SAV(:), AYR_SAV(:),&
-   &AZELEV_SAV(:), AZFLAG_SAV(:),&
-   &AZHILL_SAV(:)
+   double precision, allocatable :: axr_sav(:), ayr_sav(:),&
+   &azelev_sav(:), azflag_sav(:),&
+   &azhill_sav(:)
 
-   INTEGER, ALLOCATABLE :: IMXUNT(:,:), IPSUNT(:,:), IPSFRM(:,:),&
-   &IPLUNT(:,:,:), IAPUNT(:),&
-   &IANFRM(:), IPPUNT(:), ITXUNT(:),&
-   &IRKUNT(:), IELUNT(:), IUPART(:),&
-   &ISHUNT(:), IMDUNT(:), IMDUNT_BYYR(:),&
-   &IMXDCUNT(:), MXD_RANK(:,:)
+   integer, allocatable :: imxunt(:,:), ipsunt(:,:), ipsfrm(:,:),&
+   &iplunt(:,:,:), iapunt(:),&
+   &ianfrm(:), ippunt(:), itxunt(:),&
+   &irkunt(:), ielunt(:), iupart(:),&
+   &ishunt(:), imdunt(:), imdunt_byyr(:),&
+   &imxdcunt(:), mxd_rank(:,:)
 
-   ALLOCATABLE ::  THRFIL(:,:), PSTFIL(:,:), PLTFIL(:,:,:),&
-   &ANNPST(:), ANNPLT(:), TOXFIL(:), SEAHRS(:),&
-   &RNKFIL(:), EVLFIL(:), MAXDLY(:),&
-   &MAXDLY_BYYR(:), MAXDCONT_FILE(:)
+   allocatable ::  thrfil(:,:), pstfil(:,:), pltfil(:,:,:),&
+   &annpst(:), annplt(:), toxfil(:), seahrs(:),&
+   &rnkfil(:), evlfil(:), maxdly(:),&
+   &maxdly_byyr(:), maxdcont_file(:)
 
-   INTEGER, ALLOCATABLE :: IDCONC(:,:)
+   integer, allocatable :: idconc(:,:)
 
-   INTEGER :: ITAB, NXTOX, NYTOX, NHOURS, IPAIR
+   integer :: itab, nxtox, nytox, nhours, ipair
 
-   DOUBLE PRECISION, ALLOCATABLE :: TXCONC(:,:)
+   double precision, allocatable :: txconc(:,:)
 
 
 
@@ -1360,20 +1360,20 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for Working Space
 !***********************************************************************
 
-   CHARACTER :: WORKID*12, DUMMY*12
+   character :: workid*12, dummy*12
 
-   INTEGER :: IMIT, INUM, IDUM, INDAVE, INDGRP, INDVAL,&
-   &ISC, IOERRN, NCPP, NRPP, NGPP, NPPX, NPPY
-   REAL :: FNUM
-   DOUBLE PRECISION :: DNUM
+   integer :: imit, inum, idum, indave, indgrp, indval,&
+   &isc, ioerrn, ncpp, nrpp, ngpp, nppx, nppy
+   real :: fnum
+   double precision :: dnum
 
-   ALLOCATABLE ::          WORKID(:)
-   INTEGER, ALLOCATABLE :: IWRK2(:,:)
+   allocatable ::          workid(:)
+   integer, allocatable :: iwrk2(:,:)
 
 !     Declare Temporary Work Arrays for ZELEV and ZFLAG Receptor Data
-   DOUBLE PRECISION, ALLOCATABLE :: ZETMP1(:), ZETMP2(:)
-   DOUBLE PRECISION, ALLOCATABLE :: ZFTMP1(:), ZFTMP2(:)
-   DOUBLE PRECISION, ALLOCATABLE :: ZHTMP1(:), ZHTMP2(:)
+   double precision, allocatable :: zetmp1(:), zetmp2(:)
+   double precision, allocatable :: zftmp1(:), zftmp2(:)
+   double precision, allocatable :: zhtmp1(:), zhtmp2(:)
 
 
 !***********************************************************************
@@ -1390,71 +1390,71 @@ MODULE MAIN1
 !***********************************************************************
 
 
-   CHARACTER :: HCLMSG, MCLMSG, HMCLM
+   character :: hclmsg, mclmsg, hmclm
 
-   DOUBLE PRECISION, ALLOCATABLE ::  HRVAL(:), AVEVAL(:,:,:,:),&
-   &AERVAL(:), PRMVAL(:)
-   DOUBLE PRECISION, ALLOCATABLE ::  HIVALU(:,:,:,:,:),&
-   &HMAX(:,:,:,:)
-   INTEGER, ALLOCATABLE ::  HMLOC(:,:,:,:),&
-   &HMDATE(:,:,:,:),&
-   &NHIDAT(:,:,:,:,:),&
-   &NHIDATMXD(:,:,:),&
-   &NHIDATMXD_BYYR(:,:,:,:)
+   double precision, allocatable ::  hrval(:), aveval(:,:,:,:),&
+   &aerval(:), prmval(:)
+   double precision, allocatable ::  hivalu(:,:,:,:,:),&
+   &hmax(:,:,:,:)
+   integer, allocatable ::  hmloc(:,:,:,:),&
+   &hmdate(:,:,:,:),&
+   &nhidat(:,:,:,:,:),&
+   &nhidatmxd(:,:,:),&
+   &nhidatmxd_byyr(:,:,:,:)
 
-   DOUBLE PRECISION, ALLOCATABLE ::  ANNVAL(:,:,:), AMXVAL(:,:,:),&
-   &SHVALS(:,:,:,:,:), MXDVAL(:,:),&
-   &HIMXDLY(:,:,:),&
-   &HIMXDLY_BYYR(:,:,:,:)
-   INTEGER, ALLOCATABLE ::  IMXLOC(:,:,:), IMXDHR(:,:)
-   INTEGER              ::  IANHRS, IANCLM, IANMSG,&
-   &NSEAHR(4,24), NSEACM(4,24)
-   DOUBLE PRECISION, ALLOCATABLE ::  RMXVAL(:,:,:,:)
-   INTEGER, ALLOCATABLE ::  MXDATE(:,:,:,:),&
-   &MXLOCA(:,:,:,:)
-   INTEGER, ALLOCATABLE ::  NUMHRS(:), NUMCLM(:), NUMMSG(:)
-   ALLOCATABLE ::           HCLMSG(:,:,:,:,:),&
-   &MCLMSG(:,:,:,:),&
-   &HMCLM(:,:,:,:)
+   double precision, allocatable ::  annval(:,:,:), amxval(:,:,:),&
+   &shvals(:,:,:,:,:), mxdval(:,:),&
+   &himxdly(:,:,:),&
+   &himxdly_byyr(:,:,:,:)
+   integer, allocatable ::  imxloc(:,:,:), imxdhr(:,:)
+   integer              ::  ianhrs, ianclm, ianmsg,&
+   &nseahr(4,24), nseacm(4,24)
+   double precision, allocatable ::  rmxval(:,:,:,:)
+   integer, allocatable ::  mxdate(:,:,:,:),&
+   &mxloca(:,:,:,:)
+   integer, allocatable ::  numhrs(:), numclm(:), nummsg(:)
+   allocatable ::           hclmsg(:,:,:,:,:),&
+   &mclmsg(:,:,:,:),&
+   &hmclm(:,:,:,:)
 
-   DOUBLE PRECISION, ALLOCATABLE ::  SUMANN(:,:,:)
-   DOUBLE PRECISION, ALLOCATABLE ::  SUMHNH(:,:,:), MXPMVAL(:,:,:)
-   DOUBLE PRECISION, ALLOCATABLE ::  SUMVAL_MAXD(:,:,:,:)
+   double precision, allocatable ::  sumann(:,:,:)
+   double precision, allocatable ::  sumhnh(:,:,:), mxpmval(:,:,:)
+   double precision, allocatable ::  sumval_maxd(:,:,:,:)
 
-   INTEGER, ALLOCATABLE ::  MXPMLOC(:,:,:)
+   integer, allocatable ::  mxpmloc(:,:,:)
 
-   DOUBLE PRECISION, ALLOCATABLE ::  CHI(:,:,:), HECNTR(:,:),&
-   &HECNTR3(:,:), PPFACT(:,:),&
-   &UEFFS(:,:), UEFF3S(:,:),&
-   &EPSEF(:,:), EPSEF3(:,:),&
-   &FOPTS(:,:),&
-   &ABVAL(:,:), BCVAL(:,:)
+   double precision, allocatable ::  chi(:,:,:), hecntr(:,:),&
+   &hecntr3(:,:), ppfact(:,:),&
+   &ueffs(:,:), ueff3s(:,:),&
+   &epsef(:,:), epsef3(:,:),&
+   &fopts(:,:),&
+   &abval(:,:), bcval(:,:)
 
-   DOUBLE PRECISION, ALLOCATABLE ::  ARCMAX(:), QMAX(:), DXMAX(:),&
-   &UMAX(:),&
-   &SVMAX(:), SWMAX(:), SYMAX(:), SY3MX(:),&
-   &U3MAX(:), HEMAX(:), ARCCL(:), SZMAX(:),&
-   &CHIDMW(:), CHINMW(:), CHI3MW(:),&
-   &CHIDML(:), CHINML(:), CHI3ML(:),&
-   &HSBLMX(:)
+   double precision, allocatable ::  arcmax(:), qmax(:), dxmax(:),&
+   &umax(:),&
+   &svmax(:), swmax(:), symax(:), sy3mx(:),&
+   &u3max(:), hemax(:), arccl(:), szmax(:),&
+   &chidmw(:), chinmw(:), chi3mw(:),&
+   &chidml(:), chinml(:), chi3ml(:),&
+   &hsblmx(:)
 
-   LOGICAL, ALLOCATABLE :: CHIMASK(:,:,:)
+   logical, allocatable :: chimask(:,:,:)
 
 !***********************************************************************
 !     This is The Global Variable Definition Block For The
 !     EVENT Model Result Arrays
 !***********************************************************************
 
-   DOUBLE PRECISION, ALLOCATABLE ::  EV_AVEVAL(:), HRVALS(:,:),&
-   &GRPVAL(:,:), BACKHR(:,:),&
-   &GRPAVE(:), BACKAVE(:),&
-   &BACKANN(:), BACKSEASHR(:,:,:)
+   double precision, allocatable ::  ev_aveval(:), hrvals(:,:),&
+   &grpval(:,:), backhr(:,:),&
+   &grpave(:), backave(:),&
+   &backann(:), backseashr(:,:,:)
 
 ! --- Declare allocatable array for Original Event Concentrations;
 !     to be compared to GRPAVE calculated value for QA purpose
-   DOUBLE PRECISION, ALLOCATABLE :: EV_OrigConc(:)
+   double precision, allocatable :: EV_OrigConc(:)
 
-   INTEGER ::  EV_NUMHRS, EV_NUMCLM, EV_NUMMSG, ISTAHR, IENDHR
+   integer ::  ev_numhrs, ev_numclm, ev_nummsg, istahr, iendhr
 
 
 !***********************************************************************
@@ -1469,15 +1469,15 @@ MODULE MAIN1
 
 !---- VERSN is now a 6-character variable to accommodate leading qualifier
 !     character, such 'D' for Draft version.
-   DATA VERSN /'24142'/   ! May 21, 2024
+   data versn /'24142'/   ! May 21, 2024
 
 !     Initialize C_METVER to blanks in case there is an error opening
 !     the surface met file or with reading the version date, otherwise
 !     C_METVER will be undefined when writing the page headers.
-   DATA C_METVER /'      '/
+   data c_metver /'      '/
 
 ! --- Initialize array of hourly O3 values to 40 ppb (78.4 ug/m3)
-   DATA O3_Max24hr /144*78.4D0/   ! 144 = 24hr/day*6sectors
+   data O3_Max24hr /144*78.4d0/   ! 144 = 24hr/day*6sectors
 
 !***********************************************************************
 !     Input/Output File Units and Input/Output File Names
@@ -1498,27 +1498,27 @@ MODULE MAIN1
 !     &     TTRM2TMP/9938, 9939, 9940/,
 !     &     SWDBGUNT/8837/ ! Added for sidewash
 !RCO - D168 Debug files. Add new unit for urban debug
-   DATA INUNIT/ 7/, IOUNIT/ 8/, PVMDBG/ 9/, OLMDBG/ 9/, ARM2DBG/ 9/,&
-   &GRSMDBG/ 9/, IERUNT/10/, IERWRT/11/, IDPUNT/12/,&
-   &IDPUN2/14/, IRSUNT/15/, IHREMI/16/, IEVUNT/17/, ITEVUT/18/,&
-   &MFUNIT/19/, INCUNT/20/,&
-   &MPUNIT/21/, ISUNIT/22/, IPUNIT/23/, DBGUNT/24/, DBMUNT/25/,&
-   &AREADBUNT/26/, PRMDBUNT/27/, ISUMUNT/28/, GDEPDBG/29/,&
-   &PDEPDBG/30/, AWMADWDBUNT/931/, RLINEDBUNT/932/,&
-   &PLATFMDBUNT/933/, RDISPUNT/ 3/,&                       ! RDISPUNT is for RELDISP debug file for PVMRM
-   &TTRMUNT/9937/, URBUNT/937/, URBUNT1/938/,BLPUNT/939/,&
-   &TTRM2TMP/9938, 9939, 9940/,URBUNT2/941/,&
-   &SWDBGUNT/8837/,& ! Added for sidewash
-   &RLINEDBUNT_WS/8932/,& ! Added for the gridded wind speed profile in RLINE Wood 10/10/22
-   &ARCFTDBG/32/,&        ! Added for Aircraft Plume Rise; UNC-IE
-   &HBPUNT/731/ ! Added for HBPDEBUG; Jan. 2023
+   data inunit/ 7/, iounit/ 8/, pvmdbg/ 9/, olmdbg/ 9/, arm2dbg/ 9/,&
+   &grsmdbg/ 9/, ierunt/10/, ierwrt/11/, idpunt/12/,&
+   &idpun2/14/, irsunt/15/, ihremi/16/, ievunt/17/, itevut/18/,&
+   &mfunit/19/, incunt/20/,&
+   &mpunit/21/, isunit/22/, ipunit/23/, dbgunt/24/, dbmunt/25/,&
+   &areadbunt/26/, prmdbunt/27/, isumunt/28/, gdepdbg/29/,&
+   &pdepdbg/30/, awmadwdbunt/931/, rlinedbunt/932/,&
+   &platfmdbunt/933/, rdispunt/ 3/,&                       ! RDISPUNT is for RELDISP debug file for PVMRM
+   &ttrmunt/9937/, urbunt/937/, urbunt1/938/,blpunt/939/,&
+   &ttrm2tmp/9938, 9939, 9940/,urbunt2/941/,&
+   &swdbgunt/8837/,& ! Added for sidewash
+   &rlinedbunt_ws/8932/,& ! Added for the gridded wind speed profile in RLINE Wood 10/10/22
+   &arcftdbg/32/,&        ! Added for Aircraft Plume Rise; UNC-IE
+   &hbpunt/731/ ! Added for HBPDEBUG; Jan. 2023
 
 !*#
 
 ! --- Initialize logical variables for tracking use of turbulence data
-   DATA L_Got_SigA/.FALSE./, L_Got_SigW/.FALSE./
+   data L_Got_SigA/.false./, L_Got_SigW/.false./
 
-   DATA INPFIL/' '/, OUTFIL/' '/
+   data inpfil/' '/, outfil/' '/
 
 
 !***********************************************************************
@@ -1527,7 +1527,7 @@ MODULE MAIN1
 !                     on the SO pathway.
 !***********************************************************************
 
-   INTEGER, PRIVATE :: I
+   integer, private :: i
 ! JAT 01/29/21  ISSUE D070 TURBULENCE OPTIONS
 !     ADD 9 TURBULENCE OPTION KEYWORDS
 !     1:  NOTURB (ignore sigma-theta and sigma-w for all hours)
@@ -1542,7 +1542,7 @@ MODULE MAIN1
 !     NOTE: ONLY THE FIRST 2 CAN BE USED WITH THE DEFAULT OPTION; THE OTHERS
 !     ARE NON-DEFAULT. IF THOSE ARE ISSUED WITH THE DEFAULT KEYWORD, THE USER
 !     WILL GET A WARNING MESSAGE AND THEY WILL BE IGNORED.
-   DATA (KEYWD(I),I=1,IKN) /&
+   data (keywd(i),i=1,ikn) /&
    &'STARTING','FINISHED','TITLEONE','TITLETWO','MODELOPT',&
    &'AVERTIME','POLLUTID','HALFLIFE','DCAYCOEF','DEBUGOPT',&
    &'ELEVUNIT','FLAGPOLE','RUNORNOT','EVENTFIL','SAVEFILE',&
@@ -1577,9 +1577,9 @@ MODULE MAIN1
 !     Initialize Miscellaneous Variables
 !***********************************************************************
 
-   DATA IPROC /366*1/, IPROCL/366*1/, EXPLIM /-50.0D0/
-   DATA UCAT /1.54D0, 3.09D0, 5.14D0, 8.23D0, 10.8D0/
-   DATA MODOPS /30*'         '/
+   data iproc /366*1/, iprocl/366*1/, explim /-50.0d0/
+   data ucat /1.54d0, 3.09d0, 5.14d0, 8.23d0, 10.8d0/
+   data modops /30*'         '/
 
 !***********************************************************************
 !     Initialize distance factors used in determining when to switch
@@ -1589,8 +1589,8 @@ MODULE MAIN1
 
 !     STAB. CLASS         A      B      C       D       E       F
 !                        ***    ***    ***     ***     ***     ***
-   DATA VIRTPNT_URB /3.5D0, 3.5D0, 5.5D0, 10.5D0, 15.5D0, 15.5D0/,&
-   &VIRTPNT_RUR /3.5D0, 5.5D0, 7.5D0, 12.5D0, 15.5D0, 25.5D0/
+   data virtpnt_urb /3.5d0, 3.5d0, 5.5d0, 10.5d0, 15.5d0, 15.5d0/,&
+   &virtpnt_rur /3.5d0, 5.5d0, 7.5d0, 12.5d0, 15.5d0, 25.5d0/
 
 
 !***********************************************************************
@@ -1599,8 +1599,8 @@ MODULE MAIN1
 
 !     JAT 1/29/21 D070
 
-   DATA ICSTAT/50*0/, ISSTAT/50*0/, IRSTAT/50*0/, IMSTAT/50*0/,&
-   &IOSTAT/50*0/, IESTAT/50*0/
+   data icstat/50*0/, isstat/50*0/, irstat/50*0/, imstat/50*0/,&
+   &iostat/50*0/, iestat/50*0/
 !     JAT 1/29/21 D070 UPDATE IMSTAT cross-reference
 !***********************************************************************
 !     Cross-reference table of Keywords by I?STAT array index:
@@ -1699,21 +1699,21 @@ MODULE MAIN1
 !     Initialize Gridded Profile Height Array
 !***********************************************************************
 
-   DATA GRIDHT /&
-   &0.0D0, 0.5D0, 1.0D0, 2.0D0, 4.0D0,  8.0D0, 14.0D0, 20.0D0,&
-   &30.0D0,  40.0D0,  50.0D0,  60.0D0,  70.0D0,  80.0D0,  90.0D0,&
-   &100.0D0, 120.0D0, 140.0D0, 160.0D0, 180.0D0, 200.0D0, 250.0D0,&
-   &300.0D0, 350.0D0, 400.0D0, 450.0D0, 500.0D0, 550.0D0, 600.0D0,&
-   &650.0D0, 700.0D0, 750.0D0, 800.0D0, 850.0D0, 900.0D0, 950.0D0,&
-   &1000.0D0, 1050.0D0, 1100.0D0, 1150.0D0, 1200.0D0, 1250.0D0,&
-   &1300.0D0, 1350.0D0, 1400.0D0, 1450.0D0, 1500.0D0, 1550.0D0,&
-   &1600.0D0, 1650.0D0, 1700.0D0, 1750.0D0, 1800.0D0, 1850.0D0,&
-   &1900.0D0, 1950.0D0, 2000.0D0, 2100.0D0, 2200.0D0, 2300.0D0,&
-   &2400.0D0, 2500.0D0, 2600.0D0, 2700.0D0, 2800.0D0, 2900.0D0,&
-   &3000.0D0, 3100.0D0, 3200.0D0, 3300.0D0, 3400.0D0, 3500.0D0,&
-   &3600.0D0, 3700.0D0, 3800.0D0, 3900.0D0, 4000.0D0, 4100.0D0,&
-   &4200.0D0, 4300.0D0, 4400.0D0, 4500.0D0, 4600.0D0, 4700.0D0,&
-   &4800.0D0, 4900.0D0, 5000.0D0/
+   data gridht /&
+   &0.0d0, 0.5d0, 1.0d0, 2.0d0, 4.0d0,  8.0d0, 14.0d0, 20.0d0,&
+   &30.0d0,  40.0d0,  50.0d0,  60.0d0,  70.0d0,  80.0d0,  90.0d0,&
+   &100.0d0, 120.0d0, 140.0d0, 160.0d0, 180.0d0, 200.0d0, 250.0d0,&
+   &300.0d0, 350.0d0, 400.0d0, 450.0d0, 500.0d0, 550.0d0, 600.0d0,&
+   &650.0d0, 700.0d0, 750.0d0, 800.0d0, 850.0d0, 900.0d0, 950.0d0,&
+   &1000.0d0, 1050.0d0, 1100.0d0, 1150.0d0, 1200.0d0, 1250.0d0,&
+   &1300.0d0, 1350.0d0, 1400.0d0, 1450.0d0, 1500.0d0, 1550.0d0,&
+   &1600.0d0, 1650.0d0, 1700.0d0, 1750.0d0, 1800.0d0, 1850.0d0,&
+   &1900.0d0, 1950.0d0, 2000.0d0, 2100.0d0, 2200.0d0, 2300.0d0,&
+   &2400.0d0, 2500.0d0, 2600.0d0, 2700.0d0, 2800.0d0, 2900.0d0,&
+   &3000.0d0, 3100.0d0, 3200.0d0, 3300.0d0, 3400.0d0, 3500.0d0,&
+   &3600.0d0, 3700.0d0, 3800.0d0, 3900.0d0, 4000.0d0, 4100.0d0,&
+   &4200.0d0, 4300.0d0, 4400.0d0, 4500.0d0, 4600.0d0, 4700.0d0,&
+   &4800.0d0, 4900.0d0, 5000.0d0/
 
 
 !CRT  D100, CRT, 8/6/2021
@@ -1722,7 +1722,7 @@ MODULE MAIN1
 !CRT  array indices can be written dynamically with a incremented
 !CRT  counter variable
 
-CONTAINS
+contains
 
 
 !CRT  D100, CRT, 8/6/2021: Subroutine ERRWRNMSG()
@@ -1730,91 +1730,91 @@ CONTAINS
 !CRT  messages.  Replace hardcoded array indices with incremental
 !CRT  counter.  Move code and message statements to keep codes in order.
 
-   SUBROUTINE ERRWRNMSG()
+   subroutine errwrnmsg()
 
-      IMPLICIT NONE
+      implicit none
 
-      INTEGER :: ECD
+      integer :: ecd
 
 !***********************************************************************
 !     Initialize Error Code and Message Arrays
 !***********************************************************************
-      ECD = 0
+      ecd = 0
 
 !-----------------------------------------------------------------------
 !---- 100s -------------------------------------------------------------
 !-----------------------------------------------------------------------
 
-      ECD = ECD+1
-      ERRCOD(ECD)='100'
-      ERRMSG(ECD)='Invalid Pathway Specified. The Troubled Pathway is'
+      ecd = ecd+1
+      errcod(ecd)='100'
+      errmsg(ecd)='Invalid Pathway Specified. The Troubled Pathway is'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='105'
-      ERRMSG(ECD)='Invalid Keyword Specified. The Troubled Keyword is'
+      ecd = ecd+1
+      errcod(ecd)='105'
+      errmsg(ecd)='Invalid Keyword Specified. The Troubled Keyword is'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='109'
-      ERRMSG(ECD)='Too many fields specified on runstream image; MAX='
+      ecd = ecd+1
+      errcod(ecd)='109'
+      errmsg(ecd)='Too many fields specified on runstream image; MAX='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='110'
-      ERRMSG(ECD)='Keyword is Not Valid for This Pathway.  Keyword is'
+      ecd = ecd+1
+      errcod(ecd)='110'
+      errmsg(ecd)='Keyword is Not Valid for This Pathway.  Keyword is'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='111'
-      ERRMSG(ECD)='User-specified minimum Sigma-V on LOW_WIND Keyword'
+      ecd = ecd+1
+      errcod(ecd)='111'
+      errmsg(ecd)='User-specified minimum Sigma-V on LOW_WIND Keyword'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='112'
-      ERRMSG(ECD)='User-specified minimum WindSpeed on LOW_WIND Keywd'
+      ecd = ecd+1
+      errcod(ecd)='112'
+      errmsg(ecd)='User-specified minimum WindSpeed on LOW_WIND Keywd'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='113'
-      ERRMSG(ECD)='User-specified maximum FRAN on the LOW_WIND Keywrd'
+      ecd = ecd+1
+      errcod(ecd)='113'
+      errmsg(ecd)='User-specified maximum FRAN on the LOW_WIND Keywrd'
 
 !CRT  4/11/2022 - This message code and message is not used?
-      ECD = ECD+1
-      ERRCOD(ECD)='114'
-      ERRMSG(ECD)='User-specified SZCOEF value on LOW_WIND Keyword   '
+      ecd = ecd+1
+      errcod(ecd)='114'
+      errmsg(ecd)='User-specified SZCOEF value on LOW_WIND Keyword   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='115'
-      ERRMSG(ECD)='STARTING or FINISHED Out of Sequence:  Pathway =  '
+      ecd = ecd+1
+      errcod(ecd)='115'
+      errmsg(ecd)='STARTING or FINISHED Out of Sequence:  Pathway =  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='116'
-      ERRMSG(ECD)='Vector Wind Speeds specified on MODELOPT Keyword  '
+      ecd = ecd+1
+      errcod(ecd)='116'
+      errmsg(ecd)='Vector Wind Speeds specified on MODELOPT Keyword  '
 
 !     Wood 3/18/22 added FRANMIN to LOW_WIND option
-      ECD = ECD+1
-      ERRCOD(ECD)='117'
-      ERRMSG(ECD)='User-specified minimum FRAN on the LOW_WIND Keywrd'
+      ecd = ecd+1
+      errcod(ecd)='117'
+      errmsg(ecd)='User-specified minimum FRAN on the LOW_WIND Keywrd'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='119'
-      ERRMSG(ECD)='Missing FINISHED-Runstream File Incomplete: ISTAT='
+      ecd = ecd+1
+      errcod(ecd)='119'
+      errmsg(ecd)='Missing FINISHED-Runstream File Incomplete: ISTAT='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='120'
-      ERRMSG(ECD)='Pathway is Out of Sequence:  Pathway =            '
+      ecd = ecd+1
+      errcod(ecd)='120'
+      errmsg(ecd)='Pathway is Out of Sequence:  Pathway =            '
 
 ! --- New messages for AWMADWNW and ORD_DWNW keywords on CO pathway
-      ECD = ECD+1
-      ERRCOD(ECD)='121'
-      ERRMSG(ECD)='Duplicate option specified for Keyword            '
+      ecd = ecd+1
+      errcod(ecd)='121'
+      errmsg(ecd)='Duplicate option specified for Keyword            '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='122'
-      ERRMSG(ECD)='AWMADWNW Option requires ALPHA option on MODELOPT '
+      ecd = ecd+1
+      errcod(ecd)='122'
+      errmsg(ecd)='AWMADWNW Option requires ALPHA option on MODELOPT '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='123'
-      ERRMSG(ECD)='ORD_DWNW Option requires ALPHA option on MODELOPT '
+      ecd = ecd+1
+      errcod(ecd)='123'
+      errmsg(ecd)='ORD_DWNW Option requires ALPHA option on MODELOPT '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='124'
-      ERRMSG(ECD)='UEFF conflict: AWMADWNW and ORD_DWNW keywords'
+      ecd = ecd+1
+      errcod(ecd)='124'
+      errmsg(ecd)='UEFF conflict: AWMADWNW and ORD_DWNW keywords'
 
 !JAT  6/10/2020:  ISSUE D53.  ADD FROM 19191
 !     ADD ERROR MESSAGE FOR INCOMPLETE PATHS,
@@ -1822,688 +1822,688 @@ CONTAINS
 !     WITH MESSAGE BUT THERE NEVER HAS BEEN A MESSAGE.
 !JAT  10/28/2020:  UPDATE FROM ISSUE D53 TO BE IN LINE WITH NEW
 !     MESSAGES FROM D32.  CHANGE FROM 305 TO 314
-      ECD = ECD+1
-      ERRCOD(ECD)='125'
-      ERRMSG(ECD)='ONE OR MORE PATHS HAS FINISHED KEYWORD MISSING'
+      ecd = ecd+1
+      errcod(ecd)='125'
+      errmsg(ecd)='ONE OR MORE PATHS HAS FINISHED KEYWORD MISSING'
 
 !JAT  6/10/2020:  ISSUE D53, ASSIGN NEW ERROR CODE NUMBER, 126 TO THE
 !CRT  2/2/2021:  Update message to include AWMAUTURBHX option
 !     AWMADW STREAMLINE ERROR MESSAGE.  125 IS ACTUALLY MEANT FOR INCOMPLETE
 !     PATHS, I.E. FINISHED KEYWORD NOT FOUND
 !      ERRCOD(ECD)='125'
-      ECD = ECD+1
-      ERRCOD(ECD)='126'
-      ERRMSG(ECD)='STREAMLINE requires AWMAUTURB or AWMAUTURBHX'
+      ecd = ecd+1
+      errcod(ecd)='126'
+      errmsg(ecd)='STREAMLINE requires AWMAUTURB or AWMAUTURBHX'
 
 !CRT 9/11/2020, D062 User Minimum Sigma W
 !CRT 02/16/2021: D062 User Minimum Sigma W - Update array index for to
 !CRT avoid conflict with merging code
-      ECD = ECD+1
-      ERRCOD(ECD)='127'
-      ERRMSG(ECD)='User-specified minimum Sigma-W on LOW_WIND Keyword'
+      ecd = ecd+1
+      errcod(ecd)='127'
+      errmsg(ecd)='User-specified minimum Sigma-W on LOW_WIND Keyword'
 
 !CRT 4/11/2022: D131 FRAN Alpha Formulation - Momentum Balance
-      ECD = ECD+1
-      ERRCOD(ECD)='128'
-      ERRMSG(ECD)='User-specified PBAL Option on LOW_WIND Keyword'
+      ecd = ecd+1
+      errcod(ecd)='128'
+      errmsg(ecd)='User-specified PBAL Option on LOW_WIND Keyword'
 
 !RCO 9/28/2020, D061 User BIGT
 !CRT 02/16/2021: D061 User BIGT - Update array index for to
 !CRT avoid conflict with merging code
-      ECD = ECD+1
-      ERRCOD(ECD)='129'
-      ERRMSG(ECD)='User-specified BIGT on LOW_WIND Keyword'
+      ecd = ecd+1
+      errcod(ecd)='129'
+      errmsg(ecd)='User-specified BIGT on LOW_WIND Keyword'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='130'
-      ERRMSG(ECD)='Missing Mandatory Keyword.  The Missing Keyword is'
+      ecd = ecd+1
+      errcod(ecd)='130'
+      errmsg(ecd)='Missing Mandatory Keyword.  The Missing Keyword is'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='133'
-      ERRMSG(ECD)='LOW_WIND Option requires ALPHA option on MODELOPT '
-
-!     Wood 6/3/22 D128 added AREAMNDR as an ALPHA option to CO pathway
-      ECD = ECD+1
-      ERRCOD(ECD)='134'
-      ERRMSG(ECD)='AREAMNDR ALPHA option selected on MODELOPT Keyword'
-
-      ECD = ECD+1
-      ERRCOD(ECD)='135'
-      ERRMSG(ECD)='Nonrepeatable Keyword or Recursed INCLUDED: Keywrd'
-
-      ECD = ECD+1
-      ERRCOD(ECD)='136'
-      ERRMSG(ECD)='LOW_WIND ALPHA option selected on MODELOPT Keyword'
-
-      ECD = ECD+1
-      ERRCOD(ECD)='137'
-      ERRMSG(ECD)='BETA option not allowed with DFAULT on MODELOPT '
-
-      ECD = ECD+1
-      ERRCOD(ECD)='138'
-      ERRMSG(ECD)='ALPHA option not allowed with DFAULT on MODELOPT '
+      ecd = ecd+1
+      errcod(ecd)='133'
+      errmsg(ecd)='LOW_WIND Option requires ALPHA option on MODELOPT '
 
 !     Wood 6/3/22 D128 added AREAMNDR as an ALPHA option to CO pathway
-      ECD = ECD+1
-      ERRCOD(ECD)='139'
-      ERRMSG(ECD)='AREAMNDR Option requires ALPHA option on MODELOPT '
+      ecd = ecd+1
+      errcod(ecd)='134'
+      errmsg(ecd)='AREAMNDR ALPHA option selected on MODELOPT Keyword'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='140'
-      ERRMSG(ECD)='Invalid Order of Keyword. The Troubled Keyword is '
+      ecd = ecd+1
+      errcod(ecd)='135'
+      errmsg(ecd)='Nonrepeatable Keyword or Recursed INCLUDED: Keywrd'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='141'
-      ERRMSG(ECD)='Conflicting Options for NO2 conversion specified: '
+      ecd = ecd+1
+      errcod(ecd)='136'
+      errmsg(ecd)='LOW_WIND ALPHA option selected on MODELOPT Keyword'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='142'
-      ERRMSG(ECD)='Following Keyword Invalid Without PVMRM or OLM:   '
+      ecd = ecd+1
+      errcod(ecd)='137'
+      errmsg(ecd)='BETA option not allowed with DFAULT on MODELOPT '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='143'
-      ERRMSG(ECD)='Following Keyword Invalid Without PVMRM Option:   '
+      ecd = ecd+1
+      errcod(ecd)='138'
+      errmsg(ecd)='ALPHA option not allowed with DFAULT on MODELOPT '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='144'
-      ERRMSG(ECD)='Following Keyword Invalid Without OLM Option:     '
+!     Wood 6/3/22 D128 added AREAMNDR as an ALPHA option to CO pathway
+      ecd = ecd+1
+      errcod(ecd)='139'
+      errmsg(ecd)='AREAMNDR Option requires ALPHA option on MODELOPT '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='145'
-      ERRMSG(ECD)='Following Keyword Invalid Without ARM or ARM2:    '
+      ecd = ecd+1
+      errcod(ecd)='140'
+      errmsg(ecd)='Invalid Order of Keyword. The Troubled Keyword is '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='146'
-      ERRMSG(ECD)='PSDGROUP Keyword Specified without PSDCREDIT Opt. '
+      ecd = ecd+1
+      errcod(ecd)='141'
+      errmsg(ecd)='Conflicting Options for NO2 conversion specified: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='147'
-      ERRMSG(ECD)='Following Option is Invalid with PSDCREDIT Option:'
+      ecd = ecd+1
+      errcod(ecd)='142'
+      errmsg(ecd)='Following Keyword Invalid Without PVMRM or OLM:   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='148'
-      ERRMSG(ECD)='Both OZONEVAL and O3VALUES keywords are specified '
+      ecd = ecd+1
+      errcod(ecd)='143'
+      errmsg(ecd)='Following Keyword Invalid Without PVMRM Option:   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='149'
-      ERRMSG(ECD)='Conflicting options specified on MODELOPT keyword:'
+      ecd = ecd+1
+      errcod(ecd)='144'
+      errmsg(ecd)='Following Keyword Invalid Without OLM Option:     '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='150'
-      ERRMSG(ECD)='Conflicting Options: MULTYEAR Option with         '
+      ecd = ecd+1
+      errcod(ecd)='145'
+      errmsg(ecd)='Following Keyword Invalid Without ARM or ARM2:    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='151'
-      ERRMSG(ECD)='Non-DFAULT NoUrbTran option selected on MODELOPT  '
+      ecd = ecd+1
+      errcod(ecd)='146'
+      errmsg(ecd)='PSDGROUP Keyword Specified without PSDCREDIT Opt. '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='152'
-      ERRMSG(ECD)='ELEVUNIT card must be first for this Pathway:     '
+      ecd = ecd+1
+      errcod(ecd)='147'
+      errmsg(ecd)='Following Option is Invalid with PSDCREDIT Option:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='153'
-      ERRMSG(ECD)='Conflicting Opts: MAXDCONT with Re-Start or MULTYR'
+      ecd = ecd+1
+      errcod(ecd)='148'
+      errmsg(ecd)='Both OZONEVAL and O3VALUES keywords are specified '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='154'
-      ERRMSG(ECD)='Conflicting options:  SCIM cannot be used with    '
+      ecd = ecd+1
+      errcod(ecd)='149'
+      errmsg(ecd)='Conflicting options specified on MODELOPT keyword:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='155'
-      ERRMSG(ECD)='Conflicting Decay Keyword. Inputs Ignored for     '
+      ecd = ecd+1
+      errcod(ecd)='150'
+      errmsg(ecd)='Conflicting Options: MULTYEAR Option with         '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='156'
-      ERRMSG(ECD)='Option ignored - not valid with SCIM.  Option =   '
+      ecd = ecd+1
+      errcod(ecd)='151'
+      errmsg(ecd)='Non-DFAULT NoUrbTran option selected on MODELOPT  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='157'
-      ERRMSG(ECD)='Wet SCIM Not Supported - Wet SCIM Inputs Ignored  '
+      ecd = ecd+1
+      errcod(ecd)='152'
+      errmsg(ecd)='ELEVUNIT card must be first for this Pathway:     '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='158'
-      ERRMSG(ECD)='EMISUNIT Keyword Used With More Than 1 Output Type'
+      ecd = ecd+1
+      errcod(ecd)='153'
+      errmsg(ecd)='Conflicting Opts: MAXDCONT with Re-Start or MULTYR'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='159'
-      ERRMSG(ECD)='EMISUNIT Keyword Used With the Following Keyword: '
+      ecd = ecd+1
+      errcod(ecd)='154'
+      errmsg(ecd)='Conflicting options:  SCIM cannot be used with    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='160'
-      ERRMSG(ECD)='Duplicate ORIG Secondary Keyword for GRIDPOLR:    '
+      ecd = ecd+1
+      errcod(ecd)='155'
+      errmsg(ecd)='Conflicting Decay Keyword. Inputs Ignored for     '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='161'
-      ERRMSG(ECD)='MAXDCONT option already defined for source group: '
+      ecd = ecd+1
+      errcod(ecd)='156'
+      errmsg(ecd)='Option ignored - not valid with SCIM.  Option =   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='162'
-      ERRMSG(ECD)='Option only applies to 1-hr NO2 or 1-hr SO2 NAAQS:'
+      ecd = ecd+1
+      errcod(ecd)='157'
+      errmsg(ecd)='Wet SCIM Not Supported - Wet SCIM Inputs Ignored  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='163'
-      ERRMSG(ECD)='Option only applies to 24h PM25, 1h NO2 or 1h SO2:'
+      ecd = ecd+1
+      errcod(ecd)='158'
+      errmsg(ecd)='EMISUNIT Keyword Used With More Than 1 Output Type'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='164'
-      ERRMSG(ECD)='NOHEADER selected for non-specified output option:'
+      ecd = ecd+1
+      errcod(ecd)='159'
+      errmsg(ecd)='EMISUNIT Keyword Used With the Following Keyword: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='165'
-      ERRMSG(ECD)='Inconsistent temporally-varying BACKGRND options: '
+      ecd = ecd+1
+      errcod(ecd)='160'
+      errmsg(ecd)='Duplicate ORIG Secondary Keyword for GRIDPOLR:    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='166'
-      ERRMSG(ECD)='SECTOR option invalid w/o BG/O3/NOx Inputs:       '
+      ecd = ecd+1
+      errcod(ecd)='161'
+      errmsg(ecd)='MAXDCONT option already defined for source group: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='167'
-      ERRMSG(ECD)='Inconsistent temporally-varying O3VALUES options: '
+      ecd = ecd+1
+      errcod(ecd)='162'
+      errmsg(ecd)='Option only applies to 1-hr NO2 or 1-hr SO2 NAAQS:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='168'
-      ERRMSG(ECD)='Hourly BACKGRND already specified for this sector:'
+      ecd = ecd+1
+      errcod(ecd)='163'
+      errmsg(ecd)='Option only applies to 24h PM25, 1h NO2 or 1h SO2:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='170'
-      ERRMSG(ECD)='Invalid Secondary Keyword for Receptor Grid:      '
+      ecd = ecd+1
+      errcod(ecd)='164'
+      errmsg(ecd)='NOHEADER selected for non-specified output option:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='171'
-      ERRMSG(ECD)='Sector ID specified without Sector-varying Option:'
+      ecd = ecd+1
+      errcod(ecd)='165'
+      errmsg(ecd)='Inconsistent temporally-varying BACKGRND options: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='175'
-      ERRMSG(ECD)='Missing Secondary Keyword END for Receptor Grid:  '
+      ecd = ecd+1
+      errcod(ecd)='166'
+      errmsg(ecd)='SECTOR option invalid w/o BG/O3/NOx Inputs:       '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='180'
-      ERRMSG(ECD)='Conflicting Secondary Keyword for Receptor Grid:  '
+      ecd = ecd+1
+      errcod(ecd)='167'
+      errmsg(ecd)='Inconsistent temporally-varying O3VALUES options: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='181'
-      ERRMSG(ECD)='BULKRN Delta-T & SolarRad option for SBL was used '
+      ecd = ecd+1
+      errcod(ecd)='168'
+      errmsg(ecd)='Hourly BACKGRND already specified for this sector:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='182'
-      ERRMSG(ECD)='MMIF-generated meteorological inputs were used    '
+      ecd = ecd+1
+      errcod(ecd)='170'
+      errmsg(ecd)='Invalid Secondary Keyword for Receptor Grid:      '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='183'
-      ERRMSG(ECD)='Non-DFAULT option for MMIF-generated data without '
+      ecd = ecd+1
+      errcod(ecd)='171'
+      errmsg(ecd)='Sector ID specified without Sector-varying Option:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='184'
-      ERRMSG(ECD)='PROFFILE heights > 999m; inputs could be from MMIF'
+      ecd = ecd+1
+      errcod(ecd)='175'
+      errmsg(ecd)='Missing Secondary Keyword END for Receptor Grid:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='185'
-      ERRMSG(ECD)='Either No Sources or No Receptors are specified!!!'
+      ecd = ecd+1
+      errcod(ecd)='180'
+      errmsg(ecd)='Conflicting Secondary Keyword for Receptor Grid:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='186'
-      ERRMSG(ECD)='THRESH_1MIN 1-min ASOS wind speed threshold used  '
+      ecd = ecd+1
+      errcod(ecd)='181'
+      errmsg(ecd)='BULKRN Delta-T & SolarRad option for SBL was used '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='187'
-      ERRMSG(ECD)='ADJ_U* Option for Stable Low Winds used in AERMET '
+      ecd = ecd+1
+      errcod(ecd)='182'
+      errmsg(ecd)='MMIF-generated meteorological inputs were used    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='188'
-      ERRMSG(ECD)='Non-DFAULT FLAT required for RLINE/RLINEXT source '
+      ecd = ecd+1
+      errcod(ecd)='183'
+      errmsg(ecd)='Non-DFAULT option for MMIF-generated data without '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='189'
-      ERRMSG(ECD)='No Keywords for OU Path and No PERIOD/ANNUAL Aves.'
+      ecd = ecd+1
+      errcod(ecd)='184'
+      errmsg(ecd)='PROFFILE heights > 999m; inputs could be from MMIF'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='190'
-      ERRMSG(ECD)='Incompatible Option Used With SAVEFILE or INITFILE'
+      ecd = ecd+1
+      errcod(ecd)='185'
+      errmsg(ecd)='Either No Sources or No Receptors are specified!!!'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='191'
-      ERRMSG(ECD)='PM25, 1h NO2 or SO2 w/o MAXIFILE incompatible with'
+      ecd = ecd+1
+      errcod(ecd)='186'
+      errmsg(ecd)='THRESH_1MIN 1-min ASOS wind speed threshold used  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='192'
-      ERRMSG(ECD)='FASTALL option also implies use of FASTAREA option'
+      ecd = ecd+1
+      errcod(ecd)='187'
+      errmsg(ecd)='ADJ_U* Option for Stable Low Winds used in AERMET '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='193'
-      ERRMSG(ECD)='Units keyword specified without appropriate option'
+      ecd = ecd+1
+      errcod(ecd)='188'
+      errmsg(ecd)='Non-DFAULT FLAT required for RLINE/RLINEXT source '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='194'
-      ERRMSG(ECD)='DEBUGOPT input option is invalid or not applicable'
+      ecd = ecd+1
+      errcod(ecd)='189'
+      errmsg(ecd)='No Keywords for OU Path and No PERIOD/ANNUAL Aves.'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='195'
-      ERRMSG(ECD)='Incompatible Keyword used with GASDEPVD option    '
+      ecd = ecd+1
+      errcod(ecd)='190'
+      errmsg(ecd)='Incompatible Option Used With SAVEFILE or INITFILE'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='196'
-      ERRMSG(ECD)='Gas deposition algorithms are non-DFAULT options  '
+      ecd = ecd+1
+      errcod(ecd)='191'
+      errmsg(ecd)='PM25, 1h NO2 or SO2 w/o MAXIFILE incompatible with'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='197'
-      ERRMSG(ECD)='METHOD_2 for particulates is a non-DFAULT option  '
+      ecd = ecd+1
+      errcod(ecd)='192'
+      errmsg(ecd)='FASTALL option also implies use of FASTAREA option'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='198'
-      ERRMSG(ECD)='Non-DFAULT ALPHA Option Required for use of       '
+      ecd = ecd+1
+      errcod(ecd)='193'
+      errmsg(ecd)='Units keyword specified without appropriate option'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='199'
-      ERRMSG(ECD)='Non-DFAULT BETA Option Required for use of        '
+      ecd = ecd+1
+      errcod(ecd)='194'
+      errmsg(ecd)='DEBUGOPT input option is invalid or not applicable'
+
+      ecd = ecd+1
+      errcod(ecd)='195'
+      errmsg(ecd)='Incompatible Keyword used with GASDEPVD option    '
+
+      ecd = ecd+1
+      errcod(ecd)='196'
+      errmsg(ecd)='Gas deposition algorithms are non-DFAULT options  '
+
+      ecd = ecd+1
+      errcod(ecd)='197'
+      errmsg(ecd)='METHOD_2 for particulates is a non-DFAULT option  '
+
+      ecd = ecd+1
+      errcod(ecd)='198'
+      errmsg(ecd)='Non-DFAULT ALPHA Option Required for use of       '
+
+      ecd = ecd+1
+      errcod(ecd)='199'
+      errmsg(ecd)='Non-DFAULT BETA Option Required for use of        '
 
 !-----------------------------------------------------------------------
 !---- 200s -------------------------------------------------------------
 !-----------------------------------------------------------------------
 
-      ECD = ECD+1
-      ERRCOD(ECD)='200'
-      ERRMSG(ECD)='Missing Parameter(s). No Options Specified For    '
+      ecd = ecd+1
+      errcod(ecd)='200'
+      errmsg(ecd)='Missing Parameter(s). No Options Specified For    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='201'
-      ERRMSG(ECD)='Not Enough Parameters Specified For the Keyword of'
+      ecd = ecd+1
+      errcod(ecd)='201'
+      errmsg(ecd)='Not Enough Parameters Specified For the Keyword of'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='202'
-      ERRMSG(ECD)='Too Many Parameters Specified For the Keyword of  '
+      ecd = ecd+1
+      errcod(ecd)='202'
+      errmsg(ecd)='Too Many Parameters Specified For the Keyword of  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='203'
-      ERRMSG(ECD)='Invalid Parameter Specified.  Troubled Parameter: '
+      ecd = ecd+1
+      errcod(ecd)='203'
+      errmsg(ecd)='Invalid Parameter Specified.  Troubled Parameter: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='204'
-      ERRMSG(ECD)='Regulatory DFAULT Conflicts with Non-DFAULT Option'
+      ecd = ecd+1
+      errcod(ecd)='204'
+      errmsg(ecd)='Regulatory DFAULT Conflicts with Non-DFAULT Option'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='205'
-      ERRMSG(ECD)='No Option Parameter Setting.  Forced by Default to'
+      ecd = ecd+1
+      errcod(ecd)='205'
+      errmsg(ecd)='No Option Parameter Setting.  Forced by Default to'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='206'
-      ERRMSG(ECD)='Regulatory DFAULT Overrides Non-DFAULT Option For '
+      ecd = ecd+1
+      errcod(ecd)='206'
+      errmsg(ecd)='Regulatory DFAULT Overrides Non-DFAULT Option For '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='207'
-      ERRMSG(ECD)='No Parameters Specified. Default Values Will Used.'
+      ecd = ecd+1
+      errcod(ecd)='207'
+      errmsg(ecd)='No Parameters Specified. Default Values Will Used.'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='208'
-      ERRMSG(ECD)='Illegal Numerical Field Encountered in            '
+      ecd = ecd+1
+      errcod(ecd)='208'
+      errmsg(ecd)='Illegal Numerical Field Encountered in            '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='209'
-      ERRMSG(ECD)='Negative Value Appears For Non-negative Variable. '
+      ecd = ecd+1
+      errcod(ecd)='209'
+      errmsg(ecd)='Negative Value Appears For Non-negative Variable. '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='210'
-      ERRMSG(ECD)='Num Ranked values on RANKFILE > MAXTABLE value for'
+      ecd = ecd+1
+      errcod(ecd)='210'
+      errmsg(ecd)='Num Ranked values on RANKFILE > MAXTABLE value for'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='211'
-      ERRMSG(ECD)='Duplicate Averaging Period Specified for Keyword  '
+      ecd = ecd+1
+      errcod(ecd)='211'
+      errmsg(ecd)='Duplicate Averaging Period Specified for Keyword  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='212'
-      ERRMSG(ECD)='END Encountered Without (X,Y) Points Properly Set '
+      ecd = ecd+1
+      errcod(ecd)='212'
+      errmsg(ecd)='END Encountered Without (X,Y) Points Properly Set '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='213'
-      ERRMSG(ECD)='ELEV Input Inconsistent With Option: Input Ignored'
+      ecd = ecd+1
+      errcod(ecd)='213'
+      errmsg(ecd)='ELEV Input Inconsistent With Option: Input Ignored'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='214'
-      ERRMSG(ECD)='ELEV Input Inconsistent With Option: Defaults Used'
+      ecd = ecd+1
+      errcod(ecd)='214'
+      errmsg(ecd)='ELEV Input Inconsistent With Option: Defaults Used'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='215'
-      ERRMSG(ECD)='FLAG Input Inconsistent With Option: Input Ignored'
+      ecd = ecd+1
+      errcod(ecd)='215'
+      errmsg(ecd)='FLAG Input Inconsistent With Option: Input Ignored'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='216'
-      ERRMSG(ECD)='FLAG Input Inconsistent With Option: Defaults Used'
+      ecd = ecd+1
+      errcod(ecd)='216'
+      errmsg(ecd)='FLAG Input Inconsistent With Option: Defaults Used'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='217'
-      ERRMSG(ECD)='More Than One Delimiter In A Field for Keyword    '
+      ecd = ecd+1
+      errcod(ecd)='217'
+      errmsg(ecd)='More Than One Delimiter In A Field for Keyword    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='218'
-      ERRMSG(ECD)='Number of (X,Y) Points Does Not Match Number of   '
+      ecd = ecd+1
+      errcod(ecd)='218'
+      errmsg(ecd)='Number of (X,Y) Points Does Not Match Number of   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='219'
-      ERRMSG(ECD)='Urban ID field is too long (>8); first 12 char:   '
+      ecd = ecd+1
+      errcod(ecd)='219'
+      errmsg(ecd)='Urban ID field is too long (>8); first 12 char:   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='220'
-      ERRMSG(ECD)='Missing Origin (Use Default = 0,0) In GRIDPOLR    '
+      ecd = ecd+1
+      errcod(ecd)='220'
+      errmsg(ecd)='Missing Origin (Use Default = 0,0) In GRIDPOLR    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='221'
-      ERRMSG(ECD)='Missing Dist or Direction Setting In Polar Network'
+      ecd = ecd+1
+      errcod(ecd)='221'
+      errmsg(ecd)='Missing Dist or Direction Setting In Polar Network'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='222'
-      ERRMSG(ECD)='SECTOR Value is out of order:                     '
+      ecd = ecd+1
+      errcod(ecd)='222'
+      errmsg(ecd)='SECTOR Value is out of order:                     '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='223'
-      ERRMSG(ECD)='Missing Distance or Degree Field in               '
+      ecd = ecd+1
+      errcod(ecd)='223'
+      errmsg(ecd)='Missing Distance or Degree Field in               '
 
 ! --- New messages '224' '225' and '226' added for undefined SrcID on
 !     the SRCGROUP, OLMGROUP, or PSDGROUP keywords
-      ECD = ECD+1
-      ERRCOD(ECD)='224'
-      ERRMSG(ECD)='SrcID specified on SRCGROUP keyword not defined:  '
+      ecd = ecd+1
+      errcod(ecd)='224'
+      errmsg(ecd)='SrcID specified on SRCGROUP keyword not defined:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='225'
-      ERRMSG(ECD)='SrcID specified on OLMGROUP keyword not defined:  '
+      ecd = ecd+1
+      errcod(ecd)='225'
+      errmsg(ecd)='SrcID specified on OLMGROUP keyword not defined:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='226'
-      ERRMSG(ECD)='SrcID specified on PSDGROUP keyword not defined:  '
+      ecd = ecd+1
+      errcod(ecd)='226'
+      errmsg(ecd)='SrcID specified on PSDGROUP keyword not defined:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='227'
-      ERRMSG(ECD)='SECTOR Width is out of range:                     '
+      ecd = ecd+1
+      errcod(ecd)='227'
+      errmsg(ecd)='SECTOR Width is out of range:                     '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='228'
-      ERRMSG(ECD)='Default(s) Used for Missing Parameters on Keyword '
+      ecd = ecd+1
+      errcod(ecd)='228'
+      errmsg(ecd)='Default(s) Used for Missing Parameters on Keyword '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='229'
-      ERRMSG(ECD)='Too Many Parameters - Inputs Ignored on Keyword   '
+      ecd = ecd+1
+      errcod(ecd)='229'
+      errmsg(ecd)='Too Many Parameters - Inputs Ignored on Keyword   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='230'
-      ERRMSG(ECD)='Source ID field is too long (>12); first 12 chars:'
+      ecd = ecd+1
+      errcod(ecd)='230'
+      errmsg(ecd)='Source ID field is too long (>12); first 12 chars:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='231'
-      ERRMSG(ECD)='Too Many Numerical Values Specified for           '
+      ecd = ecd+1
+      errcod(ecd)='231'
+      errmsg(ecd)='Too Many Numerical Values Specified for           '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='232'
-      ERRMSG(ECD)='OLMGroup ID field is too long (>8); first 12 char:'
+      ecd = ecd+1
+      errcod(ecd)='232'
+      errmsg(ecd)='OLMGroup ID field is too long (>8); first 12 char:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='233'
-      ERRMSG(ECD)='Building Dimensions Specified for Non-POINT Source'
+      ecd = ecd+1
+      errcod(ecd)='233'
+      errmsg(ecd)='Building Dimensions Specified for Non-POINT Source'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='234'
-      ERRMSG(ECD)='Too Many Sectors Input for                        '
+      ecd = ecd+1
+      errcod(ecd)='234'
+      errmsg(ecd)='Too Many Sectors Input for                        '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='235'
-      ERRMSG(ECD)='Num of SRCGRPs exceeds limit for EVT name; Set=999'
+      ecd = ecd+1
+      errcod(ecd)='235'
+      errmsg(ecd)='Num of SRCGRPs exceeds limit for EVT name; Set=999'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='236'
-      ERRMSG(ECD)='Not Enough BUILDHGTs Specified for SourceID       '
+      ecd = ecd+1
+      errcod(ecd)='236'
+      errmsg(ecd)='Not Enough BUILDHGTs Specified for SourceID       '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='237'
-      ERRMSG(ECD)='Not Enough BUILDWIDs Specified for SourceID       '
+      ecd = ecd+1
+      errcod(ecd)='237'
+      errmsg(ecd)='Not Enough BUILDWIDs Specified for SourceID       '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='238'
-      ERRMSG(ECD)='Not Enough BACKGRND Concentration Values Specified'
+      ecd = ecd+1
+      errcod(ecd)='238'
+      errmsg(ecd)='Not Enough BACKGRND Concentration Values Specified'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='239'
-      ERRMSG(ECD)='Not Enough QFACTs Specified for SourceID          '
+      ecd = ecd+1
+      errcod(ecd)='239'
+      errmsg(ecd)='Not Enough QFACTs Specified for SourceID          '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='240'
-      ERRMSG(ECD)='Inconsistent Number of Particle Categories for    '
+      ecd = ecd+1
+      errcod(ecd)='240'
+      errmsg(ecd)='Inconsistent Number of Particle Categories for    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='241'
-      ERRMSG(ECD)='Not Enough BUILDLENs Specified for SourceID       '
+      ecd = ecd+1
+      errcod(ecd)='241'
+      errmsg(ecd)='Not Enough BUILDLENs Specified for SourceID       '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='242'
-      ERRMSG(ECD)='No Particle Cat. or Gas Depos. Specified for SRCID'
+      ecd = ecd+1
+      errcod(ecd)='242'
+      errmsg(ecd)='No Particle Cat. or Gas Depos. Specified for SRCID'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='243'
-      ERRMSG(ECD)='Wet depos (DEPOS, WDEP, WETDPLT) incompatible with'
+      ecd = ecd+1
+      errcod(ecd)='243'
+      errmsg(ecd)='Wet depos (DEPOS, WDEP, WETDPLT) incompatible with'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='244'
-      ERRMSG(ECD)='Source parameters are missing or incomplete for   '
+      ecd = ecd+1
+      errcod(ecd)='244'
+      errmsg(ecd)='Source parameters are missing or incomplete for   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='245'
-      ERRMSG(ECD)='SrcGroup ID field is too long (>8); first 12 char:'
+      ecd = ecd+1
+      errcod(ecd)='245'
+      errmsg(ecd)='SrcGroup ID field is too long (>8); first 12 char:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='246'
-      ERRMSG(ECD)='Not Enough XBADJs Specified for SourceID          '
+      ecd = ecd+1
+      errcod(ecd)='246'
+      errmsg(ecd)='Not Enough XBADJs Specified for SourceID          '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='247'
-      ERRMSG(ECD)='Not Enough YBADJs Specified for SourceID          '
+      ecd = ecd+1
+      errcod(ecd)='247'
+      errmsg(ecd)='Not Enough YBADJs Specified for SourceID          '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='248'
-      ERRMSG(ECD)='Either BGVALs or BGFILE missing for this sector:  '
+      ecd = ecd+1
+      errcod(ecd)='248'
+      errmsg(ecd)='Either BGVALs or BGFILE missing for this sector:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='249'
-      ERRMSG(ECD)='Source elevation is missing (-9999.0); SRCID =    '
+      ecd = ecd+1
+      errcod(ecd)='249'
+      errmsg(ecd)='Source elevation is missing (-9999.0); SRCID =    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='250'
-      ERRMSG(ECD)='Duplicate XPNT/DIST or YPNT/DIR Specified for GRID'
+      ecd = ecd+1
+      errcod(ecd)='250'
+      errmsg(ecd)='Duplicate XPNT/DIST or YPNT/DIR Specified for GRID'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='251'
-      ERRMSG(ECD)='Deposition (DEPOS, DDEP, WDEP) incompatible with  '
+      ecd = ecd+1
+      errcod(ecd)='251'
+      errmsg(ecd)='Deposition (DEPOS, DDEP, WDEP) incompatible with  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='252'
-      ERRMSG(ECD)='Duplicate Receptor Network ID Specified.  NETID = '
+      ecd = ecd+1
+      errcod(ecd)='252'
+      errmsg(ecd)='Duplicate Receptor Network ID Specified.  NETID = '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='253'
-      ERRMSG(ECD)='PSDGROUP ID field is too long (>8); first 12 char:'
+      ecd = ecd+1
+      errcod(ecd)='253'
+      errmsg(ecd)='PSDGROUP ID field is too long (>8); first 12 char:'
 
 ! Multiple_BuoyLines_D41_Wood
 !     Messages to accomodate multiple buoyant line processing.
-      ECD = ECD+1
-      ERRCOD(ECD)='254'
-      ERRMSG(ECD)='SrcID specified on BLPGROUP keyword not defined:  '
+      ecd = ecd+1
+      errcod(ecd)='254'
+      errmsg(ecd)='SrcID specified on BLPGROUP keyword not defined:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='255'
-      ERRMSG(ECD)='Non-BL source specified in a BLPGROUP'
+      ecd = ecd+1
+      errcod(ecd)='255'
+      errmsg(ecd)='Non-BL source specified in a BLPGROUP'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='256'
-      ERRMSG(ECD)='EVALFILE Option Used Without EVALCART Receptors   '
+      ecd = ecd+1
+      errcod(ecd)='256'
+      errmsg(ecd)='EVALFILE Option Used Without EVALCART Receptors   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='257'
-      ERRMSG(ECD)='BL SourceID in more than one BLPGROUP'
+      ecd = ecd+1
+      errcod(ecd)='257'
+      errmsg(ecd)='BL SourceID in more than one BLPGROUP'
 
 
 !CRT  4/5/2022 D091 Missing BLINPUT Checks - Updated Message
-      ECD = ECD+1
-      ERRCOD(ECD)='258'
-      ERRMSG(ECD)='BL SourceID not in a BLPGROUP defined via BLPINPUT'
+      ecd = ecd+1
+      errcod(ecd)='258'
+      errmsg(ecd)='BL SourceID not in a BLPGROUP defined via BLPINPUT'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='259'
-      ERRMSG(ECD)='Receptor elevation is missing (-9999.0); IREC =   '
+      ecd = ecd+1
+      errcod(ecd)='259'
+      errmsg(ecd)='Receptor elevation is missing (-9999.0); IREC =   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='260'
-      ERRMSG(ECD)='Number of EMISFACT/O3VALUES/BACKGRND values > max:'
+      ecd = ecd+1
+      errcod(ecd)='260'
+      errmsg(ecd)='Number of EMISFACT/O3VALUES/BACKGRND values > max:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='261'
-      ERRMSG(ECD)='Not Enough O3VALUES Ozone Concentrations Specified'
+      ecd = ecd+1
+      errcod(ecd)='261'
+      errmsg(ecd)='Not Enough O3VALUES Ozone Concentrations Specified'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='262'
-      ERRMSG(ECD)='First Vertex Does Not Match LOCATION for AREAPOLY '
+      ecd = ecd+1
+      errcod(ecd)='262'
+      errmsg(ecd)='First Vertex Does Not Match LOCATION for AREAPOLY '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='264'
-      ERRMSG(ECD)='Too Many Vertices Specified for AREAPOLY Source   '
+      ecd = ecd+1
+      errcod(ecd)='264'
+      errmsg(ecd)='Too Many Vertices Specified for AREAPOLY Source   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='265'
-      ERRMSG(ECD)='Not Enough Vertices Specified for AREAPOLY Source '
+      ecd = ecd+1
+      errcod(ecd)='265'
+      errmsg(ecd)='Not Enough Vertices Specified for AREAPOLY Source '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='266'
-      ERRMSG(ECD)='Invalid shape defined (area=0) for AREAPOLY source'
+      ecd = ecd+1
+      errcod(ecd)='266'
+      errmsg(ecd)='Invalid shape defined (area=0) for AREAPOLY source'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='267'
-      ERRMSG(ECD)='RLINE/RLINEXT requires Zs = 0.0 or FLAT; SRCID=   '
+      ecd = ecd+1
+      errcod(ecd)='267'
+      errmsg(ecd)='RLINE/RLINEXT requires Zs = 0.0 or FLAT; SRCID=   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='271'
-      ERRMSG(ECD)='O3FILE w/o O3VALs; full conv for hrs with miss O3 '
+      ecd = ecd+1
+      errcod(ecd)='271'
+      errmsg(ecd)='O3FILE w/o O3VALs; full conv for hrs with miss O3 '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='272'
-      ERRMSG(ECD)='Upper bound rank > Lower bound rank for MAXDCONT: '
+      ecd = ecd+1
+      errcod(ecd)='272'
+      errmsg(ecd)='Upper bound rank > Lower bound rank for MAXDCONT: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='273'
-      ERRMSG(ECD)='Range of ranks for MAXDCONT THRESH Opt is limited:'
+      ecd = ecd+1
+      errcod(ecd)='273'
+      errmsg(ecd)='Range of ranks for MAXDCONT THRESH Opt is limited:'
 
 ! --- Included new messages regarding special processing for 1hr NO2/SO2
 !     and 24hr PM25
-      ECD = ECD+1
-      ERRCOD(ECD)='276'
-      ERRMSG(ECD)='Special proc for 1h-NO2/SO2 24hPM25 NAAQS disabled'
+      ecd = ecd+1
+      errcod(ecd)='276'
+      errmsg(ecd)='Special proc for 1h-NO2/SO2 24hPM25 NAAQS disabled'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='277'
-      ERRMSG(ECD)='Specified option not applicable for this pollutant'
+      ecd = ecd+1
+      errcod(ecd)='277'
+      errmsg(ecd)='Specified option not applicable for this pollutant'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='278'
-      ERRMSG(ECD)='Keyword only applies to RLINEXT source type:      '
+      ecd = ecd+1
+      errcod(ecd)='278'
+      errmsg(ecd)='Keyword only applies to RLINEXT source type:      '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='279'
-      ERRMSG(ECD)='Multiple URBANOPT/URBANSRC inputs not allowed for:'
+      ecd = ecd+1
+      errcod(ecd)='279'
+      errmsg(ecd)='Multiple URBANOPT/URBANSRC inputs not allowed for:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='280'
-      ERRMSG(ECD)='Number of Output Types Specified Exceeds Max:NTYP='
+      ecd = ecd+1
+      errcod(ecd)='280'
+      errmsg(ecd)='Number of Output Types Specified Exceeds Max:NTYP='
 
 !D132 Remove alpha requirement for rline/bline
 !      ECD = ECD+1
 !      ERRCOD(ECD)='281'
 !      ERRMSG(ECD)='ALPHA required for RLINE/RLINEXT/BUOYLINE URBANSRC'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='282'
-      ERRMSG(ECD)='Following SRCID Included in Multiple OLMGROUPs:   '
+      ecd = ecd+1
+      errcod(ecd)='282'
+      errmsg(ecd)='Following SRCID Included in Multiple OLMGROUPs:   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='283'
-      ERRMSG(ECD)='OZONEVAL, O3VALUES or OZONEFIL Keyword Needed for '
+      ecd = ecd+1
+      errcod(ecd)='283'
+      errmsg(ecd)='OZONEVAL, O3VALUES or OZONEFIL Keyword Needed for '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='284'
-      ERRMSG(ECD)='Invalid POLLUTID Given for NO2 option; Must Use   '
+      ecd = ecd+1
+      errcod(ecd)='284'
+      errmsg(ecd)='Invalid POLLUTID Given for NO2 option; Must Use   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='285'
-      ERRMSG(ECD)='BACKGROUND and BACKGRND are invalid as Source IDs '
+      ecd = ecd+1
+      errcod(ecd)='285'
+      errmsg(ecd)='BACKGROUND and BACKGRND are invalid as Source IDs '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='286'
-      ERRMSG(ECD)='Following SRCID Included in Multiple PSDGROUPs:   '
+      ecd = ecd+1
+      errcod(ecd)='286'
+      errmsg(ecd)='Following SRCID Included in Multiple PSDGROUPs:   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='287'
-      ERRMSG(ECD)='PSDGROUP ID Must be INCRCONS, RETRBASE or NONRBASE'
+      ecd = ecd+1
+      errcod(ecd)='287'
+      errmsg(ecd)='PSDGROUP ID Must be INCRCONS, RETRBASE or NONRBASE'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='288'
-      ERRMSG(ECD)='Use of "*" for repeated values not meaningful for '
+      ecd = ecd+1
+      errcod(ecd)='288'
+      errmsg(ecd)='Use of "*" for repeated values not meaningful for '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='289'
-      ERRMSG(ECD)='Source defined as both particulate and gaseous    '
+      ecd = ecd+1
+      errcod(ecd)='289'
+      errmsg(ecd)='Source defined as both particulate and gaseous    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='290'
-      ERRMSG(ECD)='This array limit exceeded; possible coding error: '
+      ecd = ecd+1
+      errcod(ecd)='290'
+      errmsg(ecd)='This array limit exceeded; possible coding error: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='291'
-      ERRMSG(ECD)='Filename specified is too long. Maximum length =  '
+      ecd = ecd+1
+      errcod(ecd)='291'
+      errmsg(ecd)='Filename specified is too long. Maximum length =  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='292'
-      ERRMSG(ECD)='Potential problem with Fortran format specifier:  '
+      ecd = ecd+1
+      errcod(ecd)='292'
+      errmsg(ecd)='Potential problem with Fortran format specifier:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='293'
-      ERRMSG(ECD)='User-specified met data format not used;  use FREE'
+      ecd = ecd+1
+      errcod(ecd)='293'
+      errmsg(ecd)='User-specified met data format not used;  use FREE'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='294'
-      ERRMSG(ECD)='PERIOD and ANNUAL averages are both selected for  '
+      ecd = ecd+1
+      errcod(ecd)='294'
+      errmsg(ecd)='PERIOD and ANNUAL averages are both selected for  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='295'
-      ERRMSG(ECD)='Invalid Averaging Period Specified for SCREEN Mode'
+      ecd = ecd+1
+      errcod(ecd)='295'
+      errmsg(ecd)='Invalid Averaging Period Specified for SCREEN Mode'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='296'
-      ERRMSG(ECD)='Averaging Period .NE. 1-Hr for TOXXFILE Option    '
+      ecd = ecd+1
+      errcod(ecd)='296'
+      errmsg(ecd)='Averaging Period .NE. 1-Hr for TOXXFILE Option    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='297'
-      ERRMSG(ECD)='Aver. Period must be .LE. 24 for EVENT Processing '
+      ecd = ecd+1
+      errcod(ecd)='297'
+      errmsg(ecd)='Aver. Period must be .LE. 24 for EVENT Processing '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='298'
-      ERRMSG(ECD)='Results reported for source group ALL include     '
+      ecd = ecd+1
+      errcod(ecd)='298'
+      errmsg(ecd)='Results reported for source group ALL include     '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='299'
-      ERRMSG(ECD)='SRCGROUP ALL is missing, but is NOT required for  '
+      ecd = ecd+1
+      errcod(ecd)='299'
+      errmsg(ecd)='SRCGROUP ALL is missing, but is NOT required for  '
 
 !-----------------------------------------------------------------------
 !---- 300s -------------------------------------------------------------
 !-----------------------------------------------------------------------
 
-      ECD = ECD+1
-      ERRCOD(ECD)='300'
-      ERRMSG(ECD)='Specified SRCID Has Not Been Defined Yet: KEYWORD='
+      ecd = ecd+1
+      errcod(ecd)='300'
+      errmsg(ecd)='Specified SRCID Has Not Been Defined Yet: KEYWORD='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='301'
-      ERRMSG(ECD)='Urban Area ID Has Not Been Defined.  URBID =      '
+      ecd = ecd+1
+      errcod(ecd)='301'
+      errmsg(ecd)='Urban Area ID Has Not Been Defined.  URBID =      '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='302'
-      ERRMSG(ECD)='Following SRCID Included in Multiple Urban Areas: '
+      ecd = ecd+1
+      errcod(ecd)='302'
+      errmsg(ecd)='Following SRCID Included in Multiple Urban Areas: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='303'
-      ERRMSG(ECD)='Urban ID has already been defined.  URBID =       '
+      ecd = ecd+1
+      errcod(ecd)='303'
+      errmsg(ecd)='Urban ID has already been defined.  URBID =       '
 
 !CRT 3/5/2021 D067: Delete GEP stack height warning - causes confusion
 !CRT This warning was added in v.11059 when WAKEFLG was disabled to
@@ -2516,637 +2516,637 @@ CONTAINS
 !CRT      ERRCOD(ECD)='305'
 !CRT      ERRMSG(ECD)='Stack height > or = EPA formula height for SRCID: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='310'
-      ERRMSG(ECD)='Attempt to Define Duplicate LOCATION Card for SRC:'
+      ecd = ecd+1
+      errcod(ecd)='310'
+      errmsg(ecd)='Attempt to Define Duplicate LOCATION Card for SRC:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='313'
-      ERRMSG(ECD)='Attempt to Define Duplicate EVENTPER card for     '
+      ecd = ecd+1
+      errcod(ecd)='313'
+      errmsg(ecd)='Attempt to Define Duplicate EVENTPER card for     '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='314'
-      ERRMSG(ECD)='Specified GRP index and SRC index is duplicated:  '
+      ecd = ecd+1
+      errcod(ecd)='314'
+      errmsg(ecd)='Specified GRP index and SRC index is duplicated:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='315'
-      ERRMSG(ECD)='Attempt to Define Duplicate SRCPARAM Card for SRC:'
+      ecd = ecd+1
+      errcod(ecd)='315'
+      errmsg(ecd)='Attempt to Define Duplicate SRCPARAM Card for SRC:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='316'
-      ERRMSG(ECD)='Specified SRCID is not included in any SRCGROUP:  '
+      ecd = ecd+1
+      errcod(ecd)='316'
+      errmsg(ecd)='Specified SRCID is not included in any SRCGROUP:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='317'
-      ERRMSG(ECD)='Specified SRCID is not included in any PSDGROUP:  '
+      ecd = ecd+1
+      errcod(ecd)='317'
+      errmsg(ecd)='Specified SRCID is not included in any PSDGROUP:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='318'
-      ERRMSG(ECD)='No Sources Defined for Urban Area.  URBID =       '
+      ecd = ecd+1
+      errcod(ecd)='318'
+      errmsg(ecd)='No Sources Defined for Urban Area.  URBID =       '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='319'
-      ERRMSG(ECD)='No Sources Included in Specified Source Group:    '
+      ecd = ecd+1
+      errcod(ecd)='319'
+      errmsg(ecd)='No Sources Included in Specified Source Group:    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='320'
-      ERRMSG(ECD)='Input Parameter May Be Out-of-Range for Parameter '
+      ecd = ecd+1
+      errcod(ecd)='320'
+      errmsg(ecd)='Input Parameter May Be Out-of-Range for Parameter '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='321'
-      ERRMSG(ECD)='BACKGROUND concs are NOT included in any SRCGROUP!'
+      ecd = ecd+1
+      errcod(ecd)='321'
+      errmsg(ecd)='BACKGROUND concs are NOT included in any SRCGROUP!'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='322'
-      ERRMSG(ECD)='Release Height Exceeds Effective Depth for OPENPIT'
+      ecd = ecd+1
+      errcod(ecd)='322'
+      errmsg(ecd)='Release Height Exceeds Effective Depth for OPENPIT'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='323'
-      ERRMSG(ECD)='BACKGRND included w/o BACKGRND keyword for SrcGrp:'
+      ecd = ecd+1
+      errcod(ecd)='323'
+      errmsg(ecd)='BACKGRND included w/o BACKGRND keyword for SrcGrp:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='324'
-      ERRMSG(ECD)='Release Height Exceeds 3000 Meters for SRCID:     '
+      ecd = ecd+1
+      errcod(ecd)='324'
+      errmsg(ecd)='Release Height Exceeds 3000 Meters for SRCID:     '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='325'
-      ERRMSG(ECD)='Negative Exit Velocity (Set=1.0E-5) for SRCID:    '
+      ecd = ecd+1
+      errcod(ecd)='325'
+      errmsg(ecd)='Negative Exit Velocity (Set=1.0E-5) for SRCID:    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='330'
-      ERRMSG(ECD)='Mass Fraction Parameters Do Not Sum to 1. for Src '
+      ecd = ecd+1
+      errcod(ecd)='330'
+      errmsg(ecd)='Mass Fraction Parameters Do Not Sum to 1. for Src '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='332'
-      ERRMSG(ECD)='Mass Fraction Parameter Out-of-Range for Source   '
+      ecd = ecd+1
+      errcod(ecd)='332'
+      errmsg(ecd)='Mass Fraction Parameter Out-of-Range for Source   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='334'
-      ERRMSG(ECD)='Particle Density Out-of-Range for Source          '
+      ecd = ecd+1
+      errcod(ecd)='334'
+      errmsg(ecd)='Particle Density Out-of-Range for Source          '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='335'
-      ERRMSG(ECD)='Particle Diameter Out-of-Range for Source         '
+      ecd = ecd+1
+      errcod(ecd)='335'
+      errmsg(ecd)='Particle Diameter Out-of-Range for Source         '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='336'
-      ERRMSG(ECD)='NO2RATIO Missing/Invalid for OLM/PVMRM/GRSM. Src:'
+      ecd = ecd+1
+      errcod(ecd)='336'
+      errmsg(ecd)='NO2RATIO Missing/Invalid for OLM/PVMRM/GRSM. Src:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='338'
-      ERRMSG(ECD)='Neg Emis Rate Invalid with OLM/PVMRM/GRSM. Src: '
+      ecd = ecd+1
+      errcod(ecd)='338'
+      errmsg(ecd)='Neg Emis Rate Invalid with OLM/PVMRM/GRSM. Src: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='340'
-      ERRMSG(ECD)='Possible Error in PROFBASE Input:  Value is < 0   '
+      ecd = ecd+1
+      errcod(ecd)='340'
+      errmsg(ecd)='Possible Error in PROFBASE Input:  Value is < 0   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='341'
-      ERRMSG(ECD)='Emissions in HOUREMIS file < -90; set to 0.0 for  '
+      ecd = ecd+1
+      errcod(ecd)='341'
+      errmsg(ecd)='Emissions in HOUREMIS file < -90; set to 0.0 for  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='342'
-      ERRMSG(ECD)='Src ID Mismatch in Hourly Emissions File for ID = '
+      ecd = ecd+1
+      errcod(ecd)='342'
+      errmsg(ecd)='Src ID Mismatch in Hourly Emissions File for ID = '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='344'
-      ERRMSG(ECD)='Missing HOUREMIS fields; EmisRate set = 0. KURDAT='
+      ecd = ecd+1
+      errcod(ecd)='344'
+      errmsg(ecd)='Missing HOUREMIS fields; EmisRate set = 0. KURDAT='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='345'
-      ERRMSG(ECD)='Problem processing the HOUREMIS file.   KURDAT =  '
+      ecd = ecd+1
+      errcod(ecd)='345'
+      errmsg(ecd)='Problem processing the HOUREMIS file.   KURDAT =  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='346'
-      ERRMSG(ECD)='Too many fields for HOUREMIS file.     KURDAT =   '
+      ecd = ecd+1
+      errcod(ecd)='346'
+      errmsg(ecd)='Too many fields for HOUREMIS file.     KURDAT =   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='350'
-      ERRMSG(ECD)='Julian Day Out Of Range at                        '
+      ecd = ecd+1
+      errcod(ecd)='350'
+      errmsg(ecd)='Julian Day Out Of Range at                        '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='352'
-      ERRMSG(ECD)='The "H6H" field is no longer required for MULTYEAR'
+      ecd = ecd+1
+      errcod(ecd)='352'
+      errmsg(ecd)='The "H6H" field is no longer required for MULTYEAR'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='353'
-      ERRMSG(ECD)='Urban Roughness Length (m) May Be Out-of-Range:   '
+      ecd = ecd+1
+      errcod(ecd)='353'
+      errmsg(ecd)='Urban Roughness Length (m) May Be Out-of-Range:   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='360'
-      ERRMSG(ECD)='2-Digit Year Specified: Valid for Range 1950-2049 '
+      ecd = ecd+1
+      errcod(ecd)='360'
+      errmsg(ecd)='2-Digit Year Specified: Valid for Range 1950-2049 '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='361'
-      ERRMSG(ECD)='Multiyear PERIOD/ANNUAL values for NO2/SO2 require'
+      ecd = ecd+1
+      errcod(ecd)='361'
+      errmsg(ecd)='Multiyear PERIOD/ANNUAL values for NO2/SO2 require'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='362'
-      ERRMSG(ECD)='Multiyear 1h NO2/SO2 processing not applicable for'
+      ecd = ecd+1
+      errcod(ecd)='362'
+      errmsg(ecd)='Multiyear 1h NO2/SO2 processing not applicable for'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='363'
-      ERRMSG(ECD)='Multiyr 24h/Ann PM25 processing not applicable for'
+      ecd = ecd+1
+      errcod(ecd)='363'
+      errmsg(ecd)='Multiyr 24h/Ann PM25 processing not applicable for'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='365'
-      ERRMSG(ECD)='Year Input is Greater Than 2147                   '
+      ecd = ecd+1
+      errcod(ecd)='365'
+      errmsg(ecd)='Year Input is Greater Than 2147                   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='370'
-      ERRMSG(ECD)='Invalid Date: 2/29 In a Non-leap Year.            '
+      ecd = ecd+1
+      errcod(ecd)='370'
+      errmsg(ecd)='Invalid Date: 2/29 In a Non-leap Year.            '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='380'
-      ERRMSG(ECD)='This Input Variable is Out-of-Range:              '
+      ecd = ecd+1
+      errcod(ecd)='380'
+      errmsg(ecd)='This Input Variable is Out-of-Range:              '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='381'
-      ERRMSG(ECD)='Latitude in Surface File Is Not Valid:            '
+      ecd = ecd+1
+      errcod(ecd)='381'
+      errmsg(ecd)='Latitude in Surface File Is Not Valid:            '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='382'
-      ERRMSG(ECD)='Error Decoding Latitude:                          '
+      ecd = ecd+1
+      errcod(ecd)='382'
+      errmsg(ecd)='Error Decoding Latitude:                          '
 
 ! --- More new messages for buoyant line processing; updated for multiple
 !     buoyant line sources (Multiple_BuoyLines_D41_Wood)
-      ECD = ECD+1
-      ERRCOD(ECD)='383'
-      ERRMSG(ECD)='# buoy. lines in group not equal to # on HOUREMIS:'
+      ecd = ecd+1
+      errcod(ecd)='383'
+      errmsg(ecd)='# buoy. lines in group not equal to # on HOUREMIS:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='384'
-      ERRMSG(ECD)='Not enough fields specified for HOUREMIS; KURDAT ='
+      ecd = ecd+1
+      errcod(ecd)='384'
+      errmsg(ecd)='Not enough fields specified for HOUREMIS; KURDAT ='
 
 ! --- New messages for buoyant line processing; # '385'updated for multiple
 !     buoyant line sources (Multiple_BuoyLines_D41_Wood)
-      ECD = ECD+1
-      ERRCOD(ECD)='385'
-      ERRMSG(ECD)='Following SRCID Included in Multiple BLPGROUPs:   '
+      ecd = ecd+1
+      errcod(ecd)='385'
+      errmsg(ecd)='Following SRCID Included in Multiple BLPGROUPs:   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='386'
-      ERRMSG(ECD)='PARTDIAM and METHOD_2 specified for same SRCID:   '
+      ecd = ecd+1
+      errcod(ecd)='386'
+      errmsg(ecd)='PARTDIAM and METHOD_2 specified for same SRCID:   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='387'
-      ERRMSG(ECD)='METHOD_2 option already specified for this SRCID: '
+      ecd = ecd+1
+      errcod(ecd)='387'
+      errmsg(ecd)='METHOD_2 option already specified for this SRCID: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='388'
-      ERRMSG(ECD)='Input buoyant line sources not in correct order:  '
+      ecd = ecd+1
+      errcod(ecd)='388'
+      errmsg(ecd)='Input buoyant line sources not in correct order:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='389'
-      ERRMSG(ECD)='Rotated buoyant line sources not in correct order:'
+      ecd = ecd+1
+      errcod(ecd)='389'
+      errmsg(ecd)='Rotated buoyant line sources not in correct order:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='390'
-      ERRMSG(ECD)='Aspect ratio (L/W) of LINE source greater than 100'
+      ecd = ecd+1
+      errcod(ecd)='390'
+      errmsg(ecd)='Aspect ratio (L/W) of LINE source greater than 100'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='391'
-      ERRMSG(ECD)='Aspect ratio (L/W) of AREA source greater than 100'
+      ecd = ecd+1
+      errcod(ecd)='391'
+      errmsg(ecd)='Aspect ratio (L/W) of AREA source greater than 100'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='392'
-      ERRMSG(ECD)='Aspect ratio (L/W) of OPENPIT is greater than 10  '
+      ecd = ecd+1
+      errcod(ecd)='392'
+      errmsg(ecd)='Aspect ratio (L/W) of OPENPIT is greater than 10  '
 
 !     If at least one BL line is declared as urban, then all must be urban
-      ECD = ECD+1
-      ERRCOD(ECD)='393'
-      ERRMSG(ECD)='Not all lines in BL source declared urban in group'
+      ecd = ecd+1
+      errcod(ecd)='393'
+      errmsg(ecd)='Not all lines in BL source declared urban in group'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='394'
-      ERRMSG(ECD)='Met data may be from outdated version of AERMET:  '
+      ecd = ecd+1
+      errcod(ecd)='394'
+      errmsg(ecd)='Met data may be from outdated version of AERMET:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='395'
-      ERRMSG(ECD)='Met. Data Error; Incompatible Version of AERMET:  '
+      ecd = ecd+1
+      errcod(ecd)='395'
+      errmsg(ecd)='Met. Data Error; Incompatible Version of AERMET:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='396'
-      ERRMSG(ECD)='AERMET Version Out-dated or Non-standard; Version:'
+      ecd = ecd+1
+      errcod(ecd)='396'
+      errmsg(ecd)='AERMET Version Out-dated or Non-standard; Version:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='397'
-      ERRMSG(ECD)='SCREEN option used without use of SCREEN Met Data '
+      ecd = ecd+1
+      errcod(ecd)='397'
+      errmsg(ecd)='SCREEN option used without use of SCREEN Met Data '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='398'
-      ERRMSG(ECD)='SCREEN met used without specifying SCREEN option  '
+      ecd = ecd+1
+      errcod(ecd)='398'
+      errmsg(ecd)='SCREEN met used without specifying SCREEN option  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='399'
-      ERRMSG(ECD)='EXP format specified with no applicable file types'
+      ecd = ecd+1
+      errcod(ecd)='399'
+      errmsg(ecd)='EXP format specified with no applicable file types'
 
 !-----------------------------------------------------------------------
 !---- 400s -------------------------------------------------------------
 !-----------------------------------------------------------------------
 
-      ECD = ECD+1
-      ERRCOD(ECD)='400'
-      ERRMSG(ECD)='Output values exceed format limit; use OU FILEFORM'
+      ecd = ecd+1
+      errcod(ecd)='400'
+      errmsg(ecd)='Output values exceed format limit; use OU FILEFORM'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='401'
-      ERRMSG(ECD)='Use of turbulence data with ADJ_U* is NonDFAULT   '
+      ecd = ecd+1
+      errcod(ecd)='401'
+      errmsg(ecd)='Use of turbulence data with ADJ_U* is NonDFAULT   '
 
 ! --- New messages for v16216
-      ECD = ECD+1
-      ERRCOD(ECD)='402'
-      ERRMSG(ECD)='Turbulence data being used with ADJ_U* w/o DFAULT '
+      ecd = ecd+1
+      errcod(ecd)='402'
+      errmsg(ecd)='Turbulence data being used with ADJ_U* w/o DFAULT '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='403'
-      ERRMSG(ECD)='Turbulence data is being used w/o ADJ_U* option   '
+      ecd = ecd+1
+      errcod(ecd)='403'
+      errmsg(ecd)='Turbulence data is being used w/o ADJ_U* option   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='405'
-      ERRMSG(ECD)='Value of PHEE Exceeds 1.0 on KURDAT =             '
+      ecd = ecd+1
+      errcod(ecd)='405'
+      errmsg(ecd)='Value of PHEE Exceeds 1.0 on KURDAT =             '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='406'
-      ERRMSG(ECD)='Number of Vertices Exceeds Max (NVMAX) for SRCID: '
+      ecd = ecd+1
+      errcod(ecd)='406'
+      errmsg(ecd)='Number of Vertices Exceeds Max (NVMAX) for SRCID: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='409'
-      ERRMSG(ECD)='Error Allocating Storage for Setup/Result Arrays! '
+      ecd = ecd+1
+      errcod(ecd)='409'
+      errmsg(ecd)='Error Allocating Storage for Setup/Result Arrays! '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='410'
-      ERRMSG(ECD)='Wind Direction Out-of-Range.  KURDAT =            '
+      ecd = ecd+1
+      errcod(ecd)='410'
+      errmsg(ecd)='Wind Direction Out-of-Range.  KURDAT =            '
 
 ! --- Included new message regarding QSUM = 0.0 runtime error in PVMRM;
 !     this should never occur, but could indicate a programming error
-      ECD = ECD+1
-      ERRCOD(ECD)='411'
-      ERRMSG(ECD)='Possible ERROR in PVMRM_CALC! QSUM=0.0 @ Rec# Date'
+      ecd = ecd+1
+      errcod(ecd)='411'
+      errmsg(ecd)='Possible ERROR in PVMRM_CALC! QSUM=0.0 @ Rec# Date'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='412'
-      ERRMSG(ECD)='Possible ERROR in PVMRM_CALC! QSUM=0.0 @ Evt# Date'
+      ecd = ecd+1
+      errcod(ecd)='412'
+      errmsg(ecd)='Possible ERROR in PVMRM_CALC! QSUM=0.0 @ Evt# Date'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='413'
-      ERRMSG(ECD)='Number of Threshold Events > 999999 for Ave Period'
+      ecd = ecd+1
+      errcod(ecd)='413'
+      errmsg(ecd)='Number of Threshold Events > 999999 for Ave Period'
 
 
-      ECD = ECD+1
-      ERRCOD(ECD)='415'
-      ERRMSG(ECD)='MAXDCONT THRESH not reached within range of ranks '
+      ecd = ecd+1
+      errcod(ecd)='415'
+      errmsg(ecd)='MAXDCONT THRESH not reached within range of ranks '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='420'
-      ERRMSG(ECD)='Wind Speed Out-of-Range.   KURDAT =               '
+      ecd = ecd+1
+      errcod(ecd)='420'
+      errmsg(ecd)='Wind Speed Out-of-Range.   KURDAT =               '
 
 !     CRT D176 COARE Beta Check - COARE used to process met
-      ECD = ECD+1
-      ERRCOD(ECD)='422'
-      ERRMSG(ECD)='Meteorological data processed with COARE in AERMET'
+      ecd = ecd+1
+      errcod(ecd)='422'
+      errmsg(ecd)='Meteorological data processed with COARE in AERMET'
 
 !     CRT D176 COARE Beta Check - BULKRN cannot be used with COARE
-      ECD = ECD+1
-      ERRCOD(ECD)='423'
-      ERRMSG(ECD)='BULKRN in AERMET cannot be used with COARE        '
+      ecd = ecd+1
+      errcod(ecd)='423'
+      errmsg(ecd)='BULKRN in AERMET cannot be used with COARE        '
 
 !     D127 - Added for minimum fran (see similar message 494 for max fran)
-      ECD = ECD+1
-      ERRCOD(ECD)='424'
-      ERRMSG(ECD)='Meander factor (FRAN) below min @ YR MN DY ISRC:  '
+      ecd = ecd+1
+      errcod(ecd)='424'
+      errmsg(ecd)='Meander factor (FRAN) below min @ YR MN DY ISRC:  '
 
 !CRT     D127 - Added for fran min > fran max
-      ECD = ECD+1
-      ERRCOD(ECD)='426'
-      ERRMSG(ECD)='LOW_WIND user-specified FRANMIN > FRANMAX:  '
+      ecd = ecd+1
+      errcod(ecd)='426'
+      errmsg(ecd)='LOW_WIND user-specified FRANMIN > FRANMAX:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='430'
-      ERRMSG(ECD)='Ambient Temperature Data Out-of-Range.  KURDAT =  '
+      ecd = ecd+1
+      errcod(ecd)='430'
+      errmsg(ecd)='Ambient Temperature Data Out-of-Range.  KURDAT =  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='432'
-      ERRMSG(ECD)='Friction Velocity Out-of-Range.   KURDAT =        '
+      ecd = ecd+1
+      errcod(ecd)='432'
+      errmsg(ecd)='Friction Velocity Out-of-Range.   KURDAT =        '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='435'
-      ERRMSG(ECD)='Surface Roughness Length Out-of-Range.  KURDAT =  '
+      ecd = ecd+1
+      errcod(ecd)='435'
+      errmsg(ecd)='Surface Roughness Length Out-of-Range.  KURDAT =  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='438'
-      ERRMSG(ECD)='Convective Velocity Data Out-of-Range.  KURDAT =  '
+      ecd = ecd+1
+      errcod(ecd)='438'
+      errmsg(ecd)='Convective Velocity Data Out-of-Range.  KURDAT =  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='439'
-      ERRMSG(ECD)='Monin-Obukhov Length Out-of-Range.  KURDAT =      '
+      ecd = ecd+1
+      errcod(ecd)='439'
+      errmsg(ecd)='Monin-Obukhov Length Out-of-Range.  KURDAT =      '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='440'
-      ERRMSG(ECD)='Calm Hour Identified in Meteorology Data File at  '
+      ecd = ecd+1
+      errcod(ecd)='440'
+      errmsg(ecd)='Calm Hour Identified in Meteorology Data File at  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='441'
-      ERRMSG(ECD)='Vert Pot Temp Grad abv ZI set to min .005, KURDAT='
+      ecd = ecd+1
+      errcod(ecd)='441'
+      errmsg(ecd)='Vert Pot Temp Grad abv ZI set to min .005, KURDAT='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='442'
-      ERRMSG(ECD)='Vert Pot Temp Grad abv ZI exceeds 0.1 K/m, KURDAT='
+      ecd = ecd+1
+      errcod(ecd)='442'
+      errmsg(ecd)='Vert Pot Temp Grad abv ZI exceeds 0.1 K/m, KURDAT='
 
 !     JAT 1/29/21  D070 TURBULENCE OPTIONS
 !     ADD WARNING MESSAGE AND INFORMATIONAL MESSAGES
-      ECD = ECD+1
-      ERRCOD(ECD)='443'
-      ERRMSG(ECD)='SELECTED TURBULENCE OPTION:                       '
+      ecd = ecd+1
+      errcod(ecd)='443'
+      errmsg(ecd)='SELECTED TURBULENCE OPTION:                       '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='444'
-      ERRMSG(ECD)='TURBOPT INVALID WITH DFAULT; RESET                '
+      ecd = ecd+1
+      errcod(ecd)='444'
+      errmsg(ecd)='TURBOPT INVALID WITH DFAULT; RESET                '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='445'
-      ERRMSG(ECD)='Set sigma-theta to missing for                    '
+      ecd = ecd+1
+      errcod(ecd)='445'
+      errmsg(ecd)='Set sigma-theta to missing for                    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='446'
-      ERRMSG(ECD)='Set sigma-w to missing for                        '
+      ecd = ecd+1
+      errcod(ecd)='446'
+      errmsg(ecd)='Set sigma-w to missing for                        '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='450'
-      ERRMSG(ECD)='Record Out of Sequence in Meteorological File at: '
+      ecd = ecd+1
+      errcod(ecd)='450'
+      errmsg(ecd)='Record Out of Sequence in Meteorological File at: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='452'
-      ERRMSG(ECD)='Missing hourly BACKGRND w/o BGSUB, KURDAT/Sector ='
+      ecd = ecd+1
+      errcod(ecd)='452'
+      errmsg(ecd)='Missing hourly BACKGRND w/o BGSUB, KURDAT/Sector ='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='453'
-      ERRMSG(ECD)='BGSUB for missing hourly BACKGRND, KURDAT/Sector ='
+      ecd = ecd+1
+      errcod(ecd)='453'
+      errmsg(ecd)='BGSUB for missing hourly BACKGRND, KURDAT/Sector ='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='454'
-      ERRMSG(ECD)='Date/time Mismatch: BACKGRND File, KURDAT/Sector ='
+      ecd = ecd+1
+      errcod(ecd)='454'
+      errmsg(ecd)='Date/time Mismatch: BACKGRND File, KURDAT/Sector ='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='455'
-      ERRMSG(ECD)='Date/time Mismatch: Hourly Emission File, KURDAT ='
+      ecd = ecd+1
+      errcod(ecd)='455'
+      errmsg(ecd)='Date/time Mismatch: Hourly Emission File, KURDAT ='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='456'
-      ERRMSG(ECD)='Date/time Mismatch on Surface & Profile.  KURDAT ='
+      ecd = ecd+1
+      errcod(ecd)='456'
+      errmsg(ecd)='Date/time Mismatch on Surface & Profile.  KURDAT ='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='457'
-      ERRMSG(ECD)='Date/time Mismatch: OZONEFIL File, KURDAT/Sector ='
+      ecd = ecd+1
+      errcod(ecd)='457'
+      errmsg(ecd)='Date/time Mismatch: OZONEFIL File, KURDAT/Sector ='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='458'
-      ERRMSG(ECD)='O3SUB for missing hourly O3 value, KURDAT/Sector ='
+      ecd = ecd+1
+      errcod(ecd)='458'
+      errmsg(ecd)='O3SUB for missing hourly O3 value, KURDAT/Sector ='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='459'
-      ERRMSG(ECD)='No Hrly O3 & No Sub; Use Full Conversion, KURDAT ='
+      ecd = ecd+1
+      errcod(ecd)='459'
+      errmsg(ecd)='No Hrly O3 & No Sub; Use Full Conversion, KURDAT ='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='460'
-      ERRMSG(ECD)='Missing Hour Identified in Meteor. Data File at   '
+      ecd = ecd+1
+      errcod(ecd)='460'
+      errmsg(ecd)='Missing Hour Identified in Meteor. Data File at   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='465'
-      ERRMSG(ECD)='Number of Profile Levels Exceeds Max:   MXPLVL =  '
+      ecd = ecd+1
+      errcod(ecd)='465'
+      errmsg(ecd)='Number of Profile Levels Exceeds Max:   MXPLVL =  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='470'
-      ERRMSG(ECD)='Mixing Height Value is < or = 0.0.   KURDAT =     '
+      ecd = ecd+1
+      errcod(ecd)='470'
+      errmsg(ecd)='Mixing Height Value is < or = 0.0.   KURDAT =     '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='471'
-      ERRMSG(ECD)='Met. ref hgt WS < 1.0 m/s; set to 1.0 for BL srcs '
+      ecd = ecd+1
+      errcod(ecd)='471'
+      errmsg(ecd)='Met. ref hgt WS < 1.0 m/s; set to 1.0 for BL srcs '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='472'
-      ERRMSG(ECD)='Release hgt < 2.0m for BL source; set to 2.0m for '
+      ecd = ecd+1
+      errcod(ecd)='472'
+      errmsg(ecd)='Release hgt < 2.0m for BL source; set to 2.0m for '
 
 !     JAT D068 1/15/21:  UDPATED DEPOSITION MESSAGE AFTER NEWER MESSAGES
-      ECD = ECD+1
-      ERRCOD(ECD)='473'
-      ERRMSG(ECD)='Default deposition parameter(s) used for SRCID:   '
+      ecd = ecd+1
+      errcod(ecd)='473'
+      errmsg(ecd)='Default deposition parameter(s) used for SRCID:   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='474'
-      ERRMSG(ECD)='WS RefHt invalid (<0.001); Not msg or clm: KURDAT='
+      ecd = ecd+1
+      errcod(ecd)='474'
+      errmsg(ecd)='WS RefHt invalid (<0.001); Not msg or clm: KURDAT='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='475'
-      ERRMSG(ECD)='WS reference height is higher than 100m.  KURDAT ='
+      ecd = ecd+1
+      errcod(ecd)='475'
+      errmsg(ecd)='WS reference height is higher than 100m.  KURDAT ='
 
 ! --- More new messages for buoyant line processing; updated for multiple
 !     buoyant line sources (Multiple_BuoyLines_D41_Wood)
-      ECD = ECD+1
-      ERRCOD(ECD)='476'
-      ERRMSG(ECD)='# receptors within BL source (BLPGROUP)           '
-      ECD = ECD+1
-      ERRCOD(ECD)='477'
-      ERRMSG(ECD)='Receptor inside BL source group for event:        '
+      ecd = ecd+1
+      errcod(ecd)='476'
+      errmsg(ecd)='# receptors within BL source (BLPGROUP)           '
+      ecd = ecd+1
+      errcod(ecd)='477'
+      errmsg(ecd)='Receptor inside BL source group for event:        '
 
 !CRT  2/22/2021: D059 AWMA Downwash Options
 !CRT  Resolve conflict with error array index and code
-      ECD = ECD+1
-      ERRCOD(ECD)='478'
-      ERRMSG(ECD)='AWMAUTurb & AWMAUTurbHX entered; AWMAUTurbHX used '
+      ecd = ecd+1
+      errcod(ecd)='478'
+      errmsg(ecd)='AWMAUTurb & AWMAUTurbHX entered; AWMAUTurbHX used '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='479'
-      ERRMSG(ECD)='Potential temperature gradient is out-of-range:   '
+      ecd = ecd+1
+      errcod(ecd)='479'
+      errmsg(ecd)='Potential temperature gradient is out-of-range:   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='480'
-      ERRMSG(ECD)='Less than 1yr for MULTYEAR, MAXDCONT or ANNUAL Ave'
+      ecd = ecd+1
+      errcod(ecd)='480'
+      errmsg(ecd)='Less than 1yr for MULTYEAR, MAXDCONT or ANNUAL Ave'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='481'
-      ERRMSG(ECD)='Data Remaining After End of Year. Number of Hours='
+      ecd = ecd+1
+      errcod(ecd)='481'
+      errmsg(ecd)='Data Remaining After End of Year. Number of Hours='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='482'
-      ERRMSG(ECD)='Too many years modeled for 24h-PM25 1h-NO2 1h-SO2:'
+      ecd = ecd+1
+      errcod(ecd)='482'
+      errmsg(ecd)='Too many years modeled for 24h-PM25 1h-NO2 1h-SO2:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='483'
-      ERRMSG(ECD)='User Start Date is Earlier Than Start of Met File '
+      ecd = ecd+1
+      errcod(ecd)='483'
+      errmsg(ecd)='User Start Date is Earlier Than Start of Met File '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='484'
-      ERRMSG(ECD)='Restart Date < STARTEND date or start of Met File '
+      ecd = ecd+1
+      errcod(ecd)='484'
+      errmsg(ecd)='Restart Date < STARTEND date or start of Met File '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='485'
-      ERRMSG(ECD)='MULTYR DataGap; Restart Date < STARTEND or MetFile'
+      ecd = ecd+1
+      errcod(ecd)='485'
+      errmsg(ecd)='MULTYR DataGap; Restart Date < STARTEND or MetFile'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='486'
-      ERRMSG(ECD)='MULTYR Date Overlap; STARTEND Date < Restart Date '
+      ecd = ecd+1
+      errcod(ecd)='486'
+      errmsg(ecd)='MULTYR Date Overlap; STARTEND Date < Restart Date '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='487'
-      ERRMSG(ECD)='MULTYR Date Overlap; MetFile Start < Restart Date '
+      ecd = ecd+1
+      errcod(ecd)='487'
+      errmsg(ecd)='MULTYR Date Overlap; MetFile Start < Restart Date '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='488'
-      ERRMSG(ECD)='First met HR.ne.1; ST results may not be valid    '
+      ecd = ecd+1
+      errcod(ecd)='488'
+      errmsg(ecd)='First met HR.ne.1; ST results may not be valid    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='489'
-      ERRMSG(ECD)='First met HR.ne.1; EV results may not be valid for'
+      ecd = ecd+1
+      errcod(ecd)='489'
+      errmsg(ecd)='First met HR.ne.1; EV results may not be valid for'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='490'
-      ERRMSG(ECD)='Problem reading SURFFILE date for EVENTS; MNDYHR ='
+      ecd = ecd+1
+      errcod(ecd)='490'
+      errmsg(ecd)='Problem reading SURFFILE date for EVENTS; MNDYHR ='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='491'
-      ERRMSG(ECD)='MAXDCONT option requires 1st Hr of met data = 01; '
+      ecd = ecd+1
+      errcod(ecd)='491'
+      errmsg(ecd)='MAXDCONT option requires 1st Hr of met data = 01; '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='492'
-      ERRMSG(ECD)='SURFDATA YR .NE. 1st YR of file, adj to match file'
+      ecd = ecd+1
+      errcod(ecd)='492'
+      errmsg(ecd)='SURFDATA YR .NE. 1st YR of file, adj to match file'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='493'
-      ERRMSG(ECD)='SURFDATA YR must match 1st YR of file for DAYRANGE'
+      ecd = ecd+1
+      errcod(ecd)='493'
+      errmsg(ecd)='SURFDATA YR must match 1st YR of file for DAYRANGE'
 
 !     see similar message 424 for fran max
-      ECD = ECD+1
-      ERRCOD(ECD)='494'
-      ERRMSG(ECD)='Meander factor (FRAN) exceeds max @ YR MN DY ISRC:'
+      ecd = ecd+1
+      errcod(ecd)='494'
+      errmsg(ecd)='Meander factor (FRAN) exceeds max @ YR MN DY ISRC:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='495'
-      ERRMSG(ECD)='Surface met file does not include enough variables'
+      ecd = ecd+1
+      errcod(ecd)='495'
+      errmsg(ecd)='Surface met file does not include enough variables'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='496'
-      ERRMSG(ECD)='Total precipitation in SURFFILE is zero (0.0) with'
+      ecd = ecd+1
+      errcod(ecd)='496'
+      errmsg(ecd)='Total precipitation in SURFFILE is zero (0.0) with'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='497'
-      ERRMSG(ECD)='Possible code ERROR!!! EVENT mismatch for EVENTID:'
+      ecd = ecd+1
+      errcod(ecd)='497'
+      errmsg(ecd)='Possible code ERROR!!! EVENT mismatch for EVENTID:'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='498'
-      ERRMSG(ECD)='Possible code ERROR! MAXDCONT mismatch GRP/RNK/REC'
+      ecd = ecd+1
+      errcod(ecd)='498'
+      errmsg(ecd)='Possible code ERROR! MAXDCONT mismatch GRP/RNK/REC'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='499'
-      ERRMSG(ECD)='PRIME plume rise error; check stack parameters for'
+      ecd = ecd+1
+      errcod(ecd)='499'
+      errmsg(ecd)='PRIME plume rise error; check stack parameters for'
 
 !-----------------------------------------------------------------------
 !---- 500s -------------------------------------------------------------
 !-----------------------------------------------------------------------
 
-      ECD = ECD+1
-      ERRCOD(ECD)='500'
-      ERRMSG(ECD)='Fatal Error Occurs Opening the Data File of       '
+      ecd = ecd+1
+      errcod(ecd)='500'
+      errmsg(ecd)='Fatal Error Occurs Opening the Data File of       '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='501'
-      ERRMSG(ECD)='Dup Filename! Fatal Error Opening the Data File of'
+      ecd = ecd+1
+      errcod(ecd)='501'
+      errmsg(ecd)='Dup Filename! Fatal Error Opening the Data File of'
 
 ! Multiple_BuoyLines_D41_Wood
 !     Messages to accomodate multiple buoyant line processing.
 !CRT  4/5/2022 D091 Missing BLPINPUT Checks - Updated Message
-      ECD = ECD+1
-      ERRCOD(ECD)='502'
-      ERRMSG(ECD)='No BLPINPUT record for BLPGROUP ID'
+      ecd = ecd+1
+      errcod(ecd)='502'
+      errmsg(ecd)='No BLPINPUT record for BLPGROUP ID'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='503'
-      ERRMSG(ECD)='BLPGROUP IDs do not match BLPINPUT IDs'
+      ecd = ecd+1
+      errcod(ecd)='503'
+      errmsg(ecd)='BLPGROUP IDs do not match BLPINPUT IDs'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='504'
-      ERRMSG(ECD)='BLPINPUT group ID already specified-must be unique'
+      ecd = ecd+1
+      errcod(ecd)='504'
+      errmsg(ecd)='BLPINPUT group ID already specified-must be unique'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='505'
-      ERRMSG(ECD)='BLPINPUT records out of order, BLPINPUT Groups:'
+      ecd = ecd+1
+      errcod(ecd)='505'
+      errmsg(ecd)='BLPINPUT records out of order, BLPINPUT Groups:'
 
 ! D_32 Wood - Check for non-parallel lines within group
-      ECD = ECD+1
-      ERRCOD(ECD)='506'
-      ERRMSG(ECD)='BUOYLINE not parallel to 1st line of its group:'
+      ecd = ecd+1
+      errcod(ecd)='506'
+      errmsg(ecd)='BUOYLINE not parallel to 1st line of its group:'
 
 !CRT  4/5/2022 D091 Missing BLPINPUT Checks - Added Messages (507, 508, 509)
-      ECD = ECD+1
-      ERRCOD(ECD)='507'
-      ERRMSG(ECD)='No BLPINPUT records for BUOYLINE sources'
+      ecd = ecd+1
+      errcod(ecd)='507'
+      errmsg(ecd)='No BLPINPUT records for BUOYLINE sources'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='508'
-      ERRMSG(ECD)='No BUOYLINE sources for BLPINPUT record'
+      ecd = ecd+1
+      errcod(ecd)='508'
+      errmsg(ecd)='No BUOYLINE sources for BLPINPUT record'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='509'
-      ERRMSG(ECD)='# BLPGROUP IDs defined by BLPINPUTs <> # allocated'
+      ecd = ecd+1
+      errcod(ecd)='509'
+      errmsg(ecd)='# BLPGROUP IDs defined by BLPINPUTs <> # allocated'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='510'
-      ERRMSG(ECD)='Fatal Error Occurs During Reading of the File of  '
+      ecd = ecd+1
+      errcod(ecd)='510'
+      errmsg(ecd)='Fatal Error Occurs During Reading of the File of  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='520'
-      ERRMSG(ECD)='Fatal Error Occurs During Writing to the File of  '
+      ecd = ecd+1
+      errcod(ecd)='520'
+      errmsg(ecd)='Fatal Error Occurs During Writing to the File of  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='530'
-      ERRMSG(ECD)='CAUTION! Met Station ID Mismatch with SURFFILE for'
+      ecd = ecd+1
+      errcod(ecd)='530'
+      errmsg(ecd)='CAUTION! Met Station ID Mismatch with SURFFILE for'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='531'
-      ERRMSG(ECD)='CAUTION! Met Station ID Missing from SURFFILE for '
+      ecd = ecd+1
+      errcod(ecd)='531'
+      errmsg(ecd)='CAUTION! Met Station ID Missing from SURFFILE for '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='540'
-      ERRMSG(ECD)='No RECTABLE/MAXTABLE/DAYTABLE for Average Period  '
+      ecd = ecd+1
+      errcod(ecd)='540'
+      errmsg(ecd)='No RECTABLE/MAXTABLE/DAYTABLE for Average Period  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='550'
-      ERRMSG(ECD)='File Unit/Name Conflict for the Output Option:    '
+      ecd = ecd+1
+      errcod(ecd)='550'
+      errmsg(ecd)='File Unit/Name Conflict for the Output Option:    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='555'
-      ERRMSG(ECD)='File Unit/Name conflict across options: GRP# AVE  '
+      ecd = ecd+1
+      errcod(ecd)='555'
+      errmsg(ecd)='File Unit/Name conflict across options: GRP# AVE  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='560'
-      ERRMSG(ECD)='User Specified File Unit .LE. 30 for OU Keyword:  '
+      ecd = ecd+1
+      errcod(ecd)='560'
+      errmsg(ecd)='User Specified File Unit .LE. 30 for OU Keyword:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='565'
-      ERRMSG(ECD)='Possible Conflict With Dynamically Allocated FUNIT'
+      ecd = ecd+1
+      errcod(ecd)='565'
+      errmsg(ecd)='Possible Conflict With Dynamically Allocated FUNIT'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='570'
-      ERRMSG(ECD)='Problem Reading Temporary Event File for Event:   '
+      ecd = ecd+1
+      errcod(ecd)='570'
+      errmsg(ecd)='Problem Reading Temporary Event File for Event:   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='580'
-      ERRMSG(ECD)='End of File Reached Trying to Read the File of    '
+      ecd = ecd+1
+      errcod(ecd)='580'
+      errmsg(ecd)='End of File Reached Trying to Read the File of    '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='585'
-      ERRMSG(ECD)='Output data file for INITFILE option was not found'
+      ecd = ecd+1
+      errcod(ecd)='585'
+      errmsg(ecd)='Output data file for INITFILE option was not found'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='590'
-      ERRMSG(ECD)='The INITFILE filename matches a SAVEFILE filename '
+      ecd = ecd+1
+      errcod(ecd)='590'
+      errmsg(ecd)='The INITFILE filename matches a SAVEFILE filename '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='592'
-      ERRMSG(ECD)='MAXIFILE includes data past start of MULTYEAR run '
-      ECD = ECD+1
-      ERRCOD(ECD)='593'
-      ERRMSG(ECD)='POSTFILE includes data past start of MULTYEAR run '
+      ecd = ecd+1
+      errcod(ecd)='592'
+      errmsg(ecd)='MAXIFILE includes data past start of MULTYEAR run '
+      ecd = ecd+1
+      errcod(ecd)='593'
+      errmsg(ecd)='POSTFILE includes data past start of MULTYEAR run '
 
 !-----------------------------------------------------------------------
 !---- 600s -------------------------------------------------------------
@@ -3154,263 +3154,263 @@ CONTAINS
 
 !RCO 2/25/2021 need to resolve error code numbers
 !---- CERC 11/30/20 New messages for GRSM option
-      ECD = ECD+1
-      ERRCOD(ECD)='600'
-      ERRMSG(ECD)='Keyword Invalid w/o PVMRM/OLM/GRSM/TTRM:        '
+      ecd = ecd+1
+      errcod(ecd)='600'
+      errmsg(ecd)='Keyword Invalid w/o PVMRM/OLM/GRSM/TTRM:        '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='601'
-      ERRMSG(ECD)='Error calculating travel time for GRSM option:  '
+      ecd = ecd+1
+      errcod(ecd)='601'
+      errmsg(ecd)='Error calculating travel time for GRSM option:  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='602'
-      ERRMSG(ECD)='Following Keyword Invalid Without GRSM:         '
+      ecd = ecd+1
+      errcod(ecd)='602'
+      errmsg(ecd)='Following Keyword Invalid Without GRSM:         '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='603'
-      ERRMSG(ECD)='Not Enough NOx Concentrations Specified           '
+      ecd = ecd+1
+      errcod(ecd)='603'
+      errmsg(ecd)='Not Enough NOx Concentrations Specified           '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='604'
-      ERRMSG(ECD)='NOXVALUE, NOX_VALS or NOX_FILE Keyword Needed for '
+      ecd = ecd+1
+      errcod(ecd)='604'
+      errmsg(ecd)='NOXVALUE, NOX_VALS or NOX_FILE Keyword Needed for '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='605'
-      ERRMSG(ECD)='Both NOXVALUE and NOX_VALS keywords are specified '
+      ecd = ecd+1
+      errcod(ecd)='605'
+      errmsg(ecd)='Both NOXVALUE and NOX_VALS keywords are specified '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='606'
-      ERRMSG(ECD)='Inconsistent temporally-varying NOX_VALS options: '
+      ecd = ecd+1
+      errcod(ecd)='606'
+      errmsg(ecd)='Inconsistent temporally-varying NOX_VALS options: '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='607'
-      ERRMSG(ECD)='No Hrly NOx & No Sub; Assume zero conc,   KURDAT ='
+      ecd = ecd+1
+      errcod(ecd)='607'
+      errmsg(ecd)='No Hrly NOx & No Sub; Assume zero conc,   KURDAT ='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='608'
-      ERRMSG(ECD)='Date/time Mismatch: NOX_FILE File, KURDAT/Sector ='
+      ecd = ecd+1
+      errcod(ecd)='608'
+      errmsg(ecd)='Date/time Mismatch: NOX_FILE File, KURDAT/Sector ='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='609'
-      ERRMSG(ECD)='No Hrly NOx & No Sub; Use zero conc,      KURDAT ='
+      ecd = ecd+1
+      errcod(ecd)='609'
+      errmsg(ecd)='No Hrly NOx & No Sub; Use zero conc,      KURDAT ='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='610'
-      ERRMSG(ECD)='NOXSUB for missing hourly NOX val, KURDAT/Sector ='
+      ecd = ecd+1
+      errcod(ecd)='610'
+      errmsg(ecd)='NOXSUB for missing hourly NOX val, KURDAT/Sector ='
 
-      ECD = ECD+1
-      ERRCOD(ECD)='611'
-      ERRMSG(ECD)='NOXFIL w/o NOXVALs; zero bgd for hrs wth miss NOx '
+      ecd = ecd+1
+      errcod(ecd)='611'
+      errmsg(ecd)='NOXFIL w/o NOXVALs; zero bgd for hrs wth miss NOx '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='612'
-      ERRMSG(ECD)='No NOx bgd.  NOx bgd calc from NO2 assuming equil '
+      ecd = ecd+1
+      errcod(ecd)='612'
+      errmsg(ecd)='No NOx bgd.  NOx bgd calc from NO2 assuming equil '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='613'
-      ERRMSG(ECD)='NO2 bgd value > NOx bgd value. Setting NOx = NO2. '
+      ecd = ecd+1
+      errcod(ecd)='613'
+      errmsg(ecd)='NO2 bgd value > NOx bgd value. Setting NOx = NO2. '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='614'
-      ERRMSG(ECD)='Src type not recognised in instant. plume calc.   '
+      ecd = ecd+1
+      errcod(ecd)='614'
+      errmsg(ecd)='Src type not recognised in instant. plume calc.   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='615'
-      ERRMSG(ECD)='Error allocating variables for plume size calc.   '
+      ecd = ecd+1
+      errcod(ecd)='615'
+      errmsg(ecd)='Error allocating variables for plume size calc.   '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='620'
-      ERRMSG(ECD)='Both RLINE barriers on same side of SRCID: '
+      ecd = ecd+1
+      errcod(ecd)='620'
+      errmsg(ecd)='Both RLINE barriers on same side of SRCID: '
 
 ! --- New error code for NOMINO3
-      ECD = ECD+1
-      ERRCOD(ECD)='621'
-      ERRMSG(ECD)='No applicable NO2 option set with '
+      ecd = ecd+1
+      errcod(ecd)='621'
+      errmsg(ecd)='No applicable NO2 option set with '
 
 ! --- New messages related to platform downwash: 3/18/2022, CRT
-      ECD = ECD+1
-      ERRCOD(ECD)='631'
-      ERRMSG(ECD)='PLATFORM Keyword Specified for Non-POINT Source'
+      ecd = ecd+1
+      errcod(ecd)='631'
+      errmsg(ecd)='PLATFORM Keyword Specified for Non-POINT Source'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='632'
-      ERRMSG(ECD)='Duplicate PLATFORM Keyword Specified for Source'
+      ecd = ecd+1
+      errcod(ecd)='632'
+      errmsg(ecd)='Duplicate PLATFORM Keyword Specified for Source'
 
-      ECD = ECD+1
-      ERRCOD(ECD)='633'
-      ERRMSG(ECD)='PRIME and PLATFORM Parameters Specified for Source'
+      ecd = ecd+1
+      errcod(ecd)='633'
+      errmsg(ecd)='PRIME and PLATFORM Parameters Specified for Source'
 
 !CRT  D036 CRT 3/8/2022: Add new error message for 'CCC' placeholder
 !CRT  leftover from v.21112
-      ECD = ECD+1
-      ERRCOD(ECD)='640'
-      ERRMSG(ECD)='Invalid source type: '
+      ecd = ecd+1
+      errcod(ecd)='640'
+      errmsg(ecd)='Invalid source type: '
 
 !CRT  CRT 4/20/2022 D113 - Added for Sidewash source - negative concentratoin
-      ECD = ECD+1
-      ERRCOD(ECD)='650'
-      ERRMSG(ECD)='SWPOINT neg. conc. set to 0.0 (see debug), Hr: '
+      ecd = ecd+1
+      errcod(ecd)='650'
+      errmsg(ecd)='SWPOINT neg. conc. set to 0.0 (see debug), Hr: '
 
 !    D128 4/5/23: Added warning message when the AREA meander keyword is used without an AREA source
-      ECD = ECD+1
-      ERRCOD(ECD)='668'
-      ERRMSG(ECD)='AREAMNDR used without an AREA source present '
+      ecd = ecd+1
+      errcod(ecd)='668'
+      errmsg(ecd)='AREAMNDR used without an AREA source present '
 
 !-----------------------------------------------------------------------
 !---- 700s -------------------------------------------------------------
 !-----------------------------------------------------------------------
 
-      ECD = ECD+1
-      ERRCOD(ECD)='710'
-      ERRMSG(ECD)='TTRM NO2 processing not currently configured for '
+      ecd = ecd+1
+      errcod(ecd)='710'
+      errmsg(ecd)='TTRM NO2 processing not currently configured for '
 
 !     Added error statement for RLINE barrier or depressed sources missing
 !     FLAT option Wood 10/10/22
-      ECD = ECD+1
-      ERRCOD(ECD)='713'
-      ERRMSG(ECD)='Non-DFAULT FLAT required for RBARRIER/RDEPRESSION '
+      ecd = ecd+1
+      errcod(ecd)='713'
+      errmsg(ecd)='Non-DFAULT FLAT required for RBARRIER/RDEPRESSION '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='720'
-      ERRMSG(ECD)='Non-fatal Error Occurs Writing to the File of  '
+      ecd = ecd+1
+      errcod(ecd)='720'
+      errmsg(ecd)='Non-fatal Error Occurs Writing to the File of  '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='721'
-      ERRMSG(ECD)='2nd NOx-to-NO2 option not selected for TTRM2 '
+      ecd = ecd+1
+      errcod(ecd)='721'
+      errmsg(ecd)='2nd NOx-to-NO2 option not selected for TTRM2 '
 ! ---   D161 Added error message for sources which NO2 options are not implemented 2/20/23 WSP
-      ECD = ECD+1
-      ERRCOD(ECD)='722'
-      ERRMSG(ECD)='PVMRM NO2 processing not currently configured for '
+      ecd = ecd+1
+      errcod(ecd)='722'
+      errmsg(ecd)='PVMRM NO2 processing not currently configured for '
 ! ---   D161 Added error message for sources which NO2 options are not implemented 2/20/23 WSP
-      ECD = ECD+1
-      ERRCOD(ECD)='723'
-      ERRMSG(ECD)='TTRM2 NO2 processing not currently configured for '
+      ecd = ecd+1
+      errcod(ecd)='723'
+      errmsg(ecd)='TTRM2 NO2 processing not currently configured for '
 ! ---   D161 Added error message for sources which NO2 options are not implemented 2/20/23 WSP
-      ECD = ECD+1
-      ERRCOD(ECD)='724'
-      ERRMSG(ECD)='GRSM NO2 processing not currently configured for '
+      ecd = ecd+1
+      errcod(ecd)='724'
+      errmsg(ecd)='GRSM NO2 processing not currently configured for '
 ! ---   D161 Added error message for sources which NO2 options are not implemented 2/20/23 WSP
-      ECD = ECD+1
-      ERRCOD(ECD)='725'
-      ERRMSG(ECD)='OLM NO2 processing not currently configured for '
+      ecd = ecd+1
+      errcod(ecd)='725'
+      errmsg(ecd)='OLM NO2 processing not currently configured for '
 ! ---   D161 Added error message for sources which NO2 options are not implemented 4/21/23 CRT
-      ECD = ECD+1
-      ERRCOD(ECD)='726'
-      ERRMSG(ECD)='ARM2 NO2 processing not currently configured for '
+      ecd = ecd+1
+      errcod(ecd)='726'
+      errmsg(ecd)='ARM2 NO2 processing not currently configured for '
 
 !     D164 2/21/23 WSP Message when SCREEN option is used with incompatible sources
-      ECD = ECD+1
-      ERRCOD(ECD)='731'
-      ERRMSG(ECD)='SCREEN processing not currently configured for '
+      ecd = ecd+1
+      errcod(ecd)='731'
+      errmsg(ecd)='SCREEN processing not currently configured for '
 
 !     D081 - Added for 24-hr average when less than 18 hours of data are present Wood 9/28/22
-      ECD = ECD+1
-      ERRCOD(ECD)='732'
-      ERRMSG(ECD)='24-hr avg, < 18 hours of data, calms policy used.'
+      ecd = ecd+1
+      errcod(ecd)='732'
+      errmsg(ecd)='24-hr avg, < 18 hours of data, calms policy used.'
 
 !     D081 - Added for 8-hr average when less than 6 hours of data are present CRT 4/28/2023
-      ECD = ECD+1
-      ERRCOD(ECD)='733'
-      ERRMSG(ECD)='8-hr avg, < 6 hours of data, calms policy used.'
+      ecd = ecd+1
+      errcod(ecd)='733'
+      errmsg(ecd)='8-hr avg, < 6 hours of data, calms policy used.'
 
 !     D081 - Added for 3-hr average when less than 3 hours of data are present CRT 4/28/2023
-      ECD = ECD+1
-      ERRCOD(ECD)='734'
-      ERRMSG(ECD)='3-hr avg, < 3 hours of data, calms policy used.'
+      ecd = ecd+1
+      errcod(ecd)='734'
+      errmsg(ecd)='3-hr avg, < 3 hours of data, calms policy used.'
 
 !     D157 WSP 3/28/2023 - Added for ARMRATIO limits when cahnged from DFAULT 0.5 and 0.9
 !     D157 CRT 5/31/2023 - Modify message when ARMRATIO is within default range.
-      ECD = ECD+1
-      ERRCOD(ECD)='736'
-      ERRMSG(ECD)='ARMRATIO within DFAULT range, 0.5 - 0.9 '
+      ecd = ecd+1
+      errcod(ecd)='736'
+      errmsg(ecd)='ARMRATIO within DFAULT range, 0.5 - 0.9 '
 !     ERRMSG(ECD)='ARMRATIO in DFAULT range, 0.5 <= ARMRATIO <= 0.9 '
 
 !     D157 CRT 5/31/2023 - Modify warning when ARMRATIO is outside of default range.
-      ECD = ECD+1
-      ERRCOD(ECD)='737'
-      ERRMSG(ECD)='ARMRATIO outside of DFAULT range of 0.5 - 0.9 '
+      ecd = ecd+1
+      errcod(ecd)='737'
+      errmsg(ecd)='ARMRATIO outside of DFAULT range of 0.5 - 0.9 '
 !     ERRMSG(ECD)='Non-Default ARMRATIO range, 0 < ARMRATIO <= 1 '
 
 !     Added for HBP
-      ECD = ECD+1
-      ERRCOD(ECD)='740'
-      ERRMSG(ECD)='HBP option ignored for non-POINT source: '
+      ecd = ecd+1
+      errcod(ecd)='740'
+      errmsg(ecd)='HBP option ignored for non-POINT source: '
 
 !     D167 Warning message when 'FLAT' is used in the source elevation
 !     field on the SO LOCATION pathway WSP 3/6/23
-      ECD = ECD+1
-      ERRCOD(ECD)='752'
-      ERRMSG(ECD)='ZHILL and ZELEV are ignored for flat source: '
+      ecd = ecd+1
+      errcod(ecd)='752'
+      errmsg(ecd)='ZHILL and ZELEV are ignored for flat source: '
 
 !-----------------------------------------------------------------------
 !---- 800s -------------------------------------------------------------
 !-----------------------------------------------------------------------
 !**  Added for Aircraft Plume Rise; UNC-IE
 
-      ECD = ECD+1
-      ERRCOD(ECD)='807'
-      ERRMSG(ECD)='Not enough ARCFTSRC parameters for SRCID = '
+      ecd = ecd+1
+      errcod(ecd)='807'
+      errmsg(ecd)='Not enough ARCFTSRC parameters for SRCID = '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='821'
-      ERRMSG(ECD)='Missing Mandatory Keyword for ARCFTSRC in CO PTHWY '
+      ecd = ecd+1
+      errcod(ecd)='821'
+      errmsg(ecd)='Missing Mandatory Keyword for ARCFTSRC in CO PTHWY '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='822'
-      ERRMSG(ECD)='Missing Mandatory Keyword for Aircraft. Keyword is '
+      ecd = ecd+1
+      errcod(ecd)='822'
+      errmsg(ecd)='Missing Mandatory Keyword for Aircraft. Keyword is '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='823'
-      ERRMSG(ECD)='No HOUREMIS File Found, Must for Aircraft Source '
+      ecd = ecd+1
+      errcod(ecd)='823'
+      errmsg(ecd)='No HOUREMIS File Found, Must for Aircraft Source '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='824'
-      ERRMSG(ECD)='Not All Aircraft Parameters defined;set to 0.0 for '
+      ecd = ecd+1
+      errcod(ecd)='824'
+      errmsg(ecd)='Not All Aircraft Parameters defined;set to 0.0 for '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='825'
-      ERRMSG(ECD)='Too many Aircraft Parameters defined;set to 0. for '
+      ecd = ecd+1
+      errcod(ecd)='825'
+      errmsg(ecd)='Too many Aircraft Parameters defined;set to 0. for '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='826'
-      ERRMSG(ECD)='FuelBurnRate in HOUREMIS file < 0;set to 0.0 for '
+      ecd = ecd+1
+      errcod(ecd)='826'
+      errmsg(ecd)='FuelBurnRate in HOUREMIS file < 0;set to 0.0 for '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='827'
-      ERRMSG(ECD)='Thrust in HOUREMIS file < 0; set to 0.0 for '
+      ecd = ecd+1
+      errcod(ecd)='827'
+      errmsg(ecd)='Thrust in HOUREMIS file < 0; set to 0.0 for '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='828'
-      ERRMSG(ECD)='AircraftSpeed in HOUREMIS file < 0;set to 0.0 for '
+      ecd = ecd+1
+      errcod(ecd)='828'
+      errmsg(ecd)='AircraftSpeed in HOUREMIS file < 0;set to 0.0 for '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='829'
-      ERRMSG(ECD)='AirFuelRatio in HOUREMIS file < 0;set to 0.0 for '
+      ecd = ecd+1
+      errcod(ecd)='829'
+      errmsg(ecd)='AirFuelRatio in HOUREMIS file < 0;set to 0.0 for '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='830'
-      ERRMSG(ECD)='ByPR in HOUREMIS < 0 & not as -999;set to 0.0 for '
+      ecd = ecd+1
+      errcod(ecd)='830'
+      errmsg(ecd)='ByPR in HOUREMIS < 0 & not as -999;set to 0.0 for '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='831'
-      ERRMSG(ECD)='RPWR in HOUREMIS < 0 & not as -99999;set 0.0 for '
+      ecd = ecd+1
+      errcod(ecd)='831'
+      errmsg(ecd)='RPWR in HOUREMIS < 0 & not as -99999;set 0.0 for '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='832'
-      ERRMSG(ECD)='SrcAngle in HOUREMIS != -20 to 20;set to 0.0 for '
+      ecd = ecd+1
+      errcod(ecd)='832'
+      errmsg(ecd)='SrcAngle in HOUREMIS != -20 to 20;set to 0.0 for '
 
-      ECD = ECD+1
-      ERRCOD(ECD)='833'
-      ERRMSG(ECD)='This source does not fall into Aircraft category '
+      ecd = ecd+1
+      errcod(ecd)='833'
+      errmsg(ecd)='This source does not fall into Aircraft category '
 
 !**  End Aircraft Plume Rise insert; April 2023
-   END SUBROUTINE ERRWRNMSG
+   end subroutine errwrnmsg
 
 
 
-END MODULE MAIN1
+end module main1
 
-MODULE RLINE_DATA
+module rline_data
 !***********************************************************************
 !     This is The Global Variable Definition Block for the New RLINE
 !     Source Algorithm - December 2017 (Wood)
@@ -3420,14 +3420,14 @@ MODULE RLINE_DATA
 !***********************************************************************
 
 !     Indicate RLINE algorithms based on R-LINE model version 1.2.
-   CHARACTER (LEN=12)  :: RLINEver = "RLINEv1_2"
+   character (len=12)  :: RLINEver = "RLINEv1_2"
 
-   INTEGER :: NRLINES
-   LOGICAL :: RLPROCESSED
-   LOGICAL :: RLFIRSTHR
-   LOGICAL :: RLMOVESCONV
-   LOGICAL :: L_RDEPRESS
-   LOGICAL :: L_RBARRIER
+   integer :: nrlines
+   logical :: rlprocessed
+   logical :: rlfirsthr
+   logical :: rlmovesconv
+   logical :: l_rdepress
+   logical :: l_rbarrier
 !     NRLINES     = number of RLINE sources
 !     RLPROCESSED = flag to perform rotation on first RLINE source of each hour
 !     RMFIRSTHR   = flag to compute CREATE_EXP_TABLE and RLEMCONV only once
@@ -3435,14 +3435,14 @@ MODULE RLINE_DATA
 !     L_RDEPRESS  = flag to indicate key word of "RDEPRESS" in source section of input file
 !     L_RBARRIER  = flag to indicate key word of "RBARRIER" in source section of input file
 
-   TYPE AVSOURCE
-      INTEGER   :: ISRCNUM
-      DOUBLE PRECISION  ::  XSB, YSB, ZSB
-      DOUBLE PRECISION  ::  XSE, YSE, ZSE
-      DOUBLE PRECISION  ::  DCL, INIT_SIGMAZ, WIDTH, QEMIS
-      DOUBLE PRECISION  ::  HTWALL, DCLWALL, DEPTH, WTOP, WBOTTOM
-      DOUBLE PRECISION  ::  HTWALL2, DCLWALL2
-   END TYPE AVSOURCE
+   type avsource
+      integer   :: isrcnum
+      double precision  ::  xsb, ysb, zsb
+      double precision  ::  xse, yse, zse
+      double precision  ::  dcl, init_sigmaz, width, qemis
+      double precision  ::  htwall, dclwall, depth, wtop, wbottom
+      double precision  ::  htwall2, dclwall2
+   end type avsource
 !     ISRCNUM     = stored ISRC number
 !     XSB         = x-coordinate of beginning point (center line for depressed roadway)
 !     YSB         = y-coordinate of beginning point (center line for depressed roadway)
@@ -3463,15 +3463,15 @@ MODULE RLINE_DATA
 !     WBOTTOM     = width of bottom of depression
 
 !     Allocatable array of sources
-   TYPE(AVSOURCE),    ALLOCATABLE  :: RLSOURCE(:)
+   type(avsource),    allocatable  :: rlsource(:)
 
 !     Array to store MOVES to RLINE native units
-   DOUBLE PRECISION,  ALLOCATABLE  :: RLEMISCONV(:)
+   double precision,  allocatable  :: rlemisconv(:)
 
 !     Meteorological variables
-   DOUBLE PRECISION  :: SIGMAV, DISPHT, UEFF, THETAW, RLWSTAR
-   DOUBLE PRECISION  :: WSPD_ADJ, UMIN, SIGZ_Y
-   DOUBLE PRECISION  :: Z0_A(3), DH_A(3), UST_A(3), LMO_A(3)
+   double precision  :: sigmav, dispht, ueff, thetaw, rlwstar
+   double precision  :: wspd_adj, umin, sigz_y
+   double precision  :: z0_a(3), dh_a(3), ust_a(3), lmo_a(3)
 !     SIGMAV      = lateral turbulence intensity
 !     DISPHT      = displacement height
 !     UEFF        = effective wind speed
@@ -3487,16 +3487,16 @@ MODULE RLINE_DATA
 
 !     Run option parameters
 !      DOUBLE PRECISION, PARAMETER  :: ERROR_LIMIT = 5.0E-4 !D178_RLINE_RecpOrder_WSP
-   DOUBLE PRECISION, PARAMETER  :: ERROR_LIMIT = 5.0D-4
-   DOUBLE PRECISION  :: FAC_DISPHT !removed = 5.0D0  and PARAMETER definition (wood 6/22/21)
+   double precision, parameter  :: error_limit = 5.0d-4
+   double precision  :: fac_dispht !removed = 5.0D0  and PARAMETER definition (wood 6/22/21)
 !     ERROR_LIMIT = RLINE error limit
 !     FAC_DISPHT  = ratio of displacement height to roughness length (DISPHT=FAC_DISPTH*SFCZ0)
 
 !     Source variables
-   INTEGER           :: INDQ
-   DOUBLE PRECISION  :: SIGMAY0, SIGMAZ0, HRELEASE
-   DOUBLE PRECISION  :: XSBEGIN, YSBEGIN, ZSBEGIN
-   DOUBLE PRECISION  :: XSEND, YSEND, ZSEND
+   integer           :: indq
+   double precision  :: sigmay0, sigmaz0, hrelease
+   double precision  :: xsbegin, ysbegin, zsbegin
+   double precision  :: xsend, ysend, zsend
 !     INDQ        = source index
 !     SIGMAY0     = initial horizontal dispersion coefficient
 !     SIGMAZ0     = initial vertical dispersion coefficient
@@ -3510,37 +3510,37 @@ MODULE RLINE_DATA
 
 !     Computation parameters
 !MGS      DOUBLE PRECISION, PARAMETER  :: SM_NUM = 1.0E-8 !D178_RLINE_RecpOrder_WSP
-   DOUBLE PRECISION, PARAMETER  :: SM_NUM = 1.0D-8
-   DOUBLE PRECISION, PARAMETER  :: XD_MIN = 1.0D0
-   INTEGER, PARAMETER           :: NP = 100
+   double precision, parameter  :: sm_num = 1.0d-8
+   double precision, parameter  :: xd_min = 1.0d0
+   integer, parameter           :: np = 100
 !     SM_NUM      = number for numerical calculations to avoid a zero
 !     XD_MIN      = minimum distance between a source and receptor
 !     NP          = number of points in wind speed table
 
 !     Computation variables
-   DOUBLE PRECISION  :: XEXP(1000), AEXP(1000), BEXP(1000), DELEXP
-   DOUBLE PRECISION  :: ZWIND(NP,3), AWIND(NP,3), BWIND(NP,3)
-   DOUBLE PRECISION  :: DELZ(3), LOGZMAX, LOGZMIN(3)              ! CREATE_WIND_TABLE
-   INTEGER           :: I_ALPHA
-   DOUBLE PRECISION  :: XRECEP, YRECEP, ZRECEP
-   DOUBLE PRECISION, ALLOCATABLE  :: XRCP_ROT(:), YRCP_ROT(:)
-   DOUBLE PRECISION  :: X0, Y0
-   DOUBLE PRECISION  :: XR_ROT, YR_ROT
-   DOUBLE PRECISION, ALLOCATABLE  :: XSB_ROT(:), YSB_ROT(:),&
-   &XSE_ROT(:), YSE_ROT(:)
+   double precision  :: xexp(1000), aexp(1000), bexp(1000), delexp
+   double precision  :: zwind(np,3), awind(np,3), bwind(np,3)
+   double precision  :: delz(3), logzmax, logzmin(3)              ! CREATE_WIND_TABLE
+   integer           :: i_alpha
+   double precision  :: xrecep, yrecep, zrecep
+   double precision, allocatable  :: xrcp_rot(:), yrcp_rot(:)
+   double precision  :: x0, y0
+   double precision  :: xr_rot, yr_rot
+   double precision, allocatable  :: xsb_rot(:), ysb_rot(:),&
+   &xse_rot(:), yse_rot(:)
 
-   INTEGER, ALLOCATABLE :: BDW_FLAG(:,:)
-   LOGICAL              :: SHIFT_FLAG
-   DOUBLE PRECISION     :: SZB, XPER, THETA_LINE
-   DOUBLE PRECISION     :: DWU, DW_PERU, HBU
-   DOUBLE PRECISION     :: DWD, DW_PERD, HBD
-   INTEGER              :: NBARR
-   DOUBLE PRECISION     :: UH, XSHIFT, YSHIFT
-   DOUBLE PRECISION     :: ALPHA, ALPHA_U, ALPHA_D
-   LOGICAL              :: FASTRLINE
-   DOUBLE PRECISION     :: PSY1, PSY2, PSY3, PSY4
-   DOUBLE PRECISION     :: PSZ1, PSZ2, PSZ3, PSZ4
-   DOUBLE PRECISION     :: PU1, PU2, PU3, PU4
+   integer, allocatable :: bdw_flag(:,:)
+   logical              :: shift_flag
+   double precision     :: szb, xper, theta_line
+   double precision     :: dwu, dw_peru, hbu
+   double precision     :: dwd, dw_perd, hbd
+   integer              :: nbarr
+   double precision     :: uh, xshift, yshift
+   double precision     :: alpha, alpha_u, alpha_d
+   logical              :: fastrline
+   double precision     :: psy1, psy2, psy3, psy4
+   double precision     :: psz1, psz2, psz3, psz4
+   double precision     :: pu1, pu2, pu3, pu4
 
 !     XEXP        = exponential lookup
 !     AEXP        = exponential lookup
@@ -3589,13 +3589,13 @@ MODULE RLINE_DATA
 !     PU1, PU2, PU3, PU4  = INTERPOLATION COEFFS FOR UEFF
 
 !     Variables needed for DEBUG file output
-   DOUBLE PRECISION  :: FRAN_SUM, SIGMAV_SUM, UEFF_SUM,&
-   &VERT_SUM, HORZ_SUM, CONC_P_SUM, CONC_M_SUM,&
-   &POINT_CONC_SUM
+   double precision  :: fran_sum, sigmav_sum, ueff_sum,&
+   &vert_sum, horz_sum, conc_p_sum, conc_m_sum,&
+   &point_conc_sum
 
-END MODULE RLINE_DATA
+end module rline_data
 
-MODULE BUOYANT_LINE
+module buoyant_line
 !***********************************************************************
 !     This is The Global Variable Definition Block for the New BUOYLINE
 !     Source Algorithm - January 2015
@@ -3603,29 +3603,29 @@ MODULE BUOYANT_LINE
 
 
 ! BuoyantLine_CheckLinesParallel_D32 (Wood)
-   DOUBLE PRECISION, PARAMETER :: Parallel_Tol = 5.0D0
+   double precision, parameter :: Parallel_Tol = 5.0d0
 
 
 ! Multiple_BuoyLines_D41_Wood
 !     Added several variables and changed a few arrays from 1-D to 2_D
 !     to process multiple buoyant lines
 
-   TYPE BLINEDATA
-      INTEGER   (kind=4)   :: ISRCNUM
-      CHARACTER (len=12)   :: SRCID
+   type blinedata
+      integer   (kind=4)   :: isrcnum
+      character (len=12)   :: srcid
 
 ! Multiple_BuoyLines_D41_Wood
 !        Added for processing multiple buoyan lines
-      INTEGER   (kind=4)   :: IBLPGRPNUM
-      CHARACTER (len=8)    :: BLPGRPNAME
+      integer   (kind=4)   :: iblpgrpnum
+      character (len=8)    :: blpgrpname
 
 !         INTEGER   (kind=4)   :: IURBSRCNUM
 !         CHARACTER (len=8)    :: URBSRCNAME
 
-      DOUBLE PRECISION     :: XBEG, YBEG, XEND, YEND                 ! untranslated, unrotated
-      DOUBLE PRECISION     :: XBEG_TR1, YBEG_TR1, XEND_TR1, YEND_TR1 ! translated, rotate #1 w/TCOR
-      DOUBLE PRECISION     :: ELEV, BLQS, BLHS
-   END TYPE BLINEDATA
+      double precision     :: xbeg, ybeg, xend, yend                 ! untranslated, unrotated
+      double precision     :: xbeg_tr1, ybeg_tr1, xend_tr1, yend_tr1 ! translated, rotate #1 w/TCOR
+      double precision     :: elev, blqs, blhs
+   end type blinedata
 
 !     ISRCNUM = source number in the list of sources for the model run
 !     SRCID   = source ID in the control file for this line number
@@ -3641,12 +3641,12 @@ MODULE BUOYANT_LINE
 !     BLQS    = emission rate of line source in g/s
 !     BLHS    = release height
 
-   TYPE (BLINEDATA), ALLOCATABLE :: BLINEPARMS (:)
+   type (blinedata), allocatable :: blineparms (:)
 
 !     Whereas the source coordinates in BLINEPARMS are for the entire
 !      line, the following are for the segments of the line.
-   DOUBLE PRECISION, ALLOCATABLE :: XS_SCS(:,:), YS_SCS(:)
-   DOUBLE PRECISION, ALLOCATABLE :: XS_RCS(:,:), YS_RCS(:,:)
+   double precision, allocatable :: xs_scs(:,:), ys_scs(:)
+   double precision, allocatable :: xs_rcs(:,:), ys_rcs(:,:)
 
 !      1st subscript: individual buoyant line number
 !      2nd subscript: segment number (not needed for YS_SCS)
@@ -3654,7 +3654,7 @@ MODULE BUOYANT_LINE
 !             performed only once
 !      _RCS = rotated coordinate system, translated/rotated for wind dir
 
-   LOGICAL              :: L_BLSOURCE, L_BLHOURLY
+   logical              :: l_blsource, l_blhourly
 !     BLPINPUT_Checks_Missing_D091_Wood: begin
 !     L_BLSOURCE is set to true if any of the following are true
 !       there is at least one BUOYLINE record
@@ -3667,12 +3667,12 @@ MODULE BUOYANT_LINE
 
 !     Multiple_BuoyLines_D41_Wood
 !     changed or increased array dimensions on many variables
-   LOGICAL, ALLOCATABLE :: L_BLURBAN(:)
-   LOGICAL, ALLOCATABLE :: BL_RFLAG(:,:)
-   INTEGER, ALLOCATABLE :: NBLINGRP(:)
-   INTEGER, ALLOCATABLE :: HRLYBLCOUNT(:)
-   INTEGER, ALLOCATABLE :: BL_NUMURB(:)
-   INTEGER              :: NBLP, NBLTOTAL, NUMBLGRPS
+   logical, allocatable :: l_blurban(:)
+   logical, allocatable :: bl_rflag(:,:)
+   integer, allocatable :: nblingrp(:)
+   integer, allocatable :: hrlyblcount(:)
+   integer, allocatable :: bl_numurb(:)
+   integer              :: nblp, nbltotal, numblgrps
 !     NBLP         = number of individual buoyant lines in run (used to
 !                     allocate arrays)
 !     NBLTOTAL     = number of individial buoyant lines in run (used in
@@ -3694,11 +3694,11 @@ MODULE BUOYANT_LINE
 
 !     The following are input via the source keyword BLPINPUT:
 
-   DOUBLE PRECISION, ALLOCATABLE ::&
-   &BLAVGINP_LLEN(:), BLAVGINP_BHGT(:), BLAVGINP_BWID(:),&
-   &BLAVGINP_LWID(:), BLAVGINP_BSEP(:), BLAVGINP_FPRM(:)
-   CHARACTER (len=8), ALLOCATABLE :: BLAVGINP_GRPID(:), BL_GRPID(:)
-   INTEGER     :: NUMBLAVGINP, NBLAVGINPalloc
+   double precision, allocatable ::&
+   &blavginp_llen(:), blavginp_bhgt(:), blavginp_bwid(:),&
+   &blavginp_lwid(:), blavginp_bsep(:), blavginp_fprm(:)
+   character (len=8), allocatable :: blavginp_grpid(:), bl_grpid(:)
+   integer     :: numblavginp, NBLAVGINPalloc
 !     BLAVGINP_LLEN  = average line length (m)
 !     BLAVGINP_BHGT  = average building height (m)
 !     BLAVGINP_BWID  = average building width (m)
@@ -3712,8 +3712,8 @@ MODULE BUOYANT_LINE
 !     NBLAVGINPalloc = allocation counter for number of BLPINPUT records
 !     The following are the local variables used in the calculations
 !       MAKE THEM LOCAL IN BL_CALC AND PASS TO APPROPRIATE ROUTINES
-   DOUBLE PRECISION :: BLAVGLLEN, BLAVGBHGT, BLAVGBWID,&
-   &BLAVGLWID, BLAVGBSEP, BLAVGFPRM
+   double precision :: blavgllen, blavgbhgt, blavgbwid,&
+   &blavglwid, blavgbsep, blavgfprm
 !     BLAVGLLEN  = average line length (m)
 !     BLAVGBHGT  = average building height (m)
 !     BLAVGBWID  = average building width (m)
@@ -3721,26 +3721,26 @@ MODULE BUOYANT_LINE
 !     BLAVGBSEP  = average building separation (m)
 !     BLAVGFPRM  = average buoyancy parameter (m^4/s^3)
 
-   DOUBLE PRECISION :: BLTA
-   DOUBLE PRECISION :: BL_UREF
+   double precision :: blta
+   double precision :: bl_uref
 !     BLTA       = ambient temperature read from AERMET's surface file
 !                  (saved because TA is modified if there are point sources)
 !     BL_UREF    = reference wind speed used in BL calculations; set to
 !                  1.0 m/s if WS is less than 1.0 m/s
 
-   DOUBLE PRECISION, dimension (7)  :: BL_XDIST = (0.0D0)
-   DOUBLE PRECISION, dimension (7)  :: DH = (0.0D0)
+   double precision, dimension (7)  :: bl_xdist = (0.0d0)
+   double precision, dimension (7)  :: dh = (0.0d0)
 !CRT  4/2/2022 D088 Limit on # of buoyant lines, make DEL allocatable
 !      DOUBLE PRECISION, dimension (10) :: DEL
-   DOUBLE PRECISION, ALLOCATABLE    :: DEL(:)
-   DOUBLE PRECISION :: BL_XFB, LEFF, LD, R0, BL_XFINAL, BL_XFS
-   DOUBLE PRECISION :: FPRMXNB, XMATCH, PARTCH
+   double precision, allocatable    :: del(:)
+   double precision :: bl_xfb, leff, ld, r0, bl_xfinal, bl_xfs
+   double precision :: fprmxnb, xmatch, partch
 !     The following variables are used in a couple subroutines, therefore
 !       they must be allocated for multiple buoyant lines
 
-   DOUBLE PRECISION, ALLOCATABLE :: XOR(:), YOR(:), ANGRAD(:)
+   double precision, allocatable :: xor(:), yor(:), angrad(:)
 
-   DOUBLE PRECISION, ALLOCATABLE :: TCOR(:), SINTCOR(:), COSTCOR(:)
+   double precision, allocatable :: tcor(:), sintcor(:), costcor(:)
 !     LEFF     = effective building length
 !     R0       = edge radius
 !     LD       = LEFF * sin (theta), where theta = angle between flow
@@ -3759,8 +3759,8 @@ MODULE BUOYANT_LINE
 
 !     For the translated/rotated receptors
 !      to be allocated with the number of receptors
-   DOUBLE PRECISION, ALLOCATABLE :: XR_SCS(:,:), YR_SCS(:,:)
-   DOUBLE PRECISION, ALLOCATABLE :: XR_RCS(:), YR_RCS(:)
+   double precision, allocatable :: xr_scs(:,:), yr_scs(:,:)
+   double precision, allocatable :: xr_rcs(:), yr_rcs(:)
 !
 !      1st SCS subscript:
 !      2nd SCS subscript:
@@ -3770,19 +3770,19 @@ MODULE BUOYANT_LINE
 !
 !     The following arrays are used to save the coordinates from the
 !       first tranlastion/rotation of the receptors when MAXDCONT is used
-   DOUBLE PRECISION, ALLOCATABLE :: XR_SCS_SAV(:,:), YR_SCS_SAV(:,:)
+   double precision, allocatable :: xr_scs_sav(:,:), yr_scs_sav(:,:)
 
 !     The following array is used to save the flag indicating if a
 !       receptor is in the rectangular footprint defined by a buoyant
 !       line source (exclusion zone) of the buoyant line source when
 !       MAXDCONT is used
-   LOGICAL, ALLOCATABLE :: BL_RFLAG_SAV(:,:)
+   logical, allocatable :: bl_rflag_sav(:,:)
 
 !     Arrays for total and partial concentration from lines,
 !      to be allocated with the number of receptors
-   DOUBLE PRECISION, ALLOCATABLE :: CHIBL(:)
+   double precision, allocatable :: chibl(:)
 
-END MODULE BUOYANT_LINE
+end module buoyant_line
 
 !-----------------------------------------------------------------------
 ! --- The following MODULE subprograms replace the *.pri "INCLUDE"
@@ -3791,7 +3791,7 @@ END MODULE BUOYANT_LINE
 ! --- R.W. Brode, U.S. EPA/OAQPS/AQMG, 10/19/2009
 
 
-MODULE PRIME_PARAMS
+module prime_params
 
 ! --- Formerly part of PARAMS.PRI "INCLUDE" File:
 !
@@ -3799,17 +3799,17 @@ MODULE PRIME_PARAMS
 ! --- PARAMETER statements                                        PRIME
 !----------------------------------------------------------------------
 
-   INTEGER, PARAMETER :: io5=7,io6=8
+   integer, parameter :: io5=7,io6=8
 
 ! --- FORTRAN I/O unit numbers:
 !           IO5 - Control file                  - input  - formatted
 !           IO6 - List file                     - output - formatted
 !
 
-END MODULE PRIME_PARAMS
+end module prime_params
 
 
-MODULE PRIME_NUMPARM
+module prime_numparm
 
 ! --- Formerly NUMPARM.PRI "INCLUDE" File:
 !
@@ -3818,11 +3818,11 @@ MODULE PRIME_NUMPARM
 !                               numerical plume rise algorithm
 !----------------------------------------------------------------------
 !
-   INTEGER, PARAMETER :: mxnw=5000
-   INTEGER, PARAMETER :: mxent=10
-   INTEGER, PARAMETER :: mxentp1=mxent+1
-   INTEGER :: nstep, nent
-   DOUBLE PRECISION :: gravi,rgas,zmin,ds,slast,rp,&
+   integer, parameter :: mxnw=5000
+   integer, parameter :: mxent=10
+   integer, parameter :: mxentp1=mxent+1
+   integer :: nstep, nent
+   double precision :: gravi,rgas,zmin,ds,slast,rp,&
    &alphap(mxent),betap(mxent),xcat(mxentp1)
 
 !
@@ -3863,10 +3863,10 @@ MODULE PRIME_NUMPARM
 !            NENT - integer    - Number of perturbed entrainment
 !                                coefficients entered
 
-END MODULE PRIME_NUMPARM
+end module prime_numparm
 
 
-MODULE PRIME_DFSN
+module prime_dfsn
 
 ! --- Formerly DFSN.PRI "INCLUDE" File:
 !
@@ -3876,7 +3876,7 @@ MODULE PRIME_DFSN
 !                            subroutines
 !----------------------------------------------------------------------
 !
-   DOUBLE PRECISION :: afac,xbyrmax,wiz0,wiy0,wfz,wfy,&
+   double precision :: afac,xbyrmax,wiz0,wiy0,wfz,wfy,&
    &dua_ua,xdecay,xdecayi
 !
 ! --- DFSN Global Variables:
@@ -3903,10 +3903,10 @@ MODULE PRIME_DFSN
 ! --- Ambient turbulence intensities are inferred from Briggs (1973)
 ! --- "Diffusion estimation for small emissions", ATDL-106;
 
-END MODULE PRIME_DFSN
+end module prime_dfsn
 
 
-MODULE PRIME_WAKEDAT
+module prime_wakedat
 
 ! --- Formerly WAKEDAT.PRI "INCLUDE" File:
 !
@@ -3917,9 +3917,9 @@ MODULE PRIME_WAKEDAT
 !----------------------------------------------------------------------
 !
    logical :: lrurl
-   INTEGER, PARAMETER :: mxntr=50
-   INTEGER :: nwak,ncav
-   DOUBLE PRECISION :: Hb,Wb,xLb,Rb,HR,xLR,xLC,&
+   integer, parameter :: mxntr=50
+   integer :: nwak,ncav
+   double precision :: Hb,Wb,xLb,Rb,hr,xLR,xLC,&
    &xbadj,ybadj,Ub,Urh,&
    &xwak(mxntr),szwak(mxntr),sywak(mxntr),&
    &drwak(mxntr),&
@@ -3927,7 +3927,7 @@ MODULE PRIME_WAKEDAT
    &fqcav,&
    &vsigy, vsigz, vsigyc, vsigzc, zint
 
-   DOUBLE PRECISION :: third  ! constant = 1/3 used in various places
+   double precision :: third  ! constant = 1/3 used in various places
    ! initialized for PRIME in sub. WAKINI
 
 ! --- GENERAL PARAMETER definitions:
@@ -3976,10 +3976,10 @@ MODULE PRIME_WAKEDAT
 !        VSIGYC - real    - Virtual source sigma (m) for sigma-y beyond wake
 !                           for cavity source
 
-END MODULE PRIME_WAKEDAT
+end module prime_wakedat
 
 
-MODULE PRIME_AMBIENT
+module prime_ambient
 
 ! --- Formerly AMBIENT.PRI "INCLUDE" File:
 !
@@ -3989,10 +3989,10 @@ MODULE PRIME_AMBIENT
 !                               plume rise computation
 !----------------------------------------------------------------------
 !
-   INTEGER, PARAMETER :: mxnz=100
-   INTEGER, PARAMETER :: mxnzp1=mxnz+1
-   INTEGER :: NZA
-   DOUBLE PRECISION :: uamb(mxnz),ramb(mxnz),dedz(mxnzp1),tamb(mxnz),&
+   integer, parameter :: mxnz=100
+   integer, parameter :: mxnzp1=mxnz+1
+   integer :: nza
+   double precision :: uamb(mxnz),ramb(mxnz),dedz(mxnzp1),tamb(mxnz),&
    &zfacea(mxnzp1),zgpta(mxnz),tamb0,ramb0,adia,ptgrad0
 
 ! --- GENERAL PARAMETER definitions:
@@ -4018,10 +4018,10 @@ MODULE PRIME_AMBIENT
 !                PTGRAD0 - real    - Minimum potential temperature lapse
 !                                    rate (deg. K/m)
 
-END MODULE PRIME_AMBIENT
+end module prime_ambient
 
 
-MODULE PRIME_PLU
+module prime_plu
 
 ! --- Formerly COMMON /PLU/ in selected PRIME subroutines:
 !
@@ -4041,24 +4041,24 @@ MODULE PRIME_PLU
 !               TP:     PLUME TEMPERATURE
 !----------------------------------------------------------------------
 
-   DOUBLE PRECISION :: S,X,Y,Z,R,U,V,W,USC,PHI,DEN,TP
+   double precision :: s,x,y,z,r,u,v,w,usc,phi,den,tp
 
-END MODULE PRIME_PLU
+end module prime_plu
 
 ! --- Additional modules for AWMADW
 
 !     Make effective height, calculated in PRMCALC, available to wake_u_turb
-MODULE PRM2_WAKEDAT
-   INTEGER, PARAMETER :: p2mxntr=50
-   DOUBLE PRECISION :: Zeff_PRM2, u30, sv30, sw30
+module prm2_wakedat
+   integer, parameter :: p2mxntr=50
+   double precision :: Zeff_PRM2, u30, sv30, sw30
 !         DOUBLE PRECISION XTR, ZTR, NTR
-   DOUBLE PRECISION :: XTR_SAV(p2mxntr), ZTR_SAV(p2mxntr)
-   DOUBLE PRECISION :: Ueff_save, SWeff_save, SVeff_save
-   LOGICAL :: DFSN2CALL
-END MODULE PRM2_WAKEDAT
+   double precision :: xtr_sav(p2mxntr), ztr_sav(p2mxntr)
+   double precision :: Ueff_save, SWeff_save, SVeff_save
+   logical :: dfsn2call
+end module prm2_wakedat
 
 !     CERC 11/30/20 Module for GRSM NO2 option
-MODULE GRSMMOD
+module grsmmod
 
 !-----GRSM global variables/parameters---------------------------------------------------
 !     R1:                    Reaction rate for NO + O3 -> NO2
@@ -4076,18 +4076,18 @@ MODULE GRSMMOD
 !     MinimumConc:           Minimum concentration value to prevent chemistry solver NaNs
 !-----------------------------------------------------------------------------------------
 
-   DOUBLE PRECISION :: R1, R2
-   DOUBLE PRECISION :: NOXCONC_BG,NO2CONC_BG,NOCONC_BG,O3CONC_BG
-   INTEGER, PARAMETER :: nNO=1, nNO2=2, nO3=3, nPolsGRSM=3
-   DOUBLE PRECISION :: CONCTEMP(nPolsGRSM)
-   LOGICAL :: L_NightHour
-   DOUBLE PRECISION, PARAMETER :: CFrac = 1.0D-2
+   double precision :: r1, r2
+   double precision :: noxconc_bg,no2conc_bg,noconc_bg,o3conc_bg
+   integer, parameter :: nNO=1, nNO2=2, nO3=3, nPolsGRSM=3
+   double precision :: conctemp(nPolsGRSM)
+   logical :: L_NightHour
+   double precision, parameter :: CFrac = 1.0d-2
 ! MKP    4/23/2024 D193 fix provided by CERC
 !        Prevents denormal or very small concentration values from being
 !        passed to chemistry solver resulting in NaNs for certain ground
 !        level releases from area, volume, and openpit source types
 !        See grsm.f/DoGRSMChem
-   DOUBLE PRECISION, PARAMETER::MinimumConc=1.0D-21
+   double precision, parameter::MinimumConc=1.0d-21
 
-END MODULE GRSMMOD
+end module grsmmod
 

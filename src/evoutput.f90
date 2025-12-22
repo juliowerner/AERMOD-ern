@@ -1,4 +1,4 @@
-SUBROUTINE AVEREV
+subroutine averev
 !***********************************************************************
 !                 AVEREV Module of the AMS/EPA Regulatory Model - AERMOD - EVENT
 !
@@ -17,75 +17,75 @@ SUBROUTINE AVEREV
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 !     JAT 7/22/21 D065 BCKGRD NOT USED
 !      DOUBLE PRECISION :: SNUM, BCKGRD
-   DOUBLE PRECISION :: SNUM
+   double precision :: snum
 
 !     Variable Initializations
-   MODNAM = 'AVEREV'
-   SNUM   = 0.0D0
+   modnam = 'AVEREV'
+   snum   = 0.0d0
 !     JAT 7/22/21 D065 BCKGRD NOT USED
 !      BCKGRD = 0.0D0
 
 !     Calculate Average CONCentrations If Hour is Right
-   IF (CONC) THEN
-      IF (EVAPER(IEVENT) /= 1) THEN
+   if (conc) then
+      if (evaper(ievent) /= 1) then
 !           Calculate Denominator Considering Calms and Missing,
 !           Skipping Averaging if Averaging Period is 1-Hour
-         SNUM = MAX(DBLE(EV_NUMHRS - EV_NUMCLM - EV_NUMMSG),&
-         &DNINT(DBLE(EV_NUMHRS)*0.75D0+0.4D0))
+         snum = max(dble(ev_numhrs - ev_numclm - ev_nummsg),&
+         &dnint(dble(ev_numhrs)*0.75d0+0.4d0))
 !           Begin Source Group LOOP
-         DO ISRC = 1, NUMSRC
-            IF (IGROUP(ISRC,IDXEV(IEVENT)) == 1) THEN
-               EV_AVEVAL(ISRC) = EV_AVEVAL(ISRC) / SNUM
-            ENDIF
-         END DO
+         do isrc = 1, numsrc
+            if (igroup(isrc,idxev(ievent)) == 1) then
+               ev_aveval(isrc) = ev_aveval(isrc) / snum
+            endif
+         end do
 !           End Source Group LOOP
-         GRPAVE(IDXEV(IEVENT)) = GRPAVE(IDXEV(IEVENT))/SNUM
+         grpave(idxev(ievent)) = grpave(idxev(ievent))/snum
 
-         IF (GRP_BACK(IDXEV(IEVENT))) THEN
-            BACKAVE(IDXEV(IEVENT)) = BACKAVE(IDXEV(IEVENT))/SNUM
-         END IF
+         if (grp_back(idxev(ievent))) then
+            backave(idxev(ievent)) = backave(idxev(ievent))/snum
+         end if
 
-         if (OLMDEBUG) then
+         if (olmdebug) then
 ! ---          Include averages for multi-hour events in OLM debug file
-            WRITE(OLMDBG,99871) kurdat, ievent, EVNAME(IEVENT),&
-            &EVAPER(IEVENT), grpid(IDXEV(IEVENT)),&
-            &EVAPER(IEVENT), grpave(IDXEV(IEVENT))
+            write(olmdbg,99871) kurdat, ievent, evname(ievent),&
+            &evaper(ievent), grpid(idxev(ievent)),&
+            &evaper(ievent), grpave(idxev(ievent))
 99871       format(1x,i8.8,i6,2x,a10,1x,i4,2x,a8,8x,i2.2,&
             &'HR_AVERAGE',122x,e12.5)
-         else if (ARM2DEBUG) then
+         else if (arm2debug) then
 ! ---          Include averages for multi-hour events in OLM debug file
-            WRITE(ARM2DBG,99873) kurdat, ievent, EVNAME(IEVENT),&
-            &EVAPER(IEVENT), grpid(IDXEV(IEVENT)),&
-            &EVAPER(IEVENT), grpave(IDXEV(IEVENT))
+            write(arm2dbg,99873) kurdat, ievent, evname(ievent),&
+            &evaper(ievent), grpid(idxev(ievent)),&
+            &evaper(ievent), grpave(idxev(ievent))
 99873       format(1x,i8.8,i6,2x,a10,1x,i4,2x,a8,8x,i2.2,&
             &'HR_AVERAGE',55x,e12.5)
-         else if (PVMRMDBG) then
+         else if (pvmrmdbg) then
 ! ---          Include averages for multi-hour events in PVMRM debug file
-            WRITE(PVMDBG,99874) kurdat, ievent, EVNAME(IEVENT),&
-            &EVAPER(IEVENT), grpid(IDXEV(IEVENT)),&
-            &EVAPER(IEVENT), grpave(IDXEV(IEVENT))
+            write(pvmdbg,99874) kurdat, ievent, evname(ievent),&
+            &evaper(ievent), grpid(idxev(ievent)),&
+            &evaper(ievent), grpave(idxev(ievent))
 99874       format(21x,i8.8,i6,4x,a10,2x,i4,2x,a8,8x,i2.2,&
             &'HR_AVERAGE',175x,e12.5)
-         else if (GRSMDEBUG) then
+         else if (grsmdebug) then
 ! ---          Include averages for multi-hour events in GRSM debug file
-            WRITE(GRSMDBG,99875) kurdat, ievent, EVNAME(IEVENT),&
-            &EVAPER(IEVENT), grpid(IDXEV(IEVENT)),&
-            &EVAPER(IEVENT), grpave(IDXEV(IEVENT))
+            write(grsmdbg,99875) kurdat, ievent, evname(ievent),&
+            &evaper(ievent), grpid(idxev(ievent)),&
+            &evaper(ievent), grpave(idxev(ievent))
 99875       format(21x,i8.8,i6,4x,a10,2x,i4,2x,a8,8x,i2.2,&
             &'HR_AVERAGE',175x,e12.5)
          end if
-      END IF
-   END IF
+      end if
+   end if
 
-   RETURN
-END SUBROUTINE AVEREV
+   return
+end subroutine averev
 
-SUBROUTINE EV_OUTPUT
+subroutine ev_output
 !***********************************************************************
 !                 EV_OUTPUT Module of the AMS/EPA Regulatory Model - AERMOD - EVENT
 !
@@ -105,25 +105,25 @@ SUBROUTINE EV_OUTPUT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'EV_OUTPUT'
+   modnam = 'EV_OUTPUT'
 
-   IF (SOCONT) THEN
+   if (socont) then
 !        Print Out Source Contribution To the Event         ---   CALL PRTSOC
-      CALL PRTSOC
-   ELSE IF (DETAIL) THEN
+      call prtsoc
+   else if (detail) then
 !        Print Out Detal Summary of The Event               ---   CALL PRTDET
-      CALL PRTDET
-   END IF
+      call prtdet
+   end if
 
-   RETURN
-END SUBROUTINE EV_OUTPUT
+   return
+end subroutine ev_output
 
-SUBROUTINE PRTSOC
+subroutine prtsoc
 !***********************************************************************
 !                 PRTSOC Module of the AMS/EPA Regulatory Model - AERMOD - EVENT
 !
@@ -147,105 +147,105 @@ SUBROUTINE PRTSOC
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, N, NROW, NPAGE, INDEXW, IOGRP
-   DOUBLE PRECISION :: WAVEV(NSRC+1)
-   CHARACTER (LEN=12) :: HEADID(NSRC+1)
+   integer :: i, n, nrow, npage, indexw, iogrp
+   double precision :: wavev(nsrc+1)
+   character (len=12) :: headid(nsrc+1)
 
 !     Variable Initializations
-   MODNAM = 'PRTSOC'
-   HEADID(:) = ''
-   WAVEV(:)  = 0.0D0
+   modnam = 'PRTSOC'
+   headid(:) = ''
+   wavev(:)  = 0.0d0
 
 !     Set Up The Print Array
 !     Fill Work Array With SRCIDs For This Group
-   INDGRP = 0
-   DO ISRC = 1, NUMSRC
-      IF (IGROUP(ISRC,IDXEV(IEVENT)) == 1) THEN
-         INDGRP = INDGRP + 1
-         WORKID(INDGRP) = SRCID(ISRC)
-         HEADID(INDGRP) = SRCID(ISRC)
-         WAVEV(INDGRP)  = EV_AVEVAL(ISRC)
-      END IF
-   END DO
+   indgrp = 0
+   do isrc = 1, numsrc
+      if (igroup(isrc,idxev(ievent)) == 1) then
+         indgrp = indgrp + 1
+         workid(indgrp) = srcid(isrc)
+         headid(indgrp) = srcid(isrc)
+         wavev(indgrp)  = ev_aveval(isrc)
+      end if
+   end do
 ! --- Check for BACKGROUND "source" being included
 !     in source group
-   IF (GRP_BACK(IDXEV(IEVENT))) THEN
-      INDGRP = INDGRP + 1
-      WORKID(INDGRP) = 'BACKGROUND'
-      HEADID(INDGRP) = 'BACKGROUND'
-      WAVEV(INDGRP)  = BACKAVE(IDXEV(IEVENT))
+   if (grp_back(idxev(ievent))) then
+      indgrp = indgrp + 1
+      workid(indgrp) = 'BACKGROUND'
+      headid(indgrp) = 'BACKGROUND'
+      wavev(indgrp)  = backave(idxev(ievent))
 !        Check for More Than 31 Sources Per Group
-      INDEXW = MIN(31,NSRC+1)
-   ELSE
-      INDEXW = MIN(31,NSRC)
-   END IF
+      indexw = min(31,nsrc+1)
+   else
+      indexw = min(31,nsrc)
+   end if
 !     Check for More Than 31 Sources Per Group
-   IF (INDGRP > INDEXW) THEN
-      HEADID(INDEXW) = ' . . . '
-      IOGRP = 31
-   ELSE
-      IOGRP = INDGRP
-   END IF
+   if (indgrp > indexw) then
+      headid(indexw) = ' . . . '
+      iogrp = 31
+   else
+      iogrp = indgrp
+   end if
 
 !     Determine Number of Rows, NROW, @ 3 Values Per Row
-   NROW = 1 + INT((INDGRP-1)/3)
+   nrow = 1 + int((indgrp-1)/3)
 !     Determine Number of Pages, NPAGE, @ 40 Rows Per Page
-   NPAGE = 1 + INT((NROW-1)/40)
+   npage = 1 + int((nrow-1)/40)
 
 !     Loop Through Pages For This Event
-   DO N = 1, NPAGE
+   do n = 1, npage
 
 !        Print The Source Contributions
-      CALL HEADER(IOUNIT)
-      WRITE(IOUNIT,9058) EVNAME(IEVENT), EVAPER(IEVENT),&
-      &EVDATE(IEVENT), AXR(IEVENT), AYR(IEVENT),&
-      &AZELEV(IEVENT), AZFLAG(IEVENT)
+      call header(iounit)
+      write(iounit,9058) evname(ievent), evaper(ievent),&
+      &evdate(ievent), axr(ievent), ayr(ievent),&
+      &azelev(ievent), azflag(ievent)
 
-      WRITE(IOUNIT,9068) EVGRP(IEVENT), (HEADID(I),I=1,IOGRP)
-      WRITE(IOUNIT,9070) GRPAVE(IDXEV(IEVENT))
-      WRITE(IOUNIT,9062)
+      write(iounit,9068) evgrp(ievent), (headid(i),i=1,iogrp)
+      write(iounit,9070) grpave(idxev(ievent))
+      write(iounit,9062)
 
 !        Print Out The Source Contributions
-      IF (N == NPAGE) THEN
-         IF (FILE_FORMAT == 'FIX') THEN
-            WRITE(IOUNIT,9066) (WORKID(I),WAVEV(I),I=1+120*(N-1),&
-            &INDGRP)
-         ELSE IF (FILE_FORMAT == 'EXP') THEN
-            WRITE(IOUNIT,9067) (WORKID(I),WAVEV(I),I=1+120*(N-1),&
-            &INDGRP)
-         END IF
-      ELSE
-         IF (FILE_FORMAT == 'FIX') THEN
-            WRITE(IOUNIT,9066) (WORKID(I),WAVEV(I),I=1+120*(N-1),&
-            &120*N)
-         ELSE IF (FILE_FORMAT == 'EXP') THEN
-            WRITE(IOUNIT,9067) (WORKID(I),WAVEV(I),I=1+120*(N-1),&
-            &120*N)
-         END IF
-      END IF
+      if (n == npage) then
+         if (file_format == 'FIX') then
+            write(iounit,9066) (workid(i),wavev(i),i=1+120*(n-1),&
+            &indgrp)
+         else if (file_format == 'EXP') then
+            write(iounit,9067) (workid(i),wavev(i),i=1+120*(n-1),&
+            &indgrp)
+         end if
+      else
+         if (file_format == 'FIX') then
+            write(iounit,9066) (workid(i),wavev(i),i=1+120*(n-1),&
+            &120*n)
+         else if (file_format == 'EXP') then
+            write(iounit,9067) (workid(i),wavev(i),i=1+120*(n-1),&
+            &120*n)
+         end if
+      end if
 
-   END DO
+   end do
 
-9058 FORMAT(42X,'*** SOURCE CONTRIBUTIONS FOR EVENT: ',&
-   &A10,' ***'//1X,'---> AVE. PER.: ',I3,' HRS;',&
-   &'  END DATE:  ',I8.8,';  LOCATION (XR,YR,ZELEV,ZFLAG):',&
-   &4F11.2,' (M)'/)
-9068 FORMAT(1X,'GROUP ID: ',A8,1X,'OF SOURCES: ',7(A12,', ')/&
-   &18x,8(A12,', ')/18x,8(A12,', ')/18x,8(A12,', '))
-9070 FORMAT(/3X,'*** GROUP VALUE = ',F14.5,' ***'/)
-9062 FORMAT(3('   SOURCE ID      CONTRIBUTION ',10X)/&
-   &3(' -------------    ------------ ',10X))
-9066 FORMAT(3(2X,A12,3X,F13.5,11X:))
-9067 FORMAT(3(2X,A12,3X,E13.6,11X:))
+9058 format(42x,'*** SOURCE CONTRIBUTIONS FOR EVENT: ',&
+   &a10,' ***'//1x,'---> AVE. PER.: ',i3,' HRS;',&
+   &'  END DATE:  ',i8.8,';  LOCATION (XR,YR,ZELEV,ZFLAG):',&
+   &4f11.2,' (M)'/)
+9068 format(1x,'GROUP ID: ',a8,1x,'OF SOURCES: ',7(a12,', ')/&
+   &18x,8(a12,', ')/18x,8(a12,', ')/18x,8(a12,', '))
+9070 format(/3x,'*** GROUP VALUE = ',f14.5,' ***'/)
+9062 format(3('   SOURCE ID      CONTRIBUTION ',10x)/&
+   &3(' -------------    ------------ ',10x))
+9066 format(3(2x,a12,3x,f13.5,11x:))
+9067 format(3(2x,a12,3x,e13.6,11x:))
 
-   RETURN
-END SUBROUTINE PRTSOC
+   return
+end subroutine prtsoc
 
-SUBROUTINE PRTDET
+subroutine prtdet
 !***********************************************************************
 !                 PRTDET Module of the AMS/EPA Regulatory Model - AERMOD - EVENT
 !
@@ -265,140 +265,140 @@ SUBROUTINE PRTDET
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, J, N, NSPP, NPAGE, IHR, INGRP
-   DOUBLE PRECISION :: WAVEV(NSRC+1), WHRVAL(24,NSRC+1)
+   integer :: i, j, n, nspp, npage, ihr, ingrp
+   double precision :: wavev(nsrc+1), whrval(24,nsrc+1)
 
 !     Variable Initializations
-   MODNAM = 'PRTDET'
-   WAVEV(:)    = 0.0D0
-   WHRVAL(:,:) = 0.0D0
+   modnam = 'PRTDET'
+   wavev(:)    = 0.0d0
+   whrval(:,:) = 0.0d0
 
 !     Set Up The Printing Work Array
-   INGRP = 0
-   DO ISRC = 1, NUMSRC
-      IF (IGROUP(ISRC,IDXEV(IEVENT)) == 1) THEN
-         INGRP = INGRP + 1
-         WORKID(INGRP) = SRCID(ISRC)
-         WAVEV(INGRP)  = EV_AVEVAL(ISRC)
-         DO IHR = ISTAHR, IENDHR
-            WHRVAL(IHR,INGRP) = HRVALS(IHR,ISRC)
-         END DO
-      END IF
-   END DO
+   ingrp = 0
+   do isrc = 1, numsrc
+      if (igroup(isrc,idxev(ievent)) == 1) then
+         ingrp = ingrp + 1
+         workid(ingrp) = srcid(isrc)
+         wavev(ingrp)  = ev_aveval(isrc)
+         do ihr = istahr, iendhr
+            whrval(ihr,ingrp) = hrvals(ihr,isrc)
+         end do
+      end if
+   end do
 
 ! --- Check for BACKGROUND "source" being included
 !     in source group
-   IF (GRP_BACK(IDXEV(IEVENT))) THEN
-      INGRP = INGRP + 1
-      WORKID(INGRP) = 'BACKGROUND'
-      WAVEV(INGRP)  = BACKAVE(IDXEV(IEVENT))
-      DO IHR = ISTAHR, IENDHR
-         WHRVAL(IHR,INGRP) = BACKHR(IDXEV(IEVENT),IHR)
-      END DO
-   END IF
+   if (grp_back(idxev(ievent))) then
+      ingrp = ingrp + 1
+      workid(ingrp) = 'BACKGROUND'
+      wavev(ingrp)  = backave(idxev(ievent))
+      do ihr = istahr, iendhr
+         whrval(ihr,ingrp) = backhr(idxev(ievent),ihr)
+      end do
+   end if
 
 !     Set Number of Sources Per Page, NSPP
-   NSPP = 8
+   nspp = 8
 !     Calculate Number of Pages for This Event (NSPP Sources per Page)
-   NPAGE = 1 + INT((INGRP-1)/NSPP)
-   DO N = 1, NPAGE
-      CALL HEADER(IOUNIT)
-      WRITE(IOUNIT,9058) EVNAME(IEVENT), GRPAVE(IDXEV(IEVENT)),&
-      &EVAPER(IEVENT),EVDATE(IEVENT), AXR(IEVENT),AYR(IEVENT),&
-      &AZELEV(IEVENT),AZFLAG(IEVENT)
+   npage = 1 + int((ingrp-1)/nspp)
+   do n = 1, npage
+      call header(iounit)
+      write(iounit,9058) evname(ievent), grpave(idxev(ievent)),&
+      &evaper(ievent),evdate(ievent), axr(ievent),ayr(ievent),&
+      &azelev(ievent),azflag(ievent)
 
-      IF (N == NPAGE) THEN
+      if (n == npage) then
 !           Print Out The Values for the Last Page
-         WRITE(IOUNIT,9068) EVGRP(IEVENT), (WORKID(I),&
-         &I=1+NSPP*(N-1),INGRP)
-         WRITE(IOUNIT,9066)
+         write(iounit,9068) evgrp(ievent), (workid(i),&
+         &i=1+nspp*(n-1),ingrp)
+         write(iounit,9066)
 
 !           Print Out The Source Contributions for the Last Page
-         DO I = ISTAHR, IENDHR
-            IF (FILE_FORMAT == 'FIX') THEN
-               WRITE(IOUNIT,9062) I,GRPVAL(IDXEV(IEVENT),I),&
-               &(WHRVAL(I,J),J=1+NSPP*(N-1),INGRP)
-            ELSE IF (FILE_FORMAT == 'EXP') THEN
-               WRITE(IOUNIT,9063) I,GRPVAL(IDXEV(IEVENT),I),&
-               &(WHRVAL(I,J),J=1+NSPP*(N-1),INGRP)
-            END IF
-         END DO
-         IF (FILE_FORMAT == 'FIX') THEN
-            WRITE(IOUNIT,9064) GRPAVE(IDXEV(IEVENT)),&
-            &(WAVEV(I),I=1+NSPP*(N-1),INGRP)
-         ELSE IF (FILE_FORMAT == 'EXP') THEN
-            WRITE(IOUNIT,9065) GRPAVE(IDXEV(IEVENT)),&
-            &(WAVEV(I),I=1+NSPP*(N-1),INGRP)
-         END IF
-      ELSE
+         do i = istahr, iendhr
+            if (file_format == 'FIX') then
+               write(iounit,9062) i,grpval(idxev(ievent),i),&
+               &(whrval(i,j),j=1+nspp*(n-1),ingrp)
+            else if (file_format == 'EXP') then
+               write(iounit,9063) i,grpval(idxev(ievent),i),&
+               &(whrval(i,j),j=1+nspp*(n-1),ingrp)
+            end if
+         end do
+         if (file_format == 'FIX') then
+            write(iounit,9064) grpave(idxev(ievent)),&
+            &(wavev(i),i=1+nspp*(n-1),ingrp)
+         else if (file_format == 'EXP') then
+            write(iounit,9065) grpave(idxev(ievent)),&
+            &(wavev(i),i=1+nspp*(n-1),ingrp)
+         end if
+      else
 !           Print Out The Values for the Current Page
-         WRITE(IOUNIT,9068) EVGRP(IEVENT), (WORKID(I),&
-         &I=1+NSPP*(N-1),NSPP*N)
-         WRITE(IOUNIT,9066)
+         write(iounit,9068) evgrp(ievent), (workid(i),&
+         &i=1+nspp*(n-1),nspp*n)
+         write(iounit,9066)
 
 !           Print Out The Source Contributions for the Current Page
-         DO I = ISTAHR, IENDHR
-            IF (FILE_FORMAT == 'FIX') THEN
-               WRITE(IOUNIT,9062) I,GRPVAL(IDXEV(IEVENT),I),&
-               &(WHRVAL(I,J),J=1+NSPP*(N-1),NSPP*N)
-            ELSE IF (FILE_FORMAT == 'EXP') THEN
-               WRITE(IOUNIT,9063) I,GRPVAL(IDXEV(IEVENT),I),&
-               &(WHRVAL(I,J),J=1+NSPP*(N-1),NSPP*N)
-            END IF
-         END DO
-         IF (FILE_FORMAT == 'FIX') THEN
-            WRITE(IOUNIT,9064) GRPAVE(IDXEV(IEVENT)),&
-            &(WAVEV(I),I=1+NSPP*(N-1),NSPP*N)
-         ELSE IF (FILE_FORMAT == 'EXP') THEN
-            WRITE(IOUNIT,9065) GRPAVE(IDXEV(IEVENT)),&
-            &(WAVEV(I),I=1+NSPP*(N-1),NSPP*N)
-         END IF
-      END IF
+         do i = istahr, iendhr
+            if (file_format == 'FIX') then
+               write(iounit,9062) i,grpval(idxev(ievent),i),&
+               &(whrval(i,j),j=1+nspp*(n-1),nspp*n)
+            else if (file_format == 'EXP') then
+               write(iounit,9063) i,grpval(idxev(ievent),i),&
+               &(whrval(i,j),j=1+nspp*(n-1),nspp*n)
+            end if
+         end do
+         if (file_format == 'FIX') then
+            write(iounit,9064) grpave(idxev(ievent)),&
+            &(wavev(i),i=1+nspp*(n-1),nspp*n)
+         else if (file_format == 'EXP') then
+            write(iounit,9065) grpave(idxev(ievent)),&
+            &(wavev(i),i=1+nspp*(n-1),nspp*n)
+         end if
+      end if
 
-      IF (N == 1) THEN
+      if (n == 1) then
 !           Write Out the Meteorology Data
-         NEWMET = .TRUE.
-         DO IHOUR = ISTAHR, IENDHR
-            UREF   = AUREF(IHOUR,1)
-            UREFHT = AUREFHT(IHOUR,1)
-            TA     = ATA(IHOUR,1)
-            TREFHT = ATREFHT(IHOUR,1)
-            WDREF  = AWDREF(IHOUR,1)
-            SFCHF  = ASFCHF(IHOUR,1)
-            USTAR  = AUSTAR(IHOUR,1)
-            WSTAR  = AWSTAR(IHOUR,1)
-            ZICONV = AZICONV(IHOUR,1)
-            ZIMECH = AZIMECH(IHOUR,1)
-            OBULEN = AOBULEN(IHOUR,1)
-            VPTGZI = AVPTGZI(IHOUR,1)
-            SFCZ0  = ASFCZ0(IHOUR,1)
-            BOWEN  = ABOWEN(IHOUR,1)
-            ALBEDO = AALBEDO(IHOUR,1)
+         newmet = .true.
+         do ihour = istahr, iendhr
+            uref   = auref(ihour,1)
+            urefht = aurefht(ihour,1)
+            ta     = ata(ihour,1)
+            trefht = atrefht(ihour,1)
+            wdref  = awdref(ihour,1)
+            sfchf  = asfchf(ihour,1)
+            ustar  = austar(ihour,1)
+            wstar  = awstar(ihour,1)
+            ziconv = aziconv(ihour,1)
+            zimech = azimech(ihour,1)
+            obulen = aobulen(ihour,1)
+            vptgzi = avptgzi(ihour,1)
+            sfcz0  = asfcz0(ihour,1)
+            bowen  = abowen(ihour,1)
+            albedo = aalbedo(ihour,1)
 !              Write Out The Meteorology Data
-            CALL METDET
-         END DO
-      END IF
-   END DO
+            call metdet
+         end do
+      end if
+   end do
 
-9058 FORMAT(29X,'*** SOURCE CONTRIBUTIONS FOR EVENT: ',A10,&
-   &4X,'GROUP VALUE = ',F14.5,' ***'/1X,'---> AVE. PER.: ',&
-   &I3,' HRS;','  END DATE:  ',I8.8,&
-   &';  LOCATION (XR,YR,ZELEV,ZFLAG):',4F11.2,' (M)')
-9068 FORMAT(1X,'HR GROUP:',A8,' OF',1X,A12,7(2X,A12:))
-9066 FORMAT(66('- '))
-9062 FORMAT(1X,I2,1X,9(1X,F13.5:))
-9063 FORMAT(1X,I2,1X,9(1X,E13.6:))
-9064 FORMAT(66('- ')/1X,'AVE',9(1X,F13.5:))
-9065 FORMAT(66('- ')/1X,'AVE',9(1X,E13.6:))
+9058 format(29x,'*** SOURCE CONTRIBUTIONS FOR EVENT: ',a10,&
+   &4x,'GROUP VALUE = ',f14.5,' ***'/1x,'---> AVE. PER.: ',&
+   &i3,' HRS;','  END DATE:  ',i8.8,&
+   &';  LOCATION (XR,YR,ZELEV,ZFLAG):',4f11.2,' (M)')
+9068 format(1x,'HR GROUP:',a8,' OF',1x,a12,7(2x,a12:))
+9066 format(66('- '))
+9062 format(1x,i2,1x,9(1x,f13.5:))
+9063 format(1x,i2,1x,9(1x,e13.6:))
+9064 format(66('- ')/1x,'AVE',9(1x,f13.5:))
+9065 format(66('- ')/1x,'AVE',9(1x,e13.6:))
 
-   RETURN
-END SUBROUTINE PRTDET
+   return
+end subroutine prtdet
 
-SUBROUTINE METDET
+subroutine metdet
 !***********************************************************************
 !                 METDET Module of the AMS/EPA Regulatory Model - AERMOD - EVENT
 !
@@ -416,35 +416,35 @@ SUBROUTINE METDET
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'METDET'
+   modnam = 'METDET'
 
 !     Meteorology Data Summary
-   IF (NEWMET) THEN
-      NEWMET = .FALSE.
-      WRITE(IOUNIT,9025)
-   END IF
-   WRITE(IOUNIT,9026) IYEAR, IMONTH, IDAY, IHOUR,&
-   &SFCHF, USTAR, WSTAR, VPTGZI, ZICONV, ZIMECH, OBULEN,&
-   &SFCZ0, BOWEN, ALBEDO, UREF, WDREF, UREFHT, TA, TREFHT
+   if (newmet) then
+      newmet = .false.
+      write(iounit,9025)
+   end if
+   write(iounit,9026) iyear, imonth, iday, ihour,&
+   &sfchf, ustar, wstar, vptgzi, ziconv, zimech, obulen,&
+   &sfcz0, bowen, albedo, uref, wdref, urefht, ta, trefht
 
 
-9025 FORMAT (' MET DATA --> YR MO DY HR','     H0','     U*','     W*',&
+9025 format (' MET DATA --> YR MO DY HR','     H0','     U*','     W*',&
    &'  DT/DZ',' ZICNV', ' ZIMCH','  M-O LEN','    Z0',&
    &'  BOWEN',' ALBEDO','  REF WS', '   WD', '     HT',&
    &'  REF TA', '     HT')
-9026 FORMAT (14X,4(I2.2,1X),F6.1,1X,3(F6.3,1X),&
-   &2(F5.0,1X),F8.1,1X,F5.2,1X,2(F6.2,1X),F7.2,1X,F5.0,&
-   &3(1X,F6.1) )
+9026 format (14x,4(i2.2,1x),f6.1,1x,3(f6.3,1x),&
+   &2(f5.0,1x),f8.1,1x,f5.2,1x,2(f6.2,1x),f7.2,1x,f5.0,&
+   &3(1x,f6.1) )
 
-   RETURN
-END SUBROUTINE METDET
+   return
+end subroutine metdet
 
-SUBROUTINE EV_FLUSH
+subroutine ev_flush
 !***********************************************************************
 !                 Module EV_FLUSH of AERMOD Model - EVENT
 !
@@ -462,39 +462,39 @@ SUBROUTINE EV_FLUSH
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE BUOYANT_LINE
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   use buoyant_line
+   implicit none
+   character :: modnam*12
 
 ! Unused:      INTEGER :: I
 
 !     Variable Initializations
-   MODNAM = 'EV_FLUSH'
+   modnam = 'EV_FLUSH'
 
 !     Flush the Hourly Value
-   HRVAL(:) = 0.0D0
+   hrval(:) = 0.0d0
 
 !     Flush arrays, if allocated
 ! Multiple_BuoyLines_D41_Wood
 !     Removed allocation of PARTCH - now declared as a scaler
-   IF (ALLOCATED(CHI))  CHI(:,:,:) = 0.0D0
-   IF(GRSM)THEN
-      CHI_TTRAVPLM = 0.0D0
-      CHI_TTRAVPAN = 0.0D0
-      CHI_TTRAVAER = 0.0D0
-      CHI_TTRAVPRM = 0.0D0
-      CHI_TTRAVCHM(:,:) = 0.0D0
-      BLDFAC(:,:) = 0.0D0
-      PRMVAL_Src1 = 0.0D0
-   END IF
-   IF (ALLOCATED(CHIBL)) CHIBL(:) = 0.0D0
-   GRPAVE(:)    = 0.0D0
-   GRPVAL(:,:)  = 0.0D0
-   IF (ALLOCATED(BACKAVE)) BACKAVE(:) = 0.0D0
-   IF (ALLOCATED(BACKHR))  BACKHR(:,:)= 0.0D0
-   EV_AVEVAL(:) = 0.0D0
-   HRVALS(:,:)  = 0.0D0
+   if (allocated(chi))  chi(:,:,:) = 0.0d0
+   if(grsm)then
+      chi_ttravplm = 0.0d0
+      chi_ttravpan = 0.0d0
+      chi_ttravaer = 0.0d0
+      chi_ttravprm = 0.0d0
+      chi_ttravchm(:,:) = 0.0d0
+      bldfac(:,:) = 0.0d0
+      PRMVAL_Src1 = 0.0d0
+   end if
+   if (allocated(chibl)) chibl(:) = 0.0d0
+   grpave(:)    = 0.0d0
+   grpval(:,:)  = 0.0d0
+   if (allocated(backave)) backave(:) = 0.0d0
+   if (allocated(backhr))  backhr(:,:)= 0.0d0
+   ev_aveval(:) = 0.0d0
+   hrvals(:,:)  = 0.0d0
 
-   RETURN
-END SUBROUTINE EV_FLUSH
+   return
+end subroutine ev_flush

@@ -1,4 +1,4 @@
-SUBROUTINE EVCARD
+subroutine evcard
 !***********************************************************************
 !                 EVCARD Module of AERMOD Model
 !
@@ -37,74 +37,74 @@ SUBROUTINE EVCARD
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: I, ILSAVE, ITEMPDATE, ITEMPYEAR
+   integer :: i, ilsave, itempdate, itempyear
 
 !     Variable Initializations
-   MODNAM = 'EVCARD'
+   modnam = 'EVCARD'
 
-   IF (KEYWRD == 'STARTING') THEN
+   if (keywrd == 'STARTING') then
 !        Set Status Switch
-      IESTAT(1) = IESTAT(1)+1
-      IEVENT = 1
-      IF (IESTAT(1) /= 1) THEN
+      iestat(1) = iestat(1)+1
+      ievent = 1
+      if (iestat(1) /= 1) then
 !           Error Message: Repeat Starting In Same Pathway
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      END IF
-   ELSE IF (KEYWRD == 'EVENTPER') THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      end if
+   else if (keywrd == 'EVENTPER') then
 !        Set Status Switch
-      IESTAT(2) = IESTAT(2)+1
+      iestat(2) = iestat(2)+1
 !        Check for First Occurrence of EVENTPER Card, and
 !        Reinitialize IPROC Array
-      IF (IESTAT(2) == 1) THEN
-         DO I = 1, 366
-            IPROC(I) = 0
-         END DO
-      END IF
+      if (iestat(2) == 1) then
+         do i = 1, 366
+            iproc(i) = 0
+         end do
+      end if
 !        Process Average Period, Date and Source Group      ---   CALL EVPER
-      CALL EVPER
-   ELSE IF (KEYWRD == 'EVENTLOC') THEN
+      call evper
+   else if (keywrd == 'EVENTLOC') then
 !        Set Status Switch
-      IESTAT(3) = IESTAT(3)+1
+      iestat(3) = iestat(3)+1
 !        Process Discrete Receptor Location                 ---   CALL EVLOC
-      CALL EVLOC
-   ELSE IF (KEYWRD == 'INCLUDED') THEN
+      call evloc
+   else if (keywrd == 'INCLUDED') then
 !        Set Status Switch
-      IESTAT(10) = IESTAT(10) + 1
+      iestat(10) = iestat(10) + 1
 !        Save ILINE as ISAVE
-      ILSAVE = ILINE
+      ilsave = iline
 !        Process the Included Receptor File                 ---   CALL INCLUD
-      CALL INCLUD
+      call includ
 !        Retrieve ILINE From ISAVE
-      ILINE = ILSAVE
-   ELSE IF (KEYWRD == 'FINISHED') THEN
+      iline = ilsave
+   else if (keywrd == 'FINISHED') then
 !        Check for missing EVENTLOC cards
-      IF (IESTAT(2) > IESTAT(3)) THEN
+      if (iestat(2) > iestat(3)) then
 !           Write Error Message:  Missing EVENTLOC
-         CALL ERRHDL(PATH,MODNAM,'E','130','EVENTLOC')
-      END IF
-      NUMEVE = IEVENT - 1
+         call errhdl(path,modnam,'E','130','EVENTLOC')
+      end if
+      numeve = ievent - 1
 !        Set Status Switch
-      IESTAT(50) = IESTAT(50)+1
-      IF (IESTAT(50) /= 1) THEN
+      iestat(50) = iestat(50)+1
+      if (iestat(50) /= 1) then
 !           Error Message: Repeat Finished In Same Pathway
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-         GO TO 999
-      END IF
+         call errhdl(path,modnam,'E','135',keywrd)
+         go to 999
+      end if
 
-      IF (NUMEVE >= 1) THEN
+      if (numeve >= 1) then
 ! ---       At least one event has been defined;
 !           Get start date, ISDATE, and end date, IEDATE
-         ISDATE = EVDATE(1)
-         IEDATE = EVDATE(1)
-         ISYR = ISDATE/1000000
-         IEYR = IEDATE/1000000
+         isdate = evdate(1)
+         iedate = evdate(1)
+         isyr = isdate/1000000
+         ieyr = iedate/1000000
 
 !            D001 Call LONG_DATE and determine the longform date Wood 9/15/22
-         CALL LONG_DATE(ISDATE,ISDATE,ISYR,ISYR) !Determine the longform date
+         call long_date(isdate,isdate,isyr,isyr) !Determine the longform date
 ! ---        D001 remove original calculation of year Wood 9/15/22
 !C           Convert 8-digit EVDATE to 10-digit ISDATE and IEDATE
 !            IF (ISYR .GE. ISTRT_WIND .and. ISYR .LE. 99) THEN
@@ -117,7 +117,7 @@ SUBROUTINE EVCARD
 !
 
 !            D001 Call LONG_DATE and determine the longform date Wood 9/15/22
-         CALL LONG_DATE(IEDATE,IEDATE,IEYR,IEYR) !Determine the longform date
+         call long_date(iedate,iedate,ieyr,ieyr) !Determine the longform date
 ! ---        D001 remove original calculation of year Wood 9/15/22
 !            IF (IEYR .GE. ISTRT_WIND .and. IEYR .LE. 99) THEN
 !               IEYR   = ISTRT_CENT*100 + IEYR
@@ -128,12 +128,12 @@ SUBROUTINE EVCARD
 !            END IF
 
 !           Loop through events to find start date and end date
-         DO I = 1, NUMEVE
+         do i = 1, numeve
 
-            ITEMPDATE = EVDATE(I)
-            ITEMPYEAR = ITEMPDATE/1000000
+            itempdate = evdate(i)
+            itempyear = itempdate/1000000
 !            D001 Call LONG_DATE_Opt2 and determine the longform date without updating the short date Wood 9/15/22
-            CALL LONG_DATE_Opt2(ITEMPDATE,ITEMPDATE,ITEMPYEAR) !Determine the longform date
+            call LONG_DATE_Opt2(itempdate,itempdate,itempyear) !Determine the longform date
 ! ---        D001 remove original calculation of year Wood 9/15/22
 !               IF (ITEMPYEAR.GE.ISTRT_WIND .and. ITEMPYEAR.LE.99) THEN
 !                  ITEMPDATE = ISTRT_CENT*100000000 + ITEMPDATE
@@ -141,39 +141,39 @@ SUBROUTINE EVCARD
 !                  ITEMPDATE = (ISTRT_CENT+1)*100000000 + ITEMPDATE
 !               END IF
 
-            IF (ITEMPDATE < ISDATE) ISDATE = ITEMPDATE
-            IF (ITEMPDATE > IEDATE) IEDATE = ITEMPDATE
-         END DO
+            if (itempdate < isdate) isdate = itempdate
+            if (itempdate > iedate) iedate = itempdate
+         end do
 !           Set start hour to 00 since EVDATE is for the last hour of event
-         ISDATE = (ISDATE/100)*100
-         ISYR = ISDATE/1000000
-         IEYR = IEDATE/1000000
-         ISMN = (ISDATE/10000) - (ISDATE/1000000)*100
-         IEMN = (IEDATE/10000) - (IEDATE/1000000)*100
-         ISDY = (ISDATE/100) - (ISDATE/10000)*100
-         IEDY = (IEDATE/100) - (IEDATE/10000)*100
-      END IF
+         isdate = (isdate/100)*100
+         isyr = isdate/1000000
+         ieyr = iedate/1000000
+         ismn = (isdate/10000) - (isdate/1000000)*100
+         iemn = (iedate/10000) - (iedate/1000000)*100
+         isdy = (isdate/100) - (isdate/10000)*100
+         iedy = (iedate/100) - (iedate/10000)*100
+      end if
 
 !        Write Out The Error Message: Mandatory Keyword Missing
-      IF (IESTAT(1) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','STARTING')
-      END IF
-      IF (IESTAT(2) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','EVENTPER')
-      END IF
-      IF (IESTAT(3) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','EVENTLOC')
-      END IF
+      if (iestat(1) == 0) then
+         call errhdl(path,modnam,'E','130','STARTING')
+      end if
+      if (iestat(2) == 0) then
+         call errhdl(path,modnam,'E','130','EVENTPER')
+      end if
+      if (iestat(3) == 0) then
+         call errhdl(path,modnam,'E','130','EVENTLOC')
+      end if
 
-   ELSE
+   else
 !        Write Error Message: Invalid Keyword for This Pathway
-      CALL ERRHDL(PATH,MODNAM,'E','110',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','110',keywrd)
+   end if
 
-999 RETURN
-END SUBROUTINE EVCARD
+999 return
+end subroutine evcard
 
-SUBROUTINE EVPER
+subroutine evper
 !***********************************************************************
 !                 EVPER Module of AERMOD Model
 !
@@ -197,112 +197,112 @@ SUBROUTINE EVPER
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ISDX, IMN, IDY, IEVYR2, IEVYR4
-   CHARACTER :: USEVN*10
-   LOGICAL :: FOUND
+   integer :: isdx, imn, idy, ievyr2, ievyr4
+   character :: usevn*10
+   logical :: found
 
 !     Variable Initializations
-   MODNAM = 'EVPER'
-   FOUND = .FALSE.
+   modnam = 'EVPER'
+   found = .false.
 
-   IF (IEVENT > NEVE) THEN
+   if (ievent > neve) then
 !        WRITE Error Message    ! Too Many Events Specified
 !        This shouldn't occur since limits are dynamically allocated
-      WRITE(DUMMY,'(''NEVE='',I7)') NEVE
-      CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
-      GO TO 999
-   END IF
+      write(dummy,'(''NEVE='',I7)') neve
+      call errhdl(path,modnam,'E','290',dummy)
+      go to 999
+   end if
 
 !     Check Whether There Are Enough Parameter Fields
-   IF (IFC == 2) THEN
+   if (ifc == 2) then
 !        Error Message: Missing Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 7) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 7) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 7) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 7) then
 !        Error Message: Too Many Parameters
 !        Note That FIELD(7) Is Used To Hold Concentration
 !        Value for Events Generated From initial run, and
 !        these concentrations are also used during Event
 !        processing to check for consistency of results.
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     READ EVNAME, AVEPER, GRPID, DATE
 
 !     Get The Event Name
-   USEVN = FIELD(3)
+   usevn = field(3)
 !     Check for Previous EVNAME
-   CALL SINDEX(EVNAME,NEVE,USEVN,ISDX,FOUND)
-   IF (.NOT.FOUND) THEN
-      EVNAME(IEVENT) = USEVN
-   ELSE
+   call sindex(evname,neve,usevn,isdx,found)
+   if (.not.found) then
+      evname(ievent) = usevn
+   else
 !        Error Message: Duplicate EVNAME
-      CALL ERRHDL(PATH,MODNAM,'E','313',EVNAME(ISDX))
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','313',evname(isdx))
+      go to 999
+   end if
 
 !     Get Averaging Period For The Event
-   CALL STONUM(FIELD(4),ILEN_FLD,FNUM,IMIT)
+   call stonum(field(4),ilen_fld,fnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   ELSE
-      EVAPER(IEVENT) = NINT(FNUM)
-   END IF
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   else
+      evaper(ievent) = nint(fnum)
+   end if
 
 !     Check for Valid Averaging Period
-   DO IAVE = 1, NUMAVE
-      IF (EVAPER(IEVENT) == KAVE(IAVE)) THEN
-         FOUND = .TRUE.
-         IF (EVAPER(IEVENT) > 24) THEN
+   do iave = 1, numave
+      if (evaper(ievent) == kave(iave)) then
+         found = .true.
+         if (evaper(ievent) > 24) then
 !              Write Error Message for Invalid Averaging Period, Must be <=24
-            CALL ERRHDL(PATH,MODNAM,'E','297',EVNAME(IEVENT))
-         END IF
-      END IF
-   END DO
-   IF (.NOT. FOUND) THEN
+            call errhdl(path,modnam,'E','297',evname(ievent))
+         end if
+      end if
+   end do
+   if (.not. found) then
 !        Error Message: Averaging Period Does Not Match
-      CALL ERRHDL(PATH,MODNAM,'E','203','AVEPER')
-   END IF
+      call errhdl(path,modnam,'E','203','AVEPER')
+   end if
 
 !     Take The Group ID
-   EVGRP(IEVENT) = FIELD(5)
+   evgrp(ievent) = field(5)
 
 !     Retrieve The Index of The Group Array
-   FOUND = .FALSE.
-   CALL SINDEX(GRPID,NGRP,EVGRP(IEVENT),ISDX,FOUND)
-   IF (.NOT. FOUND) THEN
+   found = .false.
+   call sindex(grpid,ngrp,evgrp(ievent),isdx,found)
+   if (.not. found) then
 !        Error Message: Group ID Does Not Match
-      CALL ERRHDL(PATH,MODNAM,'E','203','GROUPID')
-   ELSE
-      IDXEV(IEVENT) = ISDX
-   END IF
+      call errhdl(path,modnam,'E','203','GROUPID')
+   else
+      idxev(ievent) = isdx
+   end if
 
 !     Get The Date Of The Event -
 !     First Convert Character String to Double Precision Real
-   CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(6),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   ELSE
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   else
 !        Note - EVDATE is an Integer Array
-      EVDATE(IEVENT) = IDNINT(DNUM)
+      evdate(ievent) = idnint(dnum)
 !        Extract 2-digit year from event date
-      IEVYR2 = IDNINT(DNUM/1000000.D0)
+      ievyr2 = idnint(dnum/1000000.d0)
 
 !        D001 Call CENT_DATE to determine the current Julian Day and Calculate Current Gregorian Date First Convert Year to 4-Digit Value Wood 9/15/22
-      CALL CENT_DATE(IEVYR2,IEVYR4)
+      call cent_date(ievyr2,ievyr4)
 ! ---    D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C        Convert to 4-digit year
 !         IF (IEVYR2 .GE. ISTRT_WIND .and. IEVYR2 .LE. 99) THEN
@@ -311,37 +311,37 @@ SUBROUTINE EVPER
 !            IEVYR4 = (ISTRT_CENT+1)*100 + IEVYR2
 !         END IF
 
-      IMN = IDNINT(DNUM/10000.D0) - IDNINT(DNUM/1000000.D0)*100
-      IDY = IDNINT(DNUM/100.D0) - IDNINT(DNUM/10000.D0)*100
-      CALL JULIAN(IEVYR4,IMN,IDY,JDAY)
-      IF (JDAY >= 1 .and. JDAY <= 366) THEN
-         IPROC(JDAY) = 1
-         EVJDAY(IEVENT) = JDAY
-      ELSE
+      imn = idnint(dnum/10000.d0) - idnint(dnum/1000000.d0)*100
+      idy = idnint(dnum/100.d0) - idnint(dnum/10000.d0)*100
+      call julian(ievyr4,imn,idy,jday)
+      if (jday >= 1 .and. jday <= 366) then
+         iproc(jday) = 1
+         evjday(ievent) = jday
+      else
 !           WRITE Error Message    ! Invalid Julian Day
-         CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
-         GO TO 999
-      END IF
-   END IF
+         call errhdl(path,modnam,'E','203','Juli Day')
+         go to 999
+      end if
+   end if
 
 !     Get The Original Modeled Concentration Of The Event -
 !     First Convert Character String to Double Precision Real
-   CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(7),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      GO TO 999
-   ELSE
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
+      go to 999
+   else
 !        Save Original Modeled Concentration for QA Purposes
-      EV_OrigConc(IEVENT) = DNUM
-   END IF
+      EV_OrigConc(ievent) = dnum
+   end if
 
-   IEVENT = IEVENT + 1
+   ievent = ievent + 1
 
-999 RETURN
-END SUBROUTINE EVPER
+999 return
+end subroutine evper
 
-SUBROUTINE EVLOC
+subroutine evloc
 !***********************************************************************
 !                 EVLOC Module of AERMOD Model
 !
@@ -359,115 +359,115 @@ SUBROUTINE EVLOC
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   USE BUOYANT_LINE
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   use buoyant_line
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: ISDX
-   DOUBLE PRECISION :: SETAXR, SETAYR
-   CHARACTER :: USEVN*10, IDNAM1*4, IDNAM2*4
-   LOGICAL :: FOUND
+   integer :: isdx
+   double precision :: setaxr, setayr
+   character :: usevn*10, idnam1*4, idnam2*4
+   logical :: found
 
 !     Variable Initializations
-   MODNAM = 'EVLOC'
+   modnam = 'EVLOC'
 
 !     Check Whether There Are Enough Parameter Fields
-   IF (IFC == 2) THEN
+   if (ifc == 2) then
 !        Error Message: Missing Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC < 8) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc < 8) then
 !        Error Message: Not Enough Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 10) THEN
+      call errhdl(path,modnam,'E','201',keywrd)
+      go to 999
+   else if (ifc > 10) then
 !        Error Message: Too Many Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     READ Event Name, XCOOR,YCOOR,ELEV,FLAG And Assign to Different Array
-   USEVN = FIELD(3)
+   usevn = field(3)
 !     Check for Previous EVNAME
-   CALL SINDEX(EVNAME,NEVE,USEVN,ISDX,FOUND)
-   IF (.NOT.FOUND) THEN
+   call sindex(evname,neve,usevn,isdx,found)
+   if (.not.found) then
 !        Error Message: EVNAME Does Not Match
-      CALL ERRHDL(PATH,MODNAM,'E','203','EVNAME')
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','203','EVNAME')
+      go to 999
+   end if
 
-   IDNAM1 = FIELD(4)
+   idnam1 = field(4)
 
-   CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(5),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
 !        Assign value of 0.0, but continue checking all fields
-      SETAXR = 0.0D0
-   ELSE
-      SETAXR = DNUM
-   END IF
+      setaxr = 0.0d0
+   else
+      setaxr = dnum
+   end if
 
-   IDNAM2 = FIELD(6)
+   idnam2 = field(6)
 
-   CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
+   call stodbl(field(7),ilen_fld,dnum,imit)
 !     Check The Numerical Field
-   IF (IMIT /= 1) THEN
-      CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
+   if (imit /= 1) then
+      call errhdl(path,modnam,'E','208',keywrd)
 !        Assign value of 0.0, but continue checking all fields
-      SETAYR = 0.0D0
-   ELSE
-      SETAYR = DNUM
-   END IF
+      setayr = 0.0d0
+   else
+      setayr = dnum
+   end if
 
-   IF (IFC >= 8) THEN
-      CALL STODBL(FIELD(8),ILEN_FLD,DNUM,IMIT)
+   if (ifc >= 8) then
+      call stodbl(field(8),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      ELSE
-         AZELEV(ISDX) = DNUM
-      END IF
-      CALL STODBL(FIELD(9),ILEN_FLD,DNUM,IMIT)
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+      else
+         azelev(isdx) = dnum
+      end if
+      call stodbl(field(9),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      ELSE
-         AZHILL(ISDX) = DNUM
-      END IF
-   ELSE
-      AZELEV(ISDX) = 0.0D0
-      AZHILL(ISDX) = 0.0D0
-   END IF
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+      else
+         azhill(isdx) = dnum
+      end if
+   else
+      azelev(isdx) = 0.0d0
+      azhill(isdx) = 0.0d0
+   end if
 
-   IF (IFC == 10) THEN
-      CALL STODBL(FIELD(10),ILEN_FLD,DNUM,IMIT)
+   if (ifc == 10) then
+      call stodbl(field(10),ilen_fld,dnum,imit)
 !        Check The Numerical Field
-      IF (IMIT /= 1) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-      ELSE
-         AZFLAG(ISDX) = DNUM
-      END IF
-   ELSE
-      AZFLAG(ISDX) = 0.0D0
-   END IF
+      if (imit /= 1) then
+         call errhdl(path,modnam,'E','208',keywrd)
+      else
+         azflag(isdx) = dnum
+      end if
+   else
+      azflag(isdx) = 0.0d0
+   end if
 
-   IF (IDNAM1=='XR=' .and. IDNAM2=='YR=') THEN
-      AXR(ISDX) = SETAXR
-      AYR(ISDX) = SETAYR
-   ELSE IF (IDNAM1=='RNG=' .and. IDNAM2=='DIR=') THEN
-      AXR(ISDX) = SETAXR*DSIN(SETAYR*DTORAD)
-      AYR(ISDX) = SETAXR*DCOS(SETAYR*DTORAD)
-   ELSE
+   if (idnam1=='XR=' .and. idnam2=='YR=') then
+      axr(isdx) = setaxr
+      ayr(isdx) = setayr
+   else if (idnam1=='RNG=' .and. idnam2=='DIR=') then
+      axr(isdx) = setaxr*dsin(setayr*dtorad)
+      ayr(isdx) = setaxr*dcos(setayr*dtorad)
+   else
 !        Write Error Message: Illegal Parameter
-      CALL ERRHDL(PATH,MODNAM,'E','203','REC-TYPE')
-   END IF
+      call errhdl(path,modnam,'E','203','REC-TYPE')
+   end if
 
-999 RETURN
-END SUBROUTINE EVLOC
+999 return
+end subroutine evloc
 
-SUBROUTINE EV_SETUP
+subroutine ev_setup
 !***********************************************************************
 !                 EV_SETUP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -503,207 +503,207 @@ SUBROUTINE EV_SETUP
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   INTEGER :: NOPS, ILEN
+   integer :: nops, ilen
 
-   INTEGER :: I, IFSTAT
-   LOGICAL :: NOPATH, NOKEY
-   CHARACTER :: RDFRM*20
+   integer :: i, ifstat
+   logical :: nopath, nokey
+   character :: rdfrm*20
 ! JAT 06/22/21 D065 REMOVE INPFLD AS UNUSED VARIABLE
 !      CHARACTER INPFLD*2, PATHWY(6)*2
-   CHARACTER :: PATHWY(6)*2
-   INTERFACE
-      SUBROUTINE EXPATH(INPFLD,PATHWY,IPN,NOPATH)
-         CHARACTER (LEN=2), INTENT(IN) :: INPFLD
-         CHARACTER (LEN=2), INTENT(IN), DIMENSION(:) :: PATHWY
-         INTEGER, INTENT(IN) :: IPN
-         LOGICAL, INTENT(OUT) :: NOPATH
-      END SUBROUTINE EXPATH
-   END INTERFACE
+   character :: pathwy(6)*2
+   interface
+      subroutine expath(inpfld,pathwy,ipn,nopath)
+         character (len=2), intent(in) :: inpfld
+         character (len=2), intent(in), dimension(:) :: pathwy
+         integer, intent(in) :: ipn
+         logical, intent(out) :: nopath
+      end subroutine expath
+   end interface
 
 
 !     Variable Initializations
-   MODNAM = 'EV_SETUP'
-   EOF = .FALSE.
-   ILINE  = 0
-   IQLINE = 0
+   modnam = 'EV_SETUP'
+   eof = .false.
+   iline  = 0
+   iqline = 0
 
 !     Initialize PATHWY array
-   PATHWY(1) = 'CO'
-   PATHWY(2) = 'SO'
-   PATHWY(3) = 'ME'
-   PATHWY(4) = 'EV'
-   PATHWY(5) = 'OU'
-   PATHWY(6) = '**'
+   pathwy(1) = 'CO'
+   pathwy(2) = 'SO'
+   pathwy(3) = 'ME'
+   pathwy(4) = 'EV'
+   pathwy(5) = 'OU'
+   pathwy(6) = '**'
 
 !     Setup READ format and ECHO format for runstream record,
 !     based on the ISTRG PARAMETER (set in MAIN1)
-   WRITE(RDFRM,9100) ISTRG, ISTRG
-9100 FORMAT('(A',I4.4,',T1,',I4.4,'A1)')
+   write(rdfrm,9100) istrg, istrg
+9100 format('(A',i4.4,',T1,',i4.4,'A1)')
 
 !     LOOP Through Input Runstream Records
-   DO WHILE (.NOT. EOF)
+   do while (.not. eof)
 
 !        Increment the Line Counter
-      ILINE = ILINE + 1
+      iline = iline + 1
 
 !        READ Record to Buffers, as A'num' and 'num'A1, where 'num' = ISTRG
 !        Length of ISTRG is Set in PARAMETER Statement in MAIN1
-      READ (INUNIT,RDFRM,END=999) RUNST1, (RUNST(I), I = 1, ISTRG)
+      read (inunit,rdfrm,end=999) runst1, (runst(i), i = 1, istrg)
 
 !        Check for blank input record and cycle, but echo to output file
-      IF (LEN_TRIM(RUNST1) == 0) THEN
-         WRITE(IOUNIT,*)
-         CYCLE
-      END IF
+      if (len_trim(runst1) == 0) then
+         write(iounit,*)
+         cycle
+      end if
 
 !        Convert Lower Case to Upper Case Letters           ---   CALL LWRUPR
-      CALL LWRUPR
+      call lwrupr
 
 !        Define Fields on Card                              ---   CALL DEFINE
-      CALL DEFINE
+      call define
 
 !        Get the Contents of the Fields                     ---   CALL GETFLD
-      CALL GETFLD
+      call getfld
 
-      IF (ECHO .and.&
-      &(FIELD(1)=='OU' .and. FIELD(2)=='FINISHED')) THEN
+      if (echo .and.&
+      &(field(1)=='OU' .and. field(2)=='FINISHED')) then
 !           Echo Last Input Card to Output File (Use Character Substring to
 !           Avoid Echoing ^Z Which May Appear at "End of File" for Some
 !           Editors).  Also, Allow for Shift in the Input Runstream File of
 !           Up to 3 Columns.
-         IF (LOCB(1) == 1) THEN
-            WRITE(IOUNIT,9200) RUNST1(1:11)
-9200        FORMAT(A11)
-         ELSE IF (LOCB(1) == 2) THEN
-            WRITE(IOUNIT,9210) RUNST1(1:12)
-9210        FORMAT(A12)
-         ELSE IF (LOCB(1) == 3) THEN
-            WRITE(IOUNIT,9220) RUNST1(1:13)
-9220        FORMAT(A13)
-         ELSE IF (LOCB(1) == 4) THEN
-            WRITE(IOUNIT,9230) RUNST1(1:14)
-9230        FORMAT(A14)
-         END IF
-      ELSE IF (ECHO) THEN
+         if (locb(1) == 1) then
+            write(iounit,9200) runst1(1:11)
+9200        format(a11)
+         else if (locb(1) == 2) then
+            write(iounit,9210) runst1(1:12)
+9210        format(a12)
+         else if (locb(1) == 3) then
+            write(iounit,9220) runst1(1:13)
+9220        format(a13)
+         else if (locb(1) == 4) then
+            write(iounit,9230) runst1(1:14)
+9230        format(a14)
+         end if
+      else if (echo) then
 !           Echo Full Input Card to Output File
-         WRITE(IOUNIT,'(a:)') RUNST1(1:LEN_TRIM(RUNST1))
-      END IF
+         write(iounit,'(a:)') runst1(1:len_trim(runst1))
+      end if
 
 !        Check for 'NO ECHO' In First Two Fields
-      IF (FIELD(1) == 'NO' .and. FIELD(2) == 'ECHO') THEN
-         ECHO = .FALSE.
-         CYCLE
-      END IF
+      if (field(1) == 'NO' .and. field(2) == 'ECHO') then
+         echo = .false.
+         cycle
+      end if
 
 !        Extract Pathway ID From Field 1                    ---   CALL EXPATH
-      CALL EXPATH(FIELD(1),PATHWY,6,NOPATH)
+      call expath(field(1),pathwy,6,nopath)
 
 !        For Invalid Pathway and Comment Lines Skip to Next Record
-      IF (NOPATH) THEN
+      if (nopath) then
 !           WRITE Error Message    ! Invalid Pathway ID
-         CALL ERRHDL(PPATH,MODNAM,'E','100',PATH)
-         PATH = PPATH
-         CYCLE
-      ELSE IF (PATH == '**') THEN
+         call errhdl(ppath,modnam,'E','100',path)
+         path = ppath
+         cycle
+      else if (path == '**') then
 ! ---       CYCLE to next runstream record
-         CYCLE
-      END IF
+         cycle
+      end if
 
 !        Extract Keyword From Field 2                       ---   CALL EXKEY
-      CALL EXKEY(FIELD(2),NOKEY)
+      call exkey(field(2),nokey)
 
-      IF (NOKEY) THEN
+      if (nokey) then
 !           WRITE Error Message    ! Invalid Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','105',KEYWRD)
-         PKEYWD = KEYWRD
-         CYCLE
-      END IF
+         call errhdl(path,modnam,'E','105',keywrd)
+         pkeywd = keywrd
+         cycle
+      end if
 
 !        Check for Proper Order of Setup Cards              ---   CALL SETORD
-      CALL EV_SETORD
+      call ev_setord
 
 !        Process Input Card Based on Pathway
-      IF (PATH == 'CO') THEN
+      if (path == 'CO') then
 !           Process COntrol Pathway Cards                   ---   CALL COCARD
-         CALL COCARD
-      ELSE IF (PATH == 'SO') THEN
+         call cocard
+      else if (path == 'SO') then
 !           Process SOurce Pathway Cards                    ---   CALL SOCARD
-         CALL SOCARD
-      ELSE IF (PATH == 'ME') THEN
+         call socard
+      else if (path == 'ME') then
 !           Process MEteorology Pathway Cards               ---   CALL MECARD
-         CALL MECARD
-      ELSE IF (PATH == 'EV') THEN
+         call mecard
+      else if (path == 'EV') then
 !           Process EVent Pathway Cards                     ---   CALL EVCARD
-         CALL EVCARD
+         call evcard
 
 ! ---       Create a character string that includes only those modeling
 !           options (MODOPS) that are applicable for this model run
          MODOPS_String = ''
-         NOPS = 0
+         nops = 0
 
-         DO I = 1, 30
-            IF (LEN_TRIM(MODOPS(I)) > 0) THEN
-               NOPS = NOPS + 1
-               ILEN = 10*(NOPS-1)
-               MODOPS_String = MODOPS_String(1:ILEN)//' '//MODOPS(I)
-            END IF
-         END DO
+         do i = 1, 30
+            if (len_trim(modops(i)) > 0) then
+               nops = nops + 1
+               ilen = 10*(nops-1)
+               MODOPS_String = MODOPS_String(1:ilen)//' '//modops(i)
+            end if
+         end do
 
-      ELSE IF (PATH == 'OU') THEN
+      else if (path == 'OU') then
 !           Process OUtput Pathway Cards                    ---   CALL OUCARD
-         CALL EV_OUCARD
+         call ev_oucard
 !           Check for 'OU FINISHED' Card.  Exit DO WHILE Loop By Branching
 !           to Statement 999 in Order to Avoid Reading a ^Z "End of File"
 !           Marker That May Be Present For Some Editors.
-         IF (PATH == 'OU' .and. KEYWRD == 'FINISHED') THEN
-            GO TO 999
-         END IF
-      END IF
+         if (path == 'OU' .and. keywrd == 'FINISHED') then
+            go to 999
+         end if
+      end if
 
 !        Store the Current Keyword as the Previous Keyword
-      PKEYWD = KEYWRD
+      pkeywd = keywrd
 
-      GO TO 11
-999   EOF = .TRUE.
-11    CONTINUE
-   END DO
+      go to 11
+999   eof = .true.
+11    continue
+   end do
 
 !     Reinitialize Line Number Counter to Count Meteorology Data
-   ILINE = 0
+   iline = 0
 
 !     Check That All Pathways Were Finished
-   IF (ICSTAT(50)/=1 .or. ISSTAT(50)/=1 .or. IMSTAT(50)/=1 .or.&
-   &IESTAT(50)/=1 .or. IOSTAT(50)/=1) THEN
+   if (icstat(50)/=1 .or. isstat(50)/=1 .or. imstat(50)/=1 .or.&
+   &iestat(50)/=1 .or. iostat(50)/=1) then
 !        Runstream File Incomplete, Save I?STAT to IFSTAT and Write Message
-      IFSTAT = ICSTAT(50)*10000 + ISSTAT(50)*1000 + IMSTAT(50)*100 +&
-      &IESTAT(50)*10 + IOSTAT(50)
-      WRITE(DUMMY,'(I5.5)') IFSTAT
-      CALL ERRHDL(PATH,MODNAM,'E','125',DUMMY)
-      IF (IFSTAT == 0) THEN
-         WRITE(IOUNIT,9990)
-9990     FORMAT(/1X,'All AERMOD input pathways missing! ',&
+      ifstat = icstat(50)*10000 + isstat(50)*1000 + imstat(50)*100 +&
+      &iestat(50)*10 + iostat(50)
+      write(dummy,'(I5.5)') ifstat
+      call errhdl(path,modnam,'E','125',dummy)
+      if (ifstat == 0) then
+         write(iounit,9990)
+9990     format(/1x,'All AERMOD input pathways missing! ',&
          &'Processing aborted!!!')
-         STOP
-      END IF
-   END IF
+         stop
+      end if
+   end if
 
 ! --- Check for non-DFAULT options for "optimized" area source,
 !     FASTAREA, or for all source types, FASTALL; set MAXDIST = 80KM
 !     if FASTALL or FASTAREA, otherwise MAXDIST = 1.0D20
-   IF (FASTALL .or. FASTAREA) THEN
-      MAXDIST = 8.0D04
-   ELSE
-      MAXDIST = 1.0D20
-   END IF
+   if (fastall .or. fastarea) then
+      maxdist = 8.0d04
+   else
+      maxdist = 1.0d20
+   end if
 
-   RETURN
-END SUBROUTINE EV_SETUP
+   return
+end subroutine ev_setup
 
-SUBROUTINE EV_SETORD
+subroutine ev_setord
 !***********************************************************************
 !                 EV_SETORD Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -721,53 +721,53 @@ SUBROUTINE EV_SETORD
 !***********************************************************************
 !
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'EV_SETORD'
+   modnam = 'EV_SETORD'
 
-   IF (KEYWRD == 'STARTING') THEN
-      IF (ISTART .or. .NOT.IFINIS) THEN
+   if (keywrd == 'STARTING') then
+      if (istart .or. .not.ifinis) then
 !           WRITE Error Message: Starting Out of Order
-         CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
-      ELSE IF (IPNUM /= IPPNUM+1) THEN
+         call errhdl(ppath,modnam,'E','119',path)
+      else if (ipnum /= ippnum+1) then
 !           WRITE Error Message: Pathway Out of Order
-         CALL ERRHDL(PPATH,MODNAM,'E','120',PATH)
-      END IF
+         call errhdl(ppath,modnam,'E','120',path)
+      end if
 !        Set Starting Indicator
-      ISTART = .TRUE.
+      istart = .true.
 !        Set Finished Indicator
-      IFINIS = .FALSE.
-   ELSE IF (KEYWRD == 'FINISHED') THEN
-      IF (IFINIS .or. .NOT.ISTART) THEN
+      ifinis = .false.
+   else if (keywrd == 'FINISHED') then
+      if (ifinis .or. .not.istart) then
 !           WRITE Error Message: Finished Out of Order
-         CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
-      ELSE IF (ISTART .and. PATH/=PPATH) THEN
+         call errhdl(ppath,modnam,'E','119',path)
+      else if (istart .and. path/=ppath) then
 !           WRITE Warning Message: Pathway Out of Order
-         CALL ERRHDL(PPATH,MODNAM,'E','120',PATH)
-      END IF
+         call errhdl(ppath,modnam,'E','120',path)
+      end if
 !        Reset Starting Indicator
-      ISTART = .FALSE.
+      istart = .false.
 !        Set Finished Indicator
-      IFINIS = .TRUE.
-   ELSE IF (.NOT.ISTART .or. IFINIS) THEN
+      ifinis = .true.
+   else if (.not.istart .or. ifinis) then
 !        WRITE Error Message: Starting or Finished Out of Order
-      CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
-   ELSE IF (ISTART .and. PATH/=PPATH) THEN
+      call errhdl(ppath,modnam,'E','119',path)
+   else if (istart .and. path/=ppath) then
 !        WRITE Warning Message: Pathway Out of Order
-      CALL ERRHDL(PPATH,MODNAM,'E','120',PATH)
-   END IF
+      call errhdl(ppath,modnam,'E','120',path)
+   end if
 
 !     Save Current Path and Path Number as Previous Path and Number
-   PPATH = PATH
-   IPPNUM = IPNUM
+   ppath = path
+   ippnum = ipnum
 
-   RETURN
-END SUBROUTINE EV_SETORD
+   return
+end subroutine ev_setord
 
-SUBROUTINE EV_OUCARD
+subroutine ev_oucard
 !***********************************************************************
 !                 EV_OUCARD Module of the AMS/EPA Regulatory Model - AERMOD - EVENT
 !
@@ -786,61 +786,61 @@ SUBROUTINE EV_OUCARD
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
 !     Variable Initializations
-   MODNAM = 'EV_OUCARD'
+   modnam = 'EV_OUCARD'
 
-   IF (KEYWRD == 'STARTING') THEN
+   if (keywrd == 'STARTING') then
 !        Set Status Switch
-      IOSTAT(1) = IOSTAT(1) + 1
-      IF (IOSTAT(1) /= 1) THEN
+      iostat(1) = iostat(1) + 1
+      if (iostat(1) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      END IF
-   ELSE IF (KEYWRD == 'EVENTOUT') THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      end if
+   else if (keywrd == 'EVENTOUT') then
 !        Process EVENT Output File Option                ---   CALL OEVENT
-      CALL OEVENT
+      call oevent
 !        Set Status Switch
-      IOSTAT(2) = IOSTAT(2) + 1
-      IF (IOSTAT(2) /= 1) THEN
+      iostat(2) = iostat(2) + 1
+      if (iostat(2) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      END IF
-   ELSE IF (KEYWRD == 'FILEFORM') THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      end if
+   else if (keywrd == 'FILEFORM') then
 !        Process FILEFORM Output Option                  ---   CALL FILEFORM
-      CALL FILEFORM
+      call fileform
 !        Set Status Switch
-      IOSTAT(13) = IOSTAT(13) + 1
-      IF (IOSTAT(13) /= 1) THEN
+      iostat(13) = iostat(13) + 1
+      if (iostat(13) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      END IF
-   ELSE IF (KEYWRD == 'FINISHED') THEN
+         call errhdl(path,modnam,'E','135',keywrd)
+      end if
+   else if (keywrd == 'FINISHED') then
 !        Set Status Switch
-      IOSTAT(50) = IOSTAT(50) + 1
+      iostat(50) = iostat(50) + 1
 !        Check If Missing Mandatory Keyword
-      IF (IOSTAT(1) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','STARTING')
-      END IF
-      IF (IOSTAT(2) == 0) THEN
-         CALL ERRHDL(PATH,MODNAM,'E','130','EVENTOUT')
-      END IF
-      IF (IOSTAT(50) /= 1) THEN
+      if (iostat(1) == 0) then
+         call errhdl(path,modnam,'E','130','STARTING')
+      end if
+      if (iostat(2) == 0) then
+         call errhdl(path,modnam,'E','130','EVENTOUT')
+      end if
+      if (iostat(50) /= 1) then
 !           WRITE Error Message: Repeat Non-repeatable Keyword
-         CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      END IF
-   ELSE
+         call errhdl(path,modnam,'E','135',keywrd)
+      end if
+   else
 !        Write Error Message:  Invalid Keyword for This Pathway
-      CALL ERRHDL(PATH,MODNAM,'E','110',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','110',keywrd)
+   end if
 
-   RETURN
-END SUBROUTINE EV_OUCARD
+   return
+end subroutine ev_oucard
 
-SUBROUTINE OEVENT
+subroutine oevent
 !***********************************************************************
 !                 OEVENT Module of the AMS/EPA Regulatory Model - AERMOD - EVENT
 !
@@ -858,41 +858,41 @@ SUBROUTINE OEVENT
 !***********************************************************************
 
 !     Variable Declarations
-   USE MAIN1
-   IMPLICIT NONE
-   CHARACTER :: MODNAM*12
+   use main1
+   implicit none
+   character :: modnam*12
 
-   CHARACTER :: OPTION*6
+   character :: option*6
 
 !     Variable Initializations
-   MODNAM = 'OEVENT'
+   modnam = 'OEVENT'
 
 !     Check If Enough Fields
-   IF (IFC == 2) THEN
+   if (ifc == 2) then
 !        Error Message: No Parameters
-      CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
-      GO TO 999
-   ELSE IF (IFC > 3) THEN
+      call errhdl(path,modnam,'E','200',keywrd)
+      go to 999
+   else if (ifc > 3) then
 !        Error Message: Too Many Fields
-      CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
-      GO TO 999
-   END IF
+      call errhdl(path,modnam,'E','202',keywrd)
+      go to 999
+   end if
 
 !     Assign Variable of EVENTOUT
-   OPTION = FIELD(3)
-   IF (OPTION == 'SOCONT') THEN
-      SOCONT = .TRUE.
-   ELSE IF (OPTION == 'DETAIL') THEN
-      DETAIL = .TRUE.
-   ELSE
+   option = field(3)
+   if (option == 'SOCONT') then
+      socont = .true.
+   else if (option == 'DETAIL') then
+      detail = .true.
+   else
 !        WRITE Error Message:  Invalid Parameter Field
-      CALL ERRHDL(PATH,MODNAM,'E','203',KEYWRD)
-   END IF
+      call errhdl(path,modnam,'E','203',keywrd)
+   end if
 
-999 RETURN
-END SUBROUTINE OEVENT
+999 return
+end subroutine oevent
 
-SUBROUTINE BLEVRECP (IEV,KK)
+subroutine blevrecp (iev,kk)
 !***********************************************************************
 !                 BLEVRECP Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -935,34 +935,34 @@ SUBROUTINE BLEVRECP (IEV,KK)
 !         extents of the translation/first rotation of the buoyant line
 !
 !     Variable Declarations
-   USE MAIN1
-   USE BUOYANT_LINE
-   IMPLICIT NONE
+   use main1
+   use buoyant_line
+   implicit none
 ! JAT 06/22/21 D065 REMOVE NVRECT AS UNUSED VARIABLE
 ! JAT 7/22/21 D065 REMOVE NRECIN
 !      INTEGER :: IEV, KK, NRECIN, LNUM, NVRECT
-   INTEGER :: IEV, KK, LNUM
-   DOUBLE PRECISION :: EX,EY, XLMIN, XLMAX, YLMIN, YLMAX
+   integer :: iev, kk, lnum
+   double precision :: ex,ey, xlmin, xlmax, ylmin, ylmax
 !      DOUBLE PRECISION :: BLREC_X(4), BLREC_Y(4)
-   CHARACTER :: MODNAM*12
+   character :: modnam*12
 ! Unused: INTEGER :: ILSAVE
 
 !     Variable Initializations
-   MODNAM = 'BLEVRECEP'
+   modnam = 'BLEVRECEP'
 ! JAT 7/22/21 D065 REMOVE NRECIN
 !      NRECIN = 0
 
-   IF (NBLTOTAL>= 1) THEN
+   if (nbltotal>= 1) then
 !        Translate event receptor
-      XR_SCS(1,KK) = AXR(IEV) - XOR(KK)
-      YR_SCS(1,KK) = AYR(IEV) - YOR(KK)
-      EX = XR_SCS(1,KK)
-      EY = YR_SCS(1,KK)
+      xr_scs(1,kk) = axr(iev) - xor(kk)
+      yr_scs(1,kk) = ayr(iev) - yor(kk)
+      ex = xr_scs(1,kk)
+      ey = yr_scs(1,kk)
 !        Rotate event receptor
-      EY = -EX*SINTCOR(KK) + EY*COSTCOR(KK)
-      YR_SCS(1,KK) = EY
-      EX = (EX + EY*SINTCOR(KK))/COSTCOR(KK)
-      XR_SCS(1,KK) = EX
+      ey = -ex*sintcor(kk) + ey*costcor(kk)
+      yr_scs(1,kk) = ey
+      ex = (ex + ey*sintcor(kk))/costcor(kk)
+      xr_scs(1,kk) = ex
 
 ! ---    Determine the min, max extents of the bouyant line source
 !         after translation and first rotation
@@ -975,29 +975,29 @@ SUBROUTINE BLEVRECP (IEV,KK)
 
 ! Multiple_BuoyLines_D41_Wood
 !     Determine the exclusion zone by BL group
-      DO LNUM = 1,NBLTOTAL
-         IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
-            YLMAX = YS_SCS(LNUM)
-            XLMAX = BLINEPARMS(LNUM)%XEND_TR1
-            XLMIN = BLINEPARMS(LNUM)%XBEG_TR1
-            EXIT
-         END IF
-      END DO
+      do lnum = 1,nbltotal
+         if (blineparms(lnum)%iblpgrpnum == kk) then
+            ylmax = ys_scs(lnum)
+            xlmax = blineparms(lnum)%xend_tr1
+            xlmin = blineparms(lnum)%xbeg_tr1
+            exit
+         end if
+      end do
 
-      DO LNUM = NBLTOTAL, 1, -1
-         IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
-            YLMIN = YS_SCS(LNUM)
-         END IF
-      END DO
+      do lnum = nbltotal, 1, -1
+         if (blineparms(lnum)%iblpgrpnum == kk) then
+            ylmin = ys_scs(lnum)
+         end if
+      end do
 
-      DO LNUM = 1,NBLTOTAL
-         IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
-            XLMIN = MIN(XLMIN,BLINEPARMS(LNUM)%XBEG_TR1)
-            XLMAX = MAX(XLMAX,BLINEPARMS(LNUM)%XEND_TR1)
-            YLMIN = MIN(YLMIN,YS_SCS(LNUM))
-            YLMAX = MAX(YLMAX,YS_SCS(LNUM))
-         END IF
-      END DO
+      do lnum = 1,nbltotal
+         if (blineparms(lnum)%iblpgrpnum == kk) then
+            xlmin = min(xlmin,blineparms(lnum)%xbeg_tr1)
+            xlmax = max(xlmax,blineparms(lnum)%xend_tr1)
+            ylmin = min(ylmin,ys_scs(lnum))
+            ylmax = max(ylmax,ys_scs(lnum))
+         end if
+      end do
 
 ! Multiple_BuoyLines_D41_Wood
 !        NOT NEEDED - commented out for now
@@ -1020,14 +1020,14 @@ SUBROUTINE BLEVRECP (IEV,KK)
 
 ! Multiple_BuoyLines_D41_Wood
 !        Second dimension added for multiple buoyant line processing
-      IF( YR_SCS(1,KK) <= (YLMAX + 0.1D0) .and.&
-      &YR_SCS(1,KK) >= (YLMIN - 0.1D0) .and.&
-      &XR_SCS(1,KK) <= (XLMAX + 0.1D0) .and.&
-      &XR_SCS(1,KK) >= (XLMIN - 0.1D0)) THEN
-         BL_RFLAG(1,KK) = .true.
-         WRITE(DUMMY,'(A8," ",I3)') trim(BL_GRPID(KK)),IEV
-         CALL ERRHDL(PATH,MODNAM,'W','477',DUMMY)
-      END IF
-   END IF
-   RETURN
-END SUBROUTINE BLEVRECP
+      if( yr_scs(1,kk) <= (ylmax + 0.1d0) .and.&
+      &yr_scs(1,kk) >= (ylmin - 0.1d0) .and.&
+      &xr_scs(1,kk) <= (xlmax + 0.1d0) .and.&
+      &xr_scs(1,kk) >= (xlmin - 0.1d0)) then
+         bl_rflag(1,kk) = .true.
+         write(dummy,'(A8," ",I3)') trim(bl_grpid(kk)),iev
+         call errhdl(path,modnam,'W','477',dummy)
+      end if
+   end if
+   return
+end subroutine blevrecp

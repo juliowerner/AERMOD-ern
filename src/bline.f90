@@ -1,4 +1,4 @@
-SUBROUTINE BL_CALC (KK)
+subroutine bl_calc (kk)
 !***********************************************************************
 !             BL_CALC Routine of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -25,63 +25,63 @@ SUBROUTINE BL_CALC (KK)
 !
 !***********************************************************************
 !     Variable Declarations
-   USE MAIN1
-   USE BUOYANT_LINE
+   use main1
+   use buoyant_line
 
-   IMPLICIT NONE
+   implicit none
 
-   CHARACTER :: MODNAM*12
+   character :: modnam*12
 
-   DOUBLE PRECISION, PARAMETER  :: BLCRIT = 0.02D0
-   DOUBLE PRECISION, PARAMETER  :: SRT2DP = 0.7978846D0
-   DOUBLE PRECISION, PARAMETER  :: AVFACT = 1.0D0
-   DOUBLE PRECISION, PARAMETER, DIMENSION(6) ::&
-   &WSPEXP = [0.10D0, 0.15D0, 0.20D0, 0.25D0, 0.30D0, 0.30D0]
-   DOUBLE PRECISION, PARAMETER, DIMENSION(6) ::&
-   &TERAN = [0.5D0, 0.5D0, 0.5D0, 0.5D0, 0.30D0, 0.30D0]
-   DOUBLE PRECISION, PARAMETER, DIMENSION(2) ::&
-   &DTHTA = [0.02D0, 0.035D0]
+   double precision, parameter  :: blcrit = 0.02d0
+   double precision, parameter  :: srt2dp = 0.7978846d0
+   double precision, parameter  :: avfact = 1.0d0
+   double precision, parameter, dimension(6) ::&
+   &wspexp = [0.10d0, 0.15d0, 0.20d0, 0.25d0, 0.30d0, 0.30d0]
+   double precision, parameter, dimension(6) ::&
+   &teran = [0.5d0, 0.5d0, 0.5d0, 0.5d0, 0.30d0, 0.30d0]
+   double precision, parameter, dimension(2) ::&
+   &dthta = [0.02d0, 0.035d0]
 
-   INTEGER :: I, KK, NBLINES
+   integer :: i, kk, nblines
 ! Unused:      INTEGER :: J, K, INOUT
-   INTEGER, PARAMETER :: MAXIT  = 14
-   INTEGER, PARAMETER, DIMENSION(7) :: NSEGA = [3,5,9,17,33,65,129]
+   integer, parameter :: maxit  = 14
+   integer, parameter, dimension(7) :: nsega = [3,5,9,17,33,65,129]
 
-   DOUBLE PRECISION   :: DECFAC, FTSAVE(129)
-   DOUBLE PRECISION   :: BL_XVZ, BL_XVY
-   DOUBLE PRECISION   :: BL_UEFF, BL_THETA
+   double precision   :: decfac, ftsave(129)
+   double precision   :: bl_xvz, bl_xvy
+   double precision   :: bl_ueff, bl_theta
 ! JAT 06/22/21 D065 REMOVE DPBL AS UNUSED VARIABLE
 !      DOUBLE PRECISION   :: P, S, TER1, FBRG, WSST, DPBL, CUQ, SUMFPRM
-   DOUBLE PRECISION   :: P, S, TER1, FBRG, WSST, CUQ, SUMFPRM
-   DOUBLE PRECISION   :: RI, UNSRT, XFSXX, DLMIN, ZLINEHS, ZLINEBASE
-   DOUBLE PRECISION   :: YV, ZV, XB, YB, XE, YE, XMAXL, YMAXL, XMINL
-   DOUBLE PRECISION   :: YMINL, DXEL, DYEL, SUMM, XRECEP, THT, HNT
-   DOUBLE PRECISION   :: DOWNX, CROSSY, SY0, SZ0, SYC, YRECEP
-   DOUBLE PRECISION   :: XRMXKM, YLOW, YHIGH, VIRTXZ, VIRTXY
-   DOUBLE PRECISION   :: VXYKM, VXZKM, SIGY, SIGZ, Z
-   DOUBLE PRECISION   :: TERRAN, H, FT, DELTAT, SUM2, DIFF, CORR
-   DOUBLE PRECISION   :: XSEG1, XDIFF, YSEG1, YDIFF, WEIGHT
-   DOUBLE PRECISION   :: XCLN, YCLN, EM, B, SFCZ0_SAV
+   double precision   :: p, s, ter1, fbrg, wsst, cuq, sumfprm
+   double precision   :: ri, unsrt, xfsxx, dlmin, zlinehs, zlinebase
+   double precision   :: yv, zv, xb, yb, xe, ye, xmaxl, ymaxl, xminl
+   double precision   :: yminl, dxel, dyel, summ, xrecep, tht, hnt
+   double precision   :: downx, crossy, sy0, sz0, syc, yrecep
+   double precision   :: xrmxkm, ylow, yhigh, virtxz, virtxy
+   double precision   :: vxykm, vxzkm, sigy, sigz, z
+   double precision   :: terran, h, ft, deltat, sum2, diff, corr
+   double precision   :: xseg1, xdiff, yseg1, ydiff, weight
+   double precision   :: xcln, ycln, em, b, sfcz0_sav
 ! CRCO D095 added for BLP debug
-   DOUBLE PRECISION   :: FPLMHT
-   INTEGER :: JITCT, IWPBL, ITHETA, IDELTA, IWOSIG, IDW, IDIV
-   INTEGER :: IDIST, ISEG, ISEG2, ISEG3, ITER, INDL, I2, IG
-   INTEGER :: IGSUB, NSEG, NSEG0, NSEGM1, INDLSV, INDLLN, NNEW
-   INTEGER :: NCONTRIB, IBMIN, IBMAX, IBMAX1, IH, IGMAX, IGMAX1
-   INTEGER :: LNUM, KSRC, LSRC, ISRC_SAV, KST_SAV, BL_URBKST
+   double precision   :: fplmht
+   integer :: jitct, iwpbl, itheta, idelta, iwosig, idw, idiv
+   integer :: idist, iseg, iseg2, iseg3, iter, indl, i2, ig
+   integer :: igsub, nseg, nseg0, nsegm1, indlsv, indlln, nnew
+   integer :: ncontrib, ibmin, ibmax, ibmax1, ih, igmax, igmax1
+   integer :: lnum, ksrc, lsrc, isrc_sav, kst_sav, bl_urbkst
 
 !     Variable Initializations
-   MODNAM = 'BL_CALC'
-   JITCT  = 0
-   IWPBL  = 0
+   modnam = 'BL_CALC'
+   jitct  = 0
+   iwpbl  = 0
 
 !CRT  Intialize variables ! 12/27/2017
-   TER1 = 0.0D0
-   FBRG = 0.0D0                                            ! Wood_D41
+   ter1 = 0.0d0
+   fbrg = 0.0d0                                            ! Wood_D41
 
-   SFCZ0_SAV = 0.0D0
-   ISRC_SAV  = 0
-   KST_SAV   = 0
+   sfcz0_sav = 0.0d0
+   isrc_sav  = 0
+   kst_sav   = 0
 
 !     The original BLP used meteorology from the met processor CRSTER.
 !      CRSTER did not allow wind speeds to be less than 1 m/s.  Set the
@@ -101,34 +101,34 @@ SUBROUTINE BL_CALC (KK)
 !       processed by AERMOD, when BL_CALC is called since this routine
 !       is not exited until all (one or more) bouyant line source groups
 !       are processed
-   ISRC_SAV = ISRC
+   isrc_sav = isrc
 
 !     LTOPG is called in METEXT.f in subr.SET_METDATA for a buoyant line
 !       source; save that value in case it is changed for an urban source
-   KST_SAV  = KST
+   kst_sav  = kst
 
 !     Save original value for Z0
-   SFCZ0_SAV = SFCZ0
+   sfcz0_sav = sfcz0
 
 ! --- Loop over the buoyant line source groups
 !jop      BLPGROUP_LOOP: DO KK = 1, NUMBLGRPS
 
 !        Initialize total concentration and partial contributions from
 !          each line to 0 for all receptors
-   CHIBL(:)  = 0.0D0
-   PARTCH    = 0.0D0
+   chibl(:)  = 0.0d0
+   partch    = 0.0d0
 
 !        Assign the average rise parameters from the arrays (processed
 !         during setup) to the scalar
-   BLAVGLLEN = BLAVGINP_LLEN(KK)
-   BLAVGBHGT = BLAVGINP_BHGT(KK)
-   BLAVGBWID = BLAVGINP_BWID(KK)
-   BLAVGLWID = BLAVGINP_LWID(KK)
-   BLAVGBSEP = BLAVGINP_BSEP(KK)
-   BLAVGFPRM = BLAVGINP_FPRM(KK)
+   blavgllen = blavginp_llen(kk)
+   blavgbhgt = blavginp_bhgt(kk)
+   blavgbwid = blavginp_bwid(kk)
+   blavglwid = blavginp_lwid(kk)
+   blavgbsep = blavginp_bsep(kk)
+   blavgfprm = blavginp_fprm(kk)
 
 ! ---    Assign # of individual lines for this BL source group to a scalar
-   NBLINES = NBLINGRP(KK)
+   nblines = nblingrp(kk)
 
 !        Set Mixing Height and Obukhov Length for Urban Option if Needed
 !         A tacit assumption is that all lines in a buoyant line source
@@ -136,81 +136,81 @@ SUBROUTINE BL_CALC (KK)
 !         is allowed.  This condition should have been checked in the QA of
 !         the source input.
 
-   IF (L_BLURBAN(KK)) THEN
+   if (l_blurban(kk)) then
 !           Find urban area index for buoyant lines
 !            Remember that once one individual BL is encountered that
 !            all buoyant lines and BL source groups are processed
 !            before moving on to the next non-BL source, so
 !            ISRC will not be changing.  The BL lines are already
 !            grouped together (group ID index = KK)
-      LNUM = 0
-      IF (KK ==1 )THEN
-         KSRC = ISRC
+      lnum = 0
+      if (kk ==1 )then
+         ksrc = isrc
 
-      ELSE IF (KK >= 2) THEN
-         DO I = 1,NUMSRC
-            IF (SRCTYP(I) == 'BUOYLINE') THEN
-               LNUM = LNUM + 1
-               IF( BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
-                  KSRC = I
-                  EXIT
-               END IF
-            END IF
-         END DO
-      END IF
+      else if (kk >= 2) then
+         do i = 1,numsrc
+            if (srctyp(i) == 'BUOYLINE') then
+               lnum = lnum + 1
+               if( blineparms(lnum)%iblpgrpnum == kk) then
+                  ksrc = i
+                  exit
+               end if
+            end if
+         end do
+      end if
 
-      DO I = 1, NUMURB
-         IF (IURBGRP(KSRC,I) == 1) THEN
-            IURB = I
-            EXIT
-         END IF
-      END DO
+      do i = 1, numurb
+         if (iurbgrp(ksrc,i) == 1) then
+            iurb = i
+            exit
+         end if
+      end do
 
-      IF (STABLE .or. L_MorningTrans(IURB)) THEN
-         URBSTAB = .TRUE.
+      if (stable .or. L_MorningTrans(iurb)) then
+         urbstab = .true.
 
 !              Set AERMET file values to urban values for use below
-         ZI = MAX( ZIURB(IURB), ZIMECH )
+         zi = max( ziurb(iurb), zimech )
 
 !              ... and for LTOPG
-         SFCZ0 = URBZ0(IURB)
-         IF (L_MorningTrans(IURB)) THEN
-            OBULEN = URBOBULEN(IURB)
+         sfcz0 = urbz0(iurb)
+         if (L_MorningTrans(iurb)) then
+            obulen = urbobulen(iurb)
 ! ---          Call LTOPG for a buoyant line source in an urban area
-            CALL LTOPG(BL_URBKST)
-            KST = BL_URBKST
-         ELSE
-            OBULEN = DABS( URBOBULEN(IURB) )
+            call ltopg(bl_urbkst)
+            kst = bl_urbkst
+         else
+            obulen = dabs( urbobulen(iurb) )
 ! CRCO 12/8/2021 Decision was to set stability to 4 for all urban nighttime hours
-            KST = 4
-         END IF
+            kst = 4
+         end if
 
 
 
 
 
-      ELSE
+      else
 !              Reset ZI and OBULEN back to rural values that were saved in
 !              SET_METDATA and URBCALC (both in metext.f)
 !              KST was not changed and retains the rural/original value
-         URBSTAB = .FALSE.
-         ZI = ZIRUR
-         OBULEN = RUROBULEN
-      END IF
+         urbstab = .false.
+         zi = zirur
+         obulen = rurobulen
+      end if
 
-   ELSE IF (URBAN .and. .NOT. L_BLURBAN(KK) ) THEN
+   else if (urban .and. .not. l_blurban(kk) ) then
 !           Reset ZI and OBULEN back to rural values that were saved in
 !           SET_METDATA and URBCALC (both in metext.f)
 !           KST was not changed and retains the rural/original value
-      URBSTAB = .FALSE.
-      ZI = ZIRUR
-      OBULEN = RUROBULEN
+      urbstab = .false.
+      zi = zirur
+      obulen = rurobulen
 
-   ELSE
+   else
 ! ---       Rural
 !           KST was not changed and retains the rural/original value
-      URBSTAB = .FALSE.
-   END IF
+      urbstab = .false.
+   end if
 
 !        Use the decay coefficient, DECOEF (default or input by the user),
 !         but only under the conditions noted, for BLP's decay factor (DECFAC)
@@ -219,70 +219,70 @@ SUBROUTINE BL_CALC (KK)
 !        modified 9/12/17 JAT, use half-life for SO2 URBAN even without DFAULT
 !        if HALFLIFE or DCAYCOEF used, use that value, not 4-hours
 
-   IF (URBAN .and. POLLUT=='SO2' .and. L_BLURBAN(KK) .and.&
-   &((ICSTAT(7) == 0 .and. ICSTAT(8) == 0) .or. DFAULT)) THEN
-      DECFAC = DECOEF
-   ELSE IF ((POLLUT=='SO2' .and. L_BLURBAN(KK)) .or.&
-   &DFAULT) THEN  !rural source for SO2 or default modified 10/12/17
-      DECFAC = 0.0D0
-   ELSE
+   if (urban .and. pollut=='SO2' .and. l_blurban(kk) .and.&
+   &((icstat(7) == 0 .and. icstat(8) == 0) .or. dfault)) then
+      decfac = decoef
+   else if ((pollut=='SO2' .and. l_blurban(kk)) .or.&
+   &dfault) then  !rural source for SO2 or default modified 10/12/17
+      decfac = 0.0d0
+   else
 !           DECFAC = 0.0D0 !commented out JAT 10/12/17
-      DECFAC = DECOEF !now add ability to use DECAY coefficient or half life
-   END IF
+      decfac = decoef !now add ability to use DECAY coefficient or half life
+   end if
 
 ! ---    Wood, 12/1/2019: modified for multiple buoyant lines
 !        If there is an hourly emissions file with buoyant lines,
 !          calculate the average FPRIME (buoyancy parameter) from the
 !          values in the file
 !
-   IF (HRLYBLCOUNT(KK) > 0) THEN
+   if (hrlyblcount(kk) > 0) then
 !           Compute the average BLAVGFPRM from ther values in the
 !            HOUREMIS file
-      LNUM = 0
-      SUMFPRM = 0.0
+      lnum = 0
+      sumfprm = 0.0
 
-      DO ISRC = 1, NUMSRC
-         IF (SRCTYP(ISRC) == 'BUOYLINE') THEN
-            LNUM = LNUM + 1
-            LSRC = BLINEPARMS(LNUM)%ISRCNUM
-            IF (QFLAG(LSRC) == 'HOURLY' .and.&
-            &BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
-               SUMFPRM = SUMFPRM + AFP(LSRC)
-            END IF
-         END IF
-      END DO
-      BLAVGFPRM = SUMFPRM / DBLE(HRLYBLCOUNT(KK))
-   END IF
+      do isrc = 1, numsrc
+         if (srctyp(isrc) == 'BUOYLINE') then
+            lnum = lnum + 1
+            lsrc = blineparms(lnum)%isrcnum
+            if (qflag(lsrc) == 'HOURLY' .and.&
+            &blineparms(lnum)%iblpgrpnum == kk) then
+               sumfprm = sumfprm + afp(lsrc)
+            end if
+         end if
+      end do
+      blavgfprm = sumfprm / dble(hrlyblcount(kk))
+   end if
 
 !        Calculate distance (from XFB) to final neutral plume rise
 !         assuming plumes interact before reaching terminal rise
 !         Note: the multiplication needs to be done when hourly values
 !               are not available from an HOUREMIS file and BLAVGFPRM
 !               is entered on the BLPINPUT record(s)
-   FBRG = DBLE(NBLINES) * BLAVGFPRM/PI
-   IF (FBRG <= 55.0D0) THEN
+   fbrg = dble(nblines) * blavgfprm/pi
+   if (fbrg <= 55.0d0) then
 !           Value: 49 = 3.5*14.
-      BL_XFINAL = 49.0D0 * FBRG**0.625D0
-   ELSE
+      bl_xfinal = 49.0d0 * fbrg**0.625d0
+   else
 !           Value: 120.72 = 3.5 * 34.49 (34.49=CONST3 in BLP)
-      BL_XFINAL =  120.72D0 * FBRG**0.4D0
-   END IF
-   XMATCH = BL_XFINAL
+      bl_xfinal =  120.72d0 * fbrg**0.4d0
+   end if
+   xmatch = bl_xfinal
 
 !        Compute the difference between the endpoint of the x coordinates
 !         AFTER the first translation/rotation for the BL group being
 !         processed
-   DO LNUM = 1,NBLTOTAL
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
-         DEL(LNUM) =&
-         &BLINEPARMS(LNUM)%XEND_TR1-BLINEPARMS(LNUM)%XBEG_TR1
-      END IF
-   END DO
+   do lnum = 1,nbltotal
+      if (blineparms(lnum)%iblpgrpnum == kk) then
+         del(lnum) =&
+         &blineparms(lnum)%xend_tr1-blineparms(lnum)%xbeg_tr1
+      end if
+   end do
 
 !        Rotate source and receptors so the y-axis of the buoyant line
 !         is parallel to the wind direction for this BL source group
 
-   CALL BL_ROTATE2 (WDREF, BL_THETA, ITHETA, NUMREC, NBLTOTAL, KK)
+   call bl_rotate2 (wdref, bl_theta, itheta, numrec, nbltotal, kk)
 
 ! ---    Create array of BLINEs (part of RWB method for determining if
 !          receptor in in bounding box - did not work for horizontal and
@@ -302,66 +302,66 @@ SUBROUTINE BL_CALC (KK)
 !         calculate WSST = stack height wind speed
 !         calculate S for stable conditions (BLTA is the saved ambient
 !         temperature since it is modified when point sources are run)
-   P = WSPEXP(KST)
-   WSST = BL_UREF * (BLAVGBHGT/UREFHT)**P
-   IF (KST > 4) S = 9.80616D0 * DTHTA(KST-4)/BLTA
+   p = wspexp(kst)
+   wsst = bl_uref * (blavgbhgt/urefht)**p
+   if (kst > 4) s = 9.80616d0 * dthta(kst-4)/blta
 
 !        Calculate an effective wind speed, BL_UEFF, with the line source
 !         plume rise eqn
 !        INPUT:  KST, WSST, S, and P
 !        OUTPUT: BL_UEFF = an effective wind speed
-   CALL BL_WSC(KST,WSST,BL_UEFF,S,P,NBLINES)
+   call bl_wsc(kst,wsst,bl_ueff,s,p,nblines)
 
 !        Calculate XFB,LEFF,LD,R0
-   CALL BL_LENG(BL_THETA,BL_UEFF,AVFACT,NBLINES)
+   call bl_leng(bl_theta,bl_ueff,avfact,nblines)
 
 !        Calculate distance to final rise
 !         BL_XFS = distance to final rise
 !         BL_XFB = distance to full buoyancy
 !         BL_XFINAL = final neutral plume rise
-   IF (KST <= 4) THEN
+   if (kst <= 4) then
 !           Calculate distance to final rise for neutral/unstable conditions
-      BL_XFS = BL_XFB + BL_XFINAL
+      bl_xfs = bl_xfb + bl_xfinal
 
 !           Find 5 intermediate downwind distances (in addition to XFB)
 !           at which plume rise will be calculated
-      DO IDIST = 2,7
-         RI = DBLE(IDIST)
-         BL_XDIST(IDIST) = BL_XFS -&
-         &(BL_XFS - BL_XFB)*(7.0D0 - RI)/5.0D0
-      END DO
+      do idist = 2,7
+         ri = dble(idist)
+         bl_xdist(idist) = bl_xfs -&
+         &(bl_xfs - bl_xfb)*(7.0d0 - ri)/5.0d0
+      end do
 
-   ELSE
+   else
 !           Calculate distance to final rise for stable conditions
-      UNSRT = (16.0D0*BL_UEFF*BL_UEFF/S) - (BL_XFB*BL_XFB/3.0D0)
+      unsrt = (16.0d0*bl_ueff*bl_ueff/s) - (bl_xfb*bl_xfb/3.0d0)
 
-      IF (UNSRT <= 0.0D0) THEN
-         BL_XFS = (12.0D0*BL_XFB*BL_UEFF*BL_UEFF/S)**(0.333333D0)
-      ELSE
-         BL_XFS = 0.5D0 * (BL_XFB + DSQRT(UNSRT))
-      END IF
+      if (unsrt <= 0.0d0) then
+         bl_xfs = (12.0d0*bl_xfb*bl_ueff*bl_ueff/s)**(0.333333d0)
+      else
+         bl_xfs = 0.5d0 * (bl_xfb + dsqrt(unsrt))
+      end if
 
-      XFSXX = BL_UEFF*PI/DSQRT(S)
-      BL_XFS = DMIN1(BL_XFS,XFSXX)
+      xfsxx = bl_ueff*pi/dsqrt(s)
+      bl_xfs = dmin1(bl_xfs,xfsxx)
 
-      IF (BL_XFS <= BL_XFB) THEN
-         DO IDIST = 2,7
-            BL_XDIST(IDIST) = BL_XFS
-         END DO
+      if (bl_xfs <= bl_xfb) then
+         do idist = 2,7
+            bl_xdist(idist) = bl_xfs
+         end do
 
-      ELSE
+      else
 !              Find 5 intermediate downwind distances (in addition to XFB)
 !               at which plume rise will be calculated
-         DO IDIST = 2,7
-            RI=DBLE(IDIST)
-            BL_XDIST(IDIST) = BL_XFS -&
-            &(BL_XFS - BL_XFB)*(7.0D0-RI)/5.0D0
-         END DO
-      END IF
-   END IF
+         do idist = 2,7
+            ri=dble(idist)
+            bl_xdist(idist) = bl_xfs -&
+            &(bl_xfs - bl_xfb)*(7.0d0-ri)/5.0d0
+         end do
+      end if
+   end if
 
 
-   CALL BL_RISE(BL_UEFF,KST, S)
+   call bl_rise(bl_ueff,kst, s)
 !
 !        CALCULATE CONCENTRATIONS DUE TO THE LINE SOURCES
 !
@@ -376,82 +376,82 @@ SUBROUTINE BL_CALC (KK)
 !         get messed up; the original source number is returned at the end
 !         of the BUOY_LINES loop.
 
-   BUOY_LINES: DO LNUM = 1,NBLTOTAL
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
-         ISRC = BLINEPARMS(LNUM)%ISRCNUM
-         DLMIN     = DEL(LNUM)/128.0D0
-         ZLINEBASE = BLINEPARMS(LNUM)%ELEV
-         ZLINEHS   = BLINEPARMS(LNUM)%BLHS
+   buoy_lines: do lnum = 1,nbltotal
+      if (blineparms(lnum)%iblpgrpnum == kk) then
+         isrc = blineparms(lnum)%isrcnum
+         dlmin     = del(lnum)/128.0d0
+         zlinebase = blineparms(lnum)%elev
+         zlinehs   = blineparms(lnum)%blhs
 
 ! CRCO D095 added for BLP debug, specifically compute plume rise
-         IF (BLPDBUG) THEN
-            FPLMHT = ZLINEHS + DH(7)
-            WRITE(BLPUNT,3333) SRCID(ISRC),IYEAR,IMONTH,IDAY,IHOUR,DH,&
-            &BL_XDIST,BL_XFB,BL_XFS,KST,URBOBULEN,&
-            &OBULEN,ZLINEHS,FPLMHT
-3333        FORMAT(1X,A12,4(2X,I2),14(F8.2),2X,2(F8.2),4X,I1,&
-            &4(1X,F8.2))
-         ENDIF
+         if (blpdbug) then
+            fplmht = zlinehs + dh(7)
+            write(blpunt,3333) srcid(isrc),iyear,imonth,iday,ihour,dh,&
+            &bl_xdist,bl_xfb,bl_xfs,kst,urbobulen,&
+            &obulen,zlinehs,fplmht
+3333        format(1x,a12,4(2x,i2),14(f8.2),2x,2(f8.2),4x,i1,&
+            &4(1x,f8.2))
+         endif
 
 !              Compute the profiled wind speed at the buoyant line
 !               release height
-         WSST  = BL_UREF * (ZLINEHS/UREFHT)**P
+         wsst  = bl_uref * (zlinehs/urefht)**p
 
 !              Assign the emissions stored in the variable AQS to QS
 !               (either the constant on the SRCPARM keyword or the
 !                hourly emission rate)
-         CALL SETSRC
+         call setsrc
 
 !              Apply the emission factor to the input argument QS
 !               (result is stored in QTK)
-         CALL EMFACT(QS)
+         call emfact(qs)
 !MGS               D183_BUOYLINE_EMISUNIT_WSP 3/1/2024: replaced 1.0E6 w/EMIFAC(1) below
 !MGS               CUQ   = QTK * 1.0D06 / (DBLE(NSEGA(1)-1)*WSST)
-         CUQ   = QTK * EMIFAC(1) / (DBLE(NSEGA(1)-1)*WSST) !EMIFAC(1) is for concentration
-         SZ0   = R0 * SRT2DP
-         ZV    = 1000.0D0 * BL_XVZ(SZ0,KST)
-         SY0   = SZ0/2.0D0
-         YV    = 1000.0D0 * BL_XVY(SY0,KST)
-         XB    = XS_RCS(LNUM,1)
-         YB    = YS_RCS(LNUM,1)
-         XE    = XS_RCS(LNUM,129)
-         YE    = YS_RCS(LNUM,129)
-         XMAXL = DMAX1(XB,XE)
-         XMINL = DMIN1(XB,XE)
-         YMAXL = DMAX1(YB,YE)
-         YMINL = DMIN1(YB,YE)
-         DXEL  = XE - XB
-         DYEL  = YE - YB
+         cuq   = qtk * emifac(1) / (dble(nsega(1)-1)*wsst) !EMIFAC(1) is for concentration
+         sz0   = r0 * srt2dp
+         zv    = 1000.0d0 * bl_xvz(sz0,kst)
+         sy0   = sz0/2.0d0
+         yv    = 1000.0d0 * bl_xvy(sy0,kst)
+         xb    = xs_rcs(lnum,1)
+         yb    = ys_rcs(lnum,1)
+         xe    = xs_rcs(lnum,129)
+         ye    = ys_rcs(lnum,129)
+         xmaxl = dmax1(xb,xe)
+         xminl = dmin1(xb,xe)
+         ymaxl = dmax1(yb,ye)
+         yminl = dmin1(yb,ye)
+         dxel  = xe - xb
+         dyel  = ye - yb
 
 !              LOOP OVER RECEPTORS
-         RECEPTOR_LOOP: DO IREC = 1, NUMREC
-            SUMM      = 0.0D0
-            PARTCH    = 0.0D0
-            NSEG      = 0
-            NCONTRIB  = 0
-            XRECEP    = XR_RCS(IREC)
+         receptor_loop: do irec = 1, numrec
+            summ      = 0.0d0
+            partch    = 0.0d0
+            nseg      = 0
+            ncontrib  = 0
+            xrecep    = xr_rcs(irec)
 
 ! Wood_D11 - Include flagpole receptor heights
-            ZFLAG = AZFLAG(IREC)
+            zflag = azflag(irec)
 !WSP                  THT   = AZELEV(IREC) - ZLINEBASE + ZFLAG
 !WSP --- Begin: D173 WSP add 7/24/2023
-            IF (L_FLATSRC(ISRC)) THEN
-               THT   = ZFLAG
-            ELSE
-               THT   = AZELEV(IREC) - ZLINEBASE + ZFLAG
-            END IF
+            if (l_flatsrc(isrc)) then
+               tht   = zflag
+            else
+               tht   = azelev(irec) - zlinebase + zflag
+            end if
 !WSP --- End: D173 WSP add 7/24/2023
 
 !                 If the receptor is upwind of the line
-            IF (XRECEP <= XMINL) THEN
-               CYCLE RECEPTOR_LOOP
-            END IF
+            if (xrecep <= xminl) then
+               cycle receptor_loop
+            end if
 
 !                 If the receptor is inside the rectangle defined by the source
 !                  cycle to the next receptor ...
-            IF (BL_RFLAG(IREC,KK)) THEN
-               CYCLE RECEPTOR_LOOP
-            END IF
+            if (bl_rflag(irec,kk)) then
+               cycle receptor_loop
+            end if
 
 !                 Check for receptor located inside "boundary" of BUOYLINE sources
 !                   (RWB method)
@@ -463,366 +463,366 @@ SUBROUTINE BL_CALC (KK)
 !                     ENDIF
 !                  END DO
 
-            YRECEP    = YR_RCS(IREC)
+            yrecep    = yr_rcs(irec)
 !                 IWOSIG keeps track of whether any line segment is within
 !                  one sigma y of the current receptor (0=NO,1=YES)
-            IWOSIG = 0
+            iwosig = 0
 
 !                 Define region of influence
 !                  Max distance from any source segment to current receptor
 !                  is equal to (XRECEP-XMINL)
-            XRMXKM = (XRECEP-XMINL)/1000.0D0
-            CALL BL_SIGMAY(XRMXKM,KST,SYC)
+            xrmxkm = (xrecep-xminl)/1000.0d0
+            call bl_sigmay(xrmxkm,kst,syc)
 
-            YLOW  = YMINL - 4.0D0*SYC
-            YHIGH = YMAXL + 4.0D0*SYC
-            IF (YRECEP < YLOW .or. YRECEP > YHIGH) THEN
-               CYCLE RECEPTOR_LOOP
-            END IF
+            ylow  = yminl - 4.0d0*syc
+            yhigh = ymaxl + 4.0d0*syc
+            if (yrecep < ylow .or. yrecep > yhigh) then
+               cycle receptor_loop
+            end if
 
-            YLOW  = YLOW  + DLMIN
-            YHIGH = YHIGH - DLMIN
-            IF (YRECEP < YLOW .or. YRECEP > YHIGH) THEN
-               CYCLE RECEPTOR_LOOP
-            END IF
+            ylow  = ylow  + dlmin
+            yhigh = yhigh - dlmin
+            if (yrecep < ylow .or. yrecep > yhigh) then
+               cycle receptor_loop
+            end if
 
 !                 Check if receptor is directly downwind of the line
 !                  (IDW=0=NO,IDW=1=YES)
-            IDW = 1
+            idw = 1
 
-            IF (YRECEP < YMINL .or. YRECEP > YMAXL) IDW = 0
+            if (yrecep < yminl .or. yrecep > ymaxl) idw = 0
 
 !                 Check if receptor is on the downwind side of the line
-            IF (XRECEP < XMAXL )THEN
-               IF (MOD(ITHETA,90) /= 0) THEN
-                  EM = DYEL/DXEL
-                  B = YE - EM*XE
-                  IF (XRECEP < (YRECEP-B)/EM) NCONTRIB = 999
-               END IF
-            END IF
+            if (xrecep < xmaxl )then
+               if (mod(itheta,90) /= 0) then
+                  em = dyel/dxel
+                  b = ye - em*xe
+                  if (xrecep < (yrecep-b)/em) ncontrib = 999
+               end if
+            end if
 
-            NSEG0  = NSEGA(1)
-            NNEW   = NSEG0
-            ITER   = 0
-            INDL   = 1
-            IDELTA = 128/(NSEG0-1)
-498         CONTINUE
-            NSEG = NSEG+NNEW
+            nseg0  = nsega(1)
+            nnew   = nseg0
+            iter   = 0
+            indl   = 1
+            idelta = 128/(nseg0-1)
+498         continue
+            nseg = nseg+nnew
 !
 !                 Loop over line segments
 !
-            SEGMENT_LOOP: DO ISEG = 1,NNEW
-               FTSAVE(INDL) = 0.0D0
+            segment_loop: do iseg = 1,nnew
+               ftsave(indl) = 0.0d0
 
 !                    If current receptor is upwind of a source segment,
 !                    then this source segment does not contribute
 
-               IF (XS_RCS(LNUM,INDL) >= XRECEP) GO TO 495
-               DOWNX  = XRECEP - XS_RCS(LNUM,INDL)
-               CROSSY = YRECEP - YS_RCS(LNUM,INDL)
-               VIRTXZ = DOWNX + ZV
-               VIRTXY = DOWNX + YV
-               VXYKM  = VIRTXY/1000.0D0
-               VXZKM  = VIRTXZ/1000.0D0
+               if (xs_rcs(lnum,indl) >= xrecep) go to 495
+               downx  = xrecep - xs_rcs(lnum,indl)
+               crossy = yrecep - ys_rcs(lnum,indl)
+               virtxz = downx + zv
+               virtxy = downx + yv
+               vxykm  = virtxy/1000.0d0
+               vxzkm  = virtxz/1000.0d0
 
-               if( VXYKM < 0.0D0 .or. VXZKM < 0.0D0 )then
+               if( vxykm < 0.0d0 .or. vxzkm < 0.0d0 )then
 ! ---                   Virtual distance is < 0.0; skip this segment
-                  GO TO 495
+                  go to 495
                endif
-               CALL BL_DBTSIG(VXZKM,VXYKM,KST,SIGY,SIGZ)
+               call bl_dbtsig(vxzkm,vxykm,kst,sigy,sigz)
 
 !                    If crosswind distance > 4 * SIGY, then this source
 !                     segment does not contribute
-               IF (4.0D0*SIGY < DABS(CROSSY)) GO TO 495
-               IF (DABS(CROSSY) < SIGY) IWOSIG = 1
-               CALL BL_ZRISE(LNUM,INDL,IREC,Z)
+               if (4.0d0*sigy < dabs(crossy)) go to 495
+               if (dabs(crossy) < sigy) iwosig = 1
+               call bl_zrise(lnum,indl,irec,z)
 !
 !                    Include terrain correction in determining the plume height
 !
-               TER1 = 1.0D0 - TERAN(KST)
-               HNT  = Z + ZLINEHS
+               ter1 = 1.0d0 - teran(kst)
+               hnt  = z + zlinehs
 !                    TER1=(1.0-TERAN(KST)); THT=RELEV(I)-LELEV(LNUM)
 !                    ZI is the AERMOD-determined mixing height
-               TERRAN = TER1 * DMIN1(HNT,THT)
-               H = HNT - TERRAN
+               terran = ter1 * dmin1(hnt,tht)
+               h = hnt - terran
 
-               IF (H > ZI .and. KST <= 4)GO TO 495
+               if (h > zi .and. kst <= 4)go to 495
 !
 !                    Solve the gaussian point source equation
 !
-               CALL BL_GAUSS(KST,ZI,CROSSY,SIGY,SIGZ,H,FT)
+               call bl_gauss(kst,zi,crossy,sigy,sigz,h,ft)
 !                    Include decay in determining chi
-               DELTAT = DOWNX/WSST
-               FTSAVE(INDL) = FT*(1.0D0 - DELTAT*DECFAC)
-               NCONTRIB = NCONTRIB + 1
-495            INDL   = INDL + IDELTA
-            END DO SEGMENT_LOOP
+               deltat = downx/wsst
+               ftsave(indl) = ft*(1.0d0 - deltat*decfac)
+               ncontrib = ncontrib + 1
+495            indl   = indl + idelta
+            end do segment_loop
 
 !
 !                 First time through loop, calculate the first chi estimate
 !
-            IF (NNEW /= NSEG0) GO TO 714
-            INDL = 1
-            NSEGM1 = NSEG0 - 1
-            SUMM = (FTSAVE(1) + FTSAVE(129))/2.0D0
-            DO ISEG2 = 2,NSEGM1
-               INDL = INDL + IDELTA
-               SUMM = SUMM + FTSAVE(INDL)
-            END DO
+            if (nnew /= nseg0) go to 714
+            indl = 1
+            nsegm1 = nseg0 - 1
+            summ = (ftsave(1) + ftsave(129))/2.0d0
+            do iseg2 = 2,nsegm1
+               indl = indl + idelta
+               summ = summ + ftsave(indl)
+            end do
 
 !                 If receptor is within region of influence but not directly
 !                  downwind of any part of the line, and SUM=0.0, CHI=0.0
-            IF (SUMM <= 0.0D0 .and. IDW /= 1) THEN
-               CYCLE RECEPTOR_LOOP
-            END IF
+            if (summ <= 0.0d0 .and. idw /= 1) then
+               cycle receptor_loop
+            end if
 !
 !                 Calculate the refined chi estimate
 !
-713         CONTINUE
-            ITER   = ITER + 1
-            IDIV   = MIN0(ITER,2)
-            IDELTA = IDELTA/IDIV
-            INDL   = 1 + IDELTA/2
+713         continue
+            iter   = iter + 1
+            idiv   = min0(iter,2)
+            idelta = idelta/idiv
+            indl   = 1 + idelta/2
 !                 INDL is the subcript of the first new line segment
 !                   (save as INDLSV)
-            INDLSV = INDL
+            indlsv = indl
 
-            NNEW = NSEGM1**ITER + 0.1D0
+            nnew = nsegm1**iter + 0.1d0
 
 !                 If more than 129 line segments (i.e., 64 new segments)
 !                  are required, continue to increase the number of
 !                  segments but only over the section of the line
 !                  which is contributing
 
-            IF (NNEW > 64) GO TO 759
-            GO TO 498
+            if (nnew > 64) go to 759
+            go to 498
 
-714         CONTINUE
+714         continue
 
 !                 Subscript of the first new line segment is INDLSV
 !                 Subscript of the last new line segment is INDLLN
-            INDLLN = 129 - IDELTA/2
+            indlln = 129 - idelta/2
 
 !                 Sum the first and last new line segments
-            SUM2 = FTSAVE(INDLSV) + FTSAVE(INDLLN)
+            sum2 = ftsave(indlsv) + ftsave(indlln)
 
 !                 If there are only 2 new line segments, skip this loop
-            IF (NNEW > 2) THEN
-               INDL = INDLSV
-               I2   = NNEW-1
+            if (nnew > 2) then
+               indl = indlsv
+               i2   = nnew-1
 !
 !                    Find the sum of all the new line segments
-               DO ISEG3=2,I2
-                  INDL = INDL + IDELTA
-                  SUM2 = SUM2 + FTSAVE(INDL)
-               END DO
+               do iseg3=2,i2
+                  indl = indl + idelta
+                  sum2 = sum2 + ftsave(indl)
+               end do
 
-            END IF
+            end if
 !
 !                 Compare the new estimate with the previous estimate
 !
-            SUM2 = SUMM/2.0D0 + SUM2/(2.0D0**ITER)
+            sum2 = summ/2.0d0 + sum2/(2.0d0**iter)
 
 !                 At least one line segment must be within one SIGMA Y of
 !                  the line (if the receptor is directly downwind of any
 !                  part of the line)
-            IF (IDW == 1 .and. IWOSIG /= 1) GO TO 758
+            if (idw == 1 .and. iwosig /= 1) go to 758
 
-            DIFF = DABS(SUM2-SUMM)
+            diff = dabs(sum2-summ)
 !MGS               D183_BUOYLINE_EMISUNIT_WSP 3/4/2024: Added the 1.0E6/EMIFAC(1) to leave this
 !MGS                            comparison equivalent to before EMIFAC(1) was added to CUQ above.
 !MGS                  IF (DIFF*CUQ .LT. 0.1D0) THEN
-            IF (DIFF*CUQ*1.0D6/EMIFAC(1) < 0.1D0) THEN    !EMIFAC(1) is for concentration
-               GO TO 720
-            END IF
+            if (diff*cuq*1.0d6/emifac(1) < 0.1d0) then    !EMIFAC(1) is for concentration
+               go to 720
+            end if
 
-            CORR = DIFF/SUM2
+            corr = diff/sum2
 
-            IF (CORR < BLCRIT) THEN
-               GO TO 720
-            END IF
+            if (corr < blcrit) then
+               go to 720
+            end if
 
-758         CONTINUE
-            SUMM = SUM2
-            GO TO 713
+758         continue
+            summ = sum2
+            go to 713
 
 !                 If 129 source segments not sufficient, continue
 !                  to increase number of segments, but only over the
 !                  section of line which is contributing
-759         CONTINUE
+759         continue
 
-            CALL BL_SORT(FTSAVE,IBMIN,IBMAX,IWPBL)
+            call bl_sort(ftsave,ibmin,ibmax,iwpbl)
 
-            IF (IWPBL /= 999) GO TO 4949
-            IWPBL  = 0
-            PARTCH = 0.0D0
-            CYCLE RECEPTOR_LOOP
+            if (iwpbl /= 999) go to 4949
+            iwpbl  = 0
+            partch = 0.0d0
+            cycle receptor_loop
 
-4949        CONTINUE
+4949        continue
 
-            IBMAX1 = IBMAX - 1
-            IH     = 0
-            IGMAX  = 1
+            ibmax1 = ibmax - 1
+            ih     = 0
+            igmax  = 1
 
-939         CONTINUE
-            SUM2   = 0.0D0
-            IGMAX1 = IGMAX + 1
+939         continue
+            sum2   = 0.0d0
+            igmax1 = igmax + 1
 
-            DO 940 IG = IBMIN,IBMAX1
+            do 940 ig = ibmin,ibmax1
 !                    XCLN = x coordinate (RCS) of current (newest) line segment
 !                    YCLN = y coordinate (RCS) of current (newest) line segment
 !                    XRCS and YRCS are the translated and rotated line source
 !                      segments w.r.t. the hourly flow vector
-               XSEG1 = XS_RCS(LNUM,IG)
-               XDIFF = XS_RCS(LNUM,IG+1) - XSEG1
-               YSEG1 = YS_RCS(LNUM,IG)
-               YDIFF = YS_RCS(LNUM,IG+1) - YSEG1
+               xseg1 = xs_rcs(lnum,ig)
+               xdiff = xs_rcs(lnum,ig+1) - xseg1
+               yseg1 = ys_rcs(lnum,ig)
+               ydiff = ys_rcs(lnum,ig+1) - yseg1
 
-               DO 941 IGSUB = 1,IGMAX
-                  WEIGHT = DBLE(IGSUB)/DBLE(IGMAX1)
-                  XCLN   = XSEG1 + WEIGHT*XDIFF
-                  YCLN   = YSEG1 + WEIGHT*YDIFF
-                  DOWNX  = XRECEP - XCLN
-                  CROSSY = YRECEP - YCLN
-                  VIRTXZ = DOWNX + ZV
-                  VIRTXY = DOWNX + YV
-                  VXYKM  = VIRTXY/1000.0D0
-                  VXZKM  = VIRTXZ/1000.0D0
+               do 941 igsub = 1,igmax
+                  weight = dble(igsub)/dble(igmax1)
+                  xcln   = xseg1 + weight*xdiff
+                  ycln   = yseg1 + weight*ydiff
+                  downx  = xrecep - xcln
+                  crossy = yrecep - ycln
+                  virtxz = downx + zv
+                  virtxy = downx + yv
+                  vxykm  = virtxy/1000.0d0
+                  vxzkm  = virtxz/1000.0d0
 
-                  if( VXYKM < 0.0D0 .or. VXZKM < 0.0D0 )then
+                  if( vxykm < 0.0d0 .or. vxzkm < 0.0d0 )then
 ! ---                      Virtual distance is < 0.0; skip this segment
-                     GO TO 941                                   ! not sure if this is best fix
+                     go to 941                                   ! not sure if this is best fix
                   endif
 
-                  CALL BL_DBTSIG(VXZKM,VXYKM,KST,SIGY,SIGZ)
-                  CALL BL_ZRISE(LNUM,IG,IREC,Z)
+                  call bl_dbtsig(vxzkm,vxykm,kst,sigy,sigz)
+                  call bl_zrise(lnum,ig,irec,z)
 
 !                       Include terrain correction in determining plume height
-                  HNT    = Z + ZLINEHS
+                  hnt    = z + zlinehs
 !                       TER1   = (1.0-TERAN(KST)); THT=RELEV(I)-LELEV(LNUM)
-                  TERRAN = TER1*DMIN1(HNT,THT)
-                  H      = HNT - TERRAN
-                  CALL BL_GAUSS(KST,ZI,CROSSY,SIGY,SIGZ,H,FT)
+                  terran = ter1*dmin1(hnt,tht)
+                  h      = hnt - terran
+                  call bl_gauss(kst,zi,crossy,sigy,sigz,h,ft)
 
 !                       Include decay in determining chi
-                  DELTAT = DOWNX/WSST
-                  FT     = FT*(1.0D0 - DELTAT*DECFAC)
-                  SUM2   = SUM2 + FT
-                  NCONTRIB = NCONTRIB + 1
-941            CONTINUE
+                  deltat = downx/wsst
+                  ft     = ft*(1.0d0 - deltat*decfac)
+                  sum2   = sum2 + ft
+                  ncontrib = ncontrib + 1
+941            continue
 
-940         CONTINUE
+940         continue
 
 !                 Compare the new estimate with the previous estimate
-            SUM2 = SUMM/2.0D0 + SUM2/(2.0D0**ITER)
+            sum2 = summ/2.0d0 + sum2/(2.0d0**iter)
 
-            DIFF = ABS(SUM2-SUMM)
+            diff = abs(sum2-summ)
 !MGS               D183_BUOYLINE_EMISUNIT_WSP 3/4/2024: Added the 1.0E6/EMIFAC(1) to leave this
 !MGS                            comparison equivalent to before EMIFAC(1) was added to CUQ above.
 !MGS                  IF (DIFF*CUQ .LT. 0.1D0) THEN
-            IF (DIFF*CUQ*1.0D6/EMIFAC(1) < 0.1D0) THEN    !EMIFAC(1) is for concentration
-               GO TO 720
-            ENDIF
+            if (diff*cuq*1.0d6/emifac(1) < 0.1d0) then    !EMIFAC(1) is for concentration
+               go to 720
+            endif
 
-            CORR = DIFF/SUM2
-            IF (CORR < BLCRIT) THEN
-               GO TO 720
-            END IF
+            corr = diff/sum2
+            if (corr < blcrit) then
+               go to 720
+            end if
 
-            SUMM = SUM2
-            ITER = ITER + 1
-            IF (ITER >= MAXIT) THEN
-               SUMM = SUM2
-               PARTCH      = CUQ*SUMM
-               CHIBL(IREC) = CHIBL(IREC) + PARTCH
-               IF (DEBUG) THEN
-                  WRITE(DBGUNT,6000) IREC, CHIBL(IREC)
-6000              FORMAT(/,5X,'Buoyant Line iteration fails to ',&
-                  &' converge for receptor',I6,', conc. =',F13.6)
-                  JITCT = JITCT+1
-                  IF (MOD(JITCT,100) == 0 ) THEN
-                     WRITE(DBGUNT,6001) JITCT
-6001                 FORMAT(/,5X,'Buoyant Line iterations for',&
-                     &' all receptors fails for ',I8,'th time' )
-                  END IF
-               ENDIF
-               CYCLE RECEPTOR_LOOP
-            END IF
-            IH = IH + 1
-            IGMAX = 2**IH
-            GO TO 939
-720         CONTINUE
+            summ = sum2
+            iter = iter + 1
+            if (iter >= maxit) then
+               summ = sum2
+               partch      = cuq*summ
+               chibl(irec) = chibl(irec) + partch
+               if (debug) then
+                  write(dbgunt,6000) irec, chibl(irec)
+6000              format(/,5x,'Buoyant Line iteration fails to ',&
+                  &' converge for receptor',i6,', conc. =',f13.6)
+                  jitct = jitct+1
+                  if (mod(jitct,100) == 0 ) then
+                     write(dbgunt,6001) jitct
+6001                 format(/,5x,'Buoyant Line iterations for',&
+                     &' all receptors fails for ',i8,'th time' )
+                  end if
+               endif
+               cycle receptor_loop
+            end if
+            ih = ih + 1
+            igmax = 2**ih
+            go to 939
+720         continue
 
-            SUMM = SUM2
+            summ = sum2
 
 !                 Test to make sure at least two line segments contributed
 !                  to the chi estimate (unless receptor is on the upwind side
 !                  of the line with some source segments downwind and some
 !                  source segments upwind -- in that case just use the test
 !                  for convergence)
-            IF (NCONTRIB < 2) GO TO 713
+            if (ncontrib < 2) go to 713
 
 !                 Calculate concentration (in micrograms);
 !                  use stack height wind speed for dilution
 
-            PARTCH = CUQ*SUMM
-            CHIBL(IREC)  = CHIBL(IREC) + PARTCH
-            HRVAL = PARTCH
+            partch = cuq*summ
+            chibl(irec)  = chibl(irec) + partch
+            hrval = partch
 
 !                 For the initial implementation of BLP into AERMOD, we
 !                  are skipping calculations with PVMRM, OLM.
 !                  As BLP is integrated more into AERMOD, those options
 !                  will be included (e.g., see PCALC).
 !
-            IF (ARM2) THEN
+            if (arm2) then
 ! ---                Store conc by source and receptor for ARM/ARM2 options
-               DO ITYP = 1, NUMTYP
-                  CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
-               END DO
+               do ityp = 1, numtyp
+                  chi(irec,isrc,ityp) = hrval(ityp)
+               end do
 
 !                    Initialize __VAL arrays (1:NUMTYP)
-               HRVAL   = 0.0D0
+               hrval   = 0.0d0
 
-            END IF
+            end if
 
 !                 Sum HRVAL to AVEVAL and ANNVAL Arrays      ---   CALL SUMVAL
-            IF (EVONLY) THEN
-               CALL EV_SUMVAL
-            ELSE
-               DO IGRP = 1, NUMGRP
-                  CALL SUMVAL
-               END DO
-            END IF
+            if (evonly) then
+               call ev_sumval
+            else
+               do igrp = 1, numgrp
+                  call sumval
+               end do
+            end if
 
-            IF (EVAL(ISRC)) THEN
+            if (eval(isrc)) then
 !                    Check ARC centerline values for EVALFILE
 !                    output                                  ---   CALL EVALCK
-               CALL EVALCK
-            END IF
+               call evalck
+            end if
 
 !                 Initialize __VAL arrays (1:NUMTYP)
-            HRVAL   = 0.0D0
+            hrval   = 0.0d0
 
-         END DO RECEPTOR_LOOP
-      END IF                    ! BLINEPARMS(LNUM)%IBLPGRPNUM = KK
-   END DO BUOY_LINES
+         end do receptor_loop
+      end if                    ! BLINEPARMS(LNUM)%IBLPGRPNUM = KK
+   end do buoy_lines
 
 !        Since all buoyant line groups and the associated individual
 !         buoyant lines are processed in consecutive calls to BL_CALC
 !         from subr,CALC, the PG stability, mixing height, roughness
 !         length, and Obukhov length need to be restored to the
 !         original values if the BL group was an urban source
-   IF (URBSTAB) THEN
-      ISRC = ISRC_SAV
-      KST  = KST_SAV
-      ZI   = ZIRUR
-      SFCZ0  = SFCZ0_sav
-      OBULEN = RUROBULEN
-   ELSE
-      ISRC = ISRC_SAV
-      KST  = KST_SAV
-      SFCZ0  = SFCZ0_sav
-   END IF
+   if (urbstab) then
+      isrc = isrc_sav
+      kst  = kst_sav
+      zi   = zirur
+      sfcz0  = SFCZ0_sav
+      obulen = rurobulen
+   else
+      isrc = isrc_sav
+      kst  = kst_sav
+      sfcz0  = SFCZ0_sav
+   end if
 
 !     END DO BLPGROUP_LOOP
 
@@ -832,10 +832,10 @@ SUBROUTINE BL_CALC (KK)
 !     SFCZ0  = SFCZ0_sav
 !     OBULEN = RUROBULEN
 
-   RETURN
-END SUBROUTINE BL_CALC
+   return
+end subroutine bl_calc
 
-SUBROUTINE BL_DBTSIG (XZ,XY,ISTAB,SY,SZ)
+subroutine bl_dbtsig (xz,xy,istab,sy,sz)
 !***********************************************************************
 !             BL_DBTSIG Routine of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -852,148 +852,148 @@ SUBROUTINE BL_DBTSIG (XZ,XY,ISTAB,SY,SZ)
 !
 !     ------------------------------------------------------------------
 !
-   IMPLICIT NONE
+   implicit none
 
-   DOUBLE PRECISION, INTENT(IN)  :: XZ, XY
-   DOUBLE PRECISION, INTENT(OUT) :: SY, SZ
-   INTEGER, INTENT (IN) :: ISTAB
-   INTEGER :: ID
+   double precision, intent(in)  :: xz, xy
+   double precision, intent(out) :: sy, sz
+   integer, intent (in) :: istab
+   integer :: id
 
-   DOUBLE PRECISION :: TH
+   double precision :: th
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(7) ::&
-   &XA = [0.5D0, 0.4D0, 0.3D0, 0.25D0, 0.2D0, 0.15D0, 0.1D0]
+   double precision, parameter, dimension(7) ::&
+   &xa = [0.5d0, 0.4d0, 0.3d0, 0.25d0, 0.2d0, 0.15d0, 0.1d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(2) ::&
-   &XB = [0.4D0, 0.2D0]
+   double precision, parameter, dimension(2) ::&
+   &xb = [0.4d0, 0.2d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(5) ::&
-   &XD = [30.0D0, 10.0D0, 3.0D0, 1.0D0, 0.3D0]
+   double precision, parameter, dimension(5) ::&
+   &xd = [30.0d0, 10.0d0, 3.0d0, 1.0d0, 0.3d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(8) ::&
-   &XE = [40.0D0, 20.0D0, 10.0D0, 4.0D0, 2.0D0,&
-   &1.0D0, 0.3D0, 0.1D0]
+   double precision, parameter, dimension(8) ::&
+   &xe = [40.0d0, 20.0d0, 10.0d0, 4.0d0, 2.0d0,&
+   &1.0d0, 0.3d0, 0.1d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(9) ::&
-   &XF = [60.0D0, 30.0D0, 15.0D0, 7.0D0, 3.0D0,&
-   &2.0D0, 1.0D0, 0.7D0, 0.2D0]
+   double precision, parameter, dimension(9) ::&
+   &xf = [60.0d0, 30.0d0, 15.0d0, 7.0d0, 3.0d0,&
+   &2.0d0, 1.0d0, 0.7d0, 0.2d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(8) ::&
-   &AA = [453.85D0, 346.75D0, 258.89D0, 217.41D0,&
-   &179.52D0, 170.22D0, 158.08D0, 122.8D0]
+   double precision, parameter, dimension(8) ::&
+   &aa = [453.85d0, 346.75d0, 258.89d0, 217.41d0,&
+   &179.52d0, 170.22d0, 158.08d0, 122.8d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(8) ::&
-   &BA = [2.1166D0, 1.7283D0, 1.4094D0, 1.2644D0,&
-   &1.1262D0, 1.0932D0, 1.0542D0, 0.9447D0]
+   double precision, parameter, dimension(8) ::&
+   &ba = [2.1166d0, 1.7283d0, 1.4094d0, 1.2644d0,&
+   &1.1262d0, 1.0932d0, 1.0542d0, 0.9447d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(3) ::&
-   &AB = [109.30D0, 98.483D0, 90.673D0]
+   double precision, parameter, dimension(3) ::&
+   &ab = [109.30d0, 98.483d0, 90.673d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(3) ::&
-   &BB = [1.0971D0, 0.98332D0, 0.93198D0]
+   double precision, parameter, dimension(3) ::&
+   &bb = [1.0971d0, 0.98332d0, 0.93198d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(6) ::&
-   &AD = [44.053D0, 36.650D0, 33.504D0, 32.093D0,&
-   &32.093D0, 34.459D0]
+   double precision, parameter, dimension(6) ::&
+   &ad = [44.053d0, 36.650d0, 33.504d0, 32.093d0,&
+   &32.093d0, 34.459d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(6) ::&
-   &BD = [0.51179D0, 0.56589D0, 0.60486D0, 0.64403D0,&
-   &0.81066D0, 0.86974D0]
+   double precision, parameter, dimension(6) ::&
+   &bd = [0.51179d0, 0.56589d0, 0.60486d0, 0.64403d0,&
+   &0.81066d0, 0.86974d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(9) ::&
-   &AE = [47.618D0, 35.420D0, 26.970D0, 24.703D0,&
-   &22.534D0, 21.628D0, 21.628D0, 23.331D0, 24.26D0]
+   double precision, parameter, dimension(9) ::&
+   &ae = [47.618d0, 35.420d0, 26.970d0, 24.703d0,&
+   &22.534d0, 21.628d0, 21.628d0, 23.331d0, 24.26d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(9) ::&
-   &BE = [0.29592D0, 0.37615D0, 0.46713D0, 0.50527D0,&
-   &0.57154D0, 0.63077D0, 0.75660D0, 0.81956D0, 0.8366D0]
+   double precision, parameter, dimension(9) ::&
+   &be = [0.29592d0, 0.37615d0, 0.46713d0, 0.50527d0,&
+   &0.57154d0, 0.63077d0, 0.75660d0, 0.81956d0, 0.8366d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(10) ::&
-   &AF = [34.219D0, 27.074D0, 22.651D0, 17.836D0, 16.187D0,&
-   &14.823D0, 13.953D0, 13.953D0, 14.457D0, 15.209D0]
+   double precision, parameter, dimension(10) ::&
+   &af = [34.219d0, 27.074d0, 22.651d0, 17.836d0, 16.187d0,&
+   &14.823d0, 13.953d0, 13.953d0, 14.457d0, 15.209d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(10) ::&
-   &BF = [0.21716D0, 0.27436D0, 0.32681D0, 0.41507D0, 0.46490D0,&
-   &0.54503D0, 0.63227D0, 0.68465D0, 0.78407D0, 0.81558D0]
+   double precision, parameter, dimension(10) ::&
+   &bf = [0.21716d0, 0.27436d0, 0.32681d0, 0.41507d0, 0.46490d0,&
+   &0.54503d0, 0.63227d0, 0.68465d0, 0.78407d0, 0.81558d0]
 
 !      GO TO (10,20,30,40,50,60),ISTAB
 
 !CRT  Initialize TH, 12/27/2017
-   TH = 0.0D0
+   th = 0.0d0
 
-   SELECT CASE (ISTAB)
-    CASE (1)
+   select case (istab)
+    case (1)
 !           STABILITY A (10)
-      TH = (24.167D0 - 2.5334D0 * DLOG(XY)) / 57.2958D0
-      IF (XZ > 3.11D0) THEN
-         SZ = 5000.0D0
-      ELSE
-         DO ID = 1,7
-            IF (XZ >= XA(ID)) GO TO 12
-         END DO
-         ID = 8
-12       SZ = AA(ID) * XZ ** BA(ID)
-      ENDIF
+      th = (24.167d0 - 2.5334d0 * dlog(xy)) / 57.2958d0
+      if (xz > 3.11d0) then
+         sz = 5000.0d0
+      else
+         do id = 1,7
+            if (xz >= xa(id)) go to 12
+         end do
+         id = 8
+12       sz = aa(id) * xz ** ba(id)
+      endif
 
-    CASE (2)
+    case (2)
 !           STABILITY B (20)
-      TH = (18.333D0 - 1.8096D0 * DLOG(XY)) / 57.2958D0
-      IF (XZ > 35.0D0) THEN
-         SZ = 5000.0D0
-      ELSE
-         DO ID = 1,2
-            IF (XZ >= XB(ID)) GO TO 22
-         END DO
-         ID = 3
-22       SZ = AB(ID) * XZ ** BB(ID)
-         IF (SZ > 5000.0D0) SZ = 5000.0D0
-      ENDIF
+      th = (18.333d0 - 1.8096d0 * dlog(xy)) / 57.2958d0
+      if (xz > 35.0d0) then
+         sz = 5000.0d0
+      else
+         do id = 1,2
+            if (xz >= xb(id)) go to 22
+         end do
+         id = 3
+22       sz = ab(id) * xz ** bb(id)
+         if (sz > 5000.0d0) sz = 5000.0d0
+      endif
 
-    CASE (3)
+    case (3)
 !           STABILITY C (30)
-      TH = (12.5D0 - 1.0857D0 * DLOG(XY)) / 57.2958D0
-      SZ = 61.141D0 * XZ ** 0.91465D0
-      IF (SZ > 5000.0D0) SZ = 5000.0D0
+      th = (12.5d0 - 1.0857d0 * dlog(xy)) / 57.2958d0
+      sz = 61.141d0 * xz ** 0.91465d0
+      if (sz > 5000.0d0) sz = 5000.0d0
 
     CAsE (4)
 !           STABILITY D (40)
-      TH = (8.3333D0 - 0.72382D0 * DLOG(XY)) / 57.2958D0
+      th = (8.3333d0 - 0.72382d0 * dlog(xy)) / 57.2958d0
 
-      DO ID = 1,5
-         IF (XZ >= XD(ID)) GO TO 42
-      END DO
-      ID = 6
-42    SZ = AD(ID) * XZ ** BD(ID)
-      IF (SZ > 5000.0D0) SZ = 5000.0D0
+      do id = 1,5
+         if (xz >= xd(id)) go to 42
+      end do
+      id = 6
+42    sz = ad(id) * xz ** bd(id)
+      if (sz > 5000.0d0) sz = 5000.0d0
 
-    CASE (5)
+    case (5)
 !           STABILITY E (50)
-      TH = (6.25D0 - 0.54287D0 * DLOG(XY)) / 57.2958D0
-      DO ID = 1,8
-         IF (XZ >= XE(ID)) GO TO 52
-      END DO
-      ID = 9
-52    SZ = AE(ID) * XZ ** BE(ID)
-      IF (SZ > 5000.0D0) SZ = 5000.0D0
+      th = (6.25d0 - 0.54287d0 * dlog(xy)) / 57.2958d0
+      do id = 1,8
+         if (xz >= xe(id)) go to 52
+      end do
+      id = 9
+52    sz = ae(id) * xz ** be(id)
+      if (sz > 5000.0d0) sz = 5000.0d0
 
-    CASE (6)
+    case (6)
 !           STABILITY F (60)
-      TH = (4.1667D0 - 0.36191D0 * DLOG(XY)) / 57.2958D0
-      DO ID = 1,9
-         IF (XZ >= XF(ID)) GO TO 62
-      END DO
-      ID = 10
-62    SZ = AF(ID) * XZ ** BF(ID)
-      IF (SZ > 5000.0D0) SZ = 5000.0D0
-   END SELECT
+      th = (4.1667d0 - 0.36191d0 * dlog(xy)) / 57.2958d0
+      do id = 1,9
+         if (xz >= xf(id)) go to 62
+      end do
+      id = 10
+62    sz = af(id) * xz ** bf(id)
+      if (sz > 5000.0d0) sz = 5000.0d0
+   end select
 
-   SY = 1000.0D0 * XY * DSIN(TH)/(2.15D0 * DCOS(TH))
+   sy = 1000.0d0 * xy * dsin(th)/(2.15d0 * dcos(th))
 
-   RETURN
-END SUBROUTINE BL_DBTSIG
+   return
+end subroutine bl_dbtsig
 !
 !     ------------------------------------------------------------------
-SUBROUTINE BL_SIGMAY(XKM,ISTAB,SY)
+subroutine bl_sigmay(xkm,istab,sy)
 !
 !             BL_SIGMAY Routine of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1007,51 +1007,51 @@ SUBROUTINE BL_SIGMAY(XKM,ISTAB,SY)
 !       SY     Sigma-y
 !
 !     ------------------------------------------------------------------
-   IMPLICIT NONE
+   implicit none
 
-   DOUBLE PRECISION, INTENT(IN)  :: XKM
-   DOUBLE PRECISION, INTENT(OUT) :: SY
-   INTEGER, INTENT(IN)           :: ISTAB
+   double precision, intent(in)  :: xkm
+   double precision, intent(out) :: sy
+   integer, intent(in)           :: istab
 
-   DOUBLE PRECISION              :: TH
+   double precision              :: th
 
 !CRT  Initialize TH  ! 12/27/2017
-   TH = 0.0D0
+   th = 0.0d0
 
-   SELECT CASE (ISTAB)
+   select case (istab)
 
-    CASE (1)
+    case (1)
 !           STABILITY A(10)
-      TH = (24.167D0 - 2.5334D0 * DLOG(XKM)) / 57.2958D0
+      th = (24.167d0 - 2.5334d0 * dlog(xkm)) / 57.2958d0
 
-    CASE (2)
+    case (2)
 !           STABILITY B
-      TH = (18.333D0 - 1.8096D0 * DLOG(XKM)) / 57.2958D0
+      th = (18.333d0 - 1.8096d0 * dlog(xkm)) / 57.2958d0
 
 !           STABILITY C
-    CASE (3)
-      TH = (12.5D0- 1.0857D0 * DLOG(XKM)) / 57.2958D0
+    case (3)
+      th = (12.5d0- 1.0857d0 * dlog(xkm)) / 57.2958d0
 
 !           STABILITY D
-    CASE (4)
-      TH = (8.3333 - 0.72385D0 * DLOG(XKM)) / 57.2958D0
+    case (4)
+      th = (8.3333 - 0.72385d0 * dlog(xkm)) / 57.2958d0
 
 !           STABILITY E
-    CASE (5)
-      TH = (6.25D0 - 0.54287D0 * DLOG(XKM)) / 57.2958D0
+    case (5)
+      th = (6.25d0 - 0.54287d0 * dlog(xkm)) / 57.2958d0
 
 !           STABILITY F
-    CASE (6)
-      TH = (4.1667D0 - 0.36191D0 * DLOG(XKM)) / 57.2958D0
+    case (6)
+      th = (4.1667d0 - 0.36191d0 * dlog(xkm)) / 57.2958d0
 
-   END SELECT
+   end select
 
-   SY = 1000.0D0 * XKM * DSIN(TH)/(2.15D0 * DCOS(TH))
+   sy = 1000.0d0 * xkm * dsin(th)/(2.15d0 * dcos(th))
 
-   RETURN
-END SUBROUTINE BL_SIGMAY
+   return
+end subroutine bl_sigmay
 
-SUBROUTINE BL_RISE(U,ISTAB,S)
+subroutine bl_rise(u,istab,s)
 !***********************************************************************
 !             BL_RISE Routine of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1078,61 +1078,61 @@ SUBROUTINE BL_RISE(U,ISTAB,S)
 !       DH      = array of intermediate plume rise values
 !
 !     ------------------------------------------------------------------
-   USE BUOYANT_LINE
-   IMPLICIT NONE
+   use buoyant_line
+   implicit none
 
-   DOUBLE PRECISION, INTENT(IN) :: U, S
-   INTEGER, INTENT(IN) :: ISTAB
+   double precision, intent(in) :: u, s
+   integer, intent(in) :: istab
 
-   DOUBLE PRECISION :: X, A, B, C, Z
-   INTEGER :: IDIST
+   double precision :: x, a, b, c, z
+   integer :: idist
 !
 !
 !     CONSTANT 1.5915494 = 3./(PI*BETA) WITH BETA=0.6
 !     CONSTANT 5.0 = 3./BETA WITH BETA=0.6
-   A = 1.5915494D0 * LEFF + 5.0D0 * R0
+   a = 1.5915494d0 * leff + 5.0d0 * r0
 
 !     CONSTANT 5.3051648 = 6./(PI*BETA*BETA) WITH BETA=0.6
 !     CONSTANT 8.3333333 = 3./(BETA*BETA) WITH BETA=0.6
-   B = R0 * (5.3051648D0 * LD + 8.333333D0 * R0)
+   b = r0 * (5.3051648d0 * ld + 8.333333d0 * r0)
 
-   DO 1000 IDIST = 2,7
-      X = BL_XDIST(IDIST)
+   do 1000 idist = 2,7
+      x = bl_xdist(idist)
 
-      IF (ISTAB <= 4  .or. X < BL_XFS) THEN
-         IF( DABS(X - BL_XFB) < 1.0D-10 )THEN
+      if (istab <= 4  .or. x < bl_xfs) then
+         if( dabs(x - bl_xfb) < 1.0d-10 )then
 !              CONSTANT 0.4420971 = 1./(2.*PI*BETA*BETA) WITH BETA=0.6
-            C = -0.4420971D0 * (FPRMXNB/BL_XFB) * (X/U)**3
-            CALL BL_CUBIC(A,B,C,Z)
-            DH(IDIST) = Z
-         ELSE
+            c = -0.4420971d0 * (fprmxnb/bl_xfb) * (x/u)**3
+            call bl_cubic(a,b,c,z)
+            dh(idist) = z
+         else
 !              CONSTANT 1.3262912 = 3./(2.*PI*BETA*BETA) WITH BETA=0.6
-            C = -1.3262912D0 * FPRMXNB *&
-            &(BL_XFB*BL_XFB/3.0D0 + X*X - BL_XFB*X)/U**3
-            CALL BL_CUBIC(A,B,C,Z)
-            DH(IDIST) = Z
+            c = -1.3262912d0 * fprmxnb *&
+            &(bl_xfb*bl_xfb/3.0d0 + x*x - bl_xfb*x)/u**3
+            call bl_cubic(a,b,c,z)
+            dh(idist) = z
 
-         END IF
+         end if
 
-      ELSE
+      else
 !           With stable conditions, use neutral rise equation
 !           for transitional rise calculations, but calculate
 !           FINAL RISE BASED ON THE FINAL STABLE RISE EQUATION
 
 !           Calculate final (stable) plume rise
 !           Constant 5.3051648 = 6./(PI*BETA*BETA) WITH BETA=0.6
-         C = -5.3051648D0 * FPRMXNB / (U*S)
-         CALL BL_CUBIC(A,B,C,Z)
-         DH(IDIST) = Z
+         c = -5.3051648d0 * fprmxnb / (u*s)
+         call bl_cubic(a,b,c,z)
+         dh(idist) = z
 
-      END IF
+      end if
 
-1000 CONTINUE
+1000 continue
 
-   RETURN
-END SUBROUTINE BL_RISE
+   return
+end subroutine bl_rise
 !
-SUBROUTINE BL_ZRISE(IL,IS,IR,Z)
+subroutine bl_zrise(il,is,ir,z)
 !***********************************************************************
 !             BL_ZRISE Routine of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1152,30 +1152,30 @@ SUBROUTINE BL_ZRISE(IL,IS,IR,Z)
 !       Z
 !
 !     ------------------------------------------------------------------
-   USE BUOYANT_LINE
+   use buoyant_line
 
-   DOUBLE PRECISION, INTENT(OUT) :: Z
-   INTEGER, INTENT(IN)           :: IL, IR, IS
-   DOUBLE PRECISION :: Z1, Z2, XI, ZXFB
+   double precision, intent(out) :: z
+   integer, intent(in)           :: il, ir, is
+   double precision :: z1, z2, xi, zxfb
 !
-   Z1 = DH(2)
+   z1 = dh(2)
 
-   XI = BL_XFB - XS_RCS(IL,IS)
-   XI = DMAX1(XI,0.0D0)
-   XI = DMIN1(XI,BL_XFB)
-   ZXFB = Z1*(1.0D0 - (BL_XFB-XI)/BL_XFB)
+   xi = bl_xfb - xs_rcs(il,is)
+   xi = dmax1(xi,0.0d0)
+   xi = dmin1(xi,bl_xfb)
+   zxfb = z1*(1.0d0 - (bl_xfb-xi)/bl_xfb)
 
 !     Z2, returned from BLP_INTRSE, is the plume height of the highest
 !         segment at X
-   CALL BL_INTRSE(XR_RCS(IR),Z2)
+   call bl_intrse(xr_rcs(ir),z2)
 
-   Z = ZXFB + Z2 - Z1
+   z = zxfb + z2 - z1
 
-   RETURN
-END SUBROUTINE BL_ZRISE
+   return
+end subroutine bl_zrise
 
 !     ------------------------------------------------------------------
-SUBROUTINE BL_INTRSE(X,Z)
+subroutine bl_intrse(x,z)
 !
 !             BL_INTRSE Routine of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1191,37 +1191,37 @@ SUBROUTINE BL_INTRSE(X,Z)
 !       Z   = Interpolated plume rise
 !
 !     ------------------------------------------------------------------
-   USE BUOYANT_LINE
-   IMPLICIT NONE
+   use buoyant_line
+   implicit none
 
-   DOUBLE PRECISION, INTENT(IN)  :: X
-   DOUBLE PRECISION, INTENT(OUT) :: Z
+   double precision, intent(in)  :: x
+   double precision, intent(out) :: z
 
-   INTEGER    :: NDEX, NDEX1, IDIST
+   integer    :: ndex, ndex1, idist
 !C
-   IF (X > BL_XDIST(7)) THEN
+   if (x > bl_xdist(7)) then
 !        PLUME REACHES FINAL RISE
-      Z = DH(7)
-   ELSE
+      z = dh(7)
+   else
 ! Wood_D117: BL_INTRSE error
 !         NDEX = 5                                          ! D117
 !         DO 10 IDIST = 2,6                                 ! D117
 
-      DO 10 IDIST = 2,7                                  ! D117
-         IF (X < BL_XDIST(IDIST)) THEN                ! D117
-            NDEX = IDIST
-            EXIT
-         ENDIF
-10    CONTINUE
-      NDEX1 = NDEX-1
-      Z = DH(NDEX) - (DH(NDEX)-DH(NDEX1)) * (BL_XDIST(NDEX) - X) /&
-      &(BL_XDIST(NDEX) - BL_XDIST(NDEX1))
-   END IF
+      do 10 idist = 2,7                                  ! D117
+         if (x < bl_xdist(idist)) then                ! D117
+            ndex = idist
+            exit
+         endif
+10    continue
+      ndex1 = ndex-1
+      z = dh(ndex) - (dh(ndex)-dh(ndex1)) * (bl_xdist(ndex) - x) /&
+      &(bl_xdist(ndex) - bl_xdist(ndex1))
+   end if
 
-   RETURN
-END SUBROUTINE BL_INTRSE
+   return
+end subroutine bl_intrse
 
-SUBROUTINE BL_GAUSS(ISTAB,DPBL,CROSSY,SIGY,SIGZ,H,FT)
+subroutine bl_gauss(istab,dpbl,crossy,sigy,sigz,h,ft)
 !***********************************************************************
 !             BL_GAUSS Routine of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1236,276 +1236,276 @@ SUBROUTINE BL_GAUSS(ISTAB,DPBL,CROSSY,SIGY,SIGZ,H,FT)
 !     Output:
 !       FT
 !     ------------------------------------------------------------------
-   USE BUOYANT_LINE
+   use buoyant_line
 
-   IMPLICIT NONE
-   INTEGER, INTENT(IN) :: ISTAB
-   DOUBLE PRECISION, INTENT(IN) :: DPBL, CROSSY, SIGY, SIGZ, H
-   DOUBLE PRECISION, INTENT(OUT) :: FT
+   implicit none
+   integer, intent(in) :: istab
+   double precision, intent(in) :: dpbl, crossy, sigy, sigz, h
+   double precision, intent(out) :: ft
 
-   DOUBLE PRECISION :: TMIN, TMAX, TD1, YPSIG, EXPYP, EXPHP
-   DOUBLE PRECISION :: ARG, F, F1, T, H2, HPSIG, EPSIL
+   double precision :: tmin, tmax, td1, ypsig, expyp, exphp
+   double precision :: arg, f, f1, t, h2, hpsig, epsil
 
-   DATA TMIN/0.0512D0/,TMAX/9.21D0/, EPSIL/1.0D-30/
+   data tmin/0.0512d0/,tmax/9.21d0/, epsil/1.0d-30/
 
-   TD1   = 3.1415927D0 * SIGY * SIGZ
-   YPSIG = CROSSY/SIGY
-   EXPYP = 0.5D0 * YPSIG * YPSIG
+   td1   = 3.1415927d0 * sigy * sigz
+   ypsig = crossy/sigy
+   expyp = 0.5d0 * ypsig * ypsig
 
 !     Prevent underflows
-   IF (EXPYP > 50.0D0) THEN
-      F  = 0.0D0                 ! not really needed
-      F1 = 0.0D0                 ! not really needed
-      FT = 0.0D0
-      RETURN
-   END IF
+   if (expyp > 50.0d0) then
+      f  = 0.0d0                 ! not really needed
+      f1 = 0.0d0                 ! not really needed
+      ft = 0.0d0
+      return
+   end if
 
-   F = EXP(-EXPYP)
+   f = exp(-expyp)
 
 !     If mixing height (DPBL) GE 5000 meters or for stable conditions,
 !     neglect the reflection terms
-   IF (ISTAB >= 5 .or. DPBL > 5000.0D0) GO TO 451
+   if (istab >= 5 .or. dpbl > 5000.0d0) go to 451
 
 !     If SIGZ GT 1.6*DPBL, assume a uniform vertical distribution
-   IF (SIGZ > 1.6D0*DPBL) GO TO 460
+   if (sigz > 1.6d0*dpbl) go to 460
 
 !     Calculate multiple eddy reflections terms
 !     using a fourier series method -- see ERT MEMO CS 093
 
-   F1 = 1
-   T  = (SIGZ/DPBL)**2
-   H2 = H/DPBL
+   f1 = 1
+   t  = (sigz/dpbl)**2
+   h2 = h/dpbl
 
-   IF (T < 0.6D0) THEN
-      ARG = 2.0D0 * (1.0D0 - H2)/T
-      IF (ARG < TMAX) THEN
-         IF (ARG < TMIN) THEN
-            F1 = F1 + 1.0D0 - ARG
-         ENDIF
-         IF(ARG >= TMIN) THEN
-            F1 = F1 + EXP(-ARG)
-         ENDIF
-         ARG = 2.0D0 * (1.0D0 + H2)/T
-         IF (ARG < TMAX) THEN
-            F1 = F1 + EXP(-ARG)
-            ARG = 4.0D0 * (2.0D0 - H2)/T
-            IF (ARG < TMAX) THEN
-               F1 = F1 + EXP(-ARG)
-               ARG = 4.0D0 * (2.0D0 + H2)/T
-               IF (ARG < TMAX) THEN
-                  F1 = F1 + EXP(-ARG)
-               ENDIF
-            ENDIF
-         ENDIF
-      ENDIF
-      ARG = -0.5D0 * H2 * H2/T
-      IF (ARG < -90.0D0) THEN
-         F1 = 0.0D0
-      ENDIF
+   if (t < 0.6d0) then
+      arg = 2.0d0 * (1.0d0 - h2)/t
+      if (arg < tmax) then
+         if (arg < tmin) then
+            f1 = f1 + 1.0d0 - arg
+         endif
+         if(arg >= tmin) then
+            f1 = f1 + exp(-arg)
+         endif
+         arg = 2.0d0 * (1.0d0 + h2)/t
+         if (arg < tmax) then
+            f1 = f1 + exp(-arg)
+            arg = 4.0d0 * (2.0d0 - h2)/t
+            if (arg < tmax) then
+               f1 = f1 + exp(-arg)
+               arg = 4.0d0 * (2.0d0 + h2)/t
+               if (arg < tmax) then
+                  f1 = f1 + exp(-arg)
+               endif
+            endif
+         endif
+      endif
+      arg = -0.5d0 * h2 * h2/t
+      if (arg < -90.0d0) then
+         f1 = 0.0d0
+      endif
 
 !        The constant 0.797885 = SQRT(2./PI)
-      IF (ARG >= -90.0D0) THEN
-         F1 = 0.797885D0 * F1 * EXP(ARG)/SIGZ
-      ENDIF
-      IF (F1 < EPSIL) F1 = 0.0D0
+      if (arg >= -90.0d0) then
+         f1 = 0.797885d0 * f1 * exp(arg)/sigz
+      endif
+      if (f1 < epsil) f1 = 0.0d0
 
-   ELSE
+   else
 !        The constant 4.934802 = PI*PI/2.
-      ARG = 4.934802D0 * T
-      IF (ARG < TMAX) THEN
-         F1 = F1 + 2.0D0 * DEXP(-ARG) * DCOS(3.141593D0*H2)
+      arg = 4.934802d0 * t
+      if (arg < tmax) then
+         f1 = f1 + 2.0d0 * dexp(-arg) * dcos(3.141593d0*h2)
 
 !            The constant 19.739209 = 2.*PI*PI
-         ARG = 19.739209D0 * T
-         IF (ARG < TMAX) THEN
-            F1 = F1 + 2.0D0 * DEXP(-ARG) * DCOS(6.283185D0*H2)
-         ENDIF
-      ENDIF
-      F1 = F1/DPBL
-      IF (F1 < EPSIL) F1 = 0.0D0
-   ENDIF
+         arg = 19.739209d0 * t
+         if (arg < tmax) then
+            f1 = f1 + 2.0d0 * dexp(-arg) * dcos(6.283185d0*h2)
+         endif
+      endif
+      f1 = f1/dpbl
+      if (f1 < epsil) f1 = 0.0d0
+   endif
 
 !     The constant 1.25331414 = SQRT(PI/2.)
-   F1 = 1.25331414D0 * SIGZ * F1
-   GO TO 445
-451 CONTINUE
+   f1 = 1.25331414d0 * sigz * f1
+   go to 445
+451 continue
 
-   HPSIG = H/SIGZ
-   EXPHP = 0.5D0 * HPSIG * HPSIG
-   IF (EXPHP > 50.0D0) THEN
-      F1 = 0.0D0
-   ELSE
-      F1 = DEXP(-EXPHP)
-   ENDIF
+   hpsig = h/sigz
+   exphp = 0.5d0 * hpsig * hpsig
+   if (exphp > 50.0d0) then
+      f1 = 0.0d0
+   else
+      f1 = dexp(-exphp)
+   endif
 
-445 CONTINUE
+445 continue
 
 !     Find product of exponential terms divided by (PI*SIGY*SIGZ)
-   FT = F * F1/TD1
-   GO TO 470
-460 CONTINUE
+   ft = f * f1/td1
+   go to 470
+460 continue
 
 !     Vertical distribution assumed uniform
 !     The constant 2.5066283 = SQRT(2.*PI)
-   FT = F/(2.5066283D0 * SIGY * DPBL)
+   ft = f/(2.5066283d0 * sigy * dpbl)
 
-470 RETURN
-END SUBROUTINE BL_GAUSS
+470 return
+end subroutine bl_gauss
 
 !
 !     ------------------------------------------------------------------
-DOUBLE PRECISION FUNCTION BL_XVZ (SZO,ISTAB)
+double precision function bl_xvz (szo,istab)
 !
 !
 !     ------------------------------------------------------------------
-   DOUBLE PRECISION :: SZO
-   INTEGER :: ISTAB, ID
+   double precision :: szo
+   integer :: istab, id
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(7) ::&
-   &SA = [13.95D0, 21.40D0, 29.3D0, 37.67D0, 47.44D0,&
-   &71.16D0 ,104.65D0]
+   double precision, parameter, dimension(7) ::&
+   &sa = [13.95d0, 21.40d0, 29.3d0, 37.67d0, 47.44d0,&
+   &71.16d0 ,104.65d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(2) ::&
-   &SB = [20.23D0, 40.0D0]
+   double precision, parameter, dimension(2) ::&
+   &sb = [20.23d0, 40.0d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(5) ::&
-   &SD = [12.09D0, 32.09D0, 65.12D0, 134.9D0, 251.2D0]
+   double precision, parameter, dimension(5) ::&
+   &sd = [12.09d0, 32.09d0, 65.12d0, 134.9d0, 251.2d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(8) ::&
-   &SE = [3.534D0, 8.698D0, 21.628D0, 33.489D0, 49.767D0,&
-   &79.07D0, 109.3D0, 141.86D0]
+   double precision, parameter, dimension(8) ::&
+   &se = [3.534d0, 8.698d0, 21.628d0, 33.489d0, 49.767d0,&
+   &79.07d0, 109.3d0, 141.86d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(9) ::&
-   &SF = [4.093D0, 10.93D0, 13.953D0, 21.627D0, 26.976D0,&
-   &40.0D0, 54.89D0, 68.84D0, 83.25D0]
+   double precision, parameter, dimension(9) ::&
+   &sf = [4.093d0, 10.93d0, 13.953d0, 21.627d0, 26.976d0,&
+   &40.0d0, 54.89d0, 68.84d0, 83.25d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(8) ::&
-   &AA = [122.8D0, 158.08D0, 170.22D0, 179.52D0, 217.41D0,&
-   &258.89D0, 346.75D0, 453.85D0]
+   double precision, parameter, dimension(8) ::&
+   &aa = [122.8d0, 158.08d0, 170.22d0, 179.52d0, 217.41d0,&
+   &258.89d0, 346.75d0, 453.85d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(3) ::&
-   &AB = [90.673D0, 98.483D0, 109.3D0]
+   double precision, parameter, dimension(3) ::&
+   &ab = [90.673d0, 98.483d0, 109.3d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(6) ::&
-   &AD = [34.459D0, 32.093D0, 32.093D0, 33.504D0,&
-   &36.650D0, 44.053D0]
+   double precision, parameter, dimension(6) ::&
+   &ad = [34.459d0, 32.093d0, 32.093d0, 33.504d0,&
+   &36.650d0, 44.053d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(9) ::&
-   &AE = [24.26D0, 23.331D0, 21.628D0, 21.628D0, 22.534D0,&
-   &24.703D0, 26.97D0, 35.42D0, 47.618D0]
+   double precision, parameter, dimension(9) ::&
+   &ae = [24.26d0, 23.331d0, 21.628d0, 21.628d0, 22.534d0,&
+   &24.703d0, 26.97d0, 35.42d0, 47.618d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(10) ::&
-   &AF = [15.209D0, 14.457D0, 13.953D0, 13.953D0, 14.823D0,&
-   &16.187D0, 17.836D0, 22.651D0, 27.074D0, 34.219D0]
+   double precision, parameter, dimension(10) ::&
+   &af = [15.209d0, 14.457d0, 13.953d0, 13.953d0, 14.823d0,&
+   &16.187d0, 17.836d0, 22.651d0, 27.074d0, 34.219d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(8) ::&
-   &CA = [1.0585D0, 0.9486D0, 0.9147D0, 0.8879D0, 0.7909D0,&
-   &0.7095D0, 0.5786D0, 0.4725D0]
+   double precision, parameter, dimension(8) ::&
+   &ca = [1.0585d0, 0.9486d0, 0.9147d0, 0.8879d0, 0.7909d0,&
+   &0.7095d0, 0.5786d0, 0.4725d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(3) ::&
-   &CB = [1.073D0, 1.017D0, 0.9115D0]
+   double precision, parameter, dimension(3) ::&
+   &cb = [1.073d0, 1.017d0, 0.9115d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(6) ::&
-   &CD = [1.1498D0, 1.2336D0, 1.5527D0, 1.6533D0,&
-   &1.7671D0, 1.9539D0]
+   double precision, parameter, dimension(6) ::&
+   &cd = [1.1498d0, 1.2336d0, 1.5527d0, 1.6533d0,&
+   &1.7671d0, 1.9539d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(9) ::&
-   &CE = [1.1953D0, 1.2202D0, 1.3217D0, 1.5854D0, 1.7497D0,&
-   &1.9791D0, 2.1407D0, 2.6585D0, 3.3793D0]
+   double precision, parameter, dimension(9) ::&
+   &ce = [1.1953d0, 1.2202d0, 1.3217d0, 1.5854d0, 1.7497d0,&
+   &1.9791d0, 2.1407d0, 2.6585d0, 3.3793d0]
 
-   DOUBLE PRECISION, PARAMETER, DIMENSION(10) ::&
-   &CF = [1.2261D0, 1.2754D0, 1.4606D0, 1.5816D0, 1.8348D0,&
-   &2.151D0, 2.4092D0, 3.0599D0, 3.6448D0, 4.6049D0]
+   double precision, parameter, dimension(10) ::&
+   &cf = [1.2261d0, 1.2754d0, 1.4606d0, 1.5816d0, 1.8348d0,&
+   &2.151d0, 2.4092d0, 3.0599d0, 3.6448d0, 4.6049d0]
 !
 !CRT  Initialize BL_XVZ
-   BL_XVZ = 0.0D0
+   bl_xvz = 0.0d0
 
-   SELECT CASE (ISTAB)
+   select case (istab)
 
-    CASE (1)
+    case (1)
 !          STABILITY A
-      DO ID = 1,7
-         IF (SZO <= SA(ID)) GO TO 12
-      END DO
-      ID = 8
-12    BL_XVZ =(SZO/AA(ID))**CA(ID)
+      do id = 1,7
+         if (szo <= sa(id)) go to 12
+      end do
+      id = 8
+12    bl_xvz =(szo/aa(id))**ca(id)
 
-    CASE (2)
+    case (2)
 !          STABILITY B
-      DO ID = 1,2
-         IF (SZO <= SB(ID)) GO TO 22
-      END DO
-      ID = 3
-22    BL_XVZ = (SZO/AB(ID))**CB(ID)
+      do id = 1,2
+         if (szo <= sb(id)) go to 22
+      end do
+      id = 3
+22    bl_xvz = (szo/ab(id))**cb(id)
 
-    CASE (3)
+    case (3)
 !          STABILITY C
-      BL_XVZ = (SZO/61.141D0)**1.0933D0
+      bl_xvz = (szo/61.141d0)**1.0933d0
 
-    CASE (4)
+    case (4)
 !          STABILITY D
-      DO ID = 1,5
-         IF(SZO <= SD(ID)) GO TO 42
-      END DO
-      ID = 6
-42    BL_XVZ = (SZO/AD(ID))**CD(ID)
+      do id = 1,5
+         if(szo <= sd(id)) go to 42
+      end do
+      id = 6
+42    bl_xvz = (szo/ad(id))**cd(id)
 
-    CASE (5)
+    case (5)
 !          STABILITY E
-      DO ID = 1,8
-         IF (SZO <= SE(ID)) GO TO 52
-      END DO
-      ID = 9
-52    BL_XVZ = (SZO/AE(ID))**CE(ID)
+      do id = 1,8
+         if (szo <= se(id)) go to 52
+      end do
+      id = 9
+52    bl_xvz = (szo/ae(id))**ce(id)
 
-    CASE (6)
+    case (6)
 !          STABILITY F
-      DO ID = 1,9
-         IF (SZO <= SF(ID)) GO TO 62
-      END DO
-      ID = 10
-62    BL_XVZ = (SZO/AF(ID))**CF(ID)
+      do id = 1,9
+         if (szo <= sf(id)) go to 62
+      end do
+      id = 10
+62    bl_xvz = (szo/af(id))**cf(id)
 
-   END SELECT
+   end select
 
-END FUNCTION BL_XVZ
+end function bl_xvz
 !
 !     ------------------------------------------------------------------
-DOUBLE PRECISION FUNCTION BL_XVY (SYO,ISTAB)
+double precision function bl_xvy (syo,istab)
 !
 !
 !     ------------------------------------------------------------------
-   IMPLICIT NONE
-   DOUBLE PRECISION :: SYO
-   INTEGER          :: ISTAB
+   implicit none
+   double precision :: syo
+   integer          :: istab
 !
 !
 !CRT  Initialize BL_XVY, 12/27/2017
-   BL_XVY = 0.0D0
+   bl_xvy = 0.0d0
 
-   SELECT CASE (ISTAB)
-    CASE (1)
-      BL_XVY = (SYO/213.0D0)**1.1148D0
+   select case (istab)
+    case (1)
+      bl_xvy = (syo/213.0d0)**1.1148d0
 
-    CASE (2)
-      BL_XVY = (SYO/155.0D0)**1.097D0
+    case (2)
+      bl_xvy = (syo/155.0d0)**1.097d0
 
-    CASE (3)
-      BL_XVY = (SYO/103.0D0)**1.092D0
+    case (3)
+      bl_xvy = (syo/103.0d0)**1.092d0
 
     CAsE (4)
-      BL_XVY = (SYO/68.0D0)**1.076D0
+      bl_xvy = (syo/68.0d0)**1.076d0
 
-    CASE (5)
-      BL_XVY = (SYO/50.0D0)**1.086D0
+    case (5)
+      bl_xvy = (syo/50.0d0)**1.086d0
 
-    CASE (6)
-      BL_XVY = (SYO/33.5D0)**1.083D0
-   END SELECT
+    case (6)
+      bl_xvy = (syo/33.5d0)**1.083d0
+   end select
 
-END FUNCTION BL_XVY
+end function bl_xvy
 
-SUBROUTINE BL_WSC(ISTAB,UM,U,S,P,NBL)
+subroutine bl_wsc(istab,um,u,s,p,nbl)
 !***********************************************************************
 !             BL_WSC Routinee of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1521,53 +1521,53 @@ SUBROUTINE BL_WSC(ISTAB,UM,U,S,P,NBL)
 !       U
 !
 !     ------------------------------------------------------------------
-   USE BUOYANT_LINE
-   IMPLICIT NONE
+   use buoyant_line
+   implicit none
 
-   DOUBLE PRECISION, INTENT(OUT) :: U
-   DOUBLE PRECISION, INTENT(IN)  :: UM, S, P
-   INTEGER, INTENT(IN) :: ISTAB, NBL
+   double precision, intent(out) :: u
+   double precision, intent(in)  :: um, s, p
+   integer, intent(in) :: istab, nbl
 
-   DOUBLE PRECISION :: P2, P3, EP, EPI, T1, Z
+   double precision :: p2, p3, ep, epi, t1, z
 
 
-   IF (ISTAB <= 4) THEN
+   if (istab <= 4) then
 !
 !        NEUTRAL (OR UNSTABLE) CONDITIONS
 !
-      P3  = 3.0D0 * P
-      EP  = 2.0D0 + P3
-      EPI = 1.0D0 / EP
+      p3  = 3.0d0 * p
+      ep  = 2.0d0 + p3
+      epi = 1.0d0 / ep
 
 !        CONSTANT 2.4=4.*BETA WITH BETA=0.6
-      T1 = (EP*EP * DBLE(NBL) * BLAVGFPRM * BLAVGBHGT**P3 /&
-      &(2.4D0 * (2.0D0 + P) * BLAVGLLEN * UM**3))**EPI
-      Z  = T1*XMATCH**(2.0D0*EPI)
+      t1 = (ep*ep * dble(nbl) * blavgfprm * blavgbhgt**p3 /&
+      &(2.4d0 * (2.0d0 + p) * blavgllen * um**3))**epi
+      z  = t1*xmatch**(2.0d0*epi)
 
 !        CONSTANT 1.2 = 2.*BETA WITH BETA=0.6
-      U  = (DBLE(NBL) * BLAVGFPRM /&
-      &(1.2D0 * BLAVGLLEN) * (XMATCH/Z)*(XMATCH/Z))**0.333333D0
-      U  = DMAX1(U,UM)
+      u  = (dble(nbl) * blavgfprm /&
+      &(1.2d0 * blavgllen) * (xmatch/z)*(xmatch/z))**0.333333d0
+      u  = dmax1(u,um)
 
-   ELSE
+   else
 !
 !        STABLE CONDITIONS
 !
-      P2 = 2.0D0 + P
+      p2 = 2.0d0 + p
 
 !        CONSTANT 0.6 = BETA
-      Z = (P2 * BLAVGBHGT**P * DBLE(NBL) * BLAVGFPRM /&
-      &(0.6D0 * BLAVGLLEN * UM * S))**(1.0D0/P2)
+      z = (p2 * blavgbhgt**p * dble(nbl) * blavgfprm /&
+      &(0.6d0 * blavgllen * um * s))**(1.0d0/p2)
 
 !        CONSTANT 3.3333333 = 2./BETA WITH BETA=0.6
-      U = 3.3333333D0 * DBLE(NBL) * BLAVGFPRM / (BLAVGLLEN*S*Z*Z)
-      U = DMAX1(U,UM)
-   ENDIF
+      u = 3.3333333d0 * dble(nbl) * blavgfprm / (blavgllen*s*z*z)
+      u = dmax1(u,um)
+   endif
 
-   RETURN
-END SUBROUTINE BL_WSC
+   return
+end subroutine bl_wsc
 !
-SUBROUTINE BL_LENG(THETA, U, AVFACTOR, NBL)
+subroutine bl_leng(theta, u, avfactor, nbl)
 !***********************************************************************
 !             BL_LENG Routine of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1581,140 +1581,140 @@ SUBROUTINE BL_LENG(THETA, U, AVFACTOR, NBL)
 !       NBL   = number of individual buoyant lines in the BL group
 !
 !     ------------------------------------------------------------------
-   USE BUOYANT_LINE
-   IMPLICIT NONE
+   use buoyant_line
+   implicit none
 
-   DOUBLE PRECISION, INTENT(IN) :: U, THETA, AVFACTOR
-   DOUBLE PRECISION :: LEFF1, LEFFV, DXM, DXM833, RAD, T1, XI
-   DOUBLE PRECISION :: THRAD, SINT, COST
-   INTEGER, INTENT(IN) :: NBL
+   double precision, intent(in) :: u, theta, avfactor
+   double precision :: leff1, leffv, dxm, dxm833, rad, t1, xi
+   double precision :: thrad, sint, cost
+   integer, intent(in) :: nbl
 
-   DATA RAD/0.0174533D0/
+   data rad/0.0174533d0/
 !
 !     BLAVGFPRM is the 'average' buoyancy flux of one line;
 !     FPRMXNB is the 'effective' buoyancy flux of n lines
-   FPRMXNB = DBLE(NBL) * BLAVGFPRM
-   THRAD    = THETA * RAD
-   SINT    = ABS(DSIN(THRAD))
-   COST    = ABS(DCOS(THRAD))
+   fprmxnb = dble(nbl) * blavgfprm
+   thrad    = theta * rad
+   sint    = abs(dsin(thrad))
+   cost    = abs(dcos(thrad))
 
 !     Calculate distance of full buoyancy (XFB)
-   DXM    = BLAVGBSEP + BLAVGBWID
-   BL_XFB = BLAVGLLEN * COST + DBLE(NBL-1) * DXM * SINT
+   dxm    = blavgbsep + blavgbwid
+   bl_xfb = blavgllen * cost + dble(nbl-1) * dxm * sint
 
 !     Calculate effective line source length (LEFF) and
 !     effective downwash line length (LD)
-   LEFF1 = BLAVGLLEN * SINT
+   leff1 = blavgllen * sint
 
-   IF (NBL == 1) THEN
+   if (nbl == 1) then
 !        IF N = 1, NO INTERACTION AT ANY X, I.E.,
 !        LEFFV = average line width;
 !        'Effective' buoyancy flux (FPRMXNB) = average buoyancy flux;
 !        Distance to full buoyancy (BL_XFB) =
 !         (average building length) * COST + (average line width) * SINT
-      LEFFV = BLAVGLWID
-      FPRMXNB = BLAVGFPRM
-      BL_XFB = BL_XFB + BLAVGLWID*SINT
+      leffv = blavglwid
+      fprmxnb = blavgfprm
+      bl_xfb = bl_xfb + blavglwid*sint
 
-   ELSE
+   else
 !        CONSTANT 0.8333333 = 1./(2.*BETA) WITH BETA=0.6
-      DXM833 = 0.8333333D0*DXM       ! DXM is 'average' distance between two lines
+      dxm833 = 0.8333333d0*dxm       ! DXM is 'average' distance between two lines
 
 !        CONSTANT 2.2619467 = 2.*PI*BETA*BETA WITH BETA=0.6
 !        CONSTANT 1.5915494 = 3./(PI*BETA) WITH BETA=0.6
-      T1 = (2.2619467D0 * U**3 / BLAVGFPRM) *&
-      &DXM833 * DXM833 * (DXM833 + 1.5915494D0*BLAVGLWID)
-      XI = (T1*BLAVGLLEN)**0.333333D0
+      t1 = (2.2619467d0 * u**3 / blavgfprm) *&
+      &dxm833 * dxm833 * (dxm833 + 1.5915494d0*blavglwid)
+      xi = (t1*blavgllen)**0.333333d0
 
-      IF (XI > BLAVGLLEN) THEN
-         XI = BLAVGLLEN/2.0D0 +&
-         &DSQRT(12.0D0*T1 - 3.0D0*BLAVGLLEN*BLAVGLLEN)/6.0D0
+      if (xi > blavgllen) then
+         xi = blavgllen/2.0d0 +&
+         &dsqrt(12.0d0*t1 - 3.0d0*blavgllen*blavgllen)/6.0d0
 
 !           CONSTANT 1.2 = 2.*BETA WITH BETA=0.6
 !           CONSTANT 0.6283185 = PI*BETA/3. WITH BETA=0.6
-         LEFFV = FPRMXNB * (BLAVGLLEN*BLAVGLLEN/3.0D0 +&
-         &XI*(XI-BLAVGLLEN)) / (1.2D0 * U**3 * DXM833 * DXM833) -&
-         &0.6283185D0 * DXM833
+         leffv = fprmxnb * (blavgllen*blavgllen/3.0d0 +&
+         &xi*(xi-blavgllen)) / (1.2d0 * u**3 * dxm833 * dxm833) -&
+         &0.6283185d0 * dxm833
 
-      ELSE
+      else
 !           CONSTANT 3.6 = 6.*BETA WITH BETA=0.6
 !           CONSTANT 0.6283185 = PI*BETA/3. WITH BETA=0.6
-         LEFFV = FPRMXNB/(3.6D0 * BLAVGLLEN * DXM833 * DXM833) *&
-         &(XI/U)**3 - 0.6283185D0 * DXM833
-      ENDIF
-   ENDIF
+         leffv = fprmxnb/(3.6d0 * blavgllen * dxm833 * dxm833) *&
+         &(xi/u)**3 - 0.6283185d0 * dxm833
+      endif
+   endif
 
-   LEFF = LEFF1 + LEFFV*COST
-   LD   = LEFF * SINT
+   leff = leff1 + leffv*cost
+   ld   = leff * sint
 
 !     Calculate downwashed edge radius
-   R0 = DMIN1(BLAVGBHGT,LD)/AVFACTOR
+   r0 = dmin1(blavgbhgt,ld)/avfactor
 
-   RETURN
-END SUBROUTINE BL_LENG
+   return
+end subroutine bl_leng
 !
 !     ------------------------------------------------------------------
-SUBROUTINE BL_SORT(FTSAVE,IBMIN,IBMAX,IWPBL)
+subroutine bl_sort(ftsave,ibmin,ibmax,iwpbl)
 !
 !             BL_SORT Routine of the AMS/EPA Regulatory Model - AERMOD
 !
 !     ------------------------------------------------------------------
-   IMPLICIT NONE
-   DOUBLE PRECISION, INTENT(INOUT) :: FTSAVE(129)
-   INTEGER, INTENT(INOUT)          :: IBMIN, IBMAX, IWPBL
+   implicit none
+   double precision, intent(inout) :: ftsave(129)
+   integer, intent(inout)          :: ibmin, ibmax, iwpbl
 
 ! Unused:      DOUBLE PRECISION :: FT
-   INTEGER          :: IB, ISAFE, ILEVEL, NEACHL, INCR, INDEXI, NC
-   INTEGER          :: INCRM, INCRP
+   integer          :: ib, isafe, ilevel, neachl, incr, indexi, nc
+   integer          :: incrm, incrp
 
-   ISAFE = 0
-   IB    = 0
-   IF (FTSAVE(129) /= 0.0D0) IB = 129
-   IF (FTSAVE(1)   /= 0.0D0) IB = 1
-   IF (IB /= 0) GO TO 970
+   isafe = 0
+   ib    = 0
+   if (ftsave(129) /= 0.0d0) ib = 129
+   if (ftsave(1)   /= 0.0d0) ib = 1
+   if (ib /= 0) go to 970
 
-   OUTER: DO ILEVEL = 1,7
-      NEACHL = 2**(ILEVEL-1)
-      INCR   = 2**(8-ILEVEL)
-      INDEXI = 1 + INCR/2
-      DO NC = 1,NEACHL
-         IF (FTSAVE(INDEXI) == 0.0D0) GO TO 944
-         IB = INDEXI
-         GO TO 970
-944      INDEXI = INDEXI + INCR
-      END DO
-   END DO OUTER
+   outer: do ilevel = 1,7
+      neachl = 2**(ilevel-1)
+      incr   = 2**(8-ilevel)
+      indexi = 1 + incr/2
+      do nc = 1,neachl
+         if (ftsave(indexi) == 0.0d0) go to 944
+         ib = indexi
+         go to 970
+944      indexi = indexi + incr
+      end do
+   end do outer
 
-   IF (IB /= 0) GO TO 970
-   IWPBL = 999
-   RETURN
+   if (ib /= 0) go to 970
+   iwpbl = 999
+   return
 
-970 IBMIN = IB - 1
-   IBMAX = IB + 1
-   IBMIN = MAX(IBMIN,1)
-   IBMAX = MIN(IBMAX,129)
+970 ibmin = ib - 1
+   ibmax = ib + 1
+   ibmin = max(ibmin,1)
+   ibmax = min(ibmax,129)
 
-975 CONTINUE
-   INCRM = 0
-   INCRP = 0
-   IF (FTSAVE(IBMIN) /= 0.0D0) INCRM = 1
-   IF (IBMIN ==1) INCRM = 0
-   IF (FTSAVE(IBMAX) /= 0.0D0) INCRP = 1
-   IF (IBMAX == 129) INCRP = 0
+975 continue
+   incrm = 0
+   incrp = 0
+   if (ftsave(ibmin) /= 0.0d0) incrm = 1
+   if (ibmin ==1) incrm = 0
+   if (ftsave(ibmax) /= 0.0d0) incrp = 1
+   if (ibmax == 129) incrp = 0
 
-   IBMIN = IBMIN - INCRM
-   IBMAX = IBMAX + INCRP
-   IF (INCRM == 0 .and. INCRP == 0) GO TO 980
-   ISAFE = ISAFE + 1
-   IF (ISAFE > 129) GO TO 980
-   GO TO 975
-980 CONTINUE
+   ibmin = ibmin - incrm
+   ibmax = ibmax + incrp
+   if (incrm == 0 .and. incrp == 0) go to 980
+   isafe = isafe + 1
+   if (isafe > 129) go to 980
+   go to 975
+980 continue
 
-   RETURN
-END SUBROUTINE BL_SORT
+   return
+end subroutine bl_sort
 !
 !     ------------------------------------------------------------------
-SUBROUTINE BL_CUBIC(A,B,C,Z)
+subroutine bl_cubic(a,b,c,z)
 !
 !             BL_CUBIC Routine of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1722,46 +1722,46 @@ SUBROUTINE BL_CUBIC(A,B,C,Z)
 !        Z**3 + A*Z**2 + B*Z + C = 0
 !     ------------------------------------------------------------------
 !
-   IMPLICIT NONE
-   DOUBLE PRECISION, INTENT(IN)  :: A, B, C
-   DOUBLE PRECISION, INTENT(OUT) :: Z
-   DOUBLE PRECISION :: A3, AP, BP, AP3, BP2, TROOT, TR
-   DOUBLE PRECISION :: APP, BSV, ONE, BPP, CM, ALPHA, SGN
+   implicit none
+   double precision, intent(in)  :: a, b, c
+   double precision, intent(out) :: z
+   double precision :: a3, ap, bp, ap3, bp2, troot, tr
+   double precision :: app, bsv, one, bpp, cm, alpha, sgn
 
-   DATA ONE/1.0D0/
+   data one/1.0d0/
 
-   A3    = A/3.0D0
-   AP    = B - A*A3
-   BP    = 2.0D0*A3**3 - A3*B + C
-   AP3   = AP/3.0D0
-   BP2   = BP/2.0D0
-   TROOT = BP2*BP2 + AP3*AP3*AP3
+   a3    = a/3.0d0
+   ap    = b - a*a3
+   bp    = 2.0d0*a3**3 - a3*b + c
+   ap3   = ap/3.0d0
+   bp2   = bp/2.0d0
+   troot = bp2*bp2 + ap3*ap3*ap3
 
-   IF (TROOT > 0.0D0) THEN
-      TR  = DSQRT(TROOT)
-      APP = (-BP2 + TR)**0.333333D0
-      BSV = -BP2 - TR
+   if (troot > 0.0d0) then
+      tr  = dsqrt(troot)
+      app = (-bp2 + tr)**0.333333d0
+      bsv = -bp2 - tr
 
-      IF (BSV == 0.0D0) THEN
+      if (bsv == 0.0d0) then
 !           BSV (& BPP) = 0.0
-         Z = APP-A3
+         z = app-a3
 
-      ELSE
-         SGN = DSIGN(ONE,BSV)
-         BPP = SGN*(DABS(BSV))**0.333333D0
-         Z   = APP + BPP - A3
-      ENDIF
+      else
+         sgn = dsign(one,bsv)
+         bpp = sgn*(dabs(bsv))**0.333333d0
+         z   = app + bpp - a3
+      endif
 
-   ELSE
-      CM    = 2.0D0 * DSQRT(-AP3)
-      ALPHA = DACOS(BP/(AP3*CM))/3.0D0
-      Z     = CM*DCOS(ALPHA) - A3
-   ENDIF
+   else
+      cm    = 2.0d0 * dsqrt(-ap3)
+      alpha = dacos(bp/(ap3*cm))/3.0d0
+      z     = cm*dcos(alpha) - a3
+   endif
 
-   RETURN
-END SUBROUTINE BL_CUBIC
+   return
+end subroutine bl_cubic
 
-SUBROUTINE BL_ROTATE2 (WD1, THETA, ITHETA, NRECEP, NBL, KK)
+subroutine bl_rotate2 (wd1, theta, itheta, nrecep, nbl, kk)
 !***********************************************************************
 !             BL_ROTATE2 Module of the AMS/EPA Regulatory Model - AERMOD
 !
@@ -1788,150 +1788,150 @@ SUBROUTINE BL_ROTATE2 (WD1, THETA, ITHETA, NRECEP, NBL, KK)
 !***********************************************************************
 !     Variable Declarations
 
-   USE BUOYANT_LINE
+   use buoyant_line
 ! JAT 06/22/21 D065 COMMENT OUT KURDAT, NOT USED
 !      USE MAIN1, ONLY : KURDAT
 
-   IMPLICIT NONE
-   DOUBLE PRECISION, INTENT(IN)  :: WD1
-   DOUBLE PRECISION, INTENT(OUT) :: THETA
-   INTEGER, INTENT(IN)  :: NRECEP, NBL, KK
-   INTEGER, INTENT(OUT) :: ITHETA
+   implicit none
+   double precision, intent(in)  :: wd1
+   double precision, intent(out) :: theta
+   integer, intent(in)  :: nrecep, nbl, kk
+   integer, intent(out) :: itheta
 
-   DOUBLE PRECISION, DIMENSION(4) :: TCHK =&
-   &[90.0D0,180.0D0,270.0D0,360.0D0]
-   DOUBLE PRECISION :: DXX, XN, YN, XSAVE, YSAVE
-   DOUBLE PRECISION :: COSTHETA, SINTHETA
-   DOUBLE PRECISION,PARAMETER  :: DEG_PER_RAD = 57.29578D0
+   double precision, dimension(4) :: tchk =&
+   &[90.0d0,180.0d0,270.0d0,360.0d0]
+   double precision :: dxx, xn, yn, xsave, ysave
+   double precision :: costheta, sintheta
+   double precision,parameter  :: deg_per_rad = 57.29578d0
 
-   INTEGER, DIMENSION(4) :: IL = [1,1,1,1]
-   INTEGER, DIMENSION(4) :: ISEG = [1,129,129,1]
+   integer, dimension(4) :: il = [1,1,1,1]
+   integer, dimension(4) :: iseg = [1,129,129,1]
 ! JAT 06/22/21 REMOVE ISAVE AS UNUSED VARIABLE
 !      INTEGER               :: I, J, ILINE, ISAVE, ISEGN, LNUM
-   INTEGER               :: I, J, ILINE, ISEGN, LNUM
-   INTEGER               :: IL12, IL34
+   integer               :: i, j, iline, isegn, lnum
+   integer               :: il12, il34
 
-   CHARACTER (LEN=12) :: MODNAM
+   character (len=12) :: modnam
 
 !     Variable Initializations
-   MODNAM = 'BL_ROTATE2'
+   modnam = 'BL_ROTATE2'
 
 !CRT  Initialize variables ! 12/27/2017
-   YN = 0.0D0
-   XN = 0.0D0
+   yn = 0.0d0
+   xn = 0.0d0
 ! D41_Wood  Initialize variables
-   ILINE = 0
-   ISEGN = 0
+   iline = 0
+   isegn = 0
 
 !     THETA is the rotation that aligns the y-axis (previously rotated
 !      to be perpendicular to the buoyant lines) with the flow vector.
 
-   THETA = 360.0D0 - (WD1 + TCOR(KK))
-   IF (THETA < 0.0D0) THETA = 360.0D0 + THETA
-   THETA    = DMOD(THETA,360.0D0)
-   ITHETA   = NINT(THETA)
-   COSTHETA = DCOS(THETA/DEG_PER_RAD)
-   SINTHETA = DSIN(THETA/DEG_PER_RAD)
+   theta = 360.0d0 - (wd1 + tcor(kk))
+   if (theta < 0.0d0) theta = 360.0d0 + theta
+   theta    = dmod(theta,360.0d0)
+   itheta   = nint(theta)
+   costheta = dcos(theta/deg_per_rad)
+   sintheta = dsin(theta/deg_per_rad)
 !
 !     Calculate source coordinates for each source line segment
 !      Note that the coordinate YS_SCS was translated and rotated in
 !      BL_ROTATE1 (soset.f)
 !
-   DO LNUM = 1,NBL
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
-         DXX = DEL(LNUM)/128.0D0
-         XS_SCS(LNUM,1) = BLINEPARMS(LNUM)%XBEG_TR1
+   do lnum = 1,nbl
+      if (blineparms(lnum)%iblpgrpnum == kk) then
+         dxx = del(lnum)/128.0d0
+         xs_scs(lnum,1) = blineparms(lnum)%xbeg_tr1
 
-         DO J=2,129
-            XS_SCS(LNUM,J) = XS_SCS(LNUM,J-1) + DXX
-         END DO
-      END IF
-   END DO
+         do j=2,129
+            xs_scs(lnum,j) = xs_scs(lnum,j-1) + dxx
+         end do
+      end if
+   end do
 
 ! D41_WOOD: The values of the array IL must be adjusted so the correct
 !           XN and YN are determined for each BL source group
-   IF (KK == 1) THEN
-      IL(1) = 1
-      IL(2) = 1
-      IL(3) = NBLINGRP(KK)
-      IL(4) = NBLINGRP(KK)
+   if (kk == 1) then
+      il(1) = 1
+      il(2) = 1
+      il(3) = nblingrp(kk)
+      il(4) = nblingrp(kk)
 
-   ELSE IF (KK >= 2) THEN
-      IL12 = 1
-      IL34 = NBLINGRP(1)
-      DO J = 2,KK
-         IL12 = IL12 + NBLINGRP(J-1)
-         IL34 = IL34 + NBLINGRP(J)
-      END DO
-      IL(1) = IL12
-      IL(2) = IL12
-      IL(3) = IL34
-      IL(4) = IL34
-   END IF
+   else if (kk >= 2) then
+      il12 = 1
+      il34 = nblingrp(1)
+      do j = 2,kk
+         il12 = il12 + nblingrp(j-1)
+         il34 = il34 + nblingrp(j)
+      end do
+      il(1) = il12
+      il(2) = il12
+      il(3) = il34
+      il(4) = il34
+   end if
 
 !
 !     Calculate XN, YN (origins of translated coordinate system
 !      in terms of the SCS coordinates)
 !
-   OUTER: DO LNUM = 1,NBL
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
+   outer: do lnum = 1,nbl
+      if (blineparms(lnum)%iblpgrpnum == kk) then
 
-         INNER:       DO I=1,4
-            IF (THETA >= TCHK(I)) CYCLE
-            ILINE = IL(I)
-            ISEGN = ISEG(I)
-            XN = XS_SCS(ILINE,ISEGN)
-            YN = YS_SCS(ILINE)
-            EXIT OUTER
-         END DO INNER
-      END IF
-   END DO OUTER
+         inner:       do i=1,4
+            if (theta >= tchk(i)) cycle
+            iline = il(i)
+            isegn = iseg(i)
+            xn = xs_scs(iline,isegn)
+            yn = ys_scs(iline)
+            exit outer
+         end do inner
+      end if
+   end do outer
 
 !
 ! --- Translate line source segment coordinates for this BL source
-   DO LNUM = 1,NBL
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
-         DO J=1,129
-            XS_RCS(LNUM,J) = XS_SCS(LNUM,J) - XN
-            YS_RCS(LNUM,J) = YS_SCS(LNUM) - YN
+   do lnum = 1,nbl
+      if (blineparms(lnum)%iblpgrpnum == kk) then
+         do j=1,129
+            xs_rcs(lnum,j) = xs_scs(lnum,j) - xn
+            ys_rcs(lnum,j) = ys_scs(lnum) - yn
             if(mod(j,10) == 0.0) then
             endif
 
-         END DO
-      END IF
-   END DO
+         end do
+      end if
+   end do
 !
 !     Translate receptor coordinates
-   DO  I = 1,NRECEP
-      XR_RCS(I) = XR_SCS(I,KK) - XN
-      YR_RCS(I) = YR_SCS(I,KK) - YN
-   END DO
+   do  i = 1,nrecep
+      xr_rcs(i) = xr_scs(i,kk) - xn
+      yr_rcs(i) = yr_scs(i,kk) - yn
+   end do
 !
 !     Rotate coordinate system
 !
 !     Rotate line source segment coordinates
-   DO LNUM = 1,NBL
+   do lnum = 1,nbl
 
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
+      if (blineparms(lnum)%iblpgrpnum == kk) then
 
-         DO J=1,129
-            XSAVE = XS_RCS(LNUM,J)
-            YSAVE = YS_RCS(LNUM,J)
-            XS_RCS(LNUM,J) = XSAVE*COSTHETA + YSAVE*SINTHETA
-            YS_RCS(LNUM,J) = YSAVE*COSTHETA - XSAVE*SINTHETA
+         do j=1,129
+            xsave = xs_rcs(lnum,j)
+            ysave = ys_rcs(lnum,j)
+            xs_rcs(lnum,j) = xsave*costheta + ysave*sintheta
+            ys_rcs(lnum,j) = ysave*costheta - xsave*sintheta
             if(mod(j,10) == 0.0) then
             endif
-         END DO
-      END IF
-   END DO
+         end do
+      end if
+   end do
 
 !     Rotate receptor coordinates
-   DO I = 1,NRECEP
-      XSAVE = XR_RCS(I)
-      YSAVE = YR_RCS(I)
-      XR_RCS(I) = XSAVE*COSTHETA + YSAVE*SINTHETA
-      YR_RCS(I) = YSAVE*COSTHETA - XSAVE*SINTHETA
-   END DO
+   do i = 1,nrecep
+      xsave = xr_rcs(i)
+      ysave = yr_rcs(i)
+      xr_rcs(i) = xsave*costheta + ysave*sintheta
+      yr_rcs(i) = ysave*costheta - xsave*sintheta
+   end do
 
-   RETURN
-END SUBROUTINE BL_ROTATE2
+   return
+end subroutine bl_rotate2

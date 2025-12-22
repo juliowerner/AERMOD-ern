@@ -38,7 +38,7 @@ SUBROUTINE EMFACT (QARG)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION :: QARG
 
@@ -48,58 +48,58 @@ SUBROUTINE EMFACT (QARG)
 ! --- Apply Variable Emission Rate Factor, Based on Value of QFLAG
 !     Emission unit factor is applied later since it varies by
 !     output type
-   IF (QFLAG(ISRC) .EQ. ' ') THEN
+   IF (QFLAG(ISRC) == ' ') THEN
       QTK = QARG
 
 !*----   ISCSTM Modification: To handle hourly emissions - jah 11/4/94
-   ELSE IF (QFLAG(ISRC) .EQ. 'HOURLY') THEN
+   ELSE IF (QFLAG(ISRC) == 'HOURLY') THEN
       QTK = QARG
 !*----
 !*#
 
-   ELSE IF (QFLAG(ISRC) .EQ. 'MONTH') THEN
+   ELSE IF (QFLAG(ISRC) == 'MONTH') THEN
       QTK = QARG * QFACT(IMONTH,ISRC)
 
-   ELSE IF (QFLAG(ISRC) .EQ. 'HROFDY') THEN
+   ELSE IF (QFLAG(ISRC) == 'HROFDY') THEN
       QTK = QARG * QFACT(IHOUR,ISRC)
 
-   ELSE IF (QFLAG(ISRC) .EQ. 'WSPEED') THEN
+   ELSE IF (QFLAG(ISRC) == 'WSPEED') THEN
       QTK = QARG * QFACT(IUCAT,ISRC)
 
-   ELSE IF (QFLAG(ISRC) .EQ. 'SEASON') THEN
+   ELSE IF (QFLAG(ISRC) == 'SEASON') THEN
       QTK = QARG * QFACT(ISEAS,ISRC)
 
-   ELSE IF (QFLAG(ISRC) .EQ. 'SEASHR') THEN
+   ELSE IF (QFLAG(ISRC) == 'SEASHR') THEN
       QTK = QARG * QFACT((IHOUR+(ISEAS-1)*24),ISRC)
 
-   ELSE IF (QFLAG(ISRC) .EQ. 'HRDOW') THEN
+   ELSE IF (QFLAG(ISRC) == 'HRDOW') THEN
       QTK = QARG * QFACT((IHOUR +&
       &(IDAY_OF_WEEK-1)*24),ISRC)
 
-   ELSE IF (QFLAG(ISRC) .EQ. 'HRDOW7') THEN
+   ELSE IF (QFLAG(ISRC) == 'HRDOW7') THEN
       QTK = QARG * QFACT((IHOUR +&
       &(IDAY_OF_WEEK7-1)*24),ISRC)
 
-   ELSE IF (QFLAG(ISRC) .EQ. 'SHRDOW') THEN
+   ELSE IF (QFLAG(ISRC) == 'SHRDOW') THEN
       QTK = QARG * QFACT((IHOUR+(ISEAS-1)*24+&
       &(IDAY_OF_WEEK-1)*96),ISRC)
 
-   ELSE IF (QFLAG(ISRC) .EQ. 'SHRDOW7') THEN
+   ELSE IF (QFLAG(ISRC) == 'SHRDOW7') THEN
       QTK = QARG * QFACT((IHOUR+(ISEAS-1)*24+&
       &(IDAY_OF_WEEK7-1)*96),ISRC)
 
-   ELSE IF (QFLAG(ISRC) .EQ. 'MHRDOW') THEN
+   ELSE IF (QFLAG(ISRC) == 'MHRDOW') THEN
       QTK = QARG * QFACT((IHOUR+(IMONTH-1)*24+&
       &(IDAY_OF_WEEK-1)*288),ISRC)
 
-   ELSE IF (QFLAG(ISRC) .EQ. 'MHRDOW7') THEN
+   ELSE IF (QFLAG(ISRC) == 'MHRDOW7') THEN
       QTK = QARG * QFACT((IHOUR+(IMONTH-1)*24+&
       &(IDAY_OF_WEEK7-1)*288),ISRC)
 
    END IF
 
    RETURN
-END
+END SUBROUTINE EMFACT
 
 SUBROUTINE BGVAL (ISECT,BARG)
 !***********************************************************************
@@ -127,7 +127,7 @@ SUBROUTINE BGVAL (ISECT,BARG)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER          :: ISECT
 
@@ -138,45 +138,45 @@ SUBROUTINE BGVAL (ISECT,BARG)
 
 ! --- Apply temporally-varying background concentration value
 !     to BARG variable
-   IF (BFLAG(ISECT) .EQ. 'ANNUAL') THEN
+   IF (BFLAG(ISECT) == 'ANNUAL') THEN
       BARG = BACKGRND(1,ISECT)
 
-   ELSE IF (BFLAG(ISECT) .EQ. 'MONTH') THEN
+   ELSE IF (BFLAG(ISECT) == 'MONTH') THEN
       BARG = BACKGRND(IMONTH,ISECT)
 
-   ELSE IF (BFLAG(ISECT) .EQ. 'HROFDY') THEN
+   ELSE IF (BFLAG(ISECT) == 'HROFDY') THEN
       BARG = BACKGRND(IHOUR,ISECT)
 
-   ELSE IF (BFLAG(ISECT) .EQ. 'WSPEED') THEN
+   ELSE IF (BFLAG(ISECT) == 'WSPEED') THEN
       BARG = BACKGRND(IUCAT,ISECT)
 
-   ELSE IF (BFLAG(ISECT) .EQ. 'SEASON') THEN
+   ELSE IF (BFLAG(ISECT) == 'SEASON') THEN
       BARG = BACKGRND(ISEAS,ISECT)
 
-   ELSE IF (BFLAG(ISECT) .EQ. 'SEASHR') THEN
+   ELSE IF (BFLAG(ISECT) == 'SEASHR') THEN
       BARG = BACKGRND(IHOUR+(ISEAS-1)*24,ISECT)
 
-   ELSE IF (BFLAG(ISECT) .EQ. 'HRDOW') THEN
+   ELSE IF (BFLAG(ISECT) == 'HRDOW') THEN
       BARG = BACKGRND(IHOUR +&
       &(IDAY_OF_WEEK-1)*24,ISECT)
 
-   ELSE IF (BFLAG(ISECT) .EQ. 'HRDOW7') THEN
+   ELSE IF (BFLAG(ISECT) == 'HRDOW7') THEN
       BARG = BACKGRND(IHOUR +&
       &(IDAY_OF_WEEK7-1)*24,ISECT)
 
-   ELSE IF (BFLAG(ISECT) .EQ. 'SHRDOW') THEN
+   ELSE IF (BFLAG(ISECT) == 'SHRDOW') THEN
       BARG = BACKGRND(IHOUR+(ISEAS-1)*24+&
       &(IDAY_OF_WEEK-1)*96,ISECT)
 
-   ELSE IF (BFLAG(ISECT) .EQ. 'SHRDOW7') THEN
+   ELSE IF (BFLAG(ISECT) == 'SHRDOW7') THEN
       BARG = BACKGRND(IHOUR+(ISEAS-1)*24+&
       &(IDAY_OF_WEEK7-1)*96,ISECT)
 
-   ELSE IF (BFLAG(ISECT) .EQ. 'MHRDOW') THEN
+   ELSE IF (BFLAG(ISECT) == 'MHRDOW') THEN
       BARG = BACKGRND(IHOUR+(IMONTH-1)*24+&
       &(IDAY_OF_WEEK-1)*288,ISECT)
 
-   ELSE IF (BFLAG(ISECT) .EQ. 'MHRDOW7') THEN
+   ELSE IF (BFLAG(ISECT) == 'MHRDOW7') THEN
       BARG = BACKGRND(IHOUR+(IMONTH-1)*24+&
       &(IDAY_OF_WEEK7-1)*288,ISECT)
 
@@ -185,28 +185,28 @@ SUBROUTINE BGVAL (ISECT,BARG)
 ! --- Adjust background concentration units to UG/M3 if needed;
 !     conversion is based on reference temperature (25C) and
 !     pressure (1013.25 mb)
-   IF (POLLUT .EQ. 'NO2') THEN
-      IF (BackUnits .EQ. 'PPB') THEN
+   IF (POLLUT == 'NO2') THEN
+      IF (BackUnits == 'PPB') THEN
          BARG = BARG / NO2_PPB
-      ELSE IF (BackUnits .EQ. 'PPM') THEN
+      ELSE IF (BackUnits == 'PPM') THEN
          BARG = BARG / NO2_PPM
       END IF
-   ELSE IF (POLLUT .EQ. 'SO2') THEN
-      IF (BackUnits .EQ. 'PPB') THEN
+   ELSE IF (POLLUT == 'SO2') THEN
+      IF (BackUnits == 'PPB') THEN
          BARG = BARG / SO2_PPB
-      ELSE IF (BackUnits .EQ. 'PPM') THEN
+      ELSE IF (BackUnits == 'PPM') THEN
          BARG = BARG / SO2_PPM
       END IF
-   ELSE IF (POLLUT .EQ. 'CO') THEN
-      IF (BackUnits .EQ. 'PPB') THEN
+   ELSE IF (POLLUT == 'CO') THEN
+      IF (BackUnits == 'PPB') THEN
          BARG = BARG * CO_PPB
-      ELSE IF (BackUnits .EQ. 'PPM') THEN
+      ELSE IF (BackUnits == 'PPM') THEN
          BARG = BARG * CO_PPM
       END IF
    END IF
 
    RETURN
-END
+END SUBROUTINE BGVAL
 
 SUBROUTINE OZONVALS (ISECT,O3ARG)
 !***********************************************************************
@@ -240,7 +240,7 @@ SUBROUTINE OZONVALS (ISECT,O3ARG)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER          :: ISECT
 
@@ -250,45 +250,45 @@ SUBROUTINE OZONVALS (ISECT,O3ARG)
    MODNAM = 'OZONVALS'
 
 ! --- Apply Variable Background O3 values Based on Value of O3FLAG
-   IF (O3FLAG(ISECT) .EQ. 'ANNUAL') THEN
+   IF (O3FLAG(ISECT) == 'ANNUAL') THEN
       O3ARG = O3VARY(1,ISECT)
 
-   ELSE IF (O3FLAG(ISECT) .EQ. 'MONTH') THEN
+   ELSE IF (O3FLAG(ISECT) == 'MONTH') THEN
       O3ARG = O3VARY(IMONTH,ISECT)
 
-   ELSE IF (O3FLAG(ISECT) .EQ. 'HROFDY') THEN
+   ELSE IF (O3FLAG(ISECT) == 'HROFDY') THEN
       O3ARG = O3VARY(IHOUR,ISECT)
 
-   ELSE IF (O3FLAG(ISECT) .EQ. 'WSPEED') THEN
+   ELSE IF (O3FLAG(ISECT) == 'WSPEED') THEN
       O3ARG = O3VARY(IUCAT,ISECT)
 
-   ELSE IF (O3FLAG(ISECT) .EQ. 'SEASON') THEN
+   ELSE IF (O3FLAG(ISECT) == 'SEASON') THEN
       O3ARG = O3VARY(ISEAS,ISECT)
 
-   ELSE IF (O3FLAG(ISECT) .EQ. 'SEASHR') THEN
+   ELSE IF (O3FLAG(ISECT) == 'SEASHR') THEN
       O3ARG = O3VARY(IHOUR+(ISEAS-1)*24,ISECT)
 
-   ELSE IF (O3FLAG(ISECT) .EQ. 'HRDOW') THEN
+   ELSE IF (O3FLAG(ISECT) == 'HRDOW') THEN
       O3ARG = O3VARY(IHOUR +&
       &(IDAY_OF_WEEK-1)*24,ISECT)
 
-   ELSE IF (O3FLAG(ISECT) .EQ. 'HRDOW7') THEN
+   ELSE IF (O3FLAG(ISECT) == 'HRDOW7') THEN
       O3ARG = O3VARY(IHOUR +&
       &(IDAY_OF_WEEK7-1)*24,ISECT)
 
-   ELSE IF (O3FLAG(ISECT) .EQ. 'SHRDOW') THEN
+   ELSE IF (O3FLAG(ISECT) == 'SHRDOW') THEN
       O3ARG = O3VARY(IHOUR+(ISEAS-1)*24+&
       &(IDAY_OF_WEEK-1)*96,ISECT)
 
-   ELSE IF (O3FLAG(ISECT) .EQ. 'SHRDOW7') THEN
+   ELSE IF (O3FLAG(ISECT) == 'SHRDOW7') THEN
       O3ARG = O3VARY(IHOUR+(ISEAS-1)*24+&
       &(IDAY_OF_WEEK7-1)*96,ISECT)
 
-   ELSE IF (O3FLAG(ISECT) .EQ. 'MHRDOW') THEN
+   ELSE IF (O3FLAG(ISECT) == 'MHRDOW') THEN
       O3ARG = O3VARY(IHOUR+(IMONTH-1)*24+&
       &(IDAY_OF_WEEK-1)*288,ISECT)
 
-   ELSE IF (O3FLAG(ISECT) .EQ. 'MHRDOW7') THEN
+   ELSE IF (O3FLAG(ISECT) == 'MHRDOW7') THEN
       O3ARG = O3VARY(IHOUR+(IMONTH-1)*24+&
       &(IDAY_OF_WEEK7-1)*288,ISECT)
 
@@ -296,11 +296,11 @@ SUBROUTINE OZONVALS (ISECT,O3ARG)
 
 ! --- Convert O3ARG from PPB or PPM to UG/M3, based on reference
 !     temperature (25C) and pressure (1013.25 mb)
-   IF (OzoneUnits .EQ. 'PPB') THEN
+   IF (OzoneUnits == 'PPB') THEN
       O3ARG = O3ARG * O3_PPB
-   ELSE IF (OzoneUnits .EQ. 'PPM') THEN
+   ELSE IF (OzoneUnits == 'PPM') THEN
       O3ARG = O3ARG * O3_PPM
-   ELSE IF (OzoneUnits .EQ. 'UG/M3') THEN
+   ELSE IF (OzoneUnits == 'UG/M3') THEN
       O3ARG = O3ARG
    ELSE
 ! ---    Default units are PPB
@@ -308,7 +308,7 @@ SUBROUTINE OZONVALS (ISECT,O3ARG)
    END IF
 
    RETURN
-END
+END SUBROUTINE OZONVALS
 
 SUBROUTINE VARYNOXVALS (ISECT,NOXARG)
 !***********************************************************************
@@ -336,7 +336,7 @@ SUBROUTINE VARYNOXVALS (ISECT,NOXARG)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER          :: ISECT
 
@@ -346,45 +346,45 @@ SUBROUTINE VARYNOXVALS (ISECT,NOXARG)
    MODNAM = 'VARYNOXVALS'
 
 ! --- Apply Variable Background NOX values Based on Value of NOXFLAG
-   IF (NOXFLAG(ISECT) .EQ. 'ANNUAL') THEN
+   IF (NOXFLAG(ISECT) == 'ANNUAL') THEN
       NOXARG = NOXVARY(1,ISECT)
 
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'MONTH') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'MONTH') THEN
       NOXARG = NOXVARY(IMONTH,ISECT)
 
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'HROFDY') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'HROFDY') THEN
       NOXARG = NOXVARY(IHOUR,ISECT)
 
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'WSPEED') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'WSPEED') THEN
       NOXARG = NOXVARY(IUCAT,ISECT)
 
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'SEASON') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'SEASON') THEN
       NOXARG = NOXVARY(ISEAS,ISECT)
 
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'SEASHR') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'SEASHR') THEN
       NOXARG = NOXVARY(IHOUR+(ISEAS-1)*24,ISECT)
 
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'HRDOW') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'HRDOW') THEN
       NOXARG = NOXVARY(IHOUR +&
       &(IDAY_OF_WEEK-1)*24,ISECT)
 
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'HRDOW7') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'HRDOW7') THEN
       NOXARG = NOXVARY(IHOUR +&
       &(IDAY_OF_WEEK7-1)*24,ISECT)
 
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'SHRDOW') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'SHRDOW') THEN
       NOXARG = NOXVARY(IHOUR+(ISEAS-1)*24+&
       &(IDAY_OF_WEEK-1)*96,ISECT)
 
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'SHRDOW7') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'SHRDOW7') THEN
       NOXARG = NOXVARY(IHOUR+(ISEAS-1)*24+&
       &(IDAY_OF_WEEK7-1)*96,ISECT)
 
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'MHRDOW') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'MHRDOW') THEN
       NOXARG = NOXVARY(IHOUR+(IMONTH-1)*24+&
       &(IDAY_OF_WEEK-1)*288,ISECT)
 
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'MHRDOW7') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'MHRDOW7') THEN
       NOXARG = NOXVARY(IHOUR+(IMONTH-1)*24+&
       &(IDAY_OF_WEEK7-1)*288,ISECT)
 
@@ -393,11 +393,11 @@ SUBROUTINE VARYNOXVALS (ISECT,NOXARG)
 ! --- Convert NOXARG from PPB or PPM to UG/M3, based on reference
 !     temperature (25C) and pressure (1013.25 mb)
 ! --- using NO2 factors (NOx expressed as 'NOx as NO2')
-   IF (NOxUnits .EQ. 'PPB') THEN
+   IF (NOxUnits == 'PPB') THEN
       NOXARG = NOXARG / NO2_PPB
-   ELSE IF (NOxUnits .EQ. 'PPM') THEN
+   ELSE IF (NOxUnits == 'PPM') THEN
       NOXARG = NOXARG / NO2_PPM
-   ELSE IF (NOxUnits .EQ. 'UG/M3') THEN
+   ELSE IF (NOxUnits == 'UG/M3') THEN
       NOXARG = NOXARG
    ELSE
 ! ---    Default units are PPB
@@ -405,7 +405,7 @@ SUBROUTINE VARYNOXVALS (ISECT,NOXARG)
    END IF
 
    RETURN
-END
+END SUBROUTINE VARYNOXVALS
 
 SUBROUTINE DISTF
 !***********************************************************************
@@ -431,7 +431,7 @@ SUBROUTINE DISTF
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: XLN, DELHNN, XMAXN
    DOUBLE PRECISION :: DHFSAV       ! save original DHFAER for URBSTAB cases
    DOUBLE PRECISION :: BVZI2
@@ -439,7 +439,7 @@ SUBROUTINE DISTF
 !     Variable Initializations
    MODNAM = 'DISTF'
 
-   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
 
 !        Compute the distance to final rise, XMAX;
 !        The negative sign appears on the FB term to insure that the
@@ -453,11 +453,11 @@ SUBROUTINE DISTF
       DHFAER = MIN( DHFAER, DELHNN )
 
 !        Compute Neutral/Unstable Final Rise
-      IF(FB .LE. 0.0D0) THEN
+      IF(FB <= 0.0D0) THEN
          XMAXN = 4.D0*DS*(VS+3.D0*UP)*(VS+3.D0*UP)/(VS*UP)
          DHFAER   = MIN( DHFAER, 3.0D0 * DS * VS / UP )
       ELSE
-         IF(FB .GE. 55.0D0) THEN
+         IF(FB >= 55.0D0) THEN
             XMAXN = 119.0D0 * FB**0.4D0
          ELSE
             XMAXN = 49.0D0 * FB**0.625D0
@@ -486,7 +486,7 @@ SUBROUTINE DISTF
 ! height.  HEDHH is not calculated in the subroutine PENFCT and not used in DELTAH
 ! for stacks at or above mixing height
 !            IF( HSP+DHFAER .GE. ZI )THEN
-         IF( HSP+DHFAER .GE. ZI .and. HSP .LT. ZI )THEN
+         IF( HSP+DHFAER >= ZI .and. HSP < ZI )THEN
 ! ---          Stack height + plume rise is .GE. ZI; use pseudo-penetrated plume
 !              approach for URBAN SBL cases
 
@@ -503,10 +503,10 @@ SUBROUTINE DISTF
             HEDHH = (17.576D0 * PSUBS + 0.296296D0) ** THIRD
 
 !              Check the value of HEDHH and compute the plume penetration, P
-            IF( HEDHH .LT. (2.0D0*THIRD) )THEN
+            IF( HEDHH < (2.0D0*THIRD) )THEN
                PPF = 0.0D0
 
-            ELSE IF( HEDHH .GT. 2.0D0 )THEN
+            ELSE IF( HEDHH > 2.0D0 )THEN
                PPF = 1.0D0
 
             ELSE
@@ -515,11 +515,11 @@ SUBROUTINE DISTF
             END IF
 
 ! ---          Include calculation of penetrated plume rise and height
-            IF( PPF .GT. 0.0D0 )THEN
+            IF( PPF > 0.0D0 )THEN
 
 !                 Compute the plume height for the penetrated source
 !                 (See Eq. 8 in the reference for Source 3)
-               IF (PPF .EQ. 1.0D0) THEN
+               IF (PPF == 1.0D0) THEN
                   DHFAER = HEDHH * (ZI-HSP)
                ELSE
                   DHFAER = 0.75D0 * (ZI-HSP) * HEDHH + 0.5D0*(ZI-HSP)
@@ -537,11 +537,11 @@ SUBROUTINE DISTF
    ELSE
 !        Unstable plume
 
-      IF( FB .LE. 0.0D0 )THEN
+      IF( FB <= 0.0D0 )THEN
          XMAX = 4.D0*DS*(VS+3.0D0*UP)*(VS+3.0D0*UP)/(VS*UP)
          DHFAER = 3.0D0 * DS * VS / UP
       ELSE
-         IF (FB .GE. 55.0D0) THEN
+         IF (FB >= 55.0D0) THEN
             XMAX = 119.D0 * FB**0.4D0
          ELSE
             XMAX = 49.D0 * FB**0.625D0
@@ -553,7 +553,7 @@ SUBROUTINE DISTF
    END IF
 
    RETURN
-END
+END SUBROUTINE DISTF
 
 SUBROUTINE WAKFLG
 !***********************************************************************
@@ -590,13 +590,13 @@ SUBROUTINE WAKFLG
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'WAKFLG'
 
 !     Select Building Dimensions for This Sector
-   IF (IFVSEC .LE. NSEC) THEN
+   IF (IFVSEC <= NSEC) THEN
       DSBH = ADSBH(IFVSEC,ISRC)
       DSBW = ADSBW(IFVSEC,ISRC)
 
@@ -613,7 +613,7 @@ SUBROUTINE WAKFLG
    END IF
 
 !     Set Initial Wake Switches Based on Building Dimensions
-   IF (DSBH .LE. 1.0D-5 .or. DSBW .LE. 1.0D-5) THEN
+   IF (DSBH <= 1.0D-5 .or. DSBW <= 1.0D-5) THEN
 ! ---    No building inputs defined for this source, set WAKE = .F.
       WAKE   = .FALSE.
    ELSE
@@ -646,7 +646,7 @@ SUBROUTINE WAKFLG
 ! --- PRIME ----------------------------------------------------
 
    RETURN
-END
+END SUBROUTINE WAKFLG
 
 SUBROUTINE XYDIST(INDX)
 !***********************************************************************
@@ -679,7 +679,7 @@ SUBROUTINE XYDIST(INDX)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: INDX
 
@@ -714,7 +714,7 @@ SUBROUTINE XYDIST(INDX)
    END IF
 
    RETURN
-END
+END SUBROUTINE XYDIST
 
 SUBROUTINE FTERM
 !***********************************************************************
@@ -737,7 +737,7 @@ SUBROUTINE FTERM
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'FTERM'
@@ -745,7 +745,7 @@ SUBROUTINE FTERM
    FOPT = 0.5D0 * (1.0D0 + PHEE)
 
    RETURN
-END
+END SUBROUTINE FTERM
 
 
 SUBROUTINE FYPLM(SYARG,FYOUT)
@@ -772,7 +772,7 @@ SUBROUTINE FYPLM(SYARG,FYOUT)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: SYARG, EXPARG, FYOUT
 
 !     Variable Initializations
@@ -782,7 +782,7 @@ SUBROUTINE FYPLM(SYARG,FYOUT)
 !
 !     Add meander component
 !
-   IF (EXPARG .GT. EXPLIM) THEN
+   IF (EXPARG > EXPLIM) THEN
 !        Calculate lateral term for Gaussian plume
       FYOUT  = DEXP(EXPARG)/(SRT2PI*SYARG)
    ELSE
@@ -790,7 +790,7 @@ SUBROUTINE FYPLM(SYARG,FYOUT)
    END IF
 
    RETURN
-END
+END SUBROUTINE FYPLM
 
 
 SUBROUTINE FYPAN(FYOUT)
@@ -817,7 +817,7 @@ SUBROUTINE FYPAN(FYOUT)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: FYOUT
 
 !     Variable Initializations
@@ -826,7 +826,7 @@ SUBROUTINE FYPAN(FYOUT)
    FYOUT = 1.0D0/(TWOPI * DISTR)
 
    RETURN
-END
+END SUBROUTINE FYPAN
 
 
 SUBROUTINE MEANDR( UEF, SVEF, FRAN )
@@ -865,7 +865,7 @@ SUBROUTINE MEANDR( UEF, SVEF, FRAN )
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 !RCO 9/28/2020 D061 User BIGT
 !RCO BIGT is now defined as user input for LOW_WIND
 !RCO default is set in coset. (CRT: Now declared in modules.f)
@@ -887,7 +887,7 @@ SUBROUTINE MEANDR( UEF, SVEF, FRAN )
 !     Remove the SVeff component from UEF
 !
    SQRTARG = UEF*UEF - 2.0D0*SVEF*SVEF
-   IF (SQRTARG .GE. 0.01D0) THEN
+   IF (SQRTARG >= 0.01D0) THEN
       UMEAN = DSQRT( SQRTARG )
    ELSE
       UMEAN = 0.1D0
@@ -903,7 +903,7 @@ SUBROUTINE MEANDR( UEF, SVEF, FRAN )
 ! --- Issue informational messages for FRAN > FRANMAX
 !CRT  5/1/2018: Add logical variable to condition so message is written
 !CRT  only if FRANMAX is specified by user under LOW_WIND option
-   IF( L_UserFRANmax .and. (FRAN .GT. FRANMAX) )THEN
+   IF( L_UserFRANmax .and. (FRAN > FRANMAX) )THEN
       WRITE( DUMMY,'(I2.2,1X,I2.2,1X,I2.2,1X,I3)') IMONTH, IDAY,&
       &IHOUR,&
       &MIN(ISRC,999)
@@ -911,7 +911,7 @@ SUBROUTINE MEANDR( UEF, SVEF, FRAN )
    ENDIF
 
 ! --- Wood 3/18/2022 D127 Issue informational messages for FRAN < FRANMIN
-   IF( L_UserFRANmin .and. (FRAN .LT. FRANMIN) )THEN
+   IF( L_UserFRANmin .and. (FRAN < FRANMIN) )THEN
       WRITE( DUMMY,'(I2.2,1X,I2.2,1X,I2.2,1X,I3)') IMONTH, IDAY,&
       &IHOUR,&
       &MIN(ISRC,999)
@@ -940,7 +940,7 @@ SUBROUTINE MEANDR( UEF, SVEF, FRAN )
    END IF
 
    RETURN
-END
+END SUBROUTINE MEANDR
 
 SUBROUTINE CRITDS (HEARG)
 !***********************************************************************
@@ -987,7 +987,7 @@ SUBROUTINE CRITDS (HEARG)
    USE MAIN1
    USE RLINE_DATA
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    INTEGER :: NDX4HC
    DOUBLE PRECISION :: HHILL, UATHH, PTATHH, TGATHH, PTHC, TGHC,&
    &TOPHT, WSTOP
@@ -997,7 +997,7 @@ SUBROUTINE CRITDS (HEARG)
    DOUBLE PRECISION :: A, AC4, B, B2, C, DETER, HBOT, HTOP,&
    &LS(MXGLVL), RS(MXGLVL), XN2(MXGLVL), N2, DWS,&
    &DWS2, ZMID
-   INTEGER IB, IT, NL, NLEV
+   INTEGER :: IB, IT, NL, NLEV
 
 !     Variable Initializations
    MODNAM = 'CRITDS'
@@ -1024,7 +1024,7 @@ SUBROUTINE CRITDS (HEARG)
       HHILL = MIN( ZHILL - ZS, ZELEV - ZS + HEARG )
    END IF
 
-   IF ( STABLE .and. ELEV .and. HHILL .GT. 0.0D0 ) THEN
+   IF ( STABLE .and. ELEV .and. HHILL > 0.0D0 ) THEN
 !        The hill elevation is above the source elevation and we are
 !        using elevated terrain;
 
@@ -1041,8 +1041,8 @@ SUBROUTINE CRITDS (HEARG)
 !     &                  GRIDHT(NDX4HC+1), GRIDWS(NDX4HC+1),
 !     &                  HHILL, UATHH )
 
-      IF ((SRCTYP(ISRC) .EQ. 'RLINE') .or.&
-      &(SRCTYP(ISRC) .EQ. 'RLINEXT')) THEN
+      IF ((SRCTYP(ISRC) == 'RLINE') .or.&
+      &(SRCTYP(ISRC) == 'RLINEXT')) THEN
          CALL GINTRP ( GRIDHT(NDX4HC), RL_GRIDWS(NDX4HC,I_ALPHA),&
          &GRIDHT(NDX4HC+1), RL_GRIDWS(NDX4HC+1,I_ALPHA),&
          &HHILL, UATHH )
@@ -1067,8 +1067,8 @@ SUBROUTINE CRITDS (HEARG)
 ! - Wood 7/5/2022       LS(NL) = 0.5D0 * GRIDWS(NL) * GRIDWS(NL)
 
 ! begin - Use RLINE windspeeds if RLINE sourcetype - Wood 7/5/2022
-         IF ((SRCTYP(ISRC) .EQ. 'RLINE') .or.&
-         &(SRCTYP(ISRC) .EQ. 'RLINEXT')) THEN
+         IF ((SRCTYP(ISRC) == 'RLINE') .or.&
+         &(SRCTYP(ISRC) == 'RLINEXT')) THEN
             LS(NL) = 0.5D0 * RL_GRIDWS(NL,I_ALPHA) *&
             &RL_GRIDWS(NL,I_ALPHA)
          ELSE
@@ -1086,13 +1086,13 @@ SUBROUTINE CRITDS (HEARG)
       RS(NLEV) = 0.0D0
       DO NL = NLEV-1, 1, -1
 
-         IF( NL .LT. NLEV-1 )THEN
+         IF( NL < NLEV-1 )THEN
             ZMID = 0.5D0 * ( GRIDHT(NL+1) + GRIDHT(NL) )
             PTHC = 0.5D0 * ( GRIDPT(NL+1) + GRIDPT(NL) )
             TGHC = 0.5D0 * ( GRIDTG(NL+1) + GRIDTG(NL) )
             TOPHT = GRIDHT(NL+1)
 
-         ELSE IF( NL .EQ. NLEV-1 )THEN
+         ELSE IF( NL == NLEV-1 )THEN
             ZMID = 0.5D0 * ( HHILL + GRIDHT(NL) )
             PTHC = 0.5D0 * ( PTATHH + GRIDPT(NL) )
             TGHC = 0.5D0 * ( TGATHH + GRIDTG(NL) )
@@ -1113,7 +1113,7 @@ SUBROUTINE CRITDS (HEARG)
 
       IT = 1
       DO NL = NLEV, 1, -1
-         IF( LS(NL) .GE. RS(NL) )THEN
+         IF( LS(NL) >= RS(NL) )THEN
             IT = NL
          END IF
       END DO
@@ -1124,9 +1124,9 @@ SUBROUTINE CRITDS (HEARG)
 !
 !        DWS is wind speed shear; N2 is the Brunt-Vaisala frequency.
 !
-      IF( IT .GT. 1 )THEN
+      IF( IT > 1 )THEN
 
-         IF( IT .EQ. NLEV )THEN
+         IF( IT == NLEV )THEN
             WSTOP = UATHH
             HTOP  = HHILL
          ELSE
@@ -1134,8 +1134,8 @@ SUBROUTINE CRITDS (HEARG)
 ! Wood 7/5/2022 HTOP  = GRIDHT(IT)
 
 ! begin - Use RLINE wind speed if RLINE or RLINEXT source
-            IF ((SRCTYP(ISRC) .EQ. 'RLINE') .or.&
-            &(SRCTYP(ISRC) .EQ. 'RLINEXT')) THEN
+            IF ((SRCTYP(ISRC) == 'RLINE') .or.&
+            &(SRCTYP(ISRC) == 'RLINEXT')) THEN
                WSTOP = RL_GRIDWS(IT,I_ALPHA)
                HTOP  = GRIDHT(IT)
             ELSE
@@ -1150,8 +1150,8 @@ SUBROUTINE CRITDS (HEARG)
 ! Wood 7/5/2022 DWS = (WSTOP - GRIDWS(IB)) / (HTOP - HBOT)
 
 ! begin - Use RLINE wind speed if RLINE or RLINEXT source
-         IF ((SRCTYP(ISRC) .EQ. 'RLINE') .or.&
-         &(SRCTYP(ISRC) .EQ. 'RLINEXT')) THEN
+         IF ((SRCTYP(ISRC) == 'RLINE') .or.&
+         &(SRCTYP(ISRC) == 'RLINEXT')) THEN
             DWS = (WSTOP - RL_GRIDWS(IB, I_ALPHA)) / (HTOP - HBOT)
          ELSE
             DWS = (WSTOP - GRIDWS(IB)) / (HTOP - HBOT)
@@ -1171,7 +1171,7 @@ SUBROUTINE CRITDS (HEARG)
          B2 = B * B
          AC4 = 4.0D0 * A * C
 !crfl 6/19/96 Avoid sqrt (neg #) when near zero.
-         IF ((B2-AC4)/B2.LT.0.0D0 .and. (B2-AC4)/B2.GT.-0.001D0) THEN
+         IF ((B2-AC4)/B2<0.0D0 .and. (B2-AC4)/B2>-0.001D0) THEN
             AC4 = B2
          END IF
 !crflendtest
@@ -1189,7 +1189,7 @@ SUBROUTINE CRITDS (HEARG)
    END IF
 
    RETURN
-END
+END SUBROUTINE CRITDS
 
 SUBROUTINE PDF
 !=======================================================================
@@ -1220,7 +1220,7 @@ SUBROUTINE PDF
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !---- Data initializations
 
@@ -1253,7 +1253,7 @@ SUBROUTINE PDF
    CALL LLCALC
 
    RETURN
-END
+END SUBROUTINE PDF
 
 SUBROUTINE SKCALC
 !=======================================================================
@@ -1289,9 +1289,9 @@ SUBROUTINE SKCALC
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
-   DOUBLE PRECISION  WBAR3
+   DOUBLE PRECISION  :: WBAR3
 
 !---- Data initializations
 !
@@ -1312,7 +1312,7 @@ SUBROUTINE SKCALC
    SKEW = WBAR3 / (SWEFFD*SWEFFD*SWEFFD)
 
    RETURN
-END
+END SUBROUTINE SKCALC
 
 SUBROUTINE CRCALC ( )
 !=======================================================================
@@ -1343,7 +1343,7 @@ SUBROUTINE CRCALC ( )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !---- Data initializations
 !
@@ -1354,7 +1354,7 @@ SUBROUTINE CRCALC ( )
    R = 2.0D0
 
    RETURN
-END
+END SUBROUTINE CRCALC
 
 SUBROUTINE ALCALC ( )
 !=======================================================================
@@ -1384,7 +1384,7 @@ SUBROUTINE ALCALC ( )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !---- Data initializations
 !
@@ -1395,7 +1395,7 @@ SUBROUTINE ALCALC ( )
    ALPHPD = ( 1.0D0 + R*R ) / (1.0D0 + 3.0D0*R*R)
 
    RETURN
-END
+END SUBROUTINE ALCALC
 
 SUBROUTINE BECALC ( )
 !=======================================================================
@@ -1425,7 +1425,7 @@ SUBROUTINE BECALC ( )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !---- Data initializations
 !
@@ -1436,7 +1436,7 @@ SUBROUTINE BECALC ( )
    BETAPD = 1.0D0 + R*R
 
    RETURN
-END
+END SUBROUTINE BECALC
 
 SUBROUTINE AACALC ( )
 !=======================================================================
@@ -1469,7 +1469,7 @@ SUBROUTINE AACALC ( )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: DETERM, SWRATIO
 
 !---- Data initializations
@@ -1490,7 +1490,7 @@ SUBROUTINE AACALC ( )
    ASUB2 = SWRATIO * (0.5D0 * ALPHPD * SKEW - 0.5D0 * DSQRT(DETERM))
 
    RETURN
-END
+END SUBROUTINE AACALC
 
 SUBROUTINE BBCALC ( )
 !=======================================================================
@@ -1523,7 +1523,7 @@ SUBROUTINE BBCALC ( )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !---- Data initializations
 !
@@ -1535,7 +1535,7 @@ SUBROUTINE BBCALC ( )
    BSUB2 = -R * ASUB2
 
    RETURN
-END
+END SUBROUTINE BBCALC
 
 SUBROUTINE LLCALC ( )
 !=======================================================================
@@ -1566,7 +1566,7 @@ SUBROUTINE LLCALC ( )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !---- Data initializations
 !
@@ -1578,7 +1578,7 @@ SUBROUTINE LLCALC ( )
    LAMDA2 = 1.0D0 - LAMDA1
 
    RETURN
-END
+END SUBROUTINE LLCALC
 
 SUBROUTINE DECAY (XARG)
 !***********************************************************************
@@ -1603,7 +1603,7 @@ SUBROUTINE DECAY (XARG)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     JAT DC1 is a temporary DCOEF variable
    DOUBLE PRECISION :: XARG,DC1
@@ -1618,18 +1618,18 @@ SUBROUTINE DECAY (XARG)
 !     &    URBSRC(ISRC).EQ.'Y') THEN !commented out 9/12/17 JAT
 !     modified 9/29/17 JAT, use half-life for SO2 URBAN even without DFAULT
 !     if HALFLIFE or DCAYCOEF used, use that value, not 4-hours
-   IF (URBAN .and. POLLUT.EQ.'SO2' .and. URBSRC(ISRC).EQ.'Y' .and.&
-   &((ICSTAT(7) .EQ. 0 .and. ICSTAT(8) .EQ. 0) .or. DFAULT)) THEN !urban SO2 source
+   IF (URBAN .and. POLLUT=='SO2' .and. URBSRC(ISRC)=='Y' .and.&
+   &((ICSTAT(7) == 0 .and. ICSTAT(8) == 0) .or. DFAULT)) THEN !urban SO2 source
       DECOEF = 4.81D-5
-   ELSE IF ((POLLUT.EQ.'SO2' .and. URBSRC(ISRC).EQ.'N') .or.&
+   ELSE IF ((POLLUT=='SO2' .and. URBSRC(ISRC)=='N') .or.&
    &DFAULT) THEN  !rural source for SO2 or default modified 10/12/17
       DECOEF = 0.0D0
 !      ELSE IF (DFAULT) THEN !removed and moved to else if above JAT 10/12/17
 !         DECOEF = 0.0D0
    END IF
 
-   IF (DECOEF .GT. 0.0D0) THEN
-      IF (STABLE .or. (UNSTAB .and. HS.GE.ZI)) THEN
+   IF (DECOEF > 0.0D0) THEN
+      IF (STABLE .or. (UNSTAB .and. HS>=ZI)) THEN
          D = DEXP (MAX (EXPLIM, -DECOEF*XARG/UEFF))
       ELSE
          D = DEXP (MAX (EXPLIM, -DECOEF*XARG/UEFFD))
@@ -1638,7 +1638,7 @@ SUBROUTINE DECAY (XARG)
    DECOEF=DC1 !RESET DECOEF TO ORIGINAL VALUE JAT
 
    RETURN
-END
+END SUBROUTINE DECAY
 
 SUBROUTINE VRTSBL (SZARG, HEARG, ZIARG)
 !***********************************************************************
@@ -1673,7 +1673,7 @@ SUBROUTINE VRTSBL (SZARG, HEARG, ZIARG)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    INTEGER :: I
    DOUBLE PRECISION :: SZARG, HEARG, ZIARG, A1, A2, A3, A4, A5, A6,&
    &TWOIZI, SUM, T, V
@@ -1683,11 +1683,11 @@ SUBROUTINE VRTSBL (SZARG, HEARG, ZIARG)
    MODNAM = 'VRTSBL'
    V = 0.0D0
 
-   IF (ZR .EQ. 0.0D0) THEN
+   IF (ZR == 0.0D0) THEN
 !        Vertical Term for Case With FLAT Terrain and No Flagpole
 !        Receptor (ZR = 0.0D0)
       A1 = (-0.5D0/(SZARG*SZARG)) * HEARG * HEARG
-      IF (A1 .GT. EXPLIM)  V = DEXP(A1)
+      IF (A1 > EXPLIM)  V = DEXP(A1)
       SUM = 0.0D0
       DO I = 1, 100
          T  = 0.0D0
@@ -1697,12 +1697,12 @@ SUBROUTINE VRTSBL (SZARG, HEARG, ZIARG)
          &(TWOIZI-HEARG)
          A3 = (-0.5D0/(SZARG*SZARG)) * (TWOIZI+HEARG) *&
          &(TWOIZI+HEARG)
-         IF (A2 .GT. EXPLIM)  T = DEXP(A2)
-         IF (A3 .GT. EXPLIM)  T = T + DEXP(A3)
+         IF (A2 > EXPLIM)  T = DEXP(A2)
+         IF (A3 > EXPLIM)  T = T + DEXP(A3)
          SUM = SUM + T
 
 !RWB        Modify convergence criterion to use relative value of T
-         IF (DABS(T) .LE. 5.0D-7*DABS(SUM)) THEN
+         IF (DABS(T) <= 5.0D-7*DABS(SUM)) THEN
 !              Exit Loop
             EXIT
          END IF
@@ -1710,7 +1710,7 @@ SUBROUTINE VRTSBL (SZARG, HEARG, ZIARG)
 !        Calculate Total Vert. Term - (2.*) was Removed for Optimization
       V  = 2.0D0*(V + SUM)
 
-   ELSE IF (ZR .LE. ZIARG) THEN
+   ELSE IF (ZR <= ZIARG) THEN
 !        Vertical Term for Case of ZR .NE. 0.0
 !        First adjust for terrain below stack base with ZR < 0,
 !        by keeping HE and ZI horizontal.
@@ -1719,8 +1719,8 @@ SUBROUTINE VRTSBL (SZARG, HEARG, ZIARG)
 
       A1 = (-0.5D0/(SZARG*SZARG)) * (ZR-HETMP) * (ZR-HETMP)
       A2 = (-0.5D0/(SZARG*SZARG)) * (ZR+HETMP) * (ZR+HETMP)
-      IF (A1 .GT. EXPLIM)  V = DEXP(A1)
-      IF (A2 .GT. EXPLIM)  V = V + DEXP(A2)
+      IF (A1 > EXPLIM)  V = DEXP(A1)
+      IF (A2 > EXPLIM)  V = V + DEXP(A2)
       SUM = 0.0D0
       DO I = 1, 100
          T  = 0.0D0
@@ -1733,14 +1733,14 @@ SUBROUTINE VRTSBL (SZARG, HEARG, ZIARG)
          &(ZR-(TWOIZI+HETMP))
          A6 = (-0.5D0/(SZARG*SZARG)) * (ZR+(TWOIZI+HETMP)) *&
          &(ZR+(TWOIZI+HETMP))
-         IF (A3 .GT. EXPLIM)  T = T + DEXP(A3)
-         IF (A4 .GT. EXPLIM)  T = T + DEXP(A4)
-         IF (A5 .GT. EXPLIM)  T = T + DEXP(A5)
-         IF (A6 .GT. EXPLIM)  T = T + DEXP(A6)
+         IF (A3 > EXPLIM)  T = T + DEXP(A3)
+         IF (A4 > EXPLIM)  T = T + DEXP(A4)
+         IF (A5 > EXPLIM)  T = T + DEXP(A5)
+         IF (A6 > EXPLIM)  T = T + DEXP(A6)
          SUM = SUM + T
 
 !RWB        Modify convergence criterion to use relative value of T
-         IF (DABS(T) .LE. 1.0D-6*DABS(SUM)) THEN
+         IF (DABS(T) <= 1.0D-6*DABS(SUM)) THEN
 !              Exit Loop
             EXIT
          END IF
@@ -1757,7 +1757,7 @@ SUBROUTINE VRTSBL (SZARG, HEARG, ZIARG)
    FSUBZ = V / (SRT2PI*SZARG)
 
    RETURN
-END
+END SUBROUTINE VRTSBL
 
 SUBROUTINE VRTSBN (SZARG, HEARG)
 !***********************************************************************
@@ -1791,7 +1791,7 @@ SUBROUTINE VRTSBN (SZARG, HEARG)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: SZARG, HEARG, A1, A2, V
    DOUBLE PRECISION :: HETMP
 
@@ -1799,11 +1799,11 @@ SUBROUTINE VRTSBN (SZARG, HEARG)
    MODNAM = 'VRTSBN'
    V = 0.0D0
 
-   IF (ZR .EQ. 0.0D0) THEN
+   IF (ZR == 0.0D0) THEN
 !        Vertical Term for Case With FLAT Terrain and No Flagpole
 !        Receptor (ZR = 0.0)
       A1 = (-0.5D0/(SZARG*SZARG)) * HEARG * HEARG
-      IF (A1 .GT. EXPLIM)  V = DEXP(A1)
+      IF (A1 > EXPLIM)  V = DEXP(A1)
       V  = 2.D0 * V
    ELSE
 !        Vertical Term for Case of ZR .NE. 0.0
@@ -1813,15 +1813,15 @@ SUBROUTINE VRTSBN (SZARG, HEARG)
 
       A1 = (-0.5D0/(SZARG*SZARG)) * (ZR-HETMP) * (ZR-HETMP)
       A2 = (-0.5D0/(SZARG*SZARG)) * (ZR+HETMP) * (ZR+HETMP)
-      IF (A1 .GT. EXPLIM)  V = DEXP(A1)
-      IF (A2 .GT. EXPLIM)  V = V + DEXP(A2)
+      IF (A1 > EXPLIM)  V = DEXP(A1)
+      IF (A2 > EXPLIM)  V = V + DEXP(A2)
    END IF
 
 !     Calculate FSUBZ from V;  FSUBZ = V / (SQRT(2*PI) * SZ)
    FSUBZ = V / (SRT2PI*SZARG)
 
    RETURN
-END
+END SUBROUTINE VRTSBN
 
 
 SUBROUTINE VRTCBL (HE1, HE2, SZ1, SZ2, FACT)
@@ -1867,7 +1867,7 @@ SUBROUTINE VRTCBL (HE1, HE2, SZ1, SZ2, FACT)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    INTEGER :: I
    DOUBLE PRECISION :: HE1, HE2, SZ1, SZ2, FACT, HEARG1,&
    &HEARG2, A1, A2, A3, A4, TWOIZI, SUM, T1, T2, TERM, V
@@ -1877,7 +1877,7 @@ SUBROUTINE VRTCBL (HE1, HE2, SZ1, SZ2, FACT)
    MODNAM = 'VRTCBL'
    V = 0.0D0
 
-   IF (DABS(ZR-0.0D0) .LT. 1.0D-10) THEN
+   IF (DABS(ZR-0.0D0) < 1.0D-10) THEN
 !        Vertical Term for Case With FLAT Terrain and No Flagpole
 !        Receptor (ZR = 0.0)
       SUM = 0.0D0
@@ -1887,21 +1887,21 @@ SUBROUTINE VRTCBL (HE1, HE2, SZ1, SZ2, FACT)
          T2 = 0.0D0
          TWOIZI = 2.0D0*DBLE(I)*ZI * FACT
 !           Check for FACT < 0 and skip first term.
-         IF (FACT .LT. 0.0D0 .and. I .EQ. 0) CYCLE
+         IF (FACT < 0.0D0 .and. I == 0) CYCLE
 
          HEARG1 = TWOIZI+HE1
          HEARG2 = TWOIZI+HE2
          A1 = (-0.5D0/(SZ1*SZ1)) * (HEARG1) * (HEARG1)
-         IF (A1 .GT. EXPLIM)  T1 = DEXP(A1)
+         IF (A1 > EXPLIM)  T1 = DEXP(A1)
          A2 = (-0.5D0/(SZ2*SZ2)) * (HEARG2) * (HEARG2)
-         IF (A2 .GT. EXPLIM)  T2 = DEXP(A2)
+         IF (A2 > EXPLIM)  T2 = DEXP(A2)
 
 !           Sum the Plume 1 and Plume 2 Portions
          TERM = (LAMDA1/SZ1)*T1 + (LAMDA2/SZ2)*T2
          SUM = SUM + TERM
 
 !           Check for Convergence of Summation Term
-         IF (DABS(TERM) .LE. 5.0D-7*DABS(SUM)) THEN
+         IF (DABS(TERM) <= 5.0D-7*DABS(SUM)) THEN
 !              Exit Loop
             EXIT
          END IF
@@ -1911,7 +1911,7 @@ SUBROUTINE VRTCBL (HE1, HE2, SZ1, SZ2, FACT)
 !        Calculate Total Vert. Term - (2.*) was Removed for Optimization
       V  = 2.0D0* SUM
 
-   ELSE IF (ZR .LE. ZI) THEN
+   ELSE IF (ZR <= ZI) THEN
 !        Vertical Term for Case of ZR .NE. 0.0
 !        First adjust for terrain below stack base with ZR < 0,
 !        by keeping HE and ZI horizontal.
@@ -1926,7 +1926,7 @@ SUBROUTINE VRTCBL (HE1, HE2, SZ1, SZ2, FACT)
          T2 = 0.0D0
          TWOIZI = 2.0D0*DBLE(I)*ZITMP * FACT
 !           Check for FACT < 0 and skip first term.
-         IF (FACT .LT. 0.0D0 .and. I .EQ. 0) CYCLE
+         IF (FACT < 0.0D0 .and. I == 0) CYCLE
 !
 !      Note:  The following code can be used for the indirect plume
 !      as well as the direct plume, since HEn, for the indirect plume,
@@ -1939,21 +1939,21 @@ SUBROUTINE VRTCBL (HE1, HE2, SZ1, SZ2, FACT)
          &(ZR-(HEARG1))
          A2 = (-0.5D0/(SZ1*SZ1)) * (ZR+(HEARG1)) *&
          &(ZR+(HEARG1))
-         IF (A1 .GT. EXPLIM)  T1 = DEXP(A1)
-         IF (A2 .GT. EXPLIM)  T1 = T1 + DEXP(A2)
+         IF (A1 > EXPLIM)  T1 = DEXP(A1)
+         IF (A2 > EXPLIM)  T1 = T1 + DEXP(A2)
          A3 = (-0.5D0/(SZ2*SZ2)) * (ZR-(HEARG2)) *&
          &(ZR-(HEARG2))
          A4 = (-0.5D0/(SZ2*SZ2)) * (ZR+(HEARG2)) *&
          &(ZR+(HEARG2))
-         IF (A3 .GT. EXPLIM)  T2 = DEXP(A3)
-         IF (A4 .GT. EXPLIM)  T2 = T2 + DEXP(A4)
+         IF (A3 > EXPLIM)  T2 = DEXP(A3)
+         IF (A4 > EXPLIM)  T2 = T2 + DEXP(A4)
 
 !           Sum the Plume 1 and Plume 2 Portions
          TERM = (LAMDA1/SZ1)*T1 + (LAMDA2/SZ2)*T2
          SUM = SUM + TERM
 
 !           Check for Convergence of Summation Term
-         IF (DABS(TERM) .LE. 1.0D-6*DABS(SUM)) THEN
+         IF (DABS(TERM) <= 1.0D-6*DABS(SUM)) THEN
 !              Exit Loop
             EXIT
          END IF
@@ -1973,7 +1973,7 @@ SUBROUTINE VRTCBL (HE1, HE2, SZ1, SZ2, FACT)
    FSUBZ = V / SRT2PI
 
    RETURN
-END
+END SUBROUTINE VRTCBL
 
 
 SUBROUTINE PFRACT (HEARG)
@@ -1999,18 +1999,18 @@ SUBROUTINE PFRACT (HEARG)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    INTEGER :: I
    DOUBLE PRECISION :: TWOIZI, HCINT, HEARG
 
-   DOUBLE PRECISION A1, A2, A3, A4, A5, A6, B1, B2, B3, B4, B5, B6,&
+   DOUBLE PRECISION :: A1, A2, A3, A4, A5, A6, B1, B2, B3, B4, B5, B6,&
    &T, SUM, ERFX
 
 !     Variable Initializations
    MODNAM = 'PFRACT'
    PHEE = 0.0D0
 
-   IF (STABLE .and. (HCRIT .GT. 0.0D0)) THEN
+   IF (STABLE .and. (HCRIT > 0.0D0)) THEN
 
 !        Define HCINT = MIN( HSBL, HCRIT) as the limit of the integral,
 !        where HSBL = MAX( HE, ZI).
@@ -2041,9 +2041,9 @@ SUBROUTINE PFRACT (HEARG)
          SUM = SUM + T
 
 !           Check for convergence of summation term
-         IF (DABS(T) .LE. 1.0D-6*DABS(SUM)) THEN
+         IF (DABS(T) <= 1.0D-6*DABS(SUM)) THEN
 ! ---          Set lower limit of 5 on number of iterations
-            IF( I .GE. 5 )THEN
+            IF( I >= 5 )THEN
 !                 Exit Loop
                EXIT
             ENDIF
@@ -2055,7 +2055,7 @@ SUBROUTINE PFRACT (HEARG)
 
 !        Check for PHEE > 1.01 and Set = 1.0
 !        (this patch may need to be changed).
-      IF (PHEE .GT. 1.01D0 .and. .NOT. L_SkipMessages)  THEN
+      IF (PHEE > 1.01D0 .and. .NOT. L_SkipMessages)  THEN
          WRITE(DUMMY,'(I8.8)') KURDAT
          CALL ERRHDL(PATH,MODNAM,'I','405',DUMMY)
          PHEE = 1.0D0
@@ -2064,7 +2064,7 @@ SUBROUTINE PFRACT (HEARG)
    END IF
 
    RETURN
-END
+END SUBROUTINE PFRACT
 
 FUNCTION ERFX(ARG)
 !***********************************************************************
@@ -2087,29 +2087,29 @@ FUNCTION ERFX(ARG)
 
 !     Variable Declarations
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
-   DOUBLE PRECISION ARG, X, ERFX
+   DOUBLE PRECISION :: ARG, X, ERFX
 
 !     Variable Initializations
    MODNAM = 'ERFX'
 
-   IF (ARG .GT. 4.0D0) THEN
+   IF (ARG > 4.0D0) THEN
       ERFX = 1.0D0
-   ELSE IF (ARG .LT. -4.0D0) THEN
+   ELSE IF (ARG < -4.0D0) THEN
       ERFX = -1.0D0
-   ELSE IF (DABS(ARG) .LT. 1.0D-10) THEN
+   ELSE IF (DABS(ARG) < 1.0D-10) THEN
       ERFX = 0.0D0
    ELSE
       X = DABS(ARG)
       ERFX = 1.D0 - 1.D0/(1.D0+X*(0.705230784D-1+X*(0.422820123D-1+X*&
       &(0.92705272D-2+X*(0.1520143D-3+X*(0.2765672D-3+X*&
       &0.430638D-4))))))**16.0D0
-      IF (ARG .LT. 0.0D0)  ERFX = -ERFX
+      IF (ARG < 0.0D0)  ERFX = -ERFX
    END IF
 
    RETURN
-END
+END FUNCTION ERFX
 
 SUBROUTINE SUMVAL
 !***********************************************************************
@@ -2138,16 +2138,16 @@ SUBROUTINE SUMVAL
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'SUMVAL'
 
 !     Begin LOOP Over Output Types
    DO ITYP = 1, NUMTYP
-      IF (HRVAL(ITYP) .NE. 0.0D0) THEN
+      IF (HRVAL(ITYP) /= 0.0D0) THEN
 !           Check for Source Belonging to Group
-         IF (IGROUP(ISRC,IGRP) .EQ. 1) THEN
+         IF (IGROUP(ISRC,IGRP) == 1) THEN
 !              Begin Averaging Period LOOP
             DO IAVE = 1, NUMAVE
                AVEVAL(IREC,IGRP,IAVE,ITYP) = HRVAL(ITYP) +&
@@ -2158,7 +2158,7 @@ SUBROUTINE SUMVAL
                ANNVAL(IREC,IGRP,ITYP) = HRVAL(ITYP) +&
                &ANNVAL(IREC,IGRP,ITYP)
             END IF
-            IF (ISEAHR(IGRP) .EQ. 1) THEN
+            IF (ISEAHR(IGRP) == 1) THEN
                SHVALS(IREC,IGRP,ISEAS,IHOUR,ITYP) = HRVAL(ITYP) +&
                &SHVALS(IREC,IGRP,ISEAS,IHOUR,ITYP)
             END IF
@@ -2168,7 +2168,7 @@ SUBROUTINE SUMVAL
 !     End LOOP Over Output Types
 
    RETURN
-END
+END SUBROUTINE SUMVAL
 
 SUBROUTINE SUMBACK
 !***********************************************************************
@@ -2193,7 +2193,7 @@ SUBROUTINE SUMBACK
    USE MAIN1
    IMPLICIT NONE
    DOUBLE PRECISION :: BCKGRD
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'SUMBACK'
@@ -2221,7 +2221,7 @@ SUBROUTINE SUMBACK
       IF (PERIOD .or. ANNUAL) THEN
          BACKANN(IGRP) = BACKANN(IGRP) + BGCONC*EMIFAC(ITYP)/1.0D6
       END IF
-      IF (ISEAHR(IGRP) .EQ. 1) THEN
+      IF (ISEAHR(IGRP) == 1) THEN
          BACKSEASHR(IGRP,ISEAS,IHOUR) =&
          &BACKSEASHR(IGRP,ISEAS,IHOUR) + BGCONC*EMIFAC(ITYP)/1.0D6
       END IF
@@ -2239,7 +2239,7 @@ SUBROUTINE SUMBACK
       ANNVAL(1:NUMREC,IGRP,ITYP) = BCKGRD +&
       &ANNVAL(1:NUMREC,IGRP,ITYP)
    END IF
-   IF (ISEAHR(IGRP) .EQ. 1) THEN
+   IF (ISEAHR(IGRP) == 1) THEN
       SHVALS(1:NUMREC,IGRP,ISEAS,IHOUR,ITYP) = BCKGRD +&
       &SHVALS(1:NUMREC,IGRP,ISEAS,IHOUR,ITYP)
    END IF
@@ -2247,7 +2247,7 @@ SUBROUTINE SUMBACK
 !     End LOOP Over Output Types
 
    RETURN
-END
+END SUBROUTINE SUMBACK
 
 SUBROUTINE SUMBACK_NO2
 !***********************************************************************
@@ -2274,7 +2274,7 @@ SUBROUTINE SUMBACK_NO2
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'SUMBACK_NO2'
@@ -2294,14 +2294,14 @@ SUBROUTINE SUMBACK_NO2
 !         should not be added to deposition (g/m^2)
    ITYP=1
 !      DO ITYP = 1, NUMTYP  !RCO comment out do loop since ITYP only = 1
-   IF (GRP_BACK(IGRP) .and. BGCONC .GT. 0.0D0) THEN
+   IF (GRP_BACK(IGRP) .and. BGCONC > 0.0D0) THEN
 ! ---       Include background for this source group
       BACKAVE(IGRP) = BACKAVE(IGRP) + BGCONC*EMIFAC(ITYP)/1.0D6
       IF (PERIOD .or. ANNUAL) THEN
          BACKANN(IGRP) = BACKANN(IGRP) +&
          &BGCONC*EMIFAC(ITYP)/1.0D6
       END IF
-      IF (ISEAHR(IGRP) .EQ. 1) THEN
+      IF (ISEAHR(IGRP) == 1) THEN
          BACKSEASHR(IGRP,ISEAS,IHOUR) =&
          &BACKSEASHR(IGRP,ISEAS,IHOUR) +&
          &BGCONC*EMIFAC(ITYP)/1.0D6
@@ -2318,7 +2318,7 @@ SUBROUTINE SUMBACK_NO2
          ANNVAL(IREC,IGRP,ITYP) = BGCONC*EMIFAC(ITYP)/1.0D6 +&
          &ANNVAL(IREC,IGRP,ITYP)
       END IF
-      IF (ISEAHR(IGRP) .EQ. 1) THEN
+      IF (ISEAHR(IGRP) == 1) THEN
          SHVALS(IREC,IGRP,ISEAS,IHOUR,ITYP) =&
          &BGCONC*EMIFAC(ITYP)/1.0D6 +&
          &SHVALS(IREC,IGRP,ISEAS,IHOUR,ITYP)
@@ -2328,7 +2328,7 @@ SUBROUTINE SUMBACK_NO2
 !     End LOOP Over Output Types
 
    RETURN
-END
+END SUBROUTINE SUMBACK_NO2
 
 SUBROUTINE SUMVALPSD(SRCS2USE)
 !***********************************************************************
@@ -2356,7 +2356,7 @@ SUBROUTINE SUMVALPSD(SRCS2USE)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12, SRCS2USE*7
+   CHARACTER :: MODNAM*12, SRCS2USE*7
 
 !     Variable Initializations
    MODNAM = 'SUMVALPSD'
@@ -2367,12 +2367,12 @@ SUBROUTINE SUMVALPSD(SRCS2USE)
 !        Begin Averaging Period LOOP
       DO IAVE = 1, NUMAVE
 
-         IF( TRIM(SRCS2USE) .EQ. 'NAAQSRC' )THEN
+         IF( TRIM(SRCS2USE) == 'NAAQSRC' )THEN
 !              NAAQS group: assign to (A+B) group 1
             AVEVAL(IREC,1,IAVE,ITYP) = ABVAL(IREC,ITYP) +&
             &AVEVAL(IREC,1,IAVE,ITYP)
 
-         ELSE IF( TRIM(SRCS2USE) .EQ. 'ALLBASE' )THEN
+         ELSE IF( TRIM(SRCS2USE) == 'ALLBASE' )THEN
 !              PSDINC group: assign (A+B)-(B+C) to group 2
             AVEVAL(IREC,2,IAVE,ITYP) = (ABVAL(IREC,ITYP) -&
             &BCVAL(IREC,ITYP)) +&
@@ -2384,12 +2384,12 @@ SUBROUTINE SUMVALPSD(SRCS2USE)
 !        Check for ANNUAL or PERIOD Averaging
       IF (PERIOD .or. ANNUAL) THEN
 
-         IF( TRIM(SRCS2USE) .EQ. 'NAAQSRC' )THEN
+         IF( TRIM(SRCS2USE) == 'NAAQSRC' )THEN
 !              NAAQS group: assign to (A+B) group 1
             ANNVAL(IREC,1,ITYP) = ABVAL(IREC,ITYP) +&
             &ANNVAL(IREC,1,ITYP)
 
-         ELSE IF( TRIM(SRCS2USE) .EQ. 'ALLBASE' )THEN
+         ELSE IF( TRIM(SRCS2USE) == 'ALLBASE' )THEN
 !              PSDINC group: assign (A+B)-(B+C) to group 2
             ANNVAL(IREC,2,ITYP) = (ABVAL(IREC,ITYP) -&
             &BCVAL(IREC,ITYP)) +&
@@ -2402,7 +2402,7 @@ SUBROUTINE SUMVALPSD(SRCS2USE)
 !     End LOOP Over Output Types
 
    RETURN
-END
+END SUBROUTINE SUMVALPSD
 
 SUBROUTINE AVER
 !***********************************************************************
@@ -2425,7 +2425,7 @@ SUBROUTINE AVER
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION :: SNUM
 
@@ -2433,24 +2433,24 @@ SUBROUTINE AVER
    MODNAM = 'AVER'
    PATH = 'CN'  !D081 CRT 5/13/2024
 
-   IF (KAVE(IAVE) .NE. 1) THEN
+   IF (KAVE(IAVE) /= 1) THEN
 !        Calculate Denominator Considering Calms and Missing,
 !        Skipping Averaging if Averaging Period is 1-Hour
       SNUM = MAX(DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)),&
       &DNINT(DBLE(NUMHRS(IAVE))*0.75D0+0.4D0))
 !        D081 - Add warning message - less than 18 hours used for 24-hr avg (WSP, 4/2023))
-      IF(DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) .LT. 18&
-      &.and. KAVE(IAVE) .EQ. 24) THEN
+      IF(DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) < 18&
+      &.and. KAVE(IAVE) == 24) THEN
          WRITE(DUMMY,'(I10)') FULLDATE
          CALL ERRHDL(PATH,MODNAM,'W','732',DUMMY)
 !        D081 - Add warning message - less than 6 hours used for 8-hr avg (CRT, 5/1/2023)
-      ELSEIF (DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) .LT. 6&
-      &.and. KAVE(IAVE) .EQ. 8) THEN
+      ELSEIF (DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) < 6&
+      &.and. KAVE(IAVE) == 8) THEN
          WRITE(DUMMY,'(I10)') FULLDATE
          CALL ERRHDL(PATH,MODNAM,'W','733',DUMMY)
 !        D081 - Add warning message - less than 3 hours used for 3-hr avg (CRT, 5/1/2023)
-      ELSEIF (DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) .LT. 3&
-      &.and. KAVE(IAVE) .EQ. 3) THEN
+      ELSEIF (DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) < 3&
+      &.and. KAVE(IAVE) == 3) THEN
          WRITE(DUMMY,'(I10)') FULLDATE
          CALL ERRHDL(PATH,MODNAM,'W','734',DUMMY)
       END IF
@@ -2459,7 +2459,7 @@ SUBROUTINE AVER
    END IF
 
    RETURN
-END
+END SUBROUTINE AVER
 
 SUBROUTINE HIVALS
 !***********************************************************************
@@ -2486,21 +2486,21 @@ SUBROUTINE HIVALS
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'HIVALS'
 
 !     Check for High/Max Value Options - Skip Update If KAVE=1,
 !     And No CALCS Were Made for the Current Hour
-   IF (CALCS .or. KAVE(IAVE).NE.1) THEN
-      IF (INHI(IAVE) .EQ. 1) THEN
+   IF (CALCS .or. KAVE(IAVE)/=1) THEN
+      IF (INHI(IAVE) == 1) THEN
          DO ITYP = 1, NUMTYP
 !              Update High Values for Each Receptor            ---   CALL NHIGH
             CALL NHIGH
          END DO
       END IF
-      IF (MAXAVE(IAVE) .EQ. 1) THEN
+      IF (MAXAVE(IAVE) == 1) THEN
          DO ITYP = 1, NUMTYP
 !              Update Maximum Value Table for KAVE             ---   CALL MAXVALUE
             CALL MAXVALUE
@@ -2513,7 +2513,7 @@ SUBROUTINE HIVALS
    NUMMSG(IAVE) = 0
 
    RETURN
-END
+END SUBROUTINE HIVALS
 
 SUBROUTINE NHIGH
 !***********************************************************************
@@ -2540,7 +2540,7 @@ SUBROUTINE NHIGH
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: J
 
@@ -2551,16 +2551,16 @@ SUBROUTINE NHIGH
    DO IGRP = 1, NUMGRP
 !        Begin Receptor LOOP
       RECEPTOR_LOOP: DO IREC = 1, NUMREC
-         IF (NHIVAL .GT. 1) THEN
-            IF (AVEVAL(IREC,IGRP,IAVE,ITYP) .GT.&
+         IF (NHIVAL > 1) THEN
+            IF (AVEVAL(IREC,IGRP,IAVE,ITYP) >&
             &HIVALU(IREC,NHIVAL,IGRP,IAVE,ITYP)) THEN
                DO J = NHIVAL-1, 1, -1
-                  IF (AVEVAL(IREC,IGRP,IAVE,ITYP) .LE.&
+                  IF (AVEVAL(IREC,IGRP,IAVE,ITYP) <=&
                   &HIVALU(IREC,J,IGRP,IAVE,ITYP)) THEN
                      HIVALU(IREC,J+1,IGRP,IAVE,ITYP) =&
                      &AVEVAL(IREC,IGRP,IAVE,ITYP)
-                     IF (NUMCLM(IAVE).EQ.0 .and.&
-                     &NUMMSG(IAVE).EQ.0) THEN
+                     IF (NUMCLM(IAVE)==0 .and.&
+                     &NUMMSG(IAVE)==0) THEN
                         HCLMSG(IREC,J+1,IGRP,IAVE,ITYP) = ' '
                      ELSE
 !                          Set Indicator Of Calm and Msg    ---   CALL HSETFG
@@ -2576,11 +2576,11 @@ SUBROUTINE NHIGH
                      &HCLMSG(IREC,J,IGRP,IAVE,ITYP)
                      NHIDAT(IREC,J+1,IGRP,IAVE,ITYP) =&
                      &NHIDAT(IREC,J,IGRP,IAVE,ITYP)
-                     IF (J .EQ. 1) THEN
+                     IF (J == 1) THEN
                         HIVALU(IREC,1,IGRP,IAVE,ITYP) =&
                         &AVEVAL(IREC,IGRP,IAVE,ITYP)
-                        IF (NUMCLM(IAVE).EQ.0 .and.&
-                        &NUMMSG(IAVE).EQ.0) THEN
+                        IF (NUMCLM(IAVE)==0 .and.&
+                        &NUMMSG(IAVE)==0) THEN
                            HCLMSG(IREC,1,IGRP,IAVE,ITYP) = ' '
                         ELSE
 !                             Set Indicator Of Calm and Msg ---   CALL HSETFG
@@ -2591,12 +2591,12 @@ SUBROUTINE NHIGH
                   END IF
                END DO
             END IF
-         ELSE IF (NHIVAL .EQ. 1) THEN
-            IF (AVEVAL(IREC,IGRP,IAVE,ITYP) .GT.&
+         ELSE IF (NHIVAL == 1) THEN
+            IF (AVEVAL(IREC,IGRP,IAVE,ITYP) >&
             &HIVALU(IREC,1,IGRP,IAVE,ITYP)) THEN
                HIVALU(IREC,1,IGRP,IAVE,ITYP) = AVEVAL(IREC,IGRP,IAVE,ITYP)
-               IF (NUMCLM(IAVE).EQ.0 .and.&
-               &NUMMSG(IAVE).EQ.0) THEN
+               IF (NUMCLM(IAVE)==0 .and.&
+               &NUMMSG(IAVE)==0) THEN
                   HCLMSG(IREC,1,IGRP,IAVE,ITYP) = ' '
                ELSE
 !                    Set Indicator Of Calm and Missing      ---   CALL HSETFG
@@ -2611,7 +2611,7 @@ SUBROUTINE NHIGH
 !     End Source Group LOOP
 
    RETURN
-END
+END SUBROUTINE NHIGH
 
 SUBROUTINE HSETFG(INDT,J)
 !***********************************************************************
@@ -2638,41 +2638,41 @@ SUBROUTINE HSETFG(INDT,J)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: J, INDT
 
 !     Variable Initializations
    MODNAM = 'HSETFG'
 
-   IF (INDT .EQ. 0) THEN
+   IF (INDT == 0) THEN
 !        Set Indicator Of Calm and Missing
-      IF (NUMCLM(IAVE).NE.0 .and.&
-      &NUMMSG(IAVE).EQ.0) THEN
+      IF (NUMCLM(IAVE)/=0 .and.&
+      &NUMMSG(IAVE)==0) THEN
          HCLMSG(IREC,J+1,IGRP,IAVE,ITYP) = 'c'
-      ELSE IF (NUMCLM(IAVE).EQ.0 .and.&
-      &NUMMSG(IAVE).NE.0) THEN
+      ELSE IF (NUMCLM(IAVE)==0 .and.&
+      &NUMMSG(IAVE)/=0) THEN
          HCLMSG(IREC,J+1,IGRP,IAVE,ITYP) = 'm'
-      ELSE IF (NUMCLM(IAVE).NE.0 .and.&
-      &NUMMSG(IAVE).NE.0) THEN
+      ELSE IF (NUMCLM(IAVE)/=0 .and.&
+      &NUMMSG(IAVE)/=0) THEN
          HCLMSG(IREC,J+1,IGRP,IAVE,ITYP) = 'b'
       END IF
-   ELSE IF (INDT .EQ. 1) THEN
+   ELSE IF (INDT == 1) THEN
 !        Set Indicator Of Calm and Missing
-      IF (NUMCLM(IAVE).NE.0 .and.&
-      &NUMMSG(IAVE).EQ.0) THEN
+      IF (NUMCLM(IAVE)/=0 .and.&
+      &NUMMSG(IAVE)==0) THEN
          HCLMSG(IREC,1,IGRP,IAVE,ITYP) = 'c'
-      ELSE IF (NUMCLM(IAVE).EQ.0 .and.&
-      &NUMMSG(IAVE).NE.0) THEN
+      ELSE IF (NUMCLM(IAVE)==0 .and.&
+      &NUMMSG(IAVE)/=0) THEN
          HCLMSG(IREC,1,IGRP,IAVE,ITYP) = 'm'
-      ELSE IF (NUMCLM(IAVE).NE.0 .and.&
-      &NUMMSG(IAVE).NE.0) THEN
+      ELSE IF (NUMCLM(IAVE)/=0 .and.&
+      &NUMMSG(IAVE)/=0) THEN
          HCLMSG(IREC,1,IGRP,IAVE,ITYP) = 'b'
       END IF
    END IF
 
    RETURN
-END
+END SUBROUTINE HSETFG
 
 SUBROUTINE MAXVALUE
 !***********************************************************************
@@ -2701,7 +2701,7 @@ SUBROUTINE MAXVALUE
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: J
 
@@ -2712,15 +2712,15 @@ SUBROUTINE MAXVALUE
    DO IGRP = 1, NUMGRP
 !        Begin Receptor LOOP
       RECEPTOR_LOOP: DO IREC = 1, NUMREC
-         IF (NMXVAL .GT. 1) THEN
-            IF (AVEVAL(IREC,IGRP,IAVE,ITYP) .GT.&
+         IF (NMXVAL > 1) THEN
+            IF (AVEVAL(IREC,IGRP,IAVE,ITYP) >&
             &RMXVAL(NMXVAL,IGRP,IAVE,ITYP)) THEN
                DO J = NMXVAL-1, 1, -1
-                  IF(AVEVAL(IREC,IGRP,IAVE,ITYP) .LE.&
+                  IF(AVEVAL(IREC,IGRP,IAVE,ITYP) <=&
                   &RMXVAL(J,IGRP,IAVE,ITYP)) THEN
                      RMXVAL(J+1,IGRP,IAVE,ITYP) = AVEVAL(IREC,IGRP,IAVE,ITYP)
-                     IF (NUMCLM(IAVE).EQ.0 .and.&
-                     &NUMMSG(IAVE).EQ.0) THEN
+                     IF (NUMCLM(IAVE)==0 .and.&
+                     &NUMMSG(IAVE)==0) THEN
                         MCLMSG(J+1,IGRP,IAVE,ITYP) = ' '
                      ELSE
 !                          Set Indicator Of Calm and Msg    ---   CALL MSETFG
@@ -2735,10 +2735,10 @@ SUBROUTINE MAXVALUE
                      MXDATE(J+1,IGRP,IAVE,ITYP) = MXDATE(J,IGRP,IAVE,ITYP)
                      MCLMSG(J+1,IGRP,IAVE,ITYP) = MCLMSG(J,IGRP,IAVE,ITYP)
                      MXLOCA(J+1,IGRP,IAVE,ITYP) = MXLOCA(J,IGRP,IAVE,ITYP)
-                     IF (J .EQ. 1) THEN
+                     IF (J == 1) THEN
                         RMXVAL(1,IGRP,IAVE,ITYP) = AVEVAL(IREC,IGRP,IAVE,ITYP)
-                        IF (NUMCLM(IAVE).EQ.0 .and.&
-                        &NUMMSG(IAVE).EQ.0) THEN
+                        IF (NUMCLM(IAVE)==0 .and.&
+                        &NUMMSG(IAVE)==0) THEN
                            MCLMSG(1,IGRP,IAVE,ITYP) = ' '
                         ELSE
 !                             Set Indicator Of Calm and Msg ---   CALL MSETFG
@@ -2750,12 +2750,12 @@ SUBROUTINE MAXVALUE
                   END IF
                END DO
             END IF
-         ELSE IF (NMXVAL .EQ. 1) THEN
-            IF (AVEVAL(IREC,IGRP,IAVE,ITYP) .GT.&
+         ELSE IF (NMXVAL == 1) THEN
+            IF (AVEVAL(IREC,IGRP,IAVE,ITYP) >&
             &RMXVAL(1,IGRP,IAVE,ITYP)) THEN
                RMXVAL(1,IGRP,IAVE,ITYP) = AVEVAL(IREC,IGRP,IAVE,ITYP)
-               IF (NUMCLM(IAVE).EQ.0 .and.&
-               &NUMMSG(IAVE).EQ.0) THEN
+               IF (NUMCLM(IAVE)==0 .and.&
+               &NUMMSG(IAVE)==0) THEN
                   MCLMSG(1,IGRP,IAVE,ITYP) = ' '
                ELSE
 !                    Set Indicator Of Calm and Missing      ---   CALL MSETFG
@@ -2771,7 +2771,7 @@ SUBROUTINE MAXVALUE
 !     End Source Group LOOP
 
    RETURN
-END
+END SUBROUTINE MAXVALUE
 
 SUBROUTINE MSETFG(INDT,J)
 !***********************************************************************
@@ -2795,41 +2795,41 @@ SUBROUTINE MSETFG(INDT,J)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: J, INDT
 
 !     Variable Initializations
    MODNAM = 'MSETFG'
 
-   IF (INDT .EQ. 0) THEN
+   IF (INDT == 0) THEN
 !        Set Indicator Of Calm and Missing
-      IF (NUMCLM(IAVE).NE.0 .and.&
-      &NUMMSG(IAVE).EQ.0) THEN
+      IF (NUMCLM(IAVE)/=0 .and.&
+      &NUMMSG(IAVE)==0) THEN
          MCLMSG(J+1,IGRP,IAVE,ITYP) = 'c'
-      ELSE IF (NUMCLM(IAVE).EQ.0 .and.&
-      &NUMMSG(IAVE).NE.0) THEN
+      ELSE IF (NUMCLM(IAVE)==0 .and.&
+      &NUMMSG(IAVE)/=0) THEN
          MCLMSG(J+1,IGRP,IAVE,ITYP) = 'm'
-      ELSE IF (NUMCLM(IAVE).NE.0 .and.&
-      &NUMMSG(IAVE).NE.0) THEN
+      ELSE IF (NUMCLM(IAVE)/=0 .and.&
+      &NUMMSG(IAVE)/=0) THEN
          MCLMSG(J+1,IGRP,IAVE,ITYP) = 'b'
       END IF
-   ELSE IF (INDT .EQ. 1) THEN
+   ELSE IF (INDT == 1) THEN
 !        Set Indicator Of Calm and Missing
-      IF (NUMCLM(IAVE).NE.0 .and.&
-      &NUMMSG(IAVE).EQ.0) THEN
+      IF (NUMCLM(IAVE)/=0 .and.&
+      &NUMMSG(IAVE)==0) THEN
          MCLMSG(1,IGRP,IAVE,ITYP) = 'c'
-      ELSE IF (NUMCLM(IAVE).EQ.0 .and.&
-      &NUMMSG(IAVE).NE.0) THEN
+      ELSE IF (NUMCLM(IAVE)==0 .and.&
+      &NUMMSG(IAVE)/=0) THEN
          MCLMSG(1,IGRP,IAVE,ITYP) = 'm'
-      ELSE IF (NUMCLM(IAVE).NE.0 .and.&
-      &NUMMSG(IAVE).NE.0) THEN
+      ELSE IF (NUMCLM(IAVE)/=0 .and.&
+      &NUMMSG(IAVE)/=0) THEN
          MCLMSG(1,IGRP,IAVE,ITYP) = 'b'
       END IF
    END IF
 
    RETURN
-END
+END SUBROUTINE MSETFG
 
 SUBROUTINE MAXFIL
 !***********************************************************************
@@ -2859,22 +2859,22 @@ SUBROUTINE MAXFIL
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'MAXFIL'
 
 !     Check for High/Max Value Options - Skip Update If KAVE=1,
 !     And No CALCS Were Made for the Current Hour
-   IF (CALCS .or. KAVE(IAVE).NE.1) THEN
+   IF (CALCS .or. KAVE(IAVE)/=1) THEN
 !        Begin Source Group LOOP
       DO IGRP = 1, NUMGRP
 !           Check for MAXIFILE Option for This IGRP,IAVE Combination
-         IF (MAXFLE(IGRP,IAVE) .EQ. 1) THEN
+         IF (MAXFLE(IGRP,IAVE) == 1) THEN
 !              Begin Receptor LOOP
             DO IREC = 1, NUMREC
 !                 For the Values Over Threshold
-               IF (AVEVAL(IREC,IGRP,IAVE,1) .GE.&
+               IF (AVEVAL(IREC,IGRP,IAVE,1) >=&
                &THRESH(IGRP,IAVE)) THEN
                   WRITE(IMXUNT(IGRP,IAVE),THRFRM,ERR=99) KAVE(IAVE),&
                   &GRPID(IGRP), KURDAT, AXR(IREC), AYR(IREC),&
@@ -2903,7 +2903,7 @@ SUBROUTINE MAXFIL
    RUNERR = .TRUE.
 
 999 RETURN
-END
+END SUBROUTINE MAXFIL
 
 SUBROUTINE POSTFL
 !***********************************************************************
@@ -2931,7 +2931,7 @@ SUBROUTINE POSTFL
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'POSTFL'
@@ -2939,8 +2939,8 @@ SUBROUTINE POSTFL
 !     Begin Source Group LOOP
    DO IGRP = 1, NUMGRP
 !        Check for POSTFILE Option for This IGRP,IAVE Combination
-      IF (IPSTFL(IGRP,IAVE) .EQ. 1) THEN
-         IF (IPSFRM(IGRP,IAVE) .EQ. 0) THEN
+      IF (IPSTFL(IGRP,IAVE) == 1) THEN
+         IF (IPSFRM(IGRP,IAVE) == 0) THEN
 !              WRITE Results to Unformatted POSTFILE
             WRITE(IPSUNT(IGRP,IAVE),ERR=99) KURDAT, KAVE(IAVE),&
             &GRPID(IGRP), ((AVEVAL(IREC,IGRP,IAVE,ITYP),&
@@ -2983,7 +2983,7 @@ SUBROUTINE POSTFL
    RUNERR = .TRUE.
 
 999 RETURN
-END
+END SUBROUTINE POSTFL
 
 SUBROUTINE MXDLYFL
 !***********************************************************************
@@ -3017,8 +3017,8 @@ SUBROUTINE MXDLYFL
    USE MAIN1
    IMPLICIT NONE
 
-   INTEGER J
-   CHARACTER MODNAM*12
+   INTEGER :: J
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'MXDLYFL'
@@ -3028,7 +3028,7 @@ SUBROUTINE MXDLYFL
       RECEPTOR_LOOP: DO IREC = 1, NUMREC
          ITYP = 1
 !           Check for MAXDAILY Option for This IGRP
-         IF (IMXDLY(IGRP) .EQ. 1) THEN
+         IF (IMXDLY(IGRP) == 1) THEN
 !              WRITE Results to MAXDAILY file for this day
             WRITE(IMDUNT(IGRP),MXDFRM,ERR=99) AXR(IREC),&
             &AYR(IREC), MXDVAL(IREC,IGRP), AZELEV(IREC),&
@@ -3038,11 +3038,11 @@ SUBROUTINE MXDLYFL
             &NETID(IREC)
          END IF
 ! ---       Update arrays of highest MAXDAILY values
-         IF (NHIMXDLY .GT. 1) THEN
-            IF (MXDVAL(IREC,IGRP) .GT.&
+         IF (NHIMXDLY > 1) THEN
+            IF (MXDVAL(IREC,IGRP) >&
             &HIMXDLY(IREC,IGRP,NHIMXDLY)) THEN
                DO J = NHIMXDLY-1, 1, -1
-                  IF (MXDVAL(IREC,IGRP) .LE.&
+                  IF (MXDVAL(IREC,IGRP) <=&
                   &HIMXDLY(IREC,IGRP,J)) THEN
                      HIMXDLY(IREC,IGRP,J+1) =&
                      &MXDVAL(IREC,IGRP)
@@ -3055,7 +3055,7 @@ SUBROUTINE MXDLYFL
                      &HIMXDLY(IREC,IGRP,J)
                      NHIDATMXD(IREC,IGRP,J+1) =&
                      &NHIDATMXD(IREC,IGRP,J)
-                     IF (J .EQ. 1) THEN
+                     IF (J == 1) THEN
                         HIMXDLY(IREC,IGRP,1) =&
                         &MXDVAL(IREC,IGRP)
                         NHIDATMXD(IREC,IGRP,1) =&
@@ -3064,8 +3064,8 @@ SUBROUTINE MXDLYFL
                   END IF
                END DO
             END IF
-         ELSE IF (NHIMXDLY .EQ. 1) THEN
-            IF (MXDVAL(IREC,IGRP) .GT.&
+         ELSE IF (NHIMXDLY == 1) THEN
+            IF (MXDVAL(IREC,IGRP) >&
             &HIMXDLY(IREC,IGRP,1)) THEN
                HIMXDLY(IREC,IGRP,1) = MXDVAL(IREC,IGRP)
                NHIDATMXD(IREC,IGRP,1) = (KURDAT/100) * 100 +&
@@ -3074,7 +3074,7 @@ SUBROUTINE MXDLYFL
          END IF
       END DO RECEPTOR_LOOP
 !        End Receptor LOOP
-      IF (RSTSAV .and. IMXDLY(IGRP) .EQ. 1) THEN
+      IF (RSTSAV .and. IMXDLY(IGRP) == 1) THEN
 !           Saving Intermediate Results to File for Later Re-start
 !           Close MAXDAILY file and Reposition to End
          CLOSE (IMDUNT(IGRP))
@@ -3096,7 +3096,7 @@ SUBROUTINE MXDLYFL
    RUNERR = .TRUE.
 
 999 RETURN
-END
+END SUBROUTINE MXDLYFL
 
 SUBROUTINE TOXXFL
 !***********************************************************************
@@ -3120,7 +3120,7 @@ SUBROUTINE TOXXFL
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, IG, ICODE
    DOUBLE PRECISION :: CUTOFF
@@ -3130,7 +3130,7 @@ SUBROUTINE TOXXFL
 
 !     Check for TOXXFILE Option - Skip Update If KAVE=1,
 !     And No CALCS Were Made for the Current Hour
-   IF (ITOXFL(IAVE).EQ.1 .and. (CALCS .or. KAVE(IAVE).NE.1)) THEN
+   IF (ITOXFL(IAVE)==1 .and. (CALCS .or. KAVE(IAVE)/=1)) THEN
 !        Convert TOXXFILE Threshold to User Units
       CUTOFF = TOXTHR(IAVE) * EMIFAC(1)
 
@@ -3141,7 +3141,7 @@ SUBROUTINE TOXXFL
          DO IGRP = 1, NUMGRP
 
 !              For the Values Over Threshold (in user units), Fill Buffers
-            IF (AVEVAL(IREC,IGRP,IAVE,1) .GE. CUTOFF) THEN
+            IF (AVEVAL(IREC,IGRP,IAVE,1) >= CUTOFF) THEN
                DO IG = 1, NUMGRP
 !                    Loop Through Groups and Write Values to Buffer
                   IPAIR = IPAIR + 1
@@ -3149,7 +3149,7 @@ SUBROUTINE TOXXFL
                   IDCONC(IAVE,IPAIR) = ICODE
 !                    Convert CONC Values Back to Units of g/s
                   TXCONC(IAVE,IPAIR)=AVEVAL(IREC,IG,IAVE,1)/EMIFAC(1)
-                  IF (IPAIR .EQ. NPAIR) THEN
+                  IF (IPAIR == NPAIR) THEN
 !                       Write Out Full Buffers and Reset Counter
                      WRITE(ITXUNT(IAVE),ERR=99) (IDCONC(IAVE,I),&
                      &I=1,NPAIR)
@@ -3177,7 +3177,7 @@ SUBROUTINE TOXXFL
    RUNERR = .TRUE.
 
 999 RETURN
-END
+END SUBROUTINE TOXXFL
 
 SUBROUTINE PRTDAY
 !***********************************************************************
@@ -3206,11 +3206,11 @@ SUBROUTINE PRTDAY
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, K, II, NX, NY, INDZ, INDC, INDEXW
    DOUBLE PRECISION :: YCOVAL, XRMS, YRMS, DIST, DIR
-   CHARACTER BUF132*132
+   CHARACTER :: BUF132*132
 
 !     Variable Initializations
    MODNAM = 'PRTDAY'
@@ -3225,7 +3225,7 @@ SUBROUTINE PRTDAY
 !           Fill Work Array With SRCIDs For This Group
          INDGRP = 0
          DO ISRC = 1, NUMSRC
-            IF (IGROUP(ISRC,IGRP) .EQ. 1) THEN
+            IF (IGROUP(ISRC,IGRP) == 1) THEN
                INDGRP = INDGRP + 1
                WORKID(INDGRP) = SRCID(ISRC)
             END IF
@@ -3247,7 +3247,7 @@ SUBROUTINE PRTDAY
          INDEXW = MIN(29,NSRC)
       END IF
 !        Check for More Than 29 Sources Per Group
-      IF (INDGRP .GT. INDEXW) THEN
+      IF (INDGRP > INDEXW) THEN
          WORKID(INDEXW) = ' . . . '
          INDGRP = INDEXW
       END IF
@@ -3271,38 +3271,38 @@ SUBROUTINE PRTDAY
                WRITE(IOUNIT,9037) NTID(I), NTTYP(I)
 !                 Print The Value By Groups
                WRITE(IOUNIT,9011) CHIDEP(3,ITYP), POLLUT,OUTLBL(ITYP)
-               IF (NX .EQ. NPPX) THEN
-                  IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+               IF (NX == NPPX) THEN
+                  IF (NTTYP(I) == 'GRIDCART') THEN
                      WRITE(IOUNIT,9016)
                      WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NUMXPT(I))
-                  ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                      WRITE(IOUNIT,9018)
                      WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NUMXPT(I))
                   END IF
                ELSE
-                  IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                  IF (NTTYP(I) == 'GRIDCART') THEN
                      WRITE(IOUNIT,9016)
                      WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NCPP*NX)
-                  ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                      WRITE(IOUNIT,9018)
                      WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NCPP*NX)
                   END IF
                END IF
                WRITE(IOUNIT,9010)
-               IF (NY .EQ. NPPY) THEN
+               IF (NY == NPPY) THEN
                   DO K = 1+NRPP*(NY-1), NUMYPT(I)
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         INDZ = NETEND(I) - K*NUMXPT(I) + 1
                         YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                         YCOVAL = YCOORD(K,I)
                      END IF
-                     IF (NX .EQ. NPPX) THEN
+                     IF (NX == NPPX) THEN
                         WRITE(IOUNIT,9013) YCOVAL,&
                         &(AVEVAL(INDZ+J-1,IGRP,IAVE,ITYP),J=1+NCPP*(NX-1),&
                         &NUMXPT(I))
@@ -3314,14 +3314,14 @@ SUBROUTINE PRTDAY
                   END DO
                ELSE
                   DO K = 1+NRPP*(NY-1), NRPP*NY
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         INDZ = NETEND(I) - K*NUMXPT(I) + 1
                         YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                         YCOVAL = YCOORD(K,I)
                      END IF
-                     IF (NX .EQ. NPPX) THEN
+                     IF (NX == NPPX) THEN
                         WRITE(IOUNIT,9013) YCOVAL,&
                         &(AVEVAL(INDZ+J-1,IGRP,IAVE,ITYP),J=1+NCPP*(NX-1),&
                         &NUMXPT(I))
@@ -3337,14 +3337,14 @@ SUBROUTINE PRTDAY
       END DO
 !        End LOOP Through Networks
 
-      IF (IRSTAT(4).NE.0 .or. IRSTAT(8).NE.0) THEN
+      IF (IRSTAT(4)/=0 .or. IRSTAT(8)/=0) THEN
 !RWB        Include EVALCART receptors with DISCCART receptors.  2/14/95
 !           Print Out The Coord. & Concentrations For Discrete Cart Receptors
          INDC = 0
          DO IREC = 1, NUMREC
-            IF (RECTYP(IREC) .EQ. 'DC') THEN
+            IF (RECTYP(IREC) == 'DC') THEN
                INDC = INDC + 1
-               IF (MOD(INDC-1,80) .EQ. 0) THEN
+               IF (MOD(INDC-1,80) == 0) THEN
                   CALL HEADER(IOUNIT)
                   WRITE(IOUNIT,9032) CHRAVE(IAVE),(CHIDEP(II,ITYP),&
                   &II=1,6),IHOUR,JDAY,IYR,GRPID(IGRP),(WORKID(K),K=1,INDGRP)
@@ -3353,7 +3353,7 @@ SUBROUTINE PRTDAY
                   &OUTLBL(ITYP)
                   WRITE(IOUNIT,9048) CHIDEP(3,ITYP), CHIDEP(3,ITYP)
                END IF
-               IF (MOD(INDC,2) .NE. 0) THEN
+               IF (MOD(INDC,2) /= 0) THEN
                   WRITE(BUF132(1:60),9045) AXR(IREC),AYR(IREC),&
                   &AVEVAL(IREC,IGRP,IAVE,ITYP)
                ELSE
@@ -3364,24 +3364,24 @@ SUBROUTINE PRTDAY
                END IF
             END IF
          END DO
-         IF (MOD(INDC,2) .NE. 0) THEN
+         IF (MOD(INDC,2) /= 0) THEN
             WRITE(IOUNIT,9090) BUF132
             WRITE(BUF132,9095)
          END IF
       END IF
 
-      IF (IRSTAT(5) .NE. 0) THEN
+      IF (IRSTAT(5) /= 0) THEN
 !           Print Out The Coord. & Concentrations For Discrete Polar Receptors
          INDC = 0
          DO IREC = 1, NUMREC
-            IF (RECTYP(IREC) .EQ. 'DP') THEN
+            IF (RECTYP(IREC) == 'DP') THEN
                INDC = INDC + 1
                XRMS = AXR(IREC) - AXS(IREF(IREC))
                YRMS = AYR(IREC) - AYS(IREF(IREC))
                DIST = DSQRT(XRMS*XRMS + YRMS*YRMS)
                DIR  = DATAN2(XRMS, YRMS) * RTODEG
-               IF (DIR .LE. 0.0D0) DIR = DIR + 360.0D0
-               IF (MOD(INDC-1,80) .EQ. 0) THEN
+               IF (DIR <= 0.0D0) DIR = DIR + 360.0D0
+               IF (MOD(INDC-1,80) == 0) THEN
                   CALL HEADER(IOUNIT)
                   WRITE(IOUNIT,9032) CHRAVE(IAVE), (CHIDEP(II,ITYP),&
                   &II=1,6),IHOUR,JDAY,IYR,GRPID(IGRP),(WORKID(K),K=1,INDGRP)
@@ -3390,7 +3390,7 @@ SUBROUTINE PRTDAY
                   &OUTLBL(ITYP)
                   WRITE(IOUNIT,9049) CHIDEP(3,ITYP), CHIDEP(3,ITYP)
                END IF
-               IF (MOD(INDC,2) .NE. 0) THEN
+               IF (MOD(INDC,2) /= 0) THEN
                   WRITE(BUF132(1:65),9047) SRCID(IREF(IREC)),&
                   &DIST, DIR, AVEVAL(IREC,IGRP,IAVE,ITYP)
                ELSE
@@ -3401,7 +3401,7 @@ SUBROUTINE PRTDAY
                END IF
             END IF
          END DO
-         IF (MOD(INDC,2) .NE. 0) THEN
+         IF (MOD(INDC,2) /= 0) THEN
             WRITE(IOUNIT,9090) BUF132
             WRITE(BUF132,9095)
          END IF
@@ -3438,7 +3438,7 @@ SUBROUTINE PRTDAY
 9095 FORMAT(132(' '))
 
    RETURN
-END
+END SUBROUTINE PRTDAY
 
 SUBROUTINE RSDUMP
 !***********************************************************************
@@ -3478,7 +3478,7 @@ SUBROUTINE RSDUMP
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, K, L, M
 
@@ -3489,13 +3489,13 @@ SUBROUTINE RSDUMP
 !     Check for Monthly Averages and Only Dump at End of Month
    IF (MONTH .and. .NOT.ENDMON)  GO TO 1000
 
-   IF (SAVFIL .EQ. SAVFL2 .or. MOD(NDUMP,2) .NE. 0) THEN
+   IF (SAVFIL == SAVFL2 .or. MOD(NDUMP,2) /= 0) THEN
       OPEN(UNIT=IDPUNT,ERR=99,FILE=SAVFIL,FORM='UNFORMATTED',&
       &IOSTAT=IOERRN,STATUS='REPLACE')
       WRITE(IDPUNT) FULLDATE, NTOTHRS
       WRITE(IDPUNT) NHIVAL, NMXVAL, NUMREC, NUMGRP, NUMAVE, NUMTYP
 
-      IF (NHIVAL .GT. 0) THEN
+      IF (NHIVAL > 0) THEN
          WRITE(IDPUNT) (((((HIVALU(I,J,K,L,M),I=1,NUMREC),J=1,NHIVAL),&
          &K=1,NUMGRP),L=1,NUMAVE),M=1,NUMTYP)
          WRITE(IDPUNT) (((((NHIDAT(I,J,K,L,M),I=1,NUMREC),J=1,NHIVAL),&
@@ -3521,7 +3521,7 @@ SUBROUTINE RSDUMP
 
       END IF
 
-      IF (NMXVAL .GT. 0) THEN
+      IF (NMXVAL > 0) THEN
          WRITE(IDPUNT) ((((RMXVAL(I,J,K,L),I=1,NMXVAL),J=1,NUMGRP),&
          &K=1,NUMAVE),L=1,NUMTYP)
          WRITE(IDPUNT) ((((MXDATE(I,J,K,L),I=1,NMXVAL),J=1,NUMGRP),&
@@ -3565,7 +3565,7 @@ SUBROUTINE RSDUMP
       WRITE(IDPUN2) FULLDATE, NTOTHRS
       WRITE(IDPUN2) NHIVAL, NMXVAL, NUMREC, NUMGRP, NUMAVE, NUMTYP
 
-      IF (NHIVAL .GT. 0) THEN
+      IF (NHIVAL > 0) THEN
          WRITE(IDPUN2) (((((HIVALU(I,J,K,L,M),I=1,NUMREC),J=1,NHIVAL),&
          &K=1,NUMGRP),L=1,NUMAVE),M=1,NUMTYP)
          WRITE(IDPUN2) (((((NHIDAT(I,J,K,L,M),I=1,NUMREC),J=1,NHIVAL),&
@@ -3591,7 +3591,7 @@ SUBROUTINE RSDUMP
 
       END IF
 
-      IF (NMXVAL .GT. 0) THEN
+      IF (NMXVAL > 0) THEN
          WRITE(IDPUN2) ((((RMXVAL(I,J,K,L),I=1,NMXVAL),J=1,NUMGRP),&
          &K=1,NUMAVE),L=1,NUMTYP)
          WRITE(IDPUN2) ((((MXDATE(I,J,K,L),I=1,NMXVAL),J=1,NUMGRP),&
@@ -3637,7 +3637,7 @@ SUBROUTINE RSDUMP
    RUNERR = .TRUE.
 
 1000 RETURN
-END
+END SUBROUTINE RSDUMP
 
 
 SUBROUTINE EVLINI
@@ -3667,7 +3667,7 @@ SUBROUTINE EVLINI
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'EVLINI'
@@ -3697,7 +3697,7 @@ SUBROUTINE EVLINI
    HSBLMX(:) = 0.0D0
 
    RETURN
-END
+END SUBROUTINE EVLINI
 
 SUBROUTINE EVALCK
 !***********************************************************************
@@ -3722,7 +3722,7 @@ SUBROUTINE EVALCK
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: INDEX
    DOUBLE PRECISION :: CHIOQ
@@ -3735,7 +3735,7 @@ SUBROUTINE EVALCK
 
 !     Check for INDEX = 0, i.e., this receptor is not an EVALCART receptor.
 !     Skip to RETURN for INDEX = 0
-   IF (INDEX .EQ. 0) GO TO 99
+   IF (INDEX == 0) GO TO 99
 
 !CRFL
 !CRFL  Add true centerline calculations:  add CHIOQC
@@ -3744,7 +3744,7 @@ SUBROUTINE EVALCK
 !     Calculate Normalized Concentration, CHI/Q
    CHIOQ = HRVAL(1)/(QTK*EMIFAC(1))
 !     Check ARCMAX Array
-   IF (CHIOQ .GT. ARCMAX(INDEX)) THEN
+   IF (CHIOQ > ARCMAX(INDEX)) THEN
       ARCMAX(INDEX) = CHIOQ
 !CRFL
 !CRFL  Add true centerline calculations:  add arc centerline
@@ -3761,7 +3761,7 @@ SUBROUTINE EVALCK
 !RJP
 !RJP     Use appropriate effective parameters
 !RJP
-      IF( STABLE .or. (UNSTAB .and. (HS .GE. ZI) ) )  THEN
+      IF( STABLE .or. (UNSTAB .and. (HS >= ZI) ) )  THEN
          UMAX(INDEX)   = UEFF
          SVMAX(INDEX)  = SVEFF
          SWMAX(INDEX)  = SWEFF
@@ -3776,7 +3776,7 @@ SUBROUTINE EVALCK
          CHINML(INDEX) = 0.0D0
          CHI3ML(INDEX) = 0.0D0
          HSBLMX(INDEX) = HSBL
-      ELSE IF (PPF .GT. 0.999D0) THEN
+      ELSE IF (PPF > 0.999D0) THEN
          UMAX(INDEX)   = UEFFD
          U3MAX(INDEX)  = UEFF3
          SVMAX(INDEX)  = SVEFF3
@@ -3810,7 +3810,7 @@ SUBROUTINE EVALCK
    END IF
 
 99 RETURN
-END
+END SUBROUTINE EVALCK
 
 SUBROUTINE EVALFL
 !***********************************************************************
@@ -3835,7 +3835,7 @@ SUBROUTINE EVALFL
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 !     JAT 7/22/21 D065 UOUST AND SVOU NOT USED
 !      DOUBLE PRECISION :: CWIC, CWICN, CWICW, CWICL, UOUST, SVOU, HEOZI,
    DOUBLE PRECISION :: CWIC, CWICN, CWICW, CWICL, HEOZI,&
@@ -3862,7 +3862,7 @@ SUBROUTINE EVALFL
 !RWB         CWIC = SRT2PI * SYMAX(I) * ARCCL(I)
 !RWB     Modify CWIC to be sum of CWIC's of individual "plumes".  2/13/95
 !RWB     Note that WRAP and LIFT components are included in ARCCL.
-      IF( STABLE .or. (UNSTAB .and. HS.GE.ZI) )THEN
+      IF( STABLE .or. (UNSTAB .and. HS>=ZI) )THEN
          CWIC  = SRT2PI * SYMAX(I) * ARCCL(I)
 !           Now calculate CWIC with U*ZI normalization,
 !           using maximum of HE & ZI, instead of ZI.
@@ -3910,7 +3910,7 @@ SUBROUTINE EVALFL
 !         END IF
 
 !        Calculate He / Zi
-      IF (ZI .GE. 1.0D-10) THEN
+      IF (ZI >= 1.0D-10) THEN
          HEOZI = HEMAX(I) / ZI
       ELSE
          HEOZI = -999.0D0
@@ -3929,13 +3929,13 @@ SUBROUTINE EVALFL
 !RWB     Replace FTOT with FSTAR (non-dimensional buoyancy flux).  2/13/95
 !RWB     Note that UP is the latest value for plume rise wind speed
 !RWB     from the iterative stable plume rise.
-      IF (WSTAR .GE. 1.0D-10) THEN
+      IF (WSTAR >= 1.0D-10) THEN
          FSTAR = FB / (UP * WSTAR * WSTAR * ZI)
       ELSE
          FSTAR = -999.0D0
       END IF
 
-      IF (OBULEN .LT. 0.0D0) THEN
+      IF (OBULEN < 0.0D0) THEN
 
 !           Calculate U / WSTAR when L < 0
 !         JAT 7/22/21 D065 UOWST NOT USED
@@ -3946,7 +3946,7 @@ SUBROUTINE EVALFL
 !            END IF
 
 !           Calculate nondimensional distance when L < 0
-         IF (UMAX(I) .GE. 1.0D-10 .and. ZI .GE. 1.0D-10) THEN
+         IF (UMAX(I) >= 1.0D-10 .and. ZI >= 1.0D-10) THEN
             XNDIM = DXMAX(I) * WSTAR / (UMAX(I) * ZI)
          ELSE
             XNDIM = -999.0D0
@@ -3980,7 +3980,7 @@ SUBROUTINE EVALFL
 !RWB     Modified to output CHI's for individual "plumes".  2/13/95
 !RWB     First select appropriate sigma-y to print out. Use SY3 for mostly
 !RWB     penetrated plumes.
-      IF (UNSTAB .and. HS.LT.ZI .and. PPF.GT.0.999D0) THEN
+      IF (UNSTAB .and. HS<ZI .and. PPF>0.999D0) THEN
          UOUT  = U3MAX(I)
          SYOUT = SY3MX(I)
       ELSE
@@ -4019,7 +4019,7 @@ SUBROUTINE EVALFL
 !C
 
    RETURN
-END
+END SUBROUTINE EVALFL
 
 SUBROUTINE MXDYBYYR(N)
 !***********************************************************************
@@ -4049,8 +4049,8 @@ SUBROUTINE MXDYBYYR(N)
 !     JAT 7/22/21 D065 ICHR NOT USED
 !      INTEGER :: ICYR, ICMN, ICDY, ICHR, ICDAT, ICDAT8, ICJDY
    INTEGER :: ICYR, ICMN, ICDY, ICDAT, ICDAT8, ICJDY
-   CHARACTER RANK(10)*5, CHRVAL*5
-   CHARACTER MODNAM*12
+   CHARACTER :: RANK(10)*5, CHRVAL*5
+   CHARACTER :: MODNAM*12
 ! Unused:       INTEGER :: J
 ! Unused:       CHARACTER PERCHR*6
 
@@ -4061,24 +4061,24 @@ SUBROUTINE MXDYBYYR(N)
    ICDAT  = 0
 
 ! --- Assign character label for rank
-   IF (N .LE. 10) THEN
+   IF (N <= 10) THEN
       CHRVAL = RANK(N)
-   ELSE IF (MOD(N,100) .GT. 10 .and.&
-   &MOD(N,100) .LT. 20) THEN
+   ELSE IF (MOD(N,100) > 10 .and.&
+   &MOD(N,100) < 20) THEN
       IDEC = INT(N/10)
       IMOD = MOD(N,10)
       WRITE(CHRVAL,'(I2,I1,"TH")') IDEC, IMOD
-   ELSE IF (N .LE. 999) THEN
+   ELSE IF (N <= 999) THEN
       IDEC = INT(N/10)
       IMOD = MOD(N,10)
-      IF (IMOD .EQ. 0) IMOD = 10
+      IF (IMOD == 0) IMOD = 10
       WRITE(CHRVAL,'(I2,A3)') IDEC, RANK(IMOD)(3:5)
    END IF
 
 !     Begin Source Group LOOP
    DO IGRP = 1, NUMGRP
 !        Check for MXDYBYYR Option for This IGRP
-      IF (IMXDLY_BYYR(IGRP) .EQ. 1) THEN
+      IF (IMXDLY_BYYR(IGRP) == 1) THEN
 
          RECEPTOR_LOOP: DO IREC = 1, NUMREC
             ITYP = 1
@@ -4106,7 +4106,7 @@ SUBROUTINE MXDYBYYR(N)
 !               ICHR =  ICDAT - (ICDAT/100)*100
 !              Calculate JULIAN Day for Start and End Dates
 !              but first make sure date variables are not 0
-            IF (ICMN.GT.0 .and. ICDY.GT.0) THEN
+            IF (ICMN>0 .and. ICDY>0) THEN
                CALL JULIAN (ICYR,ICMN,ICDY,ICJDY)
             ELSE
                ICJDY = 0
@@ -4133,5 +4133,5 @@ SUBROUTINE MXDYBYYR(N)
    RUNERR = .TRUE.
 
 999 RETURN
-END
+END SUBROUTINE MXDYBYYR
 

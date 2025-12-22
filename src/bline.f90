@@ -30,7 +30,7 @@ SUBROUTINE BL_CALC (KK)
 
    IMPLICIT NONE
 
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION, PARAMETER  :: BLCRIT = 0.02D0
    DOUBLE PRECISION, PARAMETER  :: SRT2DP = 0.7978846D0
@@ -144,14 +144,14 @@ SUBROUTINE BL_CALC (KK)
 !            ISRC will not be changing.  The BL lines are already
 !            grouped together (group ID index = KK)
       LNUM = 0
-      IF (KK .EQ.1 )THEN
+      IF (KK ==1 )THEN
          KSRC = ISRC
 
-      ELSE IF (KK .GE. 2) THEN
+      ELSE IF (KK >= 2) THEN
          DO I = 1,NUMSRC
-            IF (SRCTYP(I) .EQ. 'BUOYLINE') THEN
+            IF (SRCTYP(I) == 'BUOYLINE') THEN
                LNUM = LNUM + 1
-               IF( BLINEPARMS(LNUM)%IBLPGRPNUM .EQ. KK) THEN
+               IF( BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
                   KSRC = I
                   EXIT
                END IF
@@ -160,7 +160,7 @@ SUBROUTINE BL_CALC (KK)
       END IF
 
       DO I = 1, NUMURB
-         IF (IURBGRP(KSRC,I) .EQ. 1) THEN
+         IF (IURBGRP(KSRC,I) == 1) THEN
             IURB = I
             EXIT
          END IF
@@ -219,10 +219,10 @@ SUBROUTINE BL_CALC (KK)
 !        modified 9/12/17 JAT, use half-life for SO2 URBAN even without DFAULT
 !        if HALFLIFE or DCAYCOEF used, use that value, not 4-hours
 
-   IF (URBAN .and. POLLUT.EQ.'SO2' .and. L_BLURBAN(KK) .and.&
-   &((ICSTAT(7) .EQ. 0 .and. ICSTAT(8) .EQ. 0) .or. DFAULT)) THEN
+   IF (URBAN .and. POLLUT=='SO2' .and. L_BLURBAN(KK) .and.&
+   &((ICSTAT(7) == 0 .and. ICSTAT(8) == 0) .or. DFAULT)) THEN
       DECFAC = DECOEF
-   ELSE IF ((POLLUT.EQ.'SO2' .and. L_BLURBAN(KK)) .or.&
+   ELSE IF ((POLLUT=='SO2' .and. L_BLURBAN(KK)) .or.&
    &DFAULT) THEN  !rural source for SO2 or default modified 10/12/17
       DECFAC = 0.0D0
    ELSE
@@ -235,18 +235,18 @@ SUBROUTINE BL_CALC (KK)
 !          calculate the average FPRIME (buoyancy parameter) from the
 !          values in the file
 !
-   IF (HRLYBLCOUNT(KK) .GT. 0) THEN
+   IF (HRLYBLCOUNT(KK) > 0) THEN
 !           Compute the average BLAVGFPRM from ther values in the
 !            HOUREMIS file
       LNUM = 0
       SUMFPRM = 0.0
 
       DO ISRC = 1, NUMSRC
-         IF (SRCTYP(ISRC) .EQ. 'BUOYLINE') THEN
+         IF (SRCTYP(ISRC) == 'BUOYLINE') THEN
             LNUM = LNUM + 1
             LSRC = BLINEPARMS(LNUM)%ISRCNUM
-            IF (QFLAG(LSRC) .EQ. 'HOURLY' .and.&
-            &BLINEPARMS(LNUM)%IBLPGRPNUM .EQ. KK) THEN
+            IF (QFLAG(LSRC) == 'HOURLY' .and.&
+            &BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
                SUMFPRM = SUMFPRM + AFP(LSRC)
             END IF
          END IF
@@ -260,7 +260,7 @@ SUBROUTINE BL_CALC (KK)
 !               are not available from an HOUREMIS file and BLAVGFPRM
 !               is entered on the BLPINPUT record(s)
    FBRG = DBLE(NBLINES) * BLAVGFPRM/PI
-   IF (FBRG .LE. 55.0D0) THEN
+   IF (FBRG <= 55.0D0) THEN
 !           Value: 49 = 3.5*14.
       BL_XFINAL = 49.0D0 * FBRG**0.625D0
    ELSE
@@ -273,7 +273,7 @@ SUBROUTINE BL_CALC (KK)
 !         AFTER the first translation/rotation for the BL group being
 !         processed
    DO LNUM = 1,NBLTOTAL
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM .EQ. KK) THEN
+      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
          DEL(LNUM) =&
          &BLINEPARMS(LNUM)%XEND_TR1-BLINEPARMS(LNUM)%XBEG_TR1
       END IF
@@ -304,7 +304,7 @@ SUBROUTINE BL_CALC (KK)
 !         temperature since it is modified when point sources are run)
    P = WSPEXP(KST)
    WSST = BL_UREF * (BLAVGBHGT/UREFHT)**P
-   IF (KST .GT. 4) S = 9.80616D0 * DTHTA(KST-4)/BLTA
+   IF (KST > 4) S = 9.80616D0 * DTHTA(KST-4)/BLTA
 
 !        Calculate an effective wind speed, BL_UEFF, with the line source
 !         plume rise eqn
@@ -319,7 +319,7 @@ SUBROUTINE BL_CALC (KK)
 !         BL_XFS = distance to final rise
 !         BL_XFB = distance to full buoyancy
 !         BL_XFINAL = final neutral plume rise
-   IF (KST .LE. 4) THEN
+   IF (KST <= 4) THEN
 !           Calculate distance to final rise for neutral/unstable conditions
       BL_XFS = BL_XFB + BL_XFINAL
 
@@ -335,7 +335,7 @@ SUBROUTINE BL_CALC (KK)
 !           Calculate distance to final rise for stable conditions
       UNSRT = (16.0D0*BL_UEFF*BL_UEFF/S) - (BL_XFB*BL_XFB/3.0D0)
 
-      IF (UNSRT .LE. 0.0D0) THEN
+      IF (UNSRT <= 0.0D0) THEN
          BL_XFS = (12.0D0*BL_XFB*BL_UEFF*BL_UEFF/S)**(0.333333D0)
       ELSE
          BL_XFS = 0.5D0 * (BL_XFB + DSQRT(UNSRT))
@@ -344,7 +344,7 @@ SUBROUTINE BL_CALC (KK)
       XFSXX = BL_UEFF*PI/DSQRT(S)
       BL_XFS = DMIN1(BL_XFS,XFSXX)
 
-      IF (BL_XFS .LE. BL_XFB) THEN
+      IF (BL_XFS <= BL_XFB) THEN
          DO IDIST = 2,7
             BL_XDIST(IDIST) = BL_XFS
          END DO
@@ -377,7 +377,7 @@ SUBROUTINE BL_CALC (KK)
 !         of the BUOY_LINES loop.
 
    BUOY_LINES: DO LNUM = 1,NBLTOTAL
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM .EQ. KK) THEN
+      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
          ISRC = BLINEPARMS(LNUM)%ISRCNUM
          DLMIN     = DEL(LNUM)/128.0D0
          ZLINEBASE = BLINEPARMS(LNUM)%ELEV
@@ -443,7 +443,7 @@ SUBROUTINE BL_CALC (KK)
 !WSP --- End: D173 WSP add 7/24/2023
 
 !                 If the receptor is upwind of the line
-            IF (XRECEP .LE. XMINL) THEN
+            IF (XRECEP <= XMINL) THEN
                CYCLE RECEPTOR_LOOP
             END IF
 
@@ -476,13 +476,13 @@ SUBROUTINE BL_CALC (KK)
 
             YLOW  = YMINL - 4.0D0*SYC
             YHIGH = YMAXL + 4.0D0*SYC
-            IF (YRECEP .LT. YLOW .or. YRECEP .GT. YHIGH) THEN
+            IF (YRECEP < YLOW .or. YRECEP > YHIGH) THEN
                CYCLE RECEPTOR_LOOP
             END IF
 
             YLOW  = YLOW  + DLMIN
             YHIGH = YHIGH - DLMIN
-            IF (YRECEP .LT. YLOW .or. YRECEP .GT. YHIGH) THEN
+            IF (YRECEP < YLOW .or. YRECEP > YHIGH) THEN
                CYCLE RECEPTOR_LOOP
             END IF
 
@@ -490,14 +490,14 @@ SUBROUTINE BL_CALC (KK)
 !                  (IDW=0=NO,IDW=1=YES)
             IDW = 1
 
-            IF (YRECEP .LT. YMINL .or. YRECEP .GT. YMAXL) IDW = 0
+            IF (YRECEP < YMINL .or. YRECEP > YMAXL) IDW = 0
 
 !                 Check if receptor is on the downwind side of the line
-            IF (XRECEP .LT. XMAXL )THEN
-               IF (MOD(ITHETA,90) .NE. 0) THEN
+            IF (XRECEP < XMAXL )THEN
+               IF (MOD(ITHETA,90) /= 0) THEN
                   EM = DYEL/DXEL
                   B = YE - EM*XE
-                  IF (XRECEP .LT. (YRECEP-B)/EM) NCONTRIB = 999
+                  IF (XRECEP < (YRECEP-B)/EM) NCONTRIB = 999
                END IF
             END IF
 
@@ -517,7 +517,7 @@ SUBROUTINE BL_CALC (KK)
 !                    If current receptor is upwind of a source segment,
 !                    then this source segment does not contribute
 
-               IF (XS_RCS(LNUM,INDL) .GE. XRECEP) GO TO 495
+               IF (XS_RCS(LNUM,INDL) >= XRECEP) GO TO 495
                DOWNX  = XRECEP - XS_RCS(LNUM,INDL)
                CROSSY = YRECEP - YS_RCS(LNUM,INDL)
                VIRTXZ = DOWNX + ZV
@@ -525,7 +525,7 @@ SUBROUTINE BL_CALC (KK)
                VXYKM  = VIRTXY/1000.0D0
                VXZKM  = VIRTXZ/1000.0D0
 
-               if( VXYKM .LT. 0.0D0 .or. VXZKM .LT. 0.0D0 )then
+               if( VXYKM < 0.0D0 .or. VXZKM < 0.0D0 )then
 ! ---                   Virtual distance is < 0.0; skip this segment
                   GO TO 495
                endif
@@ -533,8 +533,8 @@ SUBROUTINE BL_CALC (KK)
 
 !                    If crosswind distance > 4 * SIGY, then this source
 !                     segment does not contribute
-               IF (4.0D0*SIGY .LT. DABS(CROSSY)) GO TO 495
-               IF (DABS(CROSSY) .LT. SIGY) IWOSIG = 1
+               IF (4.0D0*SIGY < DABS(CROSSY)) GO TO 495
+               IF (DABS(CROSSY) < SIGY) IWOSIG = 1
                CALL BL_ZRISE(LNUM,INDL,IREC,Z)
 !
 !                    Include terrain correction in determining the plume height
@@ -546,7 +546,7 @@ SUBROUTINE BL_CALC (KK)
                TERRAN = TER1 * DMIN1(HNT,THT)
                H = HNT - TERRAN
 
-               IF (H .GT. ZI .and. KST .LE. 4)GO TO 495
+               IF (H > ZI .and. KST <= 4)GO TO 495
 !
 !                    Solve the gaussian point source equation
 !
@@ -561,7 +561,7 @@ SUBROUTINE BL_CALC (KK)
 !
 !                 First time through loop, calculate the first chi estimate
 !
-            IF (NNEW .NE. NSEG0) GO TO 714
+            IF (NNEW /= NSEG0) GO TO 714
             INDL = 1
             NSEGM1 = NSEG0 - 1
             SUMM = (FTSAVE(1) + FTSAVE(129))/2.0D0
@@ -572,7 +572,7 @@ SUBROUTINE BL_CALC (KK)
 
 !                 If receptor is within region of influence but not directly
 !                  downwind of any part of the line, and SUM=0.0, CHI=0.0
-            IF (SUMM .LE. 0.0D0 .and. IDW .NE. 1) THEN
+            IF (SUMM <= 0.0D0 .and. IDW /= 1) THEN
                CYCLE RECEPTOR_LOOP
             END IF
 !
@@ -594,7 +594,7 @@ SUBROUTINE BL_CALC (KK)
 !                  segments but only over the section of the line
 !                  which is contributing
 
-            IF (NNEW .GT. 64) GO TO 759
+            IF (NNEW > 64) GO TO 759
             GO TO 498
 
 714         CONTINUE
@@ -607,7 +607,7 @@ SUBROUTINE BL_CALC (KK)
             SUM2 = FTSAVE(INDLSV) + FTSAVE(INDLLN)
 
 !                 If there are only 2 new line segments, skip this loop
-            IF (NNEW .GT. 2) THEN
+            IF (NNEW > 2) THEN
                INDL = INDLSV
                I2   = NNEW-1
 !
@@ -626,19 +626,19 @@ SUBROUTINE BL_CALC (KK)
 !                 At least one line segment must be within one SIGMA Y of
 !                  the line (if the receptor is directly downwind of any
 !                  part of the line)
-            IF (IDW .EQ. 1 .and. IWOSIG .NE. 1) GO TO 758
+            IF (IDW == 1 .and. IWOSIG /= 1) GO TO 758
 
             DIFF = DABS(SUM2-SUMM)
 !MGS               D183_BUOYLINE_EMISUNIT_WSP 3/4/2024: Added the 1.0E6/EMIFAC(1) to leave this
 !MGS                            comparison equivalent to before EMIFAC(1) was added to CUQ above.
 !MGS                  IF (DIFF*CUQ .LT. 0.1D0) THEN
-            IF (DIFF*CUQ*1.0D6/EMIFAC(1) .LT. 0.1D0) THEN    !EMIFAC(1) is for concentration
+            IF (DIFF*CUQ*1.0D6/EMIFAC(1) < 0.1D0) THEN    !EMIFAC(1) is for concentration
                GO TO 720
             END IF
 
             CORR = DIFF/SUM2
 
-            IF (CORR .LT. BLCRIT) THEN
+            IF (CORR < BLCRIT) THEN
                GO TO 720
             END IF
 
@@ -653,7 +653,7 @@ SUBROUTINE BL_CALC (KK)
 
             CALL BL_SORT(FTSAVE,IBMIN,IBMAX,IWPBL)
 
-            IF (IWPBL .NE. 999) GO TO 4949
+            IF (IWPBL /= 999) GO TO 4949
             IWPBL  = 0
             PARTCH = 0.0D0
             CYCLE RECEPTOR_LOOP
@@ -689,7 +689,7 @@ SUBROUTINE BL_CALC (KK)
                   VXYKM  = VIRTXY/1000.0D0
                   VXZKM  = VIRTXZ/1000.0D0
 
-                  if( VXYKM .LT. 0.0D0 .or. VXZKM .LT. 0.0D0 )then
+                  if( VXYKM < 0.0D0 .or. VXZKM < 0.0D0 )then
 ! ---                      Virtual distance is < 0.0; skip this segment
                      GO TO 941                                   ! not sure if this is best fix
                   endif
@@ -720,18 +720,18 @@ SUBROUTINE BL_CALC (KK)
 !MGS               D183_BUOYLINE_EMISUNIT_WSP 3/4/2024: Added the 1.0E6/EMIFAC(1) to leave this
 !MGS                            comparison equivalent to before EMIFAC(1) was added to CUQ above.
 !MGS                  IF (DIFF*CUQ .LT. 0.1D0) THEN
-            IF (DIFF*CUQ*1.0D6/EMIFAC(1) .LT. 0.1D0) THEN    !EMIFAC(1) is for concentration
+            IF (DIFF*CUQ*1.0D6/EMIFAC(1) < 0.1D0) THEN    !EMIFAC(1) is for concentration
                GO TO 720
             ENDIF
 
             CORR = DIFF/SUM2
-            IF (CORR .LT. BLCRIT) THEN
+            IF (CORR < BLCRIT) THEN
                GO TO 720
             END IF
 
             SUMM = SUM2
             ITER = ITER + 1
-            IF (ITER .GE. MAXIT) THEN
+            IF (ITER >= MAXIT) THEN
                SUMM = SUM2
                PARTCH      = CUQ*SUMM
                CHIBL(IREC) = CHIBL(IREC) + PARTCH
@@ -740,7 +740,7 @@ SUBROUTINE BL_CALC (KK)
 6000              FORMAT(/,5X,'Buoyant Line iteration fails to ',&
                   &' converge for receptor',I6,', conc. =',F13.6)
                   JITCT = JITCT+1
-                  IF (MOD(JITCT,100) .EQ. 0 ) THEN
+                  IF (MOD(JITCT,100) == 0 ) THEN
                      WRITE(DBGUNT,6001) JITCT
 6001                 FORMAT(/,5X,'Buoyant Line iterations for',&
                      &' all receptors fails for ',I8,'th time' )
@@ -760,7 +760,7 @@ SUBROUTINE BL_CALC (KK)
 !                  of the line with some source segments downwind and some
 !                  source segments upwind -- in that case just use the test
 !                  for convergence)
-            IF (NCONTRIB .LT. 2) GO TO 713
+            IF (NCONTRIB < 2) GO TO 713
 
 !                 Calculate concentration (in micrograms);
 !                  use stack height wind speed for dilution
@@ -833,7 +833,7 @@ SUBROUTINE BL_CALC (KK)
 !     OBULEN = RUROBULEN
 
    RETURN
-END
+END SUBROUTINE BL_CALC
 
 SUBROUTINE BL_DBTSIG (XZ,XY,ISTAB,SY,SZ)
 !***********************************************************************
@@ -925,11 +925,11 @@ SUBROUTINE BL_DBTSIG (XZ,XY,ISTAB,SY,SZ)
     CASE (1)
 !           STABILITY A (10)
       TH = (24.167D0 - 2.5334D0 * DLOG(XY)) / 57.2958D0
-      IF (XZ .GT. 3.11D0) THEN
+      IF (XZ > 3.11D0) THEN
          SZ = 5000.0D0
       ELSE
          DO ID = 1,7
-            IF (XZ .GE. XA(ID)) GO TO 12
+            IF (XZ >= XA(ID)) GO TO 12
          END DO
          ID = 8
 12       SZ = AA(ID) * XZ ** BA(ID)
@@ -938,59 +938,59 @@ SUBROUTINE BL_DBTSIG (XZ,XY,ISTAB,SY,SZ)
     CASE (2)
 !           STABILITY B (20)
       TH = (18.333D0 - 1.8096D0 * DLOG(XY)) / 57.2958D0
-      IF (XZ .GT. 35.0D0) THEN
+      IF (XZ > 35.0D0) THEN
          SZ = 5000.0D0
       ELSE
          DO ID = 1,2
-            IF (XZ .GE. XB(ID)) GO TO 22
+            IF (XZ >= XB(ID)) GO TO 22
          END DO
          ID = 3
 22       SZ = AB(ID) * XZ ** BB(ID)
-         IF (SZ .GT. 5000.0D0) SZ = 5000.0D0
+         IF (SZ > 5000.0D0) SZ = 5000.0D0
       ENDIF
 
     CASE (3)
 !           STABILITY C (30)
       TH = (12.5D0 - 1.0857D0 * DLOG(XY)) / 57.2958D0
       SZ = 61.141D0 * XZ ** 0.91465D0
-      IF (SZ .GT. 5000.0D0) SZ = 5000.0D0
+      IF (SZ > 5000.0D0) SZ = 5000.0D0
 
     CAsE (4)
 !           STABILITY D (40)
       TH = (8.3333D0 - 0.72382D0 * DLOG(XY)) / 57.2958D0
 
       DO ID = 1,5
-         IF (XZ .GE. XD(ID)) GO TO 42
+         IF (XZ >= XD(ID)) GO TO 42
       END DO
       ID = 6
 42    SZ = AD(ID) * XZ ** BD(ID)
-      IF (SZ .GT. 5000.0D0) SZ = 5000.0D0
+      IF (SZ > 5000.0D0) SZ = 5000.0D0
 
     CASE (5)
 !           STABILITY E (50)
       TH = (6.25D0 - 0.54287D0 * DLOG(XY)) / 57.2958D0
       DO ID = 1,8
-         IF (XZ .GE. XE(ID)) GO TO 52
+         IF (XZ >= XE(ID)) GO TO 52
       END DO
       ID = 9
 52    SZ = AE(ID) * XZ ** BE(ID)
-      IF (SZ .GT. 5000.0D0) SZ = 5000.0D0
+      IF (SZ > 5000.0D0) SZ = 5000.0D0
 
     CASE (6)
 !           STABILITY F (60)
       TH = (4.1667D0 - 0.36191D0 * DLOG(XY)) / 57.2958D0
       DO ID = 1,9
-         IF (XZ .GE. XF(ID)) GO TO 62
+         IF (XZ >= XF(ID)) GO TO 62
       END DO
       ID = 10
 62    SZ = AF(ID) * XZ ** BF(ID)
-      IF (SZ .GT. 5000.0D0) SZ = 5000.0D0
+      IF (SZ > 5000.0D0) SZ = 5000.0D0
    END SELECT
 
    SY = 1000.0D0 * XY * DSIN(TH)/(2.15D0 * DCOS(TH))
 
    RETURN
-END
+END SUBROUTINE BL_DBTSIG
 !
 !     ------------------------------------------------------------------
 SUBROUTINE BL_SIGMAY(XKM,ISTAB,SY)
@@ -1049,7 +1049,7 @@ SUBROUTINE BL_SIGMAY(XKM,ISTAB,SY)
    SY = 1000.0D0 * XKM * DSIN(TH)/(2.15D0 * DCOS(TH))
 
    RETURN
-END
+END SUBROUTINE BL_SIGMAY
 
 SUBROUTINE BL_RISE(U,ISTAB,S)
 !***********************************************************************
@@ -1099,8 +1099,8 @@ SUBROUTINE BL_RISE(U,ISTAB,S)
    DO 1000 IDIST = 2,7
       X = BL_XDIST(IDIST)
 
-      IF (ISTAB .LE. 4  .or. X .LT. BL_XFS) THEN
-         IF( DABS(X - BL_XFB) .LT. 1.0D-10 )THEN
+      IF (ISTAB <= 4  .or. X < BL_XFS) THEN
+         IF( DABS(X - BL_XFB) < 1.0D-10 )THEN
 !              CONSTANT 0.4420971 = 1./(2.*PI*BETA*BETA) WITH BETA=0.6
             C = -0.4420971D0 * (FPRMXNB/BL_XFB) * (X/U)**3
             CALL BL_CUBIC(A,B,C,Z)
@@ -1130,7 +1130,7 @@ SUBROUTINE BL_RISE(U,ISTAB,S)
 1000 CONTINUE
 
    RETURN
-END
+END SUBROUTINE BL_RISE
 !
 SUBROUTINE BL_ZRISE(IL,IS,IR,Z)
 !***********************************************************************
@@ -1172,7 +1172,7 @@ SUBROUTINE BL_ZRISE(IL,IS,IR,Z)
    Z = ZXFB + Z2 - Z1
 
    RETURN
-END
+END SUBROUTINE BL_ZRISE
 
 !     ------------------------------------------------------------------
 SUBROUTINE BL_INTRSE(X,Z)
@@ -1199,7 +1199,7 @@ SUBROUTINE BL_INTRSE(X,Z)
 
    INTEGER    :: NDEX, NDEX1, IDIST
 !C
-   IF (X .GT. BL_XDIST(7)) THEN
+   IF (X > BL_XDIST(7)) THEN
 !        PLUME REACHES FINAL RISE
       Z = DH(7)
    ELSE
@@ -1208,7 +1208,7 @@ SUBROUTINE BL_INTRSE(X,Z)
 !         DO 10 IDIST = 2,6                                 ! D117
 
       DO 10 IDIST = 2,7                                  ! D117
-         IF (X .LT. BL_XDIST(IDIST)) THEN                ! D117
+         IF (X < BL_XDIST(IDIST)) THEN                ! D117
             NDEX = IDIST
             EXIT
          ENDIF
@@ -1219,7 +1219,7 @@ SUBROUTINE BL_INTRSE(X,Z)
    END IF
 
    RETURN
-END
+END SUBROUTINE BL_INTRSE
 
 SUBROUTINE BL_GAUSS(ISTAB,DPBL,CROSSY,SIGY,SIGZ,H,FT)
 !***********************************************************************
@@ -1253,7 +1253,7 @@ SUBROUTINE BL_GAUSS(ISTAB,DPBL,CROSSY,SIGY,SIGZ,H,FT)
    EXPYP = 0.5D0 * YPSIG * YPSIG
 
 !     Prevent underflows
-   IF (EXPYP .GT. 50.0D0) THEN
+   IF (EXPYP > 50.0D0) THEN
       F  = 0.0D0                 ! not really needed
       F1 = 0.0D0                 ! not really needed
       FT = 0.0D0
@@ -1264,10 +1264,10 @@ SUBROUTINE BL_GAUSS(ISTAB,DPBL,CROSSY,SIGY,SIGZ,H,FT)
 
 !     If mixing height (DPBL) GE 5000 meters or for stable conditions,
 !     neglect the reflection terms
-   IF (ISTAB .GE. 5 .or. DPBL .GT. 5000.0D0) GO TO 451
+   IF (ISTAB >= 5 .or. DPBL > 5000.0D0) GO TO 451
 
 !     If SIGZ GT 1.6*DPBL, assume a uniform vertical distribution
-   IF (SIGZ .GT. 1.6D0*DPBL) GO TO 460
+   IF (SIGZ > 1.6D0*DPBL) GO TO 460
 
 !     Calculate multiple eddy reflections terms
 !     using a fourier series method -- see ERT MEMO CS 093
@@ -1276,53 +1276,53 @@ SUBROUTINE BL_GAUSS(ISTAB,DPBL,CROSSY,SIGY,SIGZ,H,FT)
    T  = (SIGZ/DPBL)**2
    H2 = H/DPBL
 
-   IF (T .LT. 0.6D0) THEN
+   IF (T < 0.6D0) THEN
       ARG = 2.0D0 * (1.0D0 - H2)/T
-      IF (ARG .LT. TMAX) THEN
-         IF (ARG .LT. TMIN) THEN
+      IF (ARG < TMAX) THEN
+         IF (ARG < TMIN) THEN
             F1 = F1 + 1.0D0 - ARG
          ENDIF
-         IF(ARG .GE. TMIN) THEN
+         IF(ARG >= TMIN) THEN
             F1 = F1 + EXP(-ARG)
          ENDIF
          ARG = 2.0D0 * (1.0D0 + H2)/T
-         IF (ARG .LT. TMAX) THEN
+         IF (ARG < TMAX) THEN
             F1 = F1 + EXP(-ARG)
             ARG = 4.0D0 * (2.0D0 - H2)/T
-            IF (ARG .LT. TMAX) THEN
+            IF (ARG < TMAX) THEN
                F1 = F1 + EXP(-ARG)
                ARG = 4.0D0 * (2.0D0 + H2)/T
-               IF (ARG .LT. TMAX) THEN
+               IF (ARG < TMAX) THEN
                   F1 = F1 + EXP(-ARG)
                ENDIF
             ENDIF
          ENDIF
       ENDIF
       ARG = -0.5D0 * H2 * H2/T
-      IF (ARG .LT. -90.0D0) THEN
+      IF (ARG < -90.0D0) THEN
          F1 = 0.0D0
       ENDIF
 
 !        The constant 0.797885 = SQRT(2./PI)
-      IF (ARG .GE. -90.0D0) THEN
+      IF (ARG >= -90.0D0) THEN
          F1 = 0.797885D0 * F1 * EXP(ARG)/SIGZ
       ENDIF
-      IF (F1 .LT. EPSIL) F1 = 0.0D0
+      IF (F1 < EPSIL) F1 = 0.0D0
 
    ELSE
 !        The constant 4.934802 = PI*PI/2.
       ARG = 4.934802D0 * T
-      IF (ARG .LT. TMAX) THEN
+      IF (ARG < TMAX) THEN
          F1 = F1 + 2.0D0 * DEXP(-ARG) * DCOS(3.141593D0*H2)
 
 !            The constant 19.739209 = 2.*PI*PI
          ARG = 19.739209D0 * T
-         IF (ARG .LT. TMAX) THEN
+         IF (ARG < TMAX) THEN
             F1 = F1 + 2.0D0 * DEXP(-ARG) * DCOS(6.283185D0*H2)
          ENDIF
       ENDIF
       F1 = F1/DPBL
-      IF (F1 .LT. EPSIL) F1 = 0.0D0
+      IF (F1 < EPSIL) F1 = 0.0D0
    ENDIF
 
 !     The constant 1.25331414 = SQRT(PI/2.)
@@ -1332,7 +1332,7 @@ SUBROUTINE BL_GAUSS(ISTAB,DPBL,CROSSY,SIGY,SIGZ,H,FT)
 
    HPSIG = H/SIGZ
    EXPHP = 0.5D0 * HPSIG * HPSIG
-   IF (EXPHP .GT. 50.0D0) THEN
+   IF (EXPHP > 50.0D0) THEN
       F1 = 0.0D0
    ELSE
       F1 = DEXP(-EXPHP)
@@ -1350,7 +1350,7 @@ SUBROUTINE BL_GAUSS(ISTAB,DPBL,CROSSY,SIGY,SIGZ,H,FT)
    FT = F/(2.5066283D0 * SIGY * DPBL)
 
 470 RETURN
-END
+END SUBROUTINE BL_GAUSS
 
 !
 !     ------------------------------------------------------------------
@@ -1425,7 +1425,7 @@ DOUBLE PRECISION FUNCTION BL_XVZ (SZO,ISTAB)
     CASE (1)
 !          STABILITY A
       DO ID = 1,7
-         IF (SZO .LE. SA(ID)) GO TO 12
+         IF (SZO <= SA(ID)) GO TO 12
       END DO
       ID = 8
 12    BL_XVZ =(SZO/AA(ID))**CA(ID)
@@ -1433,7 +1433,7 @@ DOUBLE PRECISION FUNCTION BL_XVZ (SZO,ISTAB)
     CASE (2)
 !          STABILITY B
       DO ID = 1,2
-         IF (SZO .LE. SB(ID)) GO TO 22
+         IF (SZO <= SB(ID)) GO TO 22
       END DO
       ID = 3
 22    BL_XVZ = (SZO/AB(ID))**CB(ID)
@@ -1445,7 +1445,7 @@ DOUBLE PRECISION FUNCTION BL_XVZ (SZO,ISTAB)
     CASE (4)
 !          STABILITY D
       DO ID = 1,5
-         IF(SZO .LE. SD(ID)) GO TO 42
+         IF(SZO <= SD(ID)) GO TO 42
       END DO
       ID = 6
 42    BL_XVZ = (SZO/AD(ID))**CD(ID)
@@ -1453,7 +1453,7 @@ DOUBLE PRECISION FUNCTION BL_XVZ (SZO,ISTAB)
     CASE (5)
 !          STABILITY E
       DO ID = 1,8
-         IF (SZO .LE. SE(ID)) GO TO 52
+         IF (SZO <= SE(ID)) GO TO 52
       END DO
       ID = 9
 52    BL_XVZ = (SZO/AE(ID))**CE(ID)
@@ -1461,14 +1461,14 @@ DOUBLE PRECISION FUNCTION BL_XVZ (SZO,ISTAB)
     CASE (6)
 !          STABILITY F
       DO ID = 1,9
-         IF (SZO .LE. SF(ID)) GO TO 62
+         IF (SZO <= SF(ID)) GO TO 62
       END DO
       ID = 10
 62    BL_XVZ = (SZO/AF(ID))**CF(ID)
 
    END SELECT
 
-END
+END FUNCTION BL_XVZ
 !
 !     ------------------------------------------------------------------
 DOUBLE PRECISION FUNCTION BL_XVY (SYO,ISTAB)
@@ -1503,7 +1503,7 @@ DOUBLE PRECISION FUNCTION BL_XVY (SYO,ISTAB)
       BL_XVY = (SYO/33.5D0)**1.083D0
    END SELECT
 
-END
+END FUNCTION BL_XVY
 
 SUBROUTINE BL_WSC(ISTAB,UM,U,S,P,NBL)
 !***********************************************************************
@@ -1531,7 +1531,7 @@ SUBROUTINE BL_WSC(ISTAB,UM,U,S,P,NBL)
    DOUBLE PRECISION :: P2, P3, EP, EPI, T1, Z
 
 
-   IF (ISTAB .LE. 4) THEN
+   IF (ISTAB <= 4) THEN
 !
 !        NEUTRAL (OR UNSTABLE) CONDITIONS
 !
@@ -1565,7 +1565,7 @@ SUBROUTINE BL_WSC(ISTAB,UM,U,S,P,NBL)
    ENDIF
 
    RETURN
-END
+END SUBROUTINE BL_WSC
 !
 SUBROUTINE BL_LENG(THETA, U, AVFACTOR, NBL)
 !***********************************************************************
@@ -1606,7 +1606,7 @@ SUBROUTINE BL_LENG(THETA, U, AVFACTOR, NBL)
 !     effective downwash line length (LD)
    LEFF1 = BLAVGLLEN * SINT
 
-   IF (NBL .EQ. 1) THEN
+   IF (NBL == 1) THEN
 !        IF N = 1, NO INTERACTION AT ANY X, I.E.,
 !        LEFFV = average line width;
 !        'Effective' buoyancy flux (FPRMXNB) = average buoyancy flux;
@@ -1626,7 +1626,7 @@ SUBROUTINE BL_LENG(THETA, U, AVFACTOR, NBL)
       &DXM833 * DXM833 * (DXM833 + 1.5915494D0*BLAVGLWID)
       XI = (T1*BLAVGLLEN)**0.333333D0
 
-      IF (XI .GT. BLAVGLLEN) THEN
+      IF (XI > BLAVGLLEN) THEN
          XI = BLAVGLLEN/2.0D0 +&
          &DSQRT(12.0D0*T1 - 3.0D0*BLAVGLLEN*BLAVGLLEN)/6.0D0
 
@@ -1651,7 +1651,7 @@ SUBROUTINE BL_LENG(THETA, U, AVFACTOR, NBL)
    R0 = DMIN1(BLAVGBHGT,LD)/AVFACTOR
 
    RETURN
-END
+END SUBROUTINE BL_LENG
 !
 !     ------------------------------------------------------------------
 SUBROUTINE BL_SORT(FTSAVE,IBMIN,IBMAX,IWPBL)
@@ -1669,23 +1669,23 @@ SUBROUTINE BL_SORT(FTSAVE,IBMIN,IBMAX,IWPBL)
 
    ISAFE = 0
    IB    = 0
-   IF (FTSAVE(129) .NE. 0.0D0) IB = 129
-   IF (FTSAVE(1)   .NE. 0.0D0) IB = 1
-   IF (IB .NE. 0) GO TO 970
+   IF (FTSAVE(129) /= 0.0D0) IB = 129
+   IF (FTSAVE(1)   /= 0.0D0) IB = 1
+   IF (IB /= 0) GO TO 970
 
    OUTER: DO ILEVEL = 1,7
       NEACHL = 2**(ILEVEL-1)
       INCR   = 2**(8-ILEVEL)
       INDEXI = 1 + INCR/2
       DO NC = 1,NEACHL
-         IF (FTSAVE(INDEXI) .EQ. 0.0D0) GO TO 944
+         IF (FTSAVE(INDEXI) == 0.0D0) GO TO 944
          IB = INDEXI
          GO TO 970
 944      INDEXI = INDEXI + INCR
       END DO
    END DO OUTER
 
-   IF (IB .NE. 0) GO TO 970
+   IF (IB /= 0) GO TO 970
    IWPBL = 999
    RETURN
 
@@ -1697,21 +1697,21 @@ SUBROUTINE BL_SORT(FTSAVE,IBMIN,IBMAX,IWPBL)
 975 CONTINUE
    INCRM = 0
    INCRP = 0
-   IF (FTSAVE(IBMIN) .NE. 0.0D0) INCRM = 1
-   IF (IBMIN .EQ.1) INCRM = 0
-   IF (FTSAVE(IBMAX) .NE. 0.0D0) INCRP = 1
-   IF (IBMAX .EQ. 129) INCRP = 0
+   IF (FTSAVE(IBMIN) /= 0.0D0) INCRM = 1
+   IF (IBMIN ==1) INCRM = 0
+   IF (FTSAVE(IBMAX) /= 0.0D0) INCRP = 1
+   IF (IBMAX == 129) INCRP = 0
 
    IBMIN = IBMIN - INCRM
    IBMAX = IBMAX + INCRP
-   IF (INCRM .EQ. 0 .and. INCRP .EQ. 0) GO TO 980
+   IF (INCRM == 0 .and. INCRP == 0) GO TO 980
    ISAFE = ISAFE + 1
-   IF (ISAFE .GT. 129) GO TO 980
+   IF (ISAFE > 129) GO TO 980
    GO TO 975
 980 CONTINUE
 
    RETURN
-END
+END SUBROUTINE BL_SORT
 !
 !     ------------------------------------------------------------------
 SUBROUTINE BL_CUBIC(A,B,C,Z)
@@ -1737,12 +1737,12 @@ SUBROUTINE BL_CUBIC(A,B,C,Z)
    BP2   = BP/2.0D0
    TROOT = BP2*BP2 + AP3*AP3*AP3
 
-   IF (TROOT .GT. 0.0D0) THEN
+   IF (TROOT > 0.0D0) THEN
       TR  = DSQRT(TROOT)
       APP = (-BP2 + TR)**0.333333D0
       BSV = -BP2 - TR
 
-      IF (BSV .EQ. 0.0D0) THEN
+      IF (BSV == 0.0D0) THEN
 !           BSV (& BPP) = 0.0
          Z = APP-A3
 
@@ -1759,7 +1759,7 @@ SUBROUTINE BL_CUBIC(A,B,C,Z)
    ENDIF
 
    RETURN
-END
+END SUBROUTINE BL_CUBIC
 
 SUBROUTINE BL_ROTATE2 (WD1, THETA, ITHETA, NRECEP, NBL, KK)
 !***********************************************************************
@@ -1811,7 +1811,7 @@ SUBROUTINE BL_ROTATE2 (WD1, THETA, ITHETA, NRECEP, NBL, KK)
    INTEGER               :: I, J, ILINE, ISEGN, LNUM
    INTEGER               :: IL12, IL34
 
-   CHARACTER (LEN=12) MODNAM
+   CHARACTER (LEN=12) :: MODNAM
 
 !     Variable Initializations
    MODNAM = 'BL_ROTATE2'
@@ -1827,7 +1827,7 @@ SUBROUTINE BL_ROTATE2 (WD1, THETA, ITHETA, NRECEP, NBL, KK)
 !      to be perpendicular to the buoyant lines) with the flow vector.
 
    THETA = 360.0D0 - (WD1 + TCOR(KK))
-   IF (THETA .LT. 0.0D0) THETA = 360.0D0 + THETA
+   IF (THETA < 0.0D0) THETA = 360.0D0 + THETA
    THETA    = DMOD(THETA,360.0D0)
    ITHETA   = NINT(THETA)
    COSTHETA = DCOS(THETA/DEG_PER_RAD)
@@ -1838,7 +1838,7 @@ SUBROUTINE BL_ROTATE2 (WD1, THETA, ITHETA, NRECEP, NBL, KK)
 !      BL_ROTATE1 (soset.f)
 !
    DO LNUM = 1,NBL
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM .EQ. KK) THEN
+      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
          DXX = DEL(LNUM)/128.0D0
          XS_SCS(LNUM,1) = BLINEPARMS(LNUM)%XBEG_TR1
 
@@ -1850,13 +1850,13 @@ SUBROUTINE BL_ROTATE2 (WD1, THETA, ITHETA, NRECEP, NBL, KK)
 
 ! D41_WOOD: The values of the array IL must be adjusted so the correct
 !           XN and YN are determined for each BL source group
-   IF (KK .EQ. 1) THEN
+   IF (KK == 1) THEN
       IL(1) = 1
       IL(2) = 1
       IL(3) = NBLINGRP(KK)
       IL(4) = NBLINGRP(KK)
 
-   ELSE IF (KK .GE. 2) THEN
+   ELSE IF (KK >= 2) THEN
       IL12 = 1
       IL34 = NBLINGRP(1)
       DO J = 2,KK
@@ -1874,10 +1874,10 @@ SUBROUTINE BL_ROTATE2 (WD1, THETA, ITHETA, NRECEP, NBL, KK)
 !      in terms of the SCS coordinates)
 !
    OUTER: DO LNUM = 1,NBL
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM .EQ. KK) THEN
+      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
 
          INNER:       DO I=1,4
-            IF (THETA .GE. TCHK(I)) CYCLE
+            IF (THETA >= TCHK(I)) CYCLE
             ILINE = IL(I)
             ISEGN = ISEG(I)
             XN = XS_SCS(ILINE,ISEGN)
@@ -1890,7 +1890,7 @@ SUBROUTINE BL_ROTATE2 (WD1, THETA, ITHETA, NRECEP, NBL, KK)
 !
 ! --- Translate line source segment coordinates for this BL source
    DO LNUM = 1,NBL
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM .EQ. KK) THEN
+      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
          DO J=1,129
             XS_RCS(LNUM,J) = XS_SCS(LNUM,J) - XN
             YS_RCS(LNUM,J) = YS_SCS(LNUM) - YN
@@ -1912,7 +1912,7 @@ SUBROUTINE BL_ROTATE2 (WD1, THETA, ITHETA, NRECEP, NBL, KK)
 !     Rotate line source segment coordinates
    DO LNUM = 1,NBL
 
-      IF (BLINEPARMS(LNUM)%IBLPGRPNUM .EQ. KK) THEN
+      IF (BLINEPARMS(LNUM)%IBLPGRPNUM == KK) THEN
 
          DO J=1,129
             XSAVE = XS_RCS(LNUM,J)
@@ -1934,4 +1934,4 @@ SUBROUTINE BL_ROTATE2 (WD1, THETA, ITHETA, NRECEP, NBL, KK)
    END DO
 
    RETURN
-END
+END SUBROUTINE BL_ROTATE2

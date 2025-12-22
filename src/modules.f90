@@ -314,9 +314,9 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for Runstream Data
 !***********************************************************************
 
-   LOGICAL BLINE, INFLD, MARK, ECHO
+   LOGICAL :: BLINE, INFLD, MARK, ECHO
 
-   CHARACTER PATH*2, PPATH*2, KEYWRD*8, PKEYWD*8, KEYWD*8, KTYPE*5,&
+   CHARACTER :: PATH*2, PPATH*2, KEYWRD*8, PKEYWD*8, KEYWD*8, KTYPE*5,&
    &RUNST*1
 
    CHARACTER (LEN=ILEN_FLD) :: FIELD, INPFIL, OUTFIL, INCFIL
@@ -330,12 +330,12 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for Error Handling
 !***********************************************************************
 
-   LOGICAL FATAL, ISTART, IFINIS, RECERR, ERRLST, EOF, ALLOC_ERR
-   LOGICAL L_SkipMessages
+   LOGICAL :: FATAL, ISTART, IFINIS, RECERR, ERRLST, EOF, ALLOC_ERR
+   LOGICAL :: L_SkipMessages
 
    REAL    :: STORE                ! Estimate of memory storage requirement
 
-   CHARACTER ERRMSG*50, ERRCOD*3, VERSN*6
+   CHARACTER :: ERRMSG*50, ERRCOD*3, VERSN*6
    CHARACTER (LEN=6) :: C_METVER         ! Character string for met version
    CHARACTER (LEN=ILEN_FLD) :: MSGFIL
 
@@ -362,7 +362,7 @@ MODULE MAIN1
 !CRT  D063  Add Downwash Platform Debug PLATFMDBG
 !CRT  D113  Add Sidewash Debug SWDBG
 
-   LOGICAL DFAULT, CONC, DEPOS, DDEP, WDEP, RURAL, URBAN, GRDRIS,&
+   LOGICAL :: DFAULT, CONC, DEPOS, DDEP, WDEP, RURAL, URBAN, GRDRIS,&
    &NOSTD, NOBID, CLMPRO, MSGPRO, PERIOD, ANNUAL, MONTH,&
    &FLAT, ELEV, FLATSRCS, FLGPOL, RUN, EVENTS, RSTSAV,&
    &RSTINP, DAYTAB, MXFILE, PPFILE, PLFILE, ANPOST, ANPLOT,&
@@ -396,7 +396,7 @@ MODULE MAIN1
 !     results and results calculated during the MAXDCONT option
 !     internal "post-processing" and between 'original' results and
 !     results calculated during the EVENT post-processing
-   LOGICAL L_EVENT_OrigConc_Warning, L_MAXDCONT_OrigConc_Warning
+   LOGICAL :: L_EVENT_OrigConc_Warning, L_MAXDCONT_OrigConc_Warning
 
 !CRT 3/23/2021, D061/D062 - Add logicals for SWmin and BigT low wind options
 !CRT 4/11/2022, D131 - FRAN Alpha Formulation - add logical for PBal (L_PBal)
@@ -413,8 +413,8 @@ MODULE MAIN1
    &L_UserFRANmin, L_COARE
 
    CHARACTER (LEN=ILEN_FLD) :: TITLE1, TITLE2
-   CHARACTER RUNDAT*8, RUNTIM*8
-   CHARACTER EVPARM*6, CHRAVE*5, CHIDEP*4, SOELEV*6, REELEV*6,&
+   CHARACTER :: RUNDAT*8, RUNTIM*8
+   CHARACTER :: EVPARM*6, CHRAVE*5, CHIDEP*4, SOELEV*6, REELEV*6,&
    &TGELEV*6, OUTTYP*5, NO2_FIELD4*3, SO2_FIELD4*3,&
    &PM25_FIELD4*3
 
@@ -503,7 +503,7 @@ MODULE MAIN1
 !     NOTE: A similar variable, OSPLAT, is used to indicate the a source
 !     is subject to offshore platform downwash once platform params
 !     are validated.
-   CHARACTER SRCID*12, SRCTYP*8, SOPCRD*1, SOGAS*1, URBSRC*1,&
+   CHARACTER :: SRCID*12, SRCTYP*8, SOPCRD*1, SOGAS*1, URBSRC*1,&
    &GRPID*8, EMILBL*40, OUTLBL*40, POLLUT*8,&
    &QFLAG*8, BFLAG(6)*8, O3FLAG(6)*8, PERLBL*40, OLMID*8,&
    &URBID*8, PSDID*8, NOxFLAG(6)*8,  SOPLAT*1,&
@@ -517,25 +517,25 @@ MODULE MAIN1
    CHARACTER (LEN=ILEN_FLD) :: HRFILE, BKGRND_File(6), BGFORM(6),&
    &BackUnits
 !*#
-   CHARACTER PREVSRCID*12
-   CHARACTER PREVGRPID*8
+   CHARACTER :: PREVSRCID*12
+   CHARACTER :: PREVGRPID*8
 
 ! --- Declare logicals related to deposition options applicable to output types;
 !     LDPART indicates that particle dry deposition is used
 !     LWPART indicates that particle wet deposition is used
 !     LDGAS  indicates that gaseous dry deposition is used
 !     LWGAS  indicates that gaseous wet deposition is used
-   LOGICAL LDPART, LWPART, LDGAS, LWGAS
+   LOGICAL :: LDPART, LWPART, LDGAS, LWGAS
 
 ! --- Declare logicals related to background concentration options:
 !     L_BACKGRND indicates generally that background concentration options are used
 !     L_BGHourly indicates generally that hourly background concentrations are used
 !     L_BGSector indicates generally that sector-varying background concs are used
-   LOGICAL L_BACKGRND, L_BGHourly, L_BGSector
+   LOGICAL :: L_BACKGRND, L_BGHourly, L_BGSector
 ! --- Declare logicals related to sector-varying background concentration options:
 !     L_BGFile indicates that hourly background concentrations are used for given sector
 !     L_BGValues indicates that non-hourly background concs are available for given sector
-   LOGICAL L_BGFile(6), L_BGValues(6)
+   LOGICAL :: L_BGFile(6), L_BGValues(6)
 
    LOGICAL, ALLOCATABLE :: GRP_BACK(:)
 
@@ -713,7 +713,7 @@ MODULE MAIN1
    &RADIUS(:), AXCNTR(:), AYCNTR(:)
    INTEGER, ALLOCATABLE :: NVERTS(:)
 
-   LOGICAL LSEG
+   LOGICAL :: LSEG
 
 
 !***********************************************************************
@@ -772,7 +772,7 @@ MODULE MAIN1
 
    CHARACTER (LEN = 40) ::  REFSPE
 
-   LOGICAL  LUSERVD
+   LOGICAL  :: LUSERVD
 !
 !     REFSPE      - Reference Species (Default is SO2)
 !
@@ -808,9 +808,9 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for REceptor Pathway
 !***********************************************************************
 
-   LOGICAL ISTA, IEND, NEWID
+   LOGICAL :: ISTA, IEND, NEWID
 
-   CHARACTER NETID*8, NETIDT*8, PNETID*8, NTID*8, NTTYP*8,&
+   CHARACTER :: NETID*8, NETIDT*8, PNETID*8, NTID*8, NTTYP*8,&
    &RECTYP*2, PXSOID*12, PESOID*12, ARCID*8
 
    DOUBLE PRECISION, ALLOCATABLE ::  AXR(:), AYR(:), AZELEV(:),&
@@ -834,14 +834,14 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for MEteorology Pathway
 !***********************************************************************
 
-   CHARACTER SFNAME*40, UANAME*40, ONNAME*40, ALAT*10, ALON*10
+   CHARACTER :: SFNAME*40, UANAME*40, ONNAME*40, ALAT*10, ALON*10
 
    CHARACTER (LEN=ILEN_FLD) :: METINP, SCIM_SFCFIL, SCIM_PROFIL,&
    &PROINP
    CHARACTER (LEN=ILEN_FLD) :: METFRM, PROFRM
    CHARACTER :: MMIF_Version*29  ! CRT 1/22/2021 D077, increase from 27 to 29
 
-   LOGICAL SCIMOUT
+   LOGICAL :: SCIMOUT
 
 ! JAT 01/29/21 ISSUE D070 TURBULENCE OPTIONS
 !     Logical flags for ignoring turbulence options
@@ -858,7 +858,7 @@ MODULE MAIN1
 !     NOTE: ONLY THE FIRST 2 CAN BE USED WITH THE DEFAULT OPTION; THE OTHERS
 !     ARE NON-DEFAULT. IF THOSE ARE ISSUED WITH THE DEFAULT KEYWORD, THE USER
 !     WILL GET A WARNING MESSAGE AND THEY WILL BE IGNORED.
-   LOGICAL TURBOPTS(9)
+   LOGICAL :: TURBOPTS(9)
 
 !**** Logical flags for met data version, L_OldMetVer is used to flag
 !     an outdated met version date in the surface file header record;
@@ -896,7 +896,7 @@ MODULE MAIN1
 !     JAT 1/29/21 D070 TURBULENCE OPTIONS
 !     ADD NEW LOGICAL VARIABLES TO DENOTE THAT SIGMA-THETA AND SIGMA-W
 !     WERE RESET
-   LOGICAL CLMHR, MSGHR, UNSTAB, NEUTRL, STABLE,&
+   LOGICAL :: CLMHR, MSGHR, UNSTAB, NEUTRL, STABLE,&
    &RUNERR, PFLERR, ENDMON, METHDR,&
    &HOURLY, L_DayOfWeekOpts,reset_sa,reset_sw
 
@@ -1091,10 +1091,10 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for Calculation
 !***********************************************************************
 
-   LOGICAL CALCS, WAKE
-   LOGICAL SURFAC
+   LOGICAL :: CALCS, WAKE
+   LOGICAL :: SURFAC
 
-   DOUBLE PRECISION PHID1, PHID2, PHIN1, PHIN2
+   DOUBLE PRECISION :: PHID1, PHID2, PHIN1, PHIN2
 
    INTEGER :: IREC,   ISRC,   IGRP,   IAVE,   ITYP,  ISET,&
    &NUMREC, NUMSRC, NUMGRP, NUMAVE, NUMARC, NUMTYP,&
@@ -1141,7 +1141,7 @@ MODULE MAIN1
    DOUBLE PRECISION :: SWQS, SWHS,& !SWBH, SWBW, SWBL, SWBA,
    &SWTHETA, BL, BW, BH, BA, SWCONC,&
    &BHS, BLS, BWS, HSS  ! Scaled building dimensions and stack height
-   LOGICAL RUNSW
+   LOGICAL :: RUNSW
 !     End insert for SIDEWASH
    DOUBLE PRECISION, ALLOCATABLE :: PDIAM(:), PHI(:), PDENS(:),&
    &VGRAV(:), TSTOP(:), SCHMIDT(:),&
@@ -1298,7 +1298,7 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for EVent Pathway
 !***********************************************************************
 
-   CHARACTER EVNAME*10, EVGRP*8
+   CHARACTER :: EVNAME*10, EVGRP*8
    INTEGER, ALLOCATABLE ::  EVAPER(:), EVDATE(:), EVJDAY(:),&
    &IDXEV(:)
 
@@ -1311,7 +1311,7 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for OUtput Pathway
 !***********************************************************************
 
-   LOGICAL OUTPART, SUMMFILE, L_NoHeader(8), EVALFIL, TOXXFIL
+   LOGICAL :: OUTPART, SUMMFILE, L_NoHeader(8), EVALFIL, TOXXFIL
 
    CHARACTER (LEN=ILEN_FLD) :: THRFIL, PSTFIL, PLTFIL, ANNPST,&
    &ANNPLT, THRFRM, PSTFRM, PLTFRM,&
@@ -1360,7 +1360,7 @@ MODULE MAIN1
 !     This is The Global Variable Definition Block for Working Space
 !***********************************************************************
 
-   CHARACTER WORKID*12, DUMMY*12
+   CHARACTER :: WORKID*12, DUMMY*12
 
    INTEGER :: IMIT, INUM, IDUM, INDAVE, INDGRP, INDVAL,&
    &ISC, IOERRN, NCPP, NRPP, NGPP, NPPX, NPPY
@@ -1390,7 +1390,7 @@ MODULE MAIN1
 !***********************************************************************
 
 
-   CHARACTER HCLMSG, MCLMSG, HMCLM
+   CHARACTER :: HCLMSG, MCLMSG, HMCLM
 
    DOUBLE PRECISION, ALLOCATABLE ::  HRVAL(:), AVEVAL(:,:,:,:),&
    &AERVAL(:), PRMVAL(:)
@@ -1734,7 +1734,7 @@ CONTAINS
 
       IMPLICIT NONE
 
-      INTEGER ECD
+      INTEGER :: ECD
 
 !***********************************************************************
 !     Initialize Error Code and Message Arrays
@@ -3442,7 +3442,7 @@ MODULE RLINE_DATA
       DOUBLE PRECISION  ::  DCL, INIT_SIGMAZ, WIDTH, QEMIS
       DOUBLE PRECISION  ::  HTWALL, DCLWALL, DEPTH, WTOP, WBOTTOM
       DOUBLE PRECISION  ::  HTWALL2, DCLWALL2
-   END TYPE
+   END TYPE AVSOURCE
 !     ISRCNUM     = stored ISRC number
 !     XSB         = x-coordinate of beginning point (center line for depressed roadway)
 !     YSB         = y-coordinate of beginning point (center line for depressed roadway)
@@ -3698,7 +3698,7 @@ MODULE BUOYANT_LINE
    &BLAVGINP_LLEN(:), BLAVGINP_BHGT(:), BLAVGINP_BWID(:),&
    &BLAVGINP_LWID(:), BLAVGINP_BSEP(:), BLAVGINP_FPRM(:)
    CHARACTER (len=8), ALLOCATABLE :: BLAVGINP_GRPID(:), BL_GRPID(:)
-   INTEGER     NUMBLAVGINP, NBLAVGINPalloc
+   INTEGER     :: NUMBLAVGINP, NBLAVGINPalloc
 !     BLAVGINP_LLEN  = average line length (m)
 !     BLAVGINP_BHGT  = average building height (m)
 !     BLAVGINP_BWID  = average building width (m)
@@ -3916,7 +3916,7 @@ MODULE PRIME_WAKEDAT
 !                               subroutines
 !----------------------------------------------------------------------
 !
-   logical lrurl
+   logical :: lrurl
    INTEGER, PARAMETER :: mxntr=50
    INTEGER :: nwak,ncav
    DOUBLE PRECISION :: Hb,Wb,xLb,Rb,HR,xLR,xLC,&
@@ -4050,11 +4050,11 @@ END MODULE PRIME_PLU
 !     Make effective height, calculated in PRMCALC, available to wake_u_turb
 MODULE PRM2_WAKEDAT
    INTEGER, PARAMETER :: p2mxntr=50
-   DOUBLE PRECISION Zeff_PRM2, u30, sv30, sw30
+   DOUBLE PRECISION :: Zeff_PRM2, u30, sv30, sw30
 !         DOUBLE PRECISION XTR, ZTR, NTR
-   DOUBLE PRECISION XTR_SAV(p2mxntr), ZTR_SAV(p2mxntr)
-   DOUBLE PRECISION Ueff_save, SWeff_save, SVeff_save
-   LOGICAL DFSN2CALL
+   DOUBLE PRECISION :: XTR_SAV(p2mxntr), ZTR_SAV(p2mxntr)
+   DOUBLE PRECISION :: Ueff_save, SWeff_save, SVeff_save
+   LOGICAL :: DFSN2CALL
 END MODULE PRM2_WAKEDAT
 
 !     CERC 11/30/20 Module for GRSM NO2 option

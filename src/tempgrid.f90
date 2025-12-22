@@ -35,9 +35,9 @@ SUBROUTINE COMPTG ()
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
-   INTEGER   NDXBLW, NDXABV, NLVL
+   INTEGER   :: NDXBLW, NDXABV, NLVL
 
    MODNAM = 'COMPTG'
    PATH   = 'MX'
@@ -57,11 +57,11 @@ SUBROUTINE COMPTG ()
 !     temperature data.  The constant GOVRCP is the conversion from
 !     temperature gradient to potential temperature gradient.
 
-   DO WHILE( NDXABV .LE. NPLVLS )
+   DO WHILE( NDXABV <= NPLVLS )
 
-      IF( PFLTA(NDXBLW) .GT. 0.0D0 )THEN
+      IF( PFLTA(NDXBLW) > 0.0D0 )THEN
 
-         IF( PFLTA(NDXABV) .GT. 0.0D0 )THEN
+         IF( PFLTA(NDXABV) > 0.0D0 )THEN
 
             NTGLVL = NTGLVL + 1
             PFLTG(NTGLVL) = (PFLTA(NDXABV) - PFLTA(NDXBLW)) /&
@@ -95,12 +95,12 @@ SUBROUTINE COMPTG ()
 !     profiling modules, the number of levels of data must be
 !     at least one level of data, whether it is missing or not
 
-   IF( NTGLVL .EQ. 0 )THEN
+   IF( NTGLVL == 0 )THEN
       NTGLVL = 1
    ENDIF
 
    RETURN
-END
+END SUBROUTINE COMPTG
 
 
 SUBROUTINE TGINIT ()
@@ -135,7 +135,7 @@ SUBROUTINE TGINIT ()
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION, PARAMETER :: TGMINHT = 2.0D0, TGMAXHT = 100.0D0
    DOUBLE PRECISION :: THSTAR0, THSTARN, NCLOUD8, USTARMax
@@ -159,9 +159,9 @@ SUBROUTINE TGINIT ()
 
       REFLVL = -99.0D0
       LVL    =  1
-      DO WHILE( REFLVL .LT. 0.0D0 .and.  LVL .LE. NTGLVL )
+      DO WHILE( REFLVL < 0.0D0 .and.  LVL <= NTGLVL )
 
-         IF( PFLTGZ(LVL) .GT. SFCZ0 )THEN
+         IF( PFLTGZ(LVL) > SFCZ0 )THEN
             REFLVL = PFLTGZ(LVL)
 
          ELSE
@@ -174,7 +174,7 @@ SUBROUTINE TGINIT ()
 ! ---    Make initial calculation of THSTAR based on observed
 !        temperature profile, if available, or with "standard"
 !        approach
-      IF( REFLVL .GT. 0.0D0 .and. REFLVL .LE. 100.0D0 )THEN
+      IF( REFLVL > 0.0D0 .and. REFLVL <= 100.0D0 )THEN
          THSTAR = PFLTG(LVL) * VONKAR * PFLTGZ(LVL) /&
          &( 1.0D0 + 5.0D0 * PFLTGZ(LVL) / OBULEN )
 
@@ -188,7 +188,7 @@ SUBROUTINE TGINIT ()
 ! ---    Make adjustments to THSTAR calculations if ADJ_U* option is used or
 !        if no observed temperature profile is available (i.e., REFLVL < 0.0)
 !
-      IF( L_AdjUstar .and. L_BULKRN .and. REFLVL .LT. 0.0D0 )THEN
+      IF( L_AdjUstar .and. L_BULKRN .and. REFLVL < 0.0D0 )THEN
 ! ---       Use Luhar/Raynor approach (2009, BLM v132) for ADJ_U* w/ BULKRN,
 !           unless observed temperature profile is available
 
@@ -206,12 +206,12 @@ SUBROUTINE TGINIT ()
          THSTAR = THSTARN
 
       ELSEIF( L_AdjUstar .and. .NOT. L_BULKRN&
-      &.and. REFLVL .LT. 0.0D0 )THEN
+      &.and. REFLVL < 0.0D0 )THEN
 ! ---       Use constant THSTAR = 0.08 per Venkatram paper (2011, BLM v138),
 !           unless observed temperature profile is available
          THSTAR = 0.08D0
 
-      ELSEIF( REFLVL .LT. 0.0D0 )THEN
+      ELSEIF( REFLVL < 0.0D0 )THEN
 ! ---       No ADJ_U* option and no observed temperature profile;
 ! ---       Apply "standard" approach for THSTAR
          THSTAR = USTAR**2 / ( G * VONKAR * OBULEN / TA )
@@ -236,7 +236,7 @@ SUBROUTINE TGINIT ()
       ENDIF
 
 ! ---    Check for TG4PFL out-of-range; issue warning if lapse rate > 0.5 K/m
-      IF( TG4PFL .GT. 0.5D0 )THEN
+      IF( TG4PFL > 0.5D0 )THEN
          WRITE(DUMMY,'("TG4PFL=",F5.3)') TG4PFL
          CALL ERRHDL(PATH,MODNAM,'W','479',DUMMY)
       ENDIF
@@ -250,7 +250,7 @@ SUBROUTINE TGINIT ()
    ENDIF
 
    RETURN
-END
+END SUBROUTINE TGINIT
 
 SUBROUTINE GRDPTG ()
 !=======================================================================
@@ -288,10 +288,10 @@ SUBROUTINE GRDPTG ()
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
-   INTEGER     PINDEX, GINDEX, NDX
-   DOUBLE PRECISION        VBELOW, HTBELO
+   INTEGER     :: PINDEX, GINDEX, NDX
+   DOUBLE PRECISION        :: VBELOW, HTBELO
 !
 !---- Data definitions
 !        PINDEX    Array index for the profile of observed values
@@ -314,7 +314,7 @@ SUBROUTINE GRDPTG ()
 !     profile exceeds the maximum number
 !     ------------------------------------------------------------------
 !
-   DO WHILE( GINDEX .LE. MXGLVL )
+   DO WHILE( GINDEX <= MXGLVL )
 !
 !       -------------------------------------------
 !       Now begin looping over the observed profile
@@ -325,21 +325,21 @@ SUBROUTINE GRDPTG ()
 
       IF( STABLE )THEN
 !
-         DO WHILE( GRIDTG(GINDEX).LT.-90.0D0 .and. PINDEX.LE.NTGLVL )
+         DO WHILE( GRIDTG(GINDEX)<-90.0D0 .and. PINDEX<=NTGLVL )
 !
-            IF( PFLTG(PINDEX) .GE. -50.0D0 )THEN
+            IF( PFLTG(PINDEX) >= -50.0D0 )THEN
 !
 !              -------------------------------------------------
 !              Data at this level are not missing; determine its
 !              location relative to the height at which data are
 !              required and act accordingly.
 !              -------------------------------------------------
-               IF( DABS(PFLTGZ(PINDEX)-GRIDHT(GINDEX)) .LE. 0.1D0 )THEN
+               IF( DABS(PFLTGZ(PINDEX)-GRIDHT(GINDEX)) <= 0.1D0 )THEN
 !                 USE the parameter at this level
                   GRIDTG(GINDEX) = PFLTG(PINDEX)
 !
-               ELSEIF( GRIDHT(GINDEX)  .GT.  PFLTGZ(PINDEX) )THEN
-                  IF( PINDEX .LT. NTGLVL )THEN
+               ELSEIF( GRIDHT(GINDEX)  >  PFLTGZ(PINDEX) )THEN
+                  IF( PINDEX < NTGLVL )THEN
 !                    SAVE value for possible interpolation
                      VBELOW = PFLTG(PINDEX)
                      HTBELO = PFLTGZ(PINDEX)
@@ -350,8 +350,8 @@ SUBROUTINE GRDPTG ()
                      &GRIDHT(GINDEX), GRIDTG(GINDEX) )
                   ENDIF
 !
-               ELSEIF( GRIDHT(GINDEX)  .LT.  PFLTGZ(PINDEX) )THEN
-                  IF( VBELOW .GE. -50.0D0 )THEN
+               ELSEIF( GRIDHT(GINDEX)  <  PFLTGZ(PINDEX) )THEN
+                  IF( VBELOW >= -50.0D0 )THEN
 !                    INTERPOLATE between the two values    --- CALL NTRPTG
                      CALL NTRPTG ( HTBELO, VBELOW, PFLTGZ(PINDEX),&
                      &PFLTG(PINDEX), GRIDHT(GINDEX),&
@@ -381,8 +381,8 @@ SUBROUTINE GRDPTG ()
 !              level, then make a computation.
 !              -------------------------------------------------------
 !
-               IF( PINDEX .EQ. NTGLVL )THEN
-                  IF( VBELOW  .GE.  -50.0D0 )THEN
+               IF( PINDEX == NTGLVL )THEN
+                  IF( VBELOW  >=  -50.0D0 )THEN
 !                    PROFILE up from BELOW                 --- CALL XTRPTG
                      CALL XTRPTG ( PFLTGZ(PINDEX), PFLTG(PINDEX),&
                      &GRIDHT(GINDEX), GRIDTG(GINDEX) )
@@ -405,8 +405,8 @@ SUBROUTINE GRDPTG ()
 !           processing
 !           ---------------------------------------------------------
 !
-            IF( (GRIDTG(GINDEX) .LT. -50.0D0)  .and.&
-            &(PINDEX .LT. NTGLVL) )THEN
+            IF( (GRIDTG(GINDEX) < -50.0D0)  .and.&
+            &(PINDEX < NTGLVL) )THEN
                PINDEX = PINDEX + 1
             ENDIF
 !
@@ -434,13 +434,13 @@ SUBROUTINE GRDPTG ()
 !        ------------------------------------------------------------
 !
    DO NDX = 1,MXGLVL
-      IF( STABLE .or. (UNSTAB .and. GRIDHT(NDX).GT.ZI) )THEN
+      IF( STABLE .or. (UNSTAB .and. GRIDHT(NDX)>ZI) )THEN
          GRIDTG(NDX) = MAX( SPTGMN, GRIDTG(NDX) )
       ENDIF
    END DO
 
    RETURN
-END
+END SUBROUTINE GRDPTG
 
 
 SUBROUTINE REFPTG ( HTINP, VALUE )
@@ -493,10 +493,10 @@ SUBROUTINE REFPTG ( HTINP, VALUE )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION, PARAMETER :: HDELTH = 100.0D0
-   DOUBLE PRECISION               HTINP, HEIGHT, VALUE, EXPARG
+   DOUBLE PRECISION               :: HTINP, HEIGHT, VALUE, EXPARG
 
    MODNAM = 'REFPTG'
 
@@ -514,12 +514,12 @@ SUBROUTINE REFPTG ( HTINP, VALUE )
    HEIGHT = HTINP
    IF( UNSTAB )THEN
 !
-      IF( HEIGHT  .LE.  ZI )THEN
+      IF( HEIGHT  <=  ZI )THEN
 ! ---       Assign unstable lapse rate of 0.0 for height .LE. ZI;
 !           value of XVAL is assigned 0.0 in MODULE MAIN1
          VALUE  = XVAL
 
-      ELSE IF( HEIGHT .LE. ZI+500.0D0 )THEN
+      ELSE IF( HEIGHT <= ZI+500.0D0 )THEN
          VALUE  = VPTGZI
 
       ELSE
@@ -531,11 +531,11 @@ SUBROUTINE REFPTG ( HTINP, VALUE )
 !        THETA_STAR and TG4PFL (dTheta/dZ at TREFHT) are computed
 !        in TGINIT
 !
-      IF (HEIGHT .LE. 2.0D0) THEN
+      IF (HEIGHT <= 2.0D0) THEN
 
          VALUE = TG4PFL
 
-      ELSE IF (HEIGHT .LE. 100.0D0) THEN
+      ELSE IF (HEIGHT <= 100.0D0) THEN
 
          IF( L_AdjUstar )THEN
             VALUE = ( THSTAR / ( VONKAR * HEIGHT ) ) *&
@@ -548,7 +548,7 @@ SUBROUTINE REFPTG ( HTINP, VALUE )
       ELSE
 !           COMPUTE gradient from gradient at TREFHT
          EXPARG =  -1.0D0*(HEIGHT-100.0D0) / (EFOLDH*MAX(HDELTH,ZI) )
-         IF (EXPARG .GT. EXPLIM) THEN
+         IF (EXPARG > EXPLIM) THEN
             VALUE = TG4XTR * DEXP( EXPARG )
          ELSE
             VALUE = 0.0D0
@@ -562,7 +562,7 @@ SUBROUTINE REFPTG ( HTINP, VALUE )
    ENDIF
 
    RETURN
-END
+END SUBROUTINE REFPTG
 
 
 SUBROUTINE NTRPTG ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
@@ -630,7 +630,7 @@ SUBROUTINE NTRPTG ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
 !                                                          --- CALL REFPTG
    CALL REFPTG ( REQDHT, REFREQ )
 !
-   IF( DABS(REFABV - REFBLW) .GT. 0.0001D0 )THEN
+   IF( DABS(REFABV - REFBLW) > 0.0001D0 )THEN
 !
 !        Linearly interpolate to REQDHT from observed and reference profiles
       CALL GINTRP ( HTBELO,VBELOW, HTABOV, VABOVE, REQDHT,VALINT )
@@ -647,7 +647,7 @@ SUBROUTINE NTRPTG ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
    ENDIF
 
    RETURN
-END
+END SUBROUTINE NTRPTG
 
 
 SUBROUTINE XTRPTG ( PFLZ, PFLVAL, GRDZ, VALUE )
@@ -685,10 +685,10 @@ SUBROUTINE XTRPTG ( PFLZ, PFLVAL, GRDZ, VALUE )
 !---- Variable declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION, PARAMETER :: HDELTH = 100.0D0
-   DOUBLE PRECISION  VALOBS, VALGRD, PFLZ, GRDZ, VALUE, PFLVAL, RATIO
+   DOUBLE PRECISION  :: VALOBS, VALGRD, PFLZ, GRDZ, VALUE, PFLVAL, RATIO
 
    MODNAM = 'XTRPTG'
 !
@@ -721,13 +721,13 @@ SUBROUTINE XTRPTG ( PFLZ, PFLVAL, GRDZ, VALUE )
 !     of AERMOD, this is in the well-mixed layer for an unstable
 !     atmosphere); therefore, if VALOBS is zero, then RATIO = 1.0.
 
-   IF( DABS( VALOBS ) .LT. 0.0001D0 ) THEN
+   IF( DABS( VALOBS ) < 0.0001D0 ) THEN
       RATIO = 1.0D0
    ELSE
       RATIO = VALGRD / VALOBS
    ENDIF
 !
-   IF (PFLZ .LE. 100.0D0) THEN
+   IF (PFLZ <= 100.0D0) THEN
       VALUE = RATIO * PFLVAL
    ELSE
 !        Highest measured Dtheta/Dz is above 100m.  Apply exponential
@@ -737,7 +737,7 @@ SUBROUTINE XTRPTG ( PFLZ, PFLVAL, GRDZ, VALUE )
    END IF
 !
    RETURN
-END
+END SUBROUTINE XTRPTG
 
 
 SUBROUTINE XTRPDN ( GRDZ, VALUE )
@@ -771,9 +771,9 @@ SUBROUTINE XTRPDN ( GRDZ, VALUE )
 
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
-   DOUBLE PRECISION  GRDZ, VALUE
+   DOUBLE PRECISION  :: GRDZ, VALUE
 
    MODNAM = 'XTRPDN'
 !
@@ -787,10 +787,10 @@ SUBROUTINE XTRPDN ( GRDZ, VALUE )
 !.......................................................................
    IF( UNSTAB )THEN
 
-      IF( GRDZ  .LE.  ZI )THEN
+      IF( GRDZ  <=  ZI )THEN
          VALUE  = XVAL
 
-      ELSE IF( GRDZ .LE. ZI+500.0D0 )THEN
+      ELSE IF( GRDZ <= ZI+500.0D0 )THEN
          VALUE  = VPTGZI
 
       ELSE
@@ -802,7 +802,7 @@ SUBROUTINE XTRPDN ( GRDZ, VALUE )
 !        THETA_STAR and TG4PFL (dTheta/dZ at TREFHT) were computed
 !        in TGINIT
 
-      IF( GRDZ .LT. 2.0D0 )THEN
+      IF( GRDZ < 2.0D0 )THEN
          VALUE = TG4PFL
 
       ELSE
@@ -819,7 +819,7 @@ SUBROUTINE XTRPDN ( GRDZ, VALUE )
    ENDIF
 
    RETURN
-END
+END SUBROUTINE XTRPDN
 
 
 SUBROUTINE GRDPT ()
@@ -859,7 +859,7 @@ SUBROUTINE GRDPT ()
 
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    INTEGER :: L, NBELOW
    DOUBLE PRECISION :: PTREF
 
@@ -912,7 +912,7 @@ SUBROUTINE GRDPT ()
    END DO
 
    RETURN
-END
+END SUBROUTINE GRDPT
 
 
 SUBROUTINE GRDDEN
@@ -942,7 +942,7 @@ SUBROUTINE GRDDEN
 
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    INTEGER :: I
    DOUBLE PRECISION :: TAMB0, TAMB, TBAR, RAMB0, RGASM
 
@@ -976,4 +976,4 @@ SUBROUTINE GRDDEN
    END DO
 
    RETURN
-END
+END SUBROUTINE GRDDEN

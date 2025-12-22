@@ -40,7 +40,7 @@ SUBROUTINE SIGY( XARG )
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION, PARAMETER :: EXPON = 1.0D0
    DOUBLE PRECISION :: XARG, SVOVRU, TYEFF,&
    &XNODIM, DENOMI, BETALPH, TYEFF3
@@ -48,7 +48,7 @@ SUBROUTINE SIGY( XARG )
 !     Variable Initializations
    MODNAM = 'SIGY'
 
-   IF( STABLE .or. (UNSTAB .and. (HS .GE. ZI)) )THEN
+   IF( STABLE .or. (UNSTAB .and. (HS >= ZI)) )THEN
 !        The atmosphere is stable or the release is above the CBL mixing ht.
 !        Calculate SV/U, but not less than PARAMETER, SVUMIN = 0.05
       SVOVRU = MAX (SVUMIN, SVEFF/UEFF)
@@ -70,7 +70,7 @@ SUBROUTINE SIGY( XARG )
       SYAN   = SYAMB
 
 !        Calculate the ambient sigma_Y for a penetrated plume, SYA3
-      IF( PPF .GT. 0.0D0 )THEN
+      IF( PPF > 0.0D0 )THEN
 !           Calculate SV/U, but not less than PARAMETER, SVUMIN = 0.05
          SVOVRU = MAX (SVUMIN, SVEFF3/UEFF3)
          TYEFF3 = (ZIMECH/(156.0D0*SVEFF3))*(MAX(HE3,0.46D0)/0.46D0)
@@ -84,7 +84,7 @@ SUBROUTINE SIGY( XARG )
    ENDIF
 
    RETURN
-END
+END SUBROUTINE SIGY
 
 SUBROUTINE SIGZ( XARG )
 !***********************************************************************
@@ -126,7 +126,7 @@ SUBROUTINE SIGZ( XARG )
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    INTEGER :: NDXZHE
    DOUBLE PRECISION :: XARG, TTRAVL, PTP, BVFRQ, ZTMP, SIGF, ALPHAB
 
@@ -135,7 +135,7 @@ SUBROUTINE SIGZ( XARG )
 !     Variable Initializations
    MODNAM = 'SIGZ'
 
-   IF( STABLE .or. (UNSTAB .and. HS .GE. ZI) )THEN
+   IF( STABLE .or. (UNSTAB .and. HS >= ZI) )THEN
 !        The atmosphere is stable or the release was above the CBL mixing ht.
 !        See Eq. 1 of the document by Venkatram referenced above.
 
@@ -149,13 +149,13 @@ SUBROUTINE SIGZ( XARG )
       CALL GINTRP( GRIDHT(NDXZHE), GRIDPT(NDXZHE),&
       &GRIDHT(NDXZHE+1), GRIDPT(NDXZHE+1), HE, PTP )
 
-      IF (TGEFF .GT. 0.0D0) THEN
+      IF (TGEFF > 0.0D0) THEN
          BVFRQ = DSQRT( G * TGEFF / PTP )
       ELSE
          BVFRQ = 1.0D-10
       END IF
 
-      IF(BVFRQ .LT. 1.0D-10) BVFRQ = 1.0D-10
+      IF(BVFRQ < 1.0D-10) BVFRQ = 1.0D-10
 
 !        Set height for calculating sigma-z, ZTMP
       ZTMP = MAX( HS, HE, 1.0D-4 )
@@ -170,7 +170,7 @@ SUBROUTINE SIGZ( XARG )
          &( 1.0D0/(0.72D0*ZTMP) + BVFRQ/(0.54D0*SWEFF) ) )
       END IF
 
-      IF (HE .LT. ZI) THEN
+      IF (HE < ZI) THEN
          CALL SZSFCL (XARG)
 
          SIGF = MIN ( HE/ZI, 1.0D0)
@@ -188,7 +188,7 @@ SUBROUTINE SIGZ( XARG )
 !        SZAN1 = ambient sigma_Z for the indirect plume updraft
 !        SZAN2 = ambient sigma_Z for the indirect plume downdraft
 
-      IF (PPF .LT. 1.0D0) THEN
+      IF (PPF < 1.0D0) THEN
          IF (.NOT.SURFAC) THEN
             ALPHAB = 1.0D0
          ELSE
@@ -213,7 +213,7 @@ SUBROUTINE SIGZ( XARG )
       SZAN2 = SZAD2
 
 !        Calculate the ambient sigma_Z for a penetrated plume, SZA3
-      IF( PPF .GT. 0.0D0 )THEN
+      IF( PPF > 0.0D0 )THEN
 
          TTRAVL = XARG / UEFF3
 
@@ -229,7 +229,7 @@ SUBROUTINE SIGZ( XARG )
    ENDIF
 
    RETURN
-END
+END SUBROUTINE SIGZ
 
 SUBROUTINE BID
 !***********************************************************************
@@ -262,7 +262,7 @@ SUBROUTINE BID
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'BID'
@@ -270,7 +270,7 @@ SUBROUTINE BID
 !     Calculate the buoyancy-induced contribution, which will be added
 !     to the other contributions in RMSSIG
 
-   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
 
       SZB = BETA2 * DHP / RTOF2
 
@@ -290,7 +290,7 @@ SUBROUTINE BID
       SZBN = SZBD
 
 !        The penetrated source contribution
-      IF( PPF .GT. 0.0D0 )THEN
+      IF( PPF > 0.0D0 )THEN
          SZB3 = BETA2 * PPF * DHP3 / RTOF2
 
       ELSE
@@ -304,7 +304,7 @@ SUBROUTINE BID
    ENDIF
 
    RETURN
-END
+END SUBROUTINE BID
 
 SUBROUTINE SZSFCL (XARG)
 !***********************************************************************
@@ -341,7 +341,7 @@ SUBROUTINE SZSFCL (XARG)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: XARG
 
 !     Variable Initializations
@@ -371,7 +371,7 @@ SUBROUTINE SZSFCL (XARG)
    ENDIF
 
    RETURN
-END
+END SUBROUTINE SZSFCL
 
 SUBROUTINE RMSSIG
 !***********************************************************************
@@ -406,7 +406,7 @@ SUBROUTINE RMSSIG
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'RMSSIG'
@@ -422,7 +422,7 @@ SUBROUTINE RMSSIG
 !     7/8/2021, MGS: Added debug statements to test/explore platform influence
 !     on total sigmaY & sigmaZ.
 
-   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
 !----    The atmosphere is stable or the atmosphere is unstable and the
 !        release is above the mixing height
 
@@ -472,7 +472,7 @@ SUBROUTINE RMSSIG
       SZN2 = DSQRT( SZBN*SZBN + SZAN2*SZAN2 + VSZN2*VSZN2&
       &+ PLATSZN2*PLATSZN2 )
 
-      IF( PPF .GT. 0.0D0 )THEN
+      IF( PPF > 0.0D0 )THEN
          SY3 = DSQRT( SYB3*SYB3 + SYA3*SYA3&
          &+ PLATSYP*PLATSYP )
          SZ3 = DSQRT( SZB3*SZB3 + SZA3*SZA3&
@@ -536,4 +536,4 @@ SUBROUTINE RMSSIG
    ENDIF
 
    RETURN
-END
+END SUBROUTINE RMSSIG

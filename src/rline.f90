@@ -92,7 +92,7 @@ SUBROUTINE RLCALC
 !     used in the calculation of concentration below, replacing the use
 !     of RLSOURCE(ISRC)%QEMIS in those expressions.
    QEMIS = RLSOURCE(ISRC)%QEMIS
-   IF(QFLAG(ISRC) .EQ. 'HOURLY') THEN
+   IF(QFLAG(ISRC) == 'HOURLY') THEN
 !        Set hourly variable source height and sigmaz-initial (optional)
       IF(L_HRLYSIG(ISRC)) THEN
          RLSOURCE(ISRC)%ZSB = AHS(ISRC)
@@ -100,7 +100,7 @@ SUBROUTINE RLCALC
          RLSOURCE(ISRC)%INIT_SIGMAZ = ASZINI(ISRC)
       END IF
 !        Set hourly variable emission rate (required)
-      IF(SRCTYP(ISRC) .EQ. 'RLINEXT') THEN
+      IF(SRCTYP(ISRC) == 'RLINEXT') THEN
          QEMIS = AQS(ISRC)
       ELSE ! RLINE source with Lnemis inputs
          QEMIS = AQS(ISRC)*RLSOURCE(ISRC)%WIDTH
@@ -109,17 +109,17 @@ SUBROUTINE RLCALC
 !     The following block is added to process the EMISFACT keyword with
 !     RLINE sources, set QTK equal to appropriate emission factor, and
 !     multiply by emission rate.
-   ELSE IF ((QFLAG(ISRC) .EQ. 'MONTH') .or.&
-   &(QFLAG(ISRC) .EQ. 'HROFDY') .or.&
-   &(QFLAG(ISRC) .EQ. 'WSPEED') .or.&
-   &(QFLAG(ISRC) .EQ. 'SEASON') .or.&
-   &(QFLAG(ISRC) .EQ. 'SEASHR') .or.&
-   &(QFLAG(ISRC) .EQ. 'HRDOW') .or.&
-   &(QFLAG(ISRC) .EQ. 'HRDOW7') .or.&
-   &(QFLAG(ISRC) .EQ. 'SHRDOW') .or.&
-   &(QFLAG(ISRC) .EQ. 'SHRDOW7') .or.&
-   &(QFLAG(ISRC) .EQ. 'MHRDOW') .or.&
-   &(QFLAG(ISRC) .EQ. 'MHRDOW7')) THEN
+   ELSE IF ((QFLAG(ISRC) == 'MONTH') .or.&
+   &(QFLAG(ISRC) == 'HROFDY') .or.&
+   &(QFLAG(ISRC) == 'WSPEED') .or.&
+   &(QFLAG(ISRC) == 'SEASON') .or.&
+   &(QFLAG(ISRC) == 'SEASHR') .or.&
+   &(QFLAG(ISRC) == 'HRDOW') .or.&
+   &(QFLAG(ISRC) == 'HRDOW7') .or.&
+   &(QFLAG(ISRC) == 'SHRDOW') .or.&
+   &(QFLAG(ISRC) == 'SHRDOW7') .or.&
+   &(QFLAG(ISRC) == 'MHRDOW') .or.&
+   &(QFLAG(ISRC) == 'MHRDOW7')) THEN
       CALL EMFACT(1.0D0)
       QEMIS = RLSOURCE(ISRC)%QEMIS*QTK
    END IF
@@ -136,10 +136,10 @@ SUBROUTINE RLCALC
    SFCZ0_sav = SFCZ0
    ZI_ORIG    = ZI ! D096; D178 switch ZI_SAV to ZI_ORIG
 !        Set Mixing Height and Adjust L & USTAR for Urban Option if Needed
-   IF (URBSRC(ISRC) .EQ. 'Y') THEN
+   IF (URBSRC(ISRC) == 'Y') THEN
 !           Find Urban Area Index for This Source
       DO I = 1, NUMURB
-         IF (IURBGRP(ISRC,I) .EQ. 1) THEN
+         IF (IURBGRP(ISRC,I) == 1) THEN
             IURB = I
             EXIT
          END IF
@@ -160,7 +160,7 @@ SUBROUTINE RLCALC
          USTAR  = RURUSTR
          RLWSTAR = WSTAR
       END IF
-   ELSE IF (URBAN .and. URBSRC(ISRC) .EQ. 'N') THEN
+   ELSE IF (URBAN .and. URBSRC(ISRC) == 'N') THEN
       URBSTAB = .FALSE.
       ZI = ZIRUR
       GRIDSV = GRDSVR
@@ -204,8 +204,8 @@ SUBROUTINE RLCALC
 
 !        Calculate a vertical displacement of the source to
 !        account for the effect of a roadside barrier                        --- CALL BARRIER_DISPLACEMENT
-   IF((RLSOURCE(ISRC)%HTWALL  .GT. 0.0D0) .or.&
-   &(RLSOURCE(ISRC)%HTWALL2 .GT. 0.0D0)) THEN
+   IF((RLSOURCE(ISRC)%HTWALL  > 0.0D0) .or.&
+   &(RLSOURCE(ISRC)%HTWALL2 > 0.0D0)) THEN
       CALL BARRIER_DISPLACEMENT
    ELSE
       NBARR = 0
@@ -386,8 +386,8 @@ SUBROUTINE BARRIER_DISPLACEMENT
 !      HBMAX   = 0.0D0  ! needed for 2 barrier case
 
 !     Check for existence of barriers in user input
-   IF((RLSOURCE(ISRC)%HTWALL  .GT. 0.0D0) .or.&
-   &(RLSOURCE(ISRC)%HTWALL2 .GT. 0.0D0)) THEN
+   IF((RLSOURCE(ISRC)%HTWALL  > 0.0D0) .or.&
+   &(RLSOURCE(ISRC)%HTWALL2 > 0.0D0)) THEN
 
 !     Calculate barriers distances and source height
       ZSBEGIN     = 0.5D0 * (ZSBEGIN + ZSEND)
@@ -424,7 +424,7 @@ SUBROUTINE BARRIER_DISPLACEMENT
 
        CASE(1) ! ONE BARRIER
          IF (HB(1) > 0.0D0) I = 1
-         IF(BDW_FLAG(ISRC,I) .EQ. 1) THEN                            ! located on downwind side
+         IF(BDW_FLAG(ISRC,I) == 1) THEN                            ! located on downwind side
             HBD     = HB(I)
             DWD     = DW(I)
             DW_PERD = DW_PER(I)
@@ -446,7 +446,7 @@ SUBROUTINE BARRIER_DISPLACEMENT
          END IF
 
        CASE(2) ! TWO BARRIERS
-         IF(BDW_FLAG(ISRC, 1) .EQ. BDW_FLAG(ISRC, 2)) THEN           ! both are on same side of source
+         IF(BDW_FLAG(ISRC, 1) == BDW_FLAG(ISRC, 2)) THEN           ! both are on same side of source
             PRINT *, "WARNING: Both barriers associated with source ",&
             &SRCID(ISRC)," are on the same side of the source."
             PRINT *, "Barrier closer to source will be used."
@@ -456,7 +456,7 @@ SUBROUTINE BARRIER_DISPLACEMENT
             I         = 2                                             ! assume barrier 2 is close; change in next line if not
             IF(DABS(DW_PER(1)) < DABS(DW_PER(2))) I = 1               ! dw_per(i) is closer to source
 
-            IF (BDW_FLAG(ISRC, I) .EQ. 1) THEN                        ! barriers are downwind of source but only choosing closest barrier
+            IF (BDW_FLAG(ISRC, I) == 1) THEN                        ! barriers are downwind of source but only choosing closest barrier
                HBD     = HB(I)
                DWD     = DW(I)
                DW_PERD = DW_PER(I)
@@ -478,7 +478,7 @@ SUBROUTINE BARRIER_DISPLACEMENT
             END IF
 
          ELSE                                                        ! barriers are on opposite sides of source
-            IF (BDW_FLAG(ISRC,1) .EQ. 1) THEN                         ! barrier 1 is downwind, barrier 2 is upwind
+            IF (BDW_FLAG(ISRC,1) == 1) THEN                         ! barrier 1 is downwind, barrier 2 is upwind
                HBD     = HB(1)
                DW_PERD = DW_PER(1)
                DWD     = DW(1)
@@ -648,7 +648,7 @@ SUBROUTINE COMPUTE_MET
    UREFCALC = MOST_WIND(UREFHT,I_ALPHA)
    WSPD_ADJ = UREF / UREFCALC
 
-   IF (HBD .GT. 0.0D0) THEN
+   IF (HBD > 0.0D0) THEN
 !                                                                            --- CALL MOST_WIND
       I_ALPHA = 2
 !          UH      = MOST_WIND(HBD,I_ALPHA) * WSPD_ADJ ! D096
@@ -846,7 +846,7 @@ SUBROUTINE CREATE_WIND_TABLE
    END DO
 
 !     Ensure there are no negative values for wind speed due to slight rounding
-   WHERE(UTBL .LT. 0.0D0) UTBL = 0.0D0
+   WHERE(UTBL < 0.0D0) UTBL = 0.0D0
 
 !     Calculate slope and intercept for each height for use in MOST_WIND function
    DO IA = 1,3
@@ -922,7 +922,7 @@ DOUBLE PRECISION FUNCTION DEPRESSED_DISPLACEMENT(THETA_LINE,IND)
    &2D0 * DABS(DEPTH))) / WTOP
    RELD      = EFFD / WBOTTOM
 
-   IF (RELD .GE. 0.0483D0) THEN
+   IF (RELD >= 0.0483D0) THEN
       FRACW = 1.0D0
    ELSE
       FRACW = -0.0776D0 + DSQRT(1.506D0 - 7.143D0 * RELD)
@@ -940,7 +940,7 @@ DOUBLE PRECISION FUNCTION DEPRESSED_DISPLACEMENT(THETA_LINE,IND)
    &(EFFW / WBOTTOM * DCL) *&
    &DSIGN(1.0D0, DSIN(THETA_LINE))
 
-END FUNCTION
+END FUNCTION DEPRESSED_DISPLACEMENT
 
 SUBROUTINE EFFECTIVE_WIND(XD,HEFF,HSHIFT)
 !***********************************************************************
@@ -1009,7 +1009,7 @@ SUBROUTINE EFFECTIVE_WIND(XD,HEFF,HSHIFT)
 !     HSHIFT      = vertical shift in source height for barriers
 
    IF(FASTRLINE) THEN
-      IF(XD .LE. 10) THEN
+      IF(XD <= 10) THEN
          UEFF   = PU1 + PU2 * LOG(ABS(XD))
       ELSE
          UEFF   = PU3 + PU4 * LOG(ABS(XD))
@@ -1096,7 +1096,7 @@ DOUBLE PRECISION FUNCTION EXPX(XP)
    P    = FLOOR((XPD + 20.0D0) / DELEXP) + 1.0D0
    EXPX = AEXP(P) + BEXP(P) * XPD
 
-END FUNCTION
+END FUNCTION EXPX
 
 SUBROUTINE  INTERP_COEFFS
 !***********************************************************************
@@ -1279,7 +1279,7 @@ DOUBLE PRECISION FUNCTION MEANDER(X, Y, Z, HSHIFT)
    HORZ    = 1.0D0 / (2.0D0 * PI * R)
    MEANDER = VERT * HORZ
 
-END FUNCTION
+END FUNCTION MEANDER
 
 DOUBLE PRECISION FUNCTION MOST_WIND(Z, IA)
 !***********************************************************************
@@ -1329,7 +1329,7 @@ DOUBLE PRECISION FUNCTION MOST_WIND(Z, IA)
    UMOST     = MAX(UMOST,UMIN)     ! D096
    MOST_WIND = MAX(UMOST * WSPD_ADJ,UMIN)    ! D096
 
-END FUNCTION
+END FUNCTION MOST_WIND
 
 SUBROUTINE NUMERICAL_LINE_SOURCE(CONC_NUM,ERR)
 !***********************************************************************
@@ -1732,7 +1732,7 @@ SUBROUTINE PLUME_CONC (XD, YD, Z, DWDT, HEFF, HSHIFT,&
    ZIEFF   = 0.0D0  !D178
 
 !     Set flags for direct/meander and gaussian/mixed-wake
-   IF (XD .LT. 0.0001D0) THEN
+   IF (XD < 0.0001D0) THEN
 !       NO DIRECT PLUME
       DIRECT_FLAG = .FALSE.
    ELSE
@@ -1742,7 +1742,7 @@ SUBROUTINE PLUME_CONC (XD, YD, Z, DWDT, HEFF, HSHIFT,&
       GAUSSIAN_FLAG = .TRUE.
 
 !       If there is a downwind barrier and receptor is downwind of it then mixed-wake mode
-      IF((HBD .GT. 0.0D0) .and. (XD .GT. DWDT)) THEN
+      IF((HBD > 0.0D0) .and. (XD > DWDT)) THEN
          GAUSSIAN_FLAG = .FALSE.
       END IF
 
@@ -1768,9 +1768,9 @@ SUBROUTINE PLUME_CONC (XD, YD, Z, DWDT, HEFF, HSHIFT,&
    ELSE
 !       Corresponding to case numbers 1, 3, 6, 8, 10, 12 (meander only cases)
 !       Note that heff is set in MEANDER subroutine
-      IF(NBARR .GT. 0) THEN
+      IF(NBARR > 0) THEN
          SZB     = 0.25D0 * HBMAX
-         IF(HBU .GT. HBD) IA_MAX = 3                                        ! If HBU > HBD, use ALPHA_U
+         IF(HBU > HBD) IA_MAX = 3                                        ! If HBU > HBD, use ALPHA_U
          I_ALPHA = IA_MAX                                                   ! set index for MAX(ALPHA_D, ALPHA_U)
          ALPHA   = MAX(ALPHA_D, ALPHA_U)                                    ! set alpha
       ELSE
@@ -1835,7 +1835,7 @@ SUBROUTINE PLUME_CONC (XD, YD, Z, DWDT, HEFF, HSHIFT,&
       FQ      = 1.0D0 / (1.0D0 + F_UH * 0.5D0 * UH * CQ * HBDEFF)          ! Venkatram et al. (2021); assuming unit emissions
 
 !                                                                            --- CALL EXPX
-      IF(ZRECEP .GT. HBDEFF) THEN
+      IF(ZRECEP > HBDEFF) THEN
 !         Note: reflection term is about Z = HBDEFF, so the reflective source is at z = HBDEFF-HEFF
          VERT  = FQ * (1.0D0 / (SRT2PI * SZ * UEFF)) *&
          &(EXPX(-0.5D0 * ((ZRECEP - HBDEFF - HEFF) / SZ)**2) +&
@@ -2059,15 +2059,15 @@ DOUBLE PRECISION FUNCTION POINT_CONC(X, Y, Z)
    YD     = YR_ROT - (Y - YSHIFT)                             ! shift in y is applied here
 
 !     Setting up options for barrier combinations
-   IF(NBARR .GT. 0) THEN
+   IF(NBARR > 0) THEN
       HBMAX   = MAX(HBU, HBD)
       HBDEFF  = HBD * 1.25D0                                   ! effective barrier height in the mixed-wake algorithm
 
 !       For nearly parallel winds, prevent dwDt from exceeding the distance to the end of the line source
       XMAX    = MAX(DABS(XR_ROT - (XSBEGIN - XSHIFT)),&
       &DABS(XR_ROT - (XSEND - XSHIFT)))
-      IF(XMAX .LT. DW_PERD) DWDT = DWD
-      IF(XMAX .GE. DW_PERD) DWDT = MIN(XMAX, DWD)
+      IF(XMAX < DW_PERD) DWDT = DWD
+      IF(XMAX >= DW_PERD) DWDT = MIN(XMAX, DWD)
    END IF
 
 ! begin - Moved calculation of Vertical and Horizontal plumes to PLUME_CONC  - Wood 7/5/2022
@@ -2220,7 +2220,7 @@ DOUBLE PRECISION FUNCTION POINT_CONC(X, Y, Z)
    I_ALPHA = 1
 
 !  Calculate height of the "effective reflecting surface" !MGS - 7/18/2022
-   IF (STABLE .or. (UNSTAB.and.(ZS.GE.ZI))) THEN
+   IF (STABLE .or. (UNSTAB.and.(ZS>=ZI))) THEN
       SZ = SIGMAZ(XD)
       CALL REFL_HT (HEFF, XD, 0.0D0, SZ, HSBL)
    ELSEIF ( UNSTAB ) THEN
@@ -2238,7 +2238,7 @@ DOUBLE PRECISION FUNCTION POINT_CONC(X, Y, Z)
 
 
 !---- Calculate the contribution due to horizontal plume, CWRAP
-   IF (FOPT .EQ. 0.0D0) THEN
+   IF (FOPT == 0.0D0) THEN
       CWRAP_P = 0.0D0
       CWRAP_M = 0.0D0
    ELSE
@@ -2251,11 +2251,11 @@ DOUBLE PRECISION FUNCTION POINT_CONC(X, Y, Z)
 
 
 !---- Calculate the contribution due to terrain-following plume, CLIFT
-   IF (ZRT .EQ. ZFLAG) THEN
+   IF (ZRT == ZFLAG) THEN
 !----    Effective receptor heights are equal, therefore CLIFT = CWRAP
       CLIFT_P = CWRAP_P
       CLIFT_M = CWRAP_M
-   ELSE IF (FOPT .EQ. 1.0D0) THEN
+   ELSE IF (FOPT == 1.0D0) THEN
       CLIFT_P = 0.0D0
       CLIFT_M = 0.0D0
    ELSE
@@ -2266,10 +2266,10 @@ DOUBLE PRECISION FUNCTION POINT_CONC(X, Y, Z)
    END IF
 
 ! Re-Calculate FOPT if I_ALPHA changes from 1 in PLUME_CONC (i.e. there is a barrier) - Wood 7/5/2022
-   IF((I_ALPHA .NE. 1) .or. (HEFF .NE. Z)) THEN
+   IF((I_ALPHA /= 1) .or. (HEFF /= Z)) THEN
 
 !     Calculate height of the "effective reflecting surface" !Wood - 7/18/2022
-      IF (STABLE .or. (UNSTAB.and.(ZS.GE.ZI))) THEN
+      IF (STABLE .or. (UNSTAB.and.(ZS>=ZI))) THEN
          SZ = SIGMAZ(XD)
          CALL REFL_HT (HEFF, XD, SZ, 0.0D0, HSBL)
       ELSEIF ( UNSTAB ) THEN
@@ -2336,7 +2336,7 @@ DOUBLE PRECISION FUNCTION POINT_CONC(X, Y, Z)
    CONC_M_SUM = CONC_M_SUM + CONC_M
    POINT_CONC_SUM = POINT_CONC_SUM + POINT_CONC
 
-END FUNCTION
+END FUNCTION POINT_CONC
 
 SUBROUTINE POLYINTERP(Y,ERR,XA,YA,X,N)
 !***********************************************************************
@@ -2488,7 +2488,7 @@ SUBROUTINE RLEMCONV
 !     only for RLINE sources.
    IF(RLMOVESCONV) THEN
       DO INDEX = ISRC, NUMSRC
-         IF (SRCTYP(INDEX) .EQ. 'RLINE') THEN
+         IF (SRCTYP(INDEX) == 'RLINE') THEN
             LENGTH = DSQRT((RLSOURCE(INDEX)%XSB -&
             &RLSOURCE(INDEX)%XSE)**2 +&
             &(RLSOURCE(INDEX)%YSB -&
@@ -2544,7 +2544,7 @@ DOUBLE PRECISION FUNCTION SIGMAY(XD)
 !     XD          = distance between source and receptor in direction parallel to wind
 
    IF(FASTRLINE) THEN
-      IF(XD .LE. 10) THEN
+      IF(XD <= 10) THEN
          SIGMAY   = PSY1 * XD**PSY2
       ELSE
          SIGMAY   = PSY3 * XD**PSY4
@@ -2574,7 +2574,7 @@ DOUBLE PRECISION FUNCTION SIGMAY(XD)
 
    SIGMAY = DSQRT(SIGMAY**2 + SIGMAY0**2)
 
-END FUNCTION
+END FUNCTION SIGMAY
 
 DOUBLE PRECISION FUNCTION SIGMAZ(XD)
 !***********************************************************************
@@ -2631,7 +2631,7 @@ DOUBLE PRECISION FUNCTION SIGMAZ(XD)
 
 !      SIGMAZ_MAX = RT2BYPI * ZI       ! D096
    IF(FASTRLINE) THEN
-      IF(XD .LE. 10) THEN
+      IF(XD <= 10) THEN
          SIGZ   = PSZ1 * XD**PSZ2
       ELSE
          SIGZ   = PSZ3 * XD**PSZ4
@@ -2684,7 +2684,7 @@ DOUBLE PRECISION FUNCTION SIGMAZ(XD)
 !      SIGMAZ = MIN(SIGZ, SIGMAZ_MAX)   ! D096
    SIGMAZ = SIGZ   ! D096
 
-END FUNCTION
+END FUNCTION SIGMAZ
 
 SUBROUTINE  TRANSLATE_ROTATE
 !***********************************************************************
@@ -2762,8 +2762,8 @@ SUBROUTINE  TRANSLATE_ROTATE
 
 !     Translate source and receptor coordinates and then rotate them along wind direction
    DO INDEX = ISRC, NUMSRC
-      IF (SRCTYP(INDEX) .EQ. 'RLINE' .or.&
-      &SRCTYP(INDEX) .EQ. 'RLINEXT') THEN
+      IF (SRCTYP(INDEX) == 'RLINE' .or.&
+      &SRCTYP(INDEX) == 'RLINEXT') THEN
 !           Initialize variables used
          DCL_LOC        = RLSOURCE(INDEX)%DCL
          DCLWALL_LOC(1) = RLSOURCE(INDEX)%DCLWALL
@@ -2778,7 +2778,7 @@ SUBROUTINE  TRANSLATE_ROTATE
          &XSB_TRAN)
 
 !           Account for due east and north source lines
-         IF (DSIN(THETA_LINE) .EQ. 0.0D0) THEN
+         IF (DSIN(THETA_LINE) == 0.0D0) THEN
             DCL_LOC        = -1.0D0 * DCL_LOC              ! needed for lines running West-East; + is North
             DCLWALL_LOC(1) = -1.0D0 * DCLWALL_LOC(1)
             DCLWALL_LOC(2) = -1.0D0 * DCLWALL_LOC(2)
@@ -2787,8 +2787,8 @@ SUBROUTINE  TRANSLATE_ROTATE
 !           Determine location of the line that is not within a depression,
 !           but is specified in source file with the centerline and distance
 !           from the centerline
-         IF (DCL_LOC .NE. 0.0D0 .and.&
-         &RLSOURCE(INDEX)%DEPTH .EQ. 0.0D0) THEN
+         IF (DCL_LOC /= 0.0D0 .and.&
+         &RLSOURCE(INDEX)%DEPTH == 0.0D0) THEN
             XSE_TRAN = XSE_TRAN + DCL_LOC * DSIN(THETA_LINE) *&
             &DSIGN(1.0D0, DSIN(THETA_LINE))
             YSE_TRAN = YSE_TRAN - DCL_LOC * DCOS(THETA_LINE) *&
@@ -2826,7 +2826,7 @@ SUBROUTINE  TRANSLATE_ROTATE
 
 !           For barrier algorithm: Calculate the beginning coordinates of the barrier.
 !           After rotation, determine if the barrier is downwind of the roadway. If so, set a flag.
-         IF(THETA_LINE .EQ. THETAW) THETA_LINE = THETA_LINE + 0.001D0
+         IF(THETA_LINE == THETAW) THETA_LINE = THETA_LINE + 0.001D0
          DO I = 1, 2
             XBB     = XSB_TRAN + (DCLWALL_LOC(I) - DCL_LOC) *&
             &DSIN(THETA_LINE) * DSIGN(1.0D0, DSIN(THETA_LINE))

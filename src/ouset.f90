@@ -31,58 +31,58 @@ SUBROUTINE OUCARD
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'OUCARD'
 
-   IF (KEYWRD .EQ. 'STARTING') THEN
+   IF (KEYWRD == 'STARTING') THEN
 !        Set Status Switch
       IOSTAT(1) = IOSTAT(1) + 1
-      IF (IOSTAT(1) .NE. 1) THEN
+      IF (IOSTAT(1) /= 1) THEN
 !           WRITE Error Message: Repeat Non-repeatable Keyword
          CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
       END IF
-   ELSE IF (KEYWRD .EQ. 'RECTABLE') THEN
+   ELSE IF (KEYWRD == 'RECTABLE') THEN
 !        Process High Value Output Option                   ---   CALL OUHIGH
       CALL OUHIGH
 !        Set Status Switch
       IOSTAT(2) = IOSTAT(2) + 1
-   ELSE IF (KEYWRD .EQ. 'MAXTABLE') THEN
+   ELSE IF (KEYWRD == 'MAXTABLE') THEN
 !        Process Maximum 50 Table Option                    ---   CALL OUMXVL
       CALL OUMXVL
 !        Set Status Switch
       IOSTAT(3) = IOSTAT(3) + 1
-   ELSE IF (KEYWRD .EQ. 'DAYTABLE') THEN
+   ELSE IF (KEYWRD == 'DAYTABLE') THEN
 !        Process Daily Value Table Option                   ---   CALL OUDALY
       CALL OUDALY
 !        Set Status Switch
       IOSTAT(4) = IOSTAT(4) + 1
-      IF (IOSTAT(4) .NE. 1) THEN
+      IF (IOSTAT(4) /= 1) THEN
 !           WRITE Error Message: Repeat Non-repeatable Keyword
          CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
       END IF
-   ELSE IF (KEYWRD .EQ. 'MAXIFILE') THEN
+   ELSE IF (KEYWRD == 'MAXIFILE') THEN
 !        Process Maximum Value (Threshold) File Option      ---   CALL OUMXFL
       CALL OUMXFL
 !        Set Status Switch
       IOSTAT(5) = IOSTAT(5) + 1
-   ELSE IF (KEYWRD .EQ. 'POSTFILE') THEN
+   ELSE IF (KEYWRD == 'POSTFILE') THEN
 !        Process Postprocessing File Output Option          ---   CALL OUPOST
       CALL OUPOST
 !        Set Status Switch
       IOSTAT(6) = IOSTAT(6) + 1
-   ELSE IF (KEYWRD .EQ. 'PLOTFILE') THEN
+   ELSE IF (KEYWRD == 'PLOTFILE') THEN
 !        Process Plotting File Output Option                ---   CALL OUPLOT
       CALL OUPLOT
 !        Set Status Switch
       IOSTAT(7) = IOSTAT(7) + 1
-   ELSE IF (KEYWRD .EQ. 'TOXXFILE') THEN
+   ELSE IF (KEYWRD == 'TOXXFILE') THEN
 !        Process TOXXFILE Output Option                     ---   CALL OUTOXX
       CALL OUTOXX
 !        Set Status Switch
       IOSTAT(8) = IOSTAT(8) + 1
-   ELSE IF (KEYWRD .EQ. 'SEASONHR') THEN
+   ELSE IF (KEYWRD == 'SEASONHR') THEN
       IF (.NOT. SCIM) THEN
 !           Process Season by Hour-of-Day Output Option     ---   CALL OUSEAS
          CALL OUSEAS
@@ -92,38 +92,38 @@ SUBROUTINE OUCARD
 !           Write Error Message: Conflicting Options SCIM and SEASONHR
          CALL ERRHDL(PATH,MODNAM,'E','154',KEYWRD)
       END IF
-   ELSE IF (KEYWRD .EQ. 'RANKFILE') THEN
+   ELSE IF (KEYWRD == 'RANKFILE') THEN
 !        Process RANKFILE Output Option                     ---   CALL OURANK
       CALL OURANK
 !        Set Status Switch
       IOSTAT(10) = IOSTAT(10) + 1
-   ELSE IF (KEYWRD .EQ. 'EVALFILE') THEN
+   ELSE IF (KEYWRD == 'EVALFILE') THEN
 !        Process EVALFILE Output Option                     ---   CALL OUEVAL
       CALL OUEVAL
 !        Set Status Switch
       IOSTAT(11) = IOSTAT(11) + 1
-   ELSE IF (KEYWRD .EQ. 'SUMMFILE') THEN
+   ELSE IF (KEYWRD == 'SUMMFILE') THEN
 !        Process SUMMFILE Output Option                     ---   CALL OUSUMM
       CALL OUSUMM
 !        Set Status Switch
       IOSTAT(12) = IOSTAT(12) + 1
-      IF (IOSTAT(12) .NE. 1) THEN
+      IF (IOSTAT(12) /= 1) THEN
 !           WRITE Error Message: Repeat Non-repeatable Keyword
          CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
       END IF
-   ELSE IF (KEYWRD .EQ. 'FILEFORM') THEN
+   ELSE IF (KEYWRD == 'FILEFORM') THEN
 !        Process FILEFORM Output Option                     ---   CALL FILEFORM
       CALL FILEFORM
 !        Set Status Switch
       IOSTAT(13) = IOSTAT(13) + 1
-      IF (IOSTAT(13) .NE. 1) THEN
+      IF (IOSTAT(13) /= 1) THEN
 !           WRITE Error Message: Repeat Non-repeatable Keyword
          CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
       END IF
-   ELSE IF (KEYWRD .EQ. 'MAXDAILY') THEN
+   ELSE IF (KEYWRD == 'MAXDAILY') THEN
       IF (NO2AVE .or. SO2AVE .or. PM25AVE) THEN
          DO IAVE = 1, NUMAVE
-            IF (KAVE(IAVE) .EQ. 1 .or. KAVE(IAVE) .EQ. 24) THEN
+            IF (KAVE(IAVE) == 1 .or. KAVE(IAVE) == 24) THEN
 !                 Process Maximum Daily 1-hr File Output Option ---   CALL OUMAXDLY
                CALL OUMAXDLY
 !                 Set Status Switch
@@ -136,14 +136,14 @@ SUBROUTINE OUCARD
          CALL ERRHDL(PATH,MODNAM,'E','162',KEYWRD)
          GO TO 999
       END IF
-      IF (IOSTAT(14) .LT. 1) THEN
+      IF (IOSTAT(14) < 1) THEN
 !           WRITE Error Message: MAXDAILY Option without 1-hr averages
          CALL ERRHDL(PATH,MODNAM,'E','162',KEYWRD)
       END IF
-   ELSE IF (KEYWRD .EQ. 'MXDYBYYR') THEN
+   ELSE IF (KEYWRD == 'MXDYBYYR') THEN
       IF (NO2AVE .or. SO2AVE .or. PM25AVE) THEN
          DO IAVE = 1, NUMAVE
-            IF (KAVE(IAVE) .EQ. 1 .or. KAVE(IAVE) .EQ. 24) THEN
+            IF (KAVE(IAVE) == 1 .or. KAVE(IAVE) == 24) THEN
 !                 Process Maximum Daily 1-hr File Output Option ---   CALL OUMXDLY_BYYR
                CALL OUMXDLY_BYYR
 !                 Set Status Switch
@@ -156,14 +156,14 @@ SUBROUTINE OUCARD
          CALL ERRHDL(PATH,MODNAM,'E','162',KEYWRD)
          GO TO 999
       END IF
-      IF (IOSTAT(15) .LT. 1) THEN
+      IF (IOSTAT(15) < 1) THEN
 !           WRITE Error Message: MXDYBYYR Option without 1-hr averages
          CALL ERRHDL(PATH,MODNAM,'E','162',KEYWRD)
       END IF
-   ELSE IF (KEYWRD .EQ. 'MAXDCONT') THEN
+   ELSE IF (KEYWRD == 'MAXDCONT') THEN
       IF (NO2AVE .or. SO2AVE .or. PM25AVE) THEN
          DO IAVE = 1, NUMAVE
-            IF (KAVE(IAVE) .EQ. 1 .or. KAVE(IAVE) .EQ. 24) THEN
+            IF (KAVE(IAVE) == 1 .or. KAVE(IAVE) == 24) THEN
 !                 Process Maximum Daily 1-hr File Output Option ---   CALL OUMAXD_CONT
                CALL OUMAXD_CONT
 !                 Set Status Switch
@@ -176,23 +176,23 @@ SUBROUTINE OUCARD
          CALL ERRHDL(PATH,MODNAM,'E','163',KEYWRD)
          GO TO 999
       END IF
-      IF (IOSTAT(16) .LT. 1) THEN
+      IF (IOSTAT(16) < 1) THEN
 !           WRITE Error Message: MAXDCONT Option without 1-hr or 24-hr averages
          CALL ERRHDL(PATH,MODNAM,'E','163',KEYWRD)
       END IF
-   ELSE IF (KEYWRD .EQ. 'NOHEADER') THEN
+   ELSE IF (KEYWRD == 'NOHEADER') THEN
 !        Process NOHEADER Output Option                     ---   CALL NOHEADER
       CALL NOHEADER
 !        Set Status Switch
       IOSTAT(18) = IOSTAT(18) + 1
-      IF (IOSTAT(18) .NE. 1) THEN
+      IF (IOSTAT(18) /= 1) THEN
 !           WRITE Error Message: Repeat Non-repeatable Keyword
          CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
       END IF
-   ELSE IF (KEYWRD .EQ. 'FINISHED') THEN
+   ELSE IF (KEYWRD == 'FINISHED') THEN
 !        Set Status Switch
       IOSTAT(50) = IOSTAT(50) + 1
-      IF (IOSTAT(50) .NE. 1) THEN
+      IF (IOSTAT(50) /= 1) THEN
 !           WRITE Error Message: Repeat Non-repeatable Keyword
          CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
       END IF
@@ -206,7 +206,7 @@ SUBROUTINE OUCARD
 999 CONTINUE
 
    RETURN
-END
+END SUBROUTINE OUCARD
 
 SUBROUTINE OUTQA
 !***********************************************************************
@@ -249,13 +249,13 @@ SUBROUTINE OUTQA
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, K, l, m, IVAL, IDCST1, NumNoHeader
 !     JAT D065 8/9/21, FOUND SET BUT NEVER USED
 !      LOGICAL OUTOPT, FOUND
-   LOGICAL OUTOPT
-   CHARACTER KEYMSG*8, MSG1*3
+   LOGICAL :: OUTOPT
+   CHARACTER :: KEYMSG*8, MSG1*3
 
 !     Variable Initializations
    MODNAM = 'OUTQA'
@@ -265,13 +265,13 @@ SUBROUTINE OUTQA
 !      FOUND  = .FALSE.
 
 !     Check If Missing Mandatory Keyword
-   IF (IOSTAT(1) .EQ. 0) THEN
+   IF (IOSTAT(1) == 0) THEN
       CALL ERRHDL(PATH,MODNAM,'E','130','STARTING')
    END IF
 
 !     Check For Lack of Any Output Option Cards
    DO I = 2, 12
-      IF (IOSTAT(I) .GT. 0) THEN
+      IF (IOSTAT(I) > 0) THEN
          OUTOPT = .TRUE.
       END IF
    END DO
@@ -283,12 +283,12 @@ SUBROUTINE OUTQA
    DO IAVE = 1, NUMAVE
       IDCST1 = 0
       DO IVAL = 1, NVAL
-         IF (NHIAVE(IVAL,IAVE) .EQ. 1) THEN
+         IF (NHIAVE(IVAL,IAVE) == 1) THEN
             IDCST1 = 1
          END IF
       END DO
-      IF (IDCST1.EQ.0 .and. MAXAVE(IAVE).EQ.0 .and.&
-      &IDYTAB(IAVE).EQ.0) THEN
+      IF (IDCST1==0 .and. MAXAVE(IAVE)==0 .and.&
+      &IDYTAB(IAVE)==0) THEN
          WRITE(KEYMSG,'(I3.3,A3)') KAVE(IAVE), MSG1
          CALL ERRHDL(PATH,MODNAM,'W','540',KEYMSG)
       END IF
@@ -325,12 +325,12 @@ SUBROUTINE OUTQA
    END IF
 
 !     Check for EVALFILE Option without EVALCART Inputs
-   IF (IOSTAT(11) .GT. 0 .and. NUMARC .EQ. 0) THEN
+   IF (IOSTAT(11) > 0 .and. NUMARC == 0) THEN
       CALL ERRHDL(PATH,MODNAM,'E','256','NUMARC=0')
    END IF
 
 ! --- Check for FILEFORM keyword without applicable output file options
-   IF (IOSTAT(13) .GT. 0 .and. FILE_FORMAT .EQ. 'EXP') THEN
+   IF (IOSTAT(13) > 0 .and. FILE_FORMAT == 'EXP') THEN
       IF (.NOT.MXFILE .and. .NOT.PPFILE .and. .NOT.PLFILE .and.&
       &.NOT.RKFILE .and.&
       &.NOT.ANPOST .and. .NOT.ANPLOT .and. .NOT.SEASONHR .and.&
@@ -348,39 +348,39 @@ SUBROUTINE OUTQA
          NumNoHeader = NumNoHeader + 1
       END IF
    END DO
-   IF (NumNoHeader .GT. 0 .and. NumNoHeader .LT. 8) THEN
+   IF (NumNoHeader > 0 .and. NumNoHeader < 8) THEN
 ! ---    NOHEADER option selected for at least one output
 !        type, but not all; check for output type on the
 !        NOHEADER keyword that was not specified by user
-      IF (L_NoHeader(1) .and. IOSTAT(5) .LT. 1) THEN
+      IF (L_NoHeader(1) .and. IOSTAT(5) < 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','MAXIFILE')
       END IF
-      IF (L_NoHeader(2) .and. IOSTAT(6) .LT. 1) THEN
+      IF (L_NoHeader(2) .and. IOSTAT(6) < 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','POSTFILE')
       END IF
-      IF (L_NoHeader(3) .and. IOSTAT(7) .LT. 1) THEN
+      IF (L_NoHeader(3) .and. IOSTAT(7) < 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','PLOTFILE')
       END IF
-      IF (L_NoHeader(4) .and. IOSTAT(9) .LT. 1) THEN
+      IF (L_NoHeader(4) .and. IOSTAT(9) < 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','SEASONHR')
       END IF
-      IF (L_NoHeader(5) .and. IOSTAT(10) .LT. 1) THEN
+      IF (L_NoHeader(5) .and. IOSTAT(10) < 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','RANKFILE')
       END IF
-      IF (L_NoHeader(6) .and. IOSTAT(14) .LT. 1) THEN
+      IF (L_NoHeader(6) .and. IOSTAT(14) < 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','MAXDAILY')
       END IF
-      IF (L_NoHeader(7) .and. IOSTAT(15) .LT. 1) THEN
+      IF (L_NoHeader(7) .and. IOSTAT(15) < 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','MXDYBYYR')
       END IF
-      IF (L_NoHeader(8) .and. IOSTAT(16) .LT. 1) THEN
+      IF (L_NoHeader(8) .and. IOSTAT(16) < 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','MAXDCONT')
       END IF
@@ -393,80 +393,80 @@ SUBROUTINE OUTQA
          DO K = 1, NUMAVE
             DO L = 1, NUMGRP
                DO M = 1, NUMAVE
-                  IF (PLTFIL(I,J,K) .EQ. PSTFIL(L,M) .and.&
-                  &IPLUNT(I,J,K) .NE. IPSUNT(L,M)) THEN
+                  IF (PLTFIL(I,J,K) == PSTFIL(L,M) .and.&
+                  &IPLUNT(I,J,K) /= IPSUNT(L,M)) THEN
 !              Write Error Message: Conflicting Inputs
-                     IF (L .GT. 999) THEN
+                     IF (L > 999) THEN
                         WRITE(DUMMY,'("999+ ",I3)') KAVE(M)
                      ELSE
                         WRITE(DUMMY,'(I4,1X,I3)') L, KAVE(M)
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .NE. PSTFIL(L,M) .and.&
-                  &IPLUNT(I,J,K) .EQ. IPSUNT(L,M)) THEN
+                  ELSE IF (PLTFIL(I,J,K) /= PSTFIL(L,M) .and.&
+                  &IPLUNT(I,J,K) == IPSUNT(L,M)) THEN
 !              Write Error Message: Conflicting Inputs
-                     IF (L .GT. 999) THEN
+                     IF (L > 999) THEN
                         WRITE(DUMMY,'("999+ ",I3)') KAVE(M)
                      ELSE
                         WRITE(DUMMY,'(I4,1X,I3)') L, KAVE(M)
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .EQ. THRFIL(L,M) .and.&
-                  &IPLUNT(I,J,K) .NE. IMXUNT(L,M)) THEN
+                  ELSE IF (PLTFIL(I,J,K) == THRFIL(L,M) .and.&
+                  &IPLUNT(I,J,K) /= IMXUNT(L,M)) THEN
 !              Write Error Message: Conflicting Inputs
-                     IF (L .GT. 999) THEN
+                     IF (L > 999) THEN
                         WRITE(DUMMY,'("999+ ",I3)') KAVE(M)
                      ELSE
                         WRITE(DUMMY,'(I4,1X,I3)') L, KAVE(M)
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .NE. THRFIL(L,M) .and.&
-                  &IPLUNT(I,J,K) .EQ. IMXUNT(L,M)) THEN
+                  ELSE IF (PLTFIL(I,J,K) /= THRFIL(L,M) .and.&
+                  &IPLUNT(I,J,K) == IMXUNT(L,M)) THEN
 !              Write Error Message: Conflicting Inputs
-                     IF (L .GT. 999) THEN
+                     IF (L > 999) THEN
                         WRITE(DUMMY,'("999+ ",I3)') KAVE(M)
                      ELSE
                         WRITE(DUMMY,'(I4,1X,I3)') L, KAVE(M)
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .EQ. ANNPST(L) .and.&
-                  &IPLUNT(I,J,K) .NE. IAPUNT(L)) THEN
+                  ELSE IF (PLTFIL(I,J,K) == ANNPST(L) .and.&
+                  &IPLUNT(I,J,K) /= IAPUNT(L)) THEN
 !              Write Error Message: Conflicting Inputs
-                     IF (L .GT. 999) THEN
+                     IF (L > 999) THEN
                         WRITE(DUMMY,'("999+ ",I3)') KAVE(M)
                      ELSE
                         WRITE(DUMMY,'(I4,1X,I3)') L, KAVE(M)
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .NE. ANNPST(L) .and.&
-                  &IPLUNT(I,J,K) .EQ. IAPUNT(L)) THEN
+                  ELSE IF (PLTFIL(I,J,K) /= ANNPST(L) .and.&
+                  &IPLUNT(I,J,K) == IAPUNT(L)) THEN
 !              Write Error Message: Conflicting Inputs
-                     IF (L .GT. 999) THEN
+                     IF (L > 999) THEN
                         WRITE(DUMMY,'("999+ ",I3)') KAVE(M)
                      ELSE
                         WRITE(DUMMY,'(I4,1X,I3)') L, KAVE(M)
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .EQ. ANNPLT(L) .and.&
-                  &IPLUNT(I,J,K) .NE. IPPUNT(L)) THEN
+                  ELSE IF (PLTFIL(I,J,K) == ANNPLT(L) .and.&
+                  &IPLUNT(I,J,K) /= IPPUNT(L)) THEN
 !              Write Error Message: Conflicting Inputs
-                     IF (L .GT. 999) THEN
+                     IF (L > 999) THEN
                         WRITE(DUMMY,'("999+ ",I3)') KAVE(M)
                      ELSE
                         WRITE(DUMMY,'(I4,1X,I3)') L, KAVE(M)
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .NE. ANNPLT(L) .and.&
-                  &IPLUNT(I,J,K) .EQ. IPPUNT(L)) THEN
+                  ELSE IF (PLTFIL(I,J,K) /= ANNPLT(L) .and.&
+                  &IPLUNT(I,J,K) == IPPUNT(L)) THEN
 !              Write Error Message: Conflicting Inputs
-                     IF (L .GT. 999) THEN
+                     IF (L > 999) THEN
                         WRITE(DUMMY,'("999+ ",I3)') KAVE(M)
                      ELSE
                         WRITE(DUMMY,'(I4,1X,I3)') L, KAVE(M)
@@ -481,7 +481,7 @@ SUBROUTINE OUTQA
    END DO
 
    RETURN
-END
+END SUBROUTINE OUTQA
 
 SUBROUTINE OUHIGH
 !***********************************************************************
@@ -508,12 +508,12 @@ SUBROUTINE OUHIGH
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, ILOCH(NAVE), IPRDT, IPRDT1, IPRDT2, ISPRD, IEPRD,&
    &HIGHST(NVAL)
-   CHARACTER LPRD*8, HPRD*8, NCHR1(10)*8, NCHR2(10)*5
-   LOGICAL FOUND, RMARK
+   CHARACTER :: LPRD*8, HPRD*8, NCHR1(10)*8, NCHR2(10)*5
+   LOGICAL :: FOUND, RMARK
 
 !     Variable Initializations
    DATA (NCHR1(I),I=1,10) /'FIRST','SECOND','THIRD','FOURTH',&
@@ -533,34 +533,34 @@ SUBROUTINE OUHIGH
    END DO
 
 !     Check If Enough Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Parameters
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .EQ. 3) THEN
+   ELSE IF (IFC == 3) THEN
 !        Error Message: Not Enough Parameters
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. NVAL+3) THEN
+   ELSE IF (IFC > NVAL+3) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
    END IF
 
 !     Retrieve Averaging Period
-   IF (FIELD(3) .EQ. 'ALLAVE') THEN
+   IF (FIELD(3) == 'ALLAVE') THEN
 !        Go For All Averaging Periods
       DO I = 1, NUMAVE
          INHI(I) = 1
          ILOCH(I) = 1
       END DO
       FOUND = .TRUE.
-   ELSE IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
+   ELSE IF (FIELD(3) == 'MONTH' .and. MONTH) THEN
 !        Set Value of IPRDT = 720 for MONTHly Averages
       IPRDT = 720
 !        Search The Period to find out the Location
       DO I = 1, NUMAVE
-         IF (IPRDT .EQ. KAVE(I)) THEN
+         IF (IPRDT == KAVE(I)) THEN
             FOUND = .TRUE.
             INHI(I) = 1
             ILOCH(I) = 1
@@ -569,9 +569,9 @@ SUBROUTINE OUHIGH
    ELSE
       CALL FSPLIT(PATH,KEYWRD,FIELD(3),ILEN_FLD,'-',RMARK,LPRD,HPRD)
 !        Single Time Period
-      IF (HPRD .EQ. LPRD) THEN
+      IF (HPRD == LPRD) THEN
          CALL STONUM(HPRD,8,FNUM,IMIT)
-         IF (IMIT .NE. 1) THEN
+         IF (IMIT /= 1) THEN
 !              Write Error Message:Invalid Numerical Field and assign value of 0
             CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
             IPRDT1 = 0
@@ -581,7 +581,7 @@ SUBROUTINE OUHIGH
          END IF
 !           Search The Period to find out the Location
          DO I = 1, NUMAVE
-            IF (IPRDT1 .EQ. KAVE(I)) THEN
+            IF (IPRDT1 == KAVE(I)) THEN
                FOUND = .TRUE.
                INHI(I) = 1
                ILOCH(I) = 1
@@ -590,7 +590,7 @@ SUBROUTINE OUHIGH
       ELSE
 !           Find The Lower Boundary
          CALL STONUM(LPRD,8,FNUM,IMIT)
-         IF (IMIT .NE. 1) THEN
+         IF (IMIT /= 1) THEN
 !              Write Error Message:Invalid Numerical Field and assign value of 0
             CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
             IPRDT1 = 0
@@ -600,7 +600,7 @@ SUBROUTINE OUHIGH
          END IF
 !           Find The Upper Boundary
 114      CALL STONUM(HPRD,8,FNUM,IMIT)
-         IF (IMIT .NE. 1) THEN
+         IF (IMIT /= 1) THEN
 !              Write Error Message:Invalid Numerical Field
             CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
             GO TO 115
@@ -608,8 +608,8 @@ SUBROUTINE OUHIGH
          IPRDT2 = NINT(FNUM)
 !           Search The Period to find out the Location
          DO I = 1, NUMAVE
-            IF (KAVE(I).GE.IPRDT1 .and.&
-            &KAVE(I).LE.IPRDT2) THEN
+            IF (KAVE(I)>=IPRDT1 .and.&
+            &KAVE(I)<=IPRDT2) THEN
                FOUND = .TRUE.
                INHI(I) = 1
                ILOCH(I) = 1
@@ -637,33 +637,33 @@ SUBROUTINE OUHIGH
       IEPRD = 0
 ! ---    First check for simple numeric value
       CALL STONUM(LPRD,ILEN_FLD,FNUM,IMIT)
-      IF (IMIT .EQ. 1) THEN
+      IF (IMIT == 1) THEN
          ISPRD = INT(FNUM)
       END IF
       CALL STONUM(HPRD,ILEN_FLD,FNUM,IMIT)
-      IF (IMIT .EQ. 1) THEN
+      IF (IMIT == 1) THEN
          IEPRD = INT(FNUM)
       END IF
-      IF (ISPRD .GT. 999 .or. IEPRD .GT. 999) THEN
+      IF (ISPRD > 999 .or. IEPRD > 999) THEN
 !           Write Error Message:Illegal Parameter Field
          CALL ERRHDL(PATH,MODNAM,'E','203','HIVALU')
          CYCLE
       END IF
-      IF (ISPRD .EQ. 0 .or. IEPRD .EQ. 0) THEN
+      IF (ISPRD == 0 .or. IEPRD == 0) THEN
 !           Check for acceptable character string if non-numeric
          DO J = 1, 10
-            IF (LPRD.EQ.NCHR1(J) .or.&
-            &LPRD.EQ.NCHR2(J)) ISPRD = J
-            IF (HPRD.EQ.NCHR1(J) .or.&
-            &HPRD.EQ.NCHR2(J)) IEPRD = J
+            IF (LPRD==NCHR1(J) .or.&
+            &LPRD==NCHR2(J)) ISPRD = J
+            IF (HPRD==NCHR1(J) .or.&
+            &HPRD==NCHR2(J)) IEPRD = J
          END DO
       END IF
-      IF (ISPRD.EQ.0 .or. IEPRD.EQ.0) THEN
+      IF (ISPRD==0 .or. IEPRD==0) THEN
 !           Write Error Message:Illegal Parameter Field
          CALL ERRHDL(PATH,MODNAM,'E','203','HIVALU')
          CYCLE
       END IF
-      IF (ISPRD.GT.NVAL .or. IEPRD.GT.NVAL) THEN
+      IF (ISPRD>NVAL .or. IEPRD>NVAL) THEN
 !           Write Error Message: High Value Requested Exceeds NVAL
 !           This shouldn't occur since limits are dynamically allocated
          WRITE(DUMMY,'(''NVAL='',I7)') NVAL
@@ -680,9 +680,9 @@ SUBROUTINE OUHIGH
 !     And Set the Maximum Number of High Values, NHIVAL
    DO I = 1, NUMAVE
       DO J = 1, NVAL
-         IF (HIGHST(J).EQ.1 .and. ILOCH(I).EQ.1) THEN
+         IF (HIGHST(J)==1 .and. ILOCH(I)==1) THEN
             NHIAVE(J,I) = 1
-            IF (J .GT. NHIVAL) THEN
+            IF (J > NHIVAL) THEN
                NHIVAL = J
             END IF
          END IF
@@ -690,7 +690,7 @@ SUBROUTINE OUHIGH
    END DO
 
 999 RETURN
-END
+END SUBROUTINE OUHIGH
 
 SUBROUTINE OUMXVL
 !***********************************************************************
@@ -713,44 +713,44 @@ SUBROUTINE OUMXVL
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, IPRDT
-   LOGICAL FOUND
+   LOGICAL :: FOUND
 
 !     Variable Initializations
    MODNAM = 'OUMXVL'
    FOUND = .FALSE.
 
 !     Check for Appropriate Number of Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Parameters
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .EQ. 3) THEN
+   ELSE IF (IFC == 3) THEN
 !        Error Message: Not Enough Parameters
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. 4) THEN
+   ELSE IF (IFC > 4) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
    END IF
 
 !     Retrieve Averaging Period
-   IF (FIELD(3) .EQ. 'ALLAVE') THEN
+   IF (FIELD(3) == 'ALLAVE') THEN
 !        Go For All Averaging Periods
       DO I = 1, NUMAVE
          MAXAVE(I) = 1
       END DO
       FOUND = .TRUE.
    ELSE
-      IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
+      IF (FIELD(3) == 'MONTH' .and. MONTH) THEN
 !           Set Value of IPRDT = 720 for MONTHly Averages
          IPRDT = 720
       ELSE
          CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
-         IF (IMIT .NE. 1) THEN
+         IF (IMIT /= 1) THEN
 !              Write Error Message:Invalid Numerical Field
             CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
             GO TO 999
@@ -759,8 +759,8 @@ SUBROUTINE OUMXVL
       END IF
 !        Check Averaging Period Against KAVE Array
       J = 1
-      DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
-         IF (IPRDT .EQ. KAVE(J)) THEN
+      DO WHILE (.NOT.FOUND .and. J<=NUMAVE)
+         IF (IPRDT == KAVE(J)) THEN
             FOUND = .TRUE.
             INDAVE = J
             MAXAVE(J) = 1
@@ -776,14 +776,14 @@ SUBROUTINE OUMXVL
 
 !     Set Number of Maximum Values to Sort
    CALL STONUM(FIELD(4),ILEN_FLD,FNUM,IMIT)
-   IF (IMIT .NE. 1) THEN
+   IF (IMIT /= 1) THEN
 !        Write Error Message:Invalid Numerical Field
       CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
       GO TO 999
    END IF
    INUM = NINT(FNUM)
 
-   IF (FIELD(3) .EQ. 'ALLAVE') THEN
+   IF (FIELD(3) == 'ALLAVE') THEN
 !        Go For All Averaging Periods
       DO I = 1, NUMAVE
          IMXVAL(I) = INUM
@@ -793,7 +793,7 @@ SUBROUTINE OUMXVL
    END IF
 
 999 RETURN
-END
+END SUBROUTINE OUMXVL
 
 SUBROUTINE OUDALY
 !***********************************************************************
@@ -816,28 +816,28 @@ SUBROUTINE OUDALY
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, IPRDT
-   LOGICAL FOUND
+   LOGICAL :: FOUND
 
 !     Variable Initializations
    MODNAM = 'OUDALY'
    FOUND  = .FALSE.
 
 !     Check for Appropriate Number of Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No AvePer And High Value
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. NUMAVE+2) THEN
+   ELSE IF (IFC > NUMAVE+2) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
    END IF
 
 !     Retrieve Averaging Period(s)
-   IF (FIELD(3) .EQ. 'ALLAVE') THEN
+   IF (FIELD(3) == 'ALLAVE') THEN
 !        Go For All Averaging Periods
       DO I = 1, NUMAVE
          IDYTAB(I) = 1
@@ -846,13 +846,13 @@ SUBROUTINE OUDALY
       DAYTAB = .TRUE.
    ELSE
       DO I = 3, IFC
-         IF (FIELD(I) .EQ. 'MONTH' .and. MONTH) THEN
+         IF (FIELD(I) == 'MONTH' .and. MONTH) THEN
 !              Set Value of IPRDT = 720 for MONTHly Averages
             IPRDT = 720
          ELSE
             FOUND = .FALSE.
             CALL STONUM(FIELD(I),ILEN_FLD,FNUM,IMIT)
-            IF (IMIT .NE. 1) THEN
+            IF (IMIT /= 1) THEN
 !                 Write Error Message:Invalid Numerical Field
                CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
                GO TO 999
@@ -861,8 +861,8 @@ SUBROUTINE OUDALY
          END IF
 !           Check Averaging Period Against KAVE Array
          J = 1
-         DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
-            IF (IPRDT .EQ. KAVE(J)) THEN
+         DO WHILE (.NOT.FOUND .and. J<=NUMAVE)
+            IF (IPRDT == KAVE(J)) THEN
                FOUND = .TRUE.
                IDYTAB(J) = 1
             END IF
@@ -879,7 +879,7 @@ SUBROUTINE OUDALY
    END IF
 
 999 RETURN
-END
+END SUBROUTINE OUDALY
 
 SUBROUTINE OUMXFL
 !***********************************************************************
@@ -916,11 +916,11 @@ SUBROUTINE OUMXFL
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, IPRDT, IDAT, IDAT8
    INTEGER :: IRSYR, IRSDATE
-   CHARACTER INPGRP*8, BUF90*90
+   CHARACTER :: INPGRP*8, BUF90*90
    LOGICAL :: FOUND, L_EXISTS
 
 !     Variable Initializations
@@ -934,27 +934,27 @@ SUBROUTINE OUMXFL
    MXFILE = .TRUE.
 
 !     Check If Enough Field
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Fields
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LT. 6) THEN
+   ELSE IF (IFC < 6) THEN
 !        Error Message: Not Enough Fields
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. 7) THEN
+   ELSE IF (IFC > 7) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
    END IF
 
 !     Retrieve Averaging Period
-   IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
+   IF (FIELD(3) == 'MONTH' .and. MONTH) THEN
 !        Set Value of IPRDT = 720 for MONTHly Averages
       IPRDT = 720
    ELSE
       CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message:Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
@@ -966,8 +966,8 @@ SUBROUTINE OUMXFL
    FOUND = .FALSE.
    INDAVE = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
-      IF (IPRDT .EQ. KAVE(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMAVE)
+      IF (IPRDT == KAVE(J)) THEN
          FOUND = .TRUE.
          INDAVE = J
       END IF
@@ -985,8 +985,8 @@ SUBROUTINE OUMXFL
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
-      IF (INPGRP .EQ. GRPID(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMGRP)
+      IF (INPGRP == GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
       END IF
@@ -1001,7 +1001,7 @@ SUBROUTINE OUMXFL
 !     Set Switch and Check for Previous MAXIFILE Card
 !     for This Averaging Period & Group ID
    MAXFLE(INDGRP,INDAVE) = MAXFLE(INDGRP,INDAVE) + 1
-   IF (MAXFLE(INDGRP,INDAVE) .GT. 1) THEN
+   IF (MAXFLE(INDGRP,INDAVE) > 1) THEN
 !        WRITE Error Message
       CALL ERRHDL(PATH,MODNAM,'E','211',KEYWRD)
       GO TO 999
@@ -1010,14 +1010,14 @@ SUBROUTINE OUMXFL
 !     Retrieve Threshold
    CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
 !     Check for Valid Threshold Value
-   IF (IMIT .NE. 1) THEN
+   IF (IMIT /= 1) THEN
 !        Write Error Message:Invalid Numerical Field
       CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
       GO TO 999
    END IF
    THRESH(INDGRP,INDAVE) = DNUM
 
-   IF ((LOCE(6)-LOCB(6)) .LE. (ILEN_FLD - 1) ) THEN
+   IF ((LOCE(6)-LOCB(6)) <= (ILEN_FLD - 1) ) THEN
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
       THRFIL(INDGRP,INDAVE) = RUNST1(LOCB(6):LOCE(6))
@@ -1028,20 +1028,20 @@ SUBROUTINE OUMXFL
    END IF
 
 !     Retrieve File Unit If Input, or Assign File Unit and OPEN File
-   IF (IFC .EQ. 7) THEN
+   IF (IFC == 7) THEN
       CALL STONUM(FIELD(7),ILEN_FLD,FNUM,IMIT)
 !        Check for Valid File Unit Value
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message:Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
       END IF
 !        Check for Conflict With System Files
-      IF (NINT(FNUM) .LE. 30) THEN
+      IF (NINT(FNUM) <= 30) THEN
 !           WRITE Error Message:  Invalid File Unit Specified
          CALL ERRHDL(PATH,MODNAM,'E','560',KEYWRD)
          GO TO 999
-      ELSE IF (NINT(FNUM) .GT. 100) THEN
+      ELSE IF (NINT(FNUM) > 100) THEN
 !           WRITE Warning Message:  Suspect File Unit Specified
 !           Unit May Conflict With Dynamically Allocated File Units
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
@@ -1052,7 +1052,7 @@ SUBROUTINE OUMXFL
    ELSE
 !        Dynamically Allocate File Unit (100's)
       IMXUNT(INDGRP,INDAVE) = 100 + INDGRP*10 + INDAVE
-      IF (INDGRP .GE. 10 .or. INDAVE .GE. 10) THEN
+      IF (INDGRP >= 10 .or. INDAVE >= 10) THEN
 !           WRITE Warning Message: Dynamic FUnit Allocation May Have Conflict
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
       END IF
@@ -1062,17 +1062,17 @@ SUBROUTINE OUMXFL
    FOUND = .FALSE.
    DO J = 1, NUMAVE
       DO I = 1, NUMGRP
-         IF (I .NE. INDGRP .or. J .NE. INDAVE) THEN
-            IF (THRFIL(INDGRP,INDAVE) .EQ. THRFIL(I,J) .and.&
-            &IMXUNT(INDGRP,INDAVE) .EQ. IMXUNT(I,J)) THEN
+         IF (I /= INDGRP .or. J /= INDAVE) THEN
+            IF (THRFIL(INDGRP,INDAVE) == THRFIL(I,J) .and.&
+            &IMXUNT(INDGRP,INDAVE) == IMXUNT(I,J)) THEN
                FOUND = .TRUE.
-            ELSE IF (THRFIL(INDGRP,INDAVE) .EQ. THRFIL(I,J) .and.&
-            &IMXUNT(INDGRP,INDAVE) .NE. IMXUNT(I,J)) THEN
+            ELSE IF (THRFIL(INDGRP,INDAVE) == THRFIL(I,J) .and.&
+            &IMXUNT(INDGRP,INDAVE) /= IMXUNT(I,J)) THEN
 !                 Write Error Message: Conflicting Inputs
                CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
                GO TO 999
-            ELSE IF (THRFIL(INDGRP,INDAVE) .NE. THRFIL(I,J) .and.&
-            &IMXUNT(INDGRP,INDAVE) .EQ. IMXUNT(I,J)) THEN
+            ELSE IF (THRFIL(INDGRP,INDAVE) /= THRFIL(I,J) .and.&
+            &IMXUNT(INDGRP,INDAVE) == IMXUNT(I,J)) THEN
 !                 Write Error Message: Conflicting Inputs
                CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
                GO TO 999
@@ -1110,7 +1110,7 @@ SUBROUTINE OUMXFL
          DO WHILE (.NOT. EOF)
             READ(IMXUNT(INDGRP,INDAVE),'(A90:)',ERR=919,&
             &END=199) BUF90
-            IF (BUF90(1:1) .NE. '*') THEN
+            IF (BUF90(1:1) /= '*') THEN
 !                 Record Is Not Part of Header - Read Date For This Record
                READ(BUF90(15:22),'(I8)',ERR=919) IDAT8
 !                 Convert 8-digit IDAT8 to 10-digit IDAT for comparison to IRSDATE
@@ -1126,7 +1126,7 @@ SUBROUTINE OUMXFL
 !                     IDAT  = (ISTRT_CENT+1)*100000000 + IDAT8
 !                  END IF
 
-               IF (IDAT .GT. IRSDATE) THEN
+               IF (IDAT > IRSDATE) THEN
 !                    Date of MAXIFILE Event Is Greater Than Start Date
 !                    From Save File.  Treat As End of File to Exit Loop.
                   IF (MULTYR) THEN
@@ -1198,7 +1198,7 @@ SUBROUTINE OUMXFL
 999 CONTINUE
 
    RETURN
-END
+END SUBROUTINE OUMXFL
 
 SUBROUTINE OUPOST
 !***********************************************************************
@@ -1246,11 +1246,11 @@ SUBROUTINE OUPOST
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, IPRDT, IDAT, IDAT8, ISTR, ISTP
    INTEGER :: IRSYR, IRSDATE
-   CHARACTER INPGRP*8, HDRFRM*400
+   CHARACTER :: INPGRP*8, HDRFRM*400
    CHARACTER (LEN = ILEN_FLD) :: BUFFER
    LOGICAL :: FOUND, L_EXISTS
 
@@ -1269,42 +1269,42 @@ SUBROUTINE OUPOST
    WRITE(HDRFRM,9020) NUMTYP, NUMTYP+2
 
 !     Check If Enough Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Fields
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LT. 6) THEN
+   ELSE IF (IFC < 6) THEN
 !        Error Message: Not Enough Fields
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. 7) THEN
+   ELSE IF (IFC > 7) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
    END IF
 
 !     Retrieve Averaging Period
-   IF (FIELD(3) .EQ. 'PERIOD' .and. PERIOD) THEN
+   IF (FIELD(3) == 'PERIOD' .and. PERIOD) THEN
 !        Post File is for PERIOD Averages                   ---   CALL PERPST
       CALL PERPST
 !        Exit to End
       GO TO 999
-   ELSE IF (FIELD(3) .EQ. 'ANNUAL' .and. ANNUAL) THEN
+   ELSE IF (FIELD(3) == 'ANNUAL' .and. ANNUAL) THEN
 !        Post File is for PERIOD Averages                   ---   CALL PERPST
       CALL PERPST
 !        Exit to End
       GO TO 999
-   ELSE IF (FIELD(3).EQ.'PERIOD' .or. FIELD(3).EQ.'ANNUAL') THEN
+   ELSE IF (FIELD(3)=='PERIOD' .or. FIELD(3)=='ANNUAL') THEN
 !        Period Post File Selected But No PERIOD Averages Calculated
 !        WRITE Error Message: Invalid Averaging Period Selected for POSTFILE
       CALL ERRHDL(PATH,MODNAM,'E','203',' AVEPER ')
       GO TO 999
-   ELSE IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
+   ELSE IF (FIELD(3) == 'MONTH' .and. MONTH) THEN
 !        Set Value of IPRDT = 720 for MONTHly Averages
       IPRDT = 720
    ELSE
       CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message:Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
@@ -1316,8 +1316,8 @@ SUBROUTINE OUPOST
    FOUND = .FALSE.
    INDAVE = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
-      IF (IPRDT .EQ. KAVE(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMAVE)
+      IF (IPRDT == KAVE(J)) THEN
          FOUND = .TRUE.
          INDAVE = J
       END IF
@@ -1335,8 +1335,8 @@ SUBROUTINE OUPOST
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
-      IF (INPGRP .EQ. GRPID(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMGRP)
+      IF (INPGRP == GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
       END IF
@@ -1349,9 +1349,9 @@ SUBROUTINE OUPOST
    END IF
 
 !     Retrieve Format Secondary Keyword
-   IF (FIELD(5) .EQ. 'UNFORM') THEN
+   IF (FIELD(5) == 'UNFORM') THEN
       IPSFRM(INDGRP,INDAVE) = 0
-   ELSE IF (FIELD(5) .EQ. 'PLOT') THEN
+   ELSE IF (FIELD(5) == 'PLOT') THEN
       IPSFRM(INDGRP,INDAVE) = 1
    ELSE
 !        Error Message: Invalid Format Specified for POSTFILE
@@ -1362,13 +1362,13 @@ SUBROUTINE OUPOST
 !     Set Switch and Check for Previous POSTFILE Card
 !     for This Averaging Period & Group ID
    IPSTFL(INDGRP,INDAVE) = IPSTFL(INDGRP,INDAVE) + 1
-   IF (IPSTFL(INDGRP,INDAVE) .GT. 1) THEN
+   IF (IPSTFL(INDGRP,INDAVE) > 1) THEN
 !        WRITE Error Message
       CALL ERRHDL(PATH,MODNAM,'E','211',KEYWRD)
       GO TO 999
    END IF
 
-   IF ((LOCE(6)-LOCB(6)) .LE. (ILEN_FLD - 1) ) THEN
+   IF ((LOCE(6)-LOCB(6)) <= (ILEN_FLD - 1) ) THEN
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
       PSTFIL(INDGRP,INDAVE) = RUNST1(LOCB(6):LOCE(6))
@@ -1379,20 +1379,20 @@ SUBROUTINE OUPOST
    END IF
 
 !     Retrieve File Unit If Input, or Assign File Unit and OPEN File
-   IF (IFC .EQ. 7) THEN
+   IF (IFC == 7) THEN
       CALL STONUM(FIELD(7),ILEN_FLD,FNUM,IMIT)
 !        Check for Valid File Unit Value
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message: Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
       END IF
 !        Check for Conflict With System Files
-      IF (NINT(FNUM) .LE. 30) THEN
+      IF (NINT(FNUM) <= 30) THEN
 !           WRITE Error Message:  Invalid File Unit Specified
          CALL ERRHDL(PATH,MODNAM,'E','560',KEYWRD)
          GO TO 999
-      ELSE IF (NINT(FNUM) .GT. 100) THEN
+      ELSE IF (NINT(FNUM) > 100) THEN
 !           WRITE Warning Message:  Suspect File Unit Specified
 !           Unit May Conflict With Dynamically Allocated File Units
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
@@ -1403,7 +1403,7 @@ SUBROUTINE OUPOST
    ELSE
 !        Dynamically Allocate File Unit (200's)
       IPSUNT(INDGRP,INDAVE) = 200 + INDGRP*10 + INDAVE
-      IF (INDGRP .GE. 10 .or. INDAVE .GE. 10) THEN
+      IF (INDGRP >= 10 .or. INDAVE >= 10) THEN
 !           WRITE Warning Message: Dynamic FUnit Allocation May Have Conflict
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
       END IF
@@ -1413,17 +1413,17 @@ SUBROUTINE OUPOST
    FOUND = .FALSE.
    DO J = 1, NUMAVE
       DO I = 1, NUMGRP
-         IF (I .NE. INDGRP .or. J .NE. INDAVE) THEN
-            IF (PSTFIL(INDGRP,INDAVE) .EQ. PSTFIL(I,J) .and.&
-            &IPSUNT(INDGRP,INDAVE) .EQ. IPSUNT(I,J)) THEN
+         IF (I /= INDGRP .or. J /= INDAVE) THEN
+            IF (PSTFIL(INDGRP,INDAVE) == PSTFIL(I,J) .and.&
+            &IPSUNT(INDGRP,INDAVE) == IPSUNT(I,J)) THEN
                FOUND = .TRUE.
-            ELSE IF (PSTFIL(INDGRP,INDAVE) .EQ. PSTFIL(I,J) .and.&
-            &IPSUNT(INDGRP,INDAVE) .NE. IPSUNT(I,J)) THEN
+            ELSE IF (PSTFIL(INDGRP,INDAVE) == PSTFIL(I,J) .and.&
+            &IPSUNT(INDGRP,INDAVE) /= IPSUNT(I,J)) THEN
 !                 Write Error Message: Conflicting Inputs
                CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
                GO TO 999
-            ELSE IF (PSTFIL(INDGRP,INDAVE) .NE. PSTFIL(I,J) .and.&
-            &IPSUNT(INDGRP,INDAVE) .EQ. IPSUNT(I,J)) THEN
+            ELSE IF (PSTFIL(INDGRP,INDAVE) /= PSTFIL(I,J) .and.&
+            &IPSUNT(INDGRP,INDAVE) == IPSUNT(I,J)) THEN
 !                 Write Error Message: Conflicting Inputs
                CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
                GO TO 999
@@ -1434,16 +1434,16 @@ SUBROUTINE OUPOST
 
 !     Check Against POSTFILEs for PERIOD Averages
    DO I = 1, NUMGRP
-      IF (PSTFIL(INDGRP,INDAVE) .EQ. ANNPST(I) .and.&
-      &IPSUNT(INDGRP,INDAVE) .EQ. IAPUNT(I)) THEN
+      IF (PSTFIL(INDGRP,INDAVE) == ANNPST(I) .and.&
+      &IPSUNT(INDGRP,INDAVE) == IAPUNT(I)) THEN
          FOUND = .TRUE.
-      ELSE IF (PSTFIL(INDGRP,INDAVE) .EQ. ANNPST(I) .and.&
-      &IPSUNT(INDGRP,INDAVE) .NE. IAPUNT(I)) THEN
+      ELSE IF (PSTFIL(INDGRP,INDAVE) == ANNPST(I) .and.&
+      &IPSUNT(INDGRP,INDAVE) /= IAPUNT(I)) THEN
 !           Write Error Message: Conflicting Inputs
          CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
          GO TO 999
-      ELSE IF (PSTFIL(INDGRP,INDAVE) .NE. ANNPST(I) .and.&
-      &IPSUNT(INDGRP,INDAVE) .EQ. IAPUNT(I)) THEN
+      ELSE IF (PSTFIL(INDGRP,INDAVE) /= ANNPST(I) .and.&
+      &IPSUNT(INDGRP,INDAVE) == IAPUNT(I)) THEN
 !           Write Error Message: Conflicting Inputs
          CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
          GO TO 999
@@ -1452,7 +1452,7 @@ SUBROUTINE OUPOST
 
    IF (.NOT. FOUND) THEN
 !        First Time File is Identified - OPEN File
-      IF (FIELD(5) .EQ. 'UNFORM') THEN
+      IF (FIELD(5) == 'UNFORM') THEN
 !           First Time File is Identified; check for re-start option (RSTINP)
 !           before OPENing File
          IF (RSTINP) THEN
@@ -1493,7 +1493,7 @@ SUBROUTINE OUPOST
 !                     IDAT  = (ISTRT_CENT+1)*100000000 + IDAT8
 !                  END IF
 
-               IF (IDAT .GT. IRSDATE) THEN
+               IF (IDAT > IRSDATE) THEN
 !                    Date of POSTFILE Record Is Greater Than Start Date
 !                    From Save File.  Treat As End of File to Exit Loop.
                   IF (MULTYR) THEN
@@ -1519,7 +1519,7 @@ SUBROUTINE OUPOST
             &FILE=PSTFIL(INDGRP,INDAVE),IOSTAT=IOERRN,&
             &FORM='UNFORMATTED',STATUS='REPLACE')
          END IF
-      ELSE IF (FIELD(5) .EQ. 'PLOT') THEN
+      ELSE IF (FIELD(5) == 'PLOT') THEN
 !           First Time File is Identified; check for re-start option (RSTINP)
 !           before OPENing File
          IF (RSTINP) THEN
@@ -1548,7 +1548,7 @@ SUBROUTINE OUPOST
             DO WHILE (.NOT. EOF)
                READ(IPSUNT(INDGRP,INDAVE),'(A:)',&
                &ERR=919,END=299) BUFFER
-               IF (BUFFER(1:1) .NE. '*') THEN
+               IF (BUFFER(1:1) /= '*') THEN
 !                    Record Is Not Part of Header - Read Date For This Record
 !                    First calculate start & end of date string based on NUMTYP
                   ISTR = 90 + 14*(NUMTYP-1)
@@ -1571,7 +1571,7 @@ SUBROUTINE OUPOST
 !                    Header record - cycle to next record
                   CYCLE
                END IF
-               IF (IDAT .GT. IRSDATE) THEN
+               IF (IDAT > IRSDATE) THEN
 !                    Date of POSTFILE Record Is Greater Than Start Date
 !                    From Save File.  Treat As End of File to Exit Loop.
                   IF (MULTYR) THEN
@@ -1606,7 +1606,7 @@ SUBROUTINE OUPOST
    END IF
 
 !     Write Header to File for Formatted Plot Files.  Skip Header if FATAL.
-   IF (RUN .and. .NOT.FATAL .and. FIELD(5).EQ.'PLOT' .and.&
+   IF (RUN .and. .NOT.FATAL .and. FIELD(5)=='PLOT' .and.&
    &.NOT.L_NoHeader(2)) THEN
       WRITE(IPSUNT(INDGRP,INDAVE),9005) VERSN, TITLE1(1:68),&
       &RUNDAT
@@ -1645,7 +1645,7 @@ SUBROUTINE OUPOST
 999 CONTINUE
 
    RETURN
-END
+END SUBROUTINE OUPOST
 
 SUBROUTINE OUPLOT
 !***********************************************************************
@@ -1669,11 +1669,11 @@ SUBROUTINE OUPLOT
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, K, IPRDT
-   CHARACTER NCHR1(10)*8, NCHR2(10)*5, INPGRP*8
-   LOGICAL FOUND
+   CHARACTER :: NCHR1(10)*8, NCHR2(10)*5, INPGRP*8
+   LOGICAL :: FOUND
 
 !     Variable Initializations
    DATA (NCHR1(I),I=1,10) /'FIRST','SECOND','THIRD','FOURTH',&
@@ -1687,42 +1687,42 @@ SUBROUTINE OUPLOT
    PLFILE = .TRUE.
 
 !     Check If Enough Field
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Fields
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LT. 5) THEN
+   ELSE IF (IFC < 5) THEN
 !        Error Message: Not Enough Fields
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. 7) THEN
+   ELSE IF (IFC > 7) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
    END IF
 
 !     Retrieve Averaging Period
-   IF (FIELD(3) .EQ. 'PERIOD' .and. PERIOD) THEN
+   IF (FIELD(3) == 'PERIOD' .and. PERIOD) THEN
 !        Plot File is for PERIOD Averages                   ---   CALL PERPLT
       CALL PERPLT
 !        Exit to End
       GO TO 999
-   ELSE IF (FIELD(3) .EQ. 'ANNUAL' .and. ANNUAL) THEN
+   ELSE IF (FIELD(3) == 'ANNUAL' .and. ANNUAL) THEN
 !        Plot File is for PERIOD Averages                   ---   CALL PERPLT
       CALL PERPLT
 !        Exit to End
       GO TO 999
-   ELSE IF (FIELD(3).EQ.'PERIOD' .or. FIELD(3).EQ.'ANNUAL') THEN
+   ELSE IF (FIELD(3)=='PERIOD' .or. FIELD(3)=='ANNUAL') THEN
 !        Period Plot File Selected But No PERIOD Averages Calculated
 !        WRITE Error Message: Invalid Averaging Period Selected for PLOTFILE
       CALL ERRHDL(PATH,MODNAM,'E','203',' AVEPER ')
       GO TO 999
-   ELSE IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
+   ELSE IF (FIELD(3) == 'MONTH' .and. MONTH) THEN
 !        Set Value of IPRDT = 720 for MONTHly Averages
       IPRDT = 720
    ELSE
       CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message:Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
@@ -1734,8 +1734,8 @@ SUBROUTINE OUPLOT
    FOUND = .FALSE.
    INDAVE = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
-      IF (IPRDT .EQ. KAVE(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMAVE)
+      IF (IPRDT == KAVE(J)) THEN
          FOUND = .TRUE.
          INDAVE = J
       END IF
@@ -1753,8 +1753,8 @@ SUBROUTINE OUPLOT
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
-      IF (INPGRP .EQ. GRPID(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMGRP)
+      IF (INPGRP == GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
       END IF
@@ -1771,12 +1771,12 @@ SUBROUTINE OUPLOT
    INDVAL = 0
 !     First check for numeric value
    CALL STONUM(FIELD(5),ILEN_FLD,FNUM,IMIT)
-   IF (IMIT .EQ. 1) THEN
+   IF (IMIT == 1) THEN
       FOUND = .TRUE.
       INDVAL = INT(FNUM)
    ELSE
       DO I = 1, 10
-         IF (FIELD(5).EQ.NCHR1(I) .or. FIELD(5).EQ.NCHR2(I)) THEN
+         IF (FIELD(5)==NCHR1(I) .or. FIELD(5)==NCHR2(I)) THEN
             FOUND = .TRUE.
             INDVAL = I
          END IF
@@ -1786,14 +1786,14 @@ SUBROUTINE OUPLOT
 !        Error Message:E203 INDVAL Not Match With Options
       CALL ERRHDL(PATH,MODNAM,'E','203','HIVALU')
       GO TO 999
-   ELSE IF (INDVAL .GT. NHIVAL) THEN
+   ELSE IF (INDVAL > NHIVAL) THEN
 !        Error Message:E203 INDVAL Not Match With Options
       CALL ERRHDL(PATH,MODNAM,'E','203','HIVALU')
       GO TO 999
    END IF
 
 !     Check High Value Specified Against Previous Options
-   IF (NHIAVE(INDVAL,INDAVE) .NE. 1) THEN
+   IF (NHIAVE(INDVAL,INDAVE) /= 1) THEN
 !        WRITE Error Message
       CALL ERRHDL(PATH,MODNAM,'E','203','HIVALU')
       GO TO 999
@@ -1802,13 +1802,13 @@ SUBROUTINE OUPLOT
 !     Set Switch and Check for Previous PLOTFILE Card
 !     for This Averaging Period & Group ID
    IPLTFL(INDVAL,INDGRP,INDAVE) = IPLTFL(INDVAL,INDGRP,INDAVE) + 1
-   IF (IPLTFL(INDVAL,INDGRP,INDAVE) .GT. 1) THEN
+   IF (IPLTFL(INDVAL,INDGRP,INDAVE) > 1) THEN
 !        WRITE Error Message
       CALL ERRHDL(PATH,MODNAM,'E','211',KEYWRD)
       GO TO 999
    END IF
 
-   IF ((LOCE(6)-LOCB(6)) .LE. (ILEN_FLD - 1) ) THEN
+   IF ((LOCE(6)-LOCB(6)) <= (ILEN_FLD - 1) ) THEN
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
       PLTFIL(INDVAL,INDGRP,INDAVE) = RUNST1(LOCB(6):LOCE(6))
@@ -1819,20 +1819,20 @@ SUBROUTINE OUPLOT
    END IF
 
 !     Retrieve File Unit If Input, or Assign File Unit and OPEN File
-   IF (IFC .EQ. 7) THEN
+   IF (IFC == 7) THEN
       CALL STONUM(FIELD(7),ILEN_FLD,FNUM,IMIT)
 !        Check for Valid File Unit Value
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message: Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
       END IF
 !        Check for Conflict With System Files
-      IF (NINT(FNUM) .LE. 30) THEN
+      IF (NINT(FNUM) <= 30) THEN
 !           WRITE Error Message:  Invalid File Unit Specified
          CALL ERRHDL(PATH,MODNAM,'E','560',KEYWRD)
          GO TO 999
-      ELSE IF (NINT(FNUM) .GT. 100) THEN
+      ELSE IF (NINT(FNUM) > 100) THEN
 !           WRITE Warning Message:  Suspect File Unit Specified
 !           Unit May Conflict With Dynamically Allocated File Units
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
@@ -1843,7 +1843,7 @@ SUBROUTINE OUPLOT
    ELSE
 !        Dynamically Allocate File Unit (> 400)
       IPLUNT(INDVAL,INDGRP,INDAVE) = (INDVAL+3)*100+INDGRP*10+INDAVE
-      IF (INDGRP .GE. 10 .or. INDAVE .GE. 10) THEN
+      IF (INDGRP >= 10 .or. INDAVE >= 10) THEN
 !           WRITE Warning Message: Dynamic FUnit Allocation May Have Conflict
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
       END IF
@@ -1854,17 +1854,17 @@ SUBROUTINE OUPLOT
    DO K = 1, NUMAVE
       DO J = 1, NUMGRP
          DO I = 1, NHIVAL
-            IF (I.NE.INDVAL .or. J.NE.INDGRP .or. K.NE.INDAVE) THEN
-               IF (PLTFIL(INDVAL,INDGRP,INDAVE) .EQ. PLTFIL(I,J,K) .and.&
-               &IPLUNT(INDVAL,INDGRP,INDAVE) .EQ. IPLUNT(I,J,K)) THEN
+            IF (I/=INDVAL .or. J/=INDGRP .or. K/=INDAVE) THEN
+               IF (PLTFIL(INDVAL,INDGRP,INDAVE) == PLTFIL(I,J,K) .and.&
+               &IPLUNT(INDVAL,INDGRP,INDAVE) == IPLUNT(I,J,K)) THEN
                   FOUND = .TRUE.
-               ELSEIF (PLTFIL(INDVAL,INDGRP,INDAVE).EQ.PLTFIL(I,J,K).and.&
-               &IPLUNT(INDVAL,INDGRP,INDAVE).NE.IPLUNT(I,J,K))THEN
+               ELSEIF (PLTFIL(INDVAL,INDGRP,INDAVE)==PLTFIL(I,J,K).and.&
+               &IPLUNT(INDVAL,INDGRP,INDAVE)/=IPLUNT(I,J,K))THEN
 !               Write Error Message: Conflicting Inputs
                   CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
                   GO TO 999
-               ELSEIF (PLTFIL(INDVAL,INDGRP,INDAVE).NE.PLTFIL(I,J,K).and.&
-               &IPLUNT(INDVAL,INDGRP,INDAVE).EQ.IPLUNT(I,J,K))THEN
+               ELSEIF (PLTFIL(INDVAL,INDGRP,INDAVE)/=PLTFIL(I,J,K).and.&
+               &IPLUNT(INDVAL,INDGRP,INDAVE)==IPLUNT(I,J,K))THEN
 !               Write Error Message: Conflicting Inputs
                   CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
                   GO TO 999
@@ -1876,16 +1876,16 @@ SUBROUTINE OUPLOT
 
 !     Check Against PLOTFILEs for PERIOD Averages
    DO I = 1, NUMGRP
-      IF (PLTFIL(INDVAL,INDGRP,INDAVE) .EQ. ANNPLT(I) .and.&
-      &IPLUNT(INDVAL,INDGRP,INDAVE) .EQ. IPPUNT(I)) THEN
+      IF (PLTFIL(INDVAL,INDGRP,INDAVE) == ANNPLT(I) .and.&
+      &IPLUNT(INDVAL,INDGRP,INDAVE) == IPPUNT(I)) THEN
          FOUND = .TRUE.
-      ELSE IF (PLTFIL(INDVAL,INDGRP,INDAVE) .EQ. ANNPLT(I) .and.&
-      &IPLUNT(INDVAL,INDGRP,INDAVE) .NE. IPPUNT(I)) THEN
+      ELSE IF (PLTFIL(INDVAL,INDGRP,INDAVE) == ANNPLT(I) .and.&
+      &IPLUNT(INDVAL,INDGRP,INDAVE) /= IPPUNT(I)) THEN
 !          Write Error Message: Conflicting Inputs
          CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
          GO TO 999
-      ELSE IF (PLTFIL(INDVAL,INDGRP,INDAVE) .NE. ANNPLT(I) .and.&
-      &IPLUNT(INDVAL,INDGRP,INDAVE) .EQ. IPPUNT(I)) THEN
+      ELSE IF (PLTFIL(INDVAL,INDGRP,INDAVE) /= ANNPLT(I) .and.&
+      &IPLUNT(INDVAL,INDGRP,INDAVE) == IPPUNT(I)) THEN
 !          Write Error Message: Conflicting Inputs
          CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
          GO TO 999
@@ -1906,7 +1906,7 @@ SUBROUTINE OUPLOT
    CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
 
 999 RETURN
-END
+END SUBROUTINE OUPLOT
 
 SUBROUTINE PERPST
 !***********************************************************************
@@ -1931,11 +1931,11 @@ SUBROUTINE PERPST
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J
-   CHARACTER INPGRP*8
-   LOGICAL FOUND
+   CHARACTER :: INPGRP*8
+   LOGICAL :: FOUND
 
 !     Variable Initializations
    MODNAM = 'PERPST'
@@ -1944,7 +1944,7 @@ SUBROUTINE PERPST
    ANPOST = .TRUE.
 
 !     Check If Too Many Fields
-   IF (IFC .GT. 7) THEN
+   IF (IFC > 7) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
@@ -1956,8 +1956,8 @@ SUBROUTINE PERPST
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
-      IF (INPGRP .EQ. GRPID(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMGRP)
+      IF (INPGRP == GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
       END IF
@@ -1972,16 +1972,16 @@ SUBROUTINE PERPST
 !     Set Switch and Check for Previous POSTFILE Card
 !     for This Averaging Period & Group ID
    IANPST(INDGRP) = IANPST(INDGRP) + 1
-   IF (IANPST(INDGRP) .GT. 1) THEN
+   IF (IANPST(INDGRP) > 1) THEN
 !        WRITE Error Message
       CALL ERRHDL(PATH,MODNAM,'E','211',KEYWRD)
       GO TO 999
    END IF
 
 !     Retrieve Format Secondary Keyword
-   IF (FIELD(5) .EQ. 'UNFORM') THEN
+   IF (FIELD(5) == 'UNFORM') THEN
       IANFRM(INDGRP) = 0
-   ELSE IF (FIELD(5) .EQ. 'PLOT') THEN
+   ELSE IF (FIELD(5) == 'PLOT') THEN
       IANFRM(INDGRP) = 1
    ELSE
 !        Error Message: Invalid Format Specified for POSTFILE
@@ -1989,7 +1989,7 @@ SUBROUTINE PERPST
       GO TO 999
    END IF
 
-   IF ((LOCE(6)-LOCB(6)) .LE. (ILEN_FLD - 1) ) THEN
+   IF ((LOCE(6)-LOCB(6)) <= (ILEN_FLD - 1) ) THEN
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
       ANNPST(INDGRP) = RUNST1(LOCB(6):LOCE(6))
@@ -2000,20 +2000,20 @@ SUBROUTINE PERPST
    END IF
 
 !     Retrieve File Unit If Input, or Assign File Unit and OPEN File
-   IF (IFC .EQ. 7) THEN
+   IF (IFC == 7) THEN
       CALL STONUM(FIELD(7),ILEN_FLD,FNUM,IMIT)
 !        Check for Valid File Unit Value
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message: Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
       END IF
 !        Check for Conflict With System Files
-      IF (NINT(FNUM) .LE. 30) THEN
+      IF (NINT(FNUM) <= 30) THEN
 !           WRITE Error Message:  Invalid File Unit Specified
          CALL ERRHDL(PATH,MODNAM,'E','560',KEYWRD)
          GO TO 999
-      ELSE IF (NINT(FNUM) .GT. 100) THEN
+      ELSE IF (NINT(FNUM) > 100) THEN
 !           WRITE Warning Message:  Suspect File Unit Specified
 !           Unit May Conflict With Dynamically Allocated File Units
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
@@ -2024,7 +2024,7 @@ SUBROUTINE PERPST
    ELSE
 !        Dynamically Allocate File Unit (300's)
       IAPUNT(INDGRP) = 300 + INDGRP*10 - 5
-      IF (INDGRP .GE. 10) THEN
+      IF (INDGRP >= 10) THEN
 !           WRITE Warning Message: Dynamic FUnit Allocation May Have Conflict
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
       END IF
@@ -2033,17 +2033,17 @@ SUBROUTINE PERPST
 !     Check for Earlier Use of This Filename and File Unit
    FOUND = .FALSE.
    DO I = 1, NUMGRP
-      IF (I .NE. INDGRP) THEN
-         IF (ANNPST(INDGRP) .EQ. ANNPST(I) .and.&
-         &IAPUNT(INDGRP) .EQ. IAPUNT(I)) THEN
+      IF (I /= INDGRP) THEN
+         IF (ANNPST(INDGRP) == ANNPST(I) .and.&
+         &IAPUNT(INDGRP) == IAPUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (ANNPST(INDGRP) .EQ. ANNPST(I) .and.&
-         &IAPUNT(INDGRP) .NE. IAPUNT(I)) THEN
+         ELSE IF (ANNPST(INDGRP) == ANNPST(I) .and.&
+         &IAPUNT(INDGRP) /= IAPUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (ANNPST(INDGRP) .NE. ANNPST(I) .and.&
-         &IAPUNT(INDGRP) .EQ. IAPUNT(I)) THEN
+         ELSE IF (ANNPST(INDGRP) /= ANNPST(I) .and.&
+         &IAPUNT(INDGRP) == IAPUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
@@ -2054,16 +2054,16 @@ SUBROUTINE PERPST
 !     Check Against POSTFILEs for Short Term Averages
    DO J = 1, NUMAVE
       DO I = 1, NUMGRP
-         IF (ANNPST(INDGRP) .EQ. PSTFIL(I,J) .and.&
-         &IAPUNT(INDGRP) .EQ. IPSUNT(I,J)) THEN
+         IF (ANNPST(INDGRP) == PSTFIL(I,J) .and.&
+         &IAPUNT(INDGRP) == IPSUNT(I,J)) THEN
             FOUND = .TRUE.
-         ELSE IF (ANNPST(INDGRP) .EQ. PSTFIL(I,J) .and.&
-         &IAPUNT(INDGRP) .NE. IPSUNT(I,J)) THEN
+         ELSE IF (ANNPST(INDGRP) == PSTFIL(I,J) .and.&
+         &IAPUNT(INDGRP) /= IPSUNT(I,J)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (ANNPST(INDGRP) .NE. PSTFIL(I,J) .and.&
-         &IAPUNT(INDGRP) .EQ. IPSUNT(I,J)) THEN
+         ELSE IF (ANNPST(INDGRP) /= PSTFIL(I,J) .and.&
+         &IAPUNT(INDGRP) == IPSUNT(I,J)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
@@ -2073,10 +2073,10 @@ SUBROUTINE PERPST
 
    IF (.NOT. FOUND) THEN
 !        First Time File is Identified - OPEN File
-      IF (FIELD(5) .EQ. 'UNFORM') THEN
+      IF (FIELD(5) == 'UNFORM') THEN
          OPEN(IAPUNT(INDGRP),ERR=99,FILE=ANNPST(INDGRP),&
          &IOSTAT=IOERRN,FORM='UNFORMATTED',STATUS='REPLACE')
-      ELSE IF (FIELD(5) .EQ. 'PLOT') THEN
+      ELSE IF (FIELD(5) == 'PLOT') THEN
          OPEN(IAPUNT(INDGRP),ERR=99,FILE=ANNPST(INDGRP),&
          &IOSTAT=IOERRN,FORM='FORMATTED',STATUS='REPLACE')
       END IF
@@ -2089,7 +2089,7 @@ SUBROUTINE PERPST
    CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
 
 999 RETURN
-END
+END SUBROUTINE PERPST
 
 SUBROUTINE PERPLT
 !***********************************************************************
@@ -2117,11 +2117,11 @@ SUBROUTINE PERPLT
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, K
-   CHARACTER INPGRP*8
-   LOGICAL FOUND
+   CHARACTER :: INPGRP*8
+   LOGICAL :: FOUND
 
 !     Variable Initializations
    MODNAM = 'PERPLT'
@@ -2130,7 +2130,7 @@ SUBROUTINE PERPLT
    ANPLOT = .TRUE.
 
 !     Check If Too Many Fields
-   IF (IFC .GT. 6) THEN
+   IF (IFC > 6) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
@@ -2142,8 +2142,8 @@ SUBROUTINE PERPLT
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
-      IF (INPGRP .EQ. GRPID(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMGRP)
+      IF (INPGRP == GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
       END IF
@@ -2158,13 +2158,13 @@ SUBROUTINE PERPLT
 !     Set Switch and Check for Previous PLOTFILE Card
 !     for This Averaging Period & Group ID
    IANPLT(INDGRP) = IANPLT(INDGRP) + 1
-   IF (IANPLT(INDGRP) .GT. 1) THEN
+   IF (IANPLT(INDGRP) > 1) THEN
 !        WRITE Error Message
       CALL ERRHDL(PATH,MODNAM,'E','211',KEYWRD)
       GO TO 999
    END IF
 
-   IF ((LOCE(5)-LOCB(5)) .LE. (ILEN_FLD - 1) ) THEN
+   IF ((LOCE(5)-LOCB(5)) <= (ILEN_FLD - 1) ) THEN
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
       ANNPLT(INDGRP) = RUNST1(LOCB(5):LOCE(5))
@@ -2175,20 +2175,20 @@ SUBROUTINE PERPLT
    END IF
 
 !     Retrieve File Unit If Input, or Assign File Unit and OPEN File
-   IF (IFC .EQ. 6) THEN
+   IF (IFC == 6) THEN
       CALL STONUM(FIELD(6),ILEN_FLD,FNUM,IMIT)
 !        Check for Valid File Unit Value
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message: Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
       END IF
 !        Check for Conflict With System Files
-      IF (NINT(FNUM) .LE. 30) THEN
+      IF (NINT(FNUM) <= 30) THEN
 !           WRITE Error Message:  Invalid File Unit Specified
          CALL ERRHDL(PATH,MODNAM,'E','560',KEYWRD)
          GO TO 999
-      ELSE IF (NINT(FNUM) .GT. 100) THEN
+      ELSE IF (NINT(FNUM) > 100) THEN
 !           WRITE Warning Message:  Suspect File Unit Specified
 !           Unit May Conflict With Dynamically Allocated File Units
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
@@ -2199,7 +2199,7 @@ SUBROUTINE PERPLT
    ELSE
 !        Dynamically Allocate File Unit (300's)
       IPPUNT(INDGRP) = 300 + INDGRP*10
-      IF (INDGRP .GE. 10) THEN
+      IF (INDGRP >= 10) THEN
 !           WRITE Warning Message: Dynamic FUnit Allocation May Have Conflict
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
       END IF
@@ -2208,17 +2208,17 @@ SUBROUTINE PERPLT
 !     Check for Earlier Use of This Filename and File Unit
    FOUND = .FALSE.
    DO I = 1, NUMGRP
-      IF (I .NE. INDGRP) THEN
-         IF (ANNPLT(INDGRP) .EQ. ANNPLT(I) .and.&
-         &IPPUNT(INDGRP) .EQ. IPPUNT(I)) THEN
+      IF (I /= INDGRP) THEN
+         IF (ANNPLT(INDGRP) == ANNPLT(I) .and.&
+         &IPPUNT(INDGRP) == IPPUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (ANNPLT(INDGRP) .EQ. ANNPLT(I) .and.&
-         &IPPUNT(INDGRP) .NE. IPPUNT(I)) THEN
+         ELSE IF (ANNPLT(INDGRP) == ANNPLT(I) .and.&
+         &IPPUNT(INDGRP) /= IPPUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (ANNPLT(INDGRP) .NE. ANNPLT(I) .and.&
-         &IPPUNT(INDGRP) .EQ. IPPUNT(I)) THEN
+         ELSE IF (ANNPLT(INDGRP) /= ANNPLT(I) .and.&
+         &IPPUNT(INDGRP) == IPPUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
@@ -2230,16 +2230,16 @@ SUBROUTINE PERPLT
    DO K = 1, NUMAVE
       DO J = 1, NUMGRP
          DO I = 1, NHIVAL
-            IF (ANNPLT(INDGRP) .EQ. PLTFIL(I,J,K) .and.&
-            &IPPUNT(INDGRP) .EQ. IPLUNT(I,J,K)) THEN
+            IF (ANNPLT(INDGRP) == PLTFIL(I,J,K) .and.&
+            &IPPUNT(INDGRP) == IPLUNT(I,J,K)) THEN
                FOUND = .TRUE.
-            ELSE IF (ANNPLT(INDGRP) .EQ. PLTFIL(I,J,K) .and.&
-            &IPPUNT(INDGRP) .NE. IPLUNT(I,J,K)) THEN
+            ELSE IF (ANNPLT(INDGRP) == PLTFIL(I,J,K) .and.&
+            &IPPUNT(INDGRP) /= IPLUNT(I,J,K)) THEN
 !                 Write Error Message: Conflicting Inputs
                CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
                GO TO 999
-            ELSE IF (ANNPLT(INDGRP) .NE. PLTFIL(I,J,K) .and.&
-            &IPPUNT(INDGRP) .EQ. IPLUNT(I,J,K)) THEN
+            ELSE IF (ANNPLT(INDGRP) /= PLTFIL(I,J,K) .and.&
+            &IPPUNT(INDGRP) == IPLUNT(I,J,K)) THEN
 !                 Write Error Message: Conflicting Inputs
                CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
                GO TO 999
@@ -2261,7 +2261,7 @@ SUBROUTINE PERPLT
    CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
 
 999 RETURN
-END
+END SUBROUTINE PERPLT
 
 SUBROUTINE OUTOXX
 !***********************************************************************
@@ -2283,11 +2283,11 @@ SUBROUTINE OUTOXX
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, IPRDT, NIDUM, NRDUM, NUMPER, RDUM
-   CHARACTER BUF12*12
-   LOGICAL FOUND
+   CHARACTER :: BUF12*12
+   LOGICAL :: FOUND
 
 !     Variable Initializations
    MODNAM = 'OUTOXX'
@@ -2301,27 +2301,27 @@ SUBROUTINE OUTOXX
    TXFILE = .TRUE.
 
 !     Check If Enough Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Fields
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LT. 5) THEN
+   ELSE IF (IFC < 5) THEN
 !        Error Message: Not Enough Fields
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. 6) THEN
+   ELSE IF (IFC > 6) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
    END IF
 
 !     Retrieve Averaging Period
-   IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
+   IF (FIELD(3) == 'MONTH' .and. MONTH) THEN
 !        Set Value of IPRDT = 720 for MONTHly Averages
       IPRDT = 720
    ELSE
       CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message:Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
@@ -2333,8 +2333,8 @@ SUBROUTINE OUTOXX
    FOUND = .FALSE.
    INDAVE = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
-      IF (IPRDT .EQ. KAVE(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMAVE)
+      IF (IPRDT == KAVE(J)) THEN
          FOUND = .TRUE.
          INDAVE = J
       END IF
@@ -2347,7 +2347,7 @@ SUBROUTINE OUTOXX
    END IF
 
 !     Check for Averaging Period Other Than 1-HOUR, and Write Warning
-   IF (IPRDT .NE. 1) THEN
+   IF (IPRDT /= 1) THEN
       WRITE(DUMMY,'(2X,I4,2X)') IPRDT
       CALL ERRHDL(PATH,MODNAM,'W','296',DUMMY)
    END IF
@@ -2355,7 +2355,7 @@ SUBROUTINE OUTOXX
 !     Set Switch and Check for Previous TOXXFILE Card
 !     for This Averaging Period
    ITOXFL(INDAVE) = ITOXFL(INDAVE) + 1
-   IF (ITOXFL(INDAVE) .GT. 1) THEN
+   IF (ITOXFL(INDAVE) > 1) THEN
 !        WRITE Error Message
       CALL ERRHDL(PATH,MODNAM,'E','211',KEYWRD)
       GO TO 999
@@ -2364,14 +2364,14 @@ SUBROUTINE OUTOXX
 !     Retrieve Threshold
    CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
 !     Check for Valid Threshold Value
-   IF (IMIT .NE. 1) THEN
+   IF (IMIT /= 1) THEN
 !        Write Error Message:Invalid Numerical Field
       CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
       GO TO 999
    END IF
    TOXTHR(INDAVE) = DNUM
 
-   IF ((LOCE(5)-LOCB(5)) .LE. (ILEN_FLD - 1) ) THEN
+   IF ((LOCE(5)-LOCB(5)) <= (ILEN_FLD - 1) ) THEN
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
       TOXFIL(INDAVE) = RUNST1(LOCB(5):LOCE(5))
@@ -2382,20 +2382,20 @@ SUBROUTINE OUTOXX
    END IF
 
 !     Retrieve File Unit If Input, or Assign File Unit and OPEN File
-   IF (IFC .EQ. 6) THEN
+   IF (IFC == 6) THEN
       CALL STONUM(FIELD(6),ILEN_FLD,FNUM,IMIT)
 !        Check for Valid Threshold Value
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message:Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
       END IF
 !        Check for Conflict With System Files
-      IF (NINT(FNUM) .LE. 30) THEN
+      IF (NINT(FNUM) <= 30) THEN
 !           WRITE Error Message:  Invalid File Unit Specified
          CALL ERRHDL(PATH,MODNAM,'E','560',KEYWRD)
          GO TO 999
-      ELSE IF (NINT(FNUM) .GT. 100) THEN
+      ELSE IF (NINT(FNUM) > 100) THEN
 !           WRITE Warning Message:  Suspect File Unit Specified
 !           Unit May Conflict With Dynamically Allocated File Units
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
@@ -2406,7 +2406,7 @@ SUBROUTINE OUTOXX
    ELSE
 !        Dynamically Allocate File Unit (300's)
       ITXUNT(INDAVE) = 300 + INDAVE
-      IF (INDAVE .GE. 5) THEN
+      IF (INDAVE >= 5) THEN
 !           WRITE Warning Message: Dynamic FUnit Allocation May Have Conflict
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
       END IF
@@ -2415,17 +2415,17 @@ SUBROUTINE OUTOXX
 !     Check for Earlier Use of This Filename and File Unit
    FOUND = .FALSE.
    DO I = 1, NUMAVE
-      IF (I .NE. INDAVE) THEN
-         IF (TOXFIL(INDAVE) .EQ. TOXFIL(I) .and.&
-         &ITXUNT(INDAVE) .EQ. ITXUNT(I)) THEN
+      IF (I /= INDAVE) THEN
+         IF (TOXFIL(INDAVE) == TOXFIL(I) .and.&
+         &ITXUNT(INDAVE) == ITXUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (TOXFIL(INDAVE) .EQ. TOXFIL(I) .and.&
-         &ITXUNT(INDAVE) .NE. ITXUNT(I)) THEN
+         ELSE IF (TOXFIL(INDAVE) == TOXFIL(I) .and.&
+         &ITXUNT(INDAVE) /= ITXUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (TOXFIL(INDAVE) .NE. TOXFIL(I) .and.&
-         &ITXUNT(INDAVE) .EQ. ITXUNT(I)) THEN
+         ELSE IF (TOXFIL(INDAVE) /= TOXFIL(I) .and.&
+         &ITXUNT(INDAVE) == ITXUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
@@ -2458,7 +2458,7 @@ SUBROUTINE OUTOXX
 999 CONTINUE
 
    RETURN
-END
+END SUBROUTINE OUTOXX
 
 SUBROUTINE OUSEAS
 !***********************************************************************
@@ -2480,11 +2480,11 @@ SUBROUTINE OUSEAS
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J
-   CHARACTER INPGRP*8
-   LOGICAL FOUND
+   CHARACTER :: INPGRP*8
+   LOGICAL :: FOUND
 
 !     Variable Initializations
    MODNAM = 'OUSEAS'
@@ -2493,15 +2493,15 @@ SUBROUTINE OUSEAS
    SEASONHR = .TRUE.
 
 !     Check If Enough Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Fields
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LT. 4) THEN
+   ELSE IF (IFC < 4) THEN
 !        Error Message: Not Enough Fields
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. 5) THEN
+   ELSE IF (IFC > 5) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
@@ -2513,8 +2513,8 @@ SUBROUTINE OUSEAS
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
-      IF (INPGRP .EQ. GRPID(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMGRP)
+      IF (INPGRP == GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
       END IF
@@ -2529,13 +2529,13 @@ SUBROUTINE OUSEAS
 !     Set Switch and Check for Previous SEASONHR Card
 !     for This Group ID
    ISEAHR(INDGRP) = ISEAHR(INDGRP) + 1
-   IF (ISEAHR(INDGRP) .GT. 1) THEN
+   IF (ISEAHR(INDGRP) > 1) THEN
 !        WRITE Error Message
       CALL ERRHDL(PATH,MODNAM,'E','211',KEYWRD)
       GO TO 999
    END IF
 
-   IF ((LOCE(4)-LOCB(4)) .LE. (ILEN_FLD - 1) ) THEN
+   IF ((LOCE(4)-LOCB(4)) <= (ILEN_FLD - 1) ) THEN
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
       SEAHRS(INDGRP) = RUNST1(LOCB(4):LOCE(4))
@@ -2546,20 +2546,20 @@ SUBROUTINE OUSEAS
    END IF
 
 !     Retrieve File Unit If Input, or Assign File Unit and OPEN File
-   IF (IFC .EQ. 5) THEN
+   IF (IFC == 5) THEN
       CALL STONUM(FIELD(5),ILEN_FLD,FNUM,IMIT)
 !        Check for Valid Threshold Value
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message: Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
       END IF
 !        Check for Conflict With System Files
-      IF (NINT(FNUM) .LE. 30) THEN
+      IF (NINT(FNUM) <= 30) THEN
 !           WRITE Error Message:  Invalid File Unit Specified
          CALL ERRHDL(PATH,MODNAM,'E','560',KEYWRD)
          GO TO 999
-      ELSE IF (NINT(FNUM) .GT. 100) THEN
+      ELSE IF (NINT(FNUM) > 100) THEN
 !           WRITE Warning Message:  Suspect File Unit Specified
 !           Unit May Conflict With Dynamically Allocated File Units
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
@@ -2570,7 +2570,7 @@ SUBROUTINE OUSEAS
    ELSE
 !        Dynamically Allocate File Unit (300's)
       ISHUNT(INDGRP) = 302 + INDGRP*10
-      IF (INDGRP .GE. 10) THEN
+      IF (INDGRP >= 10) THEN
 !           WRITE Warning Message: Dynamic FUnit Allocation May Have Conflict
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
       END IF
@@ -2579,17 +2579,17 @@ SUBROUTINE OUSEAS
 !     Check for Earlier Use of This Filename and File Unit
    FOUND = .FALSE.
    DO I = 1, NUMGRP
-      IF (I .NE. INDGRP) THEN
-         IF (SEAHRS(INDGRP) .EQ. SEAHRS(I) .and.&
-         &ISHUNT(INDGRP) .EQ. ISHUNT(I)) THEN
+      IF (I /= INDGRP) THEN
+         IF (SEAHRS(INDGRP) == SEAHRS(I) .and.&
+         &ISHUNT(INDGRP) == ISHUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (SEAHRS(INDGRP) .EQ. SEAHRS(I) .and.&
-         &ISHUNT(INDGRP) .NE. ISHUNT(I)) THEN
+         ELSE IF (SEAHRS(INDGRP) == SEAHRS(I) .and.&
+         &ISHUNT(INDGRP) /= ISHUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (SEAHRS(INDGRP) .NE. SEAHRS(I) .and.&
-         &ISHUNT(INDGRP) .EQ. ISHUNT(I)) THEN
+         ELSE IF (SEAHRS(INDGRP) /= SEAHRS(I) .and.&
+         &ISHUNT(INDGRP) == ISHUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
@@ -2610,7 +2610,7 @@ SUBROUTINE OUSEAS
    CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
 
 999 RETURN
-END
+END SUBROUTINE OUSEAS
 
 SUBROUTINE OURANK
 !***********************************************************************
@@ -2632,10 +2632,10 @@ SUBROUTINE OURANK
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, IPRDT
-   LOGICAL FOUND
+   LOGICAL :: FOUND
 
 !     Variable Initializations
    MODNAM = 'OURANK'
@@ -2644,27 +2644,27 @@ SUBROUTINE OURANK
    RKFILE = .TRUE.
 
 !     Check If Enough Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Fields
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LT. 5) THEN
+   ELSE IF (IFC < 5) THEN
 !        Error Message: Not Enough Fields
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. 6) THEN
+   ELSE IF (IFC > 6) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
    END IF
 
 !     Retrieve Averaging Period
-   IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
+   IF (FIELD(3) == 'MONTH' .and. MONTH) THEN
 !        Set Value of IPRDT = 720 for MONTHly Averages
       IPRDT = 720
    ELSE
       CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message:Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
@@ -2676,8 +2676,8 @@ SUBROUTINE OURANK
    FOUND = .FALSE.
    INDAVE = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
-      IF (IPRDT .EQ. KAVE(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMAVE)
+      IF (IPRDT == KAVE(J)) THEN
          FOUND = .TRUE.
          INDAVE = J
       END IF
@@ -2691,14 +2691,14 @@ SUBROUTINE OURANK
 
 !     Check for MAXTABLE Option for this INDAVE; Then Set Switch and
 !     Check for Previous RANKFILE Card for This Averaging Period
-   IF (IRNKFL(INDAVE) .EQ. 0) THEN
+   IF (IRNKFL(INDAVE) == 0) THEN
       IRNKFL(INDAVE) = IRNKFL(INDAVE) + 1
    ELSE
 !        Error Message:E203 AVEPER Not Match With MAXTABLE Options
       CALL ERRHDL(PATH,MODNAM,'E','203','AVEPER')
       GO TO 999
    END IF
-   IF (IRNKFL(INDAVE) .GT. 1) THEN
+   IF (IRNKFL(INDAVE) > 1) THEN
 !        WRITE Error Message
       CALL ERRHDL(PATH,MODNAM,'E','211',KEYWRD)
       GO TO 999
@@ -2707,7 +2707,7 @@ SUBROUTINE OURANK
 !     Retrieve Rank Number (number of values to output)
    CALL STONUM(FIELD(4),ILEN_FLD,FNUM,IMIT)
 !     Check for Valid Threshold Value
-   IF (IMIT .NE. 1) THEN
+   IF (IMIT /= 1) THEN
 !        Write Error Message:Invalid Numerical Field
       CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
       GO TO 999
@@ -2715,7 +2715,7 @@ SUBROUTINE OURANK
    INUM = NINT(FNUM)
    IRKVAL(INDAVE) = INUM
 
-   IF ((LOCE(5)-LOCB(5)) .LE. (ILEN_FLD - 1) ) THEN
+   IF ((LOCE(5)-LOCB(5)) <= (ILEN_FLD - 1) ) THEN
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
       RNKFIL(INDAVE) = RUNST1(LOCB(5):LOCE(5))
@@ -2726,20 +2726,20 @@ SUBROUTINE OURANK
    END IF
 
 !     Retrieve File Unit If Input, or Assign File Unit and OPEN File
-   IF (IFC .EQ. 6) THEN
+   IF (IFC == 6) THEN
       CALL STONUM(FIELD(6),ILEN_FLD,FNUM,IMIT)
 !        Check for Valid Threshold Value
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message:Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
       END IF
 !        Check for Conflict With System Files
-      IF (NINT(FNUM) .LE. 30) THEN
+      IF (NINT(FNUM) <= 30) THEN
 !           WRITE Error Message:  Invalid File Unit Specified
          CALL ERRHDL(PATH,MODNAM,'E','560',KEYWRD)
          GO TO 999
-      ELSE IF (NINT(FNUM) .GT. 100) THEN
+      ELSE IF (NINT(FNUM) > 100) THEN
 !           WRITE Warning Message:  Suspect File Unit Specified
 !           Unit May Conflict With Dynamically Allocated File Units
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
@@ -2755,17 +2755,17 @@ SUBROUTINE OURANK
 !     Check for Earlier Use of This Filename and File Unit
    FOUND = .FALSE.
    DO I = 1, NUMAVE
-      IF (I .NE. INDAVE) THEN
-         IF (RNKFIL(INDAVE) .EQ. RNKFIL(I) .and.&
-         &IRKUNT(INDAVE) .EQ. IRKUNT(I)) THEN
+      IF (I /= INDAVE) THEN
+         IF (RNKFIL(INDAVE) == RNKFIL(I) .and.&
+         &IRKUNT(INDAVE) == IRKUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (RNKFIL(INDAVE) .EQ. RNKFIL(I) .and.&
-         &IRKUNT(INDAVE) .NE. IRKUNT(I)) THEN
+         ELSE IF (RNKFIL(INDAVE) == RNKFIL(I) .and.&
+         &IRKUNT(INDAVE) /= IRKUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (RNKFIL(INDAVE) .NE. RNKFIL(I) .and.&
-         &IRKUNT(INDAVE) .EQ. IRKUNT(I)) THEN
+         ELSE IF (RNKFIL(INDAVE) /= RNKFIL(I) .and.&
+         &IRKUNT(INDAVE) == IRKUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
@@ -2788,7 +2788,7 @@ SUBROUTINE OURANK
 999 CONTINUE
 
    RETURN
-END
+END SUBROUTINE OURANK
 
 SUBROUTINE OUEVAL
 !***********************************************************************
@@ -2810,11 +2810,11 @@ SUBROUTINE OUEVAL
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, INDSRC
-   CHARACTER INPSRC*8
-   LOGICAL FOUND
+   CHARACTER :: INPSRC*8
+   LOGICAL :: FOUND
 
 !     Variable Initializations
    MODNAM  = 'OUEVAL'
@@ -2822,15 +2822,15 @@ SUBROUTINE OUEVAL
    EVALFIL = .TRUE.
 
 !     Check If Enough Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Fields
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       RETURN
-   ELSE IF (IFC .LT. 4) THEN
+   ELSE IF (IFC < 4) THEN
 !        Error Message: Not Enough Fields
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       RETURN
-   ELSE IF (IFC .GT. 5) THEN
+   ELSE IF (IFC > 5) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       RETURN
@@ -2842,8 +2842,8 @@ SUBROUTINE OUEVAL
    FOUND = .FALSE.
    INDSRC = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMSRC)
-      IF (INPSRC .EQ. SRCID(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMSRC)
+      IF (INPSRC == SRCID(J)) THEN
          FOUND = .TRUE.
          INDSRC = J
       END IF
@@ -2858,7 +2858,7 @@ SUBROUTINE OUEVAL
       EVAL(INDSRC) = .TRUE.
    END IF
 
-   IF ((LOCE(4)-LOCB(4)) .LE. (ILEN_FLD - 1) ) THEN
+   IF ((LOCE(4)-LOCB(4)) <= (ILEN_FLD - 1) ) THEN
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
       EVLFIL(INDSRC) = RUNST1(LOCB(4):LOCE(4))
@@ -2869,20 +2869,20 @@ SUBROUTINE OUEVAL
    END IF
 
 !     Retrieve File Unit If Input, or Assign File Unit and OPEN File
-   IF (IFC .EQ. 5) THEN
+   IF (IFC == 5) THEN
       CALL STONUM(FIELD(5),ILEN_FLD,FNUM,IMIT)
 !        Check for Valid Threshold Value
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message:Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          RETURN
       END IF
 !        Check for Conflict With System Files
-      IF (NINT(FNUM) .LE. 30) THEN
+      IF (NINT(FNUM) <= 30) THEN
 !           WRITE Error Message:  Invalid File Unit Specified
          CALL ERRHDL(PATH,MODNAM,'E','560',KEYWRD)
          RETURN
-      ELSE IF (NINT(FNUM) .GT. 100) THEN
+      ELSE IF (NINT(FNUM) > 100) THEN
 !           WRITE Warning Message:  Suspect File Unit Specified
 !           Unit May Conflict With Dynamically Allocated File Units
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
@@ -2898,17 +2898,17 @@ SUBROUTINE OUEVAL
 !     Check for Earlier Use of This Filename and File Unit
    FOUND = .FALSE.
    DO I = 1, NUMSRC
-      IF (I .NE. INDSRC) THEN
-         IF (EVLFIL(INDSRC) .EQ. EVLFIL(I) .and.&
-         &IELUNT(INDSRC) .EQ. IELUNT(I)) THEN
+      IF (I /= INDSRC) THEN
+         IF (EVLFIL(INDSRC) == EVLFIL(I) .and.&
+         &IELUNT(INDSRC) == IELUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (EVLFIL(INDSRC) .EQ. EVLFIL(I) .and.&
-         &IELUNT(INDSRC) .NE. IELUNT(I)) THEN
+         ELSE IF (EVLFIL(INDSRC) == EVLFIL(I) .and.&
+         &IELUNT(INDSRC) /= IELUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             EXIT
-         ELSE IF (EVLFIL(INDSRC) .NE. EVLFIL(I) .and.&
-         &IELUNT(INDSRC) .EQ. IELUNT(I)) THEN
+         ELSE IF (EVLFIL(INDSRC) /= EVLFIL(I) .and.&
+         &IELUNT(INDSRC) == IELUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             EXIT
@@ -2931,7 +2931,7 @@ SUBROUTINE OUEVAL
 999 CONTINUE
 
    RETURN
-END
+END SUBROUTINE OUEVAL
 
 SUBROUTINE OUSUMM
 !***********************************************************************
@@ -2953,7 +2953,7 @@ SUBROUTINE OUSUMM
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'OUSUMM'
@@ -2962,21 +2962,21 @@ SUBROUTINE OUSUMM
    SUMMFILE = .TRUE.
 
 !     Check If Enough Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Fields
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LT. 3) THEN
+   ELSE IF (IFC < 3) THEN
 !        Error Message: Not Enough Fields
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. 3) THEN
+   ELSE IF (IFC > 3) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
    END IF
 
-   IF ((LOCE(3)-LOCB(3)) .LE. (ILEN_FLD - 1) ) THEN
+   IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
       SUMFIL = RUNST1(LOCB(3):LOCE(3))
@@ -2997,7 +2997,7 @@ SUBROUTINE OUSUMM
 99 CALL ERRHDL(PATH,MODNAM,'E','500','SUMMFILE')
 
 999 RETURN
-END
+END SUBROUTINE OUSUMM
 
 SUBROUTINE FILEFORM
 !***********************************************************************
@@ -3019,34 +3019,34 @@ SUBROUTINE FILEFORM
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'FILEFORM'
 
 !     Check If Enough Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Fields
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LT. 3) THEN
+   ELSE IF (IFC < 3) THEN
 !        Error Message: Not Enough Fields
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. 3) THEN
+   ELSE IF (IFC > 3) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
    END IF
 
-   IF (FIELD(3)(1:3) .EQ. 'FIX') THEN
+   IF (FIELD(3)(1:3) == 'FIX') THEN
 !        Output file formats will use FIXed format
       FILE_FORMAT = 'FIX'
-   ELSE IF (FIELD(3)(1:3) .EQ. 'EXP') THEN
+   ELSE IF (FIELD(3)(1:3) == 'EXP') THEN
 !        Output file formats will use EXPonential format
       FILE_FORMAT = 'EXP'
 
-      IF (NUMTYP .EQ. 1) THEN
+      IF (NUMTYP == 1) THEN
 ! ---       Mofify affected formats to use EXPonential format;
 !           NOTE: Modifications to PLTFRM, PSTFRM and MXDFRM for multiple
 !           output types (CONC, DEPOS, etc.) are made in SUBROUTINE MOPOPS.
@@ -3076,7 +3076,7 @@ SUBROUTINE FILEFORM
    END IF
 
 999 RETURN
-END
+END SUBROUTINE FILEFORM
 
 SUBROUTINE OUMAXDLY
 !***********************************************************************
@@ -3098,11 +3098,11 @@ SUBROUTINE OUMAXDLY
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, IDAT, IDAT8, ISTR, ISTP
    INTEGER :: IRSYR, IRSDATE
-   CHARACTER INPGRP*8, HDRFRM*400
+   CHARACTER :: INPGRP*8, HDRFRM*400
    CHARACTER (LEN = ILEN_FLD) :: BUFFER
    LOGICAL :: FOUND, L_EXISTS
 ! Unused: INTEGER :: IPRDT
@@ -3122,15 +3122,15 @@ SUBROUTINE OUMAXDLY
    WRITE(HDRFRM,9020) NUMTYP, NUMTYP+2
 
 !     Check If Enough Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Fields
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LT. 4) THEN
+   ELSE IF (IFC < 4) THEN
 !        Error Message: Not Enough Fields
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. 5) THEN
+   ELSE IF (IFC > 5) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
@@ -3142,8 +3142,8 @@ SUBROUTINE OUMAXDLY
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
-      IF (INPGRP .EQ. GRPID(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMGRP)
+      IF (INPGRP == GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
       END IF
@@ -3158,13 +3158,13 @@ SUBROUTINE OUMAXDLY
 !     Set Switch and Check for Previous MAXDAILY Card
 !     for This Group ID
    IMXDLY(INDGRP) = IMXDLY(INDGRP) + 1
-   IF (IMXDLY(INDGRP) .GT. 1) THEN
+   IF (IMXDLY(INDGRP) > 1) THEN
 !        WRITE Error Message
       CALL ERRHDL(PATH,MODNAM,'E','211',KEYWRD)
       GO TO 999
    END IF
 
-   IF ((LOCE(4)-LOCB(4)) .LE. (ILEN_FLD - 1) ) THEN
+   IF ((LOCE(4)-LOCB(4)) <= (ILEN_FLD - 1) ) THEN
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
       MAXDLY(INDGRP) = RUNST1(LOCB(4):LOCE(4))
@@ -3175,20 +3175,20 @@ SUBROUTINE OUMAXDLY
    END IF
 
 !     Retrieve File Unit If Input, or Assign File Unit and OPEN File
-   IF (IFC .EQ. 5) THEN
+   IF (IFC == 5) THEN
       CALL STONUM(FIELD(5),ILEN_FLD,FNUM,IMIT)
 !        Check for Valid File Unit Value
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message: Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
       END IF
 !        Check for Conflict With System Files
-      IF (NINT(FNUM) .LE. 30) THEN
+      IF (NINT(FNUM) <= 30) THEN
 !           WRITE Error Message:  Invalid File Unit Specified
          CALL ERRHDL(PATH,MODNAM,'E','560',KEYWRD)
          GO TO 999
-      ELSE IF (NINT(FNUM) .GT. 100) THEN
+      ELSE IF (NINT(FNUM) > 100) THEN
 !           WRITE Warning Message:  Suspect File Unit Specified
 !           Unit May Conflict With Dynamically Allocated File Units
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
@@ -3199,7 +3199,7 @@ SUBROUTINE OUMAXDLY
    ELSE
 !        Dynamically Allocate File Unit (500's)
       IMDUNT(INDGRP) = 501 + (INDGRP-1)*2
-      IF (INDGRP .GE. 10) THEN
+      IF (INDGRP >= 10) THEN
 !           WRITE Warning Message: Dynamic FUnit Allocation May Have Conflict
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
       END IF
@@ -3208,17 +3208,17 @@ SUBROUTINE OUMAXDLY
 !     Check for Earlier Use of This Filename and File Unit
    FOUND = .FALSE.
    DO I = 1, NUMGRP
-      IF (I .NE. INDGRP) THEN
-         IF (MAXDLY(INDGRP) .EQ. MAXDLY(I) .and.&
-         &IMDUNT(INDGRP) .EQ. IMDUNT(I)) THEN
+      IF (I /= INDGRP) THEN
+         IF (MAXDLY(INDGRP) == MAXDLY(I) .and.&
+         &IMDUNT(INDGRP) == IMDUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (MAXDLY(INDGRP) .EQ. MAXDLY(I) .and.&
-         &IMDUNT(INDGRP) .NE. IMDUNT(I)) THEN
+         ELSE IF (MAXDLY(INDGRP) == MAXDLY(I) .and.&
+         &IMDUNT(INDGRP) /= IMDUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (MAXDLY(INDGRP) .NE. MAXDLY(I) .and.&
-         &IMDUNT(INDGRP) .EQ. IMDUNT(I)) THEN
+         ELSE IF (MAXDLY(INDGRP) /= MAXDLY(I) .and.&
+         &IMDUNT(INDGRP) == IMDUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
@@ -3254,7 +3254,7 @@ SUBROUTINE OUMAXDLY
 
          DO WHILE (.NOT. EOF)
             READ(IMDUNT(INDGRP),'(A:)', ERR=919,END=299) BUFFER
-            IF (BUFFER(1:1) .NE. '*') THEN
+            IF (BUFFER(1:1) /= '*') THEN
 !                 Record Is Not Part of Header - Read Date For This Record
 !                 First calculate start & end of date string based on NUMTYP
                ISTR = 101
@@ -3278,7 +3278,7 @@ SUBROUTINE OUMAXDLY
 !                 Header record - cycle to next record
                CYCLE
             END IF
-            IF (IDAT .GT. IRSDATE) THEN
+            IF (IDAT > IRSDATE) THEN
 !                 Date of MAXDAILY Record Is Greater Than Start Date
 !                 From Save File.  Treat As End of File to Exit Loop.
                IF (MULTYR) THEN
@@ -3347,7 +3347,7 @@ SUBROUTINE OUMAXDLY
 919 CALL ERRHDL(PATH,MODNAM,'E','510',DUMMY)
 
 999 RETURN
-END
+END SUBROUTINE OUMAXDLY
 
 SUBROUTINE OUMXDLY_BYYR
 !***********************************************************************
@@ -3369,11 +3369,11 @@ SUBROUTINE OUMXDLY_BYYR
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, IDAT, IDAT8, ISTR, ISTP
    INTEGER :: IRSYR, IRSDATE
-   CHARACTER INPGRP*8, HDRFRM*400
+   CHARACTER :: INPGRP*8, HDRFRM*400
    CHARACTER (LEN = ILEN_FLD) :: BUFFER
    LOGICAL :: FOUND, L_EXISTS
 ! Unused: INTEGER :: IPRDT
@@ -3393,15 +3393,15 @@ SUBROUTINE OUMXDLY_BYYR
    WRITE(HDRFRM,9020) NUMTYP, NUMTYP+2
 
 !     Check If Enough Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Fields
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LT. 4) THEN
+   ELSE IF (IFC < 4) THEN
 !        Error Message: Not Enough Fields
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. 5) THEN
+   ELSE IF (IFC > 5) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
@@ -3413,8 +3413,8 @@ SUBROUTINE OUMXDLY_BYYR
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
-      IF (INPGRP .EQ. GRPID(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMGRP)
+      IF (INPGRP == GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
       END IF
@@ -3429,13 +3429,13 @@ SUBROUTINE OUMXDLY_BYYR
 !     Set Switch and Check for Previous MXDYBYYR Card
 !     for This Group ID
    IMXDLY_BYYR(INDGRP) = IMXDLY_BYYR(INDGRP) + 1
-   IF (IMXDLY_BYYR(INDGRP) .GT. 1) THEN
+   IF (IMXDLY_BYYR(INDGRP) > 1) THEN
 !        WRITE Error Message
       CALL ERRHDL(PATH,MODNAM,'E','211',KEYWRD)
       GO TO 999
    END IF
 
-   IF ((LOCE(4)-LOCB(4)) .LE. (ILEN_FLD - 1) ) THEN
+   IF ((LOCE(4)-LOCB(4)) <= (ILEN_FLD - 1) ) THEN
 !        Retrieve Filename as Character Substring to Maintain Original Case
 !        Also Check for Filename Larger Than ILEN_FLD Characters
       MAXDLY_BYYR(INDGRP) = RUNST1(LOCB(4):LOCE(4))
@@ -3446,20 +3446,20 @@ SUBROUTINE OUMXDLY_BYYR
    END IF
 
 !     Retrieve File Unit If Input, or Assign File Unit and OPEN File
-   IF (IFC .EQ. 5) THEN
+   IF (IFC == 5) THEN
       CALL STONUM(FIELD(5),ILEN_FLD,FNUM,IMIT)
 !        Check for Valid File Unit Value
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message: Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
       END IF
 !        Check for Conflict With System Files
-      IF (NINT(FNUM) .LE. 30) THEN
+      IF (NINT(FNUM) <= 30) THEN
 !           WRITE Error Message:  Invalid File Unit Specified
          CALL ERRHDL(PATH,MODNAM,'E','560',KEYWRD)
          GO TO 999
-      ELSE IF (NINT(FNUM) .GT. 100) THEN
+      ELSE IF (NINT(FNUM) > 100) THEN
 !           WRITE Warning Message:  Suspect File Unit Specified
 !           Unit May Conflict With Dynamically Allocated File Units
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
@@ -3470,7 +3470,7 @@ SUBROUTINE OUMXDLY_BYYR
    ELSE
 !        Dynamically Allocate File Unit (600's)
       IMDUNT_BYYR(INDGRP) = 601 + (INDGRP-1)*2
-      IF (INDGRP .GE. 10) THEN
+      IF (INDGRP >= 10) THEN
 !           WRITE Warning Message: Dynamic FUnit Allocation May Have Conflict
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
       END IF
@@ -3479,17 +3479,17 @@ SUBROUTINE OUMXDLY_BYYR
 !     Check for Earlier Use of This Filename and File Unit
    FOUND = .FALSE.
    DO I = 1, NUMGRP
-      IF (I .NE. INDGRP) THEN
-         IF (MAXDLY_BYYR(INDGRP) .EQ. MAXDLY_BYYR(I) .and.&
-         &IMDUNT_BYYR(INDGRP) .EQ. IMDUNT_BYYR(I)) THEN
+      IF (I /= INDGRP) THEN
+         IF (MAXDLY_BYYR(INDGRP) == MAXDLY_BYYR(I) .and.&
+         &IMDUNT_BYYR(INDGRP) == IMDUNT_BYYR(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (MAXDLY_BYYR(INDGRP) .EQ. MAXDLY_BYYR(I) .and.&
-         &IMDUNT_BYYR(INDGRP) .NE. IMDUNT_BYYR(I)) THEN
+         ELSE IF (MAXDLY_BYYR(INDGRP) == MAXDLY_BYYR(I) .and.&
+         &IMDUNT_BYYR(INDGRP) /= IMDUNT_BYYR(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (MAXDLY_BYYR(INDGRP) .NE. MAXDLY_BYYR(I) .and.&
-         &IMDUNT_BYYR(INDGRP) .EQ. IMDUNT_BYYR(I)) THEN
+         ELSE IF (MAXDLY_BYYR(INDGRP) /= MAXDLY_BYYR(I) .and.&
+         &IMDUNT_BYYR(INDGRP) == IMDUNT_BYYR(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
@@ -3526,7 +3526,7 @@ SUBROUTINE OUMXDLY_BYYR
 
          DO WHILE (.NOT. EOF)
             READ(IMDUNT_BYYR(INDGRP),'(A:)', ERR=919,END=299) BUFFER
-            IF (BUFFER(1:1) .NE. '*') THEN
+            IF (BUFFER(1:1) /= '*') THEN
 !                 Record Is Not Part of Header - Read Date For This Record
 !                 First calculate start & end of date string based on NUMTYP
                ISTR = 101
@@ -3548,7 +3548,7 @@ SUBROUTINE OUMXDLY_BYYR
 !                 Header record - cycle to next record
                CYCLE
             END IF
-            IF (IDAT .GT. IRSDATE) THEN
+            IF (IDAT > IRSDATE) THEN
 !                 Date of MXDYBYYR Record Is Greater Than Start Date
 !                 From Save File.  Treat As End of File to Exit Loop.
                IF (MULTYR) THEN
@@ -3617,7 +3617,7 @@ SUBROUTINE OUMXDLY_BYYR
 919 CALL ERRHDL(PATH,MODNAM,'E','510',DUMMY)
 
 999 RETURN
-END
+END SUBROUTINE OUMXDLY_BYYR
 
 SUBROUTINE OUMAXD_CONT
 !***********************************************************************
@@ -3655,10 +3655,10 @@ SUBROUTINE OUMAXD_CONT
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J
-   CHARACTER INPGRP*8
+   CHARACTER :: INPGRP*8
 !     JAT D065, 8/9/21 BUFFER SET BUT NOT USED
 !      CHARACTER (LEN = ILEN_FLD) :: BUFFER
    LOGICAL :: FOUND
@@ -3690,15 +3690,15 @@ SUBROUTINE OUMAXD_CONT
 !      BUFFER = ' '
 
 !     Check If Enough Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Fields
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LT. 6) THEN
+   ELSE IF (IFC < 6) THEN
 !        Error Message: Not Enough Fields
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. 8) THEN
+   ELSE IF (IFC > 8) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
@@ -3710,8 +3710,8 @@ SUBROUTINE OUMAXD_CONT
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
-      IF (INPGRP .EQ. GRPID(J)) THEN
+   DO WHILE (.NOT.FOUND .and. J<=NUMGRP)
+      IF (INPGRP == GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
       END IF
@@ -3721,7 +3721,7 @@ SUBROUTINE OUMAXD_CONT
 !        Error Message: E203 GRPID Not Match With Pre-Defined One
       CALL ERRHDL(PATH,MODNAM,'E','203','GRPID')
       GO TO 999
-   ELSE IF (MAXDCONT(INDGRP) .EQ. 1) THEN
+   ELSE IF (MAXDCONT(INDGRP) == 1) THEN
 ! ---    MAXDCONT file already specified for this source group
       CALL ERRHDL(PATH,MODNAM,'E','161',GRPID(INDGRP))
       GO TO 999
@@ -3733,13 +3733,13 @@ SUBROUTINE OUMAXD_CONT
 !     Retrieve "upper" bound for rank
    CALL STONUM(FIELD(4),ILEN_FLD,FNUM,IMIT)
 !     Check for Valid Rank Value
-   IF (IMIT .NE. 1) THEN
+   IF (IMIT /= 1) THEN
 !        Write Error Message:Invalid Numerical Field
       CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
       GO TO 999
    END IF
    MXD_RANK(INDGRP,1) = NINT(FNUM)
-   IF (MXD_RANK(INDGRP,1) .GT. NHIVAL) THEN
+   IF (MXD_RANK(INDGRP,1) > NHIVAL) THEN
 !        Write Error Message:Rank exceeds # of high values;
 !        this shouldn't occur since limits are dynamically allocated
       WRITE(DUMMY,'(''NVAL='',I7)') NHIVAL
@@ -3750,12 +3750,12 @@ SUBROUTINE OUMAXD_CONT
 ! --- Check for whether user specified a threshold for the
 !     MAXDCONT file, rather than upper bound on rank
 
-   IF (FIELD(5) .EQ. 'THRESH') THEN
+   IF (FIELD(5) == 'THRESH') THEN
 ! ---    Retrieve lower threshold value for MAXDCONT results
 
       CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
 !        Check for Valid Threshold Value
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message:Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
@@ -3765,7 +3765,7 @@ SUBROUTINE OUMAXD_CONT
 ! ---    Assign maximum value to "lower" bound of ranks
       MXD_RANK(INDGRP,2) = NHIVAL
 
-      IF ((LOCE(7)-LOCB(7)) .LE. (ILEN_FLD - 1) ) THEN
+      IF ((LOCE(7)-LOCB(7)) <= (ILEN_FLD - 1) ) THEN
 !           Retrieve Filename as Character Substring to Maintain Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
          MAXDCONT_FILE(INDGRP) = RUNST1(LOCB(7):LOCE(7))
@@ -3776,20 +3776,20 @@ SUBROUTINE OUMAXD_CONT
       END IF
 
 !        Retrieve File Unit If Input, or Assign File Unit and OPEN File
-      IF (IFC .EQ. 8) THEN
+      IF (IFC == 8) THEN
          CALL STONUM(FIELD(8),ILEN_FLD,FNUM,IMIT)
 !           Check for Valid File Unit Value
-         IF (IMIT .NE. 1) THEN
+         IF (IMIT /= 1) THEN
 !              Write Error Message: Invalid Numerical Field
             CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
             GO TO 999
          END IF
 !           Check for Conflict With System Files
-         IF (NINT(FNUM) .LE. 30) THEN
+         IF (NINT(FNUM) <= 30) THEN
 !              WRITE Error Message:  Invalid File Unit Specified
             CALL ERRHDL(PATH,MODNAM,'E','560',KEYWRD)
             GO TO 999
-         ELSE IF (NINT(FNUM) .GT. 100) THEN
+         ELSE IF (NINT(FNUM) > 100) THEN
 !              WRITE Warning Message:  Suspect File Unit Specified
 !              Unit May Conflict With Dynamically Allocated File Units
             CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
@@ -3800,7 +3800,7 @@ SUBROUTINE OUMAXD_CONT
       ELSE
 !           Dynamically Allocate File Unit (700's)
          IMXDCUNT(INDGRP) = 701 + (INDGRP)*2
-         IF (INDGRP .GE. 10) THEN
+         IF (INDGRP >= 10) THEN
 !              WRITE Warning Message: Dynamic Unit Allocation May Have Conflict
             CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
          END IF
@@ -3808,16 +3808,16 @@ SUBROUTINE OUMAXD_CONT
 
 ! ---    Check for use of MAXDCONT THRESH option with limited range of
 !        ranks on RECTABLE keyword
-      IF ( (SO2AVE .and. NHIVAL.LE. 8) .or.&
-      &(NO2AVE .and. NHIVAL.LE.12) .or.&
-      &(PM25AVE .and. NHIVAL.LE.12) ) THEN
+      IF ( (SO2AVE .and. NHIVAL<= 8) .or.&
+      &(NO2AVE .and. NHIVAL<=12) .or.&
+      &(PM25AVE .and. NHIVAL<=12) ) THEN
 ! ---       NHIVAL is less than or equal to the design value rank + 4
 !           for the THRESH option; issue fatal ERROR message
          WRITE(DUMMY,'(''Max Rank ='',I2)') NHIVAL
          CALL ERRHDL(PATH,MODNAM,'E','273',DUMMY)
-      ELSE IF ( (SO2AVE .and. NHIVAL.LE.24) .or.&
-      &(NO2AVE .and. NHIVAL.LE.28) .or.&
-      &(PM25AVE .and. NHIVAL.LE.28) ) THEN
+      ELSE IF ( (SO2AVE .and. NHIVAL<=24) .or.&
+      &(NO2AVE .and. NHIVAL<=28) .or.&
+      &(PM25AVE .and. NHIVAL<=28) ) THEN
 ! ---       NHIVAL is less than or equal to the design value rank + 20
 !           for the THRESH option; issue non-fatal WARNING message
          WRITE(DUMMY,'(''Max Rank ='',I2)') NHIVAL
@@ -3830,26 +3830,26 @@ SUBROUTINE OUMAXD_CONT
 !        Retrieve "lower"  bound for rank
       CALL STONUM(FIELD(5),ILEN_FLD,FNUM,IMIT)
 !        Check for Valid Rank Value
-      IF (IMIT .NE. 1) THEN
+      IF (IMIT /= 1) THEN
 !           Write Error Message:Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
       END IF
       MXD_RANK(INDGRP,2) = NINT(FNUM)
-      IF (MXD_RANK(INDGRP,2) .GT. NHIVAL) THEN
+      IF (MXD_RANK(INDGRP,2) > NHIVAL) THEN
 !           Write Error Message:Rank exceeds # of high values;
 !           this shouldn't occur since limits are dynamically allocated
          WRITE(DUMMY,'(''NVAL='',I7)') NHIVAL
          CALL ERRHDL(PATH,MODNAM,'E','290',DUMMY)
          GO TO 999
-      ELSE IF (MXD_RANK(INDGRP,2) .LT. MXD_RANK(INDGRP,1)) THEN
+      ELSE IF (MXD_RANK(INDGRP,2) < MXD_RANK(INDGRP,1)) THEN
 !           Write Error Message: "lower" bound rank < "upper" bound
          WRITE(DUMMY,'(''U='',I3,2X,''L='',I3)') MXD_RANK(INDGRP,1),&
          &MXD_RANK(INDGRP,2)
          CALL ERRHDL(PATH,MODNAM,'E','272',DUMMY)
          GO TO 999
 ! ---    Add warning regarding MXD_RANK > 366
-      ELSE IF (MXD_RANK(INDGRP,2) .GT. 366) THEN
+      ELSE IF (MXD_RANK(INDGRP,2) > 366) THEN
 !           Write Warning Message:Rank exceeds max number of days in a year
          WRITE(DUMMY,'('' NVAL='',I6)') MXD_RANK(INDGRP,2)
          CALL ERRHDL(PATH,MODNAM,'W','290',DUMMY)
@@ -3859,7 +3859,7 @@ SUBROUTINE OUMAXD_CONT
 ! ---    Assign value of 0.0 to Threshold value
       MAXD_THRESH(INDGRP) = 0.0D0
 
-      IF ((LOCE(6)-LOCB(6)) .LE. (ILEN_FLD - 1) ) THEN
+      IF ((LOCE(6)-LOCB(6)) <= (ILEN_FLD - 1) ) THEN
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
          MAXDCONT_FILE(INDGRP) = RUNST1(LOCB(6):LOCE(6))
@@ -3870,20 +3870,20 @@ SUBROUTINE OUMAXD_CONT
       END IF
 
 !        Retrieve File Unit If Input, or Assign File Unit and OPEN File
-      IF (IFC .EQ. 7) THEN
+      IF (IFC == 7) THEN
          CALL STONUM(FIELD(7),ILEN_FLD,FNUM,IMIT)
 !           Check for Valid File Unit Value
-         IF (IMIT .NE. 1) THEN
+         IF (IMIT /= 1) THEN
 !              Write Error Message: Invalid Numerical Field
             CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
             GO TO 999
          END IF
 !           Check for Conflict With System Files
-         IF (NINT(FNUM) .LE. 30) THEN
+         IF (NINT(FNUM) <= 30) THEN
 !              WRITE Error Message:  Invalid File Unit Specified
             CALL ERRHDL(PATH,MODNAM,'E','560',KEYWRD)
             GO TO 999
-         ELSE IF (NINT(FNUM) .GT. 100) THEN
+         ELSE IF (NINT(FNUM) > 100) THEN
 !              WRITE Warning Message:  Suspect File Unit Specified
 !              Unit May Conflict With Dynamically Allocated File Units
             CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
@@ -3894,7 +3894,7 @@ SUBROUTINE OUMAXD_CONT
       ELSE
 !           Dynamically Allocate File Unit (700's)
          IMXDCUNT(INDGRP) = 701 + (INDGRP)*2
-         IF (INDGRP .GE. 10) THEN
+         IF (INDGRP >= 10) THEN
 !              WRITE Warning Message: Dynamic FUnit Allocation May Have Conflict
             CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
          END IF
@@ -3905,17 +3905,17 @@ SUBROUTINE OUMAXD_CONT
 !     Check for Earlier Use of This Filename and File Unit
    FOUND = .FALSE.
    DO I = 1, NUMGRP
-      IF (I .NE. INDGRP) THEN
-         IF (MAXDCONT_FILE(INDGRP).EQ.MAXDCONT_FILE(I) .and.&
-         &IMXDCUNT(INDGRP).EQ.IMXDCUNT(I)) THEN
+      IF (I /= INDGRP) THEN
+         IF (MAXDCONT_FILE(INDGRP)==MAXDCONT_FILE(I) .and.&
+         &IMXDCUNT(INDGRP)==IMXDCUNT(I)) THEN
             FOUND = .TRUE.
-         ELSEIF(MAXDCONT_FILE(INDGRP).EQ.MAXDCONT_FILE(I) .and.&
-         &IMXDCUNT(INDGRP).NE.IMXDCUNT(I)) THEN
+         ELSEIF(MAXDCONT_FILE(INDGRP)==MAXDCONT_FILE(I) .and.&
+         &IMXDCUNT(INDGRP)/=IMXDCUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSEIF(MAXDCONT_FILE(INDGRP).NE.MAXDCONT_FILE(I) .and.&
-         &IMXDCUNT(INDGRP).EQ.IMXDCUNT(I)) THEN
+         ELSEIF(MAXDCONT_FILE(INDGRP)/=MAXDCONT_FILE(I) .and.&
+         &IMXDCUNT(INDGRP)==IMXDCUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
@@ -3936,7 +3936,7 @@ SUBROUTINE OUMAXD_CONT
    CALL ERRHDL(PATH,MODNAM,'E','500',DUMMY)
 
 999 RETURN
-END
+END SUBROUTINE OUMAXD_CONT
 
 SUBROUTINE NOHEADER
 !***********************************************************************
@@ -3959,53 +3959,53 @@ SUBROUTINE NOHEADER
    USE MAIN1
    IMPLICIT NONE
    INTEGER :: I
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'NOHEADER'
 
 !     Check If Enough Fields
-   IF (IFC .EQ. 2) THEN
+   IF (IFC == 2) THEN
 !        Error Message: No Fields
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LT. 3) THEN
+   ELSE IF (IFC < 3) THEN
 !        Error Message: Not Enough Fields
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .GT. 10) THEN
+   ELSE IF (IFC > 10) THEN
 !        Error Message: Too Many Fields
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
    END IF
 
    DO I = 3, IFC
-      IF (FIELD(I) .EQ. 'ALL') THEN
+      IF (FIELD(I) == 'ALL') THEN
 !           No headers for any ouput file type
          L_NoHeader(:) = .TRUE.
          EXIT
-      ELSE IF (FIELD(I) .EQ. 'MAXIFILE') THEN
+      ELSE IF (FIELD(I) == 'MAXIFILE') THEN
 !           No headers for MAXIFILE
          L_NoHeader(1) = .TRUE.
-      ELSE IF (FIELD(I) .EQ. 'POSTFILE') THEN
+      ELSE IF (FIELD(I) == 'POSTFILE') THEN
 !           No headers for POSTFILE
          L_NoHeader(2) = .TRUE.
-      ELSE IF (FIELD(I) .EQ. 'PLOTFILE') THEN
+      ELSE IF (FIELD(I) == 'PLOTFILE') THEN
 !           No headers for PLOTFILE
          L_NoHeader(3) = .TRUE.
-      ELSE IF (FIELD(I) .EQ. 'SEASONHR') THEN
+      ELSE IF (FIELD(I) == 'SEASONHR') THEN
 !           No headers for SEASONHR
          L_NoHeader(4) = .TRUE.
-      ELSE IF (FIELD(I) .EQ. 'RANKFILE') THEN
+      ELSE IF (FIELD(I) == 'RANKFILE') THEN
 !           No headers for RANKFILE
          L_NoHeader(5) = .TRUE.
-      ELSE IF (FIELD(I) .EQ. 'MAXDAILY') THEN
+      ELSE IF (FIELD(I) == 'MAXDAILY') THEN
 !           No headers for MAXDAILY
          L_NoHeader(6) = .TRUE.
-      ELSE IF (FIELD(I) .EQ. 'MXDYBYYR') THEN
+      ELSE IF (FIELD(I) == 'MXDYBYYR') THEN
 !           No headers for MXDYBYYR
          L_NoHeader(7) = .TRUE.
-      ELSE IF (FIELD(I) .EQ. 'MAXDCONT') THEN
+      ELSE IF (FIELD(I) == 'MAXDCONT') THEN
 !           No headers for MAXDCONT
          L_NoHeader(8) = .TRUE.
       ELSE
@@ -4015,5 +4015,5 @@ SUBROUTINE NOHEADER
    END DO
 
 999 RETURN
-END
+END SUBROUTINE NOHEADER
 

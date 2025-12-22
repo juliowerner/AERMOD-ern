@@ -44,7 +44,7 @@ SUBROUTINE DELTAH ( XARG )
    USE MAIN1
    IMPLICIT NONE
 
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    INTEGER :: KITER, NDXZPL
    DOUBLE PRECISION :: XARG, XMAXTMP, XRISE, ZPLM, DHPOLD,&
    &SVPM, UPM, TGPM, PTPM, PTP
@@ -52,15 +52,15 @@ SUBROUTINE DELTAH ( XARG )
 !     Variable Initializations
    MODNAM = 'DELTAH'
 
-   IF( (STABLE  .or.  (UNSTAB  .and.  (HS .GE. ZI)))  .and.&
-   &(XARG .GE. XMAX) )THEN
+   IF( (STABLE  .or.  (UNSTAB  .and.  (HS >= ZI)))  .and.&
+   &(XARG >= XMAX) )THEN
 !        Use final stable plume rise (DHF) calculated in DISTF (DHP)
 !        at XMAX
       DHP = DHFAER
 
 
-   ELSE IF( (STABLE  .or. (UNSTAB  .and.  (HS .GE. ZI))) .and.&
-   &(XARG .LT. XMAX) ) THEN
+   ELSE IF( (STABLE  .or. (UNSTAB  .and.  (HS >= ZI))) .and.&
+   &(XARG < XMAX) ) THEN
 !----    Compute stable plume rise for the distance XARG   --- CALL SBLRIS
 !        Use iterative approach to plume rise calculations.
 !        First compute temporary distance to "final rise" based on current
@@ -105,7 +105,7 @@ SUBROUTINE DELTAH ( XARG )
       TGP = 0.5D0 * (TGS + TGPM)
       PTP = 0.5D0 * (PTS + PTPM)
       BVF = DSQRT( G * TGP / PTP)
-      IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
+      IF(BVF < 1.0D-10) BVF = 1.0D-10
       BVPRIM  = 0.7D0 * BVF
 
 !        Repeat calculation of temporary distance to "final rise" using
@@ -127,17 +127,17 @@ SUBROUTINE DELTAH ( XARG )
       ENDIF
 
 !        Check for convergence
-      IF(DHP.GT.0.0D0 .and. DABS((DHPOLD-DHP)/DHP).LT.0.001D0 .and.&
-      &KITER .GE. 5)THEN
-         IF( DHP .LE. 1.0D-5 )THEN
+      IF(DHP>0.0D0 .and. DABS((DHPOLD-DHP)/DHP)<0.001D0 .and.&
+      &KITER >= 5)THEN
+         IF( DHP <= 1.0D-5 )THEN
             DHP = 1.0D-5
          ENDIF
          GO TO 60
-      ELSEIF(KITER .LT. 10)THEN
+      ELSEIF(KITER < 10)THEN
          GO TO 50
       ENDIF
 
-      IF(KITER .GE. 5) THEN
+      IF(KITER >= 5) THEN
          DHP = 0.5D0 * (DHP + DHPOLD)
          IF(DEBUG) WRITE(DBGUNT,6002) DHP
 6002     FORMAT(/,5X,'OPTH2 ITERATION FAILED TO CONVERGE; PLUME',&
@@ -155,7 +155,7 @@ SUBROUTINE DELTAH ( XARG )
       TGP = TGS
       PTP = PTS
       BVF = DSQRT( G * TGP / PTP )
-      IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
+      IF(BVF < 1.0D-10) BVF = 1.0D-10
       BVPRIM  = 0.7D0 * BVF
 !crfl-3/6/95 Make sure SBL rise is not greater than CBL rise.
       CALL CBLPRD(XARG)
@@ -171,7 +171,7 @@ SUBROUTINE DELTAH ( XARG )
 !        Compute  plume rise for the indirect plume        --- CALL CBLPRN
       CALL CBLPRN ( XARG )
 
-      IF( PPF .GT. 0.0D0 )THEN
+      IF( PPF > 0.0D0 )THEN
 !           Compute plume rise for the penetrated plume    --- CALL CBLPR3
          CALL CBLPR3
 
@@ -184,7 +184,7 @@ SUBROUTINE DELTAH ( XARG )
    ENDIF
 
    RETURN
-END
+END SUBROUTINE DELTAH
 
 SUBROUTINE PRMDELH ( XARG, L_INWAKE )
 !***********************************************************************
@@ -217,7 +217,7 @@ SUBROUTINE PRMDELH ( XARG, L_INWAKE )
    USE PRM2_WAKEDAT, ONLY: DFSN2CALL
    IMPLICIT NONE
 
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    INTEGER :: NUMWAKE, ierr
    DOUBLE PRECISION :: XARG
    DOUBLE PRECISION, SAVE :: hseff, reff
@@ -245,12 +245,12 @@ SUBROUTINE PRMDELH ( XARG, L_INWAKE )
          hseff=hs
 ! ---       Compute stack radius from diameter
          reff=0.5D0*ds
-         if (srctyp(isrc) .eq. 'POINTCAP') then
+         if (srctyp(isrc) == 'POINTCAP') then
             capped = .TRUE.
          else
             capped = .FALSE.
          end if
-         if (srctyp(isrc) .eq. 'POINTHOR') then
+         if (srctyp(isrc) == 'POINTHOR') then
             horiz = .TRUE.
          else
             horiz = .FALSE.
@@ -259,14 +259,14 @@ SUBROUTINE PRMDELH ( XARG, L_INWAKE )
          call NUMRISE(PRIMEDBG,hseff,reff,ts,vs,mxntr,capped,horiz,&
          &dsfact,xtr,ytr,ztr,rtr,L_INWAKE,numwake,ierr,&
          &PRMDBUNT)
-         IF (ierr .eq. 1) then
+         IF (ierr == 1) then
 ! ---          Error occurred during PRIME numerical plume rise.
 !              Write fatal error message - source parameters may be suspect.
             CALL ERRHDL(PATH,MODNAM,'E','499',SRCID(ISRC))
             RUNERR = .TRUE.
             RETURN
          END IF
-         IF (NUMWAKE .LE. 1) THEN
+         IF (NUMWAKE <= 1) THEN
             L_INWAKE = .FALSE.
          END IF
 ! ---       ZTR is effective plume ht. - compute final rise
@@ -280,7 +280,7 @@ SUBROUTINE PRMDELH ( XARG, L_INWAKE )
       endif
 !
 ! ---    Determine the plume rise for current receptor
-      IF (XARG .LT. xtr(mxntr)) THEN
+      IF (XARG < xtr(mxntr)) THEN
 ! ---       Interpolate in rise table to get gradual rise   ---   CALL NUMGRAD
          call NUMGRAD(xarg,xtr,ztr,mxntr,zeff)
          dhp = zeff - hseff
@@ -291,7 +291,7 @@ SUBROUTINE PRMDELH ( XARG, L_INWAKE )
    ENDIF
 
    RETURN
-END
+END SUBROUTINE PRMDELH
 
 FUNCTION HSPRIM(US,VS,HS,DS)
 !***********************************************************************
@@ -315,22 +315,22 @@ FUNCTION HSPRIM(US,VS,HS,DS)
 !     Variable Declarations
    IMPLICIT NONE
    DOUBLE PRECISION :: US, VS, HS, DS, HSPRIM
-   CHARACTER MODNAM*6
+   CHARACTER :: MODNAM*6
 !     Variable Initializations
    MODNAM = 'HSPRIM'
 
 !     Calculate Adjusted Stack Height (Eqn. 1-7)
 
-   IF (VS .LT. 1.5D0*US) THEN
+   IF (VS < 1.5D0*US) THEN
       HSPRIM = HS - 2.0D0*DS*(1.5D0-VS/US)
    ELSE
       HSPRIM = HS
    END IF
 
-   IF (HSPRIM .LT. 0.0D0)  HSPRIM = 0.0D0
+   IF (HSPRIM < 0.0D0)  HSPRIM = 0.0D0
 
    RETURN
-END
+END FUNCTION HSPRIM
 
 SUBROUTINE SBLRIS ( XARG )
 !***********************************************************************
@@ -363,7 +363,7 @@ SUBROUTINE SBLRIS ( XARG )
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: XARG, TERMA, TERMB, TERMC, TERMD, TERME
    DOUBLE PRECISION :: XLN, DELHNN
 
@@ -382,7 +382,7 @@ SUBROUTINE SBLRIS ( XARG )
 ! --- Calculate TERME to check for possible negative argument for DHP
    TERME = (TERMB*TERMC+1.0D0-TERMD)
 
-   IF( TERME .GT. 0.0D0 )THEN
+   IF( TERME > 0.0D0 )THEN
       DHP = 2.66D0 * (TERMA *(TERMB*TERMC+1.0D0-TERMD))**THIRD
    ELSE
       DHP = 2.66D0 * (TERMA*TERMB*TERMC)**THIRD
@@ -404,7 +404,7 @@ SUBROUTINE SBLRIS ( XARG )
    DHP = MIN( DHP, DHFAER, DELHNN )
 
    RETURN
-END
+END SUBROUTINE SBLRIS
 
 SUBROUTINE CBLPRD ( XARG )
 !***********************************************************************
@@ -434,7 +434,7 @@ SUBROUTINE CBLPRD ( XARG )
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: XARG
 
 !     Variable Initializations
@@ -446,7 +446,7 @@ SUBROUTINE CBLPRD ( XARG )
    &(2.0D0 * BETA1*BETA1 * UP*UP*UP) )**THIRD
 
    RETURN
-END
+END SUBROUTINE CBLPRD
 
 SUBROUTINE CBLPRN ( XARG )
 !***********************************************************************
@@ -481,7 +481,7 @@ SUBROUTINE CBLPRN ( XARG )
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: XARG, RSUBH, RYRZ, DELHI
 
 !     Variable Initializations
@@ -494,7 +494,7 @@ SUBROUTINE CBLPRN ( XARG )
    DHP2  = DELHI
 
    RETURN
-END
+END SUBROUTINE CBLPRN
 
 SUBROUTINE CBLPR3
 !***********************************************************************
@@ -527,7 +527,7 @@ SUBROUTINE CBLPR3
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'CBLPR3'
@@ -537,11 +537,11 @@ SUBROUTINE CBLPR3
 !     delta(Hsub_e)/delta(Hsub_h), calculated from Eq. 26a of Jeff Weil's
 !     8/17/93 document, where delta(Hsub_h) is ZI-HS.
 
-   IF (PPF .EQ. 1.0D0) THEN
+   IF (PPF == 1.0D0) THEN
       DHP3 = HEDHH * (ZI-HSP)
    ELSE
       DHP3 = 0.75D0 * (ZI-HSP) * HEDHH + 0.5D0 * (ZI-HSP)
    END IF
 
    RETURN
-END
+END SUBROUTINE CBLPR3

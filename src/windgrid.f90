@@ -56,28 +56,28 @@ SUBROUTINE GRDWS
 !     profile exceeds the maximum number
 !     ------------------------------------------------------------------
 
-   DO WHILE( GINDEX .LE. MXGLVL )
+   DO WHILE( GINDEX <= MXGLVL )
 
 
 !        -------------------------------------------
 !        Now begin looping over the observed profile
 !        -------------------------------------------
 !
-      DO WHILE( GRIDWS(GINDEX).LT.-90.0D0 .and. PINDEX.LE.NPLVLS )
+      DO WHILE( GRIDWS(GINDEX)<-90.0D0 .and. PINDEX<=NPLVLS )
 !
-         IF( PFLWS(PINDEX) .GE. 0.0D0 )THEN
+         IF( PFLWS(PINDEX) >= 0.0D0 )THEN
 !
 !              -------------------------------------------------
 !              Data at this level are not missing; determine its
 !              location relative to the height at which data are
 !              required and act accordingly.
 !              -------------------------------------------------
-            IF( DABS(PFLHT(PINDEX) - GRIDHT(GINDEX) ).LE.0.1D0 )THEN
+            IF( DABS(PFLHT(PINDEX) - GRIDHT(GINDEX) )<=0.1D0 )THEN
 !                 USE the parameter at this level
                GRIDWS(GINDEX) = PFLWS(PINDEX)
 !
-            ELSEIF( GRIDHT(GINDEX)  .GT.  PFLHT(PINDEX) )THEN
-               IF( PINDEX .LT. NPLVLS )THEN
+            ELSEIF( GRIDHT(GINDEX)  >  PFLHT(PINDEX) )THEN
+               IF( PINDEX < NPLVLS )THEN
 !                    SAVE value for possible interpolation
                   VBELOW = PFLWS(PINDEX)
                   HTBELO = PFLHT(PINDEX)
@@ -88,8 +88,8 @@ SUBROUTINE GRDWS
                   &GRIDHT(GINDEX), GRIDWS(GINDEX) )
                ENDIF
 !
-            ELSEIF( GRIDHT(GINDEX)  .LT.  PFLHT(PINDEX) )THEN
-               IF( VBELOW .GE. 0.0D0 )THEN
+            ELSEIF( GRIDHT(GINDEX)  <  PFLHT(PINDEX) )THEN
+               IF( VBELOW >= 0.0D0 )THEN
 !                    INTERPOLATE between the two values    --- CALL NTRPWS
                   CALL NTRPWS ( HTBELO, VBELOW, PFLHT(PINDEX),&
                   &PFLWS(PINDEX), GRIDHT(GINDEX),&
@@ -119,8 +119,8 @@ SUBROUTINE GRDWS
 !              level, then make a computation.
 !              -------------------------------------------------------
 !
-            IF( PINDEX .EQ. NPLVLS )THEN
-               IF( VBELOW  .GE.  0.0D0 )THEN
+            IF( PINDEX == NPLVLS )THEN
+               IF( VBELOW  >=  0.0D0 )THEN
 !                    PROFILE up from BELOW                 --- CALL XTRPWS
                   CALL XTRPWS ( HTBELO, VBELOW,&
                   &GRIDHT(GINDEX), GRIDWS(GINDEX) )
@@ -144,8 +144,8 @@ SUBROUTINE GRDWS
 !           processing
 !           ---------------------------------------------------------
 !
-         IF( (GRIDWS(GINDEX) .LT. 0.0D0)  .and.&
-         &(PINDEX .LT. NPLVLS) )THEN
+         IF( (GRIDWS(GINDEX) < 0.0D0)  .and.&
+         &(PINDEX < NPLVLS) )THEN
             PINDEX = PINDEX + 1
          ENDIF
 !
@@ -169,7 +169,7 @@ SUBROUTINE GRDWS
    END DO   ! Loop over gridded data profile
 !
    RETURN
-END
+END SUBROUTINE GRDWS
 
 SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !=======================================================================
@@ -215,7 +215,7 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: UNSTU, STBLU, PRFLHT, UTHEOR, VLDLB, PIVALU,&
    &KVALU, UFACT, UFACT2
 
@@ -250,14 +250,14 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !     unstable amosphere, positive for a stable atmosphere).
 !     -------------------------------------------------------------
 !
-   IF( (UREFHT .GT. VLDLB)  .and.  (UREFHT .LE. ZI) )THEN
+   IF( (UREFHT > VLDLB)  .and.  (UREFHT <= ZI) )THEN
 !
 !        ----------------------------------------------------------
 !        The reference height is above the valid lower bound height
 !        and below the mixing height
 !        ----------------------------------------------------------
 !
-      IF( (PRFLHT .GT. VLDLB)  .and.  (PRFLHT .LE. ZI) )THEN
+      IF( (PRFLHT > VLDLB)  .and.  (PRFLHT <= ZI) )THEN
 !
 !           ---------------------------------------------------------
 !           The required height is above the valid lower bound height
@@ -265,14 +265,14 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !           required height
 !           ---------------------------------------------------------
 !
-         IF( OBULEN .LT. 0.0D0 )THEN
+         IF( OBULEN < 0.0D0 )THEN
             UTHEOR = UNSTU( USTAR,PRFLHT,OBULEN,SFCZ0,&
             &PIVALU, KVALU )
          ELSE
             UTHEOR = STBLU( USTAR,PRFLHT,OBULEN,SFCZ0,KVALU )
          ENDIF
 !
-      ELSEIF( PRFLHT .LE. VLDLB )THEN
+      ELSEIF( PRFLHT <= VLDLB )THEN
 !
 !           ----------------------------------------------------------
 !           The required height is below the displacement height -
@@ -287,7 +287,7 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 
          UFACT = PRFLHT / VLDLB
 
-         IF( OBULEN .LT. 0.0D0 )THEN
+         IF( OBULEN < 0.0D0 )THEN
             UTHEOR = UNSTU( USTAR,VLDLB,OBULEN,SFCZ0,&
             &PIVALU, KVALU ) * UFACT
          ELSE
@@ -295,14 +295,14 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
             &SFCZ0,KVALU ) * UFACT
          ENDIF
 !
-      ELSEIF( PRFLHT .GT. ZI )THEN
+      ELSEIF( PRFLHT > ZI )THEN
 !
 !           --------------------------------------------------------
 !           The required height is above the mixing height - profile
 !           only to the mixing height and persist to the required ht
 !           --------------------------------------------------------
 !
-         IF( OBULEN .LT. 0.0D0 )THEN
+         IF( OBULEN < 0.0D0 )THEN
             UTHEOR = UNSTU( USTAR,ZI,OBULEN,SFCZ0,&
             &PIVALU, KVALU )
          ELSE
@@ -311,21 +311,21 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !
       ENDIF   ! required ht
 !
-   ELSEIF( UREFHT .GT. ZI )THEN
+   ELSEIF( UREFHT > ZI )THEN
 !
 !        -----------------------------------------------
 !        The reference height is above the mixing height
 !        -----------------------------------------------
 !
 
-      IF( (PRFLHT .GT. VLDLB)  .and.  (PRFLHT .LE. ZI) )THEN
+      IF( (PRFLHT > VLDLB)  .and.  (PRFLHT <= ZI) )THEN
 !
 !           ---------------------------------------------------------
 !           The required height is above the valid lower bound height
 !           and below the mixing height.
 !           ---------------------------------------------------------
 !
-         IF( OBULEN .LT. 0.0D0 )THEN
+         IF( OBULEN < 0.0D0 )THEN
             UTHEOR = UNSTU( USTAR,PRFLHT,OBULEN,SFCZ0,&
             &PIVALU, KVALU )
          ELSE
@@ -333,13 +333,13 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
          ENDIF
 !
 !
-      ELSEIF( PRFLHT .LT. VLDLB )THEN
+      ELSEIF( PRFLHT < VLDLB )THEN
 !
 !           ---------------------------------------------------------
 !           The required height is below the valid lower bound height
 !           ---------------------------------------------------------
 !
-         IF( OBULEN .LT. 0.0D0 )THEN
+         IF( OBULEN < 0.0D0 )THEN
             UTHEOR = UNSTU( USTAR,VLDLB,OBULEN,SFCZ0,&
             &PIVALU, KVALU )
          ELSE
@@ -347,14 +347,14 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
             &SFCZ0, KVALU )
          ENDIF
 !
-      ELSEIF( PRFLHT .GT. ZI )THEN
+      ELSEIF( PRFLHT > ZI )THEN
 !
 !           --------------------------------------------------------
 !           The required height is above the mixing height - use the
 !           value from the reference height
 !           --------------------------------------------------------
 !
-         IF( OBULEN .LT. 0.0D0 )THEN
+         IF( OBULEN < 0.0D0 )THEN
             UTHEOR = UREF
          ELSE
             UTHEOR = UREF
@@ -362,11 +362,11 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !
       ENDIF   ! required ht
 
-   ELSEIF (UREFHT .LE. VLDLB) THEN
+   ELSEIF (UREFHT <= VLDLB) THEN
 !
       UFACT2 = UREFHT/VLDLB
 
-      IF( (PRFLHT .GT. VLDLB)  .and.  (PRFLHT .LE. ZI) )THEN
+      IF( (PRFLHT > VLDLB)  .and.  (PRFLHT <= ZI) )THEN
 !
 !           ---------------------------------------------------------
 !           The required height is above the valid lower bound height
@@ -374,14 +374,14 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !           required height
 !           ---------------------------------------------------------
 !
-         IF( OBULEN .LT. 0.0D0 )THEN
+         IF( OBULEN < 0.0D0 )THEN
             UTHEOR = UNSTU( USTAR,PRFLHT,OBULEN,SFCZ0,&
             &PIVALU, KVALU )
          ELSE
             UTHEOR = STBLU( USTAR,PRFLHT,OBULEN,SFCZ0,KVALU )
          ENDIF
 !
-      ELSEIF( PRFLHT .LE. VLDLB )THEN
+      ELSEIF( PRFLHT <= VLDLB )THEN
 !
 !           ----------------------------------------------------------
 !           The required height is below the displacement height -
@@ -399,14 +399,14 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
          UTHEOR = UREF * UFACT / UFACT2
 
 !
-      ELSEIF( PRFLHT .GT. ZI )THEN
+      ELSEIF( PRFLHT > ZI )THEN
 !
 !           --------------------------------------------------------
 !           The required height is above the mixing height - profile
 !           only to the mixing height and persist to the required ht
 !           --------------------------------------------------------
 !
-         IF( OBULEN .LT. 0.0D0 )THEN
+         IF( OBULEN < 0.0D0 )THEN
             UTHEOR = UNSTU( USTAR,ZI,OBULEN,SFCZ0,&
             &PIVALU, KVALU )
          ELSE
@@ -419,7 +419,7 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !
 !
    RETURN
-END
+END SUBROUTINE REFWS
 !
 !
 DOUBLE PRECISION FUNCTION UNSTU( USTR, Z, OBLEN, Z0, VALPI,&
@@ -497,7 +497,7 @@ DOUBLE PRECISION FUNCTION UNSTU( USTR, Z, OBLEN, Z0, VALPI,&
    UNSTU = (USTR/VALK) * ( DLOG( Z / Z0 ) - PSIM + PSIMZ0 )
 !
    RETURN
-END
+END FUNCTION UNSTU
 !
 !
 DOUBLE PRECISION FUNCTION STBLU( USTR, Z, OBLEN, Z0, VALK )
@@ -555,7 +555,7 @@ DOUBLE PRECISION FUNCTION STBLU( USTR, Z, OBLEN, Z0, VALK )
    STBLU = (USTR/VALK) * ( DLOG( Z / Z0 ) - PSIM + PSIMZ0 )
 !
    RETURN
-END
+END FUNCTION STBLU
 !
 !
 SUBROUTINE NTRPWS ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALOUT )
@@ -639,7 +639,7 @@ SUBROUTINE NTRPWS ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALOUT )
    VALOUT = RATIO * VALINT
 
    RETURN
-END
+END SUBROUTINE NTRPWS
 
 SUBROUTINE XTRPWS ( PFLZ, PFLVAL, GRDZ, VALOUT )
 !=======================================================================
@@ -707,7 +707,7 @@ SUBROUTINE XTRPWS ( PFLZ, PFLVAL, GRDZ, VALOUT )
    VALOUT = RATIO * PFLVAL
 !
    RETURN
-END
+END SUBROUTINE XTRPWS
 
 
 SUBROUTINE GRDWD
@@ -744,7 +744,7 @@ SUBROUTINE GRDWD
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER          :: PINDEX, GINDEX
    DOUBLE PRECISION :: VBELOW, HTBELO
@@ -771,34 +771,34 @@ SUBROUTINE GRDWD
 !     NOTE: There are 3 options for turning the wind with height.
 !     ------------------------------------------------------------------
 
-   DO WHILE( GINDEX .LE. MXGLVL )
+   DO WHILE( GINDEX <= MXGLVL )
 
 !        -------------------------------------------
 !        Now begin looping over the observed profile
 !        -------------------------------------------
 !
-      DO WHILE( GRIDWD(GINDEX).LT.-90.0D0 .and. PINDEX.LE.NPLVLS )
+      DO WHILE( GRIDWD(GINDEX)<-90.0D0 .and. PINDEX<=NPLVLS )
 !
-         IF( PFLWD(PINDEX) .GE. 0.0D0 )THEN
+         IF( PFLWD(PINDEX) >= 0.0D0 )THEN
 !
 !              ----------------------------------------------------------
 !              Data at this level are not missing; determine its location
 !              relative to the height at which data are required and act
 !              accordingly.
 !              ----------------------------------------------------------
-            IF( DABS(PFLHT(PINDEX)-GRIDHT(GINDEX)) .LE. 0.1D0 )THEN
+            IF( DABS(PFLHT(PINDEX)-GRIDHT(GINDEX)) <= 0.1D0 )THEN
 !                 USE the parameter at this level
 
-               IF (PFLWD(PINDEX) .GT. 360.0D0) THEN
+               IF (PFLWD(PINDEX) > 360.0D0) THEN
                   PFLWD(PINDEX) = PFLWD(PINDEX) - 360.0D0
-               ELSE IF (PFLWD(PINDEX) .LE. 0.0D0) THEN
+               ELSE IF (PFLWD(PINDEX) <= 0.0D0) THEN
                   PFLWD(PINDEX) = PFLWD(PINDEX) + 360.0D0
                END IF
 
                GRIDWD(GINDEX) = PFLWD(PINDEX)
 !
-            ELSEIF( GRIDHT(GINDEX)  .GT.  PFLHT(PINDEX) )THEN
-               IF( PINDEX .LT. NPLVLS )THEN
+            ELSEIF( GRIDHT(GINDEX)  >  PFLHT(PINDEX) )THEN
+               IF( PINDEX < NPLVLS )THEN
 !                    SAVE value for possible interpolation
                   VBELOW = PFLWD(PINDEX)
                   HTBELO = PFLHT(PINDEX)
@@ -811,8 +811,8 @@ SUBROUTINE GRDWD
                   CALL XTRPWD (  PFLWD(PINDEX),GRIDWD(GINDEX) )
                ENDIF
 !
-            ELSEIF( GRIDHT(GINDEX)  .LT.  PFLHT(PINDEX) )THEN
-               IF( VBELOW .GE. 0.0D0 )THEN
+            ELSEIF( GRIDHT(GINDEX)  <  PFLHT(PINDEX) )THEN
+               IF( VBELOW >= 0.0D0 )THEN
 !                    INTERPOLATE between the two values    --- CALL NTRPWD
                   CALL NTRPWD ( HTBELO, VBELOW, PFLHT(PINDEX),&
                   &PFLWD(PINDEX), GRIDHT(GINDEX),&
@@ -843,8 +843,8 @@ SUBROUTINE GRDWD
 !              level, then make a computation.
 !              -------------------------------------------------------
 !
-            IF( PINDEX .EQ. NPLVLS )THEN
-               IF( VBELOW .GE. 0.0D0 )THEN
+            IF( PINDEX == NPLVLS )THEN
+               IF( VBELOW >= 0.0D0 )THEN
 !                    PROFILE up from BELOW                 --- CALL XTRPWD
 ! JAT 06/22/21 REMOVE HTBELO AND GRIDHT AS UNUSED INPUT ARGUMENTS
 !                     CALL XTRPWD ( HTBELO, VBELOW,
@@ -872,8 +872,8 @@ SUBROUTINE GRDWD
 !           grid level was not computed on this pass
 !           ---------------------------------------------------------
 !
-         IF( (GRIDWD(GINDEX) .LT. 0.0D0)  .and.&
-         &(PINDEX .LT. NPLVLS) )THEN
+         IF( (GRIDWD(GINDEX) < 0.0D0)  .and.&
+         &(PINDEX < NPLVLS) )THEN
             PINDEX = PINDEX + 1
          ENDIF
 !
@@ -890,7 +890,7 @@ SUBROUTINE GRDWD
    END DO   ! Loop over gridded data profile
 !
    RETURN
-END
+END SUBROUTINE GRDWD
 
 SUBROUTINE REFWD1( WDREQD )
 !=======================================================================
@@ -938,7 +938,7 @@ SUBROUTINE REFWD1( WDREQD )
    WDREQD = WDREF
 !
    RETURN
-END
+END SUBROUTINE REFWD1
 
 SUBROUTINE NTRPWD ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALOUT )
 !=======================================================================
@@ -1014,9 +1014,9 @@ SUBROUTINE NTRPWD ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALOUT )
 
    CALL REFWD1 ( REFREQ )
 
-   IF( (VALABV-VBELOW) .LT. -180.0D0) THEN
+   IF( (VALABV-VBELOW) < -180.0D0) THEN
       VALABV = VALABV + 360.0D0
-   ELSE IF( (VALABV-VBELOW) .GT. 180.0D0) THEN
+   ELSE IF( (VALABV-VBELOW) > 180.0D0) THEN
       VALABV = VALABV - 360.0D0
    END IF
 
@@ -1029,15 +1029,15 @@ SUBROUTINE NTRPWD ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALOUT )
    RATIO  = REFREQ/REFINT
    VALOUT = RATIO * VALINT
 
-   IF (VALOUT .GT. 360.0D0) THEN
+   IF (VALOUT > 360.0D0) THEN
       VALOUT = VALOUT - 360.0D0
-   ELSE IF (VALOUT .LE. 0.0D0) THEN
+   ELSE IF (VALOUT <= 0.0D0) THEN
       VALOUT = VALOUT + 360.0D0
    END IF
 
 !
    RETURN
-END
+END SUBROUTINE NTRPWD
 
 ! JAT 06/22/21 D065
 ! REMOVE PFLZ AND GRDZ AS UNUSED INPUT ARGUMENTS
@@ -1112,12 +1112,12 @@ SUBROUTINE XTRPWD (  PFLVAL, VALOUT )
 !
    VALOUT = RATIO * PFLVAL
 
-   IF (VALOUT .GT. 360.0D0) THEN
+   IF (VALOUT > 360.0D0) THEN
       VALOUT = VALOUT - 360.0D0
-   ELSE IF (VALOUT .LE. 0.0D0) THEN
+   ELSE IF (VALOUT <= 0.0D0) THEN
       VALOUT = VALOUT + 360.0D0
    END IF
 
 !
    RETURN
-END
+END SUBROUTINE XTRPWD

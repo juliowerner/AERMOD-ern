@@ -41,7 +41,7 @@ SUBROUTINE AFLUXES
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 !     Local Variables:
 
 !      DOUBLE PRECISION  :: MFUEL, VAA, THRUST, MAIR, AFR, BYPR, RPWR
@@ -60,9 +60,9 @@ SUBROUTINE AFLUXES
    PI = 4.0D0 * DATAN(1.0D0)
 
 !     For Turbofan and Turbojet Engines
-   IF(BYPR .GT. 0.0D0) THEN
+   IF(BYPR > 0.0D0) THEN
 !     Check for Positive Fuel burn rate and Thrust
-      IF (MFUEL .GT. 0.0D0 .and. THRUST .GT. 0.0D0) THEN
+      IF (MFUEL > 0.0D0 .and. THRUST > 0.0D0) THEN
          MAIR = MFUEL * AFR * (1.D0 + BYPR)                             ! Total Mass Flow (Equation 22)
          VE   = VAA + (THRUST / MAIR)                                   ! Exhaust Velocity (Equation 24)
          TE   = (HFUEL*MFUEL/MAIR-((VE*VE)-(VAA*VAA))/2.0D0)/CPA + TA   ! Exhaust Temperature (By substituting eqns 22 and 27 in eqn 21)
@@ -74,12 +74,12 @@ SUBROUTINE AFLUXES
 !     For Non-Turbofan/Turbojet Engines or Shaft-based Engines,
 !     Turboprop, Turboshaft, Piston, and Helicopter
 !     PWST is based on Table 4 of Wayson et al.(2009)
-   ELSE IF (BYPR .EQ. -999.D0) THEN
-      IF (AFR .EQ. 106.D0) THEN
+   ELSE IF (BYPR == -999.D0) THEN
+      IF (AFR == 106.D0) THEN
          PWST = 0.07D0                                               ! Idle/Taxi
-      ELSE IF (AFR .EQ. 83.D0) THEN
+      ELSE IF (AFR == 83.D0) THEN
          PWST = 0.30D0                                               ! Approach/Landing
-      ELSE IF (AFR .EQ. 51.D0) THEN
+      ELSE IF (AFR == 51.D0) THEN
          PWST = 0.85D0                                               ! Climb-out
       ELSE
          PWST = 1.0D0                                                ! Take-Off
@@ -95,20 +95,20 @@ SUBROUTINE AFLUXES
       QEE  = 1.0D-10
    END IF
 
-   IF (TE .EQ. 1.0D-10) THEN
+   IF (TE == 1.0D-10) THEN
       RHOE = 1.0D-10
    ELSE
       RHOE = PAA / (RAA * TE)                                        ! Exhaust Density (Equation 26 or 33)
    END IF
 
-   IF (QEE .LT. 0.0D0 .or. QEE .EQ. 1.0D-10) THEN
+   IF (QEE < 0.0D0 .or. QEE == 1.0D-10) THEN
       FB = 1.0D-10
    ELSE
       FB = G * QEE / (PI * RHOE * CPA * TA)                          ! Buoyancy Flux (Equation 5 or 25)
    END IF
 
    RETURN
-END
+END SUBROUTINE AFLUXES
 
 
 SUBROUTINE MOMENTUM_PLUMERISE (XARG)
@@ -149,7 +149,7 @@ SUBROUTINE MOMENTUM_PLUMERISE (XARG)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*20
+   CHARACTER :: MODNAM*20
 !     Local Variables:
 
    DOUBLE PRECISION  :: RHOA, RMAX, XARG, XPMAX, XMAXX
@@ -175,9 +175,9 @@ SUBROUTINE MOMENTUM_PLUMERISE (XARG)
    HDISP = 0.0D0                                                     ! Initialize the Momentum Plume Rise for Airborne Sources
 
 !     For turbofan engines
-   IF (BYPR .GT. 0.0D0) THEN
+   IF (BYPR > 0.0D0) THEN
 !      Check for positive thrust
-      IF (THRUST .GT. 0.0D0) THEN
+      IF (THRUST > 0.0D0) THEN
 !      Calculation of maximum values of exhaust velocity and thrust to
 !      avoid inconsistency between thrust and fuel burn rate
          VEMAX   = SQRT(2.0D0*HFUEL/(AFR*(1.D0+BYPR))+(VAA*VAA))        ! Maximum Exhaust Velocity
@@ -186,7 +186,7 @@ SUBROUTINE MOMENTUM_PLUMERISE (XARG)
          RATT = THRUST/THRSTMX                                          ! Thrust Ratio
 
 !     For inconsistent thrust and fuel burn values
-         IF (RATT .GT. 1.0D0 ) THEN
+         IF (RATT > 1.0D0 ) THEN
             THRUST = THRSTMX
          ELSE
             THRUST = THRUST
@@ -196,7 +196,7 @@ SUBROUTINE MOMENTUM_PLUMERISE (XARG)
          RMAX  = SQRT(THRUST/(PI*RHOA*((VAA+UEFFA)+SVEFFA)*SVEFFA))     ! Maximum Plume Radius (Equation 11)
          XMAXX = (ABS(RMAX - R00)) / ALPHAM                             ! Distance for RMAX (Equation 13)
 
-         IF ( XARG .LE. XMAXX) THEN
+         IF ( XARG <= XMAXX) THEN
             RP0 = R00 + (ALPHAM * XARG/2.0D0)                          ! Final Plume Radius (Equation 15)
             HPM = R00 + (ALPHAM * XARG)                                ! Momentum Plume Rise (Equation 12)
          ELSE
@@ -208,10 +208,10 @@ SUBROUTINE MOMENTUM_PLUMERISE (XARG)
 
 !        For Airborne Sources, calculate plume displacement using
 !        source angle and xpmax
-         IF (HS .GT. 12.0D0) THEN
+         IF (HS > 12.0D0) THEN
             XPMAX = (RP0 - R00) / ALPHAM
 !           Set the minimum value for the source angle
-            IF (SRCANGLE .EQ. 0.0D0) THEN
+            IF (SRCANGLE == 0.0D0) THEN
                SRCANGLEU = 0.01
             ELSE
                SRCANGLEU = SRCANGLE
@@ -238,7 +238,7 @@ SUBROUTINE MOMENTUM_PLUMERISE (XARG)
 
 
    RETURN
-END
+END SUBROUTINE MOMENTUM_PLUMERISE
 
 
 SUBROUTINE ADISTF
@@ -267,7 +267,7 @@ SUBROUTINE ADISTF
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION :: XLN, DELHNN, XMAXN
    DOUBLE PRECISION :: DHFSAV       ! save original DHFAER for URBSTAB cases
@@ -283,9 +283,9 @@ SUBROUTINE ADISTF
 
 !     For turbofan and non-turbofan/shaft-based engines having greater
 !     than 1.0D-10 buoyancy flux
-   IF ( FB .GT. 1.0D-10 ) THEN
+   IF ( FB > 1.0D-10 ) THEN
 
-      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
+      IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
 !        Compute the distance to final rise, XMAX;
 !        The negative sign appears on the FB term to ensure that the
 !        resulting angle is between 0 and PI (i.e., positive)
@@ -322,7 +322,7 @@ SUBROUTINE ADISTF
 ! ---       "New fomulation" for v15181 to account for "partial penetration" of plume
 !           above the urban "stable" mixing height, similar to approach used for
 !           convective conditions
-            IF( HSP+DHFAER .GE. ZI )THEN
+            IF( HSP+DHFAER >= ZI )THEN
 ! ---          Stack height + plume rise is .GE. ZI; use pseudo-penetrated plume
 !              approach for URBAN SBL cases
 
@@ -339,10 +339,10 @@ SUBROUTINE ADISTF
                HEDHH = (17.576D0 * PSUBS + 0.296296D0) ** THIRD
 
 !              Check the value of HEDHH and compute the plume penetration, P
-               IF( HEDHH .LT. (2.0D0*THIRD) )THEN
+               IF( HEDHH < (2.0D0*THIRD) )THEN
                   PPF = 0.0D0
 
-               ELSE IF( HEDHH .GT. 2.0D0 )THEN
+               ELSE IF( HEDHH > 2.0D0 )THEN
                   PPF = 1.0D0
 
                ELSE
@@ -351,11 +351,11 @@ SUBROUTINE ADISTF
                END IF
 
 ! ---          Include calculation of penetrated plume rise and height
-               IF( PPF .GT. 0.0D0 )THEN
+               IF( PPF > 0.0D0 )THEN
 
 !                 Compute the plume height for the penetrated source
 !                 (See Eq. 8 in the reference for Source 3)
-                  IF (PPF .EQ. 1.0D0) THEN
+                  IF (PPF == 1.0D0) THEN
                      DHFAER = HEDHH * (ZI-HSP)
                   ELSE
                      DHFAER = 0.75D0 * (ZI-HSP) * HEDHH + 0.5D0*(ZI-HSP)
@@ -387,7 +387,7 @@ SUBROUTINE ADISTF
 !        Call the momentum plume rise code for RP0             --- CALL MOMENTUM_PLUMERISE
          CALL MOMENTUM_PLUMERISE (XMAX)
 
-         IF (HS .LE. 12.0D0) THEN
+         IF (HS <= 12.0D0) THEN
 
 !       Calculation of DHP is based on the equation 6 of Pandey et al. (2023)
             DHP1 = ((RP0/BETA1)**3.0D0 + (1.5D0/BETA1**(2.0D0))*&
@@ -437,7 +437,7 @@ SUBROUTINE ADISTF
 
 
    RETURN
-END
+END SUBROUTINE ADISTF
 
 DOUBLE PRECISION FUNCTION BISEC_TMAX(FBB,VAB,RP00,AUEFFFF,SWEFFAA)
 !***********************************************************************
@@ -494,7 +494,7 @@ DOUBLE PRECISION FUNCTION BISEC_TMAX(FBB,VAB,RP00,AUEFFFF,SWEFFAA)
 
    FRIGHT = A*X2 - SWEFFAA*C**(2.0D0/3.0D0)
 
-   IF (FRIGHT .GT. 0.0D0) THEN
+   IF (FRIGHT > 0.0D0) THEN
 
       XRIGHT = X2
       XLEFT  = X1
@@ -517,7 +517,7 @@ DOUBLE PRECISION FUNCTION BISEC_TMAX(FBB,VAB,RP00,AUEFFFF,SWEFFAA)
 
       FMID = A*XMID - SWEFFAA*C**(2.0D0/3.0D0)
 
-      IF (FMID .GT. 0.0D0) THEN
+      IF (FMID > 0.0D0) THEN
 
          XRIGHT = XMID
 
@@ -531,7 +531,7 @@ DOUBLE PRECISION FUNCTION BISEC_TMAX(FBB,VAB,RP00,AUEFFFF,SWEFFAA)
 
    ATMAX = XMID
 
-END FUNCTION
+END FUNCTION BISEC_TMAX
 
 
 SUBROUTINE ADELTAH ( XARG )
@@ -572,7 +572,7 @@ SUBROUTINE ADELTAH ( XARG )
    USE MAIN1
    IMPLICIT NONE
 
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    INTEGER :: KITER, NDXZPL
    DOUBLE PRECISION :: XARG, XMAXTMP, XRISE, ZPLM, DHPOLD,&
    &SVPM, SWPM, UPM, TGPM, PTPM, PTP
@@ -581,14 +581,14 @@ SUBROUTINE ADELTAH ( XARG )
    MODNAM = 'ADELTAH'
 
 
-   IF( (STABLE  .or.  (UNSTAB  .and.  (HS .GE. ZI)))  .and.&
-   &(XARG .GE. XMAX) )THEN
+   IF( (STABLE  .or.  (UNSTAB  .and.  (HS >= ZI)))  .and.&
+   &(XARG >= XMAX) )THEN
 !        Use final stable plume rise (DHF) calculated in DISTF (DHP)
 !        at XMAX
       DHP = DHFAER
 
-   ELSE IF( (STABLE  .or. (UNSTAB  .and.  (HS .GE. ZI))) .and.&
-   &(XARG .LT. XMAX) ) THEN
+   ELSE IF( (STABLE  .or. (UNSTAB  .and.  (HS >= ZI))) .and.&
+   &(XARG < XMAX) ) THEN
 !----    Compute stable plume rise for the distance XARG   --- CALL ASBLRIS
 !        Use iterative approach to plume rise calculations.
 !        First compute temporary distance to "final rise" based on current
@@ -642,7 +642,7 @@ SUBROUTINE ADELTAH ( XARG )
       TGP = 0.5D0 * (TGS + TGPM)
       PTP = 0.5D0 * (PTS + PTPM)
       BVF = DSQRT( G * TGP / PTP)
-      IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
+      IF(BVF < 1.0D-10) BVF = 1.0D-10
       BVPRIM  = 0.7D0 * BVF
 
 !        Repeat calculation of temporary distance to "final rise" using
@@ -664,17 +664,17 @@ SUBROUTINE ADELTAH ( XARG )
       ENDIF
 
 !        Check for convergence
-      IF(DHP.GT.0.0D0 .and. DABS((DHPOLD-DHP)/DHP).LT.0.001D0 .and.&
-      &KITER .GE. 5)THEN
-         IF( DHP .LE. 1.0D-5 )THEN
+      IF(DHP>0.0D0 .and. DABS((DHPOLD-DHP)/DHP)<0.001D0 .and.&
+      &KITER >= 5)THEN
+         IF( DHP <= 1.0D-5 )THEN
             DHP = 1.0D-5
          ENDIF
          GO TO 60
-      ELSEIF(KITER .LT. 10)THEN
+      ELSEIF(KITER < 10)THEN
          GO TO 50
       ENDIF
 
-      IF(KITER .GE. 5) THEN
+      IF(KITER >= 5) THEN
          DHP = 0.5D0 * (DHP + DHPOLD)
          IF(ARCFTDEBUG) WRITE(ARCFTDBG,6002) DHP
 6002     FORMAT(/,5X,'OPTH2 ITERATION FAILED TO CONVERGE; PLUME',&
@@ -694,7 +694,7 @@ SUBROUTINE ADELTAH ( XARG )
       TGP = TGS
       PTP = PTS
       BVF = DSQRT( G * TGP / PTP )
-      IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
+      IF(BVF < 1.0D-10) BVF = 1.0D-10
       BVPRIM  = 0.7D0 * BVF
 !crfl-3/6/95 Make sure SBL rise is not greater than CBL rise.
       CALL ACBLPRD(XARG)
@@ -710,7 +710,7 @@ SUBROUTINE ADELTAH ( XARG )
 !        Compute  plume rise for the indirect plume        --- CALL ACBLPRN
       CALL ACBLPRN ( XARG )
 
-      IF( PPF .GT. 0.0D0 )THEN
+      IF( PPF > 0.0D0 )THEN
 !           Compute plume rise for the penetrated plume    --- CALL ACBLPR3
          CALL ACBLPR3
 
@@ -723,7 +723,7 @@ SUBROUTINE ADELTAH ( XARG )
    ENDIF
 
    RETURN
-END
+END SUBROUTINE ADELTAH
 
 
 SUBROUTINE ASBLRIS ( XARG )
@@ -765,7 +765,7 @@ SUBROUTINE ASBLRIS ( XARG )
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: XARG, TERMA, TERMC, TERMD, TERME
    DOUBLE PRECISION :: XLN, DELHNN
 
@@ -778,8 +778,8 @@ SUBROUTINE ASBLRIS ( XARG )
    CALL MOMENTUM_PLUMERISE (XARG)                                   ! CALL MOMENTUM_PLUMERISE
 
 !     For turbofan and non-turbofan/shaft-based engines
-   IF (BYPR .GT. 0.0D0 .or. BYPR .EQ. -999.0D0 .and.&
-   &FB .GT. 1.0D-10) THEN
+   IF (BYPR > 0.0D0 .or. BYPR == -999.0D0 .and.&
+   &FB > 1.0D-10) THEN
 
 !       Calculation of DHP is based on the equation 6 of Pandey et al. (2023)
       DHP = ((RP0/BETA1)**3.0D0 + (1.5D0/BETA1**(2.0D0))*&
@@ -806,13 +806,13 @@ SUBROUTINE ASBLRIS ( XARG )
    END IF
 
 !     For Airborne Aircraft Sources
-   IF (HS .GT. 12) THEN
+   IF (HS > 12) THEN
       DHP = MIN(DHP, ABS(ZI-HS))
       DHP = MAX(HPM,(DHP-HDISP))
    END IF
 
    RETURN
-END
+END SUBROUTINE ASBLRIS
 
 SUBROUTINE ACBLPRD ( XARG )
 !***********************************************************************
@@ -850,7 +850,7 @@ SUBROUTINE ACBLPRD ( XARG )
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: XARG
 
 !     Variable Initializations
@@ -862,8 +862,8 @@ SUBROUTINE ACBLPRD ( XARG )
    CALL MOMENTUM_PLUMERISE (XARG)                                   ! CALL MOMENTUM_PLUMERISE
 
 !     For turbofan and non-turbofan/shaft-based engines
-   IF (BYPR .GT. 0.0D0 .or. BYPR .EQ. -999.0D0 .and.&
-   &FB .GT. 1.0D-10) THEN
+   IF (BYPR > 0.0D0 .or. BYPR == -999.0D0 .and.&
+   &FB > 1.0D-10) THEN
 
 !      Calculation of DHP is based on the equation 6 of Pandey et al. (2023)
       DHP1 = ((RP0/BETA1)**3.0D0 + (1.5D0/BETA1**(2.0D0))*&
@@ -883,7 +883,7 @@ SUBROUTINE ACBLPRD ( XARG )
    END IF
 
 !     For Airborne Aircraft Sources
-   IF (HS .GT. 12) THEN
+   IF (HS > 12) THEN
 
       DHP1 = MIN(DHP1, ABS(ZI-HS))
       DHP1 = MAX(HPM,(DHP1-HDISP))
@@ -891,7 +891,7 @@ SUBROUTINE ACBLPRD ( XARG )
    END IF
 
    RETURN
-END
+END SUBROUTINE ACBLPRD
 
 SUBROUTINE ACBLPRN ( XARG )
 !***********************************************************************
@@ -931,7 +931,7 @@ SUBROUTINE ACBLPRN ( XARG )
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: XARG, RSUBH, RYRZ, DELHI
 
 !     Variable Initializations
@@ -944,7 +944,7 @@ SUBROUTINE ACBLPRN ( XARG )
    DHP2  = DELHI
 
    RETURN
-END
+END SUBROUTINE ACBLPRN
 
 SUBROUTINE ACBLPR3
 !***********************************************************************
@@ -978,7 +978,7 @@ SUBROUTINE ACBLPR3
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'CBLPR3'
@@ -988,7 +988,7 @@ SUBROUTINE ACBLPR3
 !     delta(Hsub_e)/delta(Hsub_h), calculated from Eq. 26a of Jeff Weil's
 !     8/17/93 document, where delta(Hsub_h) is ZI-HS.
 
-   IF (PPF .EQ. 1.0D0) THEN
+   IF (PPF == 1.0D0) THEN
       DHP3 = HEDHH * (ZI-HSP)
    ELSE
       DHP3 = 0.75D0 * (ZI-HSP) * HEDHH + 0.5D0 * (ZI-HSP)
@@ -996,4 +996,4 @@ SUBROUTINE ACBLPR3
 
    RETURN
 
-END
+END SUBROUTINE ACBLPR3

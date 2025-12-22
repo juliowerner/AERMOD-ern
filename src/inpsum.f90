@@ -24,8 +24,8 @@ SUBROUTINE INPSUM
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   INTEGER I
-   CHARACTER MODNAM*12
+   INTEGER :: I
+   CHARACTER :: MODNAM*12
 ! Unused: INTEGER ILEN, NOPS
 
 !     Variable Initializations
@@ -80,7 +80,7 @@ SUBROUTINE INPSUM
    END IF
 
    RETURN
-END
+END SUBROUTINE INPSUM
 
 SUBROUTINE PRTOPT(IOUNT)
 !***********************************************************************
@@ -160,7 +160,7 @@ SUBROUTINE PRTOPT(IOUNT)
    USE BUOYANT_LINE
 
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: NOPS
 
@@ -341,7 +341,7 @@ SUBROUTINE PRTOPT(IOUNT)
 
 !     Exponential Decay (SO2)
    IF (DFAULT) THEN
-      IF (URBAN .and. POLLUT .EQ. 'SO2') THEN
+      IF (URBAN .and. POLLUT == 'SO2') THEN
          WRITE(IOUNT,*) '     * Half-life of 4 hrs for',&
          &' URBAN SO2.'
       ELSE
@@ -350,21 +350,21 @@ SUBROUTINE PRTOPT(IOUNT)
    END IF
    IF (.NOT.DFAULT) THEN
 ! ---    Check for Non-DFAULT Half-life for URBAN SO2 application
-      IF (URBAN .and. POLLUT.EQ.'SO2') THEN
-         IF( ICSTAT(7) .EQ. 1 .or. ICSTAT(8) .EQ. 1 )THEN
+      IF (URBAN .and. POLLUT=='SO2') THEN
+         IF( ICSTAT(7) == 1 .or. ICSTAT(8) == 1 )THEN
 ! ----           User-specified HALFLIFE or DCAYCOEF
-            IF (DABS(DECOEF-4.81D-5) .LE. 5.0D-8) THEN
+            IF (DABS(DECOEF-4.81D-5) <= 5.0D-8) THEN
                WRITE(IOUNT,*) '     * Half-life of 4 hrs for',&
                &' URBAN SO2.'
             ELSE
                WRITE(IOUNT,*) '     * Non-DFAULT Half-life for ',&
                &' URBAN SO2.'
             END IF
-         ELSE IF (ICSTAT(7) .EQ. 0 .and. ICSTAT(8) .EQ. 0) THEN
+         ELSE IF (ICSTAT(7) == 0 .and. ICSTAT(8) == 0) THEN
             WRITE(IOUNT,*) '     * Half-life of 4 hrs for',&
             &' URBAN SO2.'
          END IF
-      ELSE IF (DECOEF .NE. 0.0D0) THEN
+      ELSE IF (DECOEF /= 0.0D0) THEN
          WRITE(IOUNT,*) '     * Non-DFAULT Exponential',&
          &' Decay.'
       ELSE
@@ -373,7 +373,7 @@ SUBROUTINE PRTOPT(IOUNT)
    END IF
 
 !     NO2 Conversion
-   IF (POLLUT .EQ. 'NO2') THEN
+   IF (POLLUT == 'NO2') THEN
       IF (PVMRM) THEN
          WRITE(IOUNT,*)&
          &'     * Plume Volume Molar Ratio Method (PVMRM)',&
@@ -396,7 +396,7 @@ SUBROUTINE PRTOPT(IOUNT)
          WRITE(IOUNT,90901) NO2Equil
 90901    FORMAT('        with an Equilibrium NO2/NOx ',&
          &'Ratio of ',F6.3,' and')
-         IF (NUMOLM .GT. 0) THEN
+         IF (NUMOLM > 0) THEN
             WRITE(IOUNT,90911) NUMOLM
 90911       FORMAT('        with ',I3,' OLMGROUP(s)')
          ELSE
@@ -434,7 +434,7 @@ SUBROUTINE PRTOPT(IOUNT)
 9039  FORMAT(1X,'     * Model Uses URBAN Dispersion Algorithm ',&
       &'for the SBL for ',I5,' Source(s),'&
       &/'        for Total of ',I4,' Urban Area(s):')
-      IF (NUMURB .GT. 1) THEN
+      IF (NUMURB > 1) THEN
          DO I = 1, NUMURB
             WRITE(IOUNT,9040) URBID(I), URBPOP(I), URBZ0(I)
 9040        FORMAT(8X,'Urban ID = ',A8,' ;  Urban Population = ',&
@@ -446,8 +446,8 @@ SUBROUTINE PRTOPT(IOUNT)
          &F11.1,' ;  Urban Roughness Length = ',F6.3,' m')
       END IF
 
-      IF (MAXVAL(URBZ0).NE.1.0D0 .or.&
-      &MINVAL(URBZ0).NE.1.0D0) THEN
+      IF (MAXVAL(URBZ0)/=1.0D0 .or.&
+      &MINVAL(URBZ0)/=1.0D0) THEN
          WRITE(IOUNT,*) '     * Non-DFAULT Urban ',&
          &'Roughness Length(s) Used.'
       ELSE
@@ -463,7 +463,7 @@ SUBROUTINE PRTOPT(IOUNT)
    END IF
 
 !     Capped Option Used
-   IF ( NUMCAP.GT.0 .or. NUMHOR.GT.0 ) THEN
+   IF ( NUMCAP>0 .or. NUMHOR>0 ) THEN
       WRITE(IOUNT,*) '     * Option for Capped &',&
       &' Horiz Stacks Selected With:'
       WRITE(IOUNT,9092) NUMCAP, NUMHOR
@@ -557,7 +557,7 @@ SUBROUTINE PRTOPT(IOUNT)
 
    IF (L_MMIF_Data) THEN
       WRITE(IOUNT,*) '     * MMIFData - Use MMIF met data inputs'
-      IF( LEN_TRIM(MMIF_Version).GT.0 )THEN
+      IF( LEN_TRIM(MMIF_Version)>0 )THEN
          WRITE(IOUNT,*) '                   ',MMIF_Version
       END IF
    END IF
@@ -660,15 +660,15 @@ SUBROUTINE PRTOPT(IOUNT)
 ! --- Include note regarding 24-hr PM2.5, 1-hr NO2 and 1-hr SO2 processing;
 !     including a note regarding 1hr NO2/SO2 and 24hr PM25 NAAQS processing
 !     being disabled by user, if applicable.
-   IF ((POLLUT .EQ. 'PM25' .or. POLLUT .EQ. 'PM-2.5' .or.&
-   &POLLUT .EQ. 'PM-25'.or. POLLUT .EQ. 'PM2.5') .and.&
+   IF ((POLLUT == 'PM25' .or. POLLUT == 'PM-2.5' .or.&
+   &POLLUT == 'PM-25'.or. POLLUT == 'PM2.5') .and.&
    &.NOT.EVONLY) THEN
       IF (PM25AVE) THEN
          WRITE(IOUNT,99090)
       ELSE IF (L_NO_PM25AVE) THEN
          WRITE(IOUNT,99190)
       END IF
-   ELSE IF (POLLUT .EQ. 'NO2' .and. .NOT.EVONLY) THEN
+   ELSE IF (POLLUT == 'NO2' .and. .NOT.EVONLY) THEN
       IF (NO2AVE) THEN
 ! ---       Special processing for 1-hr NO2 NAAQS
 !           is applicable
@@ -681,14 +681,14 @@ SUBROUTINE PRTOPT(IOUNT)
 ! ---       Special processing for 1-hr NO2 NAAQS is NOT
 !           applicable due to non-standard averaging period(s)
          DO I = 1, NUMAVE
-            IF (CHRAVE(I) .NE. ' 1-HR') THEN
+            IF (CHRAVE(I) /= ' 1-HR') THEN
                ILEN = LEN_TRIM(CHRAVES)
                CHRAVES = CHRAVES(1:ILEN)//'  '//CHRAVE(I)
             END IF
          END DO
          WRITE(IOUNT,99291) CHRAVES
       END IF
-   ELSE IF (POLLUT .EQ. 'SO2' .and. .NOT.EVONLY) THEN
+   ELSE IF (POLLUT == 'SO2' .and. .NOT.EVONLY) THEN
       IF (SO2AVE) THEN
 ! ---       Special processing for 1-hr SO2 NAAQS
 !           is applicable
@@ -701,7 +701,7 @@ SUBROUTINE PRTOPT(IOUNT)
 ! ---       Special processing for 1-hr SO2 NAAQS is NOT
 !           applicable due to non-standard averaging period(s)
          DO I = 1, NUMAVE
-            IF (CHRAVE(I) .NE. ' 1-HR') THEN
+            IF (CHRAVE(I) /= ' 1-HR') THEN
                ILEN = LEN_TRIM(CHRAVES)
                CHRAVES = CHRAVES(1:ILEN)//'  '//CHRAVE(I)
             END IF
@@ -713,14 +713,14 @@ SUBROUTINE PRTOPT(IOUNT)
 !     Modeled average period(s) summary
    WRITE(IOUNT,9099)
    IF (PERIOD) THEN
-      IF (NUMAVE .GT. 0) THEN
+      IF (NUMAVE > 0) THEN
          WRITE(IOUNT,9042) NUMAVE, (CHRAVE(I),I=1,NUMAVE)
          WRITE(IOUNT,9043)
       ELSE
          WRITE(IOUNT,9045)
       END IF
    ELSE IF (ANNUAL) THEN
-      IF (NUMAVE .GT. 0) THEN
+      IF (NUMAVE > 0) THEN
          WRITE(IOUNT,9042) NUMAVE, (CHRAVE(I),I=1,NUMAVE)
          WRITE(IOUNT,9143)
       ELSE
@@ -744,8 +744,8 @@ SUBROUTINE PRTOPT(IOUNT)
 
 !     CRT, 3/18/2022 D063 Write number of point, pointhor, pointcap
 !     sources subject to platform downwash
-   IF ((NUMPNT .GT. 0 .or. NUMCAP .GT. 0 .or. NUMHOR .GT. 0) .and.&
-   &NumPFSrcs .GT. 0) THEN
+   IF ((NUMPNT > 0 .or. NUMCAP > 0 .or. NUMHOR > 0) .and.&
+   &NumPFSrcs > 0) THEN
       WRITE (IOUNT, 9059) NumPFSrcs
 9059  FORMAT(1X,'**Number of Platform Point Sources:', I6)
    END IF
@@ -832,7 +832,7 @@ SUBROUTINE PRTOPT(IOUNT)
          END DO
 
 ! ---       Summarize how many sectors have HOURLY BACKGRND
-         IF (NumHrlySect .GT. 0) THEN
+         IF (NumHrlySect > 0) THEN
             WRITE(IOUNT,19048) NumHrlySect,&
             &BGSECT_String(1:LEN_TRIM(BGSECT_String))
 19048       FORMAT(1X,'             HOURLY BACKGRND Values',&
@@ -857,7 +857,7 @@ SUBROUTINE PRTOPT(IOUNT)
 !           First reinitialize BFLAG_String and BFLAG_TempString
          BFLAG_String = ''
          BFLAG_TempString = ''
-         IF (NumNonHrlySect .GT. 0) THEN
+         IF (NumNonHrlySect > 0) THEN
             WRITE(IOUNT,19049) NumNonHrlySect,&
             &BGSECT_String(1:LEN_TRIM(BGSECT_String))
 19049       FORMAT(1X,'         Non-HOURLY BACKGRND Values',&
@@ -875,7 +875,7 @@ SUBROUTINE PRTOPT(IOUNT)
                BFLAG_String = BFLAG_TempString
             END IF
          END DO
-         IF (LEN_TRIM(BFLAG_String) .GT. 0) THEN
+         IF (LEN_TRIM(BFLAG_String) > 0) THEN
             WRITE(IOUNT,19050)&
             &BFLAG_String(1:LEN_TRIM(BFLAG_String))
 19050       FORMAT(1X,'     Missing HOURLY BACKGRND Values ',&
@@ -895,7 +895,7 @@ SUBROUTINE PRTOPT(IOUNT)
                BFLAG_String = BFLAG_TempString
             END IF
          END DO
-         IF (LEN_TRIM(BFLAG_String) .GT. 0) THEN
+         IF (LEN_TRIM(BFLAG_String) > 0) THEN
             WRITE(IOUNT,19051) BFLAG_String(1:LEN_TRIM(BFLAG_String))
 19051       FORMAT(1X,'         Non-HOURLY BACKGRND Values',&
             &' are Available Varying by: ',A:)
@@ -914,11 +914,11 @@ SUBROUTINE PRTOPT(IOUNT)
             WRITE(IOUNT,29048)
 29048       FORMAT(1X,'             HOURLY BACKGRND Values',&
             &' are Available')
-            IF (LEN_TRIM(BFLAG(1)) .GT. 0) THEN
+            IF (LEN_TRIM(BFLAG(1)) > 0) THEN
                WRITE(IOUNT,19050) BFLAG(1)(1:LEN_TRIM(BFLAG(1)))
             END IF
          ELSE
-            IF (LEN_TRIM(BFLAG(1)) .GT. 0) THEN
+            IF (LEN_TRIM(BFLAG(1)) > 0) THEN
                WRITE(IOUNT,19051) BFLAG(1)(1:LEN_TRIM(BFLAG(1)))
             END IF
          END IF
@@ -950,7 +950,7 @@ SUBROUTINE PRTOPT(IOUNT)
          END DO
 
 ! ---       Summarize how many sectors have HOURLY OZONE
-         IF (NumHrlyO3Sect .GT. 0) THEN
+         IF (NumHrlyO3Sect > 0) THEN
             WRITE(IOUNT,19058) NumHrlyO3Sect,&
             &O3SECT_String(1:LEN_TRIM(O3SECT_String))
 19058       FORMAT(1X,'             HOURLY OZONE    Values',&
@@ -962,7 +962,7 @@ SUBROUTINE PRTOPT(IOUNT)
          O3SECT_String = ''
          O3SECT_TempString = ''
          DO I = 1, NUMO3sects
-            IF (IO3SET(I) .GT. 0 .or. L_O3VAL(I)) THEN
+            IF (IO3SET(I) > 0 .or. L_O3VAL(I)) THEN
                WRITE(O3SECT_TempString,'(A,I4)')& ! MKP D196, write to temp string, avoid write-to-self warning
                &O3SECT_String(1:LEN_TRIM(O3SECT_String)),&
                &NINT(O3SECT(I))
@@ -975,7 +975,7 @@ SUBROUTINE PRTOPT(IOUNT)
 !           First reinitialize O3FLAG_String and O3FLAG_TempString
          O3FLAG_String = ''
          O3FLAG_TempString = ''
-         IF (NumNonHrlyO3Sect .GT. 0) THEN
+         IF (NumNonHrlyO3Sect > 0) THEN
             WRITE(IOUNT,19059) NumNonHrlyO3Sect,&
             &O3SECT_String(1:LEN_TRIM(O3SECT_String))
 19059       FORMAT(1X,'         Non-HOURLY OZONE    Values',&
@@ -985,9 +985,9 @@ SUBROUTINE PRTOPT(IOUNT)
 
 ! ---       Summarize Non-HOURLY OZONE options for missing HOURLY O3
          DO I = 1, NUMO3sects
-            IF ((IO3SET(I).GT.0 .or. L_O3VAL(I)) .and.&
+            IF ((IO3SET(I)>0 .or. L_O3VAL(I)) .and.&
             &L_O3File(I)) THEN
-               IF (IO3SET(I) .GT. 0) THEN
+               IF (IO3SET(I) > 0) THEN
                   ILEN1 = LEN_TRIM(O3FLAG_String)
                   ILEN2 = LEN_TRIM(O3FLAG(I))
                   WRITE(O3FLAG_TempString,'(A,1x,A)')&
@@ -1001,7 +1001,7 @@ SUBROUTINE PRTOPT(IOUNT)
                O3FLAG_String = O3FLAG_TempString
             END IF
          END DO
-         IF (LEN_TRIM(O3FLAG_String) .GT. 0) THEN
+         IF (LEN_TRIM(O3FLAG_String) > 0) THEN
             WRITE(IOUNT,19060)&
             &O3FLAG_String(1:LEN_TRIM(O3FLAG_String))
 19060       FORMAT(1X,'     Missing HOURLY OZONE    Values ',&
@@ -1012,8 +1012,8 @@ SUBROUTINE PRTOPT(IOUNT)
          O3FLAG_String = ''
          O3FLAG_TempString = ''
          DO I = 1, NUMO3sects
-            IF (IO3SET(I) .GT. 0 .or. L_O3VAL(I)) THEN
-               IF (IO3SET(I) .GT. 0) THEN
+            IF (IO3SET(I) > 0 .or. L_O3VAL(I)) THEN
+               IF (IO3SET(I) > 0) THEN
                   ILEN1 = LEN_TRIM(O3FLAG_String)
                   ILEN2 = LEN_TRIM(O3FLAG(I))
                   WRITE(O3FLAG_TempString,'(A,1x,A)')&
@@ -1027,7 +1027,7 @@ SUBROUTINE PRTOPT(IOUNT)
                O3FLAG_String = O3FLAG_TempString
             END IF
          END DO
-         IF (LEN_TRIM(O3FLAG_String) .GT. 0) THEN
+         IF (LEN_TRIM(O3FLAG_String) > 0) THEN
             WRITE(IOUNT,19061)&
             &O3FLAG_String(1:LEN_TRIM(O3FLAG_String))
 19061       FORMAT(1X,'         Non-HOURLY OZONE    Values',&
@@ -1045,15 +1045,15 @@ SUBROUTINE PRTOPT(IOUNT)
          IF (L_O3File(1)) THEN
             NumHrlyO3Sect = NumHrlyO3Sect + 1
          END IF
-         IF (NumHrlyO3Sect .GE. 1) THEN
+         IF (NumHrlyO3Sect >= 1) THEN
             WRITE(IOUNT,29058)
 29058       FORMAT(1X,'             HOURLY OZONE    Values ',&
             &'are Available')
-            IF (LEN_TRIM(O3FLAG(1)) .GT. 0) THEN
+            IF (LEN_TRIM(O3FLAG(1)) > 0) THEN
                WRITE(IOUNT,19060) O3FLAG(1)(1:LEN_TRIM(O3FLAG(1)))
             END IF
          ELSE
-            IF (LEN_TRIM(O3FLAG(1)) .GT. 0) THEN
+            IF (LEN_TRIM(O3FLAG(1)) > 0) THEN
                WRITE(IOUNT,19061) O3FLAG(1)(1:LEN_TRIM(O3FLAG(1)))
             END IF
          END IF
@@ -1086,7 +1086,7 @@ SUBROUTINE PRTOPT(IOUNT)
          END DO
 
 ! ---      Summarize how many sectors have HOURLY NOX
-         IF(NumHrlyNOxSect .GT. 0)THEN
+         IF(NumHrlyNOxSect > 0)THEN
             WRITE(IOUNT,19065) NumHrlyNOxSect,&
             &NOXSECT_String(1:LEN_TRIM(NOXSECT_String))
 19065       FORMAT(1X,'             HOURLY NOX      Values',&
@@ -1098,7 +1098,7 @@ SUBROUTINE PRTOPT(IOUNT)
          NOXSECT_String = ''
          NOXSECT_TempString = ''
          DO I = 1, NUMNOxSects
-            IF (INOXSET(I) .GT. 0 .or. L_NOXVALUE(I)) THEN
+            IF (INOXSET(I) > 0 .or. L_NOXVALUE(I)) THEN
                WRITE(NOXSECT_TempString,'(A,I4)')& ! MKP D196, write to temp string, avoid write-to-self warning
                &NOXSECT_String(1:LEN_TRIM(NOXSECT_String)),&
                &NINT(NOXSECT(I))
@@ -1110,7 +1110,7 @@ SUBROUTINE PRTOPT(IOUNT)
 !           First reinitialize NOxFLAG_String and NOxFLAG_TempString
          NOXFLAG_String = ''
          NOXFLAG_TempString = ''
-         IF (NumNonHrlyNOxSect .GT. 0) THEN
+         IF (NumNonHrlyNOxSect > 0) THEN
             WRITE(IOUNT,19063) NumNonHrlyNOxSect,&
             &NOxSECT_String(1:LEN_TRIM(NOxSECT_String))
 19063       FORMAT(1X,'         Non-HOURLY NOx      Values',&
@@ -1120,9 +1120,9 @@ SUBROUTINE PRTOPT(IOUNT)
 
 ! ---       Summarize Non-Hourly NOX options for missing HOURLY NOx
          DO I = 1, NumNOxsects
-            IF ((INOXSET(I).GT.0 .or. L_NOXVALUE(I)) .and.&
+            IF ((INOXSET(I)>0 .or. L_NOXVALUE(I)) .and.&
             &L_NOxFile(I)) THEN
-               IF(INOXSET(I).GT.0)THEN
+               IF(INOXSET(I)>0)THEN
                   ILEN1=LEN_TRIM(NOXFLAG_String)
                   ILEN2=LEN_TRIM(NOXFLAG(I))
                   WRITE(NOXFLAG_TempString,'(A,1x,A)')&
@@ -1136,7 +1136,7 @@ SUBROUTINE PRTOPT(IOUNT)
                NOXFLAG_String=NOXFLAG_TempString
             END IF
          END DO
-         IF(LEN_TRIM(NOXFLAG_String).GT.0)THEN
+         IF(LEN_TRIM(NOXFLAG_String)>0)THEN
             WRITE(IOUNT,19066)&
             &NOXFLAG_String(1:LEN_TRIM(NOXFLAG_String))
 19066       FORMAT(1X,'     Missing HOURLY NOX      Values ',&
@@ -1147,8 +1147,8 @@ SUBROUTINE PRTOPT(IOUNT)
          NOxFLAG_String = ''
          NOxFLAG_TempString = ''
          DO I = 1, NUMNOxSects
-            IF (INOxSET(I) .GT. 0 .or. L_NOXVALUE(I)) THEN
-               IF (INOxSET(I) .GT. 0) THEN
+            IF (INOxSET(I) > 0 .or. L_NOXVALUE(I)) THEN
+               IF (INOxSET(I) > 0) THEN
                   ILEN1 = LEN_TRIM(NOxFLAG_String)
                   ILEN2 = LEN_TRIM(NOxFLAG(I))
                   WRITE(NOxFLAG_TempString,'(A,1x,A)')&
@@ -1162,7 +1162,7 @@ SUBROUTINE PRTOPT(IOUNT)
                NOxFLAG_String = NOxFLAG_TempString
             END IF
          END DO
-         IF (LEN_TRIM(NOxFLAG_String) .GT. 0) THEN
+         IF (LEN_TRIM(NOxFLAG_String) > 0) THEN
             WRITE(IOUNT,19064)&
             &NOxFLAG_String(1:LEN_TRIM(NOxFLAG_String))
 19064       FORMAT(1X,'         Non-HOURLY NOx      Values',&
@@ -1177,15 +1177,15 @@ SUBROUTINE PRTOPT(IOUNT)
          IF(L_NOxFile(1))THEN
             NumHrlyNOxSect = NumHrlyNOxSect + 1
          END IF
-         IF(NumHrlyNOxSect .GE. 1)THEN
+         IF(NumHrlyNOxSect >= 1)THEN
             WRITE(IOUNT,29066)
 29066       FORMAT(1X,'             HOURLY NOX      Values ',&
             &'are Available')
-            IF (LEN_TRIM(NOxFLAG(1)) .GT. 0) THEN
+            IF (LEN_TRIM(NOxFLAG(1)) > 0) THEN
                WRITE(IOUNT,19066) NOXFLAG(1)(1:LEN_TRIM(NOxFLAG(1)))
             END IF
          ELSE
-            IF (LEN_TRIM(NOxFLAG(1)) .GT. 0) THEN
+            IF (LEN_TRIM(NOxFLAG(1)) > 0) THEN
                WRITE(IOUNT,19064) NOXFLAG(1)(1:LEN_TRIM(NOxFLAG(1)))
             END IF
          END IF
@@ -1224,66 +1224,66 @@ SUBROUTINE PRTOPT(IOUNT)
 !           ANNUAL Averages by Receptor Are Output
          WRITE(IOUNT,9171)
       END IF
-      IF (IOSTAT(2) .GT. 0) THEN
+      IF (IOSTAT(2) > 0) THEN
 !           RECTABLE Keyword Used
          WRITE(IOUNT,9072)
       END IF
-      IF (IOSTAT(3) .GT. 0) THEN
+      IF (IOSTAT(3) > 0) THEN
 !           MAXTABLE Keyword Used
          WRITE(IOUNT,9073)
       END IF
-      IF (IOSTAT(4) .GT. 0) THEN
+      IF (IOSTAT(4) > 0) THEN
 !           DAYTABLE Keyword Used
          WRITE(IOUNT,9074)
       END IF
-      IF (IOSTAT(5) .GT. 0) THEN
+      IF (IOSTAT(5) > 0) THEN
 !           MAXIFILE Keyword Used
          WRITE(IOUNT,9075)
       END IF
-      IF (IOSTAT(6) .GT. 0) THEN
+      IF (IOSTAT(6) > 0) THEN
 !           POSTFILE Keyword Used
          WRITE(IOUNT,9076)
       END IF
-      IF (IOSTAT(7) .GT. 0) THEN
+      IF (IOSTAT(7) > 0) THEN
 !           PLOTFILE Keyword Used
          WRITE(IOUNT,9077)
       END IF
-      IF (IOSTAT(8) .GT. 0) THEN
+      IF (IOSTAT(8) > 0) THEN
 !           TOXXFILE Keyword Used
          WRITE(IOUNT,9078)
       END IF
-      IF (IOSTAT(9) .GT. 0) THEN
+      IF (IOSTAT(9) > 0) THEN
 !           SEASONHR Keyword Used
          WRITE(IOUNT,99071)
       END IF
-      IF (IOSTAT(10) .GT. 0) THEN
+      IF (IOSTAT(10) > 0) THEN
 !           RANKFILE Keyword Used
          WRITE(IOUNT,99072)
       END IF
-      IF (IOSTAT(11) .GT. 0) THEN
+      IF (IOSTAT(11) > 0) THEN
 !           EVALFILE Keyword Used
          WRITE(IOUNT,99073)
       END IF
-      IF (IOSTAT(12) .GT. 0) THEN
+      IF (IOSTAT(12) > 0) THEN
 !           SUMMFILE Keyword Used
          WRITE(IOUNT,99074)
       END IF
-      IF (IOSTAT(14) .GT. 0) THEN
+      IF (IOSTAT(14) > 0) THEN
 !           MAXDAILY Keyword Used
          WRITE(IOUNT,99173)
       END IF
-      IF (IOSTAT(15) .GT. 0) THEN
+      IF (IOSTAT(15) > 0) THEN
 !           MXDYBYYR Keyword Used
          WRITE(IOUNT,99273)
       END IF
-      IF (IOSTAT(16) .GT. 0) THEN
+      IF (IOSTAT(16) > 0) THEN
 !           MAXDCONT Keyword Used
          WRITE(IOUNT,99373)
       END IF
    END IF
 
 ! --- Check for user-specified option for exponential-format outputs
-   IF ( FILE_FORMAT .EQ. 'EXP' .and.&
+   IF ( FILE_FORMAT == 'EXP' .and.&
    &(MXFILE .or. PPFILE .or. RKFILE .or. ANPOST .or. ANPLOT .or.&
    &SEASONHR) ) THEN
       WRITE(IOUNT,9099)
@@ -1300,7 +1300,7 @@ SUBROUTINE PRTOPT(IOUNT)
    WRITE(IOUNT,9099)
    WRITE(IOUNT,9050) ZBASE, DECOEF, ROTANG
 ! --- Write out emission and output units
-   IF (NUMTYP .EQ. 1) THEN
+   IF (NUMTYP == 1) THEN
 ! ---    Only one output type; write out units without label
       WRITE(IOUNT,9055) EMILBL(1), EMIFAC(1), OUTLBL(1)
    ELSE IF (CONC) THEN
@@ -1330,7 +1330,7 @@ SUBROUTINE PRTOPT(IOUNT)
 !     Model I/O Setting Summary
    WRITE(IOUNT,9099)
    ILMAX = MIN( 96, ILEN_FLD )
-   IF (INPFIL .NE. ' ' .or. OUTFIL .NE. ' ') THEN
+   IF (INPFIL /= ' ' .or. OUTFIL /= ' ') THEN
       WRITE(IOUNT,9080) INPFIL(1:ILMAX), OUTFIL(1:ILMAX)
    END IF
    IF (RSTINP .and. .NOT.MULTYR) THEN
@@ -1416,7 +1416,7 @@ SUBROUTINE PRTOPT(IOUNT)
 !     update for Aircraft debug opt display in .out and .sum
 ! ---    Loop through the 12 different options that are flagged
       DO I = 1, 12
-         IF (LEN_TRIM(DEBUG_OPTS(I)) .GT. 0) THEN
+         IF (LEN_TRIM(DEBUG_OPTS(I)) > 0) THEN
             NOPS = NOPS + 1
             ILEN = 10*(NOPS-1)
             DEBUG_OPTS_String =&
@@ -1625,7 +1625,7 @@ SUBROUTINE PRTOPT(IOUNT)
 9099 FORMAT(1X,' ')
 
    RETURN
-END
+END SUBROUTINE PRTOPT
 
 SUBROUTINE PRTO3VALS(ISECT)
 !***********************************************************************
@@ -1655,11 +1655,11 @@ SUBROUTINE PRTO3VALS(ISECT)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I1, I2, I3, IFR, IDW
    INTEGER :: ISECT
-   CHARACTER SEASON(4)*6, MONTHS(12)*9, DAYOFWEEK(3)*8,&
+   CHARACTER :: SEASON(4)*6, MONTHS(12)*9, DAYOFWEEK(3)*8,&
    &DAYOFWEEK7(7)*8
 ! Unused:       INTEGER :: I, J, K, NL, INDC, INGRP
 ! Unused:       CHARACTER BLDING*3, URB*3, IQUN*12, CAP*3, CQFLG*7
@@ -1677,28 +1677,28 @@ SUBROUTINE PRTO3VALS(ISECT)
 
 
 !     Print User-specified Background Ozone Concetrations
-   IF (O3FLAG(ISECT) .EQ. 'ANNUAL') THEN
+   IF (O3FLAG(ISECT) == 'ANNUAL') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9001) ISECT, OzoneUnits
       WRITE(IOUNIT,9006) O3VARY(1,ISECT)
-   ELSE IF (O3FLAG(ISECT) .EQ. 'SEASON') THEN
+   ELSE IF (O3FLAG(ISECT) == 'SEASON') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9002) ISECT, OzoneUnits
       WRITE(IOUNIT,9004) (SEASON(I1),I1=1,4)
       WRITE(IOUNIT,9006) (O3VARY(I1,ISECT),I1=1,4)
-   ELSE IF (O3FLAG(ISECT) .EQ. 'MONTH') THEN
+   ELSE IF (O3FLAG(ISECT) == 'MONTH') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9007) ISECT, OzoneUnits
       WRITE(IOUNIT,9008)
       WRITE(IOUNIT,9013)
       WRITE(IOUNIT,9010) (O3VARY(I1,ISECT),I1=1,12)
-   ELSE IF (O3FLAG(ISECT) .EQ. 'HROFDY') THEN
+   ELSE IF (O3FLAG(ISECT) == 'HROFDY') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9011) ISECT, OzoneUnits
       WRITE(IOUNIT,9012)
       WRITE(IOUNIT,9013)
       WRITE(IOUNIT,9014) (I1,O3VARY(I1,ISECT),I1=1,24)
-   ELSE IF (O3FLAG(ISECT) .EQ. 'SEASHR') THEN
+   ELSE IF (O3FLAG(ISECT) == 'SEASHR') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9018) ISECT, OzoneUnits
       WRITE(IOUNIT,9012)
@@ -1708,7 +1708,7 @@ SUBROUTINE PRTO3VALS(ISECT)
          WRITE(IOUNIT,9019) SEASON(I1)
          WRITE(IOUNIT,9014) (I2,O3VARY(I2+IFR,ISECT),I2=1,24)
       END DO
-   ELSE IF (O3FLAG(ISECT) .EQ. 'HRDOW') THEN
+   ELSE IF (O3FLAG(ISECT) == 'HRDOW') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,99218) ISECT, OzoneUnits
       WRITE(IOUNIT,99012)
@@ -1718,7 +1718,7 @@ SUBROUTINE PRTO3VALS(ISECT)
          WRITE(IOUNIT,99021) DAYOFWEEK(I1)
          WRITE(IOUNIT,99014) (I3,O3VARY(I3+IDW,ISECT),I3=1,24)
       END DO
-   ELSE IF (O3FLAG(ISECT) .EQ. 'HRDOW7') THEN
+   ELSE IF (O3FLAG(ISECT) == 'HRDOW7') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,79218) ISECT, OzoneUnits
       WRITE(IOUNIT,99012)
@@ -1728,7 +1728,7 @@ SUBROUTINE PRTO3VALS(ISECT)
          WRITE(IOUNIT,99021) DAYOFWEEK7(I1)
          WRITE(IOUNIT,99014) (I3,O3VARY(I3+IDW,ISECT),I3=1,24)
       END DO
-   ELSE IF (O3FLAG(ISECT) .EQ. 'SHRDOW') THEN
+   ELSE IF (O3FLAG(ISECT) == 'SHRDOW') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,99018) ISECT, OzoneUnits
       WRITE(IOUNIT,99012)
@@ -1741,7 +1741,7 @@ SUBROUTINE PRTO3VALS(ISECT)
             WRITE(IOUNIT,99014) (I3,O3VARY(I3+IFR+IDW,ISECT),I3=1,24)
          END DO
       END DO
-   ELSE IF (O3FLAG(ISECT) .EQ. 'SHRDOW7') THEN
+   ELSE IF (O3FLAG(ISECT) == 'SHRDOW7') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,79018) ISECT, OzoneUnits
       WRITE(IOUNIT,99012)
@@ -1754,7 +1754,7 @@ SUBROUTINE PRTO3VALS(ISECT)
             WRITE(IOUNIT,99014) (I3,O3VARY(I3+IFR+IDW,ISECT),I3=1,24)
          END DO
       END DO
-   ELSE IF (O3FLAG(ISECT) .EQ. 'MHRDOW') THEN
+   ELSE IF (O3FLAG(ISECT) == 'MHRDOW') THEN
       DO I1 = 1, 3
          CALL HEADER(IOUNIT)
          WRITE(IOUNIT,99118) ISECT, OzoneUnits
@@ -1767,7 +1767,7 @@ SUBROUTINE PRTO3VALS(ISECT)
             WRITE(IOUNIT,99014) (I3,O3VARY(I3+IFR+IDW,ISECT),I3=1,24)
          END DO
       END DO
-   ELSE IF (O3FLAG(ISECT) .EQ. 'MHRDOW7') THEN
+   ELSE IF (O3FLAG(ISECT) == 'MHRDOW7') THEN
       DO I1 = 1, 7
          CALL HEADER(IOUNIT)
          WRITE(IOUNIT,79118) ISECT, OzoneUnits
@@ -1830,7 +1830,7 @@ SUBROUTINE PRTO3VALS(ISECT)
 ! Unused: 9025 FORMAT(/26X,6('   WIND SPEED')/26X,6('   CATEGORY',I2))
 
    RETURN
-END
+END SUBROUTINE PRTO3VALS
 
 SUBROUTINE PRTNOXVALS(ISECT)
 !***********************************************************************
@@ -1852,11 +1852,11 @@ SUBROUTINE PRTNOXVALS(ISECT)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I1, I2, I3, IFR, IDW
    INTEGER :: ISECT
-   CHARACTER SEASON(4)*6, MONTHS(12)*9, DAYOFWEEK(3)*8,&
+   CHARACTER :: SEASON(4)*6, MONTHS(12)*9, DAYOFWEEK(3)*8,&
    &DAYOFWEEK7(7)*8
 
 !     Variable Initializations
@@ -1871,28 +1871,28 @@ SUBROUTINE PRTNOXVALS(ISECT)
 
 
 !     Print User-specified Background NOx Concetrations
-   IF (NOXFLAG(ISECT) .EQ. 'ANNUAL') THEN
+   IF (NOXFLAG(ISECT) == 'ANNUAL') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9001) ISECT, NOxUnits
       WRITE(IOUNIT,9006) NOXVARY(1,ISECT)
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'SEASON') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'SEASON') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9002) ISECT, NOxUnits
       WRITE(IOUNIT,9004) (SEASON(I1),I1=1,4)
       WRITE(IOUNIT,9006) (NOXVARY(I1,ISECT),I1=1,4)
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'MONTH') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'MONTH') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9007) ISECT, NOxUnits
       WRITE(IOUNIT,9008)
       WRITE(IOUNIT,9013)
       WRITE(IOUNIT,9010) (NOXVARY(I1,ISECT),I1=1,12)
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'HROFDY') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'HROFDY') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9011) ISECT, NOxUnits
       WRITE(IOUNIT,9012)
       WRITE(IOUNIT,9013)
       WRITE(IOUNIT,9014) (I1,NOXVARY(I1,ISECT),I1=1,24)
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'SEASHR') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'SEASHR') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9018) ISECT, NOxUnits
       WRITE(IOUNIT,9012)
@@ -1902,7 +1902,7 @@ SUBROUTINE PRTNOXVALS(ISECT)
          WRITE(IOUNIT,9019) SEASON(I1)
          WRITE(IOUNIT,9014) (I2,NOXVARY(I2+IFR,ISECT),I2=1,24)
       END DO
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'HRDOW') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'HRDOW') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,99218) ISECT, NOxUnits
       WRITE(IOUNIT,99012)
@@ -1912,7 +1912,7 @@ SUBROUTINE PRTNOXVALS(ISECT)
          WRITE(IOUNIT,99021) DAYOFWEEK(I1)
          WRITE(IOUNIT,99014) (I3,NOXVARY(I3+IDW,ISECT),I3=1,24)
       END DO
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'HRDOW7') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'HRDOW7') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,79218) ISECT, NOxUnits
       WRITE(IOUNIT,99012)
@@ -1922,7 +1922,7 @@ SUBROUTINE PRTNOXVALS(ISECT)
          WRITE(IOUNIT,99021) DAYOFWEEK7(I1)
          WRITE(IOUNIT,99014) (I3,NOXVARY(I3+IDW,ISECT),I3=1,24)
       END DO
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'SHRDOW') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'SHRDOW') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,99018) ISECT, NOxUnits
       WRITE(IOUNIT,99012)
@@ -1936,7 +1936,7 @@ SUBROUTINE PRTNOXVALS(ISECT)
             &NOXVARY(I3+IFR+IDW,ISECT),I3=1,24)
          END DO
       END DO
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'SHRDOW7') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'SHRDOW7') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,79018) ISECT, NOxUnits
       WRITE(IOUNIT,99012)
@@ -1950,7 +1950,7 @@ SUBROUTINE PRTNOXVALS(ISECT)
             &NOXVARY(I3+IFR+IDW,ISECT),I3=1,24)
          END DO
       END DO
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'MHRDOW') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'MHRDOW') THEN
       DO I1 = 1, 3
          CALL HEADER(IOUNIT)
          WRITE(IOUNIT,99118) ISECT, NOxUnits
@@ -1964,7 +1964,7 @@ SUBROUTINE PRTNOXVALS(ISECT)
             &NOXVARY(I3+IFR+IDW,ISECT),I3=1,24)
          END DO
       END DO
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'MHRDOW7') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'MHRDOW7') THEN
       DO I1 = 1, 7
          CALL HEADER(IOUNIT)
          WRITE(IOUNIT,79118) ISECT, NOxUnits
@@ -1978,7 +1978,7 @@ SUBROUTINE PRTNOXVALS(ISECT)
             &NOXVARY(I3+IFR+IDW,ISECT),I3=1,24)
          END DO
       END DO
-   ELSE IF (NOXFLAG(ISECT) .EQ. 'WSPEED') THEN
+   ELSE IF (NOXFLAG(ISECT) == 'WSPEED') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9015) ISECT, NOxUnits
       WRITE(IOUNIT,9025) (I1,I1=1,6)
@@ -2124,12 +2124,12 @@ SUBROUTINE PRTSRC
    USE RLINE_DATA, ONLY: RLSOURCE, RLMOVESCONV
    USE BUOYANT_LINE
    IMPLICIT NONE
-   CHARACTER MODNAM*12
-   LOGICAL   BLOUTPROCESSED
+   CHARACTER :: MODNAM*12
+   LOGICAL   :: BLOUTPROCESSED
 
    INTEGER :: I, J, K, NL, I1, I2, I3, IFR, IDW, INDC, INGRP, NBL
-   CHARACTER BLDING*3, URB*3, IQUN*12, CAP*3, CQFLG*7
-   CHARACTER SEASON(4)*6, MONTHS(12)*9, DAYOFWEEK(3)*8,&
+   CHARACTER :: BLDING*3, URB*3, IQUN*12, CAP*3, CQFLG*7
+   CHARACTER :: SEASON(4)*6, MONTHS(12)*9, DAYOFWEEK(3)*8,&
    &DAYOFWEEK7(7)*8, CNPD*5, CAZS*8,&
    &AFT*3                                                 !  Added for Aircraft; UNC-IE
 
@@ -2148,8 +2148,8 @@ SUBROUTINE PRTSRC
 !      processed for this hour
    BLOUTPROCESSED = .FALSE.
 
-   IF (ISSTAT(8) .EQ. 0 .and. ISSTAT(17) .EQ. 0 .and.&
-   &ISSTAT(18) .EQ. 0) THEN
+   IF (ISSTAT(8) == 0 .and. ISSTAT(17) == 0 .and.&
+   &ISSTAT(18) == 0) THEN
 !        Write Default Emission Rate Units
       IQUN = ' (GRAMS/SEC)'
    ELSE
@@ -2159,28 +2159,28 @@ SUBROUTINE PRTSRC
 !     Write Out The Point Source Data, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF (SRCTYP(I)(1:5) .EQ. 'POINT') THEN
+      IF (SRCTYP(I)(1:5) == 'POINT') THEN
          INDC = INDC + 1
-         IF (URBSRC(I) .EQ. 'Y') THEN
+         IF (URBSRC(I) == 'Y') THEN
             URB = 'YES'
          ELSE
             URB = 'NO'
          END IF
          BLDING = 'NO'
-         IF (NSEC .GT. 0) THEN
+         IF (NSEC > 0) THEN
 ! ---          Check for building data for this source
             DO J = 1, NSEC
-               IF(ADSBH(J,I).NE.0.0D0 .and. ADSBW(J,I).NE.0.0D0&
-               &.and. ADSBL(J,I).NE.0.0D0) THEN
+               IF(ADSBH(J,I)/=0.0D0 .and. ADSBW(J,I)/=0.0D0&
+               &.and. ADSBL(J,I)/=0.0D0) THEN
 ! -----------------------------------------------------------------
                   BLDING = 'YES'
                   EXIT
                END IF
             END DO
          END IF
-         IF (SRCTYP(I) .EQ. 'POINTCAP') THEN
+         IF (SRCTYP(I) == 'POINTCAP') THEN
             CAP = 'CAP'
-         ELSE IF (SRCTYP(I) .EQ. 'POINTHOR') THEN
+         ELSE IF (SRCTYP(I) == 'POINTHOR') THEN
             CAP = 'HOR'
          ELSE
             CAP = ' NO'
@@ -2195,7 +2195,7 @@ SUBROUTINE PRTSRC
          ELSE
             WRITE(CAZS,'(F8.1)') AZS(I)
          END IF
-         IF (MOD(INDC-1,40) .EQ. 0) THEN
+         IF (MOD(INDC-1,40) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9046) IQUN
          END IF
@@ -2208,15 +2208,15 @@ SUBROUTINE PRTSRC
 !     Write Out The Volume Source Data, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF (SRCTYP(I) .EQ. 'VOLUME') THEN
+      IF (SRCTYP(I) == 'VOLUME') THEN
          INDC = INDC + 1
-         IF (URBSRC(I) .EQ. 'Y') THEN
+         IF (URBSRC(I) == 'Y') THEN
             URB = 'YES'
          ELSE
             URB = 'NO'
          END IF
 !**  Added for Aircraft Plume Rise; UNC-IE
-         IF (AFTSRC(I) .EQ. 'Y') THEN
+         IF (AFTSRC(I) == 'Y') THEN
             AFT = 'YES'
          ELSE
             AFT = 'NO'
@@ -2232,11 +2232,11 @@ SUBROUTINE PRTSRC
          ELSE
             WRITE(CAZS,'(F8.1)') AZS(I)
          END IF
-         IF (MOD(INDC-1,40) .EQ. 0) THEN
+         IF (MOD(INDC-1,40) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9074) IQUN
          END IF
-         IF (QFLAG(I) .EQ. 'HOURLY' .and. L_HRLYSIG(I)) THEN
+         IF (QFLAG(I) == 'HOURLY' .and. L_HRLYSIG(I)) THEN
 !              Source uses HOUREMIS option with hourly varying sigmas
             CQFLG = 'HRLYSIG'
          ELSE
@@ -2251,15 +2251,15 @@ SUBROUTINE PRTSRC
 !     Write Out The Area Source Data, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF (SRCTYP(I) .EQ. 'AREA') THEN
+      IF (SRCTYP(I) == 'AREA') THEN
          INDC = INDC + 1
-         IF (URBSRC(I) .EQ. 'Y') THEN
+         IF (URBSRC(I) == 'Y') THEN
             URB = 'YES'
          ELSE
             URB = 'NO'
          END IF
 !**  Added for Aircraft Plume Rise; UNC-IE
-         IF (AFTSRC(I) .EQ. 'Y') THEN
+         IF (AFTSRC(I) == 'Y') THEN
             AFT = 'YES'
          ELSE
             AFT = 'NO'
@@ -2275,11 +2275,11 @@ SUBROUTINE PRTSRC
          ELSE
             WRITE(CAZS,'(F8.1)') AZS(I)
          END IF
-         IF (MOD(INDC-1,40) .EQ. 0) THEN
+         IF (MOD(INDC-1,40) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9076) IQUN
          END IF
-         IF (QFLAG(I) .EQ. 'HOURLY' .and. L_HRLYSIG(I)) THEN
+         IF (QFLAG(I) == 'HOURLY' .and. L_HRLYSIG(I)) THEN
 !              Source uses HOUREMIS option with hourly varying sigmas
             CQFLG = 'HRLYSIG'
          ELSE
@@ -2294,15 +2294,15 @@ SUBROUTINE PRTSRC
 !     Write Out The AREACIRC Source Data, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF (SRCTYP(I) .EQ. 'AREACIRC') THEN
+      IF (SRCTYP(I) == 'AREACIRC') THEN
          INDC = INDC + 1
-         IF (URBSRC(I) .EQ. 'Y') THEN
+         IF (URBSRC(I) == 'Y') THEN
             URB = 'YES'
          ELSE
             URB = 'NO'
          END IF
 !**  Added for Aircraft Plume Rise; UNC-IE
-         IF (AFTSRC(I) .EQ. 'Y') THEN
+         IF (AFTSRC(I) == 'Y') THEN
             AFT = 'YES'
          ELSE
             AFT = 'NO'
@@ -2318,11 +2318,11 @@ SUBROUTINE PRTSRC
          ELSE
             WRITE(CAZS,'(F8.1)') AZS(I)
          END IF
-         IF (MOD(INDC-1,40) .EQ. 0) THEN
+         IF (MOD(INDC-1,40) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9078) IQUN
          END IF
-         IF (QFLAG(I) .EQ. 'HOURLY' .and. L_HRLYSIG(I)) THEN
+         IF (QFLAG(I) == 'HOURLY' .and. L_HRLYSIG(I)) THEN
 !              Source uses HOUREMIS option with hourly varying sigmas
             CQFLG = 'HRLYSIG'
          ELSE
@@ -2337,15 +2337,15 @@ SUBROUTINE PRTSRC
 !     Write Out The AREAPOLY Source Data, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF (SRCTYP(I) .EQ. 'AREAPOLY') THEN
+      IF (SRCTYP(I) == 'AREAPOLY') THEN
          INDC = INDC + 1
-         IF (URBSRC(I) .EQ. 'Y') THEN
+         IF (URBSRC(I) == 'Y') THEN
             URB = 'YES'
          ELSE
             URB = 'NO'
          END IF
 !**  Added for Aircraft Plume Rise; UNC-IE
-         IF (AFTSRC(I) .EQ. 'Y') THEN
+         IF (AFTSRC(I) == 'Y') THEN
             AFT = 'YES'
          ELSE
             AFT = 'NO'
@@ -2361,11 +2361,11 @@ SUBROUTINE PRTSRC
          ELSE
             WRITE(CAZS,'(F8.1)') AZS(I)
          END IF
-         IF (MOD(INDC-1,40) .EQ. 0) THEN
+         IF (MOD(INDC-1,40) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9080) IQUN
          END IF
-         IF (QFLAG(I) .EQ. 'HOURLY' .and. L_HRLYSIG(I)) THEN
+         IF (QFLAG(I) == 'HOURLY' .and. L_HRLYSIG(I)) THEN
 !              Source uses HOUREMIS option with hourly varying sigmas
             CQFLG = 'HRLYSIG'
          ELSE
@@ -2380,9 +2380,9 @@ SUBROUTINE PRTSRC
 !     Write Out The Line Source Data, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF (SRCTYP(I) .EQ. 'LINE') THEN
+      IF (SRCTYP(I) == 'LINE') THEN
          INDC = INDC + 1
-         IF (URBSRC(I) .EQ. 'Y') THEN
+         IF (URBSRC(I) == 'Y') THEN
             URB = 'YES'
          ELSE
             URB = 'NO'
@@ -2397,11 +2397,11 @@ SUBROUTINE PRTSRC
          ELSE
             WRITE(CAZS,'(F8.1)') AZS(I)
          END IF
-         IF (MOD(INDC-1,40) .EQ. 0) THEN
+         IF (MOD(INDC-1,40) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,89076) IQUN
          END IF
-         IF (QFLAG(I) .EQ. 'HOURLY' .and. L_HRLYSIG(I)) THEN
+         IF (QFLAG(I) == 'HOURLY' .and. L_HRLYSIG(I)) THEN
 !              Source uses HOUREMIS option with hourly varying sigmas
             CQFLG = 'HRLYSIG'
          ELSE
@@ -2416,10 +2416,10 @@ SUBROUTINE PRTSRC
 !     Write Out The RLINE Source Data, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF ((SRCTYP(I) .EQ. 'RLINE') .or.&
-      &(SRCTYP(I) .EQ. 'RLINEXT')) THEN
+      IF ((SRCTYP(I) == 'RLINE') .or.&
+      &(SRCTYP(I) == 'RLINEXT')) THEN
          INDC = INDC + 1
-         IF (URBSRC(I) .EQ. 'Y') THEN
+         IF (URBSRC(I) == 'Y') THEN
             URB = 'YES'
          ELSE
             URB = 'NO'
@@ -2434,7 +2434,7 @@ SUBROUTINE PRTSRC
          ELSE
             WRITE(CAZS,'(F8.1)') AZS(I)
          END IF
-         IF (MOD(INDC-1,40) .EQ. 0) THEN
+         IF (MOD(INDC-1,40) == 0) THEN
             IF (RLMOVESCONV) THEN
                WRITE (IOUNIT,9109)
             ELSE
@@ -2456,11 +2456,11 @@ SUBROUTINE PRTSRC
 !     Barriers, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF ((SRCTYP(I) .EQ. 'RLINE') .or.&
-      &(SRCTYP(I) .EQ. 'RLINEXT')) THEN
+      IF ((SRCTYP(I) == 'RLINE') .or.&
+      &(SRCTYP(I) == 'RLINEXT')) THEN
          IF (RLSOURCE(I)%HTWALL > 0.0) THEN
             INDC = INDC + 1
-            IF (MOD(INDC-1,40) .EQ. 0) THEN
+            IF (MOD(INDC-1,40) == 0) THEN
                WRITE(IOUNIT,9112)
             END IF
             WRITE(IOUNIT,9113) SRCID(I),&
@@ -2474,11 +2474,11 @@ SUBROUTINE PRTSRC
 !     Depressed Roadways, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF ((SRCTYP(I) .EQ. 'RLINE') .or.&
-      &(SRCTYP(I) .EQ. 'RLINEXT')) THEN
-         IF (RLSOURCE(I)%DEPTH .NE. 0.0) THEN
+      IF ((SRCTYP(I) == 'RLINE') .or.&
+      &(SRCTYP(I) == 'RLINEXT')) THEN
+         IF (RLSOURCE(I)%DEPTH /= 0.0) THEN
             INDC = INDC + 1
-            IF (MOD(INDC-1,40) .EQ. 0) THEN
+            IF (MOD(INDC-1,40) == 0) THEN
                WRITE(IOUNIT,9114)
             END IF
             WRITE(IOUNIT,9115) SRCID(I),&
@@ -2491,9 +2491,9 @@ SUBROUTINE PRTSRC
 !*    Write Out The OpenPit Source Data, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF (SRCTYP(I) .EQ. 'OPENPIT') THEN
+      IF (SRCTYP(I) == 'OPENPIT') THEN
          INDC = INDC + 1
-         IF (URBSRC(I) .EQ. 'Y') THEN
+         IF (URBSRC(I) == 'Y') THEN
             URB = 'YES'
          ELSE
             URB = 'NO'
@@ -2508,7 +2508,7 @@ SUBROUTINE PRTSRC
          ELSE
             WRITE(CAZS,'(F8.1)') AZS(I)
          END IF
-         IF (MOD(INDC-1,40) .EQ. 0) THEN
+         IF (MOD(INDC-1,40) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9082) IQUN
          END IF
@@ -2521,7 +2521,7 @@ SUBROUTINE PRTSRC
 !     Write Out The Buoyant Line Source Data, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF  (SRCTYP(I) .EQ. 'BUOYLINE' .and.&
+      IF  (SRCTYP(I) == 'BUOYLINE' .and.&
       &(.NOT. BLOUTPROCESSED)) THEN
 !           BLOUTPROCESSED lets AERMOD know that all lines associated
 !            with the buoyant line source were written on the first pass
@@ -2529,7 +2529,7 @@ SUBROUTINE PRTSRC
 !            as one source
          DO NBL = 1, NBLTOTAL
             INDC = INDC + 1
-            IF (URBSRC(I) .EQ. 'Y') THEN
+            IF (URBSRC(I) == 'Y') THEN
                URB = 'YES'
             ELSE
                URB = 'NO'
@@ -2544,7 +2544,7 @@ SUBROUTINE PRTSRC
             ELSE
                WRITE(CAZS,'(F8.1)') BLINEPARMS(NBL)%ELEV
             END IF
-            IF (MOD(INDC-1,40) .EQ. 0) THEN
+            IF (MOD(INDC-1,40) == 0) THEN
                CALL HEADER(IOUNIT)
                WRITE(IOUNIT,9086) IQUN
             END IF
@@ -2587,7 +2587,7 @@ SUBROUTINE PRTSRC
       DO J = 1, NUMGRP
          INGRP = 0
          DO K = 1, NUMSRC
-            IF (IGROUP(K,J) .EQ. 1) THEN
+            IF (IGROUP(K,J) == 1) THEN
                INGRP = INGRP + 1
                WORKID(INGRP) = SRCID(K)
             END IF
@@ -2602,15 +2602,15 @@ SUBROUTINE PRTSRC
          NL = 1 + INT((INGRP-1)/8)
          DO K = 1, NL
             INDC = INDC + 1
-            IF (MOD(INDC-1,20) .EQ. 0) THEN
+            IF (MOD(INDC-1,20) == 0) THEN
                CALL HEADER(IOUNIT)
                WRITE(IOUNIT,9058)
             END IF
-            IF (K .EQ. 1 .and. K .EQ. NL) THEN
+            IF (K == 1 .and. K == NL) THEN
                WRITE(IOUNIT,9068) GRPID(J), (WORKID(I),I=1,INGRP)
-            ELSE IF (K .EQ. 1 .and. K .NE. NL) THEN
+            ELSE IF (K == 1 .and. K /= NL) THEN
                WRITE(IOUNIT,9068) GRPID(J), (WORKID(I),I=1,8*K)
-            ELSE IF (K .EQ. NL) THEN
+            ELSE IF (K == NL) THEN
                WRITE(IOUNIT,9067) (WORKID(I),I=1+8*(K-1),INGRP)
             ELSE
                WRITE(IOUNIT,9067) (WORKID(I),I=1+8*(K-1),8*K)
@@ -2624,7 +2624,7 @@ SUBROUTINE PRTSRC
    DO J = 1, NUMOLM
       INGRP = 0
       DO K = 1, NUMSRC
-         IF (IGRP_OLM(K,J) .EQ. 1) THEN
+         IF (IGRP_OLM(K,J) == 1) THEN
             INGRP = INGRP + 1
             WORKID(INGRP) = SRCID(K)
          END IF
@@ -2633,15 +2633,15 @@ SUBROUTINE PRTSRC
       NL = 1 + INT((INGRP-1)/8)
       DO K = 1, NL
          INDC = INDC + 1
-         IF (MOD(INDC-1,20) .EQ. 0) THEN
+         IF (MOD(INDC-1,20) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9059)
          END IF
-         IF (K .EQ. 1 .and. K .EQ. NL) THEN
+         IF (K == 1 .and. K == NL) THEN
             WRITE(IOUNIT,9068) OLMID(J), (WORKID(I),I=1,INGRP)
-         ELSE IF (K .EQ. 1 .and. K .NE. NL) THEN
+         ELSE IF (K == 1 .and. K /= NL) THEN
             WRITE(IOUNIT,9068) OLMID(J), (WORKID(I),I=1,8*K)
-         ELSE IF (K .EQ. NL) THEN
+         ELSE IF (K == NL) THEN
             WRITE(IOUNIT,9067) (WORKID(I),I=1+8*(K-1),INGRP)
          ELSE
             WRITE(IOUNIT,9067) (WORKID(I),I=1+8*(K-1),8*K)
@@ -2654,7 +2654,7 @@ SUBROUTINE PRTSRC
    DO J = 1, NUMPSD
       INGRP = 0
       DO K = 1, NUMSRC
-         IF (IGRP_PSD(K,J) .EQ. 1) THEN
+         IF (IGRP_PSD(K,J) == 1) THEN
             INGRP = INGRP + 1
             WORKID(INGRP) = SRCID(K)
          END IF
@@ -2663,15 +2663,15 @@ SUBROUTINE PRTSRC
       NL = 1 + INT((INGRP-1)/8)
       DO K = 1, NL
          INDC = INDC + 1
-         IF (MOD(INDC-1,20) .EQ. 0) THEN
+         IF (MOD(INDC-1,20) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,99059)
          END IF
-         IF (K .EQ. 1 .and. K .EQ. NL) THEN
+         IF (K == 1 .and. K == NL) THEN
             WRITE(IOUNIT,9068) PSDID(J), (WORKID(I),I=1,INGRP)
-         ELSE IF (K .EQ. 1 .and. K .NE. NL) THEN
+         ELSE IF (K == 1 .and. K /= NL) THEN
             WRITE(IOUNIT,9068) PSDID(J), (WORKID(I),I=1,8*K)
-         ELSE IF (K .EQ. NL) THEN
+         ELSE IF (K == NL) THEN
             WRITE(IOUNIT,9067) (WORKID(I),I=1+8*(K-1),INGRP)
          ELSE
             WRITE(IOUNIT,9067) (WORKID(I),I=1+8*(K-1),8*K)
@@ -2684,7 +2684,7 @@ SUBROUTINE PRTSRC
    DO J = 1, NUMURB
       INGRP = 0
       DO K = 1, NUMSRC
-         IF (IURBGRP(K,J) .EQ. 1) THEN
+         IF (IURBGRP(K,J) == 1) THEN
             INGRP = INGRP + 1
             WORKID(INGRP) = SRCID(K)
          END IF
@@ -2693,17 +2693,17 @@ SUBROUTINE PRTSRC
       NL = 1 + INT((INGRP-1)/8)
       DO K = 1, NL
          INDC = INDC + 1
-         IF (MOD(INDC-1,20) .EQ. 0) THEN
+         IF (MOD(INDC-1,20) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,99058)
          END IF
-         IF (K .EQ. 1 .and. K .EQ. NL) THEN
+         IF (K == 1 .and. K == NL) THEN
             WRITE(IOUNIT,99068) URBID(J), URBPOP(J),&
             &(WORKID(I),I=1,INGRP)
-         ELSE IF (K .EQ. 1 .and. K .NE. NL) THEN
+         ELSE IF (K == 1 .and. K /= NL) THEN
             WRITE(IOUNIT,99068) URBID(J), URBPOP(J),&
             &(WORKID(I),I=1,8*K)
-         ELSE IF (K .EQ. NL) THEN
+         ELSE IF (K == NL) THEN
             WRITE(IOUNIT,9067) (WORKID(I),I=1+8*(K-1),INGRP)
          ELSE
             WRITE(IOUNIT,9067) (WORKID(I),I=1+8*(K-1),8*K)
@@ -2716,20 +2716,20 @@ SUBROUTINE PRTSRC
       INDC = 0
       DO I = 1, NUMSRC, 4
          INDC = INDC + 1
-         IF (MOD(INDC-1,40) .EQ. 0) THEN
+         IF (MOD(INDC-1,40) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9060)
          END IF
-         IF (I+3 .LE. NUMSRC) THEN
+         IF (I+3 <= NUMSRC) THEN
             WRITE(IOUNIT,9061) SRCID(I), ANO2_RATIO(I),&
             &SRCID(I+1), ANO2_RATIO(I+1),&
             &SRCID(I+2), ANO2_RATIO(I+2),&
             &SRCID(I+3), ANO2_RATIO(I+3)
-         ELSE IF (I+2 .LE. NUMSRC) THEN
+         ELSE IF (I+2 <= NUMSRC) THEN
             WRITE(IOUNIT,9061) SRCID(I), ANO2_RATIO(I),&
             &SRCID(I+1), ANO2_RATIO(I+1),&
             &SRCID(I+2), ANO2_RATIO(I+2)
-         ELSE IF (I+1 .LE. NUMSRC) THEN
+         ELSE IF (I+1 <= NUMSRC) THEN
             WRITE(IOUNIT,9061) SRCID(I), ANO2_RATIO(I),&
             &SRCID(I+1), ANO2_RATIO(I+1)
          ELSE
@@ -2742,9 +2742,9 @@ SUBROUTINE PRTSRC
    INDC = 0
    DO I = 1, NUMSRC
       NPD = INPD(I)
-      IF (NPD .NE. 0 .and. .NOT.L_METHOD2(I)) THEN
+      IF (NPD /= 0 .and. .NOT.L_METHOD2(I)) THEN
          INDC = INDC + 1
-         IF (MOD(INDC-1,3) .EQ. 0) THEN
+         IF (MOD(INDC-1,3) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9049)
          END IF
@@ -2752,10 +2752,10 @@ SUBROUTINE PRTSRC
          WRITE(IOUNIT,9051) (APHI(J,I),J=1,NPD)
          WRITE(IOUNIT,9052) (APDIAM(J,I),J=1,NPD)
          WRITE(IOUNIT,9053) (APDENS(J,I),J=1,NPD)
-      ELSE IF (NPD .NE. 0 .and. L_METHOD2(I)) THEN
+      ELSE IF (NPD /= 0 .and. L_METHOD2(I)) THEN
 !           Summarize inputs for Method 2 particle deposition
          INDC = INDC + 1
-         IF (MOD(INDC-1,3) .EQ. 0) THEN
+         IF (MOD(INDC-1,3) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9049)
          END IF
@@ -2766,7 +2766,7 @@ SUBROUTINE PRTSRC
       ELSE IF (LWGAS .or. (LDGAS .and. .NOT.LUSERVD)) THEN
 !           Summarize inputs for gas deposition option
          INDC = INDC + 1
-         IF (MOD(INDC-1,3) .EQ. 0) THEN
+         IF (MOD(INDC-1,3) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9049)
          END IF
@@ -2785,21 +2785,21 @@ SUBROUTINE PRTSRC
    INDC = 0
    DO I = 1, NUMSRC
       BLDING = 'NO'
-      IF (NSEC .GT. 0) THEN
+      IF (NSEC > 0) THEN
 ! ---       Check for building data for this source
          DO J = 1, NSEC
-            IF(ADSBH(J,I).NE.0.0D0 .and. ADSBW(J,I).NE.0.0D0&
-            &.and. ADSBL(J,I).NE.0.0D0) THEN
+            IF(ADSBH(J,I)/=0.0D0 .and. ADSBW(J,I)/=0.0D0&
+            &.and. ADSBL(J,I)/=0.0D0) THEN
 ! --------------------------------------------------------------
                BLDING = 'YES'
                EXIT
             END IF
          END DO
       END IF
-      IF (BLDING .EQ. 'YES') THEN
+      IF (BLDING == 'YES') THEN
          INDC = INDC + 1
 !           Print Out Direction Specific Bldg. Dimensions
-         IF (MOD(INDC-1,4) .EQ. 0) THEN
+         IF (MOD(INDC-1,4) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9064)
          END IF
@@ -2823,9 +2823,9 @@ SUBROUTINE PRTSRC
 !     Print Source Emission Rate Scalars.
    INDC = 0
    DO I = 1, NUMSRC
-      IF (QFLAG(I) .EQ. 'SEASON') THEN
+      IF (QFLAG(I) == 'SEASON') THEN
          INDC = INDC + 1
-         IF (MOD(INDC-1,6) .EQ. 0) THEN
+         IF (MOD(INDC-1,6) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9002)
             WRITE(IOUNIT,9004) (SEASON(I1),I1=1,4)
@@ -2837,9 +2837,9 @@ SUBROUTINE PRTSRC
 
    INDC = 0
    DO I = 1, NUMSRC
-      IF (QFLAG(I) .EQ. 'MONTH') THEN
+      IF (QFLAG(I) == 'MONTH') THEN
          INDC = INDC + 1
-         IF (MOD(INDC-1,6) .EQ. 0) THEN
+         IF (MOD(INDC-1,6) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9007)
             WRITE(IOUNIT,9008)
@@ -2852,9 +2852,9 @@ SUBROUTINE PRTSRC
 
    INDC = 0
    DO I = 1, NUMSRC
-      IF (QFLAG(I) .EQ. 'HROFDY') THEN
+      IF (QFLAG(I) == 'HROFDY') THEN
          INDC = INDC + 1
-         IF (MOD(INDC-1,5) .EQ. 0) THEN
+         IF (MOD(INDC-1,5) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9011)
             WRITE(IOUNIT,9012)
@@ -2867,9 +2867,9 @@ SUBROUTINE PRTSRC
 
    INDC = 0
    DO I = 1, NUMSRC
-      IF (QFLAG(I) .EQ. 'WSPEED') THEN
+      IF (QFLAG(I) == 'WSPEED') THEN
          INDC = INDC + 1
-         IF (MOD(INDC-1,3) .EQ. 0) THEN
+         IF (MOD(INDC-1,3) == 0) THEN
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9015)
             WRITE(IOUNIT,9013)
@@ -2882,7 +2882,7 @@ SUBROUTINE PRTSRC
 
    INDC = 0
    DO I = 1, NUMSRC
-      IF (QFLAG(I) .EQ. 'SEASHR') THEN
+      IF (QFLAG(I) == 'SEASHR') THEN
          INDC = INDC + 1
          CALL HEADER(IOUNIT)
          WRITE(IOUNIT,9018)
@@ -2899,7 +2899,7 @@ SUBROUTINE PRTSRC
 
    INDC = 0
    DO I = 1, NUMSRC
-      IF (QFLAG(I) .EQ. 'HRDOW') THEN
+      IF (QFLAG(I) == 'HRDOW') THEN
          INDC = INDC + 1
          CALL HEADER(IOUNIT)
          WRITE(IOUNIT,99218)
@@ -2916,7 +2916,7 @@ SUBROUTINE PRTSRC
 
    INDC = 0
    DO I = 1, NUMSRC
-      IF (QFLAG(I) .EQ. 'HRDOW7') THEN
+      IF (QFLAG(I) == 'HRDOW7') THEN
          INDC = INDC + 1
          CALL HEADER(IOUNIT)
          WRITE(IOUNIT,79218)
@@ -2933,7 +2933,7 @@ SUBROUTINE PRTSRC
 
    INDC = 0
    DO I = 1, NUMSRC
-      IF (QFLAG(I) .EQ. 'SHRDOW') THEN
+      IF (QFLAG(I) == 'SHRDOW') THEN
          INDC = INDC + 1
          CALL HEADER(IOUNIT)
          WRITE(IOUNIT,99018)
@@ -2953,7 +2953,7 @@ SUBROUTINE PRTSRC
 
    INDC = 0
    DO I = 1, NUMSRC
-      IF (QFLAG(I) .EQ. 'SHRDOW7') THEN
+      IF (QFLAG(I) == 'SHRDOW7') THEN
          INDC = INDC + 1
          CALL HEADER(IOUNIT)
          WRITE(IOUNIT,79018)
@@ -2973,7 +2973,7 @@ SUBROUTINE PRTSRC
 
    INDC = 0
    DO I = 1, NUMSRC
-      IF (QFLAG(I) .EQ. 'MHRDOW') THEN
+      IF (QFLAG(I) == 'MHRDOW') THEN
          DO I1 = 1, 3
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,99118)
@@ -2992,7 +2992,7 @@ SUBROUTINE PRTSRC
 
    INDC = 0
    DO I = 1, NUMSRC
-      IF (QFLAG(I) .EQ. 'MHRDOW7') THEN
+      IF (QFLAG(I) == 'MHRDOW7') THEN
          DO I1 = 1, 7
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,79118)
@@ -3242,7 +3242,7 @@ SUBROUTINE PRTSRC
 9094 FORMAT(/10X,'HENRY`S LAW COEFFICIENT    =',2X,E9.2)
 
    RETURN
-END
+END SUBROUTINE PRTSRC
 
 SUBROUTINE PRTBKG(ISECT)
 !***********************************************************************
@@ -3264,10 +3264,10 @@ SUBROUTINE PRTBKG(ISECT)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: ISECT, I1, I2, I3, IFR, IDW
-   CHARACTER SEASON(4)*6, MONTHS(12)*9, DAYOFWEEK(3)*8,&
+   CHARACTER :: SEASON(4)*6, MONTHS(12)*9, DAYOFWEEK(3)*8,&
    &DAYOFWEEK7(7)*8
 ! Unused: CHARACTER BLDING*3, URB*3, IQUN*12, CAP*3, CQFLG*7
 ! Unused: CHARACTER CNPD*5, CAZS*8
@@ -3284,28 +3284,28 @@ SUBROUTINE PRTBKG(ISECT)
    MODNAM = 'PRTBKG'
 
 !     Print User-specified Background Concetrations
-   IF (BFLAG(ISECT) .EQ. 'ANNUAL') THEN
+   IF (BFLAG(ISECT) == 'ANNUAL') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9001) ISECT, BackUnits
       WRITE(IOUNIT,9006) BACKGRND(1,1)
-   ELSE IF (BFLAG(ISECT) .EQ. 'SEASON') THEN
+   ELSE IF (BFLAG(ISECT) == 'SEASON') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9002) ISECT, BackUnits
       WRITE(IOUNIT,9004) (SEASON(I1),I1=1,4)
       WRITE(IOUNIT,9006) (BACKGRND(I1,ISECT),I1=1,4)
-   ELSE IF (BFLAG(ISECT) .EQ. 'MONTH') THEN
+   ELSE IF (BFLAG(ISECT) == 'MONTH') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9007) ISECT, BackUnits
       WRITE(IOUNIT,9008)
       WRITE(IOUNIT,9013)
       WRITE(IOUNIT,9010) (BACKGRND(I1,ISECT),I1=1,12)
-   ELSE IF (BFLAG(ISECT) .EQ. 'HROFDY') THEN
+   ELSE IF (BFLAG(ISECT) == 'HROFDY') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9011) ISECT, BackUnits
       WRITE(IOUNIT,9012)
       WRITE(IOUNIT,9013)
       WRITE(IOUNIT,9014) (I1,BACKGRND(I1,ISECT),I1=1,24)
-   ELSE IF (BFLAG(ISECT) .EQ. 'SEASHR') THEN
+   ELSE IF (BFLAG(ISECT) == 'SEASHR') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9018) ISECT, BackUnits
       WRITE(IOUNIT,9012)
@@ -3315,7 +3315,7 @@ SUBROUTINE PRTBKG(ISECT)
          WRITE(IOUNIT,9019) SEASON(I1)
          WRITE(IOUNIT,9014) (I2,BACKGRND(I2+IFR,ISECT),I2=1,24)
       END DO
-   ELSE IF (BFLAG(ISECT) .EQ. 'HRDOW') THEN
+   ELSE IF (BFLAG(ISECT) == 'HRDOW') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,99218) ISECT, BackUnits
       WRITE(IOUNIT,99012)
@@ -3325,7 +3325,7 @@ SUBROUTINE PRTBKG(ISECT)
          WRITE(IOUNIT,99021) DAYOFWEEK(I1)
          WRITE(IOUNIT,99014) (I3,BACKGRND(I3+IDW,ISECT),I3=1,24)
       END DO
-   ELSE IF (BFLAG(ISECT) .EQ. 'HRDOW7') THEN
+   ELSE IF (BFLAG(ISECT) == 'HRDOW7') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,79218) ISECT, BackUnits
       WRITE(IOUNIT,99012)
@@ -3335,7 +3335,7 @@ SUBROUTINE PRTBKG(ISECT)
          WRITE(IOUNIT,99021) DAYOFWEEK7(I1)
          WRITE(IOUNIT,99014) (I3,BACKGRND(I3+IDW,ISECT),I3=1,24)
       END DO
-   ELSE IF (BFLAG(ISECT) .EQ. 'SHRDOW') THEN
+   ELSE IF (BFLAG(ISECT) == 'SHRDOW') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,99018) ISECT, BackUnits
       WRITE(IOUNIT,99012)
@@ -3349,7 +3349,7 @@ SUBROUTINE PRTBKG(ISECT)
             &I3=1,24)
          END DO
       END DO
-   ELSE IF (BFLAG(ISECT) .EQ. 'SHRDOW7') THEN
+   ELSE IF (BFLAG(ISECT) == 'SHRDOW7') THEN
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,79018) ISECT, BackUnits
       WRITE(IOUNIT,99012)
@@ -3363,7 +3363,7 @@ SUBROUTINE PRTBKG(ISECT)
             &I3=1,24)
          END DO
       END DO
-   ELSE IF (BFLAG(ISECT) .EQ. 'MHRDOW') THEN
+   ELSE IF (BFLAG(ISECT) == 'MHRDOW') THEN
       DO I1 = 1, 3
          CALL HEADER(IOUNIT)
          WRITE(IOUNIT,99118) ISECT, BackUnits
@@ -3377,7 +3377,7 @@ SUBROUTINE PRTBKG(ISECT)
             &I3=1,24)
          END DO
       END DO
-   ELSE IF (BFLAG(ISECT) .EQ. 'MHRDOW7') THEN
+   ELSE IF (BFLAG(ISECT) == 'MHRDOW7') THEN
       DO I1 = 1, 7
          CALL HEADER(IOUNIT)
          WRITE(IOUNIT,79118) ISECT, BackUnits
@@ -3443,7 +3443,7 @@ SUBROUTINE PRTBKG(ISECT)
 ! Unused: 9025 FORMAT(/26X,6('   WIND SPEED')/26X,6('   CATEGORY',I2))
 
    RETURN
-END
+END SUBROUTINE PRTBKG
 
 SUBROUTINE PRTREC
 !***********************************************************************
@@ -3473,11 +3473,11 @@ SUBROUTINE PRTREC
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, K, INDZ, NX, NY, INDC
    DOUBLE PRECISION :: YCOVAL, XRMS, YRMS, RANGE, RADIAL
-   CHARACTER BUF132*132
+   CHARACTER :: BUF132*132
 
 !     Variable Initializations
    MODNAM = 'PRTREC'
@@ -3488,14 +3488,14 @@ SUBROUTINE PRTREC
       CALL HEADER(IOUNIT)
       WRITE(IOUNIT,9034)
       WRITE(IOUNIT,9037) NTID(I), NTTYP(I)
-      IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+      IF (NTTYP(I) == 'GRIDCART') THEN
          WRITE(IOUNIT,9038)
       ELSE
          WRITE(IOUNIT,9036) XORIG(I), YORIG(I)
          WRITE(IOUNIT,9039)
       END IF
       WRITE(IOUNIT,9040) (XCOORD(J,I),J=1,NUMXPT(I))
-      IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+      IF (NTTYP(I) == 'GRIDCART') THEN
          WRITE(IOUNIT,9041)
       ELSE
          WRITE(IOUNIT,9042)
@@ -3516,38 +3516,38 @@ SUBROUTINE PRTREC
                CALL HEADER(IOUNIT)
                WRITE(IOUNIT,9037) NTID(I), NTTYP(I)
                WRITE(IOUNIT,9011)
-               IF (NX .EQ. NPPX) THEN
-                  IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+               IF (NX == NPPX) THEN
+                  IF (NTTYP(I) == 'GRIDCART') THEN
                      WRITE(IOUNIT,9016)
                      WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NUMXPT(I))
-                  ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                      WRITE(IOUNIT,9018)
                      WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NUMXPT(I))
                   END IF
                ELSE
-                  IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                  IF (NTTYP(I) == 'GRIDCART') THEN
                      WRITE(IOUNIT,9016)
                      WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NCPP*NX)
-                  ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                      WRITE(IOUNIT,9018)
                      WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NCPP*NX)
                   END IF
                END IF
                WRITE(IOUNIT,9010)
-               IF (NY .EQ. NPPY) THEN
+               IF (NY == NPPY) THEN
                   DO K = 1+NRPP*(NY-1), NUMYPT(I)
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         INDZ = NETEND(I) - K*NUMXPT(I) + 1
                         YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                         YCOVAL = YCOORD(K,I)
                      END IF
-                     IF (NX .EQ. NPPX) THEN
+                     IF (NX == NPPX) THEN
                         WRITE(IOUNIT,9013) YCOVAL,&
                         &(AZELEV(INDZ+J-1),J=1+NCPP*(NX-1),NUMXPT(I))
                      ELSE
@@ -3557,14 +3557,14 @@ SUBROUTINE PRTREC
                   END DO
                ELSE
                   DO K = 1+NRPP*(NY-1), NRPP*NY
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         INDZ = NETEND(I) - K*NUMXPT(I) + 1
                         YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                         YCOVAL = YCOORD(K,I)
                      END IF
-                     IF (NX .EQ. NPPX) THEN
+                     IF (NX == NPPX) THEN
                         WRITE(IOUNIT,9013) YCOVAL,&
                         &(AZELEV(INDZ+J-1),J=1+NCPP*(NX-1),NUMXPT(I))
                      ELSE
@@ -3589,38 +3589,38 @@ SUBROUTINE PRTREC
                CALL HEADER(IOUNIT)
                WRITE(IOUNIT,9037) NTID(I), NTTYP(I)
                WRITE(IOUNIT,9012)
-               IF (NX .EQ. NPPX) THEN
-                  IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+               IF (NX == NPPX) THEN
+                  IF (NTTYP(I) == 'GRIDCART') THEN
                      WRITE(IOUNIT,9016)
                      WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NUMXPT(I))
-                  ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                      WRITE(IOUNIT,9018)
                      WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NUMXPT(I))
                   END IF
                ELSE
-                  IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                  IF (NTTYP(I) == 'GRIDCART') THEN
                      WRITE(IOUNIT,9016)
                      WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NCPP*NX)
-                  ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                      WRITE(IOUNIT,9018)
                      WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NCPP*NX)
                   END IF
                END IF
                WRITE(IOUNIT,9010)
-               IF (NY .EQ. NPPY) THEN
+               IF (NY == NPPY) THEN
                   DO K = 1+NRPP*(NY-1), NUMYPT(I)
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         INDZ = NETEND(I) - K*NUMXPT(I) + 1
                         YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                         YCOVAL = YCOORD(K,I)
                      END IF
-                     IF (NX .EQ. NPPX) THEN
+                     IF (NX == NPPX) THEN
                         WRITE(IOUNIT,9013) YCOVAL,&
                         &(AZHILL(INDZ+J-1),J=1+NCPP*(NX-1),NUMXPT(I))
                      ELSE
@@ -3630,14 +3630,14 @@ SUBROUTINE PRTREC
                   END DO
                ELSE
                   DO K = 1+NRPP*(NY-1), NRPP*NY
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         INDZ = NETEND(I) - K*NUMXPT(I) + 1
                         YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                         YCOVAL = YCOORD(K,I)
                      END IF
-                     IF (NX .EQ. NPPX) THEN
+                     IF (NX == NPPX) THEN
                         WRITE(IOUNIT,9013) YCOVAL,&
                         &(AZHILL(INDZ+J-1),J=1+NCPP*(NX-1),NUMXPT(I))
                      ELSE
@@ -3664,38 +3664,38 @@ SUBROUTINE PRTREC
                CALL HEADER(IOUNIT)
                WRITE(IOUNIT,9037) NTID(I), NTTYP(I)
                WRITE(IOUNIT,9035)
-               IF (NX .EQ. NPPX) THEN
-                  IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+               IF (NX == NPPX) THEN
+                  IF (NTTYP(I) == 'GRIDCART') THEN
                      WRITE(IOUNIT,9016)
                      WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NUMXPT(I))
-                  ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                      WRITE(IOUNIT,9018)
                      WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NUMXPT(I))
                   END IF
                ELSE
-                  IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                  IF (NTTYP(I) == 'GRIDCART') THEN
                      WRITE(IOUNIT,9016)
                      WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NCPP*NX)
-                  ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                      WRITE(IOUNIT,9018)
                      WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NCPP*NX)
                   END IF
                END IF
                WRITE(IOUNIT,9010)
-               IF (NY .EQ. NPPY) THEN
+               IF (NY == NPPY) THEN
                   DO K = 1+NRPP*(NY-1), NUMYPT(I)
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         INDZ = NETEND(I) - K*NUMXPT(I) + 1
                         YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                         YCOVAL = YCOORD(K,I)
                      END IF
-                     IF (NX .EQ. NPPX) THEN
+                     IF (NX == NPPX) THEN
                         WRITE(IOUNIT,9013) YCOVAL,&
                         &(AZFLAG(INDZ+J-1),J=1+NCPP*(NX-1),NUMXPT(I))
                      ELSE
@@ -3705,14 +3705,14 @@ SUBROUTINE PRTREC
                   END DO
                ELSE
                   DO K = 1+NRPP*(NY-1), NRPP*NY
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         INDZ = NETEND(I) - K*NUMXPT(I) + 1
                         YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                         YCOVAL = YCOORD(K,I)
                      END IF
-                     IF (NX .EQ. NPPX) THEN
+                     IF (NX == NPPX) THEN
                         WRITE(IOUNIT,9013) YCOVAL,&
                         &(AZFLAG(INDZ+J-1),J=1+NCPP*(NX-1),NUMXPT(I))
                      ELSE
@@ -3726,20 +3726,20 @@ SUBROUTINE PRTREC
       END IF
    END DO
 
-   IF (IRSTAT(4).NE.0 .or. IRSTAT(8).NE.0) THEN
+   IF (IRSTAT(4)/=0 .or. IRSTAT(8)/=0) THEN
 ! ---    Include EVALCART receptors with DISCCART receptors.
 !        Print Out The Coordinates, Height , Hill Height & Flags For
 !        Discrete Cart Receptors
 
       INDC = 0
       DO I = 1, NUMREC
-         IF (RECTYP(I) .EQ. 'DC') THEN
+         IF (RECTYP(I) == 'DC') THEN
             INDC = INDC + 1
-            IF (MOD(INDC-1,90) .EQ. 0) THEN
+            IF (MOD(INDC-1,90) == 0) THEN
                CALL HEADER(IOUNIT)
                WRITE(IOUNIT,9043)
             END IF
-            IF (MOD(INDC,2) .NE. 0) THEN
+            IF (MOD(INDC,2) /= 0) THEN
                WRITE(BUF132(1:65),9045) AXR(I),AYR(I),AZELEV(I),&
                &AZHILL(I),AZFLAG(I)
             ELSE
@@ -3750,28 +3750,28 @@ SUBROUTINE PRTREC
             END IF
          END IF
       END DO
-      IF (MOD(INDC,2) .NE. 0) THEN
+      IF (MOD(INDC,2) /= 0) THEN
          WRITE(IOUNIT,9090) BUF132
          WRITE(BUF132,9095)
       END IF
    END IF
 
-   IF (IRSTAT(5) .NE. 0) THEN
+   IF (IRSTAT(5) /= 0) THEN
 !        Print Out The Coordinates, Height & Flags For Discrete Polar Receptors
       INDC = 0
       DO I = 1, NUMREC
-         IF (RECTYP(I) .EQ. 'DP') THEN
+         IF (RECTYP(I) == 'DP') THEN
             INDC = INDC + 1
             XRMS = AXR(I) - AXS(IREF(I))
             YRMS = AYR(I) - AYS(IREF(I))
             RANGE  = DSQRT(XRMS*XRMS + YRMS*YRMS)
             RADIAL = DATAN2(XRMS, YRMS) * RTODEG
-            IF(RADIAL .LE. 0.0D0) RADIAL = RADIAL + 360.0D0
-            IF (MOD(INDC-1,90) .EQ. 0) THEN
+            IF(RADIAL <= 0.0D0) RADIAL = RADIAL + 360.0D0
+            IF (MOD(INDC-1,90) == 0) THEN
                CALL HEADER(IOUNIT)
                WRITE(IOUNIT,9044)
             END IF
-            IF (MOD(INDC,2) .NE. 0) THEN
+            IF (MOD(INDC,2) /= 0) THEN
                WRITE(BUF132(1:65),9047) SRCID(IREF(I)),RANGE,RADIAL,&
                &AZELEV(I),AZHILL(I),AZFLAG(I)
             ELSE
@@ -3783,7 +3783,7 @@ SUBROUTINE PRTREC
             END IF
          END IF
       END DO
-      IF (MOD(INDC,2) .NE. 0) THEN
+      IF (MOD(INDC,2) /= 0) THEN
          WRITE(IOUNIT,9090) BUF132
          WRITE(BUF132,9095)
       END IF
@@ -3824,7 +3824,7 @@ SUBROUTINE PRTREC
 9095 FORMAT(132(' '))
 
    RETURN
-END
+END SUBROUTINE PRTREC
 
 SUBROUTINE CHKREC
 !***********************************************************************
@@ -3863,7 +3863,7 @@ SUBROUTINE CHKREC
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: INC, INOUT
    DOUBLE PRECISION :: XSRC, YSRC, DIST, XVM(5), YVM(5)
@@ -3878,23 +3878,23 @@ SUBROUTINE CHKREC
    DO ISRC = 1, NUMSRC
 
 !        Set Effective Source Radius Based on Source Type
-      IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
+      IF (SRCTYP(ISRC)(1:5) == 'POINT') THEN
          XRAD = 0.0D0
          XSRC = AXS(ISRC)
          YSRC = AYS(ISRC)
-      ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME') THEN
+      ELSE IF (SRCTYP(ISRC) == 'VOLUME') THEN
          XRAD = 2.15D0 * ASYINI(ISRC)
          XSRC = AXS(ISRC)
          YSRC = AYS(ISRC)
-      ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .or.&
-      &SRCTYP(ISRC) .EQ. 'LINE') THEN
+      ELSE IF (SRCTYP(ISRC)(1:4) == 'AREA' .or.&
+      &SRCTYP(ISRC) == 'LINE') THEN
 !           Set XRAD to -1 since no minimum distance for
 !           AREA and LINE source types.  Use center coordinates
 !           for comparison to MAXDIST.
          XRAD = -1.0D0
          XSRC = AXCNTR(ISRC)
          YSRC = AYCNTR(ISRC)
-      ELSE IF (SRCTYP(ISRC) .EQ. 'OPENPIT') THEN
+      ELSE IF (SRCTYP(ISRC) == 'OPENPIT') THEN
 !           Set XRAD to -1 since minimum distance for
 !           OPENPIT source is handled separately to
 !           flag receptors within the boundary of the
@@ -3923,35 +3923,35 @@ SUBROUTINE CHKREC
          Y = AYR(IREC) - YSRC
          DIST = DSQRT (X*X + Y*Y) - XRAD
 
-         IF (DIST .LT. 0.99D0) THEN
+         IF (DIST < 0.99D0) THEN
 !              Receptor Is Too Close To Source
             INC = INC + 1
-            IF (MOD((INC-1), 40) .EQ. 0) THEN
+            IF (MOD((INC-1), 40) == 0) THEN
                CALL HEADER(IOUNIT)
                WRITE(IOUNIT,9002)
             END IF
             WRITE(IOUNIT,9003) SRCID(ISRC), AXR(IREC),&
             &AYR(IREC), DIST
 
-         ELSE IF (DIST .GT. MAXDIST) THEN
+         ELSE IF (DIST > MAXDIST) THEN
 !              Receptor Is Too Far From Source
             INC = INC + 1
-            IF (MOD((INC-1), 40) .EQ. 0) THEN
+            IF (MOD((INC-1), 40) == 0) THEN
                CALL HEADER(IOUNIT)
                WRITE(IOUNIT,9002)
             END IF
             WRITE(IOUNIT,9003) SRCID(ISRC), AXR(IREC),&
             &AYR(IREC), DIST
 
-         ELSE IF (SRCTYP(ISRC) .EQ. 'OPENPIT') THEN
+         ELSE IF (SRCTYP(ISRC) == 'OPENPIT') THEN
 !              Check for receptors within boundary of an open pit source
             XR = AXR(IREC)
             YR = AYR(IREC)
             CALL PNPOLY(XR,YR,XVM,YVM,4,INOUT)
-            IF (INOUT .GT. 0) THEN
+            IF (INOUT > 0) THEN
 !                 Receptor is within boundary
                INC = INC + 1
-               IF (MOD((INC-1), 40) .EQ. 0) THEN
+               IF (MOD((INC-1), 40) == 0) THEN
                   CALL HEADER(IOUNIT)
                   WRITE(IOUNIT,9002)
                END IF
@@ -3979,7 +3979,7 @@ SUBROUTINE CHKREC
 9004 FORMAT(29X,A12,3X,F13.1,1X,F13.1,5X,'     OPENPIT')
 
    RETURN
-END
+END SUBROUTINE CHKREC
 
 SUBROUTINE PRTMET(IOUNT)
 !***********************************************************************
@@ -4010,7 +4010,7 @@ SUBROUTINE PRTMET(IOUNT)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, IOUNT
 
@@ -4029,7 +4029,7 @@ SUBROUTINE PRTMET(IOUNT)
       WRITE(IOUNT,9037) (IPROC(I),I = 1, 365)
    ENDIF
 
-   IF (ISDATE .NE. 0 .or. IEDATE .NE. 2147123124) THEN
+   IF (ISDATE /= 0 .or. IEDATE /= 2147123124) THEN
 !        Write Out User-specified Start and End Dates
       WRITE(IOUNT,9038) ISYR, ISMN, ISDY, ISHR,&
       &IEYR, IEMN, IEDY, IEHR
@@ -4050,7 +4050,7 @@ SUBROUTINE PRTMET(IOUNT)
    &' ALSO DEPEND ON WHAT IS INCLUDED IN THE DATA FILE.'/)
 
    RETURN
-END
+END SUBROUTINE PRTMET
 
 SUBROUTINE RSINIT
 !***********************************************************************
@@ -4092,7 +4092,7 @@ SUBROUTINE RSINIT
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, K, L, M
 !     JAT D065 8/9/21
@@ -4129,18 +4129,18 @@ SUBROUTINE RSINIT
 !     restarts and warning message for MULTYEAR restarts;
 !     IF IRSDATE > ISDATE for MULTYEAR restarts, then issue fatal error
 !     message since this implies overlapping data periods.
-   IF (.NOT.MULTYR .and. IMSTAT(6) .EQ. 1 .and.&
-   &IRSDATE .LT. ISDATE) THEN
+   IF (.NOT.MULTYR .and. IMSTAT(6) == 1 .and.&
+   &IRSDATE < ISDATE) THEN
 !        Re-start date is less than start date based on STARTEND keyword
       CALL ERRHDL(PATH,MODNAM,'E','484','STARTEND')
       RUNERR = .TRUE.
       GO TO 1000
-   ELSE IF (MULTYR .and. IMSTAT(6) .EQ. 1 .and.&
-   &IRSDATE .LT. ISDATE) THEN
+   ELSE IF (MULTYR .and. IMSTAT(6) == 1 .and.&
+   &IRSDATE < ISDATE) THEN
       CALL ERRHDL(PATH,MODNAM,'W','485','STARTEND')
 
-   ELSE IF (MULTYR .and. IMSTAT(6) .EQ. 1 .and.&
-   &IRSDATE .GT. ISDATE) THEN
+   ELSE IF (MULTYR .and. IMSTAT(6) == 1 .and.&
+   &IRSDATE > ISDATE) THEN
       WRITE(DUMMY,'(I10.10)') IRSDATE - (IRSDATE/100000000)*100000000
       CALL ERRHDL(PATH,MODNAM,'E','486',DUMMY)
       RUNERR = .TRUE.
@@ -4154,7 +4154,7 @@ SUBROUTINE RSINIT
    READ(IRSUNT,ERR=99,END=999) NHIVAL, NMXVAL, NUMREC, NUMGRP,&
    &NUMAVE, NUMTYP
 
-   IF (NHIVAL .GT. 0) THEN
+   IF (NHIVAL > 0) THEN
       READ(IRSUNT,ERR=99,END=999) (((((HIVALU(I,J,K,L,M),I=1,NUMREC),&
       &J=1,NHIVAL),K=1,NUMGRP),L=1,NUMAVE),M=1,NUMTYP)
       READ(IRSUNT,ERR=99,END=999) (((((NHIDAT(I,J,K,L,M),I=1,NUMREC),&
@@ -4180,7 +4180,7 @@ SUBROUTINE RSINIT
 
    END IF
 
-   IF (NMXVAL .GT. 0) THEN
+   IF (NMXVAL > 0) THEN
       READ(IRSUNT,ERR=99,END=999) ((((RMXVAL(I,J,K,L),I=1,NMXVAL),&
       &J=1,NUMGRP),K=1,NUMAVE),L=1,NUMTYP)
       READ(IRSUNT,ERR=99,END=999) ((((MXDATE(I,J,K,L),I=1,NMXVAL),&
@@ -4237,7 +4237,7 @@ SUBROUTINE RSINIT
    RUNERR = .TRUE.
 
 1000 RETURN
-END
+END SUBROUTINE RSINIT
 
 SUBROUTINE RESINI
 !***********************************************************************
@@ -4273,7 +4273,7 @@ SUBROUTINE RESINI
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'RESINI'
@@ -4332,4 +4332,4 @@ SUBROUTINE RESINI
    NSEACM = 0
 
    RETURN
-END
+END SUBROUTINE RESINI

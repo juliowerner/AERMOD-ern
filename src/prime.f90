@@ -57,7 +57,7 @@ subroutine prime1
    xdecayi = 1.5D0
 
    return
-end
+end subroutine prime1
 
 !----------------------------------------------------------------------
 subroutine numpr1
@@ -158,12 +158,12 @@ subroutine numpr1
 ! --- Set the default number of layers
    nza=45
    nzap1=nza+1
-   if(nza.gt.mxnz)then
+   if(nza>mxnz)then
       write(io6,*)'ERROR in SUBR. NUMPR1 -- NZA is too large -- ',&
       &'NZA = ',nza,' MXNZ = ',mxnz
       stop
    endif
-   if(nzap1.gt.mxnzp1)then
+   if(nzap1>mxnzp1)then
       write(io6,*)'ERROR in SUBR. NUMPR1 -- NZAP1 is too large -- ',&
       &'NZAP1 = ',nzap1,' MXNZP1 = ',mxnzp1
       stop
@@ -205,7 +205,7 @@ subroutine numpr1
    zfacea(nzap1)=zgpta(nza)+0.5D0*(zgpta(nza)-zgpta(nza-1))
 
    return
-end
+end subroutine numpr1
 
 !----------------------------------------------------------------------
 !MACTEC      subroutine numrise(ldbhr,h,reff,texit,wexit,
@@ -332,12 +332,12 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 
    IMPLICIT NONE
 
-   INTEGER NTR
-   DOUBLE PRECISION XTR(ntr),YTR(ntr),ZTR(ntr),RTR(ntr)
+   INTEGER :: NTR
+   DOUBLE PRECISION :: XTR(ntr),YTR(ntr),ZTR(ntr),RTR(ntr)
 
-   DOUBLE PRECISION XT(mxnw),YT(mxnw),ZT(mxnw),RT(mxnw)
-   DOUBLE PRECISION RHS(7),RHSTEMP(7),F(7),FTEMP(7)
-   DOUBLE PRECISION H, MAX, REFF, WEXIT, TEXIT, DRDXA, DS0, ZCUMUL,&
+   DOUBLE PRECISION :: XT(mxnw),YT(mxnw),ZT(mxnw),RT(mxnw)
+   DOUBLE PRECISION :: RHS(7),RHSTEMP(7),F(7),FTEMP(7)
+   DOUBLE PRECISION :: H, MAX, REFF, WEXIT, TEXIT, DRDXA, DS0, ZCUMUL,&
    &R15SRC, UA0, RA, TA, DUDZ0, DPDZ, XB,YB, ZB,&
    &DUFAC, UA, DUDZ, DELTAT, FDUM, FB, FM,&
    &UAM, WBYU, XMAXM, XMAX, XMAXB, ZNF, ZNF0, DMIN,&
@@ -347,15 +347,15 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
    &XBE, DZDXB, DZDXE, DELN, RN, DELZFIN
 
 
-   INTEGER I, NUMWAKE, ierr, IPOSITN, NNP, NP, NN, N15R, NBEG, NEND,&
+   INTEGER :: I, NUMWAKE, ierr, IPOSITN, NNP, NP, NN, N15R, NBEG, NEND,&
    &IN, IPOS, JN, IT, DBGUNT
 
-   logical ldb,ldbnn,ldbu,ldbhr,linwake
+   logical :: ldb,ldbnn,ldbu,ldbhr,linwake
 ! MACTEC Begin change
 ! --- Specify CAPFACT parameter, factor by which initial effective
 !     radius of plume is increased by raincap.
-   DOUBLE PRECISION CAPFACT
-   LOGICAL CAPPED, HORIZ
+   DOUBLE PRECISION :: CAPFACT
+   LOGICAL :: CAPPED, HORIZ
 ! MACTEC End change
 
 ! --- Use LDB as a local switch for more extensive debug output
@@ -400,7 +400,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
    ufac=1.0D0
    dufac=0.0D0
 
-   if(ipositn.LT.4) then
+   if(ipositn<4) then
       call WAKE_U(.FALSE.,xb,yb,zb,ufac,dufac,DBGUNT)
    end if
    ua=ufac*ua0
@@ -436,10 +436,10 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 ! --- Momentum only: (do not base xmax on case where w<uam)
    wbyu=MAX(1.0D0,w/uam)
    xmaxm=8.0D0*r*wbyu*(1.0D0+3.0D0/wbyu)**2
-   if(fb.le.0.0D0)then
+   if(fb<=0.0D0)then
 ! ---    No buoyancy, momentum only
       xmax=xmaxm
-   elseif(fb.lt.55.0D0)then
+   elseif(fb<55.0D0)then
 ! ---    Buoyancy flux < 55 m**4/s**3
       xmaxb=49.0D0*fb**0.625D0
       xmax=MAX(xmaxm,xmaxb)
@@ -450,10 +450,10 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 
 ! --- Use Briggs neutral rise to identify "minimal rise" cases
 ! --- Compute Briggs neutral final rise
-   if(fb.LE.0.0D0) then
+   if(fb<=0.0D0) then
 ! ---    No buoyancy, momentum only
       znf=6.0D0*r*w/uam
-   elseif(fb.LT.55.0D0) then
+   elseif(fb<55.0D0) then
 ! ---    Buoyancy flux < 55 m**4/s**3
       znf=21.425D0*(fb**0.75D0)/uam
    else
@@ -465,7 +465,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 
 ! --- Guard against step length greater than likely rise
    dmin=0.5D0*znf0
-   if(ds.GT.dmin) then
+   if(ds>dmin) then
       ds=dmin
       if(ldb) then
          write(DBGUNT,*)'NUMRISE - initial step reset'
@@ -488,7 +488,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 999 continue
 
 ! --- Set local debug logical
-   if(nnp.LT.150) then
+   if(nnp<150) then
       ldbnn=ldb
    else
       ldbnn=.FALSE.
@@ -504,7 +504,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
    dzdx=0.0D0
    dzstrm=0.0D0
    call POSITION(xb,yb,zb,ipositn)
-   if(ipositn.GT.2 .and. x.LE.r15src) then
+   if(ipositn>2 .and. x<=r15src) then
       call ZSTREAM(hb,wb,xLb,rb,xLr,hr,xb,yb,zb,dzdx)
       dxds=U/USC
       dzds=dzdx*dxds
@@ -528,7 +528,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
    ufac=1.0D0
    dufac=0.0D0
 
-   if(ipositn.LT.4) then
+   if(ipositn<4) then
       call WAKE_U(ldbu,xb,yb,zb,ufac,dufac,DBGUNT)
    end if
    ua=ufac*ua0
@@ -555,7 +555,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 
 ! --- Numerical procedure may result in small negative downwind
 ! --- distance:  reset to zero and go to next step
-   if(x.LT.0.0D0) then
+   if(x<0.0D0) then
       x=0.0D0
       s=s+ds
       nnp=nnp-1
@@ -564,7 +564,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 
 ! --- Write debug output if in debug mode
    if(ldbnn)then
-      if(mod(nnp,1000).eq.1) write(DBGUNT,112)
+      if(mod(nnp,1000)==1) write(DBGUNT,112)
 112   format(/3x,'NNP',7x,'X',6x,'Y',6x,'Z',6x,'R',6x,'U',5x,'V',&
       &6x,'W',5x,'USC',5x,'PHI',4x,'DEN',3x,'TP',5x,'UA',5x,'RA',4x,&
       &'TA',6x,'DUDZ',4x,'DPDZ',3x,'DZDS',3x,'DYDS',1x,'IPOS',&
@@ -579,7 +579,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 
 ! --- When trajectory inclination falls below 20 degrees, ignoring
 ! --- streamline descent, check for wake influence
-   if(phi.LE.0.349065850398866D0 .and. ipositn.LT.4) then
+   if(phi<=0.349065850398866D0 .and. ipositn<4) then
       if(.not.LINWAKE) then
 ! ---       Plume centerline has just entered wake
          linwake=.TRUE.
@@ -589,7 +589,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
          rise=MAX(0.0D0,z-base)
          bidsq=(rise/3.5D0)**2
 ! ---       Guard against x.LE.0 due to precision
-         if(x.LE.0.0D0) then
+         if(x<=0.0D0) then
             szi=DSQRT(bidsq)
             syi=szi
          else
@@ -623,9 +623,9 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 
 ! --- Process new position
    S=S+DS
-   if(DBLE(NNP/NP).eq.DBLE(NNP)/XNP) THEN
+   if(DBLE(NNP/NP)==DBLE(NNP)/XNP) THEN
       NN=NNP/NP
-      if(nn.gt.mxnw)then
+      if(nn>mxnw)then
          write(DBGUNT,*)' '
          write(DBGUNT,*)'Error in Subr. NUMRISE -- NN too large:'
          write(DBGUNT,*)'                          NN   = ',nn
@@ -643,7 +643,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
       ZT(NN)=zc
       RT(NN)=R
 ! --- CHECK FOR PLUME EQUILIBRIUM HEIGHT
-      IF(x .ge. xmax) THEN
+      IF(x >= xmax) THEN
          ZFIN=zc
          YFIN=Y
          XFIN=X
@@ -657,7 +657,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
    ufac=1.0D0
    dufac=0.0D0
 
-   if(ipositn.LT.4) then
+   if(ipositn<4) then
       call WAKE_U(.FALSE.,xb,yb,zb,ufac,dufac,DBGUNT)
    end if
    ua=ufac*ua0
@@ -666,7 +666,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 ! --- Next increment
    NNP=NNP+1
 ! --- Stop rise at local maximum (excludes streamline descent effects)
-   if(w.lt.0.0D0)then
+   if(w<0.0D0)then
       zfin=zc
       yfin=y
       xfin=x
@@ -675,9 +675,9 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
    endif
 
 ! --- Adjust ds toward ds0 for next step
-   if(ds.LT.ds0) ds=MIN(ds0,2.0D0*ds)
+   if(ds<ds0) ds=MIN(ds0,2.0D0*ds)
 
-   IF(S.LT.SLAST) GOTO 999
+   IF(S<SLAST) GOTO 999
    ZFIN=zc
    YFIN=Y
    XFIN=X
@@ -689,7 +689,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 ! --- streamline slope (vertical only)
    xfin0=xfin
    x15r=r15src-xfin0
-   if(x15r.GT.0.0D0) then
+   if(x15r>0.0D0) then
 ! ---    Set stepsize
       dsfin=DBLE(nstep)*ds
       dx15r=x15r/DBLE(mxnw-nn)
@@ -707,7 +707,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 ! ---       Obtain mean streamline slope
          dzdx=0.0D0
          call POSITION(xbb,yb,zb,ipos)
-         if(ipos.GT.2) then
+         if(ipos>2) then
             call ZSTREAM(hb,wb,xLb,rb,xLr,hr,xbb,yb,zb,dzdxb)
             call ZSTREAM(hb,wb,xLb,rb,xLr,hr,xbe,yb,zb,dzdxe)
             dzdx=0.5D0*(dzdxb+dzdxe)
@@ -720,7 +720,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 
 ! ---       Check for wake entry if this has not already happened
          if(.not.LINWAKE) then
-            if(ipos.LT.4) then
+            if(ipos<4) then
 ! ---             Plume centerline has just entered wake
                linwake=.TRUE.
 ! ---             Set "internal" variable names
@@ -764,13 +764,13 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
    endif
 
 ! --- Construct trajectory arrays for calling program
-   if(nn.GT.ntr) then
+   if(nn>ntr) then
 ! ---    Sample a subset of the nn points
       xtr(ntr)=xfin
       ytr(ntr)=yfin
       ztr(ntr)=zfin
       rtr(ntr)=rfin
-      if(nn.LE.2*ntr) then
+      if(nn<=2*ntr) then
 ! ---       Fill elements with nearest values
          deln=DBLE(nn)/DBLE(ntr)
          do in=1,ntr-1
@@ -816,7 +816,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
 !RWB  NOTE!  xbi is not defined if LINWAKE = .FALSE.  The following should solve this
    if(LINWAKE) then
 ! ---    Determine maximum fraction of plume captured in cavity
-      if (xbi.LT.(xLb+xLR)) then
+      if (xbi<(xLb+xLR)) then
 ! ---       Plume centerline enters wake boundary before clearing cavity
          call WAKE_FQC(ldb,xbi,xtr,ztr,mxntr,DBGUNT)
       else
@@ -891,7 +891,7 @@ subroutine numrise(ldbhr,h,reff,texit,wexit,ntr,capped,horiz,&
    endif
 
    RETURN
-END
+END SUBROUTINE numrise
 
 !----------------------------------------------------------------------
 subroutine rate(ua,dudz,ra,dpdz,ta,drdxa,rhs)
@@ -936,10 +936,10 @@ subroutine rate(ua,dudz,ra,dpdz,ta,drdxa,rhs)
 
    IMPLICIT NONE
 
-   DOUBLE PRECISION RHS(7)
-   DOUBLE PRECISION ALPHA, ALPHA0, BETA, BETA0, DRDXA, RA, UA, TA,&
+   DOUBLE PRECISION :: RHS(7)
+   DOUBLE PRECISION :: ALPHA, ALPHA0, BETA, BETA0, DRDXA, RA, UA, TA,&
    &RHS1A, DUDZ, DPDZ
-   INTEGER I, NENTP1
+   INTEGER :: I, NENTP1
 ! ---   Constants:
 !          GRAVI - Gravitational acceleration (m/s**2)
 !          RP    - Radiation coefficient (kg/m**2/deg. K**3/s)
@@ -958,13 +958,13 @@ subroutine rate(ua,dudz,ra,dpdz,ta,drdxa,rhs)
 !         beta = 0.35d0
    end if
 
-   if(nent.gt.0)then
+   if(nent>0)then
 ! ---    Check if the plume is in the area where perturbed entrainment
 ! ---    coefficients apply
-      if(x.lt.xcat(1))go to 99
+      if(x<xcat(1))go to 99
       nentp1=nent+1
       do i=2,nentp1
-         if(x.le.xcat(i))then
+         if(x<=xcat(i))then
             alpha=alphap(i-1)
             beta=betap(i-1)
             go to 99
@@ -989,7 +989,7 @@ subroutine rate(ua,dudz,ra,dpdz,ta,drdxa,rhs)
    RHS(6)=U/USC
    rhs(7)=v/usc
    RETURN
-END
+END SUBROUTINE rate
 
 !----------------------------------------------------------------------
 subroutine lump(ua,ta,f)
@@ -1014,7 +1014,7 @@ subroutine lump(ua,ta,f)
 
    IMPLICIT NONE
 
-   DOUBLE PRECISION F(7), UA, TA
+   DOUBLE PRECISION :: F(7), UA, TA
    F(1)=DEN*USC*R*R
    F(2)=F(1)*(U-UA)
    F(3)=F(1)*W
@@ -1024,7 +1024,7 @@ subroutine lump(ua,ta,f)
    F(7)=y
    RETURN
 
-END
+END SUBROUTINE lump
 
 !----------------------------------------------------------------------
 subroutine marching(fold,fnew,rhs,ds)
@@ -1049,16 +1049,16 @@ subroutine marching(fold,fnew,rhs,ds)
 !----------------------------------------------------------------------
    IMPLICIT NONE
 
-   DOUBLE PRECISION FNEW(7),FOLD(7),RHS(7)
-   DOUBLE PRECISION DS
-   INTEGER I
+   DOUBLE PRECISION :: FNEW(7),FOLD(7),RHS(7)
+   DOUBLE PRECISION :: DS
+   INTEGER :: I
 
    DO I=1,7
       FNEW(I)=FOLD(I)+RHS(I)*DS
    END DO
 
    RETURN
-END
+END SUBROUTINE marching
 
 !----------------------------------------------------------------------
 subroutine unlump(ua,ta,ra,f)
@@ -1090,7 +1090,7 @@ subroutine unlump(ua,ta,ra,f)
 
    IMPLICIT NONE
 
-   DOUBLE PRECISION F(7), UA, TA, RA
+   DOUBLE PRECISION :: F(7), UA, TA, RA
 
    U=UA+F(2)/F(1)
    W=F(3)/F(1)
@@ -1107,7 +1107,7 @@ subroutine unlump(ua,ta,ra,f)
    Y=F(7)
 
    RETURN
-END
+END SUBROUTINE unlump
 
 !>>>c   This is the old ZMET, replace with new ZMET that uses AERMOD profiles
 !>>>c----------------------------------------------------------------------
@@ -1241,17 +1241,17 @@ subroutine zmet(z,ua,ra,tap,dudz,dpdz)
 
    IMPLICIT NONE
 
-   DOUBLE PRECISION Z, ua, ra, tap, dudz, dpdz
-   DOUBLE PRECISION SVATZ, SWATZ, UATZ, PTZ, DELZ
+   DOUBLE PRECISION :: Z, ua, ra, tap, dudz, dpdz
+   DOUBLE PRECISION :: SVATZ, SWATZ, UATZ, PTZ, DELZ
 
-   INTEGER NDXBLZ
+   INTEGER :: NDXBLZ
 
 !---- Compute the parameter values at height Z for PRIME
 !---- Locate index below height Z
 
    CALL LOCATE(GRIDHT, 1, MXGLVL, Z, NDXBLZ)
 
-   IF (NDXBLZ .GE. 1) THEN
+   IF (NDXBLZ >= 1) THEN
 
 !----    Sigma_V
       CALL GINTRP( GRIDHT(NDXBLZ), GRIDSV(NDXBLZ),&
@@ -1311,7 +1311,7 @@ subroutine zmet(z,ua,ra,tap,dudz,dpdz)
    UA  = MAX( UATZ, WSMIN )
 
    return
-end
+end subroutine zmet
 
 !----------------------------------------------------------------------
 subroutine zstream(H,W,L,R,LR,HR,x,y,z,dzdx)
@@ -1355,8 +1355,8 @@ subroutine zstream(H,W,L,R,LR,HR,x,y,z,dzdx)
 ! JAT 06/22/21 D065
 ! REMOVE EXPZ1,EXPZ2,EXPX AS UNUSED VARIABLES
 !      DOUBLE PRECISION H,W,L,R,HR,LR,expz1,expz2,expzg,expx
-   DOUBLE PRECISION H,W,L,R,HR,LR,expzg
-   DOUBLE PRECISION x,y,z,dzdx2,zslope,dzdx,ypos,hbyw,onebyr,&
+   DOUBLE PRECISION :: H,W,L,R,HR,LR,expzg
+   DOUBLE PRECISION :: x,y,z,dzdx2,zslope,dzdx,ypos,hbyw,onebyr,&
    &wby2,rby2,zg,zslopeLR,yscale
 
 ! JAT 06/22/21 D065
@@ -1364,7 +1364,7 @@ subroutine zstream(H,W,L,R,LR,HR,x,y,z,dzdx)
 !      data expx/1.0D0/, expz1/3.0D0/, expz2/1.0D0/
 !
 ! --- Check for a building
-   if(h.le.0.0D0)then
+   if(h<=0.0D0)then
       dzdx=0.0D0
       go to 900
    endif
@@ -1384,7 +1384,7 @@ subroutine zstream(H,W,L,R,LR,HR,x,y,z,dzdx)
 ! --- zg is level below which slope is zero in far wake
    zg=0.0D0
    expzg=0.3D0
-   if(hbyw .ge. 2.0D0) expzg=expzg*(0.5D0*hbyw)**2
+   if(hbyw >= 2.0D0) expzg=expzg*(0.5D0*hbyw)**2
 
 !
 ! --- Local streamline slope (zslope) at z=H
@@ -1392,12 +1392,12 @@ subroutine zstream(H,W,L,R,LR,HR,x,y,z,dzdx)
 ! --- Local three-dimensional streamline slope (dzdx)
 ! --- (x,y,z)=(0,0,0) at ground of center of upwind building face
 !
-   if(x .lt. -R) then
+   if(x < -R) then
 ! ---    Upwind of building influence
       zslope = 0.0D0
       dzdx2  = 0.0D0
 
-   elseif(x .lt. 0.0D0) then
+   elseif(x < 0.0D0) then
 ! ---    Ascent upwind of building:
 ! ---    parobolic fit to slope=0 at (-R,0) with increasing slope
 ! ---    to (0,(HR-H))
@@ -1405,29 +1405,29 @@ subroutine zstream(H,W,L,R,LR,HR,x,y,z,dzdx)
 ! ---    below building nonzero slope above 2/3 H for R<H reducing
 ! ---    to ground as R approaches 2H
       zslope = 2.0D0*(HR-H)*(x+R)*onebyr**2
-      if(z .gt. H) then
+      if(z > H) then
 ! ---       dzdx2 = zslope/((z-H+R)*onebyr)**expz1
 ! ---               recode with explicit exponent, expz1=3
          dzdx2 = zslope/((z-H+R)*onebyr)**3
-      elseif(R .le. H .and. z .le. 0.67D0*H) then
+      elseif(R <= H .and. z <= 0.67D0*H) then
          dzdx2 = 0.0D0
-      elseif(R .le. H .and. z .gt. 0.67D0*H) then
+      elseif(R <= H .and. z > 0.67D0*H) then
          dzdx2 = zslope
-      elseif(R .gt. H .and. z .le. 0.67D0*(2.0D0*H-R)) then
+      elseif(R > H .and. z <= 0.67D0*(2.0D0*H-R)) then
          dzdx2 = 0.0D0
-      elseif(R .gt. H .and. z .gt. 0.67D0*(2.0D0*H-R)) then
+      elseif(R > H .and. z > 0.67D0*(2.0D0*H-R)) then
          dzdx2 = zslope
       else
          print *,'z out of bounds      ',x,z
       endif
 
-   elseif(x .le. rby2) then
+   elseif(x <= rby2) then
 ! ---    Ascent over building
 ! ---    parobolic fit from (0,0) with decreasing slope to
 ! ---    to (0.5R,(HR-H))
 ! ---    vertical decay above building using expz1
       zslope = (-(HR-H)*4.0D0*onebyr)*(2.0D0*x*onebyr-1.0D0)
-      if(z .le. H) then
+      if(z <= H) then
          dzdx2 = zslope
       else
 ! ---       dzdx2 = zslope/((z-H+R)*onebyr)**expz1
@@ -1435,18 +1435,18 @@ subroutine zstream(H,W,L,R,LR,HR,x,y,z,dzdx)
          dzdx2 = zslope/((z-H+R)*onebyr)**3
       endif
 
-   elseif(x .le. L+LR) then
+   elseif(x <= L+LR) then
 ! ---    Descent over building to end of near wake
 ! ---    parobolic fit from (.5R,(HR-H)) with increasing slope to
 ! ---    to (L+LR,-H/2)
 ! ---    vertical decay above z=H using expz2
 ! ---    vertical decay below z=H using expzg
       zslope = (HR-H)*(R-2.0D0*x)/((L-rby2+LR)**2)
-      if(z .gt. H) then
+      if(z > H) then
 ! ---       dzdx2 = zslope/((z-H+R)*onebyr)**expz2
 ! ---               recode without expz2 since expz2=1
          dzdx2 = zslope/((z-H+R)*onebyr)
-      elseif(z .le. zg) then
+      elseif(z <= zg) then
          dzdx2 = 0.0D0
       else
          dzdx2 = zslope*((z-zg)/(H-zg))**expzg
@@ -1461,11 +1461,11 @@ subroutine zstream(H,W,L,R,LR,HR,x,y,z,dzdx)
 ! ---    zslope = zslopeLR/((x-(L+LR-R))*onebyr)**expx
 ! ---             recode without expx since expx=1
       zslope = zslopeLR/((x-(L+LR-R))*onebyr)
-      if(z .gt. H) then
+      if(z > H) then
 ! ---       dzdx2 = zslope/((z-H+R)*onebyr)**expz2
 ! ---               recode without expz2 since expz2=1
          dzdx2 = zslope/((z-H+R)*onebyr)
-      elseif(z .le. zg) then
+      elseif(z <= zg) then
          dzdx2 = 0.0D0
       else
          dzdx2 = zslope*((z-zg)/(H-zg))**expzg
@@ -1474,9 +1474,9 @@ subroutine zstream(H,W,L,R,LR,HR,x,y,z,dzdx)
    endif
 
 ! --- Calculate 3-D slopes,: dzdx : from 2-d centerplane slope,: dzdx2
-   if(ypos .gt. (wby2+R/3.0D0))then
+   if(ypos > (wby2+R/3.0D0))then
       dzdx=0.0D0
-   elseif(ypos .le. wby2)then
+   elseif(ypos <= wby2)then
       dzdx=dzdx2
    else
       yscale=1.0D0+(3.0D0*onebyr)*(wby2-ypos)
@@ -1486,7 +1486,7 @@ subroutine zstream(H,W,L,R,LR,HR,x,y,z,dzdx)
 900 continue
 
    return
-end
+end subroutine zstream
 
 !-----------------------------------------------------------------------
 subroutine position(x,y,z,ipositn)
@@ -1529,13 +1529,13 @@ subroutine position(x,y,z,ipositn)
 
    IMPLICIT NONE
 
-   DOUBLE PRECISION x, y, z, ypos, rby2, rby3, wby2, xtest, ytest,&
+   DOUBLE PRECISION :: x, y, z, ypos, rby2, rby3, wby2, xtest, ytest,&
    &ztest, zcav, ycav, zwake, ywake
    DOUBLE PRECISION, PARAMETER :: zero = 0.0D0,&
    &half = 0.5D0
    DOUBLE PRECISION, PARAMETER :: skin = 0.99998D0    ! fractional boundary just inside building
 
-   INTEGER IPOSY, IPOSZ, IPOSITN
+   INTEGER :: IPOSY, IPOSZ, IPOSITN
 
 ! --- Initialize
    iposy=4
@@ -1543,10 +1543,10 @@ subroutine position(x,y,z,ipositn)
    ipositn=4
 
 ! --- Screen out any cases without building
-   if(Hb.le.zero) return
+   if(Hb<=zero) return
 
 ! --- Screen out positions upwind of building (and on windward face)
-   if(x.le.zero) return
+   if(x<=zero) return
 
 ! --- Set y positive for calculations
    ypos=DABS(y)
@@ -1560,60 +1560,60 @@ subroutine position(x,y,z,ipositn)
    xtest=x/xLB
    ytest=ypos/wby2
    ztest=z/Hb
-   if(xtest.lt.skin .and. ztest.lt.skin .and. ytest.lt.skin) then
+   if(xtest<skin .and. ztest<skin .and. ytest<skin) then
       ipositn=1
       return
    endif
 
 ! --- Calculate if location below height of near wake boundary
-   if(xLC .lt. xLb)then
+   if(xLC < xLb)then
 ! ---    Reattachment
-      if(x.lt.xLb) then
+      if(x<xLb) then
 ! ---       Cavity height equal to building height
          zcav=Hb
-         if(z .le. zcav) iposz=2
-      elseif(x.lt.(xLb+xLR)) then
+         if(z <= zcav) iposz=2
+      elseif(x<(xLb+xLR)) then
 ! ---       Cavity height is ellipse with a=LR and b=H
          zcav=Hb*DSQRT(1.0D0-((x-xLb)/xLR)**2)
-         if(z .le. zcav) iposz=2
+         if(z <= zcav) iposz=2
       endif
    else
 ! ---    No reattachment
-      if(x.le.rby2) then
+      if(x<=rby2) then
 ! ---       Cavity height is parabola with vertex at height MAX(0.5R,HR)
 ! ---       and passing thru upwind building edge (0,H)
          zcav=HR+4.0D0*(x-rby2)**2*(Hb-HR)/(Rb**2)
-         if(z .le. zcav) iposz=2
-      elseif(x.lt.(xLb+xLR)) then
+         if(z <= zcav) iposz=2
+      elseif(x<(xLb+xLR)) then
 ! ---       Cavity height is ellipse with a=LR+L-0.5R and b=HR
          zcav=HR*DSQRT(1.0D0-((x-rby2)/(xLb+xLR-rby2))**2)
-         if(z .le. zcav) iposz=2
+         if(z <= zcav) iposz=2
       endif
    endif
 
 ! --- Calculate x-y near wake boundary
-   if(x.le.Rb) then
+   if(x<=Rb) then
 ! ---    Cavity width is parabola with vertex @ width MAX(R,W/2+R/3)
 ! ---    and passing thru upwind building edge (0,W/2)
       ycav=(wby2+rby3)-(x-Rb)**2/(3.0D0*Rb)
-      if(ypos .le. ycav) iposy=2
-   elseif(x.lt.(xLb+xLR)) then
+      if(ypos <= ycav) iposy=2
+   elseif(x<(xLb+xLR)) then
 ! ---    Cavity width is ellipse with a=W/2+R/3 and b=LR+L-R
       ycav=(wby2+rby3)*DSQRT(1.0D0-((x-Rb)/(xLb+xLR-Rb))**2)
-      if(ypos .le. ycav) iposy=2
+      if(ypos <= ycav) iposy=2
    endif
 
 ! --- Set ipositn to 2 if (x,y,z) location within near wake
-   if( iposz .eq. 2 .and. iposy .eq. 2) ipositn=2
+   if( iposz == 2 .and. iposy == 2) ipositn=2
 
 ! --- Test for position in far wake if still 4
-   if(ipositn.EQ.4) then
+   if(ipositn==4) then
       call WAKE_DIM(x,Hb,Wb,Rb,zwake,ywake)
-      if(z.le.zwake .and. ypos.le.ywake) ipositn=3
+      if(z<=zwake .and. ypos<=ywake) ipositn=3
    endif
 
    return
-end
+end subroutine position
 
 !----------------------------------------------------------------------
 subroutine numgrad(x,xtr,ztr,ntr,zeff)
@@ -1644,16 +1644,16 @@ subroutine numgrad(x,xtr,ztr,ntr,zeff)
 !
    IMPLICIT NONE
 
-   INTEGER I, NTR, NTRM1, IP1
-   DOUBLE PRECISION x, xtr(ntr), ztr(ntr), zeff
+   INTEGER :: I, NTR, NTRM1, IP1
+   DOUBLE PRECISION :: x, xtr(ntr), ztr(ntr), zeff
 !
-   if(x.ge.xtr(ntr))then
+   if(x>=xtr(ntr))then
       zeff=ztr(ntr)
    else
       ntrm1=ntr-1
       zeff=ztr(1)
       do i=ntrm1,1,-1
-         if(x.ge.xtr(i))then
+         if(x>=xtr(i))then
             ip1=i+1
             zeff=ztr(ip1)-(ztr(ip1)-ztr(i))*(xtr(ip1)-x)/&
             &(xtr(ip1)-xtr(i))
@@ -1663,7 +1663,7 @@ subroutine numgrad(x,xtr,ztr,ntr,zeff)
    endif
 
    return
-end
+end subroutine numgrad
 
 !----------------------------------------------------------------------
 subroutine wake_drdx(x,drdx)
@@ -1696,21 +1696,21 @@ subroutine wake_drdx(x,drdx)
 
    IMPLICIT NONE
 
-   DOUBLE PRECISION x, drdx
-   INTEGER I, NWKM1, IP1
+   DOUBLE PRECISION :: x, drdx
+   INTEGER :: I, NWKM1, IP1
 !
 ! --- Set growth rate to zero outside interpolation region
 ! --- (all x outside wake)
-   if(x.gt.xwak(nwak) .or. x.lt.xwak(1))then
+   if(x>xwak(nwak) .or. x<xwak(1))then
       drdx=0.0D0
-   elseif(nwak.le.1) then
+   elseif(nwak<=1) then
 ! ---    Wake turbulence does not alter this plume
       drdx=0.0D0
    else
       nwkm1=nwak-1
       drdx=drwak(1)
       do i=nwkm1,1,-1
-         if(x.ge.xwak(i))then
+         if(x>=xwak(i))then
             ip1=i+1
             drdx=drwak(ip1)-(drwak(ip1)-drwak(i))*(xwak(ip1)-x)/&
             &(xwak(ip1)-xwak(i))
@@ -1720,7 +1720,7 @@ subroutine wake_drdx(x,drdx)
    endif
 
    return
-end
+end subroutine wake_drdx
 
 !----------------------------------------------------------------------
 subroutine wake_ini(kurdat,ldbhr,DBGUNT,rural,dsbh,dsbw,dsbl,&
@@ -1770,9 +1770,9 @@ subroutine wake_ini(kurdat,ldbhr,DBGUNT,rural,dsbh,dsbw,dsbl,&
    DOUBLE PRECISION :: dsbh,dsbw,dsbl,xadj,yadj,ubldg,ustack
    DOUBLE PRECISION, PARAMETER :: zero = 0.0D0
 
-   integer kurdat, DBGUNT
+   integer :: kurdat, DBGUNT
 
-   logical rural,ldbhr
+   logical :: rural,ldbhr
 
 ! --- Calculate global variable, third=1/3, used in various places
    third = 1.0D0/3.0D0
@@ -1802,7 +1802,7 @@ subroutine wake_ini(kurdat,ldbhr,DBGUNT,rural,dsbh,dsbw,dsbl,&
 !aer      xyvwak=zero
 
    return
-end
+end subroutine wake_ini
 
 !-----------------------------------------------------------------------
 subroutine wake_scales(kurdat,ldbhr,DBGUNT)
@@ -1837,16 +1837,16 @@ subroutine wake_scales(kurdat,ldbhr,DBGUNT)
 
    IMPLICIT NONE
 
-   DOUBLE PRECISION twoby3, rw, rl, hh, ww, explh
+   DOUBLE PRECISION :: twoby3, rw, rl, hh, ww, explh
 
-   integer kurdat, DBGUNT
+   integer :: kurdat, DBGUNT
 
-   logical ldbhr
+   logical :: ldbhr
 
 ! --- Set misc. constants, third=1/3 defined in sub. wake_ini
    twoby3 = 2.0D0*third
 
-   if(HB.le.0.0D0) then
+   if(HB<=0.0D0) then
 ! ---    No building
       Rb=0.0D0
       Hb=0.0D0
@@ -1858,16 +1858,16 @@ subroutine wake_scales(kurdat,ldbhr,DBGUNT)
       rw = Wb/Hb
       rl = xLb/Hb
 ! ---    Fackrell limits on aspect ratio L/H
-      if(rl .lt. 0.3D0) rl=0.3D0
-      if(rl .gt. 3.0D0) rl=3.0D0
+      if(rl < 0.3D0) rl=0.3D0
+      if(rl > 3.0D0) rl=3.0D0
 !
 ! ---    Length scale R --- Wilson
 ! ---    Wilson limits for length scale R
 ! ---    H/W or W/H not greater than 8 --  already behaves as 2-D
       HH=Hb                    ! only modify H to calculate R
       WW=Wb                    ! only modify W to calculate R
-      if(HH.gt.8.0D0*WW)HH=8.0D0*WW
-      if(WW.gt.8.0D0*HH)WW=8.0D0*HH
+      if(HH>8.0D0*WW)HH=8.0D0*WW
+      if(WW>8.0D0*HH)WW=8.0D0*HH
       Rb= (MIN(HH,WW)**twoby3) * (MAX(HH,WW)**third)
 !
 ! ---    Reattachment for LC < L
@@ -1880,7 +1880,7 @@ subroutine wake_scales(kurdat,ldbhr,DBGUNT)
 ! ---    Let L/H dependence decrease from Fackrell dependence at W/H=1
 ! ---    to no dependence at W/H=0.33.
       explh = 0.3D0
-      if(rw .lt. 1.0D0) explh=MAX(0.0D0,0.3D0*(rw-0.33D0)/0.67D0)
+      if(rw < 1.0D0) explh=MAX(0.0D0,0.3D0*(rw-0.33D0)/0.67D0)
       xLR = 1.8D0*Wb/(rl**explh*(1.0D0+0.24D0*rw))
 !
 ! ---    Maximum cavity height  (Wilson,ASHRAE):
@@ -1906,7 +1906,7 @@ subroutine wake_scales(kurdat,ldbhr,DBGUNT)
    endif
 !
    return
-end
+end subroutine wake_scales
 
 !-----------------------------------------------------------------------
 subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
@@ -1969,19 +1969,19 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
    IMPLICIT NONE
 
 ! --- Define local variable arrays for fine-steps
-   DOUBLE PRECISION dist(mxnw),asigz(mxnw),asigy(mxnw),dsz(mxnw)
-   DOUBLE PRECISION csigz(mxnw),csigy(mxnw)
-   DOUBLE PRECISION xi,szi,syi,z
-   DOUBLE PRECISION xamx,xamn,xay,zkdum,ykdum,xcave,distc,xbc
-   DOUBLE PRECISION xaz,xdc,szcav0,sycav0,xd,dx,xlow,xhi,xrange
-   DOUBLE PRECISION dxi,x,xold,sycav0r,xmid,wakiz,wakiy,zk,yk,zkc,&
+   DOUBLE PRECISION :: dist(mxnw),asigz(mxnw),asigy(mxnw),dsz(mxnw)
+   DOUBLE PRECISION :: csigz(mxnw),csigy(mxnw)
+   DOUBLE PRECISION :: xi,szi,syi,z
+   DOUBLE PRECISION :: xamx,xamn,xay,zkdum,ykdum,xcave,distc,xbc
+   DOUBLE PRECISION :: xaz,xdc,szcav0,sycav0,xd,dx,xlow,xhi,xrange
+   DOUBLE PRECISION :: dxi,x,xold,sycav0r,xmid,wakiz,wakiy,zk,yk,zkc,&
    &ykc,dzrate,xnew,sigzxa,sydum,sz,szdum,sigyxa,sy,&
    &deln,rn
    DOUBLE PRECISION, PARAMETER :: zero=0.0D0, half=0.5D0, one=1.0D0,&
    &rtpiby2 = 1.25331413731550D0
 
-   INTEGER I,NP,NWS,NCS,N,IR,NPW,IN,JN,INP,NPC,DBGUNT
-   logical ldbhr,lcav,lwak,lrevcav
+   INTEGER :: I,NP,NWS,NCS,N,IR,NPW,IN,JN,INP,NPC,DBGUNT
+   logical :: ldbhr,lcav,lwak,lrevcav
 
 ! --- Compute xa, where turbulent growth in the wake transitions
 ! --- to ambient growth rate, measured from upwind face of bldg
@@ -2016,7 +2016,7 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
    call WAKE_CAV0(syi,szcav0,sycav0)
 ! --- The cavity sigma-y will need to be revised if xi lies upwind of
 ! --- the downwind face of the bldg.
-   if(xi.LT.xLb) then
+   if(xi<xLb) then
       lrevcav=.TRUE.
    else
       lrevcav=.FALSE.
@@ -2029,7 +2029,7 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
    xcav(1)=xbc+xbadj
    szcav(1)=szcav0
    sycav(1)=sycav0
-   if(xi.GE.xcave) then
+   if(xi>=xcave) then
       lcav=.FALSE.
       lrevcav=.FALSE.
    else
@@ -2044,7 +2044,7 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
    szwak(1)=szi
    sywak(1)=syi
    drwak(1)=zero
-   if(xi.GE.xamx) then
+   if(xi>=xamx) then
       lwak=.FALSE.
       if(ldbhr) then
          write(DBGUNT,*) ' '
@@ -2125,9 +2125,9 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
 
 ! ---    Check to see if cavity data should be revised based on
 ! ---    data from previous step
-      if(lrevcav .and. xold.GE.xLb) then
+      if(lrevcav .and. xold>=xLb) then
          call WAKE_CAV0(asigy(n-1),szcav0,sycav0r)
-         if(sycav0r.GT.sycav0) then
+         if(sycav0r>sycav0) then
             sycav0=sycav0r
             sycav(1)=sycav0
 ! ---          Replace sigma-y values in stepping arrays
@@ -2141,14 +2141,14 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
 ! ---    Obtain sigmas for this step
 
 ! ---    First, persist initial values if upwind of starting point
-      if(lwak .and. (xi.GE.x)) then
+      if(lwak .and. (xi>=x)) then
          asigz(n)=asigz(n-1)
          asigy(n)=asigy(n-1)
          dsz(n)=dsz(n-1)
 ! ---       Set index for skipping entry when filling wake arrays
          nws=n
       endif
-      if(lcav .and. (xbc.GE.x)) then
+      if(lcav .and. (xbc>=x)) then
          csigz(n)=szcav0
          csigy(n)=sycav0
 ! ---       Set index for skipping entry when filling cav arrays
@@ -2156,9 +2156,9 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
       endif
 
 ! ---    Now test again and apply full treatment when needed
-      if(xold.GT.xamx) then
+      if(xold>xamx) then
 ! ---       Ambient growth region in wake: use virtuals
-         if(lwak .and. (xi.LT.x)) then
+         if(lwak .and. (xi<x)) then
             vsigz = max( vsigz, szi )
             vsigy = max( vsigy, syi )
             call SIGZPR(dist(n),z,asigz(n))
@@ -2168,7 +2168,7 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
             dsz(n)=(asigz(n)-asigz(n-1))*dxi
          endif
 ! ---       Cavity source ---
-         if(lcav .and. (xbc.LT.x)) then
+         if(lcav .and. (xbc<x)) then
             vsigzc = max( vsigzc, szcav0 )
             vsigyc = max( vsigyc, sycav0 )
             call SIGZPR(dist(n),0.0D0,csigz(n))
@@ -2177,20 +2177,20 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
             csigy(n) = DSQRT( csigy(n)**2 + vsigyc**2 )
          endif
       else
-         if(x.LT.xamn) then
+         if(x<xamn) then
 ! ---          Wake growth for both sigz and sigy
 ! ---          Set x at mid-point of step
             xmid=half*(x+xold)
 ! ---          Compute turbulence intensities at midpoint
             call WAKE_TURB(xmid,xLb,Rb,wakiz,wakiy)
-            if(lwak .and. (xi.LE.x)) then
+            if(lwak .and. (xi<=x)) then
 ! ---             Compute sigmas in wake
                call WAKE_SIG(x,xd,xold,wakiz,wakiy,asigz(n-1),&
                &asigy(n-1),Hb,Wb,Rb,zk,yk,&
                &asigz(n),asigy(n),dsz(n))
             endif
 ! ---          Cavity source ---
-            if(lcav .and. (xbc.LE.x)) then
+            if(lcav .and. (xbc<=x)) then
                call WAKE_SIG(x,xdc,xold,wakiz,wakiy,csigz(n-1),&
                &csigy(n-1),Hb,Wb,Rb,zkc,ykc,&
                &csigz(n),csigy(n),dzrate)
@@ -2199,27 +2199,27 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
          else
 ! ---          At least one of the sigmas reaches ambient growth in wake
 ! ---          Process SIGMA-Z
-            if(xold.GE.xaz) then
+            if(xold>=xaz) then
 ! ---             Ambient growth region in wake: use virtual x
-               if(lwak .and. (xi.LE.x)) then
+               if(lwak .and. (xi<=x)) then
                   call SIGZPR(dist(n),z,asigz(n))
                   vsigz = max( vsigz, szi )
                   asigz(n) = DSQRT( asigz(n)**2 + vsigz**2 )
                   dsz(n)=(asigz(n)-asigz(n-1))*dxi
                endif
 ! ---             Cavity source ---
-               if(lcav .and. (xbc.LE.x)) then
+               if(lcav .and. (xbc<=x)) then
                   call SIGZPR(dist(n),0.0D0,csigz(n))
                   csigz(n) = DSQRT( csigz(n)**2 + vsigzc**2 )
                   csigz(n) = MAX( csigz(n), szcav0 )       ! ctmp cavity bug fix
                endif
-            elseif(x.GE.xaz) then
+            elseif(x>=xaz) then
 ! ---             Transition from wake to ambient
                xnew=xaz
                xmid=half*(xnew+xold)
 ! ---             Compute turbulence intensities at midpoint
                call WAKE_TURB(xmid,xLb,Rb,wakiz,wakiy)
-               if(lwak .and. (xi.LE.xnew)) then
+               if(lwak .and. (xi<=xnew)) then
 ! ---                Compute wake sigma at xaz
                   call WAKE_SIG(xnew,xd,xold,wakiz,wakiy,asigz(n-1),&
                   &asigy(n-1),Hb,Wb,Rb,zk,ykdum,&
@@ -2227,7 +2227,7 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
 ! ---                Get virtual source term as difference in quadrature between
 ! ---                wake and ambient sigmas at transition distance
                   call SIGZPR(xaz+xbadj,z,sz)
-                  if (sigzxa .gt. sz) then
+                  if (sigzxa > sz) then
                      vsigz = DSQRT( sigzxa**2 - sz**2 )
                   else
                      vsigz = 0.0D0
@@ -2238,7 +2238,7 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
                   dsz(n)=(asigz(n)-asigz(n-1))*dxi
                endif
 ! ---             Cavity source ---
-               if(lcav .and. (xbc.LE.xnew)) then
+               if(lcav .and. (xbc<=xnew)) then
 ! ---                Compute wake sigma at xaz
                   call WAKE_SIG(xnew,xdc,xold,wakiz,wakiy,csigz(n-1),&
                   &csigy(n-1),Hb,Wb,Rb,zkc,ykdum,&
@@ -2246,7 +2246,7 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
 ! ---                Get virtual source term as difference in quadrature between
 ! ---                wake and ambient sigmas at transition distance
                   call SIGZPR(xaz+xbadj,0.0D0,sz)
-                  if (sigzxa .gt. sz) then
+                  if (sigzxa > sz) then
                      vsigzc = DSQRT( sigzxa**2 - sz**2 )
                   else
                      vsigzc = 0.0D0
@@ -2262,14 +2262,14 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
                xmid=half*(x+xold)
 ! ---             Compute turbulence intensities at midpoint
                call WAKE_TURB(xmid,xLb,Rb,wakiz,wakiy)
-               if(lwak .and. (xi.LE.x)) then
+               if(lwak .and. (xi<=x)) then
 ! ---                Compute sigmaz
                   call WAKE_SIG(x,xd,xold,wakiz,wakiy,asigz(n-1),&
                   &asigy(n-1),Hb,Wb,Rb,zk,ykdum,&
                   &asigz(n),sydum,dsz(n))
                endif
 ! ---             Cavity source ---
-               if(lcav .and. (xbc.LE.x)) then
+               if(lcav .and. (xbc<=x)) then
                   call WAKE_SIG(x,xdc,xold,wakiz,wakiy,csigz(n-1),&
                   &csigy(n-1),Hb,Wb,Rb,zkc,ykdum,&
                   &csigz(n),sydum,dzrate)
@@ -2277,26 +2277,26 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
                endif
             endif
 ! ---          Process SIGMA-Y
-            if(xold.GE.xay) then
+            if(xold>=xay) then
 ! ---             Ambient growth region in wake: use virtual x
-               if(lwak .and. (xi.LE.x)) then
+               if(lwak .and. (xi<=x)) then
                   call SIGYPR(dist(n),z,asigy(n))
                   vsigy = max( vsigy, syi )
                   asigy(n) = DSQRT( asigy(n)**2 + vsigy**2 )
                endif
 ! ---             Cavity source ---
-               if(lcav .and. (xbc.LE.x)) then
+               if(lcav .and. (xbc<=x)) then
                   call SIGYPR(dist(n),0.0D0,csigy(n))
                   vsigyc = max( vsigyc, sycav0 )
                   csigy(n) = DSQRT( csigy(n)**2 + vsigyc**2 )
                endif
-            elseif(x.GE.xay) then
+            elseif(x>=xay) then
 ! ---             Transition from wake to ambient
                xnew=xay
                xmid=half*(xnew+xold)
 ! ---             Compute turbulence intensities at midpoint
                call WAKE_TURB(xmid,xLb,Rb,wakiz,wakiy)
-               if(lwak .and. (xi.LE.xnew)) then
+               if(lwak .and. (xi<=xnew)) then
 ! ---                Compute sigma at xay
 !RWB                     call WAKE_SIG(xnew,xd,xold,turbz,turby,asigz(n-1),
 !RWB                 turbz and turby appear to be the wrong variables for this
@@ -2307,7 +2307,7 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
 ! ---                Get virtual source term as difference in quadrature between
 ! ---                wake and ambient sigmas at transition distance
                   call SIGYPR(xay+xbadj,z,sy)
-                  if (sigyxa .gt. sy) then
+                  if (sigyxa > sy) then
                      vsigy = DSQRT( sigyxa**2 - sy**2 )
                   else
                      vsigy = 0.0D0
@@ -2317,12 +2317,12 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
                   asigy(n) = DSQRT( asigy(n)**2 + vsigy**2 )
                endif
 ! ---             Cavity source ---
-               if(lcav .and. (xbc.LE.xnew)) then
+               if(lcav .and. (xbc<=xnew)) then
                   call WAKE_SIG(xnew,xdc,xold,wakiz,wakiy,csigz(n-1),&
                   &csigy(n-1),Hb,Wb,Rb,zkdum,ykc,&
                   &szdum,sigyxa,dzrate)
                   call SIGYPR(xay+xbadj,0.0D0,sy)
-                  if (sigyxa .gt. sy) then
+                  if (sigyxa > sy) then
                      vsigyc = DSQRT( sigyxa**2 - sy**2 )
                   else
                      vsigyc = 0.0D0
@@ -2336,14 +2336,14 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
                xmid=half*(x+xold)
 ! ---             Compute turbulence intensities at midpoint
                call WAKE_TURB(xmid,xLb,Rb,wakiz,wakiy)
-               if(lwak .and. (xi.LE.x)) then
+               if(lwak .and. (xi<=x)) then
 ! ---                Compute sigmay
                   call WAKE_SIG(x,xd,xold,wakiz,wakiy,asigz(n-1),&
                   &asigy(n-1),Hb,Wb,Rb,zkdum,yk,&
                   &szdum,asigy(n),dzrate)
                endif
 ! ---             Cavity source
-               if(lcav .and. (xbc.LE.x)) then
+               if(lcav .and. (xbc<=x)) then
                   call WAKE_SIG(x,xdc,xold,wakiz,wakiy,csigz(n-1),&
                   &csigy(n-1),Hb,Wb,Rb,zkdum,ykc,&
                   &szdum,csigy(n),dzrate)
@@ -2367,14 +2367,14 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
       szwak(1)=szi
       sywak(1)=syi
       drwak(1)=zero
-      if(npw.GE.mxntr) then
+      if(npw>=mxntr) then
 ! ---       Sample a subset of the npw points
          nwak=mxntr
          xwak(nwak)=dist(np)
          szwak(nwak)=asigz(np)
          sywak(nwak)=asigy(np)
          drwak(nwak)=rtpiby2*dsz(np)
-         if(npw.LE.2*mxntr) then
+         if(npw<=2*mxntr) then
 ! ---          Fill elements with nearest values
             deln=DBLE(npw)/DBLE(nwak)
             do in=2,nwak-1
@@ -2418,13 +2418,13 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
       xcav(1)=xbc+xbadj
       szcav(1)=szcav0
       sycav(1)=sycav0
-      if(npc.GE.mxntr) then
+      if(npc>=mxntr) then
 ! ---       Sample a subset of the npc points
          ncav=mxntr
          xcav(ncav)=dist(np)
          szcav(ncav)=csigz(np)
          sycav(ncav)=csigy(np)
-         if(npc.LE.2*mxntr) then
+         if(npc<=2*mxntr) then
 ! ---          Fill elements with nearest values
             deln=DBLE(npc)/DBLE(ncav)
             do in=2,ncav-1
@@ -2507,7 +2507,7 @@ subroutine wake_dfsn(ldbhr,xi,szi,syi,z,DBGUNT)
       write(AWMADWDBUNT,*)
    end if
    return
-end
+end subroutine wake_dfsn
 
 !-----------------------------------------------------------------------
 subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
@@ -2570,23 +2570,23 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
    IMPLICIT NONE
 
 ! --- Define local variable arrays for fine-steps
-   INTEGER NTR,NP,NWS,NCS,N,IR,NPW,IN,JN,INP,NPC,DBGUNT
+   INTEGER :: NTR,NP,NWS,NCS,N,IR,NPW,IN,JN,INP,NPC,DBGUNT
 
-   DOUBLE PRECISION dist(mxnw),asigz(mxnw),asigy(mxnw),dsz(mxnw)
-   DOUBLE PRECISION csigz(mxnw),csigy(mxnw)
-   DOUBLE PRECISION xtr(ntr), ztr(ntr), zxay, zxaz
-   DOUBLE PRECISION xi,szi,syi
+   DOUBLE PRECISION :: dist(mxnw),asigz(mxnw),asigy(mxnw),dsz(mxnw)
+   DOUBLE PRECISION :: csigz(mxnw),csigy(mxnw)
+   DOUBLE PRECISION :: xtr(ntr), ztr(ntr), zxay, zxaz
+   DOUBLE PRECISION :: xi,szi,syi
 !     JAT D065 8/9/21 DISTC SET BUT NEVER USED
 !      DOUBLE PRECISION xamx,xamn,xay,zkdum,ykdum,xcave,distc,xbc
-   DOUBLE PRECISION xamx,xamn,xay,zkdum,ykdum,xcave,xbc
-   DOUBLE PRECISION xaz,xdc,szcav0,sycav0,xd,dx,xlow,xhi,xrange
-   DOUBLE PRECISION dxi,x,xold,sycav0r,xmid,wakiz,wakiy,zk,yk,zkc,&
+   DOUBLE PRECISION :: xamx,xamn,xay,zkdum,ykdum,xcave,xbc
+   DOUBLE PRECISION :: xaz,xdc,szcav0,sycav0,xd,dx,xlow,xhi,xrange
+   DOUBLE PRECISION :: dxi,x,xold,sycav0r,xmid,wakiz,wakiy,zk,yk,zkc,&
    &ykc,dzrate,xnew,sigzxa,sydum,sz,szdum,sigyxa,sy,&
    &deln,rn,zdist
    DOUBLE PRECISION, PARAMETER :: zero=0.0D0, half=0.5D0, one=1.0D0,&
    &rtpiby2 = 1.25331413731550D0
 
-   logical ldbhr,lcav,lwak,lrevcav
+   logical :: ldbhr,lcav,lwak,lrevcav
 
 ! --- Compute xa, where turbulent growth in the wake transitions
 ! --- to ambient growth rate, measured from upwind face of bldg
@@ -2626,7 +2626,7 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
    call WAKE_CAV0(syi,szcav0,sycav0)
 ! --- The cavity sigma-y will need to be revised if xi lies upwind of
 ! --- the downwind face of the bldg.
-   if(xi.LT.xLb) then
+   if(xi<xLb) then
       lrevcav=.TRUE.
    else
       lrevcav=.FALSE.
@@ -2639,7 +2639,7 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
    xcav(1)=xbc+xbadj
    szcav(1)=szcav0
    sycav(1)=sycav0
-   if(xi.GE.xcave) then
+   if(xi>=xcave) then
       lcav=.FALSE.
       lrevcav=.FALSE.
    else
@@ -2654,7 +2654,7 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
    szwak(1)=szi
    sywak(1)=syi
    drwak(1)=zero
-   if(xi.GE.xamx) then
+   if(xi>=xamx) then
       lwak=.FALSE.
       if(ldbhr) then
          write(DBGUNT,*)' '
@@ -2750,9 +2750,9 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
 
 ! ---    Check to see if cavity data should be revised based on
 ! ---    data from previous step
-      if(lrevcav .and. xold.GE.xLb) then
+      if(lrevcav .and. xold>=xLb) then
          call WAKE_CAV0(asigy(n-1),szcav0,sycav0r)
-         if(sycav0r.GT.sycav0) then
+         if(sycav0r>sycav0) then
             sycav0=sycav0r
             sycav(1)=sycav0
 ! ---          Replace sigma-y values in stepping arrays
@@ -2766,14 +2766,14 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
 ! ---    Obtain sigmas for this step
 
 ! ---    First, persist initial values if upwind of starting point
-      if(lwak .and. (xi.GE.x)) then
+      if(lwak .and. (xi>=x)) then
          asigz(n)=asigz(n-1)
          asigy(n)=asigy(n-1)
          dsz(n)=dsz(n-1)
 ! ---       Set index for skipping entry when filling wake arrays
          nws=n
       endif
-      if(lcav .and. (xbc.GE.x)) then
+      if(lcav .and. (xbc>=x)) then
          csigz(n)=szcav0
          csigy(n)=sycav0
 ! ---       Set index for skipping entry when filling cav arrays
@@ -2781,9 +2781,9 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
       endif
 
 ! ---    Now test again and apply full treatment when needed
-      if(xold.GT.xamx) then
+      if(xold>xamx) then
 ! ---       Ambient growth region in wake: use virtuals
-         if(lwak .and. (xi.LT.x)) then
+         if(lwak .and. (xi<x)) then
             vsigz = max( vsigz, szi )
             vsigy = max( vsigy, syi )
             call numgrad(dist(n),xtr,ztr,ntr,zdist)
@@ -2794,7 +2794,7 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
             dsz(n)=(asigz(n)-asigz(n-1))*dxi
          endif
 ! ---       Cavity source ---
-         if(lcav .and. (xbc.LT.x)) then
+         if(lcav .and. (xbc<x)) then
             vsigzc = max( vsigzc, szcav0 )
             vsigyc = max( vsigyc, sycav0 )
             call SIGZPR(dist(n),0.0D0,csigz(n))
@@ -2803,13 +2803,13 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
             csigy(n) = DSQRT( csigy(n)**2 + vsigyc**2 )
          endif
       else
-         if(x.LT.xamn) then
+         if(x<xamn) then
 ! ---          Wake growth for both sigz and sigy
 ! ---          Set x at mid-point of step
             xmid=half*(x+xold)
 ! ---          Compute turbulence intensities at midpoint
             call WAKE_TURB(xmid,xLb,Rb,wakiz,wakiy)
-            if(lwak .and. (xi.LE.x)) then
+            if(lwak .and. (xi<=x)) then
 ! ---             Compute sigmas in wake
                call WAKE_SIG(x,xd,xold,wakiz,wakiy,asigz(n-1),&
                &asigy(n-1),Hb,Wb,Rb,zk,yk,&
@@ -2819,12 +2819,12 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
 ! ---          Cavity source ---
             IF( L_ORD_Cav )THEN                                 ! ORD (EMM) change
 ! ---             ORD Downwash Modification
-               if (lcav.and.(xbc.LE.x).and.(x.GE.xcave)) then        ! ORD (EMM) change
+               if (lcav.and.(xbc<=x).and.(x>=xcave)) then        ! ORD (EMM) change
                   call WAKE_SIG(x,xdc,xold,wakiz,wakiy,csigz(n-1),&   ! ORD (EMM) change
                   &csigy(n-1),Hb,Wb,Rb,zkc,ykc,&
                   &csigz(n),csigy(n),dzrate)
                   csigz(n) = MAX( csigz(n), szcav0 )                 ! ctmp cavity bug fix
-               elseif(lcav.and.(xbc.LE.x).and.(x.LT.xcave)) then     ! ORD (EMM) change
+               elseif(lcav.and.(xbc<=x).and.(x<xcave)) then     ! ORD (EMM) change
                   call WAKE_SIG(x,xdc,xold,wakiz,wakiy,csigz(n-1),&   ! ORD (EMM) change
                   &csigy(n-1),Hb,Wb,Rb,zkc,ykc,&
                   &csigz(n),csigy(n),dzrate)
@@ -2835,7 +2835,7 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
 
             ELSE
 ! ---             Regulatory AERMOD code
-               if(lcav .and. (xbc.LE.x)) then
+               if(lcav .and. (xbc<=x)) then
                   call WAKE_SIG(x,xdc,xold,wakiz,wakiy,csigz(n-1),&
                   &csigy(n-1),Hb,Wb,Rb,zkc,ykc,&
                   &csigz(n),csigy(n),dzrate)
@@ -2846,9 +2846,9 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
          else
 ! ---          At least one of the sigmas reaches ambient growth in wake
 ! ---          Process SIGMA-Z
-            if(xold.GE.xaz) then
+            if(xold>=xaz) then
 ! ---             Ambient growth region in wake: use virtual x
-               if(lwak .and. (xi.LE.x)) then
+               if(lwak .and. (xi<=x)) then
                   call numgrad(dist(n),xtr,ztr,ntr,zdist)
                   call SIGZPR(dist(n),zdist,asigz(n))
                   vsigz = max( vsigz, szi )
@@ -2856,18 +2856,18 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
                   dsz(n)=(asigz(n)-asigz(n-1))*dxi
                endif
 ! ---             Cavity source ---
-               if(lcav .and. (xbc.LE.x)) then
+               if(lcav .and. (xbc<=x)) then
                   vsigzc = MAX( vsigzc, szcav0 )           ! ctmp cavity bug fix
                   call SIGZPR(dist(n),0.0D0,csigz(n))
                   csigz(n) = DSQRT( csigz(n)**2 + vsigzc**2 )
                endif
-            elseif(x.GE.xaz) then
+            elseif(x>=xaz) then
 ! ---             Transition from wake to ambient
                xnew=xaz
                xmid=half*(xnew+xold)
 ! ---             Compute turbulence intensities at midpoint
                call WAKE_TURB(xmid,xLb,Rb,wakiz,wakiy)
-               if(lwak .and. (xi.LE.xnew)) then
+               if(lwak .and. (xi<=xnew)) then
 ! ---                Compute wake sigma at xaz
                   call WAKE_SIG(xnew,xd,xold,wakiz,wakiy,asigz(n-1),&
                   &asigy(n-1),Hb,Wb,Rb,zk,ykdum,&
@@ -2875,7 +2875,7 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
 ! ---                Get virtual source term as difference in quadrature between
 ! ---                wake and ambient sigmas at transition distance
                   call SIGZPR(xaz+xbadj,zxaz,sz)
-                  if (sigzxa .gt. sz) then
+                  if (sigzxa > sz) then
                      vsigz = DSQRT( sigzxa**2 - sz**2 )
                   else
                      vsigz = 0.0D0
@@ -2887,7 +2887,7 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
                   dsz(n)=(asigz(n)-asigz(n-1))*dxi
                endif
 ! ---             Cavity source ---
-               if(lcav .and. (xbc.LE.xnew)) then
+               if(lcav .and. (xbc<=xnew)) then
 ! ---                Compute wake sigma at xaz
                   call WAKE_SIG(xnew,xdc,xold,wakiz,wakiy,csigz(n-1),&
                   &csigy(n-1),Hb,Wb,Rb,zkc,ykdum,&
@@ -2895,7 +2895,7 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
 ! ---                Get virtual source term as difference in quadrature between
 ! ---                wake and ambient sigmas at transition distance
                   call SIGZPR(xaz+xbadj,0.0D0,sz)
-                  if (sigzxa .gt. sz) then
+                  if (sigzxa > sz) then
                      vsigzc = DSQRT( sigzxa**2 - sz**2 )
                   else
                      vsigzc = 0.0D0
@@ -2911,14 +2911,14 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
                xmid=half*(x+xold)
 ! ---             Compute turbulence intensities at midpoint
                call WAKE_TURB(xmid,xLb,Rb,wakiz,wakiy)
-               if(lwak .and. (xi.LE.x)) then
+               if(lwak .and. (xi<=x)) then
 ! ---                Compute sigmaz
                   call WAKE_SIG(x,xd,xold,wakiz,wakiy,asigz(n-1),&
                   &asigy(n-1),Hb,Wb,Rb,zk,ykdum,&
                   &asigz(n),sydum,dsz(n))
                endif
 ! ---             Cavity source ---
-               if(lcav .and. (xbc.LE.x)) then
+               if(lcav .and. (xbc<=x)) then
                   call WAKE_SIG(x,xdc,xold,wakiz,wakiy,csigz(n-1),&
                   &csigy(n-1),Hb,Wb,Rb,zkc,ykdum,&
                   &csigz(n),sydum,dzrate)
@@ -2926,9 +2926,9 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
                endif
             endif
 ! ---          Process SIGMA-Y
-            if(xold.GE.xay) then
+            if(xold>=xay) then
 ! ---             Ambient growth region in wake: use virtual x
-               if(lwak .and. (xi.LE.x)) then
+               if(lwak .and. (xi<=x)) then
                   call numgrad(dist(n),xtr,ztr,ntr,zdist)
                   call SIGYPR(dist(n),zdist,asigy(n))
                   vsigy = max( vsigy, syi )
@@ -2938,11 +2938,11 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
 ! ---             Cavity source ---
                IF( L_ORD_Cav )THEN                              ! ORD (EMM) change
 ! ---                Modifications for AWMADWNW
-                  if(lcav.and.(x.GE.xcave).and.(xbc.LE.x)) then      ! ORD (EMM) change
+                  if(lcav.and.(x>=xcave).and.(xbc<=x)) then      ! ORD (EMM) change
                      call SIGYPR(dist(n),0.0D0,csigy(n))
                      vsigyc = max( vsigyc, sycav0 )
                      csigy(n) = DSQRT( csigy(n)**2 + vsigyc**2 )
-                  elseif(lcav.and.(x.LT.xcave).and.(xbc.LE.x)) then  ! ORD (EMM) change
+                  elseif(lcav.and.(x<xcave).and.(xbc<=x)) then  ! ORD (EMM) change
                      call SIGYPR(dist(n),0.0D0,csigy(n))             ! ORD (EMM) change
                      vsigyc = max( vsigyc, sycav0 )                  ! ORD (EMM) change
 !                        csigy(n) = DSQRT( csigy(n)**2 + vsigyc**2 )     ! ORD (EMM) change
@@ -2951,20 +2951,20 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
 
                ELSE
 ! ---                Regulatory AERMOD code
-                  if(lcav .and. (xbc.LE.x)) then
+                  if(lcav .and. (xbc<=x)) then
                      call SIGYPR(dist(n),0.0D0,csigy(n))
                      vsigyc = max( vsigyc, sycav0 )
                      csigy(n) = DSQRT( csigy(n)**2 + vsigyc**2 )
                   endif
                END IF
 
-            elseif(x.GE.xay) then
+            elseif(x>=xay) then
 ! ---             Transition from wake to ambient
                xnew=xay
                xmid=half*(xnew+xold)
 ! ---             Compute turbulence intensities at midpoint
                call WAKE_TURB(xmid,xLb,Rb,wakiz,wakiy)
-               if(lwak .and. (xi.LE.xnew)) then
+               if(lwak .and. (xi<=xnew)) then
 ! ---                Compute sigma at xay
 !RWB                 Modify call to WAKE_SIG to include wakiz and wakiy
 !RWB                 instead of turbz and turby.
@@ -2975,7 +2975,7 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
 ! ---                Get virtual source term as difference in quadrature between
 ! ---                wake and ambient sigmas at transition distance
                   call SIGYPR(xay+xbadj,zxay,sy)
-                  if (sigyxa .gt. sy) then
+                  if (sigyxa > sy) then
                      vsigy = DSQRT( sigyxa**2 - sy**2 )
                   else
                      vsigy = 0.0D0
@@ -2986,12 +2986,12 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
                   asigy(n) = DSQRT( asigy(n)**2 + vsigy**2 )
                endif
 ! ---             Cavity source ---
-               if(lcav .and. (xbc.LE.xnew)) then
+               if(lcav .and. (xbc<=xnew)) then
                   call WAKE_SIG(xnew,xdc,xold,wakiz,wakiy,csigz(n-1),&
                   &csigy(n-1),Hb,Wb,Rb,zkdum,ykc,&
                   &szdum,sigyxa,dzrate)
                   call SIGYPR(xay+xbadj,0.0D0,sy)
-                  if (sigyxa .gt. sy) then
+                  if (sigyxa > sy) then
                      vsigyc = DSQRT( sigyxa**2 - sy**2 )
                   else
                      vsigyc = 0.0D0
@@ -3005,14 +3005,14 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
                xmid=half*(x+xold)
 ! ---             Compute turbulence intensities at midpoint
                call WAKE_TURB(xmid,xLb,Rb,wakiz,wakiy)
-               if(lwak .and. (xi.LE.x)) then
+               if(lwak .and. (xi<=x)) then
 ! ---                Compute sigmay
                   call WAKE_SIG(x,xd,xold,wakiz,wakiy,asigz(n-1),&
                   &asigy(n-1),Hb,Wb,Rb,zkdum,yk,&
                   &szdum,asigy(n),dzrate)
                endif
 ! ---             Cavity source
-               if(lcav .and. (xbc.LE.x)) then
+               if(lcav .and. (xbc<=x)) then
                   call WAKE_SIG(x,xdc,xold,wakiz,wakiy,csigz(n-1),&
                   &csigy(n-1),Hb,Wb,Rb,zkdum,ykc,&
                   &szdum,csigy(n),dzrate)
@@ -3036,14 +3036,14 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
       szwak(1)=szi
       sywak(1)=syi
       drwak(1)=zero
-      if(npw.GE.mxntr) then
+      if(npw>=mxntr) then
 ! ---       Sample a subset of the npw points
          nwak=mxntr
          xwak(nwak)=dist(np)
          szwak(nwak)=asigz(np)
          sywak(nwak)=asigy(np)
          drwak(nwak)=rtpiby2*dsz(np)
-         if(npw.LE.2*mxntr) then
+         if(npw<=2*mxntr) then
 ! ---          Fill elements with nearest values
             deln=DBLE(npw)/DBLE(nwak)
             do in=2,nwak-1
@@ -3087,13 +3087,13 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
       xcav(1)=xbc+xbadj
       szcav(1)=szcav0
       sycav(1)=sycav0
-      if(npc.GE.mxntr) then
+      if(npc>=mxntr) then
 ! ---       Sample a subset of the npc points
          ncav=mxntr
          xcav(ncav)=dist(np)
          szcav(ncav)=csigz(np)
          sycav(ncav)=csigy(np)
-         if(npc.LE.2*mxntr) then
+         if(npc<=2*mxntr) then
 ! ---          Fill elements with nearest values
             deln=DBLE(npc)/DBLE(ncav)
             do in=2,ncav-1
@@ -3161,7 +3161,7 @@ subroutine wake_dfsn2(ldbhr,xi,szi,syi,xtr,ztr,ntr,DBGUNT)
    end if
 
    return
-end
+end subroutine wake_dfsn2
 
 !-----------------------------------------------------------------------
 subroutine wake_turb(xinp,L,Rinp,tiz,tiy)
@@ -3211,14 +3211,14 @@ subroutine wake_turb(xinp,L,Rinp,tiz,tiy)
 
    IMPLICIT NONE
 
-   DOUBLE PRECISION xinp, L, Rinp, tiz, tiy
-   DOUBLE PRECISION ambiz, ambiy, fariz, fariy, xmL, xfac, xfrac
+   DOUBLE PRECISION :: xinp, L, Rinp, tiz, tiy
+   DOUBLE PRECISION :: ambiz, ambiy, fariz, fariy, xmL, xfac, xfrac
    DOUBLE PRECISION :: ZHI, ZLO
    INTEGER          :: NDXBHI, NDXBLO, NDXALO
 
    DOUBLE PRECISION, PARAMETER :: one = 1.0D0, zero = 0.0D0
-   DOUBLE PRECISION zdum ! forces wake_u_turb to use z from wake_u
-   DOUBLE PRECISION dum  ! for consistent wake_u_turb argument list
+   DOUBLE PRECISION :: zdum ! forces wake_u_turb to use z from wake_u
+   DOUBLE PRECISION :: dum  ! for consistent wake_u_turb argument list
 
 ! --- Specify ambient turbulence intensities from AERMOD effective parameters
    ambiz = sweff/ueff
@@ -3235,7 +3235,7 @@ subroutine wake_turb(xinp,L,Rinp,tiz,tiy)
    IF (L_AWMA_UTurbHX .and. DFSN2CALL) THEN
 
 ! ---    Determine the plume rise at the current position, xinp
-      IF (xinp .LT. xtr_sav(p2mxntr)) THEN
+      IF (xinp < xtr_sav(p2mxntr)) THEN
 ! ---          Interpolate in rise table to get gradual rise   ---   CALL NUMGRAD
          call NUMGRAD(xinp,xtr_sav,ztr_sav,p2mxntr,Zeff_prm2)
       ELSE
@@ -3290,7 +3290,7 @@ subroutine wake_turb(xinp,L,Rinp,tiz,tiy)
    END IF
 
 ! --- Interpolate turbulence intensity if over roof of bldg
-   if (xinp.LT.L) then
+   if (xinp<L) then
       xfrac=xinp/L
       tiz=ambiz+xfrac*(tiz-ambiz)
       tiy=ambiy+xfrac*(tiy-ambiy)
@@ -3306,7 +3306,7 @@ subroutine wake_turb(xinp,L,Rinp,tiz,tiy)
    END IF
 
    return
-end
+end subroutine wake_turb
 
 !-----------------------------------------------------------------------
 subroutine wake_u(ldb,x,y,z,ubyua,dufac,DBGUNT)
@@ -3357,16 +3357,16 @@ subroutine wake_u(ldb,x,y,z,ubyua,dufac,DBGUNT)
    USE PRIME_wakedat
 
    IMPLICIT NONE
-   INTEGER DBGUNT
-   DOUBLE PRECISION x,y,z,zcav,ycav,hwake,wwake,yabs,&
+   INTEGER :: DBGUNT
+   DOUBLE PRECISION :: x,y,z,zcav,ycav,hwake,wwake,yabs,&
    &ubyua,dufac,ymin,du_ua,ydiff,xml,xfrac,ucbyua,&
    &zz
 
    DOUBLE PRECISION, PARAMETER :: zero=0.0D0, one=1.0D0, two=2.0D0,&
    &fmin=0.01D0
 
-   DOUBLE PRECISION dum    ! used for for consistency in wake_u_turb arg list
-   logical ldb
+   DOUBLE PRECISION :: dum    ! used for for consistency in wake_u_turb arg list
+   logical :: ldb
 
 ! --- Compute cavity height above ground, and width
    call CAVITY_HT(Hb,Wb,xLb,Rb,xLC,xLR,HR,x,zcav,ycav)
@@ -3378,7 +3378,7 @@ subroutine wake_u(ldb,x,y,z,ubyua,dufac,DBGUNT)
    yabs  = DABS(y)
    ubyua = one
    dufac = zero
-   if(z.GE.hwake .or. yabs.GE.wwake) return
+   if(z>=hwake .or. yabs>=wwake) return
 
 ! --- AWMA version D20350
    IF (L_AWMA_UTurb .or. L_AWMA_UTurbHX) THEN
@@ -3390,7 +3390,7 @@ subroutine wake_u(ldb,x,y,z,ubyua,dufac,DBGUNT)
 ! ---    beyond bldg width projection, but within the wake
       ymin  = MAX(0.5D0*Wb,wwake-Rb/3.0D0)
       ydiff = wwake-ymin
-      if(yabs.GT.ymin .and. ydiff.GT.zero) then
+      if(yabs>ymin .and. ydiff>zero) then
          du_ua = du_ua * (one-(yabs-ymin)/ydiff)
       endif
 
@@ -3401,7 +3401,7 @@ subroutine wake_u(ldb,x,y,z,ubyua,dufac,DBGUNT)
       ymin  = MAX(0.5D0*Wb,wwake-Rb/3.0D0)
       du_ua = dua_ua
       ydiff = wwake-ymin
-      if(yabs.GT.ymin .and. ydiff.GT.zero) then
+      if(yabs>ymin .and. ydiff>zero) then
          du_ua = dua_ua*(one-(yabs-ymin)/ydiff)
       endif
 
@@ -3413,7 +3413,7 @@ subroutine wake_u(ldb,x,y,z,ubyua,dufac,DBGUNT)
    END IF
 
 ! --- Interpolate factor if over roof of bldg (linear)
-   if(x.LT.xLb) then
+   if(x<xLb) then
       xfrac=x/xLb
       du_ua=xfrac*du_ua
    endif
@@ -3425,7 +3425,7 @@ subroutine wake_u(ldb,x,y,z,ubyua,dufac,DBGUNT)
 
 ! --- Compute gradient in speed factor (zero below Zcav)
    dufac=zero
-   if(z.GT.zcav) then
+   if(z>zcav) then
       dufac=(one-ucbyua)/(hwake-zcav)
    endif
 
@@ -3445,7 +3445,7 @@ subroutine wake_u(ldb,x,y,z,ubyua,dufac,DBGUNT)
    endif
 
    return
-end
+end subroutine wake_u
 
 !-----------------------------------------------------------------------
 SUBROUTINE wake_u_turb&
@@ -3624,7 +3624,7 @@ SUBROUTINE wake_u_turb&
 !             with further thought the value of 'z' computed there could
 !             be passed to wake_u_turb and used here such that the
 !             following code could be removed
-         IF (xinp .LT. xtr_sav(p2mxntr)) THEN
+         IF (xinp < xtr_sav(p2mxntr)) THEN
 !              xinp is the input argument, which is xinp in CALL WAKE_U_TURB
 ! ---          Interpolate in rise table to get gradual rise ---   CALL NUMGRAD
             call NUMGRAD(xinp,xtr_sav,ztr_sav,p2mxntr,Zplm)
@@ -3861,8 +3861,8 @@ subroutine wake_xa(L,Rinp,xaz,xay)
 
    IMPLICIT NONE
 
-   DOUBLE PRECISION L, Rinp, xaz, xay
-   DOUBLE PRECISION ambiz, ambiy, fariz, fariy, farizt, fariyt,&
+   DOUBLE PRECISION :: L, Rinp, xaz, xay
+   DOUBLE PRECISION :: ambiz, ambiy, fariz, fariy, farizt, fariyt,&
    &x0byr, xbyr
    DOUBLE PRECISION, PARAMETER :: one=1.0D0
 
@@ -3903,7 +3903,7 @@ subroutine wake_xa(L,Rinp,xaz,xay)
    end if
 
    return
-end
+end subroutine wake_xa
 
 subroutine wake_xa2(L,Rinp,xaz,xay)
 !-----------------------------------------------------------------------
@@ -3949,8 +3949,8 @@ subroutine wake_xa2(L,Rinp,xaz,xay)
 
    IMPLICIT NONE
 
-   DOUBLE PRECISION L, Rinp, xaz, xay
-   DOUBLE PRECISION ambiz, ambiy, fariz, fariy, farizt, fariyt,&
+   DOUBLE PRECISION :: L, Rinp, xaz, xay
+   DOUBLE PRECISION :: ambiz, ambiy, fariz, fariy, farizt, fariyt,&
    &x0byr
    DOUBLE PRECISION, PARAMETER :: one=1.0D0
 
@@ -3982,7 +3982,7 @@ subroutine wake_xa2(L,Rinp,xaz,xay)
    xay=Rinp*xay
 
    return
-end
+end subroutine wake_xa2
 
 !-----------------------------------------------------------------------
 subroutine wake_dim(x,H,W,R,hwake,wwake)
@@ -4015,9 +4015,9 @@ subroutine wake_dim(x,H,W,R,hwake,wwake)
 
    IMPLICIT NONE
 
-   DOUBLE PRECISION x,H,W,R,hwake,wwake
-   DOUBLE PRECISION xbyr,xpbyr,dxbyr,xbyr3rd
-   DOUBLE PRECISION third
+   DOUBLE PRECISION :: x,H,W,R,hwake,wwake
+   DOUBLE PRECISION :: xbyr,xpbyr,dxbyr,xbyr3rd
+   DOUBLE PRECISION :: third
    DOUBLE PRECISION, PARAMETER :: cwkht = 1.2D0, half=0.5D0,&
    &zero=0.0D0
 
@@ -4034,14 +4034,14 @@ subroutine wake_dim(x,H,W,R,hwake,wwake)
 
 ! --- Wake height
    hwake=zero
-   if(xbyr.GT.zero) hwake =cwkht*R*dxbyr**third
+   if(xbyr>zero) hwake =cwkht*R*dxbyr**third
 
 ! --- Wake half-width from empirical fit to Snyder wind tunnel data
    wwake=zero
-   if(xbyr.GT.zero) wwake=half*W+(third*R)*xbyR3rd
+   if(xbyr>zero) wwake=half*W+(third*R)*xbyR3rd
 
    return
-end
+end subroutine wake_dim
 
 !-----------------------------------------------------------------------
 subroutine wake_sig(x,xd,xold,turbz,turby,szold,syold,&
@@ -4080,9 +4080,9 @@ subroutine wake_sig(x,xd,xold,turbz,turby,szold,syold,&
 
    IMPLICIT NONE
 
-   DOUBLE PRECISION x,xd,xold,turbz,turby,szold,syold,&
+   DOUBLE PRECISION :: x,xd,xold,turbz,turby,szold,syold,&
    &H,W,R,zk,yk,sz,sy,dsz
-   DOUBLE PRECISION htwake,hwwake,fwwake,delx,xstepi,dsz2,dsy2,&
+   DOUBLE PRECISION :: htwake,hwwake,fwwake,delx,xstepi,dsz2,dsy2,&
    &sigzd,sigyd
    DOUBLE PRECISION, PARAMETER :: two = 2.0D0
 
@@ -4094,12 +4094,12 @@ subroutine wake_sig(x,xd,xold,turbz,turby,szold,syold,&
 
    delx=x-xold
    xstepi=1.0D0/delx
-   if(x.LT.xd) then
+   if(x<xd) then
 ! ---    Pure PDF Form
       dsz=turbz
       sz=szold + delx*turbz
       sy=syold + delx*turby
-   elseif(xold.GT.xd) then
+   elseif(xold>xd) then
 ! ---    Pure Wake Diffusivity Form
       dsz2=zk*turbz*htwake
       dsy2=yk*turby*fwwake
@@ -4124,7 +4124,7 @@ subroutine wake_sig(x,xd,xold,turbz,turby,szold,syold,&
    endif
 
    return
-end
+end subroutine wake_sig
 
 !-----------------------------------------------------------------------
 subroutine wake_dbg(io,ntr,xtr,ytr,ztr,rtr,nobid,hstack)
@@ -4183,16 +4183,16 @@ subroutine wake_dbg(io,ntr,xtr,ytr,ztr,rtr,nobid,hstack)
 
    IMPLICIT NONE
 
-   INTEGER IO, NTR, IPOSITN, IT
+   INTEGER :: IO, NTR, IPOSITN, IT
 
-   DOUBLE PRECISION XTR(ntr),YTR(ntr),ZTR(ntr),RTR(ntr),HSTACK
-   DOUBLE PRECISION DBX,DBY,DBZ,DBSZ,DBSY,DBHW,DBHC,DBRSZ,DBUW,&
+   DOUBLE PRECISION :: XTR(ntr),YTR(ntr),ZTR(ntr),RTR(ntr),HSTACK
+   DOUBLE PRECISION :: DBX,DBY,DBZ,DBSZ,DBSY,DBHW,DBHC,DBRSZ,DBUW,&
    &RISE,XB,YB,ZB,DBXB,DBSZC,DBSYC,DBDRDX,DBWW,&
    &DBWC,DBDUW,XZERO
 
    DOUBLE PRECISION, PARAMETER :: rt2bypi = 0.797884560802866D0
 
-   logical nobid,ldb
+   logical :: nobid,ldb
 
    ldb=.FALSE.
 
@@ -4207,7 +4207,7 @@ subroutine wake_dbg(io,ntr,xtr,ytr,ztr,rtr,nobid,hstack)
    write(io,*)
 
 ! --- Report start of cavity as first point if it lies upwind of source
-   if(xcav(1).LT.0.0D0) then
+   if(xcav(1)<0.0D0) then
 ! ---    Set plume coordinates
       dbx=xcav(1)
       dby=ytr(1)
@@ -4238,7 +4238,7 @@ subroutine wake_dbg(io,ntr,xtr,ytr,ztr,rtr,nobid,hstack)
 ! ---    Set dr/dx of plume radius within wake region
       dbdrdx=0.0D0
 
-      if(xb.GE.0.0D0) then
+      if(xb>=0.0D0) then
 ! ---       Set wake dimension along center plane from bldg
          call WAKE_DIM(xb,Hb,Wb,Rb,dbhw,dbww)
 
@@ -4248,7 +4248,7 @@ subroutine wake_dbg(io,ntr,xtr,ytr,ztr,rtr,nobid,hstack)
 ! ---       Set speed factor
          call POSITION(xb,yb,zb,ipositn)
          dbuw=1.0D0
-         if(ipositn.LT.4)then
+         if(ipositn<4)then
             call WAKE_U(ldb,xb,yb,zb,dbuw,dbduw,io)
          else
             dbduw = 0.0D0
@@ -4289,7 +4289,7 @@ subroutine wake_dbg(io,ntr,xtr,ytr,ztr,rtr,nobid,hstack)
 ! --- Set dr/dx of plume radius within wake region
    call WAKE_DRDX(dbx,dbdrdx)
 
-   if(xb.GE.0.0D0) then
+   if(xb>=0.0D0) then
 ! ---    Set wake dimension along center plane from bldg
       call WAKE_DIM(xb,Hb,Wb,Rb,dbhw,dbww)
 
@@ -4299,7 +4299,7 @@ subroutine wake_dbg(io,ntr,xtr,ytr,ztr,rtr,nobid,hstack)
 ! ---    Set speed factor
       call POSITION(xb,yb,zb,ipositn)
       dbuw=1.0D0
-      if(ipositn.LT.4)then
+      if(ipositn<4)then
          call WAKE_U(ldb,xb,yb,zb,dbuw,dbduw,io)
       else
          dbduw = 0.0D0
@@ -4340,7 +4340,7 @@ subroutine wake_dbg(io,ntr,xtr,ytr,ztr,rtr,nobid,hstack)
 ! ---    Set dr/dx of plume radius within wake region
       call WAKE_DRDX(dbx,dbdrdx)
 
-      if(xb.GE.0.0D0) then
+      if(xb>=0.0D0) then
 ! ---       Set wake dimension along center plane from bldg
          call WAKE_DIM(xb,Hb,Wb,Rb,dbhw,dbww)
 
@@ -4350,7 +4350,7 @@ subroutine wake_dbg(io,ntr,xtr,ytr,ztr,rtr,nobid,hstack)
 ! ---       Set speed factor
          call POSITION(xb,yb,zb,ipositn)
          dbuw=1.0D0
-         if(ipositn.LT.4)then
+         if(ipositn<4)then
             call WAKE_U(ldb,xb,yb,zb,dbuw,dbduw,io)
          else
             dbduw = 0.0D0
@@ -4371,7 +4371,7 @@ subroutine wake_dbg(io,ntr,xtr,ytr,ztr,rtr,nobid,hstack)
 101 format(1x,7f7.1,2f7.3,f7.1,f7.3,i4,2f7.1)
 
    return
-end
+end subroutine wake_dbg
 
 !-----------------------------------------------------------------------
 subroutine wake_cav0(sycapt,szcav0,sycav0)
@@ -4413,9 +4413,9 @@ subroutine wake_cav0(sycapt,szcav0,sycav0)
 
    IMPLICIT NONE
 
-   DOUBLE PRECISION sycapt,szcav0,sycav0
+   DOUBLE PRECISION :: sycapt,szcav0,sycav0
 
-   DOUBLE PRECISION wcapt, wscale, hcav, uratio
+   DOUBLE PRECISION :: wcapt, wscale, hcav, uratio
 
    DOUBLE PRECISION, PARAMETER :: rt2pi   = 2.50662827463100D0,&
    &rt2bypi = 0.797884560802866D0
@@ -4434,7 +4434,7 @@ subroutine wake_cav0(sycapt,szcav0,sycav0)
    sycav0=wscale/rt2pi
 
 ! --- Set height of cavity behind the bldg
-   if(xLC .LT. xLb) then
+   if(xLC < xLb) then
 ! ---    Reattachment
       hcav=Hb
    else
@@ -4449,7 +4449,7 @@ subroutine wake_cav0(sycapt,szcav0,sycav0)
    szcav0=rt2bypi*uratio*hcav*third
 
    return
-end
+end subroutine wake_cav0
 
 !-----------------------------------------------------------------------
 subroutine cav_src(xr,yr,zr,fqcav0,qc,hc,yrc,zrc,szc,syc,n1,n2)
@@ -4527,13 +4527,13 @@ subroutine cav_src(xr,yr,zr,fqcav0,qc,hc,yrc,zrc,szc,syc,n1,n2)
 
    IMPLICIT NONE
 
-   INTEGER I, N1, N2, MODE, IPOSITN
+   INTEGER :: I, N1, N2, MODE, IPOSITN
 
-   DOUBLE PRECISION xr,yr,zr,fqcav0,szcav0,sycav0,xrb,yrb,zrb,&
+   DOUBLE PRECISION :: xr,yr,zr,fqcav0,szcav0,sycav0,xrb,yrb,zrb,&
    &x115b,x85b,wtop,ybmax,ysb,dumz,dumy,zcav,&
    &wcav
 
-   DOUBLE PRECISION qc(3),hc(3),yrc(3),zrc(3),szc(3),syc(3)
+   DOUBLE PRECISION :: qc(3),hc(3),yrc(3),zrc(3),szc(3),syc(3)
 
    DOUBLE PRECISION, PARAMETER :: rt2pi   = 2.50662827463100D0,&
    &rt2bypi = 0.797884560802866D0
@@ -4553,7 +4553,7 @@ subroutine cav_src(xr,yr,zr,fqcav0,qc,hc,yrc,zrc,szc,syc,n1,n2)
 ! --- (0: none, 1: "outside", 2: "inside", 3: both)
    mode=0
 
-   if(fqcav.LE.0.0D0) then
+   if(fqcav<=0.0D0) then
 ! ---    No mass in cavity
       n1=1
       n2=1
@@ -4576,18 +4576,18 @@ subroutine cav_src(xr,yr,zr,fqcav0,qc,hc,yrc,zrc,szc,syc,n1,n2)
       x85b=xLb+0.85D0*xLR
 ! ---    Adjust relative contribution of cavity sources near end
 ! ---    of cavity region
-      if(xrb.GE.x115b) then
+      if(xrb>=x115b) then
 ! ---       Receptor well outside cavity; use only "outside" source
          qc(2)=1.0D0
          qc(3)=0.0D0
          mode=1
-      elseif(xrb.GT.x85b) then
+      elseif(xrb>x85b) then
 ! ---       Mix relative contribution so that they are equal at
 ! ---       end of cavity
          qc(2)=(xrb-x85b)/(x115b-x85b)
          qc(3)=1.0D0-qc(2)
          mode=3
-      elseif(xrb.GT.xLb) then
+      elseif(xrb>xLb) then
 ! ---       Receptor well within cavity; use only "inside" source
          qc(2)=0.0D0
          qc(3)=1.0D0
@@ -4601,7 +4601,7 @@ subroutine cav_src(xr,yr,zr,fqcav0,qc,hc,yrc,zrc,szc,syc,n1,n2)
          mode=2
       endif
 
-      if(ipositn.EQ.4) then
+      if(ipositn==4) then
 ! ---       Not within wake, so drop cavity source contribution
          mode=0
          n1=1
@@ -4619,14 +4619,14 @@ subroutine cav_src(xr,yr,zr,fqcav0,qc,hc,yrc,zrc,szc,syc,n1,n2)
          wtop=sycav0*rt2pi
 ! ---       Max distance from bldg center to centerline of cavity plume
          ybmax=0.5D0*(Wb-wtop)
-         if(ybmax.LE.0.0D0) then
+         if(ybmax<=0.0D0) then
 ! ---          Plume spread exceeds bldg width so cavity source is
 ! ---          centered on bldg
             yrc(2)=yrb
          else
 ! ---          Source location relative to center of bldg
             ysb=-ybadj
-            if(ysb.LT.0.0D0) then
+            if(ysb<0.0D0) then
                yrc(2)=yrb-MAX(ysb,-ybmax)
             else
                yrc(2)=yrb-MIN(ysb,ybmax)
@@ -4634,16 +4634,16 @@ subroutine cav_src(xr,yr,zr,fqcav0,qc,hc,yrc,zrc,szc,syc,n1,n2)
          endif
          yrc(3)=yrc(2)
 
-         if(ipositn.LE.2) then
+         if(ipositn<=2) then
 ! ---          Within cavity/bldg, so drop primary source contribution,
 ! ---          and place receptor on ground
-            if(mode.EQ.3) then
+            if(mode==3) then
                n1=2
                n2=3
-            elseif(mode.EQ.2) then
+            elseif(mode==2) then
                n1=3
                n2=3
-            elseif(mode.EQ.1) then
+            elseif(mode==1) then
                n1=2
                n2=2
             endif
@@ -4652,22 +4652,22 @@ subroutine cav_src(xr,yr,zr,fqcav0,qc,hc,yrc,zrc,szc,syc,n1,n2)
                szc(i)=szcav0
                syc(i)=sycav0
             enddo
-            if((mode.EQ.1 .or. mode.EQ.3) .and.&
-            &xr.GT.0.0D0) call WAKE_XSIG(xr,hc(2),0.0D0,.TRUE.,&
+            if((mode==1 .or. mode==3) .and.&
+            &xr>0.0D0) call WAKE_XSIG(xr,hc(2),0.0D0,.TRUE.,&
             &dumz,dumy,szc(2),syc(2))
          else
 ! ---          Contributions from primary & possibly both cavity plumes
             n1=1
             n2=3
 ! ---          Set pole height to height above cavity boundary
-            if(xrb.GE.(xLb+xLR)) then
+            if(xrb>=(xLb+xLR)) then
                zrc(2)=zr
             else
                call CAVITY_HT(Hb,Wb,xLb,Rb,xLC,xLR,HR,xrb,zcav,wcav)
                zrc(2)=MAX(0.0D0,zr-zcav)
             endif
             zrc(3)=zrc(2)
-            if(mode.EQ.2) then
+            if(mode==2) then
 ! ---             No contribution from "outside" cavity source, so
 ! ---             set emission rate for "outside" source to zero.
                qc(2)=0.0D0
@@ -4676,7 +4676,7 @@ subroutine cav_src(xr,yr,zr,fqcav0,qc,hc,yrc,zrc,szc,syc,n1,n2)
                szc(3)=szcav0
                syc(3)=sycav0
                n2=3
-            elseif(mode.EQ.1) then
+            elseif(mode==1) then
 ! ---             No contribution from "inside" cavity source, so
 ! ---             reset n2=2
                call WAKE_XSIG(xr,hc(2),0.0D0,.TRUE.,dumz,dumy,szc(2),&
@@ -4688,7 +4688,7 @@ subroutine cav_src(xr,yr,zr,fqcav0,qc,hc,yrc,zrc,szc,syc,n1,n2)
                syc(2)=sycav0
                szc(3)=szcav0
                syc(3)=sycav0
-               if(xr.GE.0.0D0) call WAKE_XSIG(xr,hc(2),0.0D0,.TRUE.,&
+               if(xr>=0.0D0) call WAKE_XSIG(xr,hc(2),0.0D0,.TRUE.,&
                &dumz,dumy,szc(2),syc(2))
             endif
          endif
@@ -4697,10 +4697,10 @@ subroutine cav_src(xr,yr,zr,fqcav0,qc,hc,yrc,zrc,szc,syc,n1,n2)
 
 ! --- Final check: receptor upwind of primary source, or all mass in cav
 ! --- Do not allow n1=1 (primary source contribution)
-   if(n1.EQ.1 .and. (xr.LE.0.0D0 .or. fqcav.EQ.1.0D0)) n1=2
+   if(n1==1 .and. (xr<=0.0D0 .or. fqcav==1.0D0)) n1=2
 
    return
-end
+end subroutine cav_src
 
 !-----------------------------------------------------------------------
 subroutine wake_fqc(ldb,xbi,xtr,ztr,ntr,DBGUNT)
@@ -4748,14 +4748,14 @@ subroutine wake_fqc(ldb,xbi,xtr,ztr,ntr,DBGUNT)
 
    IMPLICIT NONE
 
-   INTEGER NTR, nstep, is, DBGUNT
+   INTEGER :: NTR, nstep, is, DBGUNT
 
-   DOUBLE PRECISION XBI, XTR(ntr), ZTR(ntr)
-   DOUBLE PRECISION xbstart,xbend,xrange,yba,xend,xstep,x,xb,fz,&
+   DOUBLE PRECISION :: XBI, XTR(ntr), ZTR(ntr)
+   DOUBLE PRECISION :: xbstart,xbend,xrange,yba,xend,xstep,x,xb,fz,&
    &fract,xb85,fq85,zplm,sz,sy,szc,syc,fractz0,&
    &zcav,ycav,fractz,fracty,xmax,fzmax
 
-   logical ldb
+   logical :: ldb
 
    fqcav=0.0D0
 
@@ -4791,7 +4791,7 @@ subroutine wake_fqc(ldb,xbi,xtr,ztr,ntr,DBGUNT)
       call FRGAUSS(yba,sy,ycav,-ycav,fracty)
       fz=MIN(fractz,fractz0)
       fract=fz*fracty
-      if(fract.GT.fqcav) then
+      if(fract>fqcav) then
          fqcav=fract
          xmax=x
          fzmax=fz
@@ -4803,7 +4803,7 @@ subroutine wake_fqc(ldb,xbi,xtr,ztr,ntr,DBGUNT)
 ! --- capture fraction that linearly drops from 1.0 at 85% of the
 ! --- cavity length, to 0% at the end of the cavity.
    xb85=xLb+0.85D0*xLR
-   if(xbstart.GT.xb85) then
+   if(xbstart>xb85) then
       fq85=MAX( 0.0D0, 1.0D0-(xbstart-xb85)/(xbend-xb85) )
       fqcav=MIN(fqcav,fq85)
    endif
@@ -4823,7 +4823,7 @@ subroutine wake_fqc(ldb,xbi,xtr,ztr,ntr,DBGUNT)
    endif
 
    return
-end
+end subroutine wake_fqc
 
 !----------------------------------------------------------------------
 subroutine FRGAUSS(hcntr,sigma,h1,h2,fract)
@@ -4853,7 +4853,7 @@ subroutine FRGAUSS(hcntr,sigma,h1,h2,fract)
 !
    IMPLICIT NONE
 
-   DOUBLE PRECISION hcntr,sigma,h1,h2,fract,s,z1,z2,erfdif
+   DOUBLE PRECISION :: hcntr,sigma,h1,h2,fract,s,z1,z2,erfdif
    DOUBLE PRECISION, PARAMETER :: sqrt2=1.41421356237310D0,&
    &small=1.0D-5
 !
@@ -4866,7 +4866,7 @@ subroutine FRGAUSS(hcntr,sigma,h1,h2,fract)
    fract=0.5D0*DABS(ERFDIF(z1,z2))
 !
    return
-end
+end subroutine FRGAUSS
 
 !----------------------------------------------------------------------
 DOUBLE PRECISION FUNCTION ERFDIF(X1,X2)
@@ -4898,24 +4898,24 @@ DOUBLE PRECISION FUNCTION ERFDIF(X1,X2)
 !
    IMPLICIT NONE
 
-   INTEGER ISIGN
-   DOUBLE PRECISION FNERF, FNERFC
-   DOUBLE PRECISION X1,X2,XTEST,XX1,XX2,ERFCX1,ERFCX2
+   INTEGER :: ISIGN
+   DOUBLE PRECISION :: FNERF, FNERFC
+   DOUBLE PRECISION :: X1,X2,XTEST,XX1,XX2,ERFCX1,ERFCX2
 
    ERFDIF=0.0D0
-   IF(X1.EQ.X2) GO TO 40
-   IF((X1*X2) .LE. 0.0D0) GO TO 50
+   IF(X1==X2) GO TO 40
+   IF((X1*X2) <= 0.0D0) GO TO 50
    XTEST=DABS(X2)
-   IF(DABS(X1).LT.XTEST) XTEST=DABS(X1)
+   IF(DABS(X1)<XTEST) XTEST=DABS(X1)
 ! --- Some compilers cannot handle reals .LT. 1.18e-38, so reset cut
 !     IF(XTEST.GE.13.306D0) GO TO 40
-   if(xtest .GE. 9.15D0) GO TO 40
-   IF(XTEST .LT. 0.47D0) GO TO 50
+   if(xtest >= 9.15D0) GO TO 40
+   IF(XTEST < 0.47D0) GO TO 50
 !     CAN ONLY REACH HERE WHEN X1 AND X2 HAVE SAME SIGN.
    ISIGN=1
    XX1=X1
    XX2=X2
-   IF(X1.GT.0.0D0) GO TO 30
+   IF(X1>0.0D0) GO TO 30
    ISIGN=-1
    XX1=-XX1
    XX2=-XX2
@@ -4925,15 +4925,15 @@ DOUBLE PRECISION FUNCTION ERFDIF(X1,X2)
 ! --- Some compilers cannot handle reals .LT. 1.18e-38, so reset cut
 !     IF(XX1.LT.13.306D0) ERFCX1=FNERFC(XX1)
 !     IF(XX2.LT.13.306D0) ERFCX2=FNERFC(XX2)
-   if(xx1 .LT. 9.15D0) erfcx1=FNERFC(xx1)
-   if(xx2 .LT. 9.15D0) erfcx2=FNERFC(xx2)
+   if(xx1 < 9.15D0) erfcx1=FNERFC(xx1)
+   if(xx2 < 9.15D0) erfcx2=FNERFC(xx2)
    ERFDIF=DBLE(ISIGN)*(ERFCX2-ERFCX1)
 ! --- Protect against flakey LAHEY compiler 4/9/89
-   if(erfcx2.eq.erfcx1) erfdif=0.0D0
+   if(erfcx2==erfcx1) erfdif=0.0D0
 40 RETURN
 50 ERFDIF=FNERF(X1)-FNERF(X2)
    RETURN
-END
+END FUNCTION ERFDIF
 
 !-----------------------------------------------------------------------
 DOUBLE PRECISION FUNCTION FNERF(XX)
@@ -4965,14 +4965,14 @@ DOUBLE PRECISION FUNCTION FNERF(XX)
 !
    IMPLICIT NONE
 
-   DOUBLE PRECISION x, xx ,t, t16, a(6), xcut
+   DOUBLE PRECISION :: x, xx ,t, t16, a(6), xcut
 
    data a/0.0000430638D0, 0.0002765672D0, 0.0001520143D0,&
    &0.0092705272D0, 0.0422820123D0, 0.0705230784D0/
    data xcut/ 3.919206D0/
 !
    x = DABS(xx)
-   if(x .gt. xcut) then
+   if(x > xcut) then
       t16 = 0.0D0
    else
 !
@@ -4985,14 +4985,14 @@ DOUBLE PRECISION FUNCTION FNERF(XX)
       t16 = t16 * t16 * t16 * t16
    endif
 !
-   if(xx .gt. 0.0D0) then
+   if(xx > 0.0D0) then
       fnerf =  1.0D0 - t16
    else
       fnerf =  t16 - 1.0D0
    endif
 !
    return
-end
+end function FNERF
 
 !-----------------------------------------------------------------------
 DOUBLE PRECISION FUNCTION FNERFC(XX)
@@ -5025,8 +5025,8 @@ DOUBLE PRECISION FUNCTION FNERFC(XX)
 !
    IMPLICIT NONE
 
-   DOUBLE PRECISION x, xx ,t, t16, a(6)
-   DOUBLE PRECISION xcutl, xcuth, rtpii, z
+   DOUBLE PRECISION :: x, xx ,t, t16, a(6)
+   DOUBLE PRECISION :: xcutl, xcuth, rtpii, z
 
    data a/0.0000430638D0, 0.0002765672D0, 0.0001520143D0,&
    &0.0092705272D0, 0.0422820123D0, 0.0705230784D0/
@@ -5034,13 +5034,13 @@ DOUBLE PRECISION FUNCTION FNERFC(XX)
    data xcuth/13.306D0   /
    data rtpii/0.564189583547756D0/
 !
-   if(xx .gt. xcuth) then
+   if(xx > xcuth) then
       fnerfc = 0.0D0
 !
-   elseif(xx .lt. xcutl) then
+   elseif(xx < xcutl) then
       fnerfc = 2.0D0
 !
-   elseif(xx .gt. 2.79D0) then
+   elseif(xx > 2.79D0) then
       x = DABS(xx)
       z = 1.0D0 / x
       fnerfc = rtpii*z*DEXP(-x*x)*(1.0D0-0.5D0*z*z*(1.0D0-1.5D0*z*z))
@@ -5056,7 +5056,7 @@ DOUBLE PRECISION FUNCTION FNERFC(XX)
       t16 = t * t * t * t
       t16 = t16 * t16 * t16 * t16
 !
-      if(xx .gt. 0.0D0) then
+      if(xx > 0.0D0) then
          fnerfc =  t16
       else
          fnerfc =  2.0D0 - t16
@@ -5065,7 +5065,7 @@ DOUBLE PRECISION FUNCTION FNERFC(XX)
    endif
 !
    return
-end
+end function FNERFC
 
 !----------------------------------------------------------------------
 subroutine wake_xsig(x,hstk,rise,NOBID,sz,sy,szc,syc)
@@ -5118,20 +5118,20 @@ subroutine wake_xsig(x,hstk,rise,NOBID,sz,sy,szc,syc)
 
    IMPLICIT NONE
 
-   INTEGER I, nwkm1, ip1, ncvm1
+   INTEGER :: I, nwkm1, ip1, ncvm1
 
-   DOUBLE PRECISION x,hstk,rise,sz,sy,szc,syc
-   DOUBLE PRECISION bidsq,fac
+   DOUBLE PRECISION :: x,hstk,rise,sz,sy,szc,syc
+   DOUBLE PRECISION :: bidsq,fac
 !
-   logical NOBID
+   logical :: NOBID
 
 ! --- Primary source:
 ! -------------------
-   if(x.LE.0.0D0) then
+   if(x<=0.0D0) then
 ! ---    Report null values (these should never get used!)
       sz=0.0D0
       sy=0.0D0
-   elseif(nwak.LE.1) then
+   elseif(nwak<=1) then
 ! ---    Plume never altered by wake turbulence; use HOST curves
       call SIGZPR(x,hstk+rise,sz)
       call SIGYPR(x,hstk+rise,sy)
@@ -5140,7 +5140,7 @@ subroutine wake_xsig(x,hstk,rise,NOBID,sz,sy,szc,syc)
          sz=DSQRT(sz**2+bidsq)
          sy=DSQRT(sy**2+bidsq)
       endif
-   elseif(x.lt.xwak(1)) then
+   elseif(x<xwak(1)) then
 ! ---    Point lies upwind of wake region; use HOST curves
       call SIGZPR(x,hstk+rise,sz)
       call SIGYPR(x,hstk+rise,sy)
@@ -5149,7 +5149,7 @@ subroutine wake_xsig(x,hstk,rise,NOBID,sz,sy,szc,syc)
          sz=DSQRT(sz**2+bidsq)
          sy=DSQRT(sy**2+bidsq)
       endif
-   elseif(x.gt.xwak(nwak)) then
+   elseif(x>xwak(nwak)) then
 ! ---    Point lies downwind of transition to ambient growth; use
 ! ---    HOST curves with virtual source term
       call SIGZPR(x,hstk+rise,sz)
@@ -5162,7 +5162,7 @@ subroutine wake_xsig(x,hstk,rise,NOBID,sz,sy,szc,syc)
       sz=szwak(1)
       sy=sywak(1)
       do i=nwkm1,1,-1
-         if(x.ge.xwak(i))then
+         if(x>=xwak(i))then
             ip1=i+1
             fac=(xwak(ip1)-x)/(xwak(ip1)-xwak(i))
             sz=szwak(ip1)-(szwak(ip1)-szwak(i))*fac
@@ -5174,15 +5174,15 @@ subroutine wake_xsig(x,hstk,rise,NOBID,sz,sy,szc,syc)
 
 ! --- Cavity source:
 ! -------------------
-50 if(ncav.LE.1) then
+50 if(ncav<=1) then
 ! ---    No contribution from cavity source (report initial values)
       szc=szcav(1)
       syc=sycav(1)
-   elseif(x.lt.xcav(1)) then
+   elseif(x<xcav(1)) then
 ! ---    Point lies upwind of cavity region (report initial values)
       szc=szcav(1)
       syc=sycav(1)
-   elseif(x.gt.xcav(ncav)) then
+   elseif(x>xcav(ncav)) then
 ! ---    Point lies downwind of transition to ambient growth; use
 ! ---    HOST curves with virtual source term
       call SIGZPR(x,0.0D0,szc)
@@ -5195,7 +5195,7 @@ subroutine wake_xsig(x,hstk,rise,NOBID,sz,sy,szc,syc)
       szc=szcav(1)
       syc=sycav(1)
       do i=ncvm1,1,-1
-         if(x.ge.xcav(i))then
+         if(x>=xcav(i))then
             ip1=i+1
             fac=(xcav(ip1)-x)/(xcav(ip1)-xcav(i))
             szc=szcav(ip1)-(szcav(ip1)-szcav(i))*fac
@@ -5206,7 +5206,7 @@ subroutine wake_xsig(x,hstk,rise,NOBID,sz,sy,szc,syc)
    endif
 
    return
-end
+end subroutine wake_xsig
 
 !-----------------------------------------------------------------------
 subroutine cavity_ht(H,W,L,R,LC,LR,HR,x,zcav,ycav)
@@ -5245,47 +5245,47 @@ subroutine cavity_ht(H,W,L,R,LC,LR,HR,x,zcav,ycav)
 !
    IMPLICIT NONE
 
-   DOUBLE PRECISION H,W,L,R,HR,LR,LC,x,zcav,ycav
+   DOUBLE PRECISION :: H,W,L,R,HR,LR,LC,x,zcav,ycav
 
 ! --- Initialize
    zcav=0.0D0
    ycav=0.0D0
 
 ! --- Cavity is not present upwind of bldg or at/beyond L+LR
-   if(x.GE.(L+LR)) then
+   if(x>=(L+LR)) then
       return
-   elseif(x.LT.0.0D0) then
+   elseif(x<0.0D0) then
       return
    endif
 !
 !     calculate x-y near wake boundary
 !
-   if(x.ge.0.0D0 .and. x.le.R) then
+   if(x>=0.0D0 .and. x<=R) then
       ycav=(W/2.D0+R/3.D0)-(x-R)**2/(3.D0*R)
-   elseif(x.gt.R .and. x.le.(L+LR)) then
+   elseif(x>R .and. x<=(L+LR)) then
       ycav=(W/2.D0+R/3.D0)*DSQRT(1.D0-((x-R)/(L+LR-R))**2)
    endif
 
 !     calculate x-z near wake boundary
 !
-   if(LC .lt. L)then       ! reattachment
+   if(LC < L)then       ! reattachment
 !
-      if(x.ge.0.D0 .and. x.le.L) then
+      if(x>=0.D0 .and. x<=L) then
          zcav=H
-      elseif(x.ge.L .and. x.le.(L+LR)) then
+      elseif(x>=L .and. x<=(L+LR)) then
          zcav=H*DSQRT(1.D0-((x-L)/LR)**2)
       endif
 !
    else                    ! nonreattachment
-      if(x.ge.0.D0 .and. x.le.0.5D0*R) then
+      if(x>=0.D0 .and. x<=0.5D0*R) then
          zcav=HR+4.D0*(x-0.5D0*R)**2*(H-HR)/(R**2)
-      elseif(x.gt.0.5D0*R .and. x.le.(L+LR)) then
+      elseif(x>0.5D0*R .and. x<=(L+LR)) then
          zcav=HR*DSQRT(1.D0-((x-0.5D0*R)/(L+LR-0.5D0*R))**2)
       endif
    endif
 !
    return
-end
+end subroutine cavity_ht
 
 SUBROUTINE SIGYPR(XARG,ZARG,SYOUT)
 !***********************************************************************
@@ -5342,7 +5342,7 @@ SUBROUTINE SIGYPR(XARG,ZARG,SYOUT)
    SYOUT = SYAMB
 
    RETURN
-END
+END SUBROUTINE SIGYPR
 
 SUBROUTINE SIGZPR(XARG,ZARG,SZOUT)
 !***********************************************************************
@@ -5388,7 +5388,7 @@ SUBROUTINE SIGZPR(XARG,ZARG,SZOUT)
 
       CALL LOCATE(GRIDHT, 1, MXGLVL, ZARG, NDXZHE)
 
-      IF (NDXZHE .GE. 1) THEN
+      IF (NDXZHE >= 1) THEN
          CALL GINTRP( GRIDHT(NDXZHE), GRIDPT(NDXZHE),&
          &GRIDHT(NDXZHE+1), GRIDPT(NDXZHE+1), ZARG, PTP )
       ELSE
@@ -5396,7 +5396,7 @@ SUBROUTINE SIGZPR(XARG,ZARG,SZOUT)
       END IF
 
       BVFRQ = DSQRT( G * TGEFF / PTP )
-      IF(BVFRQ .LT. 1.0D-10) BVFRQ = 1.0D-10
+      IF(BVFRQ < 1.0D-10) BVFRQ = 1.0D-10
 
 !        Set height for calculating sigma-z, ZTMP
       ZTMP = MAX( ZARG, 1.0D-4 )
@@ -5411,7 +5411,7 @@ SUBROUTINE SIGZPR(XARG,ZARG,SZOUT)
          &( 1.0D0/(0.72D0*ZTMP) + BVFRQ/(0.54D0*SWEFF) ) )
       END IF
 
-      IF (ZARG .LT. ZI) THEN
+      IF (ZARG < ZI) THEN
          CALL SZSFCLPR (XARG,ZARG)
 
          SIGF = MIN ( ZARG/ZI, 1.0D0)
@@ -5425,7 +5425,7 @@ SUBROUTINE SIGZPR(XARG,ZARG,SZOUT)
 
    ELSEIF( UNSTAB )THEN
 
-      IF (ZARG .GE. 0.1D0*ZI) THEN
+      IF (ZARG >= 0.1D0*ZI) THEN
          ALPHAB = 1.0D0
       ELSE
          ALPHAB = 0.6D0 + 0.4D0*(ZARG/(0.1D0*ZI))
@@ -5440,7 +5440,7 @@ SUBROUTINE SIGZPR(XARG,ZARG,SZOUT)
    ENDIF
 
    RETURN
-END
+END SUBROUTINE SIGZPR
 
 SUBROUTINE SZSFCLPR (XARG, ZARG)
 !***********************************************************************
@@ -5478,7 +5478,7 @@ SUBROUTINE SZSFCLPR (XARG, ZARG)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: XARG, ZARG
 
 !     Variable Initializations
@@ -5488,7 +5488,7 @@ SUBROUTINE SZSFCLPR (XARG, ZARG)
 
 !---- Calculate the surface layer contribution.
 
-   IF (UNSTAB .and. ZARG .LT. 0.1D0*ZI) THEN
+   IF (UNSTAB .and. ZARG < 0.1D0*ZI) THEN
       SZSURF = BSUBC * ( 1.0D0 - 10.D0 * (ZARG / ZI)) *&
       &(USTAR / UEFF)*(USTAR / UEFF)  *&
       &(XARG * XARG / DABS( OBULEN ))
@@ -5503,4 +5503,4 @@ SUBROUTINE SZSFCLPR (XARG, ZARG)
    ENDIF
 
    RETURN
-END
+END SUBROUTINE SZSFCLPR

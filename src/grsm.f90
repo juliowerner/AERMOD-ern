@@ -29,7 +29,7 @@ SUBROUTINE GRSM_CALC
 
 ! --- Local variables
    INTEGER::NUMGRP_USE, IGRP_USE, nStat
-   CHARACTER MODNAM*12, NightStr*3
+   CHARACTER :: MODNAM*12, NightStr*3
    DOUBLE PRECISION, ALLOCATABLE::PLUMEBKGNO2(:), PLUMEBKGNO(:) !Plume background concentrations
    DOUBLE PRECISION, ALLOCATABLE:: NOXPERSOURCE(:), PLUMEBKGO3(:) !NOX concentration for each source
    DOUBLE PRECISION, ALLOCATABLE::SIGYSIGZ_I_X(:), SIGYSIGZ_E_X(:) !Instantaneous and ensemble plume size at X
@@ -407,7 +407,7 @@ SUBROUTINE GRSM_CALC
 
          SOURCE_LOOP: DO ISRC = 1, NUMSRC
 
-            IF( IGROUP(ISRC,IGRP_USE) .NE. 1 )THEN
+            IF( IGROUP(ISRC,IGRP_USE) /= 1 )THEN
 ! ---         This source is not included in the current SRCGROUP
                CYCLE SOURCE_LOOP
             END IF
@@ -424,7 +424,7 @@ SUBROUTINE GRSM_CALC
 
 ! ---         Write debug file
                IF (GRSMDEBUG) THEN
-                  IF (IGROUP(ISRC,IGRP) .EQ. 1) THEN
+                  IF (IGROUP(ISRC,IGRP) == 1) THEN
                      WRITE(GRSMDBG,9989,ERR=999) KURDAT, IREC,&
                      &GRPID(IGRP),  ISRC, SRCID(ISRC), NIGHTSTR,&
                      &O3CONC_BG,NOXCONC_BG,NO2CONC_BG,TTRAVCHM(IREC),&
@@ -445,7 +445,7 @@ SUBROUTINE GRSM_CALC
 
 ! ---         Write debug file
                IF (GRSMDEBUG) THEN
-                  IF (IGROUP(ISRC,IDXEV(IEVENT)) .EQ. 1) THEN
+                  IF (IGROUP(ISRC,IDXEV(IEVENT)) == 1) THEN
                      WRITE(GRSMDBG,9990,ERR=999) KURDAT, IEVENT,&
                      &EVNAME(IEVENT), EVAPER(IEVENT),&
                      &GRPID(IDXEV(IEVENT)), ISRC, SRCID(ISRC),&
@@ -523,7 +523,7 @@ SUBROUTINE RXNRATES
    USE MAIN1
    USE GRSMMOD
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION, PARAMETER:: SCRNHT=1.2D0
    DOUBLE PRECISION, PARAMETER:: CONST1=4.405D-2
@@ -584,7 +584,7 @@ SUBROUTINE GETBGDEQUIL
    USE MAIN1
    USE GRSMMOD
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 ! --- Variable Initializations
    MODNAM = 'GETBGDEQUIL'
@@ -714,10 +714,10 @@ FUNCTION FindInitDt()
 
    TimeScale = 1. ! initial value
    DO ConcLoop = 1, nPolsGRSM
-      IF ( ConcTemp(ConcLoop ).GT.0.) THEN
+      IF ( ConcTemp(ConcLoop )>0.) THEN
          IF(ABS(dCdt(ConcLoop))>CFrac*ConcTemp(ConcLoop))THEN
             TimeLoop = CFrac*ABS(ConcTemp(ConcLoop)/dCdt(ConcLoop))
-            IF ( TimeLoop.LT.TimeScale ) TimeScale = TimeLoop
+            IF ( TimeLoop<TimeScale ) TimeScale = TimeLoop
          END IF
       END IF
    END DO
@@ -813,7 +813,7 @@ SUBROUTINE DoGRSMChem
 
 ! --- Check for concentrations less than the minimum value
    DO  I=1,nPolsGRSM
-      IF (CONCTEMP(I).LT.MinimumConc) CONCTEMP(I) = 0.D0
+      IF (CONCTEMP(I)<MinimumConc) CONCTEMP(I) = 0.D0
    END DO
 
 ! --- Estimate initial time step
@@ -827,7 +827,7 @@ SUBROUTINE DoGRSMChem
 
       !Check for concentrations less than the minimum value and negative gradients
       DO i=1,nPolsGRSM
-         IF (CONCTEMP(i).LT.MinimumConc .and. dCdt(I).LT.0.D0)THEN
+         IF (CONCTEMP(i)<MinimumConc .and. dCdt(I)<0.D0)THEN
             CONCTEMP(I) = 0.D0
             dCdt(I) = 0.D0
          ENDIF
@@ -838,20 +838,20 @@ SUBROUTINE DoGRSMChem
       END DO
 
 !       Ensure we don't go past the travel time
-      IF(tLocal+dt.gt.TTRAVCHM(IREC)) dt=TTRAVCHM(IREC)-tLocal
+      IF(tLocal+dt>TTRAVCHM(IREC)) dt=TTRAVCHM(IREC)-tLocal
 
 !       Perform Runge-Kutta integration using adaptive timestep
       CALL AdaptiveRK(CONCTEMP,dCdt,tLocal,dt,Cscal,dtnext)
 
 !       Check for negative concentrations
       DO  I=1,nPolsGRSM
-         IF (CONCTEMP(I).LT.0.) CONCTEMP(I) = 0.
+         IF (CONCTEMP(I)<0.) CONCTEMP(I) = 0.
       END DO
 
 !       If we've reached the travel time, return
-      IF(tLocal.ge.TTRAVCHM(IREC)) RETURN
+      IF(tLocal>=TTRAVCHM(IREC)) RETURN
 !       Otherwise set the timestep for the next iteration
-      IF(dtnext.lt.dtmin) dtnext=dtmin
+      IF(dtnext<dtmin) dtnext=dtmin
       dt=dtnext
    END DO
 !     Reached maximum No. of time steps - return with latest concentrations
@@ -917,13 +917,13 @@ SUBROUTINE AdaptiveRK(CLocal,dCdt,tLocal,dttry,Cscal,dtnext)
    errmax=0.
 
    DO i=1,nPolsGRSM
-      IF (Cscal(i).gt.MinimumConc)THEN
+      IF (Cscal(i)>MinimumConc)THEN
          errmax=max(errmax,abs(CErr(i)/Cscal(i)))
       END IF
    END DO
 
    errmax=errmax/CFrac
-   IF(errmax.gt.1.)THEN
+   IF(errmax>1.)THEN
       !Error too large - shrink the timestep and try again
       ttemp=SAFETY*dt*(errmax**P_Shrink)
       dt=max(ttemp,0.1*dt)
@@ -933,7 +933,7 @@ SUBROUTINE AdaptiveRK(CLocal,dCdt,tLocal,dttry,Cscal,dtnext)
       !Error below threshold - calculate initial timestep for
       !next call to this routine and return
       GrowthFac = SAFETY*(errmax**P_Grow)
-      IF(GrowthFac.gt.MaxGrow)THEN
+      IF(GrowthFac>MaxGrow)THEN
          dtnext=MaxGrow*dt
       ELSE
          dtnext=GrowthFac*dt
@@ -1001,28 +1001,28 @@ SUBROUTINE CashKarpRK(C,dCdt,dt,COut,CErr)
 
    DO i=1,nPolsGRSM
       CTemp(i)=C(i)+B21*dt*dCdt(i)
-      IF(CTemp(i).LT.0.) CTemp(i) = 0. !Prevent negative concs
+      IF(CTemp(i)<0.) CTemp(i) = 0. !Prevent negative concs
    END DO
    CALL DConcsDt(CTemp,ak2)
    DO i=1,nPolsGRSM
       CTemp(i)=C(i)+dt*(B31*dCdt(i)+B32*ak2(i))
-      IF(CTemp(i).LT.0.) CTemp(i) = 0. !Prevent negative concs
+      IF(CTemp(i)<0.) CTemp(i) = 0. !Prevent negative concs
    END DO
    CALL DConcsDt(CTemp,ak3)
    DO i=1,nPolsGRSM
       CTemp(i)=C(i)+dt*(B41*dCdt(i)+B42*ak2(i)+B43*ak3(i))
-      IF(CTemp(i).LT.0.) CTemp(i) = 0. !Prevent negative concs
+      IF(CTemp(i)<0.) CTemp(i) = 0. !Prevent negative concs
    END DO
    CALL DConcsDt(CTemp,ak4)
    DO i=1,nPolsGRSM
       CTemp(i)=C(i)+dt*(B51*dCdt(i)+B52*ak2(i)+B53*ak3(i)+B54*ak4(i))
-      IF(CTemp(i).LT.0.) CTemp(i) = 0. !Prevent negative concs
+      IF(CTemp(i)<0.) CTemp(i) = 0. !Prevent negative concs
    END DO
    CALL DConcsDt(CTemp,ak5)
    DO i=1,nPolsGRSM
       CTemp(i)=C(i)+dt*(B61*dCdt(i)+B62*ak2(i)+B63*ak3(i)+B64*ak4(i)+&
       &B65*ak5(i))
-      IF(CTemp(i).LT.0.) CTemp(i) = 0. !Prevent negative concs
+      IF(CTemp(i)<0.) CTemp(i) = 0. !Prevent negative concs
    END DO
    CALL DConcsDt(CTemp,ak6)
    DO i=1,nPolsGRSM
@@ -1097,10 +1097,10 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 
 
 !     Set Mixing Height and Profiles for Urban Option if Needed
-   IF (URBSRC(ISRC) .EQ. 'Y') THEN
+   IF (URBSRC(ISRC) == 'Y') THEN
 !        Find Urban Area Index for This Source
       DO I = 1, NUMURB
-         IF (IURBGRP(ISRC,I) .EQ. 1) THEN
+         IF (IURBGRP(ISRC,I) == 1) THEN
             IURB = I
             EXIT
          END IF
@@ -1124,7 +1124,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
          OBULEN = RUROBULEN
          USTAR  = RURUSTR
       END IF
-   ELSE IF (URBAN .and. URBSRC(ISRC) .EQ. 'N') THEN
+   ELSE IF (URBAN .and. URBSRC(ISRC) == 'N') THEN
       URBSTAB = .FALSE.
       ZI = ZIRUR
       GRIDSV = GRDSVR
@@ -1143,10 +1143,10 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 !     Calculate the initial meteorological variables     ---   CALL METINI
    CALL METINI
 
-   IF ((SRCTYP(ISRC) .EQ. 'VOLUME' .and. AFTSRC(ISRC) .EQ. 'N').or.&  ! Added for Aircraft; UNC-IE
-   &SRCTYP(ISRC) .EQ. 'LINE' .or.&
-   &(SRCTYP(ISRC)(1:4) .EQ. 'AREA' .and. AFTSRC(ISRC) .EQ. 'N').or.&! Added for Aircraft; UNC-IE
-   &SRCTYP(ISRC) .EQ. 'OPENPIT') THEN
+   IF ((SRCTYP(ISRC) == 'VOLUME' .and. AFTSRC(ISRC) == 'N').or.&  ! Added for Aircraft; UNC-IE
+   &SRCTYP(ISRC) == 'LINE' .or.&
+   &(SRCTYP(ISRC)(1:4) == 'AREA' .and. AFTSRC(ISRC) == 'N').or.&! Added for Aircraft; UNC-IE
+   &SRCTYP(ISRC) == 'OPENPIT') THEN
       FB  = 0.0D0
       FM  = 0.0D0
       PPF = 0.0D0
@@ -1158,27 +1158,27 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
       DHCRIT = 0.0D0
       XFINAL = 0.0D0
       XMIXED = ZI * UAVG / SWAVG
-      IF(XMIXED .LT. XFINAL) XMIXED = XFINAL
+      IF(XMIXED < XFINAL) XMIXED = XFINAL
       ZMIDMX = 0.5D0 * ZI
 !        Define temporary values of CENTER and SURFAC based on HS
 !        to account for non-POINT sources
       CENTER = HECNTR(IREC,ISRC)
-      IF( CENTER .LT. 0.1D0*ZI )THEN
+      IF( CENTER < 0.1D0*ZI )THEN
          SURFAC = .TRUE.
       ELSE
          SURFAC = .FALSE.
       END IF
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   ELSE IF ((SRCTYP(ISRC) .EQ. 'VOLUME' .or.&
-   &SRCTYP(ISRC) (1:4) .EQ. 'AREA') .and.&
-   &(AFTSRC(ISRC) .EQ. 'Y')) THEN
+   ELSE IF ((SRCTYP(ISRC) == 'VOLUME' .or.&
+   &SRCTYP(ISRC) (1:4) == 'AREA') .and.&
+   &(AFTSRC(ISRC) == 'Y')) THEN
 !        Calculate Buoyancy Fluxes                          ---   CALL AFLUXES
       CALL AFLUXES
 
 !        Define temporary values of CENTER and SURFAC based on HS
       CENTER = HECNTR(IREC,ISRC)
-      IF( CENTER .LT. 0.1D0*ZI )THEN
+      IF( CENTER < 0.1D0*ZI )THEN
          SURFAC = .TRUE.
       ELSE
          SURFAC = .FALSE.
@@ -1190,7 +1190,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 !        Calculate the plume penetration factor             ---   CALL PENFCT
       CALL PENFCT
 
-      IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+      IF (STABLE .or. (UNSTAB.and.(HS>=ZI))) THEN
 !           Use iterative approach to stable plume rise calculations
          KITER = 0
 150      ZPLM = HSP + 0.5D0 * DHFAER
@@ -1232,7 +1232,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
          TGP = 0.5D0 * (TGS + TGPM)
          PTP = 0.5D0 * (PTS + PTPM)
          BVF = DSQRT( G * TGP / PTP )
-         IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
+         IF(BVF < 1.0D-10) BVF = 1.0D-10
          BVPRIM  = 0.7D0 * BVF
 
          CALL ADISTF
@@ -1240,9 +1240,9 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
          KITER = KITER + 1
 
 !           Check for convergence
-         IF(DABS((DHFOLD - DHFAER)/DHFAER) .LT. 0.01D0) GO TO 160
+         IF(DABS((DHFOLD - DHFAER)/DHFAER) < 0.01D0) GO TO 160
 
-         IF(KITER .GE. 5) THEN
+         IF(KITER >= 5) THEN
             DHFAER = 0.5D0 * (DHFAER + DHFOLD)
             GO TO 160
          ELSE
@@ -1259,7 +1259,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
          TGP = TGS
          PTP = PTS
          BVF = DSQRT( G * TGP / PTP )
-         IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
+         IF(BVF < 1.0D-10) BVF = 1.0D-10
          BVPRIM  = 0.7D0 * BVF
       END IF
 
@@ -1282,9 +1282,9 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
       XFINAL = XMAX
       DHCRIT = DHFAER
       XMIXED = ZI * UAVG / SWAVG
-      IF (UNSTAB .and. HS.LT.ZI) THEN
+      IF (UNSTAB .and. HS<ZI) THEN
 !           Check for XMIXED smaller than 1.25*XFINAL
-         IF (XMIXED .LT. 1.25D0*XFINAL) THEN
+         IF (XMIXED < 1.25D0*XFINAL) THEN
             XFINAL = 0.8D0 * XMIXED
             CALL ACBLPRD (XFINAL)
             DHCRIT = DHP1
@@ -1292,7 +1292,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
       END IF
 !**  End Aircraft Plume Rise insert; April 2023
 
-   ELSE IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
+   ELSE IF (SRCTYP(ISRC)(1:5) == 'POINT') THEN
 !        Calculate Buoyancy and Momentum Fluxes             ---   CALL FLUXES
       CALL FLUXES(VSEQ)
 
@@ -1305,7 +1305,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 
 !        Define temporary values of CENTER and SURFAC based on HS
       CENTER = HECNTR(IREC,ISRC)
-      IF( CENTER .LT. 0.1D0*ZI )THEN
+      IF( CENTER < 0.1D0*ZI )THEN
          SURFAC = .TRUE.
       ELSE
          SURFAC = .FALSE.
@@ -1313,10 +1313,10 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 
 ! ---    Apply HSP for POINTCAP and POINTHOR first to avoid NOSTD option
 !        overriding POINTCAP
-      IF (SRCTYP(ISRC) .EQ. 'POINTCAP') THEN
+      IF (SRCTYP(ISRC) == 'POINTCAP') THEN
 !           Apply stack-tip downwash for capped stacks with VS = 0.001m/s
          HSP = HSPRIM ( US, VSEQ, HS, DS )
-      ELSE IF (SRCTYP(ISRC) .EQ. 'POINTHOR') THEN
+      ELSE IF (SRCTYP(ISRC) == 'POINTHOR') THEN
 !           Do not apply stack-tip downwash for horizontal releases
          HSP = HS
       ELSE IF( NOSTD )THEN
@@ -1333,7 +1333,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 !        Calculate the plume penetration factor             ---   CALL PENFCT
       CALL PENFCT
 
-      IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+      IF (STABLE .or. (UNSTAB.and.(HS>=ZI))) THEN
 !           Use iterative approach to stable plume rise calculations
          KITER = 0
 50       ZPLM = HSP + 0.5D0 * DHFAER
@@ -1367,7 +1367,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
          TGP = 0.5D0 * (TGS + TGPM)
          PTP = 0.5D0 * (PTS + PTPM)
          BVF = DSQRT( G * TGP / PTP )
-         IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
+         IF(BVF < 1.0D-10) BVF = 1.0D-10
          BVPRIM  = 0.7D0 * BVF
 
          CALL DISTF
@@ -1375,9 +1375,9 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
          KITER = KITER + 1
 
 !           Check for convergence
-         IF(DABS((DHFOLD - DHFAER)/DHFAER) .LT. 0.01D0) GO TO 60
+         IF(DABS((DHFOLD - DHFAER)/DHFAER) < 0.01D0) GO TO 60
 
-         IF(KITER .GE. 5) THEN
+         IF(KITER >= 5) THEN
             DHFAER = 0.5D0 * (DHFAER + DHFOLD)
             GO TO 60
          ELSE
@@ -1392,7 +1392,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
          TGP = TGS
          PTP = PTS
          BVF = DSQRT( G * TGP / PTP )
-         IF(BVF .LT. 1.0D-10) BVF = 1.0D-10
+         IF(BVF < 1.0D-10) BVF = 1.0D-10
          BVPRIM  = 0.7D0 * BVF
       END IF
 
@@ -1415,9 +1415,9 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
       XFINAL = XMAX
       DHCRIT = DHFAER
       XMIXED = ZI * UAVG / SWAVG
-      IF (UNSTAB .and. HS.LT.ZI) THEN
+      IF (UNSTAB .and. HS<ZI) THEN
 !           Check for XMIXED smaller than 1.25*XFINAL
-         IF (XMIXED .LT. 1.25D0*XFINAL) THEN
+         IF (XMIXED < 1.25D0*XFINAL) THEN
             XFINAL = 0.8D0 * XMIXED
             CALL CBLPRD (XFINAL)
             DHCRIT = DHP1
@@ -1429,13 +1429,13 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 !     Define plume centroid height (CENTER)
    CALL CENTROID ( XARG )
 
-   IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
+   IF (SRCTYP(ISRC)(1:5) == 'POINT') THEN
 !       Calculate the plume rise                  ---   CALL DELTAH
       CALL DELTAH ( XARG )
 !**  Added for Aircraft Plume Rise; UNC-IE
-   ELSE IF ((SRCTYP(ISRC) .EQ. 'VOLUME' .or.&
-   &SRCTYP(ISRC)(1:4) .EQ. 'AREA') .and.&
-   &(AFTSRC(ISRC) .EQ. 'Y')) THEN
+   ELSE IF ((SRCTYP(ISRC) == 'VOLUME' .or.&
+   &SRCTYP(ISRC)(1:4) == 'AREA') .and.&
+   &(AFTSRC(ISRC) == 'Y')) THEN
 !       Calculate the plume rise                  ---   CALL ADELTAH
       CALL ADELTAH ( XARG )
 !**  End Aircraft Plume Rise insert; April 2023
@@ -1450,7 +1450,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                     ---   CALL PDF
-   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
+   IF( UNSTAB  .and.  (HS < ZI) ) THEN
       CALL PDF
    END IF
 
@@ -1462,7 +1462,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
    CALL IBLVAL ( XARG )
 
 !     Call PDF & HEFF again for final CBL plume heights
-   IF (UNSTAB .and. (HS.LT.ZI) ) THEN
+   IF (UNSTAB .and. (HS<ZI) ) THEN
       CALL PDF
       CALL HEFF ( XARG )
    END IF
@@ -1494,7 +1494,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
       !Unknown source type
       CALL ERRHDL(PATH,MODNAM,'E','614','')
    END SELECT
-   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
       SIGZ_NoTurb = SZ
    ELSE
       SIGZ_NoTurb = 0.5D0*(SZD1+SZD2)
@@ -1519,7 +1519,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
       !Unknown source type
       CALL ERRHDL(PATH,MODNAM,'E','614','')
    END SELECT
-   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
       SIGZ = SZ
    ELSE
       SIGZ = 0.5D0*(SZD1+SZD2)
@@ -1554,7 +1554,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 
 
    !Calculate dispersion time for Gaussian part of plume
-   IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+   IF (STABLE .or. (UNSTAB.and.(HS>=ZI))) THEN
       UCHM=UEFF
    ELSE
       UCHM=UEFFD
@@ -1605,7 +1605,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
    ENDIF
 
    !Get fraction of random kinetic energy
-   IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+   IF (STABLE .or. (UNSTAB.and.(HS>=ZI))) THEN
       CALL MEANDR(UEFF, SVEFF, FRAN)
    ELSE
       CALL MEANDR(UEFFD, SVEFFD, FRAN)

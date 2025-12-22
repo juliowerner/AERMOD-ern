@@ -31,9 +31,9 @@ SUBROUTINE GRDSV ()
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
-   INTEGER     PINDEX, GINDEX
+   INTEGER     :: PINDEX, GINDEX
    DOUBLE PRECISION :: VBELOW, HTBELO
 !
 !---- Data definitions
@@ -57,27 +57,27 @@ SUBROUTINE GRDSV ()
 !     profile exceeds the maximum number
 !     ------------------------------------------------------------------
 !
-   DO WHILE( GINDEX .LE. MXGLVL )
+   DO WHILE( GINDEX <= MXGLVL )
 !
 !        -------------------------------------------
 !        Now begin looping over the observed profile
 !        -------------------------------------------
 !
-      DO WHILE( GRIDSV(GINDEX) .LT. -90.0D0 .and. PINDEX.LE.NPLVLS )
+      DO WHILE( GRIDSV(GINDEX) < -90.0D0 .and. PINDEX<=NPLVLS )
 !
-         IF( PFLSV(PINDEX) .GE. 0.0D0 )THEN
+         IF( PFLSV(PINDEX) >= 0.0D0 )THEN
 !
 !              -------------------------------------------------
 !              Data at this level are not missing; determine its
 !              location relative to the height at which data are
 !              required and act accordingly.
 !              -------------------------------------------------
-            IF( DABS( PFLHT(PINDEX)-GRIDHT(GINDEX)) .LE. 0.1D0 )THEN
+            IF( DABS( PFLHT(PINDEX)-GRIDHT(GINDEX)) <= 0.1D0 )THEN
 !                 USE the parameter at this level
                GRIDSV(GINDEX) = PFLSV(PINDEX)
 !
-            ELSEIF( GRIDHT(GINDEX)  .GT.  PFLHT(PINDEX) )THEN
-               IF( PINDEX .LT. NPLVLS )THEN
+            ELSEIF( GRIDHT(GINDEX)  >  PFLHT(PINDEX) )THEN
+               IF( PINDEX < NPLVLS )THEN
 !                    SAVE value for possible interpolation
                   VBELOW = PFLSV(PINDEX)
                   HTBELO = PFLHT(PINDEX)
@@ -88,8 +88,8 @@ SUBROUTINE GRDSV ()
                   &GRIDHT(GINDEX), GRIDSV(GINDEX) )
                ENDIF
 !
-            ELSEIF( GRIDHT(GINDEX)  .LT.  PFLHT(PINDEX) )THEN
-               IF( VBELOW .GE. 0.0D0 )THEN
+            ELSEIF( GRIDHT(GINDEX)  <  PFLHT(PINDEX) )THEN
+               IF( VBELOW >= 0.0D0 )THEN
 !                    INTERPOLATE between the two values    --- CALL NTRPSV
                   CALL NTRPSV ( HTBELO, VBELOW, PFLHT(PINDEX),&
                   &PFLSV(PINDEX), GRIDHT(GINDEX),&
@@ -119,8 +119,8 @@ SUBROUTINE GRDSV ()
 !              level, then make a computation.
 !              -------------------------------------------------------
 !
-            IF( PINDEX .EQ. NPLVLS )THEN
-               IF( VBELOW  .GE.  0.0D0 )THEN
+            IF( PINDEX == NPLVLS )THEN
+               IF( VBELOW  >=  0.0D0 )THEN
 !                    PROFILE up from BELOW                 --- CALL XTRPSV
                   CALL XTRPSV ( HTBELO, VBELOW,&
                   &GRIDHT(GINDEX), GRIDSV(GINDEX) )
@@ -143,8 +143,8 @@ SUBROUTINE GRDSV ()
 !           processing
 !           ---------------------------------------------------------
 !
-         IF( (GRIDSV(GINDEX) .LT. 0.0D0)  .and.&
-         &(PINDEX .LT. NPLVLS) )THEN
+         IF( (GRIDSV(GINDEX) < 0.0D0)  .and.&
+         &(PINDEX < NPLVLS) )THEN
             PINDEX = PINDEX + 1
          ENDIF
 !
@@ -161,7 +161,7 @@ SUBROUTINE GRDSV ()
    END DO   ! Loop over gridded data profile
 !
    RETURN
-END
+END SUBROUTINE GRDSV
 
 SUBROUTINE REFSV ( HTINP, VALUE )
 !=======================================================================
@@ -196,7 +196,7 @@ SUBROUTINE REFSV ( HTINP, VALUE )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION :: HEIGHT, VALUE, SVC, SVM
    DOUBLE PRECISION :: HTINP
@@ -230,7 +230,7 @@ SUBROUTINE REFSV ( HTINP, VALUE )
 
 !
    RETURN
-END
+END SUBROUTINE REFSV
 
 SUBROUTINE REFSVC ( HTINP, VALUE )
 !=======================================================================
@@ -265,7 +265,7 @@ SUBROUTINE REFSVC ( HTINP, VALUE )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION :: HEIGHT, VALUE, SV2, ZDCRS, ATZI, SV2DCR, VAL2
    DOUBLE PRECISION :: HTINP
@@ -290,10 +290,10 @@ SUBROUTINE REFSVC ( HTINP, VALUE )
 !
    SV2 = 0.35D0 * WSTAR**2
 !
-   IF( HEIGHT  .LE.  ZICONV )THEN
+   IF( HEIGHT  <=  ZICONV )THEN
       VALUE = DSQRT( SV2 )
 
-   ELSEIF( HEIGHT .GT. ZICONV  .and.  HEIGHT .LE. ZDCRS )THEN
+   ELSEIF( HEIGHT > ZICONV  .and.  HEIGHT <= ZDCRS )THEN
 !        COMPUTE sigmaV at 1.2*ZI
       SV2DCR = MIN( SV2, 0.25D0 )
 !        INTERPOLATE between value of SV2 at ZI and at 1.2*ZI
@@ -307,7 +307,7 @@ SUBROUTINE REFSVC ( HTINP, VALUE )
    ENDIF
 !
    RETURN
-END
+END SUBROUTINE REFSVC
 
 SUBROUTINE REFSVM ( HTINP, VALUE )
 !=======================================================================
@@ -342,7 +342,7 @@ SUBROUTINE REFSVM ( HTINP, VALUE )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION :: HEIGHT, VALUE, SV02, SV2ZI, VARV
    DOUBLE PRECISION :: HTINP
@@ -366,7 +366,7 @@ SUBROUTINE REFSVM ( HTINP, VALUE )
 !     Do not let SV2 at ZI exceed the surface value.
    SV2ZI = MIN( SV02, 0.25D0 )
 
-   IF( HEIGHT  .LE.  ZIMECH )THEN
+   IF( HEIGHT  <=  ZIMECH )THEN
 !        INTERPOLATE between these two values of the variance if HEIGHT is
 !        below ZIMECH
       CALL GINTRP ( 0.0D0, SV02, ZIMECH, SV2ZI, HEIGHT, VARV )
@@ -379,7 +379,7 @@ SUBROUTINE REFSVM ( HTINP, VALUE )
    ENDIF
 !
    RETURN
-END
+END SUBROUTINE REFSVM
 
 SUBROUTINE NTRPSV ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
 !=======================================================================
@@ -458,7 +458,7 @@ SUBROUTINE NTRPSV ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
    VALUE = RATIO * VALINT
 
    RETURN
-END
+END SUBROUTINE NTRPSV
 
 SUBROUTINE XTRPSV ( PFLZ, PFLVAL, GRDZ, VALUE )
 !=======================================================================
@@ -524,7 +524,7 @@ SUBROUTINE XTRPSV ( PFLZ, PFLVAL, GRDZ, VALUE )
    VALUE = RATIO * PFLVAL
 !
    RETURN
-END
+END SUBROUTINE XTRPSV
 
 
 
@@ -560,9 +560,9 @@ SUBROUTINE GRDSW ()
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
-   INTEGER     PINDEX, GINDEX
+   INTEGER     :: PINDEX, GINDEX
    DOUBLE PRECISION :: VBELOW, HTBELO
 !
 !---- Data definitions
@@ -586,27 +586,27 @@ SUBROUTINE GRDSW ()
 !     profile exceeds the maximum number
 !     ------------------------------------------------------------------
 
-   DO WHILE( GINDEX .LE. MXGLVL )
+   DO WHILE( GINDEX <= MXGLVL )
 
 !        -------------------------------------------
 !        Now begin looping over the observed profile
 !        -------------------------------------------
 !
-      DO WHILE( GRIDSW(GINDEX) .LT. -90.0D0 .and. PINDEX.LE.NPLVLS )
+      DO WHILE( GRIDSW(GINDEX) < -90.0D0 .and. PINDEX<=NPLVLS )
 !
-         IF( PFLSW(PINDEX) .GE. 0.0D0 )THEN
+         IF( PFLSW(PINDEX) >= 0.0D0 )THEN
 !
 !              -------------------------------------------------
 !              Data at this level are not missing; determine its
 !              location relative to the height at which data are
 !              required and act accordingly.
 !              -------------------------------------------------
-            IF( DABS( PFLHT(PINDEX) - GRIDHT(GINDEX) ).LE.0.1D0 )THEN
+            IF( DABS( PFLHT(PINDEX) - GRIDHT(GINDEX) )<=0.1D0 )THEN
 !                 USE the parameter at this level
                GRIDSW(GINDEX) = PFLSW(PINDEX)
 !
-            ELSEIF( GRIDHT(GINDEX)  .GT.  PFLHT(PINDEX) )THEN
-               IF( PINDEX .LT. NPLVLS )THEN
+            ELSEIF( GRIDHT(GINDEX)  >  PFLHT(PINDEX) )THEN
+               IF( PINDEX < NPLVLS )THEN
 !                    SAVE value for possible interpolation
                   VBELOW = PFLSW(PINDEX)
                   HTBELO = PFLHT(PINDEX)
@@ -617,8 +617,8 @@ SUBROUTINE GRDSW ()
                   &GRIDHT(GINDEX), GRIDSW(GINDEX) )
                ENDIF
 !
-            ELSEIF( GRIDHT(GINDEX)  .LT.  PFLHT(PINDEX) )THEN
-               IF( VBELOW .GE. 0.0D0 )THEN
+            ELSEIF( GRIDHT(GINDEX)  <  PFLHT(PINDEX) )THEN
+               IF( VBELOW >= 0.0D0 )THEN
 !                    INTERPOLATE between the two values    --- CALL NTRPSW
                   CALL NTRPSW ( HTBELO, VBELOW, PFLHT(PINDEX),&
                   &PFLSW(PINDEX), GRIDHT(GINDEX),&
@@ -648,8 +648,8 @@ SUBROUTINE GRDSW ()
 !              level, then make a computation.
 !              -------------------------------------------------------
 !
-            IF( PINDEX .EQ. NPLVLS )THEN
-               IF( VBELOW  .GE.  0.0D0 )THEN
+            IF( PINDEX == NPLVLS )THEN
+               IF( VBELOW  >=  0.0D0 )THEN
 !                    PROFILE up from BELOW                 --- CALL XTRPSW
                   CALL XTRPSW ( HTBELO, VBELOW,&
                   &GRIDHT(GINDEX), GRIDSW(GINDEX) )
@@ -672,8 +672,8 @@ SUBROUTINE GRDSW ()
 !           processing
 !           ---------------------------------------------------------
 !
-         IF( (GRIDSW(GINDEX) .LT. 0.0D0)  .and.&
-         &(PINDEX .LT. NPLVLS) )THEN
+         IF( (GRIDSW(GINDEX) < 0.0D0)  .and.&
+         &(PINDEX < NPLVLS) )THEN
             PINDEX = PINDEX + 1
          ENDIF
 !
@@ -692,7 +692,7 @@ SUBROUTINE GRDSW ()
 
 
    RETURN
-END
+END SUBROUTINE GRDSW
 
 SUBROUTINE REFSW ( HTINP, VALUE )
 !=======================================================================
@@ -730,7 +730,7 @@ SUBROUTINE REFSW ( HTINP, VALUE )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION :: HEIGHT, VALUE, SWC, SWM
    DOUBLE PRECISION :: HTINP
@@ -784,7 +784,7 @@ SUBROUTINE REFSW ( HTINP, VALUE )
    END IF
 
    RETURN
-END
+END SUBROUTINE REFSW
 
 SUBROUTINE REFSWC ( HTINP, VALUE )
 !=======================================================================
@@ -823,7 +823,7 @@ SUBROUTINE REFSWC ( HTINP, VALUE )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION :: HEIGHT, VALUE, SW2, EXPARG
    DOUBLE PRECISION :: HTINP
@@ -840,16 +840,16 @@ SUBROUTINE REFSWC ( HTINP, VALUE )
 !
 !.......................................................................
 !
-   IF( HEIGHT  .LE.  0.1D0*ZICONV )THEN
+   IF( HEIGHT  <=  0.1D0*ZICONV )THEN
       SW2 = 1.6D0 * ( HEIGHT / ZICONV )**(2.0D0*THIRD) * WSTAR**2
       VALUE  = DSQRT( SW2 )
 
-   ELSEIF( HEIGHT .GT. 0.1D0*ZICONV  .and.  HEIGHT .LE. ZICONV )THEN
+   ELSEIF( HEIGHT > 0.1D0*ZICONV  .and.  HEIGHT <= ZICONV )THEN
       VALUE = DSQRT( 0.35D0 * WSTAR**2 )
 
-   ELSEIF( HEIGHT .GT. ZICONV )THEN
+   ELSEIF( HEIGHT > ZICONV )THEN
       EXPARG = -6.0D0*(HEIGHT - ZICONV)/ZICONV
-      IF (EXPARG .GT. EXPLIM) THEN
+      IF (EXPARG > EXPLIM) THEN
          SW2 = 0.35D0 * WSTAR**2 * DEXP( EXPARG )
          VALUE = DSQRT( SW2 )
       ELSE
@@ -861,7 +861,7 @@ SUBROUTINE REFSWC ( HTINP, VALUE )
 !
 
    RETURN
-END
+END SUBROUTINE REFSWC
 
 SUBROUTINE REFSWM ( HTINP, VALUE )
 !=======================================================================
@@ -900,7 +900,7 @@ SUBROUTINE REFSWM ( HTINP, VALUE )
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION :: HEIGHT, VALUE, SWR, SWBL
    DOUBLE PRECISION :: HTINP
@@ -922,7 +922,7 @@ SUBROUTINE REFSWM ( HTINP, VALUE )
 
    SWR  = SWRMAX * MIN( 1.0D0, HEIGHT/ZI)
 
-   IF (HEIGHT .LT. ZI) THEN
+   IF (HEIGHT < ZI) THEN
       SWBL = 1.3D0 * USTAR * DSQRT( 1.0D0 - HEIGHT/ZI)
    ELSE
       SWBL = 0.0D0
@@ -932,7 +932,7 @@ SUBROUTINE REFSWM ( HTINP, VALUE )
 
 
    RETURN
-END
+END SUBROUTINE REFSWM
 
 SUBROUTINE NTRPSW ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
 !=======================================================================
@@ -1008,7 +1008,7 @@ SUBROUTINE NTRPSW ( HTBELO,VBELOW, HTABOV,VABOVE, REQDHT,VALUE )
    VALUE = RATIO * VALINT
 
    RETURN
-END
+END SUBROUTINE NTRPSW
 
 SUBROUTINE XTRPSW ( PFLZ, PFLVAL, GRDZ, VALUE )
 !=======================================================================
@@ -1073,4 +1073,4 @@ SUBROUTINE XTRPSW ( PFLZ, PFLVAL, GRDZ, VALUE )
    VALUE = RATIO * PFLVAL
 !
    RETURN
-END
+END SUBROUTINE XTRPSW

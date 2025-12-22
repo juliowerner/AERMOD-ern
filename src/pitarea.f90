@@ -21,7 +21,7 @@ SUBROUTINE AVERTS(XVIN,YVIN,XWD,YWD,NUMV)
 !*    Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: NUMV, NSP
 
@@ -37,7 +37,7 @@ SUBROUTINE AVERTS(XVIN,YVIN,XWD,YWD,NUMV)
    END DO
 
    RETURN
-END
+END SUBROUTINE AVERTS
 
 SUBROUTINE AREAIN
 !***********************************************************************
@@ -74,13 +74,13 @@ SUBROUTINE AREAIN
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    integer :: i
    INTEGER :: KSIDE, NCP, KSP, KS
    DOUBLE PRECISION :: UCRIT, UA, UB, VA, VB, VNMIN, VNMAX, WA, VNORM
    DOUBLE PRECISION :: VAL, DVAL
-   LOGICAL QGO
+   LOGICAL :: QGO
 
 !     Variable Initializations
    MODNAM = 'AREAIN'
@@ -97,10 +97,10 @@ SUBROUTINE AREAIN
       ub = SPA(ncp+1,1)
       va = SPA(ncp,2)
       vb = SPA(ncp+1,2)
-      IF (ua .ge. ucrit) THEN
+      IF (ua >= ucrit) THEN
          kside = kside + 1
 
-         IF (kside .LE. NVMAX+1) THEN
+         IF (kside <= NVMAX+1) THEN
             uvert(kside) = ua
             vvert(kside) = va
          ELSE
@@ -110,10 +110,10 @@ SUBROUTINE AREAIN
             RETURN
          END IF
       END IF
-      IF ((ua .ge. ucrit .and. ub .lt. ucrit) .or.&
-      &(ua .lt. ucrit .and. ub .ge. ucrit)) THEN
+      IF ((ua >= ucrit .and. ub < ucrit) .or.&
+      &(ua < ucrit .and. ub >= ucrit)) THEN
          kside = kside+1
-         IF (kside .LE. NVMAX+1) THEN
+         IF (kside <= NVMAX+1) THEN
             uvert(kside) = ucrit
             vvert(kside) = va+(ucrit-ua)*(vb-va)/(ub-ua)
          ELSE
@@ -146,7 +146,7 @@ SUBROUTINE AREAIN
    endif
 
    QGO = .FALSE.
-   IF (kside .gt. 2) THEN
+   IF (kside > 2) THEN
       QGO = .TRUE.
       vnmin=  3.9D0
       vnmax= -3.9D0
@@ -159,7 +159,7 @@ SUBROUTINE AREAIN
          vnmax = MAX(vnorm,vnmax)
          vnmin = MIN(vnorm,vnmin)
       END DO
-      IF (vnmin .ge. 3.9D0 .or. vnmax .le. -3.9D0) QGO = .FALSE.
+      IF (vnmin >= 3.9D0 .or. vnmax <= -3.9D0) QGO = .FALSE.
 
       if( AREADBG )then
          write(AREADBUNT,*)
@@ -177,7 +177,7 @@ SUBROUTINE AREAIN
    IF (QGO) THEN
 !        MAKE 1st Point Same as Last
       ksp = kside+1
-      IF (ksp .LE. NVMAX+1) THEN
+      IF (ksp <= NVMAX+1) THEN
          uvert(ksp)  = uvert(1)
          vvert(ksp)  = vvert(1)
          vnvert(ksp) = vnvert(1)
@@ -196,7 +196,7 @@ SUBROUTINE AREAIN
          ua = uvert(ks)
          ub = uvert(ks+1)
          dval  = 0.0D0
-         IF (DABS(ua-ub) .lt. 0.01D0) QGO = .FALSE.
+         IF (DABS(ua-ub) < 0.01D0) QGO = .FALSE.
          IF (QGO .and. FASTAREA) THEN
             call pside_tox(ua,ub,dval)
          ELSE IF (QGO) THEN
@@ -204,7 +204,7 @@ SUBROUTINE AREAIN
          END IF
          val  = val + dval
       END DO
-      IF (nsegs .gt. 0) THEN
+      IF (nsegs > 0) THEN
          LSEG = .TRUE.
          IF (FASTAREA) THEN
             call pside2_tox(dval)
@@ -233,7 +233,7 @@ SUBROUTINE AREAIN
    END IF
 
    RETURN
-END
+END SUBROUTINE AREAIN
 
 SUBROUTINE PLUMEF(XARG,POUT)
 !***********************************************************************
@@ -278,7 +278,7 @@ SUBROUTINE PLUMEF(XARG,POUT)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Declare Local Variables
    INTEGER :: J
@@ -294,7 +294,7 @@ SUBROUTINE PLUMEF(XARG,POUT)
    XDIST = XARG
 
 !     Determine Deposition Correction Factors
-   IF (NPD .EQ. 0 .and. .NOT.ARDPLETE .and. (LDGAS .or. LWGAS)) THEN
+   IF (NPD == 0 .and. .NOT.ARDPLETE .and. (LDGAS .or. LWGAS)) THEN
       CALL PDEPG (XARG)
    ELSE IF (.NOT.ARDPLETE) THEN
       DQCORG = 1.0D0
@@ -302,7 +302,7 @@ SUBROUTINE PLUMEF(XARG,POUT)
    END IF
    IF (.NOT.ARDPLETE .and. (LDPART .or. LWPART)) THEN
       CALL PDEP (XARG)
-   ELSE IF (.NOT.ARDPLETE .and. NPD .GT. 0) THEN
+   ELSE IF (.NOT.ARDPLETE .and. NPD > 0) THEN
 !        Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
       DQCOR = 1.0D0
       WQCOR = 1.0D0
@@ -315,13 +315,13 @@ SUBROUTINE PLUMEF(XARG,POUT)
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                              ---   CALL PDF
-   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
+   IF( UNSTAB  .and.  (HS < ZI) ) THEN
       CALL PDF
    ENDIF
 
 !     Determine Effective Plume Height                      ---   CALL HEFF
 !**   Added for Aircraft Plume Rise; UNC-IE
-   IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+   IF (AFTSRC(ISRC) == 'Y') THEN
 !      Find Aircraft Index for This Source
 !       Calculate Buoyancy Flux                             ---   CALL AFLUXES
       CALL AFLUXES
@@ -336,10 +336,10 @@ SUBROUTINE PLUMEF(XARG,POUT)
    CALL IBLVAL (XARG)
 
 !     Call PDF & HEFF again for final CBL plume heights
-   IF (UNSTAB .and. (HS.LT.ZI) ) THEN
+   IF (UNSTAB .and. (HS<ZI) ) THEN
       CALL PDF
 !**  Added for Aircraft Plume Rise; UNC-IE
-      IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+      IF (AFTSRC(ISRC) == 'Y') THEN
 !       Find Aircraft Index for This Source
 !       Calculate Buoyancy Flux                             --- CALL AFLUXES
          CALL AFLUXES
@@ -368,17 +368,17 @@ SUBROUTINE PLUMEF(XARG,POUT)
       CALL ADISZ(XARG)
    END IF
 
-   IF (NPD .EQ. 0) THEN
+   IF (NPD == 0) THEN
 !        Perform calculations for gases
 !        Assign plume tilt, HV = 0.0
       HV = 0.0D0
 
       ADJ = DQCORG * WQCORG
 
-      IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+      IF (STABLE .or. (UNSTAB.and.(HS>=ZI))) THEN
 !           Calculate height of the "effective reflecting surface"
 !**  Added for Aircraft Plume Rise; UNC-IE
-         IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+         IF (AFTSRC(ISRC) == 'Y') THEN
             CALL REFL_HT (HE, XARG, SZB, VSIGZ, HSBL)
          ELSE
 !**  End Aircraft Plume Rise insert; April 2023
@@ -413,12 +413,12 @@ SUBROUTINE PLUMEF(XARG,POUT)
 !           depletion
          ADJ = PHI(J) * DQCOR(J) * WQCOR(J)
 
-         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
+         IF (STABLE .or. (UNSTAB.and.(HS>=ZI))) THEN
 !              Calculate height of the "effective reflecting surface"
 !              Calculate Settled Plume Height(s), HESETL
             HESETL = MAX( 0.0D0, HE - HV )
 !**  Added for Aircraft Plume Rise; UNC-IE
-            IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+            IF (AFTSRC(ISRC) == 'Y') THEN
                CALL REFL_HT (HESETL, XARG, SZB, VSIGZ, HSBL)
             ELSE
 !**  End Aircraft Plume Rise insert; April 2023
@@ -449,7 +449,7 @@ SUBROUTINE PLUMEF(XARG,POUT)
    END IF
 
    RETURN
-END
+END SUBROUTINE PLUMEF
 
 
 SUBROUTINE PSIDE(U1,U2,DVAL)
@@ -509,7 +509,7 @@ SUBROUTINE PSIDE(U1,U2,DVAL)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !---- Set convergence criteria for calls to QATR3:
 !         NDIM = maximum number of integration steps
@@ -520,7 +520,7 @@ SUBROUTINE PSIDE(U1,U2,DVAL)
    INTEGER, PARAMETER :: NDIM = 12, IMIN = 5
    DOUBLE PRECISION, PARAMETER :: EPSR = 1.0D-2, EPST = 1.0D-5
 
-   integer icase
+   integer :: icase
    INTEGER :: I, KS, IMINUS, IPLUS, NOUT, ICON
    DOUBLE PRECISION :: DVAL, U1, U2, UMINUS, UPLUS, AUX(NDIM),&
 !     JAT DO65 8/29/21, V1 AND W SET BUT NEVER USED
@@ -547,14 +547,14 @@ SUBROUTINE PSIDE(U1,U2,DVAL)
    uminus = -1.0D0
    uplus  = -1.0D0
    DO i = 1,2
-      IF (vn(i) .lt. -3.9D0) iminus = i + iminus
-      IF (vn(i) .gt.  3.9D0) iplus  = i + iplus
+      IF (vn(i) < -3.9D0) iminus = i + iminus
+      IF (vn(i) >  3.9D0) iplus  = i + iplus
    END DO
 
-   IF (iplus.EQ.1 .or. iplus.EQ.2) THEN
+   IF (iplus==1 .or. iplus==2) THEN
       call zbrent( 1,u(1),u(2),vn(1),vn(2),1.0D-3,uplus)
    END IF
-   IF (iminus.EQ.1 .or. iminus.EQ.2) THEN
+   IF (iminus==1 .or. iminus==2) THEN
       call zbrent(-1,u(1),u(2),vn(1),vn(2),1.0D-3,uminus)
    END IF
 
@@ -569,23 +569,23 @@ SUBROUTINE PSIDE(U1,U2,DVAL)
          write(AREADBUNT,*) '  IREC   = ',irec
       ENDIF
       write(AREADBUNT,*) ' iplus  iminus  case'
-      if( iplus.eq.0 .and. iminus.eq.0 )then
+      if( iplus==0 .and. iminus==0 )then
          icase = 1
-      elseif( iplus.eq.0 .and. iminus.eq.3 )then
+      elseif( iplus==0 .and. iminus==3 )then
          icase = 2
-      elseif( iplus.eq.0 .and. iminus.eq.1 )then
+      elseif( iplus==0 .and. iminus==1 )then
          icase = 4
-      elseif( iplus.eq.0 .and. iminus.eq.2 )then
+      elseif( iplus==0 .and. iminus==2 )then
          icase = 5
-      elseif( iplus.eq.1 .and. iminus.eq.0 )then
+      elseif( iplus==1 .and. iminus==0 )then
          icase = 7
-      elseif( iplus.eq.1 .and. iminus.eq.2 )then
+      elseif( iplus==1 .and. iminus==2 )then
          icase = 9
-      elseif( iplus.eq.2 .and. iminus.eq.0 )then
+      elseif( iplus==2 .and. iminus==0 )then
          icase = 6
-      elseif( iplus.eq.2 .and. iminus.eq.1 )then
+      elseif( iplus==2 .and. iminus==1 )then
          icase = 8
-      elseif( iplus.eq.3 .and. iminus.eq.0 )then
+      elseif( iplus==3 .and. iminus==0 )then
          icase = 3
       endif
       write(AREADBUNT,'(I5,I7,I6)') iplus, iminus, icase
@@ -593,16 +593,16 @@ SUBROUTINE PSIDE(U1,U2,DVAL)
    endif
 
 !---- CASE DEPENDs on iplus, iminus
-   IF (iplus .EQ. 0) THEN
-      IF (iminus .EQ. 0) THEN
+   IF (iplus == 0) THEN
+      IF (iminus == 0) THEN
 !                                             iplus  iminus  case
 !                                               0     0       1
          call qatr3(u1,u2,epsr,epst,ndim,imin,dval,&
          &icon,nout,aux)
-      ELSE IF (iminus .EQ. 3) THEN
+      ELSE IF (iminus == 3) THEN
 !                                               0     3       2
          dval = 0.0D0
-      ELSE IF (iminus .EQ. 1) THEN
+      ELSE IF (iminus == 1) THEN
 !                                               0     1       4
          call qatr3(uminus,u2,epsr,epst,ndim,imin,dval,&
          &icon,nout,aux)
@@ -612,11 +612,11 @@ SUBROUTINE PSIDE(U1,U2,DVAL)
          &icon,nout,aux)
       END IF
 
-   ELSE IF (iplus .EQ. 1) THEN
+   ELSE IF (iplus == 1) THEN
       nsegs = nsegs+1
       uasegs(nsegs) = u1
       ubsegs(nsegs) = uplus
-      IF (iminus .EQ. 0) THEN
+      IF (iminus == 0) THEN
 !                                               1     0       7
          call qatr3(uplus,u2,epsr,epst,ndim,imin,dval,&
          &icon,nout,aux)
@@ -626,11 +626,11 @@ SUBROUTINE PSIDE(U1,U2,DVAL)
          &icon,nout,aux)
       END IF
 
-   ELSE IF (iplus .EQ. 2) THEN
+   ELSE IF (iplus == 2) THEN
       nsegs = nsegs+1
       uasegs(nsegs) = uplus
       ubsegs(nsegs) = u2
-      IF (iminus .EQ. 0) THEN
+      IF (iminus == 0) THEN
 !                                               2     0       6
          call qatr3(u1,uplus,epsr,epst,ndim,imin,dval,&
          &icon,nout,aux)
@@ -658,7 +658,7 @@ SUBROUTINE PSIDE(U1,U2,DVAL)
       ENDIF
 
       write(AREADBUNT,*) '  NSEGS  = ',nsegs
-      if( nsegs .gt. 0 )then
+      if( nsegs > 0 )then
          write(AREADBUNT,*) '  UASEGS = ',uasegs(nsegs)
          write(AREADBUNT,*) '  UBSEGS = ',ubsegs(nsegs)
       else
@@ -669,7 +669,7 @@ SUBROUTINE PSIDE(U1,U2,DVAL)
    endif
 
    RETURN
-END
+END SUBROUTINE PSIDE
 
 SUBROUTINE XWIDTH(U,XOUT)
 !***********************************************************************
@@ -695,7 +695,7 @@ SUBROUTINE XWIDTH(U,XOUT)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION :: XOUT, U, U1, U2, V1, V2
 
@@ -709,7 +709,7 @@ SUBROUTINE XWIDTH(U,XOUT)
    XOUT = V1+(U-U1)*(V2-V1)/(U2-U1)
 
    RETURN
-END
+END SUBROUTINE XWIDTH
 
 SUBROUTINE PWIDTH(XARG,V1,VN,WIDTH)
 !***********************************************************************
@@ -747,7 +747,7 @@ SUBROUTINE PWIDTH(XARG,V1,VN,WIDTH)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: ITEMP
    DOUBLE PRECISION :: XARG, WIDTH, VN, V1, TEMP, GA(79)
@@ -772,7 +772,7 @@ SUBROUTINE PWIDTH(XARG,V1,VN,WIDTH)
    WIDTH = 0.0D0
    VN = 0.0D0
 
-   IF (XARG .EQ. 0.0D0) THEN
+   IF (XARG == 0.0D0) THEN
       SY = 1.0D0
       VN = V1
       WIDTH = VN
@@ -794,13 +794,13 @@ SUBROUTINE PWIDTH(XARG,V1,VN,WIDTH)
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                              ---   CALL PDF
-   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
+   IF( UNSTAB  .and.  (HS < ZI) ) THEN
       CALL PDF
    ENDIF
 
 !     Determine Effective Plume Height                      ---   CALL HEFF
 !**  Added for Aircraft Plume Rise; UNC-IE
-   IF (AFTSRC(ISRC) .EQ. 'Y') THEN
+   IF (AFTSRC(ISRC) == 'Y') THEN
 !      Find Aircraft Index for This Source
 !      Calculate Buoyancy Flux                              ---   CALL AFLUXES
       CALL AFLUXES
@@ -823,17 +823,17 @@ SUBROUTINE PWIDTH(XARG,V1,VN,WIDTH)
    ITEMP = IDINT(TEMP)
    WIDTH = 0.0D0
 
-   IF (ITEMP .GT. 78) THEN
+   IF (ITEMP > 78) THEN
       WIDTH = 1.0000D0
    ELSE
-      IF (ITEMP .GE. 1) THEN
+      IF (ITEMP >= 1) THEN
          WIDTH = GA(ITEMP)+(TEMP-DBLE(ITEMP))*&
          &(GA(ITEMP+1)-GA(ITEMP))
       END IF
    END IF
 
 999 RETURN
-END
+END SUBROUTINE PWIDTH
 
 SUBROUTINE ZBRENT(IFD,X1,X2,VN1,VN2,TOL,OUTVAL)
 !***********************************************************************
@@ -861,7 +861,7 @@ SUBROUTINE ZBRENT(IFD,X1,X2,VN1,VN2,TOL,OUTVAL)
 
 !     Variable Declarations
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER, PARAMETER :: ITMAX = 10
    DOUBLE PRECISION, PARAMETER :: EPSZ  = 1.0D-3
@@ -881,16 +881,16 @@ SUBROUTINE ZBRENT(IFD,X1,X2,VN1,VN2,TOL,OUTVAL)
    fa = vn1-DBLE(ifd)*3.9D0
    fb = vn2-DBLE(ifd)*3.9D0
 
-   IF (fb*fa .LE. 0.0D0) THEN
+   IF (fb*fa <= 0.0D0) THEN
       fc = fb
       DO iter = 1, itmax
-         IF (fb*fc .gt. 0.0D0) THEN
+         IF (fb*fc > 0.0D0) THEN
             c1 = a1
             fc = fa
             d1 = b1-a1
             e1 = d1
          END IF
-         IF (DABS(fc) .lt. DABS(fb)) THEN
+         IF (DABS(fc) < DABS(fb)) THEN
             a1 = b1
             b1 = c1
             c1 = a1
@@ -900,13 +900,13 @@ SUBROUTINE ZBRENT(IFD,X1,X2,VN1,VN2,TOL,OUTVAL)
          END IF
          tol1 = 2.0D0*epsz*DABS(b1)+0.5D0*tol
          xm = 0.5D0*(c1-b1)
-         IF (DABS(xm).le.tol1  .or. fb .EQ. 0.0D0) THEN
+         IF (DABS(xm)<=tol1  .or. fb == 0.0D0) THEN
             outval = b1
             RETURN
          END IF
-         IF (DABS(e1).ge.tol1 .and. DABS(fa).gt.DABS(fb)) THEN
+         IF (DABS(e1)>=tol1 .and. DABS(fa)>DABS(fb)) THEN
             s1 = fb/fa
-            IF (a1 .EQ. c1) THEN
+            IF (a1 == c1) THEN
                p1 = 2.0D0*xm*s1
                q1 = 1.0D0-s1
             ELSE
@@ -915,9 +915,9 @@ SUBROUTINE ZBRENT(IFD,X1,X2,VN1,VN2,TOL,OUTVAL)
                p1 = s1*(2.0D0*xm*q1*(q1-r1)-(b1-a1)*(r1-1.0D0))
                q1 = (q1-1.0D0)*(r1-1.0D0)*(s1-1.0D0)
             END IF
-            IF(p1 .gt. 0.0D0) q1 = -q1
+            IF(p1 > 0.0D0) q1 = -q1
             p1 = DABS(p1)
-            IF (2.0D0*p1.lt.min(3.0D0*xm*q1-&
+            IF (2.0D0*p1<min(3.0D0*xm*q1-&
             &DABS(tol1*q1),DABS(e1-q1))) THEN
                e1 = d1
                d1 = p1/q1
@@ -931,7 +931,7 @@ SUBROUTINE ZBRENT(IFD,X1,X2,VN1,VN2,TOL,OUTVAL)
          END IF
          a1 = b1
          fa = fb
-         IF (DABS(d1).gt. tol1) THEN
+         IF (DABS(d1)> tol1) THEN
             b1 = b1+d1
          ELSE
             b1 = b1+dsign(tol1,xm)
@@ -944,7 +944,7 @@ SUBROUTINE ZBRENT(IFD,X1,X2,VN1,VN2,TOL,OUTVAL)
    END IF
 
    RETURN
-END
+END SUBROUTINE ZBRENT
 
 SUBROUTINE PSIDE2(DVAL)
 !***********************************************************************
@@ -969,7 +969,7 @@ SUBROUTINE PSIDE2(DVAL)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !---- Set convergence criteria for call to QATR3:
 !         NDIM = maximum number of integration steps
@@ -983,9 +983,9 @@ SUBROUTINE PSIDE2(DVAL)
    INTEGER :: I, J, ISEG, NPTS, NOUT, ICON
    DOUBLE PRECISION :: DVAL, TEMP, U1, U2, UAV, UBV, TMPVAL,&
    &AUX(NDIM)
-   DOUBLE PRECISION ulist(nvmax2), useg(nvmax,2)
-   integer usign(nvmax), ufac, usegf(nvmax)
-   LOGICAL Ltest1,Ltest2
+   DOUBLE PRECISION :: ulist(nvmax2), useg(nvmax,2)
+   integer :: usign(nvmax), ufac, usegf(nvmax)
+   LOGICAL :: Ltest1,Ltest2
 
 !     Variable Initializations
    MODNAM = 'PSIDE2'
@@ -1003,13 +1003,13 @@ SUBROUTINE PSIDE2(DVAL)
 
    DO i = 1, nsegs
       usign(i) = 1
-      IF (uasegs(i) .GT. ubsegs(i)) THEN
+      IF (uasegs(i) > ubsegs(i)) THEN
          usign(i) = -1
          temp = uasegs(i)
          uasegs(i) = ubsegs(i)
          ubsegs(i) = temp
       END IF
-      IF (uasegs(i) .EQ. ubsegs(i)) usign(i) = 0
+      IF (uasegs(i) == ubsegs(i)) usign(i) = 0
    END DO
    iseg = 0
 
@@ -1020,16 +1020,16 @@ SUBROUTINE PSIDE2(DVAL)
 !*****
 !           compare segment [u1,u2] against each ua,ub
 !*****
-      IF (u1 .ne. u2) THEN
+      IF (u1 /= u2) THEN
          DO j = 1, nsegs
-            IF (u1.ge.uasegs(j) .and. u2 .le. ubsegs(j)) THEN
+            IF (u1>=uasegs(j) .and. u2 <= ubsegs(j)) THEN
                ufac = ufac + usign(j)
             END IF
          END DO
 !*****
 !              make table of segments and factors
 !*****
-         IF (ufac .ne. 0) THEN
+         IF (ufac /= 0) THEN
             iseg = iseg+1
             useg(iseg,1) = u1
             useg(iseg,2) = u2
@@ -1041,10 +1041,10 @@ SUBROUTINE PSIDE2(DVAL)
 !            CONSOLIDATE SEGMENTS IF iseg>1
 !*****
    nsegs = iseg
-   IF (nsegs .gt. 1) THEN
+   IF (nsegs > 1) THEN
       DO iseg = 2, nsegs
-         Ltest1 = useg(iseg,1) .EQ. useg(iseg-1,2)
-         Ltest2 = usegf(iseg)*usegf(iseg-1) .gt. 0
+         Ltest1 = useg(iseg,1) == useg(iseg-1,2)
+         Ltest2 = usegf(iseg)*usegf(iseg-1) > 0
          IF (Ltest1 .and. Ltest2) THEN
             usegf(iseg-1) = 0
             useg(iseg,1) = useg(iseg-1,1)
@@ -1052,9 +1052,9 @@ SUBROUTINE PSIDE2(DVAL)
       END DO
    END IF
    dval  = 0.0D0
-   IF (nsegs .gt. 0) THEN
+   IF (nsegs > 0) THEN
       DO iseg = 1, nsegs
-         IF (usegf(iseg) .ne. 0) THEN
+         IF (usegf(iseg) /= 0) THEN
             uav = useg(iseg,1)
             ubv = useg(iseg,2)
             ufac = usegf(iseg)
@@ -1077,7 +1077,7 @@ SUBROUTINE PSIDE2(DVAL)
       ENDIF
 
       write(AREADBUNT,*) '  NSEGS  = ',nsegs
-      if( nsegs .gt. 0 )then
+      if( nsegs > 0 )then
          write(AREADBUNT,*) '  UASEGS = ',uasegs(nsegs)
          write(AREADBUNT,*) '  UBSEGS = ',ubsegs(nsegs)
       else
@@ -1088,7 +1088,7 @@ SUBROUTINE PSIDE2(DVAL)
    endif
 
    RETURN
-END
+END SUBROUTINE PSIDE2
 
 SUBROUTINE HPSORT(NVAR,UVAR,IDIM)
 !***********************************************************************
@@ -1115,7 +1115,7 @@ SUBROUTINE HPSORT(NVAR,UVAR,IDIM)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, IDIM, NVAR, ILMID, IR
    DOUBLE PRECISION :: RU, UVAR(IDIM)
@@ -1128,14 +1128,14 @@ SUBROUTINE HPSORT(NVAR,UVAR,IDIM)
 
 10 CONTINUE
 
-   IF (ilmid.gt.1) THEN
+   IF (ilmid>1) THEN
       ilmid = ilmid-1
       ru = uvar(ilmid)
    ELSE
       ru = uvar(ir)
       uvar(ir) = uvar(1)
       ir = ir-1
-      IF (ir .EQ. 1)THEN
+      IF (ir == 1)THEN
          uvar(1) = ru
 !           Processing is done
          GO TO 999
@@ -1145,11 +1145,11 @@ SUBROUTINE HPSORT(NVAR,UVAR,IDIM)
    i = ilmid
    j = ilmid+ilmid
 
-   DO WHILE (j.LE. ir)
-      IF (j.LT. ir) THEN
-         IF (uvar(j).lt.uvar(j+1) ) j = j+1
+   DO WHILE (j<= ir)
+      IF (j< ir) THEN
+         IF (uvar(j)<uvar(j+1) ) j = j+1
       END IF
-      IF (ru.lt.uvar(j)) THEN
+      IF (ru<uvar(j)) THEN
          uvar(i) = uvar(j)
          i = j
          j = 2*j
@@ -1163,7 +1163,7 @@ SUBROUTINE HPSORT(NVAR,UVAR,IDIM)
    GO TO 10
 
 999 RETURN
-END
+END SUBROUTINE HPSORT
 
 !***  End new code for area source numerical integration algorithm - 7/7/93
 
@@ -1198,7 +1198,7 @@ SUBROUTINE ESCAPE(ICAT)
 !*    Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: ICAT
 !*    Variable Initializations
@@ -1207,7 +1207,7 @@ SUBROUTINE ESCAPE(ICAT)
    EFRAC(ICAT) = 1.0D0/(1.0D0 + VGRAV(ICAT) / (ALPHA * UREF10) )
 
    RETURN
-END
+END SUBROUTINE ESCAPE
 
 
 SUBROUTINE ADJEMI(ICAT,QPTOT)
@@ -1236,7 +1236,7 @@ SUBROUTINE ADJEMI(ICAT,QPTOT)
 !*    Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: ICAT
    DOUBLE PRECISION :: QPTOT
@@ -1247,7 +1247,7 @@ SUBROUTINE ADJEMI(ICAT,QPTOT)
    QPTOT = QPTOT + QPART(ICAT)
 
    RETURN
-END
+END SUBROUTINE ADJEMI
 
 
 SUBROUTINE AMFRAC(QPTOT)
@@ -1273,7 +1273,7 @@ SUBROUTINE AMFRAC(QPTOT)
 !*    Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: ICAT
    DOUBLE PRECISION :: QPTOT
@@ -1285,7 +1285,7 @@ SUBROUTINE AMFRAC(QPTOT)
    END DO
 
    RETURN
-END
+END SUBROUTINE AMFRAC
 
 
 SUBROUTINE LWIND
@@ -1313,7 +1313,7 @@ SUBROUTINE LWIND
    USE MAIN1
    IMPLICIT NONE
    DOUBLE PRECISION :: THOUT
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !*    Variable Initializations
    MODNAM = 'LWIND'
@@ -1329,7 +1329,7 @@ SUBROUTINE LWIND
    PITL = PITLEN * (1.0D0 - THETA/90.D0) + PITWID * (THETA / 90.D0)
 
    RETURN
-END
+END SUBROUTINE LWIND
 
 
 SUBROUTINE PDEPTH
@@ -1354,7 +1354,7 @@ SUBROUTINE PDEPTH
 !*    Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !*    Variable Initializations
    MODNAM = 'PDEPTH'
@@ -1362,7 +1362,7 @@ SUBROUTINE PDEPTH
    PDREL = (PDEFF-EMIHGT) / PITL
 
    RETURN
-END
+END SUBROUTINE PDEPTH
 
 
 SUBROUTINE PTFRAC
@@ -1387,19 +1387,19 @@ SUBROUTINE PTFRAC
 !*    Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !*    Variable Initializations
    MODNAM = 'PTFRAC'
 
-   IF (PDREL .GE. 0.2D0) THEN
+   IF (PDREL >= 0.2D0) THEN
       PITFRA = 0.08D0
    ELSE
       PITFRA = DSQRT(1.0D0 - 1.7D0*(PDREL**THIRD) )
    ENDIF
 
    RETURN
-END
+END SUBROUTINE PTFRAC
 
 
 SUBROUTINE PITEFF
@@ -1431,7 +1431,7 @@ SUBROUTINE PITEFF
 !*    Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, II, IUPWND
    DOUBLE PRECISION :: SPAMIN, EFFANG, EFFWID, EFFLEN
@@ -1450,7 +1450,7 @@ SUBROUTINE PITEFF
    SPAMIN = 1.0D+20
    IUPWND = 0
    DO IVERT = 1,NVERT
-      IF (XTEMP(IVERT) .LT. SPAMIN) THEN
+      IF (XTEMP(IVERT) < SPAMIN) THEN
          IUPWND = IVERT
          SPAMIN = XTEMP(IVERT)-EPSLON
       ENDIF
@@ -1513,16 +1513,16 @@ SUBROUTINE PITEFF
 !*    First determine proper 'x-dim' and 'y-dim' for effective area,
 !*    taking into account angle of orientation and relation to actual pit.
 
-   IF (XINIT .LE. YINIT .and. (IUPWND.EQ.1 .or. IUPWND.EQ.3)) THEN
+   IF (XINIT <= YINIT .and. (IUPWND==1 .or. IUPWND==3)) THEN
       XEFF = EFFWID
       YEFF = EFFLEN
-   ELSE IF (XINIT.LE.YINIT .and. (IUPWND.EQ.2 .or. IUPWND.EQ.4)) THEN
+   ELSE IF (XINIT<=YINIT .and. (IUPWND==2 .or. IUPWND==4)) THEN
       XEFF = EFFLEN
       YEFF = EFFWID
-   ELSE IF (XINIT.GT.YINIT .and. (IUPWND.EQ.1 .or. IUPWND.EQ.3)) THEN
+   ELSE IF (XINIT>YINIT .and. (IUPWND==1 .or. IUPWND==3)) THEN
       XEFF = EFFLEN
       YEFF = EFFWID
-   ELSE IF (XINIT.GT.YINIT .and. (IUPWND.EQ.2 .or. IUPWND.EQ.4)) THEN
+   ELSE IF (XINIT>YINIT .and. (IUPWND==2 .or. IUPWND==4)) THEN
       XEFF = EFFWID
       YEFF = EFFLEN
    END IF
@@ -1617,7 +1617,7 @@ SUBROUTINE PITEFF
    ENDIF
 
    RETURN
-END
+END SUBROUTINE PITEFF
 
 
 SUBROUTINE PITEMI(QPTOT)
@@ -1644,7 +1644,7 @@ SUBROUTINE PITEMI(QPTOT)
 !*    Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION :: QPTOT
 !*    Variable Initializations
@@ -1653,7 +1653,7 @@ SUBROUTINE PITEMI(QPTOT)
    QEFF = QPTOT / PITFRA
 
    RETURN
-END
+END SUBROUTINE PITEMI
 
 
 SUBROUTINE CTHETA(AFVIN,ALFIN,THOUT)
@@ -1681,36 +1681,36 @@ SUBROUTINE CTHETA(AFVIN,ALFIN,THOUT)
 
    DOUBLE PRECISION :: THOUT, ALFIN, AFVIN, THETA
 
-   if (dabs(AFVIN-ALFIN) .le. 90.0D0) then
+   if (dabs(AFVIN-ALFIN) <= 90.0D0) then
       THOUT = dabs(AFVIN-ALFIN)
-   else if (AFVIN .gt. ALFIN) then
+   else if (AFVIN > ALFIN) then
       theta = AFVIN - ALFIN
-      if (theta .gt. 90.0D0) then
+      if (theta > 90.0D0) then
          theta = AFVIN-180.0D0 - ALFIN
       endif
-      if (theta .gt. 90.0D0) then
+      if (theta > 90.0D0) then
          theta = AFVIN-360.0D0 - ALFIN
       endif
-      if (theta .gt. 90.0D0) then
+      if (theta > 90.0D0) then
          theta = AFVIN-540.0D0 - ALFIN
       endif
       THOUT = dabs(theta)
-   else if (AFVIN .lt. ALFIN) then
+   else if (AFVIN < ALFIN) then
       theta = AFVIN - ALFIN
-      if (theta .lt. -90.0D0) then
+      if (theta < -90.0D0) then
          theta = AFVIN + 180.0D0 - ALFIN
       endif
-      if (theta .lt. -90.0D0) then
+      if (theta < -90.0D0) then
          theta = AFVIN + 360.0D0 - ALFIN
       endif
-      if (theta .lt. -90.0D0) then
+      if (theta < -90.0D0) then
          theta = AFVIN + 540.0D0 - ALFIN
       endif
       THOUT = dabs(theta)
    endif
 
    RETURN
-end
+end subroutine CTHETA
 
 !-----------------------------------------------------------------------
 subroutine qatr3(xl,xu,eps,epst,ndim,imin,y,ier,i,aux)
@@ -1764,7 +1764,7 @@ subroutine qatr3(xl,xu,eps,epst,ndim,imin,y,ier,i,aux)
    aux(1) = 0.5D0 * (P1+P2)
    h = xu - xl
 
-   if(h .EQ. 0.0D0 .or. aux(1) .EQ. 0.0D0) then
+   if(h == 0.0D0 .or. aux(1) == 0.0D0) then
       ier=0
       y  = 0.0D0
       return
@@ -1811,19 +1811,19 @@ subroutine qatr3(xl,xu,eps,epst,ndim,imin,y,ier,i,aux)
 !        Compute absolute error, delt2
       delt2 = DABS(y-aux(1))
 
-      if (i .GE. imin) then
+      if (i >= imin) then
 !           Check for covergence of algorithm
-         if (DABS(aux(1)) .LT. epst) then
+         if (DABS(aux(1)) < epst) then
 !              Lower threshold convergence test
             ier = 0
             y  = h*aux(1)
             return
-         else if (delt2 .LE. eps*DABS(aux(1)) ) then
+         else if (delt2 <= eps*DABS(aux(1)) ) then
 !              Relative error convergence test
             ier = 0
             y  = h*aux(1)
             return
-         else if (dabs(hh) .LT. 1.0D0) then
+         else if (dabs(hh) < 1.0D0) then
 !              Minimum "delta-x" convergence test; < 1.0m
             ier = 0
             y  = h*aux(1)
@@ -1839,7 +1839,7 @@ subroutine qatr3(xl,xu,eps,epst,ndim,imin,y,ier,i,aux)
    y  = h*aux(1)
 
    return
-end
+end subroutine qatr3
 
 SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
 !***********************************************************************
@@ -1902,7 +1902,7 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !---- Set convergence criteria for calls to QATR3:
 !         NDIM = maximum number of integration steps
@@ -1918,7 +1918,7 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
 !     Xmax and Xmin are the distances to the endpoints of the side.
    DOUBLE PRECISION, PARAMETER :: QG_FACT = 5.0D0
 
-   integer icase
+   integer :: icase
    INTEGER :: I, KS, IMINUS, IPLUS, NOUT, ICON
    DOUBLE PRECISION :: DVAL, U1, U2, UMINUS, UPLUS, AUX(NDIM),&
 !     JAT DO65 8/29/21, V1 AND W SET BUT NEVER USED
@@ -1945,14 +1945,14 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
    uminus = -1.0D0
    uplus  = -1.0D0
    DO i = 1,2
-      IF (vn(i) .lt. -3.9D0) iminus = i + iminus
-      IF (vn(i) .gt.  3.9D0) iplus  = i + iplus
+      IF (vn(i) < -3.9D0) iminus = i + iminus
+      IF (vn(i) >  3.9D0) iplus  = i + iplus
    END DO
 
-   IF (iplus.EQ.1 .or. iplus.EQ.2) THEN
+   IF (iplus==1 .or. iplus==2) THEN
       call zbrent( 1,u(1),u(2),vn(1),vn(2),1.0D-3,uplus)
    END IF
-   IF (iminus.EQ.1 .or. iminus.EQ.2) THEN
+   IF (iminus==1 .or. iminus==2) THEN
       call zbrent(-1,u(1),u(2),vn(1),vn(2),1.0D-3,uminus)
    END IF
 
@@ -1968,23 +1968,23 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
       ENDIF
 
       write(AREADBUNT,*) ' iplus  iminus  case'
-      if( iplus.eq.0 .and. iminus.eq.0 )then
+      if( iplus==0 .and. iminus==0 )then
          icase = 1
-      elseif( iplus.eq.0 .and. iminus.eq.3 )then
+      elseif( iplus==0 .and. iminus==3 )then
          icase = 2
-      elseif( iplus.eq.0 .and. iminus.eq.1 )then
+      elseif( iplus==0 .and. iminus==1 )then
          icase = 4
-      elseif( iplus.eq.0 .and. iminus.eq.2 )then
+      elseif( iplus==0 .and. iminus==2 )then
          icase = 5
-      elseif( iplus.eq.1 .and. iminus.eq.0 )then
+      elseif( iplus==1 .and. iminus==0 )then
          icase = 7
-      elseif( iplus.eq.1 .and. iminus.eq.2 )then
+      elseif( iplus==1 .and. iminus==2 )then
          icase = 9
-      elseif( iplus.eq.2 .and. iminus.eq.0 )then
+      elseif( iplus==2 .and. iminus==0 )then
          icase = 6
-      elseif( iplus.eq.2 .and. iminus.eq.1 )then
+      elseif( iplus==2 .and. iminus==1 )then
          icase = 8
-      elseif( iplus.eq.3 .and. iminus.eq.0 )then
+      elseif( iplus==3 .and. iminus==0 )then
          icase = 3
       endif
       write(AREADBUNT,'(I5,I7,I6)') iplus, iminus, icase
@@ -1992,22 +1992,22 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
    endif
 
 !---- CASE DEPENDs on iplus, iminus
-   IF (iplus .EQ. 0) THEN
-      IF (iminus .EQ. 0) THEN
+   IF (iplus == 0) THEN
+      IF (iminus == 0) THEN
 !                                             iplus  iminus  case
 !                                               0     0       1
-         if (DABS(u2-u1) .lt. QG_FACT*min(u1,u2)) then
+         if (DABS(u2-u1) < QG_FACT*min(u1,u2)) then
             call qg2(u1,u2,dval)
          else
             call qatr3(u1,u2,epsr,epst,ndim,imin,dval,&
             &icon,nout,aux)
          end if
-      ELSE IF (iminus .EQ. 3) THEN
+      ELSE IF (iminus == 3) THEN
 !                                               0     3       2
          dval = 0.0D0
-      ELSE IF (iminus .EQ. 1) THEN
+      ELSE IF (iminus == 1) THEN
 !                                               0     1       4
-         if (DABS(u2-uminus) .lt. QG_FACT*min(uminus,u2)) then
+         if (DABS(u2-uminus) < QG_FACT*min(uminus,u2)) then
             call qg2(uminus,u2,dval)
          else
             call qatr3(uminus,u2,epsr,epst,ndim,imin,dval,&
@@ -2015,7 +2015,7 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
          end if
       ELSE
 !                                               0     2       5
-         if (dabs(uminus-u1) .lt. QG_FACT*min(u1,uminus)) then
+         if (dabs(uminus-u1) < QG_FACT*min(u1,uminus)) then
             call qg2(u1,uminus,dval)
          else
             call qatr3(u1,uminus,epsr,epst,ndim,imin,dval,&
@@ -2023,13 +2023,13 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
          end if
       END IF
 
-   ELSE IF (iplus .EQ. 1) THEN
+   ELSE IF (iplus == 1) THEN
       nsegs = nsegs+1
       uasegs(nsegs) = u1
       ubsegs(nsegs) = uplus
-      IF (iminus .EQ. 0) THEN
+      IF (iminus == 0) THEN
 !                                               1     0       7
-         if (DABS(u2-uplus) .lt. QG_FACT*min(uplus,u2)) then
+         if (DABS(u2-uplus) < QG_FACT*min(uplus,u2)) then
             call qg2(uplus,u2,dval)
          else
             call qatr3(uplus,u2,epsr,epst,ndim,imin,dval,&
@@ -2037,7 +2037,7 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
          end if
       ELSE
 !                                               1     2       9
-         if (DABS(uminus-uplus) .lt. QG_FACT*min(uplus,uminus)) then
+         if (DABS(uminus-uplus) < QG_FACT*min(uplus,uminus)) then
             call qg2(uplus,uminus,dval)
          else
             call qatr3(uplus,uminus,epsr,epst,ndim,imin,dval,&
@@ -2045,13 +2045,13 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
          end if
       END IF
 
-   ELSE IF (iplus .EQ. 2) THEN
+   ELSE IF (iplus == 2) THEN
       nsegs = nsegs+1
       uasegs(nsegs) = uplus
       ubsegs(nsegs) = u2
-      IF (iminus .EQ. 0) THEN
+      IF (iminus == 0) THEN
 !                                               2     0       6
-         if (DABS(uplus-u1) .lt. QG_FACT*min(u1,uplus)) then
+         if (DABS(uplus-u1) < QG_FACT*min(u1,uplus)) then
             call qg2(u1,uplus,dval)
          else
             call qatr3(u1,uplus,epsr,epst,ndim,imin,dval,&
@@ -2059,7 +2059,7 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
          end if
       ELSE
 !                                               2     1       8
-         if (DABS(uplus-uminus) .lt. QG_FACT*min(uminus,uplus)) then
+         if (DABS(uplus-uminus) < QG_FACT*min(uminus,uplus)) then
             call qg2(uminus,uplus,dval)
          else
             call qatr3(uminus,uplus,epsr,epst,ndim,imin,dval,&
@@ -2084,7 +2084,7 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
          write(AREADBUNT,*) '  IREC   = ',irec
       ENDIF
       write(AREADBUNT,*) '  NSEGS  = ',nsegs
-      if( nsegs .gt. 0 )then
+      if( nsegs > 0 )then
          write(AREADBUNT,*) '  UASEGS = ',uasegs(nsegs)
          write(AREADBUNT,*) '  UBSEGS = ',ubsegs(nsegs)
       else
@@ -2095,7 +2095,7 @@ SUBROUTINE PSIDE_TOX(U1,U2,DVAL)
    endif
 
    RETURN
-END
+END SUBROUTINE PSIDE_TOX
 
 SUBROUTINE PSIDE2_TOX(DVAL)
 !***********************************************************************
@@ -2124,7 +2124,7 @@ SUBROUTINE PSIDE2_TOX(DVAL)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !---- Set convergence criteria for call to QATR3:
 !         NDIM = maximum number of integration steps
@@ -2144,8 +2144,8 @@ SUBROUTINE PSIDE2_TOX(DVAL)
    DOUBLE PRECISION :: DVAL, TEMP, U1, U2, UAV, UBV, TMPVAL,&
    &AUX(NDIM)
    DOUBLE PRECISION :: ulist(nvmax2), useg(nvmax,2)
-   integer usign(nvmax), ufac, usegf(nvmax)
-   LOGICAL Ltest1,Ltest2
+   integer :: usign(nvmax), ufac, usegf(nvmax)
+   LOGICAL :: Ltest1,Ltest2
 
 !     Variable Initializations
    MODNAM = 'PSIDE2_TOX'
@@ -2163,13 +2163,13 @@ SUBROUTINE PSIDE2_TOX(DVAL)
 
    DO i = 1, nsegs
       usign(i) = 1
-      IF (uasegs(i) .GT. ubsegs(i)) THEN
+      IF (uasegs(i) > ubsegs(i)) THEN
          usign(i) = -1
          temp = uasegs(i)
          uasegs(i) = ubsegs(i)
          ubsegs(i) = temp
       END IF
-      IF (uasegs(i) .EQ. ubsegs(i)) usign(i) = 0
+      IF (uasegs(i) == ubsegs(i)) usign(i) = 0
    END DO
    iseg = 0
 
@@ -2180,16 +2180,16 @@ SUBROUTINE PSIDE2_TOX(DVAL)
 !*****
 !           compare segment [u1,u2] against each ua,ub
 !*****
-      IF (u1 .ne. u2) THEN
+      IF (u1 /= u2) THEN
          DO j = 1, nsegs
-            IF (u1.ge.uasegs(j) .and. u2 .le. ubsegs(j)) THEN
+            IF (u1>=uasegs(j) .and. u2 <= ubsegs(j)) THEN
                ufac = ufac + usign(j)
             END IF
          END DO
 !*****
 !              make table of segments and factors
 !*****
-         IF (ufac .ne. 0) THEN
+         IF (ufac /= 0) THEN
             iseg = iseg+1
             useg(iseg,1) = u1
             useg(iseg,2) = u2
@@ -2201,10 +2201,10 @@ SUBROUTINE PSIDE2_TOX(DVAL)
 !            CONSOLIDATE SEGMENTS IF iseg>1
 !*****
    nsegs = iseg
-   IF (nsegs .gt. 1) THEN
+   IF (nsegs > 1) THEN
       DO iseg = 2, nsegs
-         Ltest1 = useg(iseg,1) .EQ. useg(iseg-1,2)
-         Ltest2 = usegf(iseg)*usegf(iseg-1) .gt. 0
+         Ltest1 = useg(iseg,1) == useg(iseg-1,2)
+         Ltest2 = usegf(iseg)*usegf(iseg-1) > 0
          IF (Ltest1 .and. Ltest2) THEN
             usegf(iseg-1) = 0
             useg(iseg,1) = useg(iseg-1,1)
@@ -2212,13 +2212,13 @@ SUBROUTINE PSIDE2_TOX(DVAL)
       END DO
    END IF
    dval  = 0.0D0
-   IF (nsegs .gt. 0) THEN
+   IF (nsegs > 0) THEN
       DO iseg = 1, nsegs
-         IF (usegf(iseg) .ne. 0) THEN
+         IF (usegf(iseg) /= 0) THEN
             uav = useg(iseg,1)
             ubv = useg(iseg,2)
             ufac = usegf(iseg)
-            if (DABS(ubv-uav) .lt. QG_FACT*min(uav,ubv)) then
+            if (DABS(ubv-uav) < QG_FACT*min(uav,ubv)) then
                call qg2(uav,ubv,tmpval)
             else
                call qatr3(uav,ubv,epsr,epst,ndim,imin,tmpval,&
@@ -2240,7 +2240,7 @@ SUBROUTINE PSIDE2_TOX(DVAL)
          write(AREADBUNT,*) '  IREC   = ',irec
       ENDIF
       write(AREADBUNT,*) '  NSEGS  = ',nsegs
-      if( nsegs .gt. 0 )then
+      if( nsegs > 0 )then
          write(AREADBUNT,*) '  UASEGS = ',uasegs(nsegs)
          write(AREADBUNT,*) '  UBSEGS = ',ubsegs(nsegs)
       else
@@ -2251,7 +2251,7 @@ SUBROUTINE PSIDE2_TOX(DVAL)
    endif
 
    RETURN
-END
+END SUBROUTINE PSIDE2_TOX
 
 !
 !     ..................................................................
@@ -2303,4 +2303,4 @@ SUBROUTINE QG2(XL,XU,Y)
    Y = 0.5D0*B*(P1+P2)
 
    RETURN
-END
+END SUBROUTINE QG2

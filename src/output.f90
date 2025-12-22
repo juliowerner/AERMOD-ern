@@ -21,7 +21,7 @@ SUBROUTINE PERAVE
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION :: SNUM, SNUMSCM, STOTHRS
 
@@ -43,7 +43,7 @@ SUBROUTINE PERAVE
 !     Begin LOOP Over Output Types
    DO ITYP = 1, NUMTYP
 
-      IF (OUTTYP(ITYP) .EQ. 'CONC') THEN
+      IF (OUTTYP(ITYP) == 'CONC') THEN
 
          ANNVAL(1:NUMREC,1:NUMGRP,1) =&
          &ANNVAL(1:NUMREC,1:NUMGRP,1)/SNUM
@@ -59,7 +59,7 @@ SUBROUTINE PERAVE
 !     End LOOP Over Output Types
 
    RETURN
-END
+END SUBROUTINE PERAVE
 
 SUBROUTINE SHAVE
 !***********************************************************************
@@ -81,7 +81,7 @@ SUBROUTINE SHAVE
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    DOUBLE PRECISION :: SNUM
 
@@ -103,7 +103,7 @@ SUBROUTINE SHAVE
    END DO
 
    RETURN
-END
+END SUBROUTINE SHAVE
 
 SUBROUTINE HIPER
 !***********************************************************************
@@ -132,7 +132,7 @@ SUBROUTINE HIPER
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: J
 
@@ -143,11 +143,11 @@ SUBROUTINE HIPER
    DO IGRP = 1, NUMGRP
 !        Begin Receptor LOOP
       RECEPTOR_LOOP: DO IREC = 1, NUMREC
-         IF (NHIANN .GT. 1) THEN
-            IF (ANNVAL(IREC,IGRP,ITYP) .GT.&
+         IF (NHIANN > 1) THEN
+            IF (ANNVAL(IREC,IGRP,ITYP) >&
             &AMXVAL(NHIANN,IGRP,ITYP)) THEN
                DO J = NHIANN-1, 1, -1
-                  IF (ANNVAL(IREC,IGRP,ITYP) .LE.&
+                  IF (ANNVAL(IREC,IGRP,ITYP) <=&
                   &AMXVAL(J,IGRP,ITYP))THEN
                      AMXVAL(J+1,IGRP,ITYP) = ANNVAL(IREC,IGRP,ITYP)
                      IMXLOC(J+1,IGRP,ITYP) = IREC
@@ -156,15 +156,15 @@ SUBROUTINE HIPER
                   ELSE
                      AMXVAL(J+1,IGRP,ITYP) = AMXVAL(J,IGRP,ITYP)
                      IMXLOC(J+1,IGRP,ITYP) = IMXLOC(J,IGRP,ITYP)
-                     IF (J .EQ. 1) THEN
+                     IF (J == 1) THEN
                         AMXVAL(1,IGRP,ITYP) = ANNVAL(IREC,IGRP,ITYP)
                         IMXLOC(1,IGRP,ITYP) = IREC
                      END IF
                   END IF
                END DO
             END IF
-         ELSE IF (NHIANN .EQ. 1) THEN
-            IF (ANNVAL(IREC,IGRP,ITYP) .GT. AMXVAL(1,IGRP,ITYP)) THEN
+         ELSE IF (NHIANN == 1) THEN
+            IF (ANNVAL(IREC,IGRP,ITYP) > AMXVAL(1,IGRP,ITYP)) THEN
                AMXVAL(1,IGRP,ITYP) = ANNVAL(IREC,IGRP,ITYP)
                IMXLOC(1,IGRP,ITYP) = IREC
             END IF
@@ -175,7 +175,7 @@ SUBROUTINE HIPER
 !     End Source Group LOOP
 
    RETURN
-END
+END SUBROUTINE HIPER
 
 SUBROUTINE PSTANN
 !***********************************************************************
@@ -215,10 +215,10 @@ SUBROUTINE PSTANN
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 ! Unused:      INTEGER :: I
-   CHARACTER PERCHR*6, HDRFRM*400
+   CHARACTER :: PERCHR*6, HDRFRM*400
 
 !     Variable Initializations
    MODNAM = 'PSTANN'
@@ -235,8 +235,8 @@ SUBROUTINE PSTANN
 !     Begin Source Group LOOP
    DO IGRP = 1, NUMGRP
 !        Check for Selection of PERIOD POSTFILE for This Group
-      IF (IANPST(IGRP) .EQ. 1) THEN
-         IF (IANFRM(IGRP) .EQ. 0) THEN
+      IF (IANPST(IGRP) == 1) THEN
+         IF (IANFRM(IGRP) == 0) THEN
 !              WRITE Results to Unformatted POSTFILE
             IF (PERIOD) THEN
                WRITE(IAPUNT(IGRP),ERR=99) KURDAT, IANHRS,&
@@ -319,7 +319,7 @@ SUBROUTINE PSTANN
    & 3('' ______  ''),''______  ________  ________  ________'')')
 
 999 RETURN
-END
+END SUBROUTINE PSTANN
 
 SUBROUTINE PLTANN
 !***********************************************************************
@@ -357,10 +357,10 @@ SUBROUTINE PLTANN
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 ! Unused:      INTEGER :: I
-   CHARACTER PERCHR*6, HDRFRM*400
+   CHARACTER :: PERCHR*6, HDRFRM*400
 
 !     Variable Initializations
    MODNAM = 'PLTANN'
@@ -377,7 +377,7 @@ SUBROUTINE PLTANN
 !     Begin Source Group LOOP
    DO IGRP = 1, NUMGRP
 !        Check for Selection of PERIOD PLOTFILE for This Group
-      IF (IANPLT(IGRP) .EQ. 1) THEN
+      IF (IANPLT(IGRP) == 1) THEN
 !           Write Header Information
          WRITE(IPPUNT(IGRP),9005) VERSN, TITLE1(1:68), RUNDAT
          WRITE(IPPUNT(IGRP),9007) C_METVER, RUNTIM,&
@@ -432,7 +432,7 @@ SUBROUTINE PLTANN
    & 3('' ______  ''),''______  ________  ________  ________'')')
 
 999 RETURN
-END
+END SUBROUTINE PLTANN
 
 SUBROUTINE PLOTFL
 !***********************************************************************
@@ -464,10 +464,10 @@ SUBROUTINE PLOTFL
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, IVAL, IDEC, IMOD
-   CHARACTER NCHR1(10)*3, NCHR2(10)*5, CHRVAL*5, HDRFRM*400
+   CHARACTER :: NCHR1(10)*3, NCHR2(10)*5, CHRVAL*5, HDRFRM*400
 
 !     Variable Initializations
    DATA (NCHR1(I),I=1,10) /'YR1','YR2','YR3','YR4','YR5',&
@@ -490,20 +490,20 @@ SUBROUTINE PLOTFL
 !           Begin High Value LOOP
          DO IVAL = 1, NHIVAL
 !              Decide if we should go through the processing
-            IF (IPLTFL(IVAL,IGRP,IAVE) .EQ. 1) THEN
+            IF (IPLTFL(IVAL,IGRP,IAVE) == 1) THEN
 
 ! ---             Assign character label for rank
-               IF (IVAL .LE. 10) THEN
+               IF (IVAL <= 10) THEN
                   CHRVAL = NCHR2(IVAL)
-               ELSE IF (MOD(IVAL,100) .GT. 10 .and.&
-               &MOD(IVAL,100) .LT. 20) THEN
+               ELSE IF (MOD(IVAL,100) > 10 .and.&
+               &MOD(IVAL,100) < 20) THEN
                   IDEC = INT(IVAL/10)
                   IMOD = MOD(IVAL,10)
                   WRITE(CHRVAL,'(I2,I1,"TH")') IDEC, IMOD
-               ELSE IF (IVAL .LE. 999) THEN
+               ELSE IF (IVAL <= 999) THEN
                   IDEC = INT(IVAL/10)
                   IMOD = MOD(IVAL,10)
-                  IF (IMOD .EQ. 0) IMOD = 10
+                  IF (IMOD == 0) IMOD = 10
                   WRITE(CHRVAL,'(I2,A3)') IDEC, NCHR2(IMOD)(3:5)
                END IF
 
@@ -594,7 +594,7 @@ SUBROUTINE PLOTFL
    & ''______  ________  ________  ________  ________'')')
 
 999 RETURN
-END
+END SUBROUTINE PLOTFL
 
 SUBROUTINE OUTPUT
 !***********************************************************************
@@ -622,7 +622,7 @@ SUBROUTINE OUTPUT
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'OUTPUT'
@@ -635,25 +635,25 @@ SUBROUTINE OUTPUT
       END DO
    END IF
 
-   IF (PM25AVE .and. NUMAVE.EQ.1) THEN
+   IF (PM25AVE .and. NUMAVE==1) THEN
 !        Print Out Table of Average High-N-High Values for PM2.5
       DO ITYP = 1, NUMTYP
          CALL PRTPM25
       END DO
       CALL MAXPM25
-   ELSE IF (NO2AVE .and. NUMAVE.GE.1) THEN
+   ELSE IF (NO2AVE .and. NUMAVE>=1) THEN
 !        Print Out Table of Average High-N-High Values for NO2
       DO ITYP = 1, NUMTYP
          CALL PRTPM25
       END DO
       CALL MAXPM25
-   ELSE IF (SO2AVE .and. NUMAVE.GE.1) THEN
+   ELSE IF (SO2AVE .and. NUMAVE>=1) THEN
 !        Print Out Table of Average High-N-High Values for SO2
       DO ITYP = 1, NUMTYP
          CALL PRTPM25
       END DO
       CALL MAXPM25
-   ELSE IF (NHIVAL .GT. 0) THEN
+   ELSE IF (NHIVAL > 0) THEN
       DO ITYP = 1, NUMTYP
 !           Print Out Summary of High Values by Receptor    ---   CALL PRTNHI
          CALL PRTNHI
@@ -666,14 +666,14 @@ SUBROUTINE OUTPUT
 9001  FORMAT('EV FINISHED')
    END IF
 
-   IF (NMXVAL .GT. 0) THEN
+   IF (NMXVAL > 0) THEN
       DO ITYP = 1, NUMTYP
 !           Print Out Summary of Overall Maximum Values     ---   CALL PRTMAX
          CALL PRTMAX
       END DO
    END IF
 
-   IF (PERIOD .or. ANNUAL .or. NHIVAL .GT. 0) THEN
+   IF (PERIOD .or. ANNUAL .or. NHIVAL > 0) THEN
       DO ITYP = 1, NUMTYP
 ! ---       Print Out Summary of Results                    ---   CALL PRTSUM
 !           Note that summary of short-term results for PM25 24h, NO2/SO2 1h
@@ -686,7 +686,7 @@ SUBROUTINE OUTPUT
    END IF
 
 ! --- Print out summary of short-term results for PM25 24h, NO2/SO2 1h
-   IF (PM25AVE .and. NHIVAL .GT. 0) THEN
+   IF (PM25AVE .and. NHIVAL > 0) THEN
       DO ITYP = 1, NUMTYP
 !           Print Out Summary of PM-2.5 Results             ---   CALL PRTPM25SUM
          CALL PRTPM25SUM(IOUNIT)
@@ -694,7 +694,7 @@ SUBROUTINE OUTPUT
             CALL PRTPM25SUM(ISUMUNT)
          END IF
       END DO
-   ELSE IF (NO2AVE .and. NHIVAL .GT. 0) THEN
+   ELSE IF (NO2AVE .and. NHIVAL > 0) THEN
       DO ITYP = 1, NUMTYP
 !           Print Out Summary of NO2 Results                ---   CALL PRTPM25SUM
          CALL PRTPM25SUM(IOUNIT)
@@ -702,7 +702,7 @@ SUBROUTINE OUTPUT
             CALL PRTPM25SUM(ISUMUNT)
          END IF
       END DO
-   ELSE IF (SO2AVE .and. NHIVAL .GT. 0) THEN
+   ELSE IF (SO2AVE .and. NHIVAL > 0) THEN
       DO ITYP = 1, NUMTYP
 !           Print Out Summary of SO2 Results                ---   CALL PRTPM25SUM
          CALL PRTPM25SUM(IOUNIT)
@@ -729,7 +729,7 @@ SUBROUTINE OUTPUT
    END IF
 
    RETURN
-END
+END SUBROUTINE OUTPUT
 
 SUBROUTINE PRTANN
 !***********************************************************************
@@ -763,11 +763,11 @@ SUBROUTINE PRTANN
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, K, II, NX, NY, INDZ, INDC, INDEXW
    DOUBLE PRECISION :: YCOVAL, XRMS, YRMS, DIST, DIR
-   CHARACTER PERCHR*6, BUF132*132
+   CHARACTER :: PERCHR*6, BUF132*132
 
 !     Variable Initializations
    MODNAM = 'PRTANN'
@@ -787,7 +787,7 @@ SUBROUTINE PRTANN
 !           Fill Work Array With SRCIDs For This Group
          INDGRP = 0
          DO ISRC = 1, NUMSRC
-            IF (IGROUP(ISRC,IGRP) .EQ. 1) THEN
+            IF (IGROUP(ISRC,IGRP) == 1) THEN
                INDGRP = INDGRP + 1
                WORKID(INDGRP) = SRCID(ISRC)
             END IF
@@ -809,7 +809,7 @@ SUBROUTINE PRTANN
          INDEXW = MIN(29,NSRC)
       END IF
 !        Check for More Than 29 Sources Per Group
-      IF (INDGRP .GT. INDEXW) THEN
+      IF (INDGRP > INDEXW) THEN
          WORKID(INDEXW) = ' . . . '
          INDGRP = INDEXW
       END IF
@@ -837,38 +837,38 @@ SUBROUTINE PRTANN
                WRITE(IOUNIT,9037) NTID(I), NTTYP(I)
 !                 Print The Values By Source Group
                WRITE(IOUNIT,9011) CHIDEP(3,ITYP), POLLUT,PERLBL(ITYP)
-               IF (NX .EQ. NPPX) THEN
-                  IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+               IF (NX == NPPX) THEN
+                  IF (NTTYP(I) == 'GRIDCART') THEN
                      WRITE(IOUNIT,9016)
                      WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NUMXPT(I))
-                  ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                      WRITE(IOUNIT,9018)
                      WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NUMXPT(I))
                   END IF
                ELSE
-                  IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                  IF (NTTYP(I) == 'GRIDCART') THEN
                      WRITE(IOUNIT,9016)
                      WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NCPP*NX)
-                  ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                      WRITE(IOUNIT,9018)
                      WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NCPP*NX)
                   END IF
                END IF
                WRITE(IOUNIT,9010)
-               IF (NY .EQ. NPPY) THEN
+               IF (NY == NPPY) THEN
                   DO K = 1+NRPP*(NY-1), NUMYPT(I)
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         INDZ = NETEND(I) - K*NUMXPT(I) + 1
                         YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                         YCOVAL = YCOORD(K,I)
                      END IF
-                     IF (NX .EQ. NPPX) THEN
+                     IF (NX == NPPX) THEN
                         WRITE(IOUNIT,9013) YCOVAL,&
                         &(ANNVAL(INDZ+J-1,IGRP,ITYP),J=1+NCPP*(NX-1),NUMXPT(I))
                      ELSE
@@ -878,14 +878,14 @@ SUBROUTINE PRTANN
                   END DO
                ELSE
                   DO K = 1+NRPP*(NY-1), NRPP*NY
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         INDZ = NETEND(I) - K*NUMXPT(I) + 1
                         YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                         YCOVAL = YCOORD(K,I)
                      END IF
-                     IF (NX .EQ. NPPX) THEN
+                     IF (NX == NPPX) THEN
                         WRITE(IOUNIT,9013) YCOVAL,&
                         &(ANNVAL(INDZ+J-1,IGRP,ITYP),J=1+NCPP*(NX-1),NUMXPT(I))
                      ELSE
@@ -899,14 +899,14 @@ SUBROUTINE PRTANN
       END DO
 !        End LOOP Through Networks
 
-      IF (IRSTAT(4).NE.0 .or. IRSTAT(8).NE.0) THEN
+      IF (IRSTAT(4)/=0 .or. IRSTAT(8)/=0) THEN
 ! ---       Include EVALCART receptors with DISCCART receptors.
 !           Print Out The Coord. & Concentrations For Discrete Cart Receptors
          INDC = 0
          DO IREC = 1, NUMREC
-            IF (RECTYP(IREC) .EQ. 'DC') THEN
+            IF (RECTYP(IREC) == 'DC') THEN
                INDC = INDC + 1
-               IF (MOD(INDC-1,80) .EQ. 0) THEN
+               IF (MOD(INDC-1,80) == 0) THEN
                   CALL HEADER(IOUNIT)
                   IF (PERIOD) THEN
                      WRITE(IOUNIT,9032) PERCHR,IANHRS,(CHIDEP(II,ITYP),&
@@ -920,7 +920,7 @@ SUBROUTINE PRTANN
                   &PERLBL(ITYP)
                   WRITE(IOUNIT,9048) CHIDEP(3,ITYP), CHIDEP(3,ITYP)
                END IF
-               IF (MOD(INDC,2) .NE. 0) THEN
+               IF (MOD(INDC,2) /= 0) THEN
                   WRITE(BUF132(1:60),9045) AXR(IREC), AYR(IREC),&
                   &ANNVAL(IREC,IGRP,ITYP)
                ELSE
@@ -931,24 +931,24 @@ SUBROUTINE PRTANN
                END IF
             END IF
          END DO
-         IF (MOD(INDC,2) .NE. 0) THEN
+         IF (MOD(INDC,2) /= 0) THEN
             WRITE(IOUNIT,9090) BUF132
             WRITE(BUF132,9095)
          END IF
       END IF
 
-      IF (IRSTAT(5) .NE. 0) THEN
+      IF (IRSTAT(5) /= 0) THEN
 !           Print Out The Coord. & Concentrations For Discrete Polar Receptors
          INDC = 0
          DO IREC = 1, NUMREC
-            IF (RECTYP(IREC) .EQ. 'DP') THEN
+            IF (RECTYP(IREC) == 'DP') THEN
                INDC = INDC + 1
                XRMS = AXR(IREC) - AXS(IREF(IREC))
                YRMS = AYR(IREC) - AYS(IREF(IREC))
                DIST = DSQRT(XRMS*XRMS + YRMS*YRMS)
                DIR  = DATAN2(XRMS, YRMS) * RTODEG
-               IF (DIR .LE. 0.0D0) DIR = DIR + 360.0D0
-               IF (MOD(INDC-1,80) .EQ. 0) THEN
+               IF (DIR <= 0.0D0) DIR = DIR + 360.0D0
+               IF (MOD(INDC-1,80) == 0) THEN
                   CALL HEADER(IOUNIT)
                   IF (PERIOD) THEN
                      WRITE(IOUNIT,9032) PERCHR,IANHRS,(CHIDEP(II,ITYP),&
@@ -962,7 +962,7 @@ SUBROUTINE PRTANN
                   &PERLBL(ITYP)
                   WRITE(IOUNIT,9049) CHIDEP(3,ITYP), CHIDEP(3,ITYP)
                END IF
-               IF (MOD(INDC,2) .NE. 0) THEN
+               IF (MOD(INDC,2) /= 0) THEN
                   WRITE(BUF132(1:65),9047) SRCID(IREF(IREC)), DIST,&
                   &DIR, ANNVAL(IREC,IGRP,ITYP)
                ELSE
@@ -973,7 +973,7 @@ SUBROUTINE PRTANN
                END IF
             END IF
          END DO
-         IF (MOD(INDC,2) .NE. 0) THEN
+         IF (MOD(INDC,2) /= 0) THEN
             WRITE(IOUNIT,9090) BUF132
             WRITE(BUF132,9095)
          END IF
@@ -1013,7 +1013,7 @@ SUBROUTINE PRTANN
 9095 FORMAT(132(' '))
 
    RETURN
-END
+END SUBROUTINE PRTANN
 
 SUBROUTINE PRTNHI
 !***********************************************************************
@@ -1044,11 +1044,11 @@ SUBROUTINE PRTNHI
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: IWHP(NVAL), IHST, IVAL, K, IT1, KWRT, IGRP_TMP
    DOUBLE PRECISION :: XR2, YR2, ZE2, ZH2, ZF2
-   CHARACTER NAMEEV*10
+   CHARACTER :: NAMEEV*10
 
 !     Variable Initialization
    MODNAM = 'PRTNHI'
@@ -1058,7 +1058,7 @@ SUBROUTINE PRTNHI
 
 !     Write Out the 'EV STARTING' Card to the Temp-EVent File for
 !     First Output Type Only (i.e., ITYP = 1)
-   IF (ITYP .EQ. 1) THEN
+   IF (ITYP == 1) THEN
       WRITE(ITEVUT,9000)
    END IF
 
@@ -1066,18 +1066,18 @@ SUBROUTINE PRTNHI
 !        Decide if Print The Period
       IHST = 0
       DO IVAL = 1, NVAL
-         IF (NHIAVE(IVAL,IAVE) .EQ. 1) THEN
+         IF (NHIAVE(IVAL,IAVE) == 1) THEN
             IHST = IHST + 1
             IWHP(IHST) = IVAL
          END IF
       END DO
-      IF (IHST .EQ. 0) THEN
+      IF (IHST == 0) THEN
 !           No High Values for This IAVE; Cycle to Next Averaging Period
          CYCLE
       END IF
 !        Print The Data
       DO IVAL = 1, NVAL
-         IF (NHIAVE(IVAL,IAVE) .EQ. 1) THEN
+         IF (NHIAVE(IVAL,IAVE) == 1) THEN
 !              Print Out High Value By Receptor Table       ---   CALL SPRTHT
             CALL SPRTHT(IVAL)
          END IF
@@ -1088,7 +1088,7 @@ SUBROUTINE PRTNHI
          DO IREC = 1, NUMREC
 !               Get The Maximum in Nth Highest
             DO K = 1, IHST
-               IF (HIVALU(IREC,IWHP(K),IGRP,IAVE,ITYP) .GT.&
+               IF (HIVALU(IREC,IWHP(K),IGRP,IAVE,ITYP) >&
                &HMAX(K,IGRP,IAVE,ITYP)) THEN
                   HMAX(K,IGRP,IAVE,ITYP)   = HIVALU(IREC,IWHP(K),IGRP,IAVE,ITYP)
                   HMDATE(K,IGRP,IAVE,ITYP) = NHIDAT(IREC,IWHP(K),IGRP,IAVE,ITYP)
@@ -1100,10 +1100,10 @@ SUBROUTINE PRTNHI
 !
 !           Output The Max-Upto-IHST to the TempEVent File for the
 !           First Output Type Only (i.e., ITYP = 1)
-         IF (ITYP .EQ. 1) THEN
+         IF (ITYP == 1) THEN
             DO K = 1, IHST
                IT1 = MIN( 999, IWHP(K) )
-               IF (HMLOC(K,IGRP,IAVE,ITYP) .EQ. 0) THEN
+               IF (HMLOC(K,IGRP,IAVE,ITYP) == 0) THEN
                   XR2 = 0.0D0
                   YR2 = 0.0D0
                   ZE2 = 0.0D0
@@ -1117,10 +1117,10 @@ SUBROUTINE PRTNHI
                   ZF2 = AZFLAG(HMLOC(K,IGRP,IAVE,ITYP))
                END IF
 
-               IF (IGRP .GT. 999) THEN
+               IF (IGRP > 999) THEN
 !                    Number of Source Groups Exceeds Limit of EVNAME Field,
 !                    Write Warning Message and Reset to 999
-                  IF (IGRP .LE. 9999) THEN
+                  IF (IGRP <= 9999) THEN
                      WRITE(DUMMY,'(I2.2,''hr'',1X,''IG='',I4)')&
                      &IAVE, IGRP
                   ELSE
@@ -1133,7 +1133,7 @@ SUBROUTINE PRTNHI
                   IGRP_TMP = IGRP
                END IF
 
-               IF (KAVE(IAVE) .LE. 24) THEN
+               IF (KAVE(IAVE) <= 24) THEN
                   WRITE(NAMEEV,'(A1,I3.3,A1,I2.2,I3.3)')&
                   &'H',IT1,'H',KAVE(IAVE),IGRP_TMP
                ELSE
@@ -1155,7 +1155,7 @@ SUBROUTINE PRTNHI
 
 !     Write Out the 'EV FINISHED' Card to the Temp-EVent File for
 !     First Output Type Only (i.e., ITYP = 1)
-   IF (ITYP .EQ. 1) THEN
+   IF (ITYP == 1) THEN
       WRITE(ITEVUT,9009)
    END IF
 
@@ -1166,7 +1166,7 @@ SUBROUTINE PRTNHI
 9009 FORMAT('EV FINISHED')
 
    RETURN
-END
+END SUBROUTINE PRTNHI
 
 SUBROUTINE SPRTHT(IHNUM)
 !***********************************************************************
@@ -1200,12 +1200,12 @@ SUBROUTINE SPRTHT(IHNUM)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: IHNUM, I, J, K, II, INDZ, INDC, NX, NY, INDEXW
    INTEGER :: IDEC, IMOD
    DOUBLE PRECISION :: YCOVAL, XRMS, YRMS, DIST, DIR
-   CHARACTER BUF132*132, CHRVAL*5, CHRVALS(10)*5
+   CHARACTER :: BUF132*132, CHRVAL*5, CHRVALS(10)*5
 
 !     Variable Initializations
    DATA (CHRVALS(I),I=1,10) /'  1ST','  2ND','  3RD','  4TH','  5TH',&
@@ -1215,17 +1215,17 @@ SUBROUTINE SPRTHT(IHNUM)
    INDZ   = 0
 
 ! --- Assign character label for rank
-   IF (IHNUM .LE. 10) THEN
+   IF (IHNUM <= 10) THEN
       CHRVAL = CHRVALS(IHNUM)
-   ELSE IF (MOD(IHNUM,100) .GT. 10 .and.&
-   &MOD(IHNUM,100) .LT. 20) THEN
+   ELSE IF (MOD(IHNUM,100) > 10 .and.&
+   &MOD(IHNUM,100) < 20) THEN
       IDEC = INT(IHNUM/10)
       IMOD = MOD(IHNUM,10)
       WRITE(CHRVAL,'(I2,I1,"TH")') IDEC, IMOD
-   ELSE IF (IHNUM .LE. 999) THEN
+   ELSE IF (IHNUM <= 999) THEN
       IDEC = INT(IHNUM/10)
       IMOD = MOD(IHNUM,10)
-      IF (IMOD .EQ. 0) IMOD = 10
+      IF (IMOD == 0) IMOD = 10
       WRITE(CHRVAL,'(I2,A3)') IDEC, CHRVALS(IMOD)(3:5)
    END IF
 
@@ -1235,7 +1235,7 @@ SUBROUTINE SPRTHT(IHNUM)
 !           Fill Work Array With SRCIDs For This Group
          INDGRP = 0
          DO ISRC = 1, NUMSRC
-            IF (IGROUP(ISRC,IGRP) .EQ. 1) THEN
+            IF (IGROUP(ISRC,IGRP) == 1) THEN
                INDGRP = INDGRP + 1
                WORKID(INDGRP) = SRCID(ISRC)
             END IF
@@ -1257,7 +1257,7 @@ SUBROUTINE SPRTHT(IHNUM)
          INDEXW = MIN(29,NSRC)
       END IF
 !        Check for More Than 29 Sources Per Group
-      IF (INDGRP .GT. INDEXW) THEN
+      IF (INDGRP > INDEXW) THEN
          WORKID(INDEXW) = ' . . . '
          INDGRP = INDEXW
       END IF
@@ -1281,38 +1281,38 @@ SUBROUTINE SPRTHT(IHNUM)
 !                 Print The Values By Source Group
                WRITE(IOUNIT,9011) CHIDEP(3,ITYP), POLLUT,&
                &OUTLBL(ITYP)
-               IF (NX .EQ. NPPX) THEN
-                  IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+               IF (NX == NPPX) THEN
+                  IF (NTTYP(I) == 'GRIDCART') THEN
                      WRITE(IOUNIT,9016)
                      WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NUMXPT(I))
-                  ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                      WRITE(IOUNIT,9018)
                      WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NUMXPT(I))
                   END IF
                ELSE
-                  IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                  IF (NTTYP(I) == 'GRIDCART') THEN
                      WRITE(IOUNIT,9016)
                      WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NCPP*NX)
-                  ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                  ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                      WRITE(IOUNIT,9018)
                      WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                      &NCPP*NX)
                   END IF
                END IF
                WRITE(IOUNIT,9010)
-               IF (NY .EQ. NPPY) THEN
+               IF (NY == NPPY) THEN
                   DO K = 1+NRPP*(NY-1), NUMYPT(I)
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         INDZ = NETEND(I) - K*NUMXPT(I) + 1
                         YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                         YCOVAL = YCOORD(K,I)
                      END IF
-                     IF (NX .EQ. NPPX) THEN
+                     IF (NX == NPPX) THEN
                         WRITE(IOUNIT,9013) YCOVAL,&
                         &(HIVALU(INDZ+J-1,IHNUM,IGRP,IAVE,ITYP),&
                         &HCLMSG(INDZ+J-1,IHNUM,IGRP,IAVE,ITYP),&
@@ -1328,14 +1328,14 @@ SUBROUTINE SPRTHT(IHNUM)
                   END DO
                ELSE
                   DO K = 1+NRPP*(NY-1), NRPP*NY
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         INDZ = NETEND(I) - K*NUMXPT(I) + 1
                         YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                         YCOVAL = YCOORD(K,I)
                      END IF
-                     IF (NX .EQ. NPPX) THEN
+                     IF (NX == NPPX) THEN
                         WRITE(IOUNIT,9013) YCOVAL,&
                         &(HIVALU(INDZ+J-1,IHNUM,IGRP,IAVE,ITYP),&
                         &HCLMSG(INDZ+J-1,IHNUM,IGRP,IAVE,ITYP),&
@@ -1355,14 +1355,14 @@ SUBROUTINE SPRTHT(IHNUM)
       END DO
 !        End LOOP Through Networks
 
-      IF (IRSTAT(4).NE.0 .or. IRSTAT(8).NE.0) THEN
+      IF (IRSTAT(4)/=0 .or. IRSTAT(8)/=0) THEN
 ! ---       Include EVALCART receptors with DISCCART receptors.
 !           Print Out The Coord. & Concentrations For Discrete Cart Receptors
          INDC = 0
          DO IREC = 1, NUMREC
-            IF (RECTYP(IREC) .EQ. 'DC') THEN
+            IF (RECTYP(IREC) == 'DC') THEN
                INDC = INDC + 1
-               IF (MOD(INDC-1,80) .EQ. 0) THEN
+               IF (MOD(INDC-1,80) == 0) THEN
                   CALL HEADER(IOUNIT)
                   WRITE(IOUNIT,9032) CHRVAL, CHRAVE(IAVE),&
                   &(CHIDEP(II,ITYP),II=1,6),GRPID(IGRP),(WORKID(J),J=1,INDGRP)
@@ -1371,7 +1371,7 @@ SUBROUTINE SPRTHT(IHNUM)
                   &OUTLBL(ITYP)
                   WRITE(IOUNIT,9048) CHIDEP(3,ITYP), CHIDEP(3,ITYP)
                END IF
-               IF (MOD(INDC,2) .NE. 0) THEN
+               IF (MOD(INDC,2) /= 0) THEN
                   WRITE(BUF132(1:65),9045) AXR(IREC), AYR(IREC),&
                   &HIVALU(IREC,IHNUM,IGRP,IAVE,ITYP),&
                   &HCLMSG(IREC,IHNUM,IGRP,IAVE,ITYP),&
@@ -1386,24 +1386,24 @@ SUBROUTINE SPRTHT(IHNUM)
                END IF
             END IF
          END DO
-         IF (MOD(INDC,2) .NE. 0) THEN
+         IF (MOD(INDC,2) /= 0) THEN
             WRITE(IOUNIT,9090) BUF132
             WRITE(BUF132,9095)
          END IF
       END IF
 
-      IF (IRSTAT(5) .NE. 0) THEN
+      IF (IRSTAT(5) /= 0) THEN
 !           Print Out The Coord. & Concentrations For Discrete Polar Receptors
          INDC = 0
          DO IREC = 1, NUMREC
-            IF (RECTYP(IREC) .EQ. 'DP') THEN
+            IF (RECTYP(IREC) == 'DP') THEN
                INDC = INDC + 1
                XRMS = AXR(IREC) - AXS(IREF(IREC))
                YRMS = AYR(IREC) - AYS(IREF(IREC))
                DIST = DSQRT(XRMS*XRMS + YRMS*YRMS)
                DIR  = DATAN2(XRMS, YRMS) * RTODEG
-               IF (DIR .LE. 0.0D0) DIR = DIR + 360.0D0
-               IF (MOD(INDC-1,80) .EQ. 0) THEN
+               IF (DIR <= 0.0D0) DIR = DIR + 360.0D0
+               IF (MOD(INDC-1,80) == 0) THEN
                   CALL HEADER(IOUNIT)
                   WRITE(IOUNIT,9032) CHRVAL, CHRAVE(IAVE),&
                   &(CHIDEP(II,ITYP),II=1,6),GRPID(IGRP),(WORKID(J),J=1,INDGRP)
@@ -1412,7 +1412,7 @@ SUBROUTINE SPRTHT(IHNUM)
                   &OUTLBL(ITYP)
                   WRITE(IOUNIT,9049) CHIDEP(3,ITYP), CHIDEP(3,ITYP)
                END IF
-               IF (MOD(INDC,2) .NE. 0) THEN
+               IF (MOD(INDC,2) /= 0) THEN
                   WRITE(BUF132(1:66),9047) SRCID(IREF(IREC)), DIST,&
                   &DIR, HIVALU(IREC,IHNUM,IGRP,IAVE,ITYP),&
                   &HCLMSG(IREC,IHNUM,IGRP,IAVE,ITYP),&
@@ -1427,7 +1427,7 @@ SUBROUTINE SPRTHT(IHNUM)
                END IF
             END IF
          END DO
-         IF (MOD(INDC,2) .NE. 0) THEN
+         IF (MOD(INDC,2) /= 0) THEN
             WRITE(IOUNIT,9090) BUF132
             WRITE(BUF132,9095)
          END IF
@@ -1465,7 +1465,7 @@ SUBROUTINE SPRTHT(IHNUM)
 9095 FORMAT(132(' '))
 
    RETURN
-END
+END SUBROUTINE SPRTHT
 
 SUBROUTINE PRTMAX
 !***********************************************************************
@@ -1492,26 +1492,26 @@ SUBROUTINE PRTMAX
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: J, K, L, NPG, NROWS, JSTRT, II, J1, KMAX1, KMAX2,&
    &INDEXW
    DOUBLE PRECISION :: XR1, YR1, XR2, YR2
-   CHARACTER NTY1*2, NTY2*2
+   CHARACTER :: NTY1*2, NTY2*2
 
 !     Variable Initializations
    MODNAM = 'PRTMAX'
 
    DO IAVE = 1, NUMAVE
 !        Check Array to See IF Maximum Values Are Needed For This AVEPER
-      IF (MAXAVE(IAVE) .NE. 1) CYCLE
+      IF (MAXAVE(IAVE) /= 1) CYCLE
 
       DO IGRP = 1, NUMGRP
          IF (.NOT. PSDCREDIT) THEN
 !              Fill Work Array With SRCIDs For This Group
             INDGRP = 0
             DO ISRC = 1, NUMSRC
-               IF (IGROUP(ISRC,IGRP) .EQ. 1) THEN
+               IF (IGROUP(ISRC,IGRP) == 1) THEN
                   INDGRP = INDGRP + 1
                   WORKID(INDGRP) = SRCID(ISRC)
                END IF
@@ -1533,17 +1533,17 @@ SUBROUTINE PRTMAX
             INDEXW = MIN(29,NSRC)
          END IF
 !           Check for More Than 29 Sources Per Group
-         IF (INDGRP .GT. INDEXW) THEN
+         IF (INDGRP > INDEXW) THEN
             WORKID(INDEXW) = ' . . . '
             INDGRP = INDEXW
          END IF
 
-         IF (IMXVAL(IAVE) .GE. 2) THEN
+         IF (IMXVAL(IAVE) >= 2) THEN
 !              Determine Number of Pages @ 80 Per Page, NPG
             NPG = 1 + INT((IMXVAL(IAVE)-1)/80)
             DO L = 1, NPG
 !                 Determine Number of Rows for This Page, NROWS
-               IF (L .EQ. NPG) THEN
+               IF (L == NPG) THEN
                   NROWS = (IMXVAL(IAVE)-80*(L-1))/2
                ELSE
                   NROWS = 40
@@ -1560,12 +1560,12 @@ SUBROUTINE PRTMAX
                JSTRT = 1 + 80*(L-1)
                DO J = JSTRT, JSTRT+NROWS-1
                   J1 = J + NROWS
-                  IF (L.EQ.NPG .and. MOD(IMXVAL(IAVE),2).NE.0) THEN
+                  IF (L==NPG .and. MOD(IMXVAL(IAVE),2)/=0) THEN
                      J1 = J1 + 1
                   END IF
                   KMAX1 = MXLOCA(J,IGRP,IAVE,ITYP)
                   KMAX2 = MXLOCA(J1,IGRP,IAVE,ITYP)
-                  IF (KMAX1 .EQ. 0) THEN
+                  IF (KMAX1 == 0) THEN
                      XR1 = 0.0D0
                      YR1 = 0.0D0
                      NTY1 = ' '
@@ -1574,7 +1574,7 @@ SUBROUTINE PRTMAX
                      YR1 = AYR(KMAX1)
                      NTY1 = RECTYP(KMAX1)
                   END IF
-                  IF (KMAX2 .EQ. 0) THEN
+                  IF (KMAX2 == 0) THEN
                      XR2 = 0.0D0
                      YR2 = 0.0D0
                      NTY2 = ' '
@@ -1590,11 +1590,11 @@ SUBROUTINE PRTMAX
                   &MXDATE(J1,IGRP,IAVE,ITYP), XR2, YR2, NTY2
                END DO
             END DO
-            IF (MOD(IMXVAL(IAVE),2) .NE. 0) THEN
+            IF (MOD(IMXVAL(IAVE),2) /= 0) THEN
 !                 Odd Number of Max Values - Print Out Last Value
                J = INT(IMXVAL(IAVE)/2) + 1 + 40*(NPG-1)
                KMAX1 = MXLOCA(J,IGRP,IAVE,ITYP)
-               IF (KMAX1 .EQ. 0) THEN
+               IF (KMAX1 == 0) THEN
                   XR1 = 0.0D0
                   YR1 = 0.0D0
                   NTY1 = ' '
@@ -1610,7 +1610,7 @@ SUBROUTINE PRTMAX
          ELSE
             J = 1
             KMAX1 = MXLOCA(J,IGRP,IAVE,ITYP)
-            IF (KMAX1 .EQ. 0) THEN
+            IF (KMAX1 == 0) THEN
                XR1 = 0.0D0
                YR1 = 0.0D0
                NTY1 = '  '
@@ -1658,7 +1658,7 @@ SUBROUTINE PRTMAX
    &/23X,'DP = DISCPOLR')
 
    RETURN
-END
+END SUBROUTINE PRTMAX
 
 SUBROUTINE PRTSUM(IOUNT)
 !***********************************************************************
@@ -1695,13 +1695,13 @@ SUBROUTINE PRTSUM(IOUNT)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: IWHP(NVAL), I, IVAL, INDMX, IHST, INDLOC, IOUNT
    INTEGER :: IDEC, IMOD
    DOUBLE PRECISION :: AXR1, AYR1, AZELV1, AZHIL1, AZFLG1, XR2, YR2,&
    &ZE2, ZH2,ZF2
-   CHARACTER PERCHR*6, RANK(10)*5, CHRVAL*5
+   CHARACTER :: PERCHR*6, RANK(10)*5, CHRVAL*5
 
 !     Variable Initializations
    DATA (RANK(I),I=1,10) /'  1ST','  2ND','  3RD','  4TH','  5TH',&
@@ -1719,7 +1719,7 @@ SUBROUTINE PRTSUM(IOUNT)
 !        Calculate Number of Groups Per Page, NGPP
       NGPP = MAX( 1, INT(50/(NHIANN+1)) )
       DO IGRP = 1, NUMGRP
-         IF (MOD(IGRP-1, NGPP) .EQ. 0) THEN
+         IF (MOD(IGRP-1, NGPP) == 0) THEN
             CALL HEADER(IOUNT)
             IF (PERIOD .and. MULTYR) THEN
                WRITE(IOUNT,9020) PERCHR, IANHRS, NUMYRS
@@ -1734,12 +1734,12 @@ SUBROUTINE PRTSUM(IOUNT)
          END IF
          DO IVAL = 1, NHIANN
             INDMX = IMXLOC(IVAL,IGRP,ITYP)
-            IF (IVAL .EQ. 1 .and. INDMX .NE. 0) THEN
+            IF (IVAL == 1 .and. INDMX /= 0) THEN
                WRITE(IOUNT,1012) GRPID(IGRP), RANK(IVAL),&
                &AMXVAL(IVAL,IGRP,ITYP), AXR(INDMX), AYR(INDMX),&
                &AZELEV(INDMX), AZHILL(INDMX), AZFLAG(INDMX),&
                &RECTYP(INDMX), NETID(INDMX)
-            ELSE IF (IVAL .EQ. 1 .and. INDMX .EQ. 0) THEN
+            ELSE IF (IVAL == 1 .and. INDMX == 0) THEN
                AXR1 = 0.0D0
                AYR1 = 0.0D0
                AZELV1 = 0.0D0
@@ -1748,7 +1748,7 @@ SUBROUTINE PRTSUM(IOUNT)
                WRITE(IOUNT,1014) GRPID(IGRP), RANK(IVAL),&
                &AMXVAL(IVAL,IGRP,ITYP), AXR1, AYR1, AZELV1, AZHIL1,&
                &AZFLG1
-            ELSE IF (INDMX .EQ. 0) THEN
+            ELSE IF (INDMX == 0) THEN
                AXR1 = 0.0D0
                AYR1 = 0.0D0
                AZELV1 = 0.0D0
@@ -1780,12 +1780,12 @@ SUBROUTINE PRTSUM(IOUNT)
 !        this averaging period
       IHST = 0
       DO IVAL = 1, NVAL
-         IF (NHIAVE(IVAL,IAVE) .EQ. 1) THEN
+         IF (NHIAVE(IVAL,IAVE) == 1) THEN
             IHST = IHST + 1
             IWHP(IHST) = IVAL
          END IF
       END DO
-      IF (IHST .EQ. 0) THEN
+      IF (IHST == 0) THEN
 !           No High Values for This IAVE; Cycle to Next Averaging Period
          CYCLE
       END IF
@@ -1798,23 +1798,23 @@ SUBROUTINE PRTSUM(IOUNT)
          DO I = 1, IHST
 
 ! ---          Assign character label for rank
-            IF (IWHP(I) .LE. 10) THEN
+            IF (IWHP(I) <= 10) THEN
                CHRVAL = RANK(IWHP(I))
-            ELSE IF (MOD(IWHP(I),100) .GT. 10 .and.&
-            &MOD(IWHP(I),100) .LT. 20) THEN
+            ELSE IF (MOD(IWHP(I),100) > 10 .and.&
+            &MOD(IWHP(I),100) < 20) THEN
                IDEC = INT(IWHP(I)/10)
                IMOD = MOD(IWHP(I),10)
                WRITE(CHRVAL,'(I2,I1,"TH")') IDEC, IMOD
-            ELSE IF (IWHP(I) .LE. 999) THEN
+            ELSE IF (IWHP(I) <= 999) THEN
                IDEC = INT(IWHP(I)/10)
                IMOD = MOD(IWHP(I),10)
-               IF (IMOD .EQ. 0) IMOD = 10
+               IF (IMOD == 0) IMOD = 10
                WRITE(CHRVAL,'(I2,A3)') IDEC, RANK(IMOD)(3:5)
             END IF
 
             INDLOC = HMLOC(I,IGRP,IAVE,ITYP)
-            IF (I .EQ. 1) THEN
-               IF (MOD(IGRP-1,NGPP) .EQ. 0) THEN
+            IF (I == 1) THEN
+               IF (MOD(IGRP-1,NGPP) == 0) THEN
                   CALL HEADER(IOUNT)
                   IF (MULTYR) THEN
                      WRITE(IOUNT,9030) CHRAVE(IAVE), NUMYRS
@@ -1827,7 +1827,7 @@ SUBROUTINE PRTSUM(IOUNT)
                   &CHIDEP(2,ITYP),CHIDEP(3,ITYP)
                END IF
                WRITE(IOUNT,*) ' '
-               IF (INDLOC .EQ. 0) THEN
+               IF (INDLOC == 0) THEN
                   XR2 = 0.0D0
                   YR2 = 0.0D0
                   ZE2 = 0.0D0
@@ -1852,7 +1852,7 @@ SUBROUTINE PRTSUM(IOUNT)
                   &NETID(INDLOC)
                END IF
             ELSE
-               IF (INDLOC .EQ. 0) THEN
+               IF (INDLOC == 0) THEN
                   XR2 = 0.0D0
                   YR2 = 0.0D0
                   ZE2 = 0.0D0
@@ -1927,7 +1927,7 @@ SUBROUTINE PRTSUM(IOUNT)
    &/22X,'DP = DISCPOLR')
 
    RETURN
-END
+END SUBROUTINE PRTSUM
 
 SUBROUTINE EVEFIL
 !***********************************************************************
@@ -1954,12 +1954,12 @@ SUBROUTINE EVEFIL
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: IAVEP
    DOUBLE PRECISION :: CONC1
-   CHARACTER EVFRM*20
-   LOGICAL HITIN
+   CHARACTER :: EVFRM*20
+   LOGICAL :: HITIN
 
 !     Variable Initializations
    MODNAM = 'EVEFIL'
@@ -1979,16 +1979,16 @@ SUBROUTINE EVEFIL
       IF (.NOT. HITIN) THEN
 !           Not in the Event Pathway - Echo Input to EVENT File
          READ(ITEVUT,EVFRM,END=999) RUNST1
-         IF (RUNST1(1:11) .EQ. 'EV STARTING') THEN
+         IF (RUNST1(1:11) == 'EV STARTING') THEN
 !              Event Pathway Starts - Set Logical Switch
             HITIN = .TRUE.
-            IF (LOCB(1) .EQ. 1) THEN
+            IF (LOCB(1) == 1) THEN
                WRITE(IEVUNT,'(a:)') RUNST1(1:LEN_TRIM(RUNST1))
-            ELSE IF (LOCB(1) .EQ. 2) THEN
+            ELSE IF (LOCB(1) == 2) THEN
                WRITE(IEVUNT,'(1x,a:)') RUNST1(1:LEN_TRIM(RUNST1))
-            ELSE IF (LOCB(1) .EQ. 3) THEN
+            ELSE IF (LOCB(1) == 3) THEN
                WRITE(IEVUNT,'(2x,a:)') RUNST1(1:LEN_TRIM(RUNST1))
-            ELSE IF (LOCB(1) .EQ. 4) THEN
+            ELSE IF (LOCB(1) == 4) THEN
                WRITE(IEVUNT,'(3x,a:)') RUNST1(1:LEN_TRIM(RUNST1))
             END IF
          ELSE
@@ -1996,23 +1996,23 @@ SUBROUTINE EVEFIL
          END IF
       ELSE
          READ(ITEVUT,EVFRM,END=999) RUNST1
-         IF (RUNST1(1:11) .EQ. 'EV FINISHED') THEN
+         IF (RUNST1(1:11) == 'EV FINISHED') THEN
             IF (MXFILE) THEN
 !                 Add Events From Max Value (>Thresh) Files ---   CALL MXEVNT
                CALL MXEVNT
             END IF
-            IF (LOCB(1) .EQ. 1) THEN
+            IF (LOCB(1) == 1) THEN
                WRITE(IEVUNT,'(a:)') RUNST1(1:LEN_TRIM(RUNST1))
-            ELSE IF (LOCB(1) .EQ. 2) THEN
+            ELSE IF (LOCB(1) == 2) THEN
                WRITE(IEVUNT,'(1x,a:)') RUNST1(1:LEN_TRIM(RUNST1))
-            ELSE IF (LOCB(1) .EQ. 3) THEN
+            ELSE IF (LOCB(1) == 3) THEN
                WRITE(IEVUNT,'(2x,a:)') RUNST1(1:LEN_TRIM(RUNST1))
-            ELSE IF (LOCB(1) .EQ. 4) THEN
+            ELSE IF (LOCB(1) == 4) THEN
                WRITE(IEVUNT,'(3x,a:)') RUNST1(1:LEN_TRIM(RUNST1))
             END IF
             HITIN = .FALSE.
          END IF
-         IF (HITIN .and. RUNST1(LOCB(1):LOCB(1)+10) .EQ.&
+         IF (HITIN .and. RUNST1(LOCB(1):LOCB(1)+10) ==&
          &'   EVENTPER') THEN
             READ(RUNST1(LOCB(1)+23:),'(I3)') IAVEP
             READ(RUNST1(LOCB(1)+47:),'(F18.5)',ERR=99) CONC1
@@ -2027,7 +2027,7 @@ SUBROUTINE EVEFIL
          CONC1 = 1.0D9
 
 100      CONTINUE
-         IF (HITIN.and. IAVEP.NE.720 .and. CONC1.NE.0.0D0) THEN
+         IF (HITIN.and. IAVEP/=720 .and. CONC1/=0.0D0) THEN
 !              Write Out EVENTPER & EVENTLOC Cards, Allowing for Column Shift
             WRITE(IEVUNT,'(a:)') RUNST1(LOCB(1):LEN_TRIM(RUNST1))
          END IF
@@ -2040,13 +2040,13 @@ SUBROUTINE EVEFIL
    END DO
 
 !     Write OU Pathway Images to EVENT File, Allowing For Column Shift
-   IF (LOCB(1) .EQ. 1) THEN
+   IF (LOCB(1) == 1) THEN
       WRITE(IEVUNT,1011) EVPARM
-   ELSE IF (LOCB(1) .EQ. 2) THEN
+   ELSE IF (LOCB(1) == 2) THEN
       WRITE(IEVUNT,1012) EVPARM
-   ELSE IF (LOCB(1) .EQ. 3) THEN
+   ELSE IF (LOCB(1) == 3) THEN
       WRITE(IEVUNT,1013) EVPARM
-   ELSE IF (LOCB(1) .EQ. 4) THEN
+   ELSE IF (LOCB(1) == 4) THEN
       WRITE(IEVUNT,1014) EVPARM
    END IF
 
@@ -2066,7 +2066,7 @@ SUBROUTINE EVEFIL
    &/'   OU FINISHED')
 
    RETURN
-END
+END SUBROUTINE EVEFIL
 
 SUBROUTINE MXEVNT
 !***********************************************************************
@@ -2093,11 +2093,11 @@ SUBROUTINE MXEVNT
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: IAVEP, KDATE
    DOUBLE PRECISION :: CONC1, XR2, YR2, ZE2, ZH2, ZF2
-   CHARACTER NAMEEV*10, GID*8, BUFIN*90
+   CHARACTER :: NAMEEV*10, GID*8, BUFIN*90
 
 !     Variable Initializations
    MODNAM = 'MXEVNT'
@@ -2108,7 +2108,7 @@ SUBROUTINE MXEVNT
       NUMEVE = 0
 !        Begin Source Group LOOP
       DO IGRP = 1, NUMGRP
-         IF (MAXFLE(IGRP,IAVE) .EQ. 1) THEN
+         IF (MAXFLE(IGRP,IAVE) == 1) THEN
 !              Maximum Value File Exists for This Group and AvePer
 !              Rewind File
             REWIND IMXUNT(IGRP,IAVE)
@@ -2119,15 +2119,15 @@ SUBROUTINE MXEVNT
                READ(IMXUNT(IGRP,IAVE),100,ERR=99,END=999) BUFIN
 100            FORMAT(A90)
 !                 Skip Record if Part of Header, '*' in Column 1
-               IF (BUFIN(1:1) .EQ. '*') GO TO 11
+               IF (BUFIN(1:1) == '*') GO TO 11
                READ(BUFIN,THRFRM,ERR=99) IAVEP,&
                &GID, KDATE, XR2, YR2, ZE2, ZH2, ZF2, CONC1
-               IF (IAVEP.NE.720 .and. IAVEP.EQ.KAVE(IAVE) .and.&
-               &GID.EQ.GRPID(IGRP)) THEN
+               IF (IAVEP/=720 .and. IAVEP==KAVE(IAVE) .and.&
+               &GID==GRPID(IGRP)) THEN
 !                    Increment Event Counter and Generate Event Name
                   NUMEVE = NUMEVE + 1
 
-                  IF (NUMEVE .GT. 999999) THEN
+                  IF (NUMEVE > 999999) THEN
 !                       Number of Events Exceeds Limit of Field,
 !                       Write Warning Message and Reset to 1
                      WRITE(DUMMY,'(3X,I2.2,3X)') IAVEP
@@ -2137,19 +2137,19 @@ SUBROUTINE MXEVNT
 
                   WRITE(NAMEEV,'("TH",I2.2,I6.6)') IAVEP, NUMEVE
 !                    Write EVENTPER & EVENTLOC Cards, Allowing for Col. Shift
-                  IF (LOCB(1) .EQ. 1) THEN
+                  IF (LOCB(1) == 1) THEN
                      WRITE(IEVUNT,1901) NAMEEV,IAVEP,GID,KDATE,CONC1
                      WRITE(IEVUNT,1911) NAMEEV, XR2, YR2, ZE2, ZH2,&
                      &ZF2
-                  ELSE IF (LOCB(1) .EQ. 2) THEN
+                  ELSE IF (LOCB(1) == 2) THEN
                      WRITE(IEVUNT,1902) NAMEEV,IAVEP,GID,KDATE,CONC1
                      WRITE(IEVUNT,1912) NAMEEV, XR2, YR2, ZE2, ZH2,&
                      &ZF2
-                  ELSE IF (LOCB(1) .EQ. 3) THEN
+                  ELSE IF (LOCB(1) == 3) THEN
                      WRITE(IEVUNT,1903) NAMEEV,IAVEP,GID,KDATE,CONC1
                      WRITE(IEVUNT,1913) NAMEEV, XR2, YR2, ZE2, ZH2,&
                      &ZF2
-                  ELSE IF (LOCB(1) .EQ. 4) THEN
+                  ELSE IF (LOCB(1) == 4) THEN
                      WRITE(IEVUNT,1904) NAMEEV,IAVEP,GID,KDATE,CONC1
                      WRITE(IEVUNT,1914) NAMEEV, XR2, YR2, ZE2, ZH2,&
                      &ZF2
@@ -2189,7 +2189,7 @@ SUBROUTINE MXEVNT
    &3(1X,F10.4))
 
 1000 RETURN
-END
+END SUBROUTINE MXEVNT
 
 SUBROUTINE PRTPM25
 !***********************************************************************
@@ -2224,14 +2224,14 @@ SUBROUTINE PRTPM25
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, K, II, INDZ, INDC, NX, NY, INDEXW, N
    INTEGER :: IDEC, IMOD
    DOUBLE PRECISION :: YCOVAL, XRMS, YRMS, DIST, DIR
-   CHARACTER BUF132*132
+   CHARACTER :: BUF132*132
 
-   CHARACTER RANK(10)*5, CHRVAL*5
+   CHARACTER :: RANK(10)*5, CHRVAL*5
 
 !     Variable Initializations
    DATA (RANK(I),I=1,10) /'  1ST','  2ND','  3RD','  4TH','  5TH',&
@@ -2242,7 +2242,7 @@ SUBROUTINE PRTPM25
 
 !     Write Out the 'EV STARTING' Card to the Temp-EVent File for
 !     First Output Type Only (i.e., ITYP = 1)
-   IF (ITYP .EQ. 1) THEN
+   IF (ITYP == 1) THEN
       WRITE(ITEVUT,9000)
    END IF
 
@@ -2250,7 +2250,7 @@ SUBROUTINE PRTPM25
    DO N = 1, NVAL
 
 !      If this rank not applicable, cycle to next rank
-      IF( NHIAVE(N,1) .NE. 1 ) CYCLE
+      IF( NHIAVE(N,1) /= 1 ) CYCLE
 
 ! ---  Loop through source groups
       DO IGRP = 1, NUMGRP
@@ -2259,7 +2259,7 @@ SUBROUTINE PRTPM25
 !           Fill Work Array With SRCIDs For This Group
             INDGRP = 0
             DO ISRC = 1, NUMSRC
-               IF (IGROUP(ISRC,IGRP) .EQ. 1) THEN
+               IF (IGROUP(ISRC,IGRP) == 1) THEN
                   INDGRP = INDGRP + 1
                   WORKID(INDGRP) = SRCID(ISRC)
                END IF
@@ -2281,7 +2281,7 @@ SUBROUTINE PRTPM25
             INDEXW = MIN(29,NSRC)
          END IF
 !        Check for More Than 29 Sources Per Group
-         IF (INDGRP .GT. INDEXW) THEN
+         IF (INDGRP > INDEXW) THEN
             WORKID(INDEXW) = ' . . . '
             INDGRP = INDEXW
          END IF
@@ -2299,19 +2299,19 @@ SUBROUTINE PRTPM25
             DO NX = 1, NPPX
                DO NY = 1, NPPY
                   CALL HEADER(IOUNIT)
-                  IF (NHIAVE(N,1) .EQ. 1) THEN
+                  IF (NHIAVE(N,1) == 1) THEN
 ! ---                Assign character label for rank
-                     IF (N .LE. 10) THEN
+                     IF (N <= 10) THEN
                         CHRVAL = RANK(N)
-                     ELSE IF (MOD(N,100) .GT. 10 .and.&
-                     &MOD(N,100) .LT. 20) THEN
+                     ELSE IF (MOD(N,100) > 10 .and.&
+                     &MOD(N,100) < 20) THEN
                         IDEC = INT(N/10)
                         IMOD = MOD(N,10)
                         WRITE(CHRVAL,'(I2,I1,"TH")') IDEC, IMOD
-                     ELSE IF (N .LE. 999) THEN
+                     ELSE IF (N <= 999) THEN
                         IDEC = INT(N/10)
                         IMOD = MOD(N,10)
-                        IF (IMOD .EQ. 0) IMOD = 10
+                        IF (IMOD == 0) IMOD = 10
                         WRITE(CHRVAL,'(I2,A3)') IDEC, RANK(IMOD)(3:5)
                      END IF
 
@@ -2328,38 +2328,38 @@ SUBROUTINE PRTPM25
                   WRITE(IOUNIT,9037) NTID(I), NTTYP(I)
 !                 Print The Values By Source Group
                   WRITE(IOUNIT,9011) CHIDEP(3,ITYP), POLLUT,PERLBL(ITYP)
-                  IF (NX .EQ. NPPX) THEN
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                  IF (NX == NPPX) THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         WRITE(IOUNIT,9016)
                         WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                         &NUMXPT(I))
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         WRITE(IOUNIT,9018)
                         WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                         &NUMXPT(I))
                      END IF
                   ELSE
-                     IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                     IF (NTTYP(I) == 'GRIDCART') THEN
                         WRITE(IOUNIT,9016)
                         WRITE(IOUNIT,9017) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                         &NCPP*NX)
-                     ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                     ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                         WRITE(IOUNIT,9018)
                         WRITE(IOUNIT,9019) (XCOORD(J,I),J=1+NCPP*(NX-1),&
                         &NCPP*NX)
                      END IF
                   END IF
                   WRITE(IOUNIT,9010)
-                  IF (NY .EQ. NPPY) THEN
+                  IF (NY == NPPY) THEN
                      DO K = 1+NRPP*(NY-1), NUMYPT(I)
-                        IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                        IF (NTTYP(I) == 'GRIDCART') THEN
                            INDZ = NETEND(I) - K*NUMXPT(I) + 1
                            YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                        ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                        ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                            INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                            YCOVAL = YCOORD(K,I)
                         END IF
-                        IF (NX .EQ. NPPX) THEN
+                        IF (NX == NPPX) THEN
                            WRITE(IOUNIT,9013) YCOVAL,&
                            &(SUMHNH(INDZ+J-1,IGRP,N),J=1+NCPP*(NX-1),NUMXPT(I))
                         ELSE
@@ -2369,14 +2369,14 @@ SUBROUTINE PRTPM25
                      END DO
                   ELSE
                      DO K = 1+NRPP*(NY-1), NRPP*NY
-                        IF (NTTYP(I) .EQ. 'GRIDCART') THEN
+                        IF (NTTYP(I) == 'GRIDCART') THEN
                            INDZ = NETEND(I) - K*NUMXPT(I) + 1
                            YCOVAL = YCOORD(NUMYPT(I)-K+1,I)
-                        ELSE IF (NTTYP(I) .EQ. 'GRIDPOLR') THEN
+                        ELSE IF (NTTYP(I) == 'GRIDPOLR') THEN
                            INDZ = NETSTA(I) + (K-1)*NUMXPT(I)
                            YCOVAL = YCOORD(K,I)
                         END IF
-                        IF (NX .EQ. NPPX) THEN
+                        IF (NX == NPPX) THEN
                            WRITE(IOUNIT,9013) YCOVAL,&
                            &(SUMHNH(INDZ+J-1,IGRP,N),J=1+NCPP*(NX-1),NUMXPT(I))
                         ELSE
@@ -2390,28 +2390,28 @@ SUBROUTINE PRTPM25
          END DO
 !        End LOOP Through Networks
 
-         IF (IRSTAT(4).NE.0 .or. IRSTAT(8).NE.0) THEN
+         IF (IRSTAT(4)/=0 .or. IRSTAT(8)/=0) THEN
 ! ---       Include EVALCART receptors with DISCCART receptors.
 !           Print Out The Coord. & Concentrations For Discrete Cart Receptors
             INDC = 0
             DO IREC = 1, NUMREC
-               IF (RECTYP(IREC) .EQ. 'DC') THEN
+               IF (RECTYP(IREC) == 'DC') THEN
                   INDC = INDC + 1
-                  IF (MOD(INDC-1,80) .EQ. 0) THEN
+                  IF (MOD(INDC-1,80) == 0) THEN
                      CALL HEADER(IOUNIT)
-                     IF (NHIAVE(N,1) .EQ. 1) THEN
+                     IF (NHIAVE(N,1) == 1) THEN
 ! ---                   Assign character label for rank
-                        IF (N .LE. 10) THEN
+                        IF (N <= 10) THEN
                            CHRVAL = RANK(N)
-                        ELSE IF (MOD(N,100) .GT. 10 .and.&
-                        &MOD(N,100) .LT. 20) THEN
+                        ELSE IF (MOD(N,100) > 10 .and.&
+                        &MOD(N,100) < 20) THEN
                            IDEC = INT(N/10)
                            IMOD = MOD(N,10)
                            WRITE(CHRVAL,'(I2,I1,"TH")') IDEC, IMOD
-                        ELSE IF (N .LE. 999) THEN
+                        ELSE IF (N <= 999) THEN
                            IDEC = INT(N/10)
                            IMOD = MOD(N,10)
-                           IF (IMOD .EQ. 0) IMOD = 10
+                           IF (IMOD == 0) IMOD = 10
                            WRITE(CHRVAL,'(I2,A3)') IDEC, RANK(IMOD)(3:5)
                         END IF
 
@@ -2430,7 +2430,7 @@ SUBROUTINE PRTPM25
                      &PERLBL(ITYP)
                      WRITE(IOUNIT,9048) CHIDEP(3,ITYP), CHIDEP(3,ITYP)
                   END IF
-                  IF (MOD(INDC,2) .NE. 0) THEN
+                  IF (MOD(INDC,2) /= 0) THEN
                      WRITE(BUF132(1:60),9045) AXR(IREC), AYR(IREC),&
                      &SUMHNH(IREC,IGRP,N)
                   ELSE
@@ -2441,38 +2441,38 @@ SUBROUTINE PRTPM25
                   END IF
                END IF
             END DO
-            IF (MOD(INDC,2) .NE. 0) THEN
+            IF (MOD(INDC,2) /= 0) THEN
                WRITE(IOUNIT,9090) BUF132
                WRITE(BUF132,9095)
             END IF
          END IF
 
-         IF (IRSTAT(5) .NE. 0) THEN
+         IF (IRSTAT(5) /= 0) THEN
 !           Print Out The Coord. & Concentrations For Discrete Polar Receptors
             INDC = 0
             DO IREC = 1, NUMREC
-               IF (RECTYP(IREC) .EQ. 'DP') THEN
+               IF (RECTYP(IREC) == 'DP') THEN
                   INDC = INDC + 1
                   XRMS = AXR(IREC) - AXS(IREF(IREC))
                   YRMS = AYR(IREC) - AYS(IREF(IREC))
                   DIST = DSQRT(XRMS*XRMS + YRMS*YRMS)
                   DIR  = DATAN2(XRMS, YRMS) * RTODEG
-                  IF (DIR .LE. 0.0D0) DIR = DIR + 360.0D0
-                  IF (MOD(INDC-1,80) .EQ. 0) THEN
+                  IF (DIR <= 0.0D0) DIR = DIR + 360.0D0
+                  IF (MOD(INDC-1,80) == 0) THEN
                      CALL HEADER(IOUNIT)
-                     IF (NHIAVE(N,1) .EQ. 1) THEN
+                     IF (NHIAVE(N,1) == 1) THEN
 ! ---                   Assign character label for rank
-                        IF (N .LE. 10) THEN
+                        IF (N <= 10) THEN
                            CHRVAL = RANK(N)
-                        ELSE IF (MOD(N,100) .GT. 10 .and.&
-                        &MOD(N,100) .LT. 20) THEN
+                        ELSE IF (MOD(N,100) > 10 .and.&
+                        &MOD(N,100) < 20) THEN
                            IDEC = INT(N/10)
                            IMOD = MOD(N,10)
                            WRITE(CHRVAL,'(I2,I1,"TH")') IDEC, IMOD
-                        ELSE IF (N .LE. 999) THEN
+                        ELSE IF (N <= 999) THEN
                            IDEC = INT(N/10)
                            IMOD = MOD(N,10)
-                           IF (IMOD .EQ. 0) IMOD = 10
+                           IF (IMOD == 0) IMOD = 10
                            WRITE(CHRVAL,'(I2,A3)') IDEC, RANK(IMOD)(3:5)
                         END IF
 
@@ -2491,7 +2491,7 @@ SUBROUTINE PRTPM25
                      &PERLBL(ITYP)
                      WRITE(IOUNIT,9049) CHIDEP(3,ITYP), CHIDEP(3,ITYP)
                   END IF
-                  IF (MOD(INDC,2) .NE. 0) THEN
+                  IF (MOD(INDC,2) /= 0) THEN
                      WRITE(BUF132(1:65),9047) SRCID(IREF(IREC)), DIST,&
                      &DIR, SUMHNH(IREC,IGRP,N)
                   ELSE
@@ -2502,7 +2502,7 @@ SUBROUTINE PRTPM25
                   END IF
                END IF
             END DO
-            IF (MOD(INDC,2) .NE. 0) THEN
+            IF (MOD(INDC,2) /= 0) THEN
                WRITE(IOUNIT,9090) BUF132
                WRITE(BUF132,9095)
             END IF
@@ -2513,7 +2513,7 @@ SUBROUTINE PRTPM25
 
 !     Write Out the 'EV FINISHED' Card to the Temp-EVent File for
 !     First Output Type Only (i.e., ITYP = 1)
-   IF (ITYP .EQ. 1) THEN
+   IF (ITYP == 1) THEN
       WRITE(ITEVUT,9009)
    END IF
 
@@ -2551,7 +2551,7 @@ SUBROUTINE PRTPM25
 9095 FORMAT(132(' '))
 
    RETURN
-END
+END SUBROUTINE PRTPM25
 
 SUBROUTINE MAXPM25
 !***********************************************************************
@@ -2580,7 +2580,7 @@ SUBROUTINE MAXPM25
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: J, N
 
@@ -2592,14 +2592,14 @@ SUBROUTINE MAXPM25
 !        Begin loop through ranks
       DO N = 1, NVAL
 !           Cycle to next rank if this rank is not applicable
-         IF( NHIAVE(N,1) .NE. 1 ) CYCLE
+         IF( NHIAVE(N,1) /= 1 ) CYCLE
 !           Begin Receptor LOOP
          RECEPTOR_LOOP: DO IREC = 1, NUMREC
-            IF (NMXPM .GT. 1) THEN
-               IF (SUMHNH(IREC,IGRP,N) .GT.&
+            IF (NMXPM > 1) THEN
+               IF (SUMHNH(IREC,IGRP,N) >&
                &MXPMVAL(NMXPM,IGRP,N)) THEN
                   DO J = NMXPM-1, 1, -1
-                     IF(SUMHNH(IREC,IGRP,N) .LE.&
+                     IF(SUMHNH(IREC,IGRP,N) <=&
                      &MXPMVAL(J,IGRP,N)) THEN
                         MXPMVAL(J+1,IGRP,N) = SUMHNH(IREC,IGRP,N)
                         MXPMLOC(J+1,IGRP,N) = IREC
@@ -2608,15 +2608,15 @@ SUBROUTINE MAXPM25
                      ELSE
                         MXPMVAL(J+1,IGRP,N) = MXPMVAL(J,IGRP,N)
                         MXPMLOC(J+1,IGRP,N) = MXPMLOC(J,IGRP,N)
-                        IF (J .EQ. 1) THEN
+                        IF (J == 1) THEN
                            MXPMVAL(1,IGRP,N) = SUMHNH(IREC,IGRP,N)
                            MXPMLOC(1,IGRP,N) = IREC
                         END IF
                      END IF
                   END DO
                END IF
-            ELSE IF (NMXPM .EQ. 1) THEN
-               IF (SUMHNH(IREC,IGRP,N) .GT. MXPMVAL(1,IGRP,N)) THEN
+            ELSE IF (NMXPM == 1) THEN
+               IF (SUMHNH(IREC,IGRP,N) > MXPMVAL(1,IGRP,N)) THEN
                   MXPMVAL(1,IGRP,N) = SUMHNH(IREC,IGRP,N)
                   MXPMLOC(1,IGRP,N) = IREC
                END IF
@@ -2629,7 +2629,7 @@ SUBROUTINE MAXPM25
 !     End Source Group LOOP
 
    RETURN
-END
+END SUBROUTINE MAXPM25
 
 SUBROUTINE PRTPM25SUM(IOUNT)
 !***********************************************************************
@@ -2661,38 +2661,38 @@ SUBROUTINE PRTPM25SUM(IOUNT)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, IVAL, INDMX, IOUNT, N
    INTEGER :: IDEC, IMOD
    DOUBLE PRECISION :: AXR1, AYR1, AZELV1, AZHIL1, AZFLG1
-   CHARACTER RANK(10)*5, CHRVAL*5
+   CHARACTER :: RANK(10)*5, CHRVAL*5
 
 !     Variable Initializations
    DATA (RANK(I),I=1,10) /'  1ST','  2ND','  3RD','  4TH','  5TH',&
    &'  6TH','  7TH','  8TH','  9TH',' 10TH'/
    MODNAM = 'PRTPM25SUM'
 
-   IF (NUMAVE .EQ. 1) THEN
+   IF (NUMAVE == 1) THEN
 !        Calculate Number of Groups Per Page, NGPP
       NGPP = MAX( 1, INT(50/(NMXPM+1)) )
       DO N = 1, NVAL
-         IF (NHIAVE(N,1) .NE. 1) CYCLE
+         IF (NHIAVE(N,1) /= 1) CYCLE
          DO IGRP = 1, NUMGRP
-            IF (MOD(IGRP-1, NGPP) .EQ. 0) THEN
+            IF (MOD(IGRP-1, NGPP) == 0) THEN
                CALL HEADER(IOUNT)
 ! ---             Assign character label for rank
-               IF (N .LE. 10) THEN
+               IF (N <= 10) THEN
                   CHRVAL = RANK(N)
-               ELSE IF (MOD(N,100) .GT. 10 .and.&
-               &MOD(N,100) .LT. 20) THEN
+               ELSE IF (MOD(N,100) > 10 .and.&
+               &MOD(N,100) < 20) THEN
                   IDEC = INT(N/10)
                   IMOD = MOD(N,10)
                   WRITE(CHRVAL,'(I2,I1,"TH")') IDEC, IMOD
-               ELSE IF (N .LE. 999) THEN
+               ELSE IF (N <= 999) THEN
                   IDEC = INT(N/10)
                   IMOD = MOD(N,10)
-                  IF (IMOD .EQ. 0) IMOD = 10
+                  IF (IMOD == 0) IMOD = 10
                   WRITE(CHRVAL,'(I2,A3)') IDEC, RANK(IMOD)(3:5)
                END IF
 
@@ -2707,12 +2707,12 @@ SUBROUTINE PRTPM25SUM(IOUNT)
             END IF
             DO IVAL = 1, NMXPM
                INDMX = MXPMLOC(IVAL,IGRP,N)
-               IF (IVAL .EQ. 1 .and. INDMX .NE. 0) THEN
+               IF (IVAL == 1 .and. INDMX /= 0) THEN
                   WRITE(IOUNT,1012) GRPID(IGRP), RANK(IVAL),&
                   &MXPMVAL(IVAL,IGRP,N), AXR(INDMX), AYR(INDMX),&
                   &AZELEV(INDMX), AZHILL(INDMX), AZFLAG(INDMX),&
                   &RECTYP(INDMX), NETID(INDMX)
-               ELSE IF (IVAL .EQ. 1 .and. INDMX .EQ. 0) THEN
+               ELSE IF (IVAL == 1 .and. INDMX == 0) THEN
                   AXR1 = 0.0D0
                   AYR1 = 0.0D0
                   AZELV1 = 0.0D0
@@ -2721,7 +2721,7 @@ SUBROUTINE PRTPM25SUM(IOUNT)
                   WRITE(IOUNT,1014) GRPID(IGRP), RANK(IVAL),&
                   &MXPMVAL(IVAL,IGRP,N), AXR1, AYR1, AZELV1,&
                   &AZHIL1, AZFLG1
-               ELSE IF (INDMX .EQ. 0) THEN
+               ELSE IF (INDMX == 0) THEN
                   AXR1 = 0.0D0
                   AYR1 = 0.0D0
                   AZELV1 = 0.0D0
@@ -2765,7 +2765,7 @@ SUBROUTINE PRTPM25SUM(IOUNT)
    &/22X,'DP = DISCPOLR')
 
    RETURN
-END
+END SUBROUTINE PRTPM25SUM
 
 SUBROUTINE SHOUT
 !***********************************************************************
@@ -2795,10 +2795,10 @@ SUBROUTINE SHOUT
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 ! Unused:      INTEGER :: I
-   CHARACTER HDRFRM*400, SEAFRM*80
+   CHARACTER :: HDRFRM*400, SEAFRM*80
 
 !     Variable Initializations
    MODNAM = 'SHOUT'
@@ -2808,12 +2808,12 @@ SUBROUTINE SHOUT
 
 ! --- Generate ouptut format based on number of output types and
 !     file format ('FIX' or 'EXP')
-   IF (FILE_FORMAT .EQ. 'FIX') THEN
+   IF (FILE_FORMAT == 'FIX') THEN
 !        Use FIXed format (F13.8) for concentrations and fluxes
       WRITE(SEAFRM,1009) NUMTYP
 1009  FORMAT('(2(1X,F13.5),',I1,'(1X,F13.8),3(1X,F7.2),2X,A8,2X,',&
       &'3(I4,2X),A8)')
-   ELSE IF (FILE_FORMAT .EQ. 'EXP') THEN
+   ELSE IF (FILE_FORMAT == 'EXP') THEN
 !        Use EXPonential format (E13.6) for concentrations and fluxes
       WRITE(SEAFRM,1010) NUMTYP
 1010  FORMAT('(2(1X,F13.5),',I1,'(1X,E13.6),3(1X,F7.2),2X,A8,2X,',&
@@ -2823,7 +2823,7 @@ SUBROUTINE SHOUT
 !     Begin Source Group LOOP
    DO IGRP = 1, NUMGRP
 !        Check for Selection of SEASONHR File for This Group
-      IF (ISEAHR(IGRP) .EQ. 1) THEN
+      IF (ISEAHR(IGRP) == 1) THEN
          IF (.NOT. L_NoHeader(4)) THEN
 !              Write Header Information
             WRITE(ISHUNT(IGRP),9005) VERSN, TITLE1(1:68), RUNDAT
@@ -2871,7 +2871,7 @@ SUBROUTINE SHOUT
    &  3('' ______ ''),'' ________  ____  ____  ____  ________'')')
 
 999 RETURN
-END
+END SUBROUTINE SHOUT
 
 SUBROUTINE RANKFL
 !***********************************************************************
@@ -2897,10 +2897,10 @@ SUBROUTINE RANKFL
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, IRANK, IDATSV(NMXVAL)
-   LOGICAL FOUND
+   LOGICAL :: FOUND
 
 !     Variable Initializations
    MODNAM = 'RANKFL'
@@ -2908,7 +2908,7 @@ SUBROUTINE RANKFL
 !     Begin Averaging Period LOOP
    DO IAVE = 1, NUMAVE
 !        Decide if we should go through the processing
-      IF (IRNKFL(IAVE) .EQ. 1) THEN
+      IF (IRNKFL(IAVE) == 1) THEN
          IF (.NOT. L_NoHeader(5)) THEN
 !              Write Header to File
             WRITE(IRKUNT(IAVE),9005) VERSN, TITLE1(1:68), RUNDAT
@@ -2929,12 +2929,12 @@ SUBROUTINE RANKFL
             DO I = 1, IRKVAL(IAVE)
                FOUND = .FALSE.
                DO J = 1, NMXVAL
-                  IF (MXDATE(I,IGRP,IAVE,ITYP) .EQ. IDATSV(J)) THEN
+                  IF (MXDATE(I,IGRP,IAVE,ITYP) == IDATSV(J)) THEN
                      FOUND = .TRUE.
                      EXIT
                   END IF
                END DO
-               IF (.NOT.FOUND .and. IRANK.LT.IRKVAL(IAVE)) THEN
+               IF (.NOT.FOUND .and. IRANK<IRKVAL(IAVE)) THEN
                   IRANK = IRANK + 1
                   IREC  = MXLOCA(I,IGRP,IAVE,ITYP)
                   IDATSV(IRANK) = MXDATE(I,IGRP,IAVE,ITYP)
@@ -2971,7 +2971,7 @@ SUBROUTINE RANKFL
    &2(2X,'____________'),3(2X,'______'),'  ________')
 
 999 RETURN
-END
+END SUBROUTINE RANKFL
 
 SUBROUTINE MAXDCALC
 !***********************************************************************
@@ -3015,7 +3015,7 @@ SUBROUTINE MAXDCALC
    USE MAIN1
    IMPLICIT NONE
 
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 ! Unused:      CHARACTER (LEN=6) :: SPEC1, SPEC2, SPEC3
 ! Unused:      CHARACTER (LEN=8) :: CUSI, CSSI, COSI
 ! Unused:      INTEGER :: METVER, IOSI, ISSI, IUSI
@@ -3053,16 +3053,16 @@ SUBROUTINE MAXDCALC
 !        Begin Source Loop
       DO ISRC = 1, NUMSRC
 ! ---       Check for HOURLY emissions for this source
-         IF (QFLAG(ISRC) .EQ. 'HOURLY') THEN
+         IF (QFLAG(ISRC) == 'HOURLY') THEN
 ! ---          Retrieve hourly emissions for MAXDCONT option
             AQS(ISRC) = AAQS(IHR_NDX,IYR_NDX,ISRC)
 
-            IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
+            IF (SRCTYP(ISRC)(1:5) == 'POINT') THEN
                ATS(ISRC) =  AATS(IHR_NDX,IYR_NDX,ISRC)
                AVS(ISRC) =  AAVS(IHR_NDX,IYR_NDX,ISRC)
 !**  Added for Aircraft Plume Rise; UNC-IE
-            ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and.&
-            &AFTSRC(ISRC) .EQ. 'Y') THEN
+            ELSE IF (SRCTYP(ISRC) == 'VOLUME' .and.&
+            &AFTSRC(ISRC) == 'Y') THEN
                AMFUEL(ISRC) = AAMFUEL(IHR_NDX,IYR_NDX,ISRC)
                ATHRUST(ISRC) = AATHRUST(IHR_NDX,IYR_NDX,ISRC)
                AVAA(ISRC) = AAVAA(IHR_NDX,IYR_NDX,ISRC)
@@ -3070,9 +3070,9 @@ SUBROUTINE MAXDCALC
                ABYPR(ISRC) = AABYPR(IHR_NDX,IYR_NDX,ISRC)
                ASRCANGLE(ISRC) = AASRCANGLE(IHR_NDX,IYR_NDX,ISRC)
                ARPWR(ISRC) = AARPWR(IHR_NDX,IYR_NDX,ISRC)
-            ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and.&
+            ELSE IF (SRCTYP(ISRC) == 'VOLUME' .and.&
             &L_HRLYSIG(ISRC).and.&
-            &AFTSRC(ISRC) .EQ. 'Y') THEN
+            &AFTSRC(ISRC) == 'Y') THEN
                AHS(ISRC)    =  AAHS(IHR_NDX,IYR_NDX,ISRC)
                ASYINI(ISRC) =  AASYINI(IHR_NDX,IYR_NDX,ISRC)
                ASZINI(ISRC) =  AASZINI(IHR_NDX,IYR_NDX,ISRC)
@@ -3084,15 +3084,15 @@ SUBROUTINE MAXDCALC
                ASRCANGLE(ISRC) = AASRCANGLE(IHR_NDX,IYR_NDX,ISRC)
                ARPWR(ISRC) = AARPWR(IHR_NDX,IYR_NDX,ISRC)
 !**  End Aircarft Plume Rise insert; April 2023
-            ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and.&
-            &AFTSRC(ISRC) .EQ. 'N'     .and.&   ! Added for Aircraft; UNC-IE
+            ELSE IF (SRCTYP(ISRC) == 'VOLUME' .and.&
+            &AFTSRC(ISRC) == 'N'     .and.&   ! Added for Aircraft; UNC-IE
             &L_HRLYSIG(ISRC)) THEN
                AHS(ISRC)    =  AAHS(IHR_NDX,IYR_NDX,ISRC)
                ASYINI(ISRC) =  AASYINI(IHR_NDX,IYR_NDX,ISRC)
                ASZINI(ISRC) =  AASZINI(IHR_NDX,IYR_NDX,ISRC)
 !**  Added for Aircraft Plume Rise; UNC-IE
-            ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .and.&
-            &AFTSRC(ISRC) .EQ. 'Y') THEN
+            ELSE IF (SRCTYP(ISRC)(1:4) == 'AREA' .and.&
+            &AFTSRC(ISRC) == 'Y') THEN
                AMFUEL(ISRC) = AAMFUEL(IHR_NDX,IYR_NDX,ISRC)
                ATHRUST(ISRC) = AATHRUST(IHR_NDX,IYR_NDX,ISRC)
                AVAA(ISRC) = AAVAA(IHR_NDX,IYR_NDX,ISRC)
@@ -3100,9 +3100,9 @@ SUBROUTINE MAXDCALC
                ABYPR(ISRC) = AABYPR(IHR_NDX,IYR_NDX,ISRC)
                ASRCANGLE(ISRC) = AASRCANGLE(IHR_NDX,IYR_NDX,ISRC)
                ARPWR(ISRC) = AARPWR(IHR_NDX,IYR_NDX,ISRC)
-            ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .and.&
+            ELSE IF (SRCTYP(ISRC)(1:4) == 'AREA' .and.&
             &L_HRLYSIG(ISRC).and.&
-            &AFTSRC(ISRC) .EQ. 'Y') THEN
+            &AFTSRC(ISRC) == 'Y') THEN
                AHS(ISRC)    =  AAHS(IHR_NDX,IYR_NDX,ISRC)
                ASZINI(ISRC) =  AASZINI(IHR_NDX,IYR_NDX,ISRC)
                AMFUEL(ISRC) = AAMFUEL(IHR_NDX,IYR_NDX,ISRC)
@@ -3113,17 +3113,17 @@ SUBROUTINE MAXDCALC
                ASRCANGLE(ISRC) = AASRCANGLE(IHR_NDX,IYR_NDX,ISRC)
                ARPWR(ISRC) = AARPWR(IHR_NDX,IYR_NDX,ISRC)
 !**  End Aircraft Plume Rise insert; April 2023
-            ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .and.&
-            &AFTSRC(ISRC) .EQ. 'N'     .and.&  ! Added for Aircraft; UNC-IE
+            ELSE IF (SRCTYP(ISRC)(1:4) == 'AREA' .and.&
+            &AFTSRC(ISRC) == 'N'     .and.&  ! Added for Aircraft; UNC-IE
             &L_HRLYSIG(ISRC)) THEN
                AHS(ISRC)    =  AAHS(IHR_NDX,IYR_NDX,ISRC)
                ASZINI(ISRC) =  AASZINI(IHR_NDX,IYR_NDX,ISRC)
 
-            ELSE IF (SRCTYP(ISRC) .EQ. 'LINE' .and.&
+            ELSE IF (SRCTYP(ISRC) == 'LINE' .and.&
             &L_HRLYSIG(ISRC)) THEN
                AHS(ISRC)    =  AAHS(IHR_NDX,IYR_NDX,ISRC)
                ASZINI(ISRC) =  AASZINI(IHR_NDX,IYR_NDX,ISRC)
-            ELSE IF (SRCTYP(ISRC) .EQ. 'BUOYLINE') THEN
+            ELSE IF (SRCTYP(ISRC) == 'BUOYLINE') THEN
                AFP(ISRC) = AAFP(IHR_NDX,IYR_NDX,ISRC)
             END IF
          END IF
@@ -3154,7 +3154,7 @@ SUBROUTINE MAXDCALC
 !        user-specified annual or temporally-varying O3
       O3CONC = AO3CONC(IHR_NDX,IYR_NDX)
 !---     Set O3MISS = .T. if stored O3CONC is less than 0.
-      IF (O3CONC .LT. 0.0D0) THEN
+      IF (O3CONC < 0.0D0) THEN
          O3MISS = .TRUE.
       ELSE
          O3MISS = .FALSE.
@@ -3170,14 +3170,14 @@ SUBROUTINE MAXDCALC
 !        user-specified annual or temporally-varying NOx
       NOXBGCONC = ANOXBGCONC(IHR_NDX,IYR_NDX)
 !---     Set NOXMISS = .T. if stored NOXBGCONC is less than 0.
-      IF (NOXBGCONC .LT. 0.0D0) THEN
+      IF (NOXBGCONC < 0.0D0) THEN
          NOXMISS = .TRUE.
       ELSE
          NOXMISS = .FALSE.
       END IF
    END IF
 
-   IF (FULLDATE.GE.ISDATE .and. FULLDATE.LE.IEDATE) THEN
+   IF (FULLDATE>=ISDATE .and. FULLDATE<=IEDATE) THEN
 
       IF (CLMHR .and. CLMPRO) THEN
 !           Check for Calm Hr & Processing and Increment Counters
@@ -3187,7 +3187,7 @@ SUBROUTINE MAXDCALC
 !           Check for Missing Hour & Processing and Increment Counters
          NUMHRS(1) = NUMHRS(1) + 1
          NUMMSG(1) = NUMMSG(1) + 1
-      ELSE IF (ZI .LE. 0.0D0) THEN
+      ELSE IF (ZI <= 0.0D0) THEN
 !           Write Out The Informational Message & Increment Counters
          NUMHRS(1) = NUMHRS(1) + 1
       ELSE
@@ -3258,7 +3258,7 @@ SUBROUTINE MAXDCALC
 
       IAVE = 1
 !        Check for End of Averaging Period
-      IF (KAVE(1).NE.1 .and. MOD(IHOUR,KAVE(1)).EQ.0) THEN
+      IF (KAVE(1)/=1 .and. MOD(IHOUR,KAVE(1))==0) THEN
 !           Calculate Applicable Averages          ---   CALL AVER
          CALL AVER
 ! ---       Reinitialize NUMHRS, NUMCLM and NUMMSG
@@ -3306,7 +3306,7 @@ SUBROUTINE MAXDCALC
    prec1 = Prate
 
    RETURN
-END
+END SUBROUTINE MAXDCALC
 
 SUBROUTINE MAXDCNT_FILE(IGRP1,IVAL)
 !***********************************************************************
@@ -3331,12 +3331,12 @@ SUBROUTINE MAXDCNT_FILE(IGRP1,IVAL)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, IVAL, IDEC, IMOD, IGRP1, IGRP2
 ! JAT 06/22/21 D065 REMOVE NCHR1 AS UNUSED VARIABLE
 !      CHARACTER NCHR1(10)*3, NCHR2(10)*5, CHRVAL*5, HDRFRM*400,
-   CHARACTER NCHR2(10)*5, CHRVAL*5, HDRFRM*400,&
+   CHARACTER :: NCHR2(10)*5, CHRVAL*5, HDRFRM*400,&
    &MXDFMT*100
 ! Unused:       INTEGER :: J
 
@@ -3352,24 +3352,24 @@ SUBROUTINE MAXDCNT_FILE(IGRP1,IVAL)
    WRITE(HDRFRM,9019) NUMGRP, NUMGRP
 
 ! --- Generate write format, depending on FILE_FORMAT
-   IF (FILE_FORMAT .EQ. 'FIX') THEN
+   IF (FILE_FORMAT == 'FIX') THEN
       WRITE(MXDFMT,9001) MIN( NUMGRP, 9999 )
-   ELSE IF (FILE_FORMAT .EQ. 'EXP') THEN
+   ELSE IF (FILE_FORMAT == 'EXP') THEN
       WRITE(MXDFMT,9002) MIN( NUMGRP, 9999 )
    END IF
 
 ! --- Assign character label for rank
-   IF (IVAL .LE. 10) THEN
+   IF (IVAL <= 10) THEN
       CHRVAL = NCHR2(IVAL)
-   ELSE IF (MOD(IVAL,100) .GT. 10 .and.&
-   &MOD(IVAL,100) .LT. 20) THEN
+   ELSE IF (MOD(IVAL,100) > 10 .and.&
+   &MOD(IVAL,100) < 20) THEN
       IDEC = INT(IVAL/10)
       IMOD = MOD(IVAL,10)
       WRITE(CHRVAL,'(I2,I1,"TH")') IDEC, IMOD
-   ELSE IF (IVAL .LE. 999) THEN
+   ELSE IF (IVAL <= 999) THEN
       IDEC = INT(IVAL/10)
       IMOD = MOD(IVAL,10)
-      IF (IMOD .EQ. 0) IMOD = 10
+      IF (IMOD == 0) IMOD = 10
       WRITE(CHRVAL,'(I2,A3)') IDEC, NCHR2(IMOD)(3:5)
    END IF
 
@@ -3380,7 +3380,7 @@ SUBROUTINE MAXDCNT_FILE(IGRP1,IVAL)
       &MODOPS_String(1:LEN_TRIM(MODOPS_String))
 !
       IF (PM25AVE) THEN
-         IF (MAXD_THRESH(IGRP1) .GT. 0.0D0) THEN
+         IF (MAXD_THRESH(IGRP1) > 0.0D0) THEN
             WRITE(IMXDCUNT(IGRP1),9008) CHRVAL,CHRAVE(1),&
             &NUMYRS, GRPID(IGRP1), MAXD_THRESH(IGRP1),&
             &NREC, NUMGRP, MXDFMT
@@ -3389,7 +3389,7 @@ SUBROUTINE MAXDCNT_FILE(IGRP1,IVAL)
             &NUMYRS, GRPID(IGRP1), NREC, NUMGRP, MXDFMT
          END IF
       ELSE IF (NO2AVE .or. SO2AVE) THEN
-         IF (MAXD_THRESH(IGRP1) .GT. 0.0D0) THEN
+         IF (MAXD_THRESH(IGRP1) > 0.0D0) THEN
             WRITE(IMXDCUNT(IGRP1),9009) CHRVAL,CHRAVE(1),&
             &NUMYRS, GRPID(IGRP1), MAXD_THRESH(IGRP1),&
             &NREC, NUMGRP, MXDFMT
@@ -3478,5 +3478,5 @@ SUBROUTINE MAXDCNT_FILE(IGRP1,IVAL)
    &POSITION='APPEND')
 
    RETURN
-END
+END SUBROUTINE MAXDCNT_FILE
 

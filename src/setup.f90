@@ -49,20 +49,20 @@ SUBROUTINE SETUP
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 !     JAT D065 8/9/21 NOPS AND ILEN SET BUT NOT USED
 !      INTEGER :: NOPS, ILEN
 !     JAT D065 8/9/21 MOD_LEN SET BUT NOT USED
 !      INTEGER :: MOD_Len
 
    INTEGER :: I, IFSTAT
-   LOGICAL NOPATH, NOKEY
-   LOGICAL NOCOMMENTECHO
-   CHARACTER RDFRM*20
+   LOGICAL :: NOPATH, NOKEY
+   LOGICAL :: NOCOMMENTECHO
+   CHARACTER :: RDFRM*20
 ! JAT 06/22/21 D065
 ! REMOVE INPFLD AS UNUSED VARIABLE
 !      CHARACTER INPFLD*2, PATHWY(6)*2
-   CHARACTER PATHWY(6)*2
+   CHARACTER :: PATHWY(6)*2
    INTERFACE
       SUBROUTINE EXPATH(INPFLD,PATHWY,IPN,NOPATH)
          CHARACTER (LEN=2), INTENT(IN) :: INPFLD
@@ -123,9 +123,9 @@ SUBROUTINE SETUP
 !        Check for blank input record; echo the blank record to the
 !        output file and the Temporary Event File and then cycle to
 !        the next record; unless PATH = 'RE' for EVENT
-      IF (LEN_TRIM(RUNST1) .EQ. 0) THEN
+      IF (LEN_TRIM(RUNST1) == 0) THEN
          WRITE(IOUNIT,*)
-         IF (PATH .NE. 'RE' .and. PATH .NE. 'OU') THEN
+         IF (PATH /= 'RE' .and. PATH /= 'OU') THEN
 !              Skip echo of blank field to Event file for RE pathway
             WRITE(ITEVUT,*)
          END IF
@@ -142,21 +142,21 @@ SUBROUTINE SETUP
       CALL GETFLD
 
       IF (ECHO .and.&
-      &(FIELD(1).EQ.'OU' .and. FIELD(2).EQ.'FINISHED')) THEN
+      &(FIELD(1)=='OU' .and. FIELD(2)=='FINISHED')) THEN
 !           Echo Last Input Card to Output File (Use Character Substring to
 !           Avoid Echoing ^Z Which May Appear at "End of File" for Some
 !           Editors).  Also, Allow for Shift in the Input Runstream File of
 !           Up to 3 Columns.
-         IF (LOCB(1) .EQ. 1) THEN
+         IF (LOCB(1) == 1) THEN
             WRITE(IOUNIT,9200) RUNST1(1:11)
 9200        FORMAT(A11)
-         ELSE IF (LOCB(1) .EQ. 2) THEN
+         ELSE IF (LOCB(1) == 2) THEN
             WRITE(IOUNIT,9210) RUNST1(1:12)
 9210        FORMAT(A12)
-         ELSE IF (LOCB(1) .EQ. 3) THEN
+         ELSE IF (LOCB(1) == 3) THEN
             WRITE(IOUNIT,9220) RUNST1(1:13)
 9220        FORMAT(A13)
-         ELSE IF (LOCB(1) .EQ. 4) THEN
+         ELSE IF (LOCB(1) == 4) THEN
             WRITE(IOUNIT,9230) RUNST1(1:14)
 9230        FORMAT(A14)
          END IF
@@ -166,7 +166,7 @@ SUBROUTINE SETUP
       END IF
 
 !        Check for 'NO ECHO' In First Two Fields
-      IF (FIELD(1) .EQ. 'NO' .and. FIELD(2) .EQ. 'ECHO') THEN
+      IF (FIELD(1) == 'NO' .and. FIELD(2) == 'ECHO') THEN
          ECHO = .FALSE.
          CYCLE
       END IF
@@ -180,15 +180,15 @@ SUBROUTINE SETUP
          CALL ERRHDL(PPATH,MODNAM,'E','100',PATH)
          PATH = PPATH
          CYCLE
-      ELSE IF (PATH .EQ. 'RE') THEN
+      ELSE IF (PATH == 'RE') THEN
          NOCOMMENTECHO = .TRUE.
-      ELSE IF (PATH .EQ. 'ME') THEN
+      ELSE IF (PATH == 'ME') THEN
          NOCOMMENTECHO = .FALSE.
-      ELSE IF (PATH .EQ. 'OU') THEN
+      ELSE IF (PATH == 'OU') THEN
          NOCOMMENTECHO = .TRUE.
       END IF
 
-      IF (PATH .EQ. '**') THEN
+      IF (PATH == '**') THEN
          IF (NOCOMMENTECHO) THEN
 ! ---          Skip echo to temporary event file and cycle
             CYCLE
@@ -216,29 +216,29 @@ SUBROUTINE SETUP
       CALL SETORD
 
 !        Process Input Card Based on Pathway
-      IF (PATH .EQ. 'CO') THEN
+      IF (PATH == 'CO') THEN
 !           Process COntrol Pathway Cards                   ---   CALL COCARD
          CALL COCARD
 ! ---       Echo Runstream Image to Temporary Event File (Except EVENTFIL,
 !           SAVEFILE, INITFILE & MULTYEAR)
-         IF (KEYWRD.NE.'EVENTFIL' .and. KEYWRD.NE.'SAVEFILE' .and.&
-         &KEYWRD.NE.'INITFILE' .and. KEYWRD.NE.'MULTYEAR') THEN
+         IF (KEYWRD/='EVENTFIL' .and. KEYWRD/='SAVEFILE' .and.&
+         &KEYWRD/='INITFILE' .and. KEYWRD/='MULTYEAR') THEN
             WRITE(ITEVUT,'(a:)') RUNST1(1:LEN_TRIM(RUNST1))
          END IF
-      ELSE IF (PATH .EQ. 'SO') THEN
+      ELSE IF (PATH == 'SO') THEN
 !           Echo Runstream Image to Temporary Event File
          WRITE(ITEVUT,'(a)') RUNST1(1:LEN_TRIM(RUNST1))
 !           Process SOurce Pathway Cards                    ---   CALL SOCARD
          CALL SOCARD
-      ELSE IF (PATH .EQ. 'RE') THEN
+      ELSE IF (PATH == 'RE') THEN
 !           Process REceptor Pathway Cards                  ---   CALL RECARD
          CALL RECARD
-      ELSE IF (PATH .EQ. 'ME') THEN
+      ELSE IF (PATH == 'ME') THEN
 !           Process MEteorology Pathway Cards               ---   CALL MECARD
          CALL MECARD
 !           Echo Runstream Image to Temporary Event File (Except STARTEND
 !           & DAYRANGE)
-         IF (KEYWRD.NE.'STARTEND' .and. KEYWRD.NE.'DAYRANGE') THEN
+         IF (KEYWRD/='STARTEND' .and. KEYWRD/='DAYRANGE') THEN
             WRITE(ITEVUT,'(a:)') RUNST1(1:LEN_TRIM(RUNST1))
          END IF
 
@@ -252,7 +252,7 @@ SUBROUTINE SETUP
 
 ! ---       Loop through the 30 different options that are flagged
          DO I = 1, 30
-            IF (LEN_TRIM(MODOPS(I)) .GT. 0) THEN
+            IF (LEN_TRIM(MODOPS(I)) > 0) THEN
 !                 JAT D065 8/9/21 MOD_LEN SET BUT NOT USED
 !                  MOD_LEN = LEN_TRIM(MODOPS(I))
                MODOPS_String =&
@@ -261,7 +261,7 @@ SUBROUTINE SETUP
             END IF
          END DO
 
-      ELSE IF (PATH .EQ. 'OU') THEN
+      ELSE IF (PATH == 'OU') THEN
 !           Process OUtput Pathway Cards                    ---   CALL OUCARD
          CALL OUCARD
       END IF
@@ -272,7 +272,7 @@ SUBROUTINE SETUP
 !        Check for 'OU FINISHED' Card.  Exit DO WHILE Loop By Branching
 !        to Statement 999 in Order to Avoid Reading a ^Z "End of File"
 !        Marker That May Be Present For Some Editors.
-      IF (PATH .EQ. 'OU' .and. KEYWRD .EQ. 'FINISHED') THEN
+      IF (PATH == 'OU' .and. KEYWRD == 'FINISHED') THEN
          GO TO 999
       END IF
 
@@ -285,8 +285,8 @@ SUBROUTINE SETUP
    ILINE = 0
 
 !     Check That All Pathways Were Finished
-   IF (ICSTAT(50).NE.1 .or. ISSTAT(50).NE.1 .or. IRSTAT(50).NE.1 .or.&
-   &IMSTAT(50).NE.1 .or. IOSTAT(50).NE.1) THEN
+   IF (ICSTAT(50)/=1 .or. ISSTAT(50)/=1 .or. IRSTAT(50)/=1 .or.&
+   &IMSTAT(50)/=1 .or. IOSTAT(50)/=1) THEN
 !        Runstream File Incomplete, Save I?STAT to IFSTAT and Write Message
       IFSTAT = ICSTAT(50)*10000 + ISSTAT(50)*1000 + IRSTAT(50)*100 +&
       &IMSTAT(50)*10 + IOSTAT(50)
@@ -294,7 +294,7 @@ SUBROUTINE SETUP
       CALL ERRHDL(PATH,MODNAM,'E','125',DUMMY)
 ! ---    Check for IFSTAT = 0, indicating an empty input file;
 !        issue error message to 'aermod.out' file and abort
-      IF (IFSTAT .EQ. 0) THEN
+      IF (IFSTAT == 0) THEN
          WRITE(IOUNIT,9990)
 9990     FORMAT(/1X,'All AERMOD input pathways missing! ',&
          &'Processing aborted!!!')
@@ -314,7 +314,7 @@ SUBROUTINE SETUP
    END IF
 
    RETURN
-END
+END SUBROUTINE SETUP
 
 SUBROUTINE LWRUPR
 !***********************************************************************
@@ -341,11 +341,11 @@ SUBROUTINE LWRUPR
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, INDCHK
-   CHARACTER UPCASE*26
-   CHARACTER LWCASE*26
+   CHARACTER :: UPCASE*26
+   CHARACTER :: LWCASE*26
 
 !     Variable Initializations
    DATA UPCASE/'ABCDEFGHIJKLMNOPQRSTUVWXYZ'/
@@ -354,16 +354,16 @@ SUBROUTINE LWRUPR
    INDCHK = 0
 
    DO I = 1, ISTRG
-      IF (RUNST(I) .NE. ' ') THEN
+      IF (RUNST(I) /= ' ') THEN
          INDCHK = INDEX(LWCASE,RUNST(I))
-         IF (INDCHK .NE. 0) THEN
+         IF (INDCHK /= 0) THEN
             RUNST(I) = UPCASE(INDCHK:INDCHK)
          END IF
       END IF
    END DO
 
    RETURN
-END
+END SUBROUTINE LWRUPR
 
 SUBROUTINE DEFINE
 !***********************************************************************
@@ -395,9 +395,9 @@ SUBROUTINE DEFINE
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
-   LOGICAL INQUOTE
+   LOGICAL :: INQUOTE
 
    INTEGER :: I
 
@@ -411,17 +411,17 @@ SUBROUTINE DEFINE
    INFLD = .FALSE.
    INQUOTE = .FALSE.
 
-   IF (ILINE .EQ. 1) THEN
+   IF (ILINE == 1) THEN
 !        Define the Starting Column for the Input File In Case File Is Shifted.
 !        Allow for Shift of Up to 3 Columns
       LOCB(1) = 0
-      IF (RUNST(1) .NE. ' ') THEN
+      IF (RUNST(1) /= ' ') THEN
          LOCB(1) = 1
-      ELSE IF (RUNST(2) .NE. ' ') THEN
+      ELSE IF (RUNST(2) /= ' ') THEN
          LOCB(1) = 2
-      ELSE IF (RUNST(3) .NE. ' ') THEN
+      ELSE IF (RUNST(3) /= ' ') THEN
          LOCB(1) = 3
-      ELSE IF (RUNST(4) .NE. ' ') THEN
+      ELSE IF (RUNST(4) /= ' ') THEN
          LOCB(1) = 4
       ELSE
          LOCB(1) = 1
@@ -434,7 +434,7 @@ SUBROUTINE DEFINE
    IFC = 2
 
 !     Check RUNST1 (full input record string) for Blank Line
-   IF (LEN_TRIM(RUNST1) .GT. 0) THEN
+   IF (LEN_TRIM(RUNST1) > 0) THEN
       BLINE = .FALSE.
    ELSE
       RETURN
@@ -443,7 +443,7 @@ SUBROUTINE DEFINE
 !     Loop through the Data Fields
    DO I = LOCB(1)+12, ISTRG
 
-      IF (.NOT.INFLD .and. RUNST(I).EQ.'"') THEN
+      IF (.NOT.INFLD .and. RUNST(I)=='"') THEN
 !           Location is the Beginning of a Field using "'s
 !           Set Mark of not Blank Line
          BLINE = .FALSE.
@@ -454,7 +454,7 @@ SUBROUTINE DEFINE
 !           Increment the Field Counter
          IFC = IFC + 1
 !           Check for number of fields > IFMAX parameter
-         IF (IFC .GT. IFMAX) THEN
+         IF (IFC > IFMAX) THEN
 !              WRITE Error Message: Too many fields specified
             WRITE(DUMMY,'(I8)') IFMAX
             CALL ERRHDL(PPATH,MODNAM,'E','109',DUMMY)
@@ -462,7 +462,7 @@ SUBROUTINE DEFINE
          END IF
 !           Record the Location of Beginning of the Field
          LOCB(IFC) = I + 1
-      ELSE IF (.NOT.INFLD .and. RUNST(I).NE.' ') THEN
+      ELSE IF (.NOT.INFLD .and. RUNST(I)/=' ') THEN
 !           Location is the Beginning of a Field
 !           Set Mark of not Blank Line
          BLINE = .FALSE.
@@ -471,7 +471,7 @@ SUBROUTINE DEFINE
 !           Increment the Field Counter
          IFC = IFC + 1
 !           Check for number of fields > IFMAX parameter
-         IF (IFC .GT. IFMAX) THEN
+         IF (IFC > IFMAX) THEN
 !              WRITE Error Message: Too many fields specified
             WRITE(DUMMY,'(I8)') IFMAX
             CALL ERRHDL(PPATH,MODNAM,'E','109',DUMMY)
@@ -479,7 +479,7 @@ SUBROUTINE DEFINE
          END IF
 !           Record the Location of Beginning of the Field
          LOCB(IFC) = I
-      ELSE IF (INQUOTE .and. RUNST(I).EQ.'"') THEN
+      ELSE IF (INQUOTE .and. RUNST(I)=='"') THEN
 !           Location is the End of a Field
 !           Set Mark of Not In a field
          INFLD = .FALSE.
@@ -487,7 +487,7 @@ SUBROUTINE DEFINE
          INQUOTE = .FALSE.
 !           Record the Location of Ending of the Field
          LOCE(IFC) = I - 1
-      ELSE IF (.NOT.INQUOTE .and. INFLD .and. RUNST(I).EQ.' ') THEN
+      ELSE IF (.NOT.INQUOTE .and. INFLD .and. RUNST(I)==' ') THEN
 !           Location is the End of a Field
 !           Set Mark of Not In a field
          INFLD = .FALSE.
@@ -497,14 +497,14 @@ SUBROUTINE DEFINE
 
 !        Check for End of Input String
 !        (Length of ISTRG is Set as a PARAMETER in MAIN1)
-      IF (INFLD .and. I.EQ.ISTRG) THEN
+      IF (INFLD .and. I==ISTRG) THEN
          LOCE(IFC) = ISTRG
       END IF
 
    END DO
 
    RETURN
-END
+END SUBROUTINE DEFINE
 
 SUBROUTINE GETFLD
 !***********************************************************************
@@ -526,10 +526,10 @@ SUBROUTINE GETFLD
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J
-   CHARACTER WRTFRM*20
+   CHARACTER :: WRTFRM*20
 
 !     Variable Initializations
    MODNAM = 'GETFLD'
@@ -542,8 +542,8 @@ SUBROUTINE GETFLD
 
    DO I = 1, IFC
 ! ---    Skip processing of fields if IFC > IFMAX
-      IF (I .GT. IFMAX) EXIT
-      IF (LOCE(I)-LOCB(I) .LE. (ILEN_FLD - 1) ) THEN
+      IF (I > IFMAX) EXIT
+      IF (LOCE(I)-LOCB(I) <= (ILEN_FLD - 1) ) THEN
 !           Field Satisfies Limit of ILEN_FLD Characters (set in MAIN1)
          WRITE(FIELD(I),WRTFRM) (RUNST(J),J=LOCB(I),LOCE(I))
       ELSE
@@ -555,7 +555,7 @@ SUBROUTINE GETFLD
    END DO
 
    RETURN
-END
+END SUBROUTINE GETFLD
 
 SUBROUTINE EXPATH(INPFLD,PATHWY,IPN,NOPATH)
 !***********************************************************************
@@ -578,7 +578,7 @@ SUBROUTINE EXPATH(INPFLD,PATHWY,IPN,NOPATH)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I
    CHARACTER (LEN=2), INTENT(IN) :: INPFLD
@@ -591,12 +591,12 @@ SUBROUTINE EXPATH(INPFLD,PATHWY,IPN,NOPATH)
    MODNAM = 'EXPATH'
 
 !     Begin The Processing
-   IF (INPFLD .NE. '  ') THEN
+   IF (INPFLD /= '  ') THEN
 !        Check the Read-in Pathway
       PATH = INPFLD
       DO I = 1, IPN
 !           In Case of Match Set NOPATH to FALSE and Set Path Number, IPNUM
-         IF (INPFLD .EQ. PATHWY(I)) THEN
+         IF (INPFLD == PATHWY(I)) THEN
             NOPATH = .FALSE.
             IPNUM = I
 !              Exit to END
@@ -611,7 +611,7 @@ SUBROUTINE EXPATH(INPFLD,PATHWY,IPN,NOPATH)
    END IF
 
 999 RETURN
-END
+END SUBROUTINE EXPATH
 
 SUBROUTINE EXKEY(INPFLD,NOKEY)
 !***********************************************************************
@@ -635,29 +635,29 @@ SUBROUTINE EXKEY(INPFLD,NOKEY)
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I
    CHARACTER (LEN=8) :: INPFLD
-   LOGICAL NOKEY
+   LOGICAL :: NOKEY
 
 !     Variable Initializations
    NOKEY  = .TRUE.
    MODNAM = 'EXKEY'
 
 !     Begin The Processing
-   IF (INPFLD .NE. '        ') THEN
+   IF (INPFLD /= '        ') THEN
 !        Check the Read-in Keyword
       KEYWRD = INPFLD
       DO I = 1, IKN
 !           In Case of Match Set NOKEY to FALSE
-         IF (INPFLD .EQ. KEYWD(I)) THEN
+         IF (INPFLD == KEYWD(I)) THEN
             NOKEY = .FALSE.
 !              Exit to END
             GO TO 999
          END IF
       END DO
-   ELSE IF (PKEYWD .NE. 'STARTING') THEN
+   ELSE IF (PKEYWD /= 'STARTING') THEN
 !        In Case of Blank Field, Keyword Is Set to Previous Keyword
 !        unless previous keyword is 'STARTING'
       NOKEY  = .FALSE.
@@ -670,7 +670,7 @@ SUBROUTINE EXKEY(INPFLD,NOKEY)
    END IF
 
 999 RETURN
-END
+END SUBROUTINE EXKEY
 
 SUBROUTINE SETORD
 !***********************************************************************
@@ -696,16 +696,16 @@ SUBROUTINE SETORD
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'SETORD'
 
-   IF (KEYWRD .EQ. 'STARTING') THEN
+   IF (KEYWRD == 'STARTING') THEN
       IF (ISTART .or. .NOT.IFINIS) THEN
 !           WRITE Error Message: Starting Out of Order
          CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
-      ELSE IF (IPNUM .NE. IPPNUM+1) THEN
+      ELSE IF (IPNUM /= IPPNUM+1) THEN
 !           WRITE Error Message: Pathway Out of Order
          CALL ERRHDL(PPATH,MODNAM,'E','120',PATH)
       END IF
@@ -713,11 +713,11 @@ SUBROUTINE SETORD
       ISTART = .TRUE.
 !        Set Finished Indicator
       IFINIS = .FALSE.
-   ELSE IF (KEYWRD .EQ. 'FINISHED') THEN
+   ELSE IF (KEYWRD == 'FINISHED') THEN
       IF (IFINIS .or. .NOT.ISTART) THEN
 !           WRITE Error Message: Finished Out of Order
          CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
-      ELSE IF (ISTART .and. PATH.NE.PPATH) THEN
+      ELSE IF (ISTART .and. PATH/=PPATH) THEN
 !           WRITE Warning Message: Pathway Out of Order
          CALL ERRHDL(PPATH,MODNAM,'E','120',PATH)
       END IF
@@ -728,7 +728,7 @@ SUBROUTINE SETORD
    ELSE IF (.NOT.ISTART .or. IFINIS) THEN
 !        WRITE Error Message: Starting or Finished Out of Order
       CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
-   ELSE IF (ISTART .and. PATH.NE.PPATH) THEN
+   ELSE IF (ISTART .and. PATH/=PPATH) THEN
 !        WRITE Warning Message: Pathway Out of Order
       CALL ERRHDL(PPATH,MODNAM,'E','120',PATH)
    END IF
@@ -738,7 +738,7 @@ SUBROUTINE SETORD
    IPPNUM = IPNUM
 
    RETURN
-END
+END SUBROUTINE SETORD
 
 SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
 !***********************************************************************
@@ -761,10 +761,10 @@ SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
 !     Variable Declarations
    IMPLICIT NONE
 
-   CHARACTER STRVAR*(*), CHK, MODNAM*6, NUMS*10
+   CHARACTER :: STRVAR*(*), CHK, MODNAM*6, NUMS*10
    INTEGER :: I, IMUTI, LENGTH
    REAL    :: FNUM, CNUM, FDEC, FDC1, HEAD
-   LOGICAL MEND, IN, NMARK, PMARK, DMARK, MMARK, EMARK
+   LOGICAL :: MEND, IN, NMARK, PMARK, DMARK, MMARK, EMARK
 
 !     Variable Initialization
    MODNAM = 'STONUM'
@@ -783,11 +783,11 @@ SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
    FDEC  = 1.
 
 !     Beginning the Processing
-   DO WHILE (.NOT.MEND .and. I.LE.LENGTH)
+   DO WHILE (.NOT.MEND .and. I<=LENGTH)
       CHK = STRVAR(I:I)
-      IF (CHK .NE. ' ') THEN
+      IF (CHK /= ' ') THEN
          IN = .TRUE.
-         IF (CHK.GE.'0' .and. CHK.LE.'9') THEN
+         IF (CHK>='0' .and. CHK<='9') THEN
 !              CHK is a Number, Assign a Value
             IF (.NOT. DMARK) THEN
                CNUM = CNUM*10.+FLOAT(INDEX(NUMS,CHK)-1)
@@ -798,7 +798,7 @@ SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
             END IF
          ELSE
 !              Handle The E-Type Real Number
-            IF (DMARK .and. .NOT.EMARK .and. CHK.EQ.'E') THEN
+            IF (DMARK .and. .NOT.EMARK .and. CHK=='E') THEN
                EMARK = .TRUE.
                IF (.NOT.NMARK) THEN
                   HEAD = CNUM
@@ -808,16 +808,16 @@ SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
                DMARK = .FALSE.
                NMARK = .FALSE.
                CNUM = 0.0
-            ELSE IF (.NOT.PMARK .and. CHK.EQ.'+') THEN
+            ELSE IF (.NOT.PMARK .and. CHK=='+') THEN
 !                 Set Positive Indicator
                PMARK = .TRUE.
-            ELSE IF (.NOT.NMARK .and. CHK.EQ.'-') THEN
+            ELSE IF (.NOT.NMARK .and. CHK=='-') THEN
 !                 Set Negative Indicator
                NMARK = .TRUE.
-            ELSE IF (.NOT.DMARK .and. CHK.EQ.'.') THEN
+            ELSE IF (.NOT.DMARK .and. CHK=='.') THEN
 !                 Set Decimal Indicator
                DMARK = .TRUE.
-            ELSE IF (.NOT.MMARK .and. CHK.EQ.'*' .and.&
+            ELSE IF (.NOT.MMARK .and. CHK=='*' .and.&
             &.NOT.NMARK) THEN
 !                 Set Repeat Number
                MMARK = .TRUE.
@@ -828,7 +828,7 @@ SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
                GO TO 9999
             END IF
          END IF
-      ELSE IF (IN .and. CHK.EQ.' ') THEN
+      ELSE IF (IN .and. CHK==' ') THEN
          MEND = .TRUE.
       END IF
       I = I + 1
@@ -842,12 +842,12 @@ SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
    END IF
 
 !     In Case of E-Format, Check for Exponents Out of Range
-   IF (EMARK .and. ABS(FNUM) .LE. 30.) THEN
+   IF (EMARK .and. ABS(FNUM) <= 30.) THEN
       FNUM = HEAD*10.0**(FNUM)
-   ELSE IF (EMARK .and. ABS(FNUM) .GT. 30.) THEN
-      IF (FNUM .LT. 0.0) THEN
+   ELSE IF (EMARK .and. ABS(FNUM) > 30.) THEN
+      IF (FNUM < 0.0) THEN
          FNUM = 0.0
-      ELSE IF (FNUM .GT. 0.0) THEN
+      ELSE IF (FNUM > 0.0) THEN
          FNUM = HEAD * 10.**30.
       END IF
       GO TO 9999
@@ -860,7 +860,7 @@ SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
 9999 IMUTI = -1
 
 1000 RETURN
-END
+END SUBROUTINE STONUM
 
 SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
 !***********************************************************************
@@ -887,11 +887,11 @@ SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
 !     Variable Declarations
    IMPLICIT NONE
 
-   CHARACTER STRVAR*(*), CHK, MODNAM*6, NUMS*10
+   CHARACTER :: STRVAR*(*), CHK, MODNAM*6, NUMS*10
    INTEGER :: IMUTI, LEN, I
    DOUBLE PRECISION :: FDEC, FDC1, HEAD
    DOUBLE PRECISION :: FNUM, CNUM
-   LOGICAL MEND, IN, NMARK, PMARK, DMARK, MMARK, EMARK
+   LOGICAL :: MEND, IN, NMARK, PMARK, DMARK, MMARK, EMARK
 
 !     Variable Initialization
    MODNAM = 'STODBL'
@@ -910,11 +910,11 @@ SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
    IMUTI = 1
 
 !     Beginning the Processing
-   DO WHILE (.NOT.MEND .and. I.LE.LEN)
+   DO WHILE (.NOT.MEND .and. I<=LEN)
       CHK = STRVAR(I:I)
-      IF (CHK .NE. ' ') THEN
+      IF (CHK /= ' ') THEN
          IN = .TRUE.
-         IF (CHK.GE.'0' .and. CHK.LE.'9') THEN
+         IF (CHK>='0' .and. CHK<='9') THEN
 !              CHK is a Number, Assign a Value
             IF (.NOT. DMARK) THEN
                CNUM = CNUM*10.0D0+DBLE(INDEX(NUMS,CHK)-1)
@@ -925,8 +925,8 @@ SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
             END IF
          ELSE
 !              Handle The E-Type (or D-Type) Real Number
-            IF ((DMARK .and. .NOT.EMARK .and. CHK.EQ.'E') .or.&
-            &(DMARK .and. .NOT.EMARK .and. CHK.EQ.'D')) THEN
+            IF ((DMARK .and. .NOT.EMARK .and. CHK=='E') .or.&
+            &(DMARK .and. .NOT.EMARK .and. CHK=='D')) THEN
                EMARK = .TRUE.
                IF (.NOT.NMARK) THEN
                   HEAD = CNUM
@@ -936,16 +936,16 @@ SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
                DMARK = .FALSE.
                NMARK = .FALSE.
                CNUM = 0.0D0
-            ELSE IF (.NOT.PMARK .and. CHK.EQ.'+') THEN
+            ELSE IF (.NOT.PMARK .and. CHK=='+') THEN
 !                 Set Positive Indicator
                PMARK = .TRUE.
-            ELSE IF (.NOT.NMARK .and. CHK.EQ.'-') THEN
+            ELSE IF (.NOT.NMARK .and. CHK=='-') THEN
 !                 Set Negative Indicator
                NMARK = .TRUE.
-            ELSE IF (.NOT.DMARK .and. CHK.EQ.'.') THEN
+            ELSE IF (.NOT.DMARK .and. CHK=='.') THEN
 !                 Set Decimal Indicator
                DMARK = .TRUE.
-            ELSE IF (.NOT.MMARK .and. CHK.EQ.'*' .and.&
+            ELSE IF (.NOT.MMARK .and. CHK=='*' .and.&
             &.NOT.NMARK) THEN
 !                 Set Repeat Indicator
                MMARK = .TRUE.
@@ -956,7 +956,7 @@ SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
                GO TO 9999
             END IF
          END IF
-      ELSE IF (IN .and. CHK.EQ.' ') THEN
+      ELSE IF (IN .and. CHK==' ') THEN
          MEND = .TRUE.
       END IF
       I = I + 1
@@ -970,12 +970,12 @@ SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
    END IF
 
 !     In Case of *E* Format, Check for Exponents Out of Range
-   IF (EMARK .and. DABS(FNUM) .LE. 30.0D0) THEN
+   IF (EMARK .and. DABS(FNUM) <= 30.0D0) THEN
       FNUM = HEAD*10.0D0**(FNUM)
-   ELSE IF (EMARK .and. DABS(FNUM) .GT. 30.0D0) THEN
-      IF (FNUM .LT. 0.0D0) THEN
+   ELSE IF (EMARK .and. DABS(FNUM) > 30.0D0) THEN
+      IF (FNUM < 0.0D0) THEN
          FNUM = 0.0D0
-      ELSE IF (FNUM .GT. 0.0D0) THEN
+      ELSE IF (FNUM > 0.0D0) THEN
          FNUM = HEAD * 10.0D0**30.0D0
       END IF
       GO TO 9999
@@ -988,7 +988,7 @@ SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
 9999 IMUTI = -1
 
 1000 RETURN
-END
+END SUBROUTINE STODBL
 
 SUBROUTINE SINDEX(ARRIN,IDIM,ELEM,INDEXS,FOUND)
 !***********************************************************************
@@ -1012,8 +1012,8 @@ SUBROUTINE SINDEX(ARRIN,IDIM,ELEM,INDEXS,FOUND)
 
    INTEGER :: I, IDIM, INDEXS
    CHARACTER (LEN=*) :: ARRIN(IDIM), ELEM
-   CHARACTER MODNAM*6
-   LOGICAL FOUND
+   CHARACTER :: MODNAM*6
+   LOGICAL :: FOUND
 
 !     Variable Initializations
    MODNAM = 'SINDEX'
@@ -1021,8 +1021,8 @@ SUBROUTINE SINDEX(ARRIN,IDIM,ELEM,INDEXS,FOUND)
    I = 1
    INDEXS = 0
 
-   DO WHILE (.NOT.FOUND .and. I.LE.IDIM)
-      IF (ELEM .EQ. ARRIN(I)) THEN
+   DO WHILE (.NOT.FOUND .and. I<=IDIM)
+      IF (ELEM == ARRIN(I)) THEN
          FOUND = .TRUE.
          INDEXS = I
       END IF
@@ -1030,7 +1030,7 @@ SUBROUTINE SINDEX(ARRIN,IDIM,ELEM,INDEXS,FOUND)
    END DO
 
    RETURN
-END
+END SUBROUTINE SINDEX
 
 SUBROUTINE FSPLIT(PATHIN,KEYIN,INPFLD,LENGTH,DELIM,LFLAG,&
 &BEGFLD,ENDFLD)
@@ -1062,9 +1062,9 @@ SUBROUTINE FSPLIT(PATHIN,KEYIN,INPFLD,LENGTH,DELIM,LFLAG,&
    IMPLICIT NONE
 
    INTEGER :: I, LENGTH, IDELM
-   CHARACTER CHK, INPFLD*(*), BEGFLD*(*), ENDFLD*(*),&
+   CHARACTER :: CHK, INPFLD*(*), BEGFLD*(*), ENDFLD*(*),&
    &DELIM*1, MODNAM*12, PATHIN*2, KEYIN*8
-   LOGICAL LFLAG, MEND, IN
+   LOGICAL :: LFLAG, MEND, IN
 
 !     Variable Initialization
    MODNAM = 'FSPLIT'
@@ -1077,25 +1077,25 @@ SUBROUTINE FSPLIT(PATHIN,KEYIN,INPFLD,LENGTH,DELIM,LFLAG,&
    LFLAG = .FALSE.
 
 !     Begin the Processing
-   DO WHILE (.NOT.MEND .and. I.GE.1)
+   DO WHILE (.NOT.MEND .and. I>=1)
       CHK = INPFLD(I:I)
-      IF (CHK .NE. ' ') THEN
+      IF (CHK /= ' ') THEN
          IN = .TRUE.
 !           Check for the Group Delimiter
-         IF (.NOT.LFLAG .and. CHK.EQ.DELIM) THEN
+         IF (.NOT.LFLAG .and. CHK==DELIM) THEN
             LFLAG = .TRUE.
             IDELM = I
             ENDFLD = INPFLD(I+1:LENGTH)
-            IF (I .EQ. 1) THEN
+            IF (I == 1) THEN
 !                 Write Error Message for Invalid Range Parameter
                CALL ERRHDL(PATHIN,MODNAM,'E','203',KEYIN)
                GO TO 999
             END IF
-         ELSE IF (LFLAG .and. CHK.EQ.DELIM) THEN
+         ELSE IF (LFLAG .and. CHK==DELIM) THEN
 !              WRITE Error Message  ! More Than One Delimiter in a Field
             CALL ERRHDL(PATHIN,MODNAM,'E','217',KEYIN)
          END IF
-      ELSE IF (IN .and. CHK.EQ.' ') THEN
+      ELSE IF (IN .and. CHK==' ') THEN
          MEND = .TRUE.
          IF (LFLAG) THEN
             BEGFLD = INPFLD(1:IDELM-1)
@@ -1120,7 +1120,7 @@ SUBROUTINE FSPLIT(PATHIN,KEYIN,INPFLD,LENGTH,DELIM,LFLAG,&
    END IF
 
 999 RETURN
-END
+END SUBROUTINE FSPLIT
 
 SUBROUTINE VARINI
 !***********************************************************************
@@ -1174,7 +1174,7 @@ SUBROUTINE VARINI
    USE BUOYANT_LINE
 
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 ! Unused: INTEGER :: I, J, K
 
@@ -1436,7 +1436,7 @@ SUBROUTINE VARINI
 !     default = 'FIX' for fixed-format outputs; 'EXP' indicates user specified
 !     use of exponential-format outputs.  This variable applies to
 !     MAXIFILE, PLOTFILE, POSTFILE (plot-formatted), RANKFILE, and SEASONHR outputs
-   IF (FILE_FORMAT .NE. 'EXP') THEN
+   IF (FILE_FORMAT /= 'EXP') THEN
       FILE_FORMAT = 'FIX'
    END IF
 
@@ -1855,7 +1855,7 @@ SUBROUTINE VARINI
    NWARN  = 0
 
    RETURN
-END
+END SUBROUTINE VARINI
 
 
 SUBROUTINE INCLUD
@@ -1885,15 +1885,15 @@ SUBROUTINE INCLUD
 !*    Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, ITEMPL
-   LOGICAL NOPATH, NOKEY
-   CHARACTER RDFRM*20
+   LOGICAL :: NOPATH, NOKEY
+   CHARACTER :: RDFRM*20
 ! JAT 06/22/21 D065
 ! REMOVE INPFLD AS UNUSED VARIABLE
 !      CHARACTER INPFLD*2, PATHWY(7)*2
-   CHARACTER PATHWY(7)*2
+   CHARACTER :: PATHWY(7)*2
    INTERFACE
       SUBROUTINE EXPATH(INPFLD,PATHWY,IPN,NOPATH)
          CHARACTER (LEN=2), INTENT(IN) :: INPFLD
@@ -1923,9 +1923,9 @@ SUBROUTINE INCLUD
    WRITE(RDFRM,9100) ISTRG, ISTRG
 9100 FORMAT('(A',I4.4,',T1,',I4.4,'A1)')
 
-   IF (IFC .EQ. 3) THEN
+   IF (IFC == 3) THEN
 !        Retrieve Included Filename as Character Substring to Maintain Case
-      IF ((LOCE(3)-LOCB(3)) .LE. (ILEN_FLD - 1) ) THEN
+      IF ((LOCE(3)-LOCB(3)) <= (ILEN_FLD - 1) ) THEN
 !           Retrieve Filename as Character Substring to Maintain Original Case
 !           Also Check for Filename Larger Than ILEN_FLD Characters
          INCFIL = RUNST1(LOCB(3):LOCE(3))
@@ -1937,7 +1937,7 @@ SUBROUTINE INCLUD
          RETURN
       END IF
 
-   ELSE IF (IFC .GT. 4) THEN
+   ELSE IF (IFC > 4) THEN
 !        WRITE Error Message           ! Too Many Parameters
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
    ELSE
@@ -1967,14 +1967,14 @@ SUBROUTINE INCLUD
       &(RUNST(I), I = 1, ISTRG)
 
 !        Check for blank input record and cycle
-      IF (LEN_TRIM(RUNST1) .EQ. 0) CYCLE
+      IF (LEN_TRIM(RUNST1) == 0) CYCLE
 
 !        Convert Lower Case to Upper Case Letters           ---   CALL LWRUPR
       CALL LWRUPR
 
 !        If ILINE=1, reset ILINE temporarily to avoid the
 !        check for column shift in subroutine DEFINE
-      IF (ILINE .EQ. 1) THEN
+      IF (ILINE == 1) THEN
          ILINE  = 2
          ITEMPL = 1
       END IF
@@ -1983,7 +1983,7 @@ SUBROUTINE INCLUD
       CALL DEFINE
 
 !        Reset ILINE if needed
-      IF (ITEMPL .EQ. 1) THEN
+      IF (ITEMPL == 1) THEN
          ILINE  = 1
          ITEMPL = 0
       END IF
@@ -1992,7 +1992,7 @@ SUBROUTINE INCLUD
       CALL GETFLD
 
 !        Check for 'NO ECHO' In First Two Fields
-      IF (FIELD(1) .EQ. 'NO' .and. FIELD(2) .EQ. 'ECHO') THEN
+      IF (FIELD(1) == 'NO' .and. FIELD(2) == 'ECHO') THEN
 !           Skip record with NO ECHO in INCLUDED file, but leave ECHO "on"
          CYCLE
       END IF
@@ -2006,7 +2006,7 @@ SUBROUTINE INCLUD
          CALL ERRHDL(PPATH,MODNAM,'E','100',PATH)
          PATH = PPATH
          CYCLE
-      ELSE IF (PATH .EQ. '**') THEN
+      ELSE IF (PATH == '**') THEN
          CYCLE
       END IF
 
@@ -2025,31 +2025,31 @@ SUBROUTINE INCLUD
 !        since these keywords are not allowed in INCLUDED files.
 !        This also allows INCLUD to be used for standard
 !        processing and EVENT processing.
-      IF (KEYWRD .NE. 'STARTING' .and.&
-      &KEYWRD .NE. 'FINISHED') CALL SETORD
+      IF (KEYWRD /= 'STARTING' .and.&
+      &KEYWRD /= 'FINISHED') CALL SETORD
 
 !        First Check for Invalid Keywords (STARTING, FINISHED, INCLUDED)
-      IF (KEYWRD .EQ. 'STARTING') THEN
+      IF (KEYWRD == 'STARTING') THEN
 !           Cannot Use the STARTING keyword in the INCLUDED file
          CALL ERRHDL(PATH,MODNAM,'E','140',KEYWRD)
 
-      ELSE IF (KEYWRD .EQ. 'INCLUDED') THEN
+      ELSE IF (KEYWRD == 'INCLUDED') THEN
 !           Cannot Recurse the INCLUDED Keyword in the INCLUDED file
 !           Write Error Message: Repeat INCLUDED In Same Pathway
          CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
 
-      ELSE IF (KEYWRD .EQ. 'FINISHED') THEN
+      ELSE IF (KEYWRD == 'FINISHED') THEN
 !           Cannot Use the FINISHED Keyword in the INCLUDED File
          CALL ERRHDL(PATH,MODNAM,'E','140',KEYWRD)
 
 !        Process Input Card Based on Pathway
-      ELSE IF (PATH .EQ. 'SO') THEN
+      ELSE IF (PATH == 'SO') THEN
 !           Process SOurce Pathway Cards                    ---   CALL SOCARD
          CALL SOCARD
-      ELSE IF (PATH .EQ. 'RE') THEN
+      ELSE IF (PATH == 'RE') THEN
 !           Process REceptor Pathway Cards                  ---   CALL RECARD
          CALL RECARD
-      ELSE IF (PATH .EQ. 'EV') THEN
+      ELSE IF (PATH == 'EV') THEN
 !           Process EVent Pathway Cards                     ---   CALL EVCARD
          CALL EVCARD
 
@@ -2080,4 +2080,4 @@ SUBROUTINE INCLUD
    CLOSE (INCUNT)
 
    RETURN
-END
+END SUBROUTINE INCLUD

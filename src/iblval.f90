@@ -50,7 +50,7 @@ SUBROUTINE IBLVAL (XARG)
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    INTEGER :: NDXEFF, NDXBHI, NDXBLO, NDXALO
 !     JAT 7/22/21 D065 SZOLD, SZ3OLD NOT USED
 !      DOUBLE PRECISION :: XARG, SZNEW, ZHI, ZLO, SZOLD, SZ3NEW, SZ3OLD,
@@ -75,7 +75,7 @@ SUBROUTINE IBLVAL (XARG)
 !  *********************************added code end --kja
 !RWB  Initialize the effective parameters based on
 !RWB  values at plume height
-   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
       HTEFF = HE
       CALL LOCATE(GRIDHT, 1, MXGLVL, HTEFF, NDXEFF)
       CALL GINTRP( GRIDHT(NDXEFF), GRIDWS(NDXEFF),&
@@ -111,11 +111,11 @@ SUBROUTINE IBLVAL (XARG)
          &' m/s; SWeff = ',F7.2,' m/s.',/)
       ENDIF
 
-   ELSE IF (UNSTAB .and. (HS.LT.ZI)) THEN
+   ELSE IF (UNSTAB .and. (HS<ZI)) THEN
 
 !        Direct and Indirect Source
 
-      IF (PPF .LT. 1.0D0) THEN
+      IF (PPF < 1.0D0) THEN
 
 !RWB        Initialize effective parameters based on vlues at the
 !RWB        plume centroid height (CENTER)
@@ -156,15 +156,15 @@ SUBROUTINE IBLVAL (XARG)
 !RJP
 !RJP     Penetrated source
 !RJP
-      IF (PPF .GT. 0.0D0) THEN
+      IF (PPF > 0.0D0) THEN
 !  ****** FOR HIGHLY BUOYANT PLUME ****** added code JAN 2023--kja
 ! ** determine next hour mix height ZIN from mechanical and convective heights
          IF (HBPLUME) THEN
-            IF(ZICONVN .GT. 0.0D0 .and. ZIMECHN .GT. 0.0D00) THEN
+            IF(ZICONVN > 0.0D0 .and. ZIMECHN > 0.0D00) THEN
                ZIN = MAX(ZICONVN,ZIMECHN)
-            ELSEIF( ZICONVN .LT. 0.0D0 .and. ZIMECHN .GT. 0.0D0) THEN
+            ELSEIF( ZICONVN < 0.0D0 .and. ZIMECHN > 0.0D0) THEN
                ZIN = ZIMECHN
-            ELSEIF( ZICONVN .GT. 0.0D0 .and. ZIMECHN .LT. 0.0D0) THEN
+            ELSEIF( ZICONVN > 0.0D0 .and. ZIMECHN < 0.0D0) THEN
                ZIN = ZICONVN
             ELSE
                ZIN = ZI
@@ -220,30 +220,30 @@ SUBROUTINE IBLVAL (XARG)
 
 !     End initialization.  Next compute averages across plume layer.
 
-   IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
+   IF (SRCTYP(ISRC)(1:5) == 'POINT') THEN
 !        Determine Dispersion Parameters              ---   CALL PDIS
       CALL PDIS ( XARG )
-   ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME') THEN
+   ELSE IF (SRCTYP(ISRC) == 'VOLUME') THEN
 !        Determine Dispersion Parameters              ---   CALL VDIS
       CALL VDIS ( XARG )
-   ELSE IF (SRCTYP(ISRC) .EQ. 'AREA' .or.&
-   &SRCTYP(ISRC) .EQ. 'AREAPOLY' .or.&
-   &SRCTYP(ISRC) .EQ. 'AREACIRC' .or.&
-   &SRCTYP(ISRC) .EQ. 'LINE' .or.&
-   &SRCTYP(ISRC) .EQ. 'OPENPIT') THEN
+   ELSE IF (SRCTYP(ISRC) == 'AREA' .or.&
+   &SRCTYP(ISRC) == 'AREAPOLY' .or.&
+   &SRCTYP(ISRC) == 'AREACIRC' .or.&
+   &SRCTYP(ISRC) == 'LINE' .or.&
+   &SRCTYP(ISRC) == 'OPENPIT') THEN
 !        Determine Vertical Dispersion Parameters     ---   CALL ADISZ
       CALL ADISZ ( XARG )
    END IF
 
-   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS >= ZI) ) )THEN
 
       SZNEW  = SZ
       CENTER = HE
-      IF (CENTER .LE. 5.0D0 .and. ZRT .LE. 5.0D0) THEN
+      IF (CENTER <= 5.0D0 .and. ZRT <= 5.0D0) THEN
          ZHI = 5.0D0
          ZHI = MIN( ZHI, ZI )
          ZLO = 0.0D0
-      ELSE IF (CENTER .GT. ZRT) THEN
+      ELSE IF (CENTER > ZRT) THEN
          ZHI = CENTER
          ZLO = MAX(CENTER - SZCOEF*SZNEW, ZRT)
       ELSE
@@ -310,14 +310,14 @@ SUBROUTINE IBLVAL (XARG)
          &' m/s; SWeff = ',F7.2,' m/s.',/)
       END IF
 
-   ELSE IF (UNSTAB .and. (HS.LT.ZI)) THEN
+   ELSE IF (UNSTAB .and. (HS<ZI)) THEN
 !RJP
 !RJP  Process effective values for direct and penetrated plumes
 !RJP
 !RJP  First, process the penetrated plume, then the direct plumes.
 !RJP
 
-      IF( PPF .GT. 0.0D0 )THEN
+      IF( PPF > 0.0D0 )THEN
 !  ********* FOR HIGHLY BUOYANT PLUME ********* added code JAN 2023--kja
 !  ** how much of penetrated plume still above ZIAVG
 !  ** assuming gaussian entrainment factor
@@ -328,10 +328,10 @@ SUBROUTINE IBLVAL (XARG)
             PPWID = HHTOP - HHBOT
 ! ** difference between top of plume and ZIAVG mixing height
             HTOPDIF = HHTOP - ZIAVG
-            IF (HTOPDIF .GT. 0.0D0) THEN  ! top of plume > mixing ht
+            IF (HTOPDIF > 0.0D0) THEN  ! top of plume > mixing ht
 ! ** PPFN should be between 0 - 1
-               IF(HTOPDIF .LT. PPWID) THEN ! mixing ht within plume
-                  IF(ZIAVG .LE. HE3) THEN
+               IF(HTOPDIF < PPWID) THEN ! mixing ht within plume
+                  IF(ZIAVG <= HE3) THEN
 ! ** PPFN from 0 to 0.5 - amount of penetrated plume entrained
 ! ** lower half of plume
                      PPFN = 0.5D0*ERF((ZIAVG-HHBOT)/SZ3/DSQRT(2.0D0))
@@ -356,7 +356,7 @@ SUBROUTINE IBLVAL (XARG)
          SZ3NEW = SZ3
 
 !RWB        Change ZEFF to ZRT in following block. RWB 1/23/95
-         IF(HE3 .GT. ZRT) THEN
+         IF(HE3 > ZRT) THEN
             ZHI = HE3
             ZLO = MAX(HE3 - SZCOEF*SZ3NEW, ZRT)
          ELSE
@@ -429,7 +429,7 @@ SUBROUTINE IBLVAL (XARG)
 
       END IF
 
-      IF (PPF .LT. 1.0D0) THEN
+      IF (PPF < 1.0D0) THEN
 
 !RJP        Process the direct plume components here. *************************
 
@@ -437,11 +437,11 @@ SUBROUTINE IBLVAL (XARG)
          SZDNEW = SZDAVG
 
 !RWB        Change ZEFF to ZRT in following block. RWB 1/23/95
-         IF (CENTER .LE. 5.0D0 .and. ZRT .LE. 5.0D0) THEN
+         IF (CENTER <= 5.0D0 .and. ZRT <= 5.0D0) THEN
             ZHI = MIN( 5.0D0, ZI )
             ZHI = MIN( ZHI, ZI )
             ZLO = 0.0D0
-         ELSE IF(CENTER .GT. ZRT) THEN
+         ELSE IF(CENTER > ZRT) THEN
 !RWB           Limit ZHI to be .LE. ZI
             ZHI = MIN (CENTER, ZI)
             ZLO = MAX (CENTER - SZCOEF*SZDNEW, ZRT)
@@ -478,7 +478,7 @@ SUBROUTINE IBLVAL (XARG)
          END IF
 
 !RWB        Check for ZHI .LE. ZLO, skip averages
-         IF (ZHI .GT. ZLO) THEN
+         IF (ZHI > ZLO) THEN
             CALL LOCATE(GRIDHT, 1, MXGLVL, ZHI, NDXBHI)
             CALL LOCATE(GRIDHT, 1, MXGLVL, ZLO, NDXBLO)
             NDXALO = NDXBLO + 1
@@ -535,14 +535,14 @@ SUBROUTINE IBLVAL (XARG)
    END IF
 
 !RWB  Set effective parameters for indirect source = direct source
-   IF (UNSTAB .and. HS.LT.ZI) THEN
+   IF (UNSTAB .and. HS<ZI) THEN
       UEFFN  = UEFFD
       SVEFFN = SVEFFD
       SWEFFN = SWEFFD
    END IF
 
    RETURN
-END
+END SUBROUTINE IBLVAL
 
 SUBROUTINE METINI
 !=======================================================================
@@ -596,7 +596,7 @@ SUBROUTINE METINI
 !
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
    DOUBLE PRECISION :: VALABV, VBELOW
 !---- Declare SVS2 variable to save SVS before SVMIN adjustment for use
 !     in US adjustment under LowWind2 option
@@ -616,7 +616,7 @@ SUBROUTINE METINI
 !CRFL  at stack height and at ZI/2.
 !CRFL
 
-   IF (NDXSTK(ISRC) .GE. 1) THEN
+   IF (NDXSTK(ISRC) >= 1) THEN
 !----    Sigma_V at stack height
       CALL GINTRP( GRIDHT(NDXSTK(ISRC)), GRIDSV(NDXSTK(ISRC)),&
       &GRIDHT(NDXSTK(ISRC)+1), GRIDSV(NDXSTK(ISRC)+1),&
@@ -637,14 +637,14 @@ SUBROUTINE METINI
       VALABV = GRIDWD(NDXSTK(ISRC)+1)
       VBELOW = GRIDWD(NDXSTK(ISRC))
 
-      IF( (VALABV-VBELOW) .LT. -180.0D0) THEN
+      IF( (VALABV-VBELOW) < -180.0D0) THEN
          VALABV = VALABV + 360.0D0
-      ELSE IF( (VALABV-VBELOW) .GT. 180.0D0) THEN
+      ELSE IF( (VALABV-VBELOW) > 180.0D0) THEN
          VALABV = VALABV - 360.0D0
       END IF
 
 !----    Assign Wind direction
-      IF (VBELOW .EQ. VALABV) THEN
+      IF (VBELOW == VALABV) THEN
          WDIR = VBELOW
       ELSE
 !----       Interpolate to HS
@@ -654,9 +654,9 @@ SUBROUTINE METINI
       END IF
 
 !        Check for WDIR > 360 or < 0
-      IF (WDIR .GT. 360.0D0) THEN
+      IF (WDIR > 360.0D0) THEN
          WDIR = WDIR - 360.0D0
-      ELSE IF (WDIR .LE. 0.0D0) THEN
+      ELSE IF (WDIR <= 0.0D0) THEN
          WDIR = WDIR + 360.0D0
       END IF
 !
@@ -703,11 +703,11 @@ SUBROUTINE METINI
       WDCOS = DCOS(WDIR * DTORAD)
 
       AFV = WDIR - 180.0D0
-      IF (AFV .LT. 0.0D0) THEN
+      IF (AFV < 0.0D0) THEN
          AFV = AFV + 360.0D0
       END IF
       IFVSEC = IDINT (AFV*0.10D0 + 0.4999D0)
-      IF (IFVSEC .EQ. 0) IFVSEC = 36
+      IF (IFVSEC == 0) IFVSEC = 36
 
    END IF
 
@@ -735,14 +735,14 @@ SUBROUTINE METINI
    SWP = SWS       ! Added for ARISE; UNC-IE
 !     Compute the Brunt-Vaisala frequency, BVF, at stack height for STABLE
 !     conditions or for UNSTAB releases above ZI.  Check for TGS < 0 first.
-   IF ( (TGS.GT.0.0D0) .and.&
-   &(STABLE .or. (UNSTAB .and. HS.GE.ZI)) ) THEN
+   IF ( (TGS>0.0D0) .and.&
+   &(STABLE .or. (UNSTAB .and. HS>=ZI)) ) THEN
       BVF = DSQRT( G * TGS / PTS )
    ELSE
       BVF = 1.0D-10
    END IF
 
-   IF( BVF .LT. 1.0D-10 )THEN
+   IF( BVF < 1.0D-10 )THEN
       BVF =  1.0D-10
    END IF
 
@@ -767,14 +767,14 @@ SUBROUTINE METINI
 
 !     Define temporary values of CENTER and SURFAC based on HS
    CENTER = HS
-   IF( CENTER .LT. 0.1D0*ZI )THEN
+   IF( CENTER < 0.1D0*ZI )THEN
       SURFAC = .TRUE.
    ELSE
       SURFAC = .FALSE.
    END IF
 
    RETURN
-END
+END SUBROUTINE METINI
 
 SUBROUTINE LOCATE ( PARRAY, LVLBLW, LVLABV, VALUE, NDXBLW )
 !=======================================================================
@@ -809,8 +809,8 @@ SUBROUTINE LOCATE ( PARRAY, LVLBLW, LVLABV, VALUE, NDXBLW )
 !
    IMPLICIT NONE
 
-   INTEGER   LVLABV, LVLBLW, NDXBLW, JL, JM, JU
-   DOUBLE PRECISION  PARRAY(LVLABV), VALUE
+   INTEGER   :: LVLABV, LVLBLW, NDXBLW, JL, JM, JU
+   DOUBLE PRECISION  :: PARRAY(LVLABV), VALUE
 !
 !---- Data dictionary
 !     JL   lower bound temporary variable
@@ -821,11 +821,11 @@ SUBROUTINE LOCATE ( PARRAY, LVLBLW, LVLABV, VALUE, NDXBLW )
    JL = LVLBLW - 1
    JU = LVLABV + 1
 
-   DO WHILE( (JU - JL) .GT. 1 )
+   DO WHILE( (JU - JL) > 1 )
 
       JM = (JU + JL) / 2
 
-      IF( VALUE .GE. PARRAY(JM) )THEN
+      IF( VALUE >= PARRAY(JM) )THEN
          JL = JM
       ELSE
          JU = JM
@@ -836,7 +836,7 @@ SUBROUTINE LOCATE ( PARRAY, LVLBLW, LVLABV, VALUE, NDXBLW )
    NDXBLW = MIN( JL, LVLABV-1 )
 
    RETURN
-END
+END SUBROUTINE LOCATE
 
 
 !RJP  Add subroutine ANYAVG
@@ -887,10 +887,10 @@ SUBROUTINE ANYAVG ( NLVLS,HTS,PARRAY,ZBOT,NDXABV,ZTOP,NDXBLW,&
 !
    IMPLICIT NONE
 
-   INTEGER   I, NLVLS, NDXABV, NDXBLW
-   DOUBLE PRECISION  HTS(NLVLS), PARRAY(NLVLS), ZBOT, ZTOP,&
+   INTEGER   :: I, NLVLS, NDXABV, NDXBLW
+   DOUBLE PRECISION  :: HTS(NLVLS), PARRAY(NLVLS), ZBOT, ZTOP,&
    &SUM, VALAVG
-   DOUBLE PRECISION  VALBOT, VALTOP
+   DOUBLE PRECISION  :: VALBOT, VALTOP
 !
 !---- Data initializations
 !
@@ -908,17 +908,17 @@ SUBROUTINE ANYAVG ( NLVLS,HTS,PARRAY,ZBOT,NDXABV,ZTOP,NDXBLW,&
 !
 !     Check for minimum values of ZTOP and ZBOT.
 !
-   IF(ZBOT .LT. 0.5D0) THEN
+   IF(ZBOT < 0.5D0) THEN
       ZBOT = 0.5D0
       NDXABV = 2
    ENDIF
-   IF(ZTOP .LT. 0.51D0) THEN
+   IF(ZTOP < 0.51D0) THEN
       ZTOP = 0.51D0
       NDXBLW = 2
    ENDIF
 !
-   IF(NDXBLW .LT. NDXABV) GO TO 300
-   IF(NDXBLW .EQ. NDXABV) GO TO 200
+   IF(NDXBLW < NDXABV) GO TO 300
+   IF(NDXBLW == NDXABV) GO TO 200
 !
 !     Sum using trapezoidal rule over intermediate profile layers.
 !
@@ -931,7 +931,7 @@ SUBROUTINE ANYAVG ( NLVLS,HTS,PARRAY,ZBOT,NDXABV,ZTOP,NDXBLW,&
 !     the top.
 !
 200 CONTINUE
-   IF(NDXABV .GT. 1) THEN
+   IF(NDXABV > 1) THEN
       CALL GINTRP(HTS(NDXABV-1),PARRAY(NDXABV-1),HTS(NDXABV),&
       &PARRAY(NDXABV),ZBOT,VALBOT)
       SUM = SUM + (HTS(NDXABV) - ZBOT) * 0.5D0 *&
@@ -940,7 +940,7 @@ SUBROUTINE ANYAVG ( NLVLS,HTS,PARRAY,ZBOT,NDXABV,ZTOP,NDXBLW,&
       SUM = SUM + (HTS(1) - ZBOT) * PARRAY(1)
    ENDIF
 
-   IF(NDXBLW .LT. NLVLS) THEN
+   IF(NDXBLW < NLVLS) THEN
       CALL GINTRP(HTS(NDXBLW),PARRAY(NDXBLW),HTS(NDXBLW+1),&
       &PARRAY(NDXBLW+1),ZTOP,VALTOP)
       SUM = SUM + (ZTOP - HTS(NDXBLW)) * 0.5D0 *&
@@ -961,4 +961,4 @@ SUBROUTINE ANYAVG ( NLVLS,HTS,PARRAY,ZBOT,NDXABV,ZTOP,NDXBLW,&
    &PARRAY(NDXABV),0.5D0*(ZBOT+ZTOP),VALAVG)
 !
 999 RETURN
-END
+END SUBROUTINE ANYAVG

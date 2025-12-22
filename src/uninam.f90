@@ -4,16 +4,16 @@ subroutine uninam( prenam, defnam, comnam, lcom )
 !  If prenam_defnam already exists, add a date extension to prenam.
 !  If necessary, expand the date to include seconds and milliseconds.
 !
-   character*(*) :: prenam, defnam, comnam
+   character(len=*) :: prenam, defnam, comnam
    integer :: lpre, ldef, lcom, i
    logical :: jexist
-   character*8 :: dfield
-   character*10 :: tfield
+   character(len=8) :: dfield
+   character(len=10) :: tfield
    integer, parameter  :: nmax=1000000
 !
    lpre = len( prenam )
    ldef = len( defnam )
-   if( lpre .eq. 0 ) then
+   if( lpre == 0 ) then
       comnam = defnam
       lcom = ldef
       return
@@ -48,4 +48,4 @@ subroutine uninam( prenam, defnam, comnam, lcom )
       end if
    end if
    return
-end
+end subroutine uninam

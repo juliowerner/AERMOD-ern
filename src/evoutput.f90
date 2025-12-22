@@ -19,7 +19,7 @@ SUBROUTINE AVEREV
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 !     JAT 7/22/21 D065 BCKGRD NOT USED
 !      DOUBLE PRECISION :: SNUM, BCKGRD
    DOUBLE PRECISION :: SNUM
@@ -32,14 +32,14 @@ SUBROUTINE AVEREV
 
 !     Calculate Average CONCentrations If Hour is Right
    IF (CONC) THEN
-      IF (EVAPER(IEVENT) .NE. 1) THEN
+      IF (EVAPER(IEVENT) /= 1) THEN
 !           Calculate Denominator Considering Calms and Missing,
 !           Skipping Averaging if Averaging Period is 1-Hour
          SNUM = MAX(DBLE(EV_NUMHRS - EV_NUMCLM - EV_NUMMSG),&
          &DNINT(DBLE(EV_NUMHRS)*0.75D0+0.4D0))
 !           Begin Source Group LOOP
          DO ISRC = 1, NUMSRC
-            IF (IGROUP(ISRC,IDXEV(IEVENT)) .EQ. 1) THEN
+            IF (IGROUP(ISRC,IDXEV(IEVENT)) == 1) THEN
                EV_AVEVAL(ISRC) = EV_AVEVAL(ISRC) / SNUM
             ENDIF
          END DO
@@ -83,7 +83,7 @@ SUBROUTINE AVEREV
    END IF
 
    RETURN
-END
+END SUBROUTINE AVEREV
 
 SUBROUTINE EV_OUTPUT
 !***********************************************************************
@@ -107,7 +107,7 @@ SUBROUTINE EV_OUTPUT
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'EV_OUTPUT'
@@ -121,7 +121,7 @@ SUBROUTINE EV_OUTPUT
    END IF
 
    RETURN
-END
+END SUBROUTINE EV_OUTPUT
 
 SUBROUTINE PRTSOC
 !***********************************************************************
@@ -149,7 +149,7 @@ SUBROUTINE PRTSOC
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, N, NROW, NPAGE, INDEXW, IOGRP
    DOUBLE PRECISION :: WAVEV(NSRC+1)
@@ -164,7 +164,7 @@ SUBROUTINE PRTSOC
 !     Fill Work Array With SRCIDs For This Group
    INDGRP = 0
    DO ISRC = 1, NUMSRC
-      IF (IGROUP(ISRC,IDXEV(IEVENT)) .EQ. 1) THEN
+      IF (IGROUP(ISRC,IDXEV(IEVENT)) == 1) THEN
          INDGRP = INDGRP + 1
          WORKID(INDGRP) = SRCID(ISRC)
          HEADID(INDGRP) = SRCID(ISRC)
@@ -184,7 +184,7 @@ SUBROUTINE PRTSOC
       INDEXW = MIN(31,NSRC)
    END IF
 !     Check for More Than 31 Sources Per Group
-   IF (INDGRP .GT. INDEXW) THEN
+   IF (INDGRP > INDEXW) THEN
       HEADID(INDEXW) = ' . . . '
       IOGRP = 31
    ELSE
@@ -210,19 +210,19 @@ SUBROUTINE PRTSOC
       WRITE(IOUNIT,9062)
 
 !        Print Out The Source Contributions
-      IF (N .EQ. NPAGE) THEN
-         IF (FILE_FORMAT .EQ. 'FIX') THEN
+      IF (N == NPAGE) THEN
+         IF (FILE_FORMAT == 'FIX') THEN
             WRITE(IOUNIT,9066) (WORKID(I),WAVEV(I),I=1+120*(N-1),&
             &INDGRP)
-         ELSE IF (FILE_FORMAT .EQ. 'EXP') THEN
+         ELSE IF (FILE_FORMAT == 'EXP') THEN
             WRITE(IOUNIT,9067) (WORKID(I),WAVEV(I),I=1+120*(N-1),&
             &INDGRP)
          END IF
       ELSE
-         IF (FILE_FORMAT .EQ. 'FIX') THEN
+         IF (FILE_FORMAT == 'FIX') THEN
             WRITE(IOUNIT,9066) (WORKID(I),WAVEV(I),I=1+120*(N-1),&
             &120*N)
-         ELSE IF (FILE_FORMAT .EQ. 'EXP') THEN
+         ELSE IF (FILE_FORMAT == 'EXP') THEN
             WRITE(IOUNIT,9067) (WORKID(I),WAVEV(I),I=1+120*(N-1),&
             &120*N)
          END IF
@@ -243,7 +243,7 @@ SUBROUTINE PRTSOC
 9067 FORMAT(3(2X,A12,3X,E13.6,11X:))
 
    RETURN
-END
+END SUBROUTINE PRTSOC
 
 SUBROUTINE PRTDET
 !***********************************************************************
@@ -267,7 +267,7 @@ SUBROUTINE PRTDET
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
    INTEGER :: I, J, N, NSPP, NPAGE, IHR, INGRP
    DOUBLE PRECISION :: WAVEV(NSRC+1), WHRVAL(24,NSRC+1)
@@ -280,7 +280,7 @@ SUBROUTINE PRTDET
 !     Set Up The Printing Work Array
    INGRP = 0
    DO ISRC = 1, NUMSRC
-      IF (IGROUP(ISRC,IDXEV(IEVENT)) .EQ. 1) THEN
+      IF (IGROUP(ISRC,IDXEV(IEVENT)) == 1) THEN
          INGRP = INGRP + 1
          WORKID(INGRP) = SRCID(ISRC)
          WAVEV(INGRP)  = EV_AVEVAL(ISRC)
@@ -311,7 +311,7 @@ SUBROUTINE PRTDET
       &EVAPER(IEVENT),EVDATE(IEVENT), AXR(IEVENT),AYR(IEVENT),&
       &AZELEV(IEVENT),AZFLAG(IEVENT)
 
-      IF (N .EQ. NPAGE) THEN
+      IF (N == NPAGE) THEN
 !           Print Out The Values for the Last Page
          WRITE(IOUNIT,9068) EVGRP(IEVENT), (WORKID(I),&
          &I=1+NSPP*(N-1),INGRP)
@@ -319,18 +319,18 @@ SUBROUTINE PRTDET
 
 !           Print Out The Source Contributions for the Last Page
          DO I = ISTAHR, IENDHR
-            IF (FILE_FORMAT .EQ. 'FIX') THEN
+            IF (FILE_FORMAT == 'FIX') THEN
                WRITE(IOUNIT,9062) I,GRPVAL(IDXEV(IEVENT),I),&
                &(WHRVAL(I,J),J=1+NSPP*(N-1),INGRP)
-            ELSE IF (FILE_FORMAT .EQ. 'EXP') THEN
+            ELSE IF (FILE_FORMAT == 'EXP') THEN
                WRITE(IOUNIT,9063) I,GRPVAL(IDXEV(IEVENT),I),&
                &(WHRVAL(I,J),J=1+NSPP*(N-1),INGRP)
             END IF
          END DO
-         IF (FILE_FORMAT .EQ. 'FIX') THEN
+         IF (FILE_FORMAT == 'FIX') THEN
             WRITE(IOUNIT,9064) GRPAVE(IDXEV(IEVENT)),&
             &(WAVEV(I),I=1+NSPP*(N-1),INGRP)
-         ELSE IF (FILE_FORMAT .EQ. 'EXP') THEN
+         ELSE IF (FILE_FORMAT == 'EXP') THEN
             WRITE(IOUNIT,9065) GRPAVE(IDXEV(IEVENT)),&
             &(WAVEV(I),I=1+NSPP*(N-1),INGRP)
          END IF
@@ -342,24 +342,24 @@ SUBROUTINE PRTDET
 
 !           Print Out The Source Contributions for the Current Page
          DO I = ISTAHR, IENDHR
-            IF (FILE_FORMAT .EQ. 'FIX') THEN
+            IF (FILE_FORMAT == 'FIX') THEN
                WRITE(IOUNIT,9062) I,GRPVAL(IDXEV(IEVENT),I),&
                &(WHRVAL(I,J),J=1+NSPP*(N-1),NSPP*N)
-            ELSE IF (FILE_FORMAT .EQ. 'EXP') THEN
+            ELSE IF (FILE_FORMAT == 'EXP') THEN
                WRITE(IOUNIT,9063) I,GRPVAL(IDXEV(IEVENT),I),&
                &(WHRVAL(I,J),J=1+NSPP*(N-1),NSPP*N)
             END IF
          END DO
-         IF (FILE_FORMAT .EQ. 'FIX') THEN
+         IF (FILE_FORMAT == 'FIX') THEN
             WRITE(IOUNIT,9064) GRPAVE(IDXEV(IEVENT)),&
             &(WAVEV(I),I=1+NSPP*(N-1),NSPP*N)
-         ELSE IF (FILE_FORMAT .EQ. 'EXP') THEN
+         ELSE IF (FILE_FORMAT == 'EXP') THEN
             WRITE(IOUNIT,9065) GRPAVE(IDXEV(IEVENT)),&
             &(WAVEV(I),I=1+NSPP*(N-1),NSPP*N)
          END IF
       END IF
 
-      IF (N .EQ. 1) THEN
+      IF (N == 1) THEN
 !           Write Out the Meteorology Data
          NEWMET = .TRUE.
          DO IHOUR = ISTAHR, IENDHR
@@ -396,7 +396,7 @@ SUBROUTINE PRTDET
 9065 FORMAT(66('- ')/1X,'AVE',9(1X,E13.6:))
 
    RETURN
-END
+END SUBROUTINE PRTDET
 
 SUBROUTINE METDET
 !***********************************************************************
@@ -418,7 +418,7 @@ SUBROUTINE METDET
 !     Variable Declarations
    USE MAIN1
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 !     Variable Initializations
    MODNAM = 'METDET'
@@ -442,7 +442,7 @@ SUBROUTINE METDET
    &3(1X,F6.1) )
 
    RETURN
-END
+END SUBROUTINE METDET
 
 SUBROUTINE EV_FLUSH
 !***********************************************************************
@@ -465,7 +465,7 @@ SUBROUTINE EV_FLUSH
    USE MAIN1
    USE BUOYANT_LINE
    IMPLICIT NONE
-   CHARACTER MODNAM*12
+   CHARACTER :: MODNAM*12
 
 ! Unused:      INTEGER :: I
 
@@ -497,4 +497,4 @@ SUBROUTINE EV_FLUSH
    HRVALS(:,:)  = 0.0D0
 
    RETURN
-END
+END SUBROUTINE EV_FLUSH

@@ -24,10 +24,10 @@ cd test
 
 - [x] Create automated tests comparing results between AERMOD-ern and AERMOD 23132/24142.
 - [x] Convert source code from fixed format to free format using `findent'
+- [x] Standardize variables and keywords to lowercase for consistency.
 
 ## TODO
 
-- [ ] Standardize variables and keywords to lowercase for consistency.
 - [ ] Remove all GOTO statements and replace them with structured programming constructs.
 
 # Acknowledgements

@@ -119,9 +119,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(2) = ISSTAT(2) + 1
 !        Check for SRCGROUP or PSDGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
 !        Process Source Location                            ---   CALL SOLOCA
@@ -130,26 +130,26 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(3) = ISSTAT(3) + 1
 !        Check for SRCGROUP or PSDGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
 !        Process Source Parameters                          ---   CALL SOPARM
       CALL SOPARM
 
 ! --- PRIME ---------------------------------
-   ELSE IF (KEYWRD .EQ. 'BUILDHGT' .OR.&
-   &KEYWRD .EQ. 'BUILDWID' .OR.&
-   &KEYWRD .EQ. 'BUILDLEN' .OR.&
-   &KEYWRD .EQ. 'XBADJ   ' .OR.&
+   ELSE IF (KEYWRD .EQ. 'BUILDHGT' .or.&
+   &KEYWRD .EQ. 'BUILDWID' .or.&
+   &KEYWRD .EQ. 'BUILDLEN' .or.&
+   &KEYWRD .EQ. 'XBADJ   ' .or.&
    &KEYWRD .EQ. 'YBADJ   ') THEN
 ! -------------------------------------------
 
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
 !        Set Status Switch
@@ -187,9 +187,9 @@ SUBROUTINE SOCARD
       ISSTAT(47) = ISSTAT(47) + 1
 
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
 
@@ -201,9 +201,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(7) = ISSTAT(7) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
 !        Process Variable Emission Rate Factors             ---   CALL EMVARY
@@ -212,9 +212,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(8) = ISSTAT(8) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
       IF (ISSTAT(8) .NE. 1) THEN
@@ -232,9 +232,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(12) = ISSTAT(12) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
 !        Check that RLEMCONV is NOT repeated
@@ -254,7 +254,7 @@ SUBROUTINE SOCARD
 !           Set RLINE MOVES conversion switch to TRUE
          RLMOVESCONV = .TRUE.
       END IF
-   ELSE IF (KEYWRD .EQ. 'PARTDIAM' .OR. KEYWRD .EQ. 'MASSFRAX' .OR.&
+   ELSE IF (KEYWRD .EQ. 'PARTDIAM' .or. KEYWRD .EQ. 'MASSFRAX' .or.&
    &KEYWRD .EQ. 'PARTDENS') THEN
 !        Set Status Switch
       IF (KEYWRD .EQ. 'PARTDIAM') THEN
@@ -265,9 +265,9 @@ SUBROUTINE SOCARD
          ISSTAT(11) = ISSTAT(11) + 1
       END IF
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
 !        Process Particle Deposition Parameters             ---   CALL PARTDEP
@@ -277,9 +277,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(15) = ISSTAT(15) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
       IF (ISSTAT(15) .NE. 1) THEN
@@ -296,9 +296,9 @@ SUBROUTINE SOCARD
 !*       Set Status Switch
       ISSTAT(16) = ISSTAT(16) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
 !        Set HOURLY Flag
@@ -311,9 +311,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(17) = ISSTAT(17) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
       IF (ISSTAT(17) .NE. 1) THEN
@@ -331,9 +331,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(18) = ISSTAT(18) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
       IF (ISSTAT(18) .NE. 1) THEN
@@ -352,9 +352,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(19) = ISSTAT(19) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
 !        Process Vertices for AREAPOLY Sources              ---   CALL ARVERT
@@ -392,9 +392,9 @@ SUBROUTINE SOCARD
 !             Set Status Switch
          ISSTAT(26) = ISSTAT(26) + 1
 !             Check for SRCGROUP Card Out Of Order
-         IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+         IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
             CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-         ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+         ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
             CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
          END IF
          IF (.NOT. LUSERVD) THEN
@@ -423,9 +423,9 @@ SUBROUTINE SOCARD
 !                 Set flag for use of non-DEFAULT option
             L_NonDFAULT = .TRUE.
 !                 Check for SRCGROUP Card Out Of Order
-            IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+            IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
                CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-            ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+            ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
                CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
             END IF
 !                 Process Method 2 Deposition Parameters          ---   CALL METH_2
@@ -438,9 +438,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(28) = ISSTAT(28) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
       IF (URBAN) THEN
@@ -454,13 +454,13 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(29) = ISSTAT(29) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
-      IF (PVMRM .OR. OLM&
-      &.OR. RUNTTRM .OR. GRSM) THEN
+      IF (PVMRM .or. OLM&
+      &.or. RUNTTRM .or. GRSM) THEN
 !           Process the NO2 Ratio Card                      ---   CALL NO2RAT
          CALL NO2RAT
       ELSE
@@ -472,9 +472,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(30) = ISSTAT(30) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
       IF (OLM) THEN
@@ -501,9 +501,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(40) = ISSTAT(40) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
 !        Process the BACKGRND Card                         ---   CALL BACK_GRND
@@ -513,9 +513,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(41) = ISSTAT(41) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
       IF (ISSTAT(41) .NE. 1) THEN
@@ -540,7 +540,7 @@ SUBROUTINE SOCARD
 !     Check for RLINE barrier input
    ELSE IF (KEYWRD .EQ. 'RBARRIER') THEN
 !         Added FLAT restriction in addition to the ALPHA restriction Wood 10/7
-      IF(L_ALPHA .AND. FLAT) THEN
+      IF(L_ALPHA .and. FLAT) THEN
 !           Set the RBARRIER logical to true
          L_RBARRIER = .TRUE.
 !           Process RBARRIER keyword                        ---   CALL RLINEBAR_INPUTS
@@ -575,7 +575,7 @@ SUBROUTINE SOCARD
 !     Check for RLINE depressed roadway input
    ELSE IF (KEYWRD .EQ. 'RDEPRESS') THEN
 !         Added FLAT restriction in addition to the ALPHA restriction Wood 10/7
-      IF(L_ALPHA .AND. FLAT) THEN
+      IF(L_ALPHA .and. FLAT) THEN
 !           Set the RDEPRESS logical to true
          L_RDEPRESS = .TRUE.
 !           Process RDEPRESS keyword                        ---   CALL RLINEDPR_INPUTS
@@ -636,9 +636,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(48) = ISSTAT(48) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
 
@@ -661,9 +661,9 @@ SUBROUTINE SOCARD
 !        Set Status Switch
       ISSTAT(45) = ISSTAT(45) + 1
 !        Check for SRCGROUP Card Out Of Order
-      IF (.NOT.PSDCREDIT .AND. ISSTAT(24) .NE. 0) THEN
+      IF (.NOT.PSDCREDIT .and. ISSTAT(24) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
-      ELSE IF (PSDCREDIT .AND. ISSTAT(34) .NE. 0) THEN
+      ELSE IF (PSDCREDIT .and. ISSTAT(34) .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','PSDGROUP')
       END IF
       IF (HBPLUME) THEN
@@ -689,10 +689,10 @@ SUBROUTINE SOCARD
       END IF
 
 !        Check to Insure That SRCGROUP or PSDGROUP Was The Last Functional Keyword
-      IF (PKEYWD .NE. 'SRCGROUP' .AND. .NOT.PSDCREDIT) THEN
+      IF (PKEYWD .NE. 'SRCGROUP' .and. .NOT.PSDCREDIT) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
       END IF
-      IF (PKEYWD .NE. 'PSDGROUP' .AND. PSDCREDIT) THEN
+      IF (PKEYWD .NE. 'PSDGROUP' .and. PSDCREDIT) THEN
          CALL ERRHDL(PATH,MODNAM,'E','140','SRCGROUP')
       END IF
 
@@ -706,10 +706,10 @@ SUBROUTINE SOCARD
       IF (ISSTAT(3) .EQ. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','130','SRCPARAM')
       END IF
-      IF (ISSTAT(24) .EQ. 0 .AND. .NOT.PSDCREDIT) THEN
+      IF (ISSTAT(24) .EQ. 0 .and. .NOT.PSDCREDIT) THEN
          CALL ERRHDL(PATH,MODNAM,'E','130','SRCGROUP')
       END IF
-      IF (ISSTAT(34) .EQ. 0 .AND. PSDCREDIT) THEN
+      IF (ISSTAT(34) .EQ. 0 .and. PSDCREDIT) THEN
          CALL ERRHDL(PATH,MODNAM,'E','130','PSDGROUP')
       END IF
       IF (ISSTAT(3) .LT. ISSTAT(2)) THEN
@@ -718,7 +718,7 @@ SUBROUTINE SOCARD
       END IF
 
 ! ---    Check for BACKUNIT keyword without BACKGRND keyword
-      IF (ISSTAT(40) .EQ. 0 .AND. ISSTAT(41) .GT. 0) THEN
+      IF (ISSTAT(40) .EQ. 0 .and. ISSTAT(41) .GT. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','193','SO BACKGRND')
       END IF
 
@@ -729,7 +729,7 @@ SUBROUTINE SOCARD
 
       ELSE
 ! ---       Check for non-DFAULT gas deposition options
-         IF (DFAULT .AND. ISSTAT(26) .GT. 0) THEN
+         IF (DFAULT .and. ISSTAT(26) .GT. 0) THEN
 !              Write Error Message:  Gas Deposition Option w/ DFAULT Option
             CALL ERRHDL(PATH,MODNAM,'E','196','GASDEPOS')
          ELSE IF (ISSTAT(26) .GT. 0) THEN
@@ -737,8 +737,8 @@ SUBROUTINE SOCARD
             L_NonDFAULT = .TRUE.
          END IF
 ! ---       Set logical flags for deposition options
-         IF (LUSERVD .OR. (ICSTAT(18).GT.0 .AND.&
-         &ICSTAT(20).GT.0 .AND.&
+         IF (LUSERVD .or. (ICSTAT(18).GT.0 .and.&
+         &ICSTAT(20).GT.0 .and.&
          &ISSTAT(26).GT.0)) THEN
 ! ---          Gas dry deposition inputs specified
 !              GASDEPVD or GDSEASON, GDLANUSE & GASDEPOS
@@ -748,27 +748,27 @@ SUBROUTINE SOCARD
 ! ---          Gas wet deposition inputs specified
             LWGAS = .TRUE.
          END IF
-         IF ((ISSTAT( 9).GT.0 .AND. ISSTAT(10).GT.0 .AND.&
-         &ISSTAT(11).GT.0) .OR. ISSTAT(27).GT.0) THEN
+         IF ((ISSTAT( 9).GT.0 .and. ISSTAT(10).GT.0 .and.&
+         &ISSTAT(11).GT.0) .or. ISSTAT(27).GT.0) THEN
 ! ---          Particle dry and wet deposition inputs specified
 !              PARTDIAM, MASSFRAX & PARTDENS or METHOD_2
             LDPART = .TRUE.
             LWPART = .TRUE.
          END IF
-         IF (DRYDPLT .OR. (.NOT.NODRYDPLT .AND.&
-         &(LDGAS .OR. LDPART))) THEN
+         IF (DRYDPLT .or. (.NOT.NODRYDPLT .and.&
+         &(LDGAS .or. LDPART))) THEN
 ! ---          Set dry depletion unless overridden by user
             DDPLETE = .TRUE.
          END IF
-         IF (WETDPLT .OR. (.NOT.NOWETDPLT .AND.&
-         &(LWGAS .OR. LWPART))) THEN
+         IF (WETDPLT .or. (.NOT.NOWETDPLT .and.&
+         &(LWGAS .or. LWPART))) THEN
 ! ---          Set wet depletion unless overridden by user
             WDPLETE = .TRUE.
          END IF
 
 ! ---       Check for incompatibilities with user-specified deposition velocity
 !           This condition may not be caught by check in subroutine COCARD
-         IF (LUSERVD .AND. WDPLETE) THEN
+         IF (LUSERVD .and. WDPLETE) THEN
 !              Write Error Message: Wet deposition/depletion incompatible
 !              with GASDEPVD option
             CALL ERRHDL(PATH,MODNAM,'E','243','GASDEPVD')
@@ -797,13 +797,13 @@ SUBROUTINE SOCARD
             MODOPS(15) = '         '
          END IF
 ! ---       Check for error with inputs for dry deposition
-         IF ((DDPLETE .OR. DEPOS .OR. DDEP) .AND.&
-         &(.NOT.LDGAS .AND. .NOT.LDPART)) THEN
+         IF ((DDPLETE .or. DEPOS .or. DDEP) .and.&
+         &(.NOT.LDGAS .and. .NOT.LDPART)) THEN
             CALL ERRHDL('SO',MODNAM,'E','244','DRYDEP')
          END IF
 ! ---       Check for error with inputs for wet deposition
-         IF ((WDPLETE .OR. DEPOS .OR. WDEP) .AND.&
-         &(.NOT.LWGAS .AND. .NOT.LWPART)) THEN
+         IF ((WDPLETE .or. DEPOS .or. WDEP) .and.&
+         &(.NOT.LWGAS .and. .NOT.LWPART)) THEN
             CALL ERRHDL('SO',MODNAM,'E','244','WETDEP')
          END IF
 
@@ -841,7 +841,7 @@ SUBROUTINE SOCARD
 !              The condition that NUMBLAVGINP be > 0 was added so
 !              NUMBLGRPS is not set to 1 when BLPINPUT record is missing
 
-            IF (NUMBLGRPS .EQ. 0 .AND. NUMBLAVGINP .GT. 0) THEN
+            IF (NUMBLGRPS .EQ. 0 .and. NUMBLAVGINP .GT. 0) THEN
 !              BLPINPUT_Checks_Missing_D091_Wood: end
 
                NUMBLGRPS = 1
@@ -912,24 +912,24 @@ SUBROUTINE SOCARD
 
 ! ---       Check for consistency of deposition logical variables
 !           Check for CO GDSEASON Card if Gas Deposition is Calculated
-         IF (.NOT. LUSERVD .AND. LDGAS .AND. ICSTAT(18) .EQ. 0) THEN
+         IF (.NOT. LUSERVD .and. LDGAS .and. ICSTAT(18) .EQ. 0) THEN
 ! ---          Write Error Message:  Missing Mandatory Keyword
             CALL ERRHDL('CO',MODNAM,'E','130','GDSEASON')
          END IF
 ! ---       Check for CO GDLANUSE Card if Gas Deposition is Calculated
-         IF (.NOT. LUSERVD .AND. LDGAS .AND. ICSTAT(20) .EQ. 0) THEN
+         IF (.NOT. LUSERVD .and. LDGAS .and. ICSTAT(20) .EQ. 0) THEN
 !              Write Error Message:  Missing Mandatory Keyword
             CALL ERRHDL('CO',MODNAM,'E','130','GDLANUSE')
          END IF
 ! ---       Check for SO GASDEPOS Card if Gas Depos is Calculated w/o LUSERVD
-         IF (.NOT. LUSERVD .AND. LDGAS .AND. ISSTAT(26) .EQ. 0) THEN
+         IF (.NOT. LUSERVD .and. LDGAS .and. ISSTAT(26) .EQ. 0) THEN
 !              Write Error Message:  Missing Mandatory Keyword
             CALL ERRHDL('SO',MODNAM,'E','130','GASDEPOS')
          END IF
 
 ! ---       Calculate settling velocity and related time-invariant
 !           deposition data                                 ---   CALL VDP1
-         IF (LDPART .OR. LDGAS) THEN
+         IF (LDPART .or. LDGAS) THEN
             CALL VDP1
          END IF
 
@@ -1043,8 +1043,8 @@ SUBROUTINE SRCQA
 
 !        Check Source Array Limits for Too Few Values;
 !        (Too Many Checked In DSFILL and EFFILL)
-      IF (IWRK2(I,1) .GT.0 .OR. IWRK2(I,2) .GT.0 .OR.&
-      &IWRK2(I,11).GT.0 .OR. IWRK2(I,12).GT.0 .OR.&
+      IF (IWRK2(I,1) .GT.0 .or. IWRK2(I,2) .GT.0 .or.&
+      &IWRK2(I,11).GT.0 .or. IWRK2(I,12).GT.0 .or.&
       &IWRK2(I,13).GT.0) THEN
 
          IF (IWRK2(I,1).LT.NSEC) THEN
@@ -1076,7 +1076,7 @@ SUBROUTINE SRCQA
 !     CRT, 6/6/2012: D063 PRIME and PLATFORM downwash params
 !     cannot be specified for the same source
 
-      IF (OSPLAT(I) .AND. IWRK2(I,1) .GT. 0) THEN
+      IF (OSPLAT(I) .and. IWRK2(I,1) .GT. 0) THEN
 
 !           WRITE Error Message:  Cannot be both PRIME and PLATFORM
          CALL ERRHDL(PATH,MODNAM,'E','633',SRCID(I))
@@ -1086,37 +1086,37 @@ SUBROUTINE SRCQA
 ! -----------------------------------------------------------
 
       IF (QFLAG(I) .NE. ' ') THEN
-         IF (QFLAG(I).EQ.'SEASON' .AND. IWRK2(I,4).LT.4) THEN
+         IF (QFLAG(I).EQ.'SEASON' .and. IWRK2(I,4).LT.4) THEN
 !              WRITE Error Message: Not Enough QFACTs
             CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF (QFLAG(I).EQ.'MONTH' .AND. IWRK2(I,4).LT.12) THEN
+         ELSE IF (QFLAG(I).EQ.'MONTH' .and. IWRK2(I,4).LT.12) THEN
 !              WRITE Error Message: Not Enough QFACTs
             CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I).EQ.'HROFDY' .AND. IWRK2(I,4).LT.24) THEN
+         ELSE IF(QFLAG(I).EQ.'HROFDY' .and. IWRK2(I,4).LT.24) THEN
 !              WRITE Error Message: Not Enough QFACTs
             CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF (QFLAG(I).EQ.'WSPEED' .AND. IWRK2(I,4).LT.6) THEN
+         ELSE IF (QFLAG(I).EQ.'WSPEED' .and. IWRK2(I,4).LT.6) THEN
 !              WRITE Error Message: Not Enough QFACTs
             CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I).EQ.'SEASHR' .AND. IWRK2(I,4).LT.96) THEN
+         ELSE IF(QFLAG(I).EQ.'SEASHR' .and. IWRK2(I,4).LT.96) THEN
 !              WRITE Error Message: Not Enough QFACTs
             CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I).EQ.'HRDOW' .AND. IWRK2(I,4).LT.72) THEN
+         ELSE IF(QFLAG(I).EQ.'HRDOW' .and. IWRK2(I,4).LT.72) THEN
 !              WRITE Error Message: Not Enough QFACTs
             CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I).EQ.'HRDOW7' .AND. IWRK2(I,4).LT.168) THEN
+         ELSE IF(QFLAG(I).EQ.'HRDOW7' .and. IWRK2(I,4).LT.168) THEN
 !              WRITE Error Message: Not Enough QFACTs
             CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I).EQ.'SHRDOW' .AND. IWRK2(I,4).LT.288) THEN
+         ELSE IF(QFLAG(I).EQ.'SHRDOW' .and. IWRK2(I,4).LT.288) THEN
 !              WRITE Error Message: Not Enough QFACTs
             CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I).EQ.'SHRDOW7' .AND. IWRK2(I,4).LT.672) THEN
+         ELSE IF(QFLAG(I).EQ.'SHRDOW7' .and. IWRK2(I,4).LT.672) THEN
 !              WRITE Error Message: Not Enough QFACTs
             CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I).EQ.'MHRDOW' .AND. IWRK2(I,4).LT.864) THEN
+         ELSE IF(QFLAG(I).EQ.'MHRDOW' .and. IWRK2(I,4).LT.864) THEN
 !              WRITE Error Message: Not Enough QFACTs
             CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
-         ELSE IF(QFLAG(I).EQ.'MHRDOW7' .AND. IWRK2(I,4).LT.2016) THEN
+         ELSE IF(QFLAG(I).EQ.'MHRDOW7' .and. IWRK2(I,4).LT.2016) THEN
 !              WRITE Error Message: Not Enough QFACTs
             CALL ERRHDL(PATH,MODNAM,'E','239',SRCID(I))
          ELSE IF(QFLAG(I) .EQ. 'HOURLY') THEN
@@ -1148,12 +1148,12 @@ SUBROUTINE SRCQA
 !         in the source QA
 
 !        Check Settling and Removal Parameters
-      IF (IWRK2(I,5).NE.0 .OR. IWRK2(I,6).NE.0 .OR.&
+      IF (IWRK2(I,5).NE.0 .or. IWRK2(I,6).NE.0 .or.&
       &IWRK2(I,7).NE.0) THEN
 !           Set Number of Particle Diameter Categories for This Source
          INPD(I) = IWRK2(I,5)
 !           Check for Consistent Number of Categories for All Parameters
-         IF (IWRK2(I,5).NE.IWRK2(I,6) .OR.&
+         IF (IWRK2(I,5).NE.IWRK2(I,6) .or.&
          &IWRK2(I,5).NE.IWRK2(I,7)) THEN
 !              WRITE Error Message: PartDiam Categories Don't Match
             CALL ERRHDL(PATH,MODNAM,'E','240',SRCID(I))
@@ -1165,7 +1165,7 @@ SUBROUTINE SRCQA
             DO J = 1, N
                ATOT = ATOT + APHI(J,I)
             END DO
-            IF (ATOT .LT. 0.98D0 .OR. ATOT .GT. 1.02D0) THEN
+            IF (ATOT .LT. 0.98D0 .or. ATOT .GT. 1.02D0) THEN
 !                 WRITE Error Message: Mass Fractions Don't Sum to 1.0
                CALL ERRHDL(PATH,MODNAM,'W','330',SRCID(I))
             END IF
@@ -1180,12 +1180,12 @@ SUBROUTINE SRCQA
 !        Screen for Conflicts with the Deposition Options
       IF (INPD(I) .EQ. 0) THEN
 !           Check for NPD=0 and no gas deposition with the DEPOS, DDEP, or WDEP
-         IF ((DEPOS.OR.DDEP.OR.WDEP.OR.DDPLETE.OR.WDPLETE) .AND.&
-         &.NOT. LUSERVD .AND. SOGAS(I).EQ.'N') THEN
+         IF ((DEPOS.or.DDEP.or.WDEP.or.DDPLETE.or.WDPLETE) .and.&
+         &.NOT. LUSERVD .and. SOGAS(I).EQ.'N') THEN
 !              WRITE Error Message for Lack of Particle Deposition Parameters
             CALL ERRHDL(PATH,MODNAM,'E','242',SRCID(I))
          END IF
-      ELSE IF (INPD(I).GT.0 .AND. SOGAS(I).EQ.'Y') THEN
+      ELSE IF (INPD(I).GT.0 .and. SOGAS(I).EQ.'Y') THEN
 !           Check for NPD>0 and gas deposition for same source
 !           WRITE Error Message for source as both particle and gas
          CALL ERRHDL(PATH,MODNAM,'E','289',SRCID(I))
@@ -1291,7 +1291,7 @@ SUBROUTINE SRCQA
 !     End Source LOOP
 
 !     D128: Warning message when AREAMNDR is used without an AREA Source present
-   IF (L_AREAMNDR .AND. NUMAREA .EQ. 0) THEN
+   IF (L_AREAMNDR .and. NUMAREA .EQ. 0) THEN
       CALL ERRHDL(PATH,'RLINE','W','668','AREAMNDR')
    END IF
 
@@ -1342,7 +1342,7 @@ SUBROUTINE SRCQA
          IF (GRP_BACK(J)) THEN
             NumBack = Numback + 1
          END IF
-         IF (ITOTSRC .EQ. 0 .AND. .NOT.GRP_BACK(J)) THEN
+         IF (ITOTSRC .EQ. 0 .and. .NOT.GRP_BACK(J)) THEN
 !              Write Warning Message:  No Sources in SRCGROUP
             CALL ERRHDL(PATH,MODNAM,'W','319',GRPID(J))
          END IF
@@ -1350,7 +1350,7 @@ SUBROUTINE SRCQA
 
 ! ---    Issue warning if BACKGROUND is specified but not included with
 !        any source groups
-      IF (L_BACKGRND .AND. NumBack .EQ. 0) THEN
+      IF (L_BACKGRND .and. NumBack .EQ. 0) THEN
 !           Write Warning Message:  BACKGROUND not in any SRCGROUP
          CALL ERRHDL(PATH,MODNAM,'W','321',' ')
       END IF
@@ -1372,13 +1372,13 @@ SUBROUTINE SRCQA
    END IF
 
 ! Added for HBP, JAN. 2023
-   IF (HBPLUME .AND. NHBP.EQ.0) THEN
+   IF (HBPLUME .and. NHBP.EQ.0) THEN
 !        Write Error Message:  No HBP sources defined with HBP
       CALL ERRHDL(PATH,MODNAM,'E','130','HBPSRCID')
    END IF
 ! End HBP insert
 
-   IF (URBAN .AND. NURBSRC.EQ.0) THEN
+   IF (URBAN .and. NURBSRC.EQ.0) THEN
 !        Write Error Message:  No urban sources defined with URBANOPT
       CALL ERRHDL(PATH,MODNAM,'E','130','URBANSRC')
    END IF
@@ -1401,7 +1401,7 @@ SUBROUTINE SRCQA
    END IF
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   IF (ARCFT .AND. NAFTSRC.EQ.0) THEN
+   IF (ARCFT .and. NAFTSRC.EQ.0) THEN
 !        Write Error Message:  No Aircraft sources defined with ARCFTOPT
       CALL ERRHDL(PATH,MODNAM,'E','822','ARCFTSRC')
    END IF
@@ -1462,7 +1462,7 @@ SUBROUTINE SRCQA
 
 !        BLPINPUT_Checks_Missing_D091_Wood: begin
 !        There is at least one individual buoyant line but no BLPINPUT
-      IF (NUMBLAVGINP .EQ. 0 .AND. NBLTOTAL .GT. 0) THEN
+      IF (NUMBLAVGINP .EQ. 0 .and. NBLTOTAL .GT. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','507','  ')
       ENDIF
 
@@ -1520,7 +1520,7 @@ SUBROUTINE SRCQA
 !           Check to see if QFLAG is set for buoyant lines - increment
 !           counter(s) for later use
 !           DO I = 1,NUMSRC
-!              IF (SRCTYP(I).EQ.'BUOYLINE' .AND.
+!              IF (SRCTYP(I).EQ.'BUOYLINE' .and.
 !    &              QFLAG(I).EQ.'HOURLY') THEN
 !                 OUTER: DO LNUM = 1,NBLTOTAL
 !                    DO KK = 1, NUMBLGRPS
@@ -1546,7 +1546,7 @@ SUBROUTINE SRCQA
 !        Compare the number(s) obtained above for HRLYBLCOUNT to the
 !        number in each source group
          DO KK = 1,NUMBLGRPS
-            IF (HRLYBLCOUNT(KK) .GT. 0 .AND.&
+            IF (HRLYBLCOUNT(KK) .GT. 0 .and.&
             &NBLINGRP(KK) .GT. 0) THEN
                IF (HRLYBLCOUNT(KK) .NE. NBLINGRP(KK)) THEN
                   CALL ERRHDL(PATH,MODNAM,'E','383',BL_GRPID(KK))
@@ -1570,7 +1570,7 @@ SUBROUTINE SRCQA
             END IF
          END DO
 
-         IF ((L_BLURBAN(KK)) .AND.&
+         IF ((L_BLURBAN(KK)) .and.&
          &(BL_NUMURB(KK) .NE. NBLINGRP(KK))) THEN
 !               Write Error Message:  At least one but not all BL
 !                lines in the BL source group are declared as urban
@@ -1582,7 +1582,7 @@ SUBROUTINE SRCQA
 !        Check to require ALPHA with Buoyant Line urban sources
 !         DO J = 1, NUMSRC
 !            IF (SRCTYP(J) .EQ. 'BUOYLINE') THEN
-!               IF ((URBSRC(J) .EQ. 'Y') .AND. .NOT.L_ALPHA) THEN
+!               IF ((URBSRC(J) .EQ. 'Y') .and. .NOT.L_ALPHA) THEN
 !                  WRITE Error Message: ALPHA required for BUOYLINE URBANSRC
 !                  CALL ERRHDL(PATH,MODNAM,'E','281', SRCID(J))
 !               END IF
@@ -1658,7 +1658,7 @@ SUBROUTINE SRCQA
 
 
 !     Check that Deposition options are all FALSE when RLINE or BUOYLINE are present
-   IF(DEPOS .OR. DDEP .OR. WDEP) THEN
+   IF(DEPOS .or. DDEP .or. WDEP) THEN
       IF (NBLTOTAL .GT. 0) THEN
 !              Write Error Message:Deposition (DEPOS, DDEP, WDEP) incompatible with
          CALL ERRHDL(PATH,MODNAM,'E','251','BUOYLINE')
@@ -1741,7 +1741,7 @@ SUBROUTINE SRCQA
    END IF
 
 ! --- Check for potential problems with inputs for NO2 options; first for OLM/PVMRM/GRSM/TTRM
-   IF (OLM .OR. PVMRM .OR. RUNTTRM .OR. GRSM) THEN
+   IF (OLM .or. PVMRM .or. RUNTTRM .or. GRSM) THEN
 !        Check for negative emission rate with OLM, PVMRM or GRSM option.
 !        Negative emission for credit sources cannot be used for OLM, PVMRM and
 !        GRSM due to non-linear dependence of concentrations on emissions.
@@ -1895,7 +1895,7 @@ SUBROUTINE SRCQA
 
 ! ---    Check for user-specified background units; apply default if needed
       IF (ISSTAT(41) .NE. 1) THEN
-         IF (POLLUT .EQ. 'NO2' .OR. POLLUT .EQ. 'SO2') THEN
+         IF (POLLUT .EQ. 'NO2' .or. POLLUT .EQ. 'SO2') THEN
             BackUnits = 'PPB'
          ELSE IF (POLLUT .EQ. 'CO') THEN
             BackUnits = 'PPM'
@@ -2011,8 +2011,8 @@ SUBROUTINE SOLOCA
 
 !     Check The Number Of The Fields
 !*--- Modified to handle LINE, BUOYLINE, and RLINE sources
-   IF (FIELD(4).EQ.'LINE' .OR. FIELD(4).EQ.'BUOYLINE'&
-   &.OR. FIELD(4).EQ.'RLINE') THEN
+   IF (FIELD(4).EQ.'LINE' .or. FIELD(4).EQ.'BUOYLINE'&
+   &.or. FIELD(4).EQ.'RLINE') THEN
       IF (IFC .LE. 2) THEN
 !           Error Message: No Parameters
          CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
@@ -2065,7 +2065,7 @@ SUBROUTINE SOLOCA
 !*       Retrieve Source ID Character Substring
       SOID = FIELD(3)
 ! ---    Check for "reserved" source ID for 'BACKGROUND'
-      IF (SOID .EQ. 'BACKGROUND' .OR. SOID .EQ. 'BACKGRND') THEN
+      IF (SOID .EQ. 'BACKGROUND' .or. SOID .EQ. 'BACKGRND') THEN
 !*          WRITE Error Message:  Source ID Field is Too Long
          CALL ERRHDL(PATH,MODNAM,'E','285',FIELD(3)(1:12))
          GO TO 999
@@ -2085,30 +2085,30 @@ SUBROUTINE SOLOCA
          SRCTYP(ISRC) = FIELD(4)
 
 ! ---       Allow for variations in the source type string
-         IF (SRCTYP(ISRC) .EQ. 'OPENPIT'  .OR.&
-         &SRCTYP(ISRC) .EQ. 'OPEN_PIT' .OR.&
+         IF (SRCTYP(ISRC) .EQ. 'OPENPIT'  .or.&
+         &SRCTYP(ISRC) .EQ. 'OPEN_PIT' .or.&
          &SRCTYP(ISRC) .EQ. 'OPEN-PIT') THEN
 ! ---           Assign as 'OPENPIT' for future references
             SRCTYP(ISRC) = 'OPENPIT'
          END IF
 
 ! ---       Check for acceptable source types
-         IF (SRCTYP(ISRC).EQ.'POINT' .OR.&
-         &SRCTYP(ISRC).EQ.'POINTCAP' .OR.&
-         &SRCTYP(ISRC).EQ.'POINTHOR' .OR.&
-         &SRCTYP(ISRC).EQ.'VOLUME' .OR.&
-         &SRCTYP(ISRC).EQ.'AREA' .OR.&
-         &SRCTYP(ISRC).EQ.'AREAPOLY' .OR.&
-         &SRCTYP(ISRC).EQ.'AREACIRC' .OR.&
-         &SRCTYP(ISRC).EQ.'LINE' .OR.&
-         &SRCTYP(ISRC).EQ.'RLINE' .OR.&
-         &SRCTYP(ISRC).EQ.'RLINEXT' .OR.&
-         &SRCTYP(ISRC).EQ.'BUOYLINE' .OR.&
-         &SRCTYP(ISRC).EQ.'OPENPIT' .OR.&
+         IF (SRCTYP(ISRC).EQ.'POINT' .or.&
+         &SRCTYP(ISRC).EQ.'POINTCAP' .or.&
+         &SRCTYP(ISRC).EQ.'POINTHOR' .or.&
+         &SRCTYP(ISRC).EQ.'VOLUME' .or.&
+         &SRCTYP(ISRC).EQ.'AREA' .or.&
+         &SRCTYP(ISRC).EQ.'AREAPOLY' .or.&
+         &SRCTYP(ISRC).EQ.'AREACIRC' .or.&
+         &SRCTYP(ISRC).EQ.'LINE' .or.&
+         &SRCTYP(ISRC).EQ.'RLINE' .or.&
+         &SRCTYP(ISRC).EQ.'RLINEXT' .or.&
+         &SRCTYP(ISRC).EQ.'BUOYLINE' .or.&
+         &SRCTYP(ISRC).EQ.'OPENPIT' .or.&
          &SRCTYP(ISRC).EQ.'SWPOINT') THEN
 
 !*---          Modified to add handling of LINE, BUOYLINE source types
-            IF (SRCTYP(ISRC).EQ.'LINE' .OR.&
+            IF (SRCTYP(ISRC).EQ.'LINE' .or.&
             &SRCTYP(ISRC).EQ.'BUOYLINE') THEN
                CALL STODBL(FIELD(5), ILEN_FLD, AXS1(ISRC), IMIT)
 !                 Check The Numerical Field
@@ -2223,10 +2223,10 @@ SUBROUTINE SOLOCA
 ! ---
 !           RLINE source now has terrain, treat like other sources - Wood 7/6/2022
 ! ---          Read elevation for LINE or BUOYLINE source
-!               IF (SRCTYP(ISRC).EQ.'LINE' .OR.
+!               IF (SRCTYP(ISRC).EQ.'LINE' .or.
 !     &             SRCTYP(ISRC).EQ.'BUOYLINE') THEN
-            IF (SRCTYP(ISRC).EQ.'LINE' .OR.&
-            &SRCTYP(ISRC).EQ.'BUOYLINE' .OR.&
+            IF (SRCTYP(ISRC).EQ.'LINE' .or.&
+            &SRCTYP(ISRC).EQ.'BUOYLINE' .or.&
             &SRCTYP(ISRC).EQ.'RLINE') THEN
                IF (IFC .EQ. 8) THEN
 !                    No Source Elevation Field - Default to 0.0
@@ -2235,7 +2235,7 @@ SUBROUTINE SOLOCA
 !                       Write Warning Message for No Source Elevation with ELEV
                      CALL ERRHDL(PATH,MODNAM,'W','205','ZS = 0.0')
                   END IF
-               ELSE IF (IFC .EQ. 9 .AND. FLATSRCS .AND.&
+               ELSE IF (IFC .EQ. 9 .and. FLATSRCS .and.&
                &FIELD(9).EQ.'FLAT') THEN
 ! ---                Source has been identified as a terrain-following
 !                    source, to be simulated with 'FLAT' terrain option
@@ -2267,13 +2267,13 @@ SUBROUTINE SOLOCA
 ! ---                ERROR MESSAGE THAT RLINE SOURCE REQUIRES 'FLAT' MODELOPT
 !                    CALL ERRHDL(PATH,MODNAM,'E','188','')
 !                 END IF
-!                  IF (IFC .EQ. 8 .AND. ELEV) THEN
+!                  IF (IFC .EQ. 8 .and. ELEV) THEN
 !                    Write Warning Message for No Source Elevation with ELEV
 !                     CALL ERRHDL(PATH,MODNAM,'W','205','ZS = 0.0')
 !                     L_FLATSRC(ISRC) = .TRUE.
 !                     NUMFLAT = NUMFLAT + 1
 !                     AZS(ISRC) = 0.0D0
-!                  ELSE IF (IFC .EQ. 9 .AND. FIELD(9) .EQ. 'FLAT') THEN
+!                  ELSE IF (IFC .EQ. 9 .and. FIELD(9) .EQ. 'FLAT') THEN
 ! ---                Source has been identified as a terrain-following
 !                    source, to be simulated with 'FLAT' terrain option
 
@@ -2314,13 +2314,13 @@ SUBROUTINE SOLOCA
 !                     CALL ERRHDL(PATH,MODNAM,'E','188','')
 !                  END IF
 
-!                  IF (IFC .EQ. 10 .AND. ELEV) THEN
+!                  IF (IFC .EQ. 10 .and. ELEV) THEN
 !                    Write Warning Message for No Source Elevation with ELEV
 !                     CALL ERRHDL(PATH,MODNAM,'W','205','ZS = 0.0')
 !                     L_FLATSRC(ISRC) = .TRUE.
 !                     NUMFLAT = NUMFLAT + 1
 !                     AZS(ISRC) = 0.0D0
-!                  ELSE IF (IFC .EQ. 11 .AND. FIELD(11) .EQ. 'FLAT') THEN
+!                  ELSE IF (IFC .EQ. 11 .and. FIELD(11) .EQ. 'FLAT') THEN
 ! ---                Source has been identified as a terrain-following
 !                    source, to be simulated with 'FLAT' terrain option
 !                     L_FLATSRC(ISRC) = .TRUE.
@@ -2353,7 +2353,7 @@ SUBROUTINE SOLOCA
 !                       Write Warning Message for No Source Elevation with ELEV
                      CALL ERRHDL(PATH,MODNAM,'W','205','ZS = 0.0')
                   END IF
-               ELSE IF (IFC .EQ. 11 .AND. FLATSRCS .AND.&
+               ELSE IF (IFC .EQ. 11 .and. FLATSRCS .and.&
                &FIELD(11).EQ.'FLAT') THEN
 ! ---                Source has been identified as a terrain-following
 !                    source, to be simulated with 'FLAT' terrain option
@@ -2384,7 +2384,7 @@ SUBROUTINE SOLOCA
 
 ! ---          Read elevation for source types other than LINE, BUOYLINE, RLINE, or RLINEXT
             ELSE
-               IF (IFC .EQ. 7 .AND. FLATSRCS .AND.&
+               IF (IFC .EQ. 7 .and. FLATSRCS .and.&
                &FIELD(7) .EQ. 'FLAT') THEN
 ! ---                Source has been identified as a terrain-following
 !                    source, to be simulated with 'FLAT' terrain option
@@ -2523,8 +2523,8 @@ SUBROUTINE SOPARM
             CYCLE
          END IF
       END DO
-      IF (SRCTYP(ISDX) .EQ. 'POINT' .OR.&
-      &SRCTYP(ISDX) .EQ. 'POINTCAP' .OR.&
+      IF (SRCTYP(ISDX) .EQ. 'POINT' .or.&
+      &SRCTYP(ISDX) .EQ. 'POINTCAP' .or.&
       &SRCTYP(ISDX) .EQ. 'POINTHOR') THEN
          IF (IFC .EQ. 3) THEN
 !              Error Message: No Parameters
@@ -2773,7 +2773,7 @@ SUBROUTINE PPARM(ISDX,TEMP)
    ELSE IF (ATS(ISDX) .GT. 2000.0D0) THEN
 !        WRITE Warning Message:  Exit Temp. > 2000K
       CALL ERRHDL(PATH,MODNAM,'W','320',' TS ')
-   ELSE IF ((ATS(ISDX).GT.0.0D0) .AND. (ATS(ISDX).LT.200.0D0)) THEN
+   ELSE IF ((ATS(ISDX).GT.0.0D0) .and. (ATS(ISDX).LT.200.0D0)) THEN
 !*       Exit temp<200K (about -100F); Incorrect units may have been
 !*       used or ATS and AVS may have been switched;
 !*       WRITE Fatal Error Message
@@ -2862,7 +2862,7 @@ SUBROUTINE VPARM(ISDX,TEMP)
 !        WRITE Error Message:  Negative Release Height
       CALL ERRHDL(PATH,MODNAM,'E','209',' HS ')
 !MGS      ELSE IF (AHS(ISDX) .GT. 100.0D0) THEN
-   ELSE IF((AHS(ISDX) .GT. 100.0D0) .AND.&
+   ELSE IF((AHS(ISDX) .GT. 100.0D0) .and.&
    &(.NOT. ARCFT)) THEN
 !        WRITE Warning Message:  Large Release Height (> 100M)
       CALL ERRHDL(PATH,MODNAM,'W','320',' HS ')
@@ -2973,7 +2973,7 @@ SUBROUTINE APARM(ISDX,TEMP)
 !        WRITE Error Message:  Negative Release Height
       CALL ERRHDL(PATH,MODNAM,'E','209',' HS ')
 !MGS      ELSE IF (AHS(ISDX) .GT. 100.0D0) THEN
-   ELSE IF ((AHS(ISDX) .GT. 100.0D0) .AND.&
+   ELSE IF ((AHS(ISDX) .GT. 100.0D0) .and.&
    &(.NOT. ARCFT)) THEN
 !        WRITE Warning Message:  Large Release Height (> 100M)
       CALL ERRHDL(PATH,MODNAM,'W','320',' HS ')
@@ -3025,7 +3025,7 @@ SUBROUTINE APARM(ISDX,TEMP)
    END IF
 
 !     Check for aspect ratio (length/width) > 100
-   IF (AYINIT(ISDX)/AXINIT(ISDX) .GT. 100.00001D0 .OR.&
+   IF (AYINIT(ISDX)/AXINIT(ISDX) .GT. 100.00001D0 .or.&
    &AXINIT(ISDX)/AYINIT(ISDX) .GT. 100.00001D0) THEN
 !        WRITE Warning Message: Aspect ratio > 100 for area source
       CALL ERRHDL(PATH,MODNAM,'W','391',SRCID(ISDX))
@@ -3506,7 +3506,7 @@ SUBROUTINE OPARM(ISDX,TEMP)
    END IF
 
 !     Check for aspect ratio (length/width) > 10
-   IF (AYINIT(ISDX)/AXINIT(ISDX) .GT. 10.0D0 .OR.&
+   IF (AYINIT(ISDX)/AXINIT(ISDX) .GT. 10.0D0 .or.&
    &AXINIT(ISDX)/AYINIT(ISDX) .GT. 10.0D0) THEN
 !        WRITE Warning Message: Aspect ratio > 10 for pit source
       CALL ERRHDL(PATH,MODNAM,'W','392',SRCID(ISDX))
@@ -3619,8 +3619,8 @@ SUBROUTINE PLATFM
    IF (FOUND) THEN
 
 !        Check for POINT, POINTHOR, POINTCAP source type
-      IF (SRCTYP(ISDX) .NE. 'POINT' .AND.&
-      &SRCTYP(ISDX) .NE. 'POINTHOR' .AND.&
+      IF (SRCTYP(ISDX) .NE. 'POINT' .and.&
+      &SRCTYP(ISDX) .NE. 'POINTHOR' .and.&
       &SRCTYP(ISDX) .NE. 'POINTCAP') THEN
 !           WRITE Error Message: PLATFORM only applies to POINT,
 !           POINTHOR, and POINTCAP sources
@@ -3652,7 +3652,7 @@ SUBROUTINE PLATFM
       PLATWB(ISDX) = TEMP(3)     ! Platform building width
 
 !        Set platform flag to true only if building width and height are greater the 0.0 (0.001)
-      IF (PLATHB(ISDX) .GT. 0.001D0 .AND.&
+      IF (PLATHB(ISDX) .GT. 0.001D0 .and.&
       &PLATWB(ISDX) .GT. 0.001D0) THEN
          OSPLAT(ISDX) = .TRUE.
       END IF
@@ -3750,7 +3750,7 @@ SUBROUTINE LPARM(ISDX,TEMP)
    AANGLE(ISDX) = DATAN2(XLEN,YLEN) * RTODEG
 
 !     Check for aspect ratio (length/width) > 100
-   IF (AYINIT(ISDX)/AXINIT(ISDX) .GT. 100.00001D0 .OR.&
+   IF (AYINIT(ISDX)/AXINIT(ISDX) .GT. 100.00001D0 .or.&
    &AXINIT(ISDX)/AYINIT(ISDX) .GT. 100.00001D0) THEN
 !        WRITE Warning Message: Aspect ratio > 100 for line source
       CALL ERRHDL(PATH,MODNAM,'W','390',SRCID(ISDX))
@@ -4105,7 +4105,7 @@ SUBROUTINE DSBLDG
 !        First Check Range for Upper Value < Lower Value
       CALL SETIDG(LID,LID1,IL,LID2)
       CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR. (HID2.LT.LID2)) THEN
+      IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or. (HID2.LT.LID2)) THEN
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
          CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
          GO TO 999
@@ -4113,7 +4113,7 @@ SUBROUTINE DSBLDG
       DO I = 1, NUMSRC
 !           See Whether It's In The Group
          CALL ASNGRP(SRCID(I),LID,HID,INGRP)
-         IF (INGRP .AND. SRCTYP(I)(1:5).EQ.'POINT') THEN
+         IF (INGRP .and. SRCTYP(I)(1:5).EQ.'POINT') THEN
             ISDX = I
 !              Fill DS Array
             CALL DSFILL(ISDX)
@@ -4412,7 +4412,7 @@ SUBROUTINE EMVARY
 !        First Check Range for Upper Value < Lower Value
       CALL SETIDG(LID,LID1,IL,LID2)
       CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR. (HID2.LT.LID2)) THEN
+      IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or. (HID2.LT.LID2)) THEN
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
          CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
          GO TO 999
@@ -4585,7 +4585,7 @@ SUBROUTINE EMUNIT
    EMIFAC(1) = DNUM
    EMILBL(1) = FIELD(4)
    OUTLBL(1) = FIELD(5)
-   IF (.NOT.CONC .AND. ANNUAL) THEN
+   IF (.NOT.CONC .and. ANNUAL) THEN
       PERLBL(1) = RUNST1(LOCB(5):LOCE(5))//'/YR'
    ELSE
       PERLBL(1) = FIELD(5)
@@ -4828,7 +4828,7 @@ SUBROUTINE INPPDM
    IF (LID .EQ. HID) THEN
 !        Search For The Index
       CALL SINDEX(SRCID,NSRC,SOID,ISDX,FOUND)
-      IF (FOUND .AND. .NOT.L_METHOD2(ISDX)) THEN
+      IF (FOUND .and. .NOT.L_METHOD2(ISDX)) THEN
          ISET = IWRK2(ISDX,5)
          DO K = 4, IFC
 !              Change It To Numbers
@@ -4842,7 +4842,7 @@ SUBROUTINE INPPDM
 !                 for particle diameters; Issue Error message
                CALL ERRHDL(PATH,MODNAM,'E','288',KEYWRD)
                CYCLE
-            ELSE IF (DNUM .LE. 0.001D0 .OR. DNUM .GT. 1000.0D0) THEN
+            ELSE IF (DNUM .LE. 0.001D0 .or. DNUM .GT. 1000.0D0) THEN
 !                 WRITE Error Message: Particle Diameter Out-of-Range
                CALL ERRHDL(PATH,MODNAM,'E','335',SRCID(ISDX))
             END IF
@@ -4859,7 +4859,7 @@ SUBROUTINE INPPDM
          END DO
          IWRK2(ISDX,5) = ISET
 
-      ELSE IF (FOUND .AND. L_METHOD2(ISDX)) THEN
+      ELSE IF (FOUND .and. L_METHOD2(ISDX)) THEN
 ! ---       Write Error Message     ! Source ID identified as Method 2
          CALL ERRHDL(PATH,MODNAM,'E','386',SRCID(ISDX))
 
@@ -4871,7 +4871,7 @@ SUBROUTINE INPPDM
 !        First Check Range for Upper Value < Lower Value
       CALL SETIDG(LID,LID1,IL,LID2)
       CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR. (HID2.LT.LID2)) THEN
+      IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or. (HID2.LT.LID2)) THEN
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
          CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
          GO TO 999
@@ -4879,7 +4879,7 @@ SUBROUTINE INPPDM
       SOURCE_LOOP: DO I = 1, NUMSRC
 !           See Whether It's In The Group
          CALL ASNGRP(SRCID(I),LID,HID,INGRP)
-         IF (INGRP .AND. .NOT.L_METHOD2(I)) THEN
+         IF (INGRP .and. .NOT.L_METHOD2(I)) THEN
             ISET = IWRK2(I,5)
             DO K = 4, IFC
 !                 Get Numbers
@@ -4893,7 +4893,7 @@ SUBROUTINE INPPDM
 !                    for particle diameters; Issue Error message
                   CALL ERRHDL(PATH,MODNAM,'E','288',KEYWRD)
                   CYCLE SOURCE_LOOP
-               ELSE IF (DNUM .LE. 0.001D0 .OR. DNUM.GT.1000.0D0) THEN
+               ELSE IF (DNUM .LE. 0.001D0 .or. DNUM.GT.1000.0D0) THEN
 !                    WRITE Error Message: Particle Diameter Out-of-Range
                   CALL ERRHDL(PATH,MODNAM,'E','335',SRCID(I))
                END IF
@@ -4909,7 +4909,7 @@ SUBROUTINE INPPDM
             END DO
             IWRK2(I,5) = ISET
 
-         ELSE IF (INGRP .AND. L_METHOD2(I)) THEN
+         ELSE IF (INGRP .and. L_METHOD2(I)) THEN
 ! ---          Write Error Message     ! Source ID identified as Method 2
             CALL ERRHDL(PATH,MODNAM,'E','386',SRCID(I))
 
@@ -4970,7 +4970,7 @@ SUBROUTINE INPPHI
                CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
                CYCLE
             END IF
-            IF (DNUM .LT. 0.0D0 .OR. DNUM .GT. 1.0D0) THEN
+            IF (DNUM .LT. 0.0D0 .or. DNUM .GT. 1.0D0) THEN
 !                 WRITE Error Message: Mass Fraction Out-of-Range
                CALL ERRHDL(PATH,MODNAM,'E','332',SRCID(ISDX))
             END IF
@@ -4996,7 +4996,7 @@ SUBROUTINE INPPHI
 !        First Check Range for Upper Value < Lower Value
       CALL SETIDG(LID,LID1,IL,LID2)
       CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR. (HID2.LT.LID2)) THEN
+      IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or. (HID2.LT.LID2)) THEN
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
          CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
          GO TO 999
@@ -5014,7 +5014,7 @@ SUBROUTINE INPPHI
                   CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
                   CYCLE SOURCE_LOOP
                END IF
-               IF (DNUM .LT. 0.0D0 .OR. DNUM .GT. 1.0D0) THEN
+               IF (DNUM .LT. 0.0D0 .or. DNUM .GT. 1.0D0) THEN
 !                    WRITE Error Message: Mass Fraction Out-of-Range
                   CALL ERRHDL(PATH,MODNAM,'E','332',SRCID(I))
                END IF
@@ -5119,7 +5119,7 @@ SUBROUTINE INPPDN
 !        First Check Range for Upper Value < Lower Value
       CALL SETIDG(LID,LID1,IL,LID2)
       CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR. (HID2.LT.LID2)) THEN
+      IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or. (HID2.LT.LID2)) THEN
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
          CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
          GO TO 999
@@ -5232,26 +5232,26 @@ SUBROUTINE GASDEP
          CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
 !           Check The Numerical Field
 !           MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-         IF ((POLLUT .EQ. 'HG0') .AND. (DNUM .EQ. 0.0D0)) THEN
+         IF ((POLLUT .EQ. 'HG0') .and. (DNUM .EQ. 0.0D0)) THEN
             DNUM = 5.5D-02
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'HGII') .AND.&
+         ELSE IF ((POLLUT .EQ. 'HGII') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 4.5D-02
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'TCDD') .AND.&
+         ELSE IF ((POLLUT .EQ. 'TCDD') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 5.196D-02
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'BAP') .AND.&
+         ELSE IF ((POLLUT .EQ. 'BAP') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 5.13D-02
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'SO2') .AND.&
+         ELSE IF ((POLLUT .EQ. 'SO2') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 1.112D-01
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'NO2') .AND.&
+         ELSE IF ((POLLUT .EQ. 'NO2') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 1.361D-01
             DLOOKUP=.TRUE.
@@ -5267,26 +5267,26 @@ SUBROUTINE GASDEP
          CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
 !           Check The Numerical Field
 !           MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-         IF ((POLLUT .EQ. 'HG0') .AND. (DNUM .EQ. 0.0D0)) THEN
+         IF ((POLLUT .EQ. 'HG0') .and. (DNUM .EQ. 0.0D0)) THEN
             DNUM = 6.4D-06
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'HGII') .AND.&
+         ELSE IF ((POLLUT .EQ. 'HGII') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 5.2D-06
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'TCDD') .AND.&
+         ELSE IF ((POLLUT .EQ. 'TCDD') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 4.392D-06
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'BAP') .AND.&
+         ELSE IF ((POLLUT .EQ. 'BAP') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 4.44D-06
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'SO2') .AND.&
+         ELSE IF ((POLLUT .EQ. 'SO2') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 1.83D-05
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'NO2') .AND.&
+         ELSE IF ((POLLUT .EQ. 'NO2') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 1.4D-05
             DLOOKUP=.TRUE.
@@ -5302,26 +5302,26 @@ SUBROUTINE GASDEP
          CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
 !           Check The Numerical Field
 !           MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-         IF ((POLLUT .EQ. 'HG0') .AND. (DNUM .EQ. 0.0D0)) THEN
+         IF ((POLLUT .EQ. 'HG0') .and. (DNUM .EQ. 0.0D0)) THEN
             DNUM = 1.0D05
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'HGII') .AND.&
+         ELSE IF ((POLLUT .EQ. 'HGII') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 1.0D05
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'TCDD') .AND.&
+         ELSE IF ((POLLUT .EQ. 'TCDD') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 9.67D0
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'BAP') .AND.&
+         ELSE IF ((POLLUT .EQ. 'BAP') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 4.41D-01
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'SO2') .AND.&
+         ELSE IF ((POLLUT .EQ. 'SO2') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 7.32D02
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'NO2') .AND.&
+         ELSE IF ((POLLUT .EQ. 'NO2') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 1.2D04
             DLOOKUP=.TRUE.
@@ -5337,26 +5337,26 @@ SUBROUTINE GASDEP
          CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
 !           Check The Numerical Field
 !           MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-         IF ((POLLUT .EQ. 'HG0') .AND. (DNUM .EQ. 0.0D0)) THEN
+         IF ((POLLUT .EQ. 'HG0') .and. (DNUM .EQ. 0.0D0)) THEN
             DNUM = 7.19D02
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'HGII') .AND.&
+         ELSE IF ((POLLUT .EQ. 'HGII') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 7.2D-05
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'TCDD') .AND.&
+         ELSE IF ((POLLUT .EQ. 'TCDD') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 1.46D0
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'BAP') .AND.&
+         ELSE IF ((POLLUT .EQ. 'BAP') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 4.6D-02
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'SO2') .AND.&
+         ELSE IF ((POLLUT .EQ. 'SO2') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 7.2D01
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'NO2') .AND.&
+         ELSE IF ((POLLUT .EQ. 'NO2') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 8.444D03
             DLOOKUP=.TRUE.
@@ -5381,7 +5381,7 @@ SUBROUTINE GASDEP
 !        First Check Range for Upper Value < Lower Value
       CALL SETIDG(LID,LID1,IL,LID2)
       CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR. (HID2.LT.LID2)) THEN
+      IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or. (HID2.LT.LID2)) THEN
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
          CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
          GO TO 999
@@ -5399,21 +5399,21 @@ SUBROUTINE GASDEP
             CALL STODBL(FIELD(4),ILEN_FLD,DNUM,IMIT)
 !              Check The Numerical Field
 !              MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-            IF ((POLLUT .EQ. 'HG0') .AND. (DNUM .EQ. 0.0D0)) THEN
+            IF ((POLLUT .EQ. 'HG0') .and. (DNUM .EQ. 0.0D0)) THEN
                DNUM = 5.5D-02
-            ELSE IF ((POLLUT .EQ. 'HGII') .AND.&
+            ELSE IF ((POLLUT .EQ. 'HGII') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 4.5D-02
-            ELSE IF ((POLLUT .EQ. 'TCDD') .AND.&
+            ELSE IF ((POLLUT .EQ. 'TCDD') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 5.196D-02
-            ELSE IF ((POLLUT .EQ. 'BAP') .AND.&
+            ELSE IF ((POLLUT .EQ. 'BAP') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 5.13D-02
-            ELSE IF ((POLLUT .EQ. 'SO2') .AND.&
+            ELSE IF ((POLLUT .EQ. 'SO2') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 1.112D-01
-            ELSE IF ((POLLUT .EQ. 'NO2') .AND.&
+            ELSE IF ((POLLUT .EQ. 'NO2') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 1.361D-01
             ELSE IF (IMIT .NE. 1) THEN
@@ -5428,21 +5428,21 @@ SUBROUTINE GASDEP
             CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
 !              Check The Numerical Field
 !              MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-            IF ((POLLUT .EQ. 'HG0') .AND. (DNUM .EQ. 0.0D0)) THEN
+            IF ((POLLUT .EQ. 'HG0') .and. (DNUM .EQ. 0.0D0)) THEN
                DNUM = 6.4D-06
-            ELSE IF ((POLLUT .EQ. 'HGII') .AND.&
+            ELSE IF ((POLLUT .EQ. 'HGII') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 5.2D-06
-            ELSE IF ((POLLUT .EQ. 'TCDD') .AND.&
+            ELSE IF ((POLLUT .EQ. 'TCDD') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 4.392D-06
-            ELSE IF ((POLLUT .EQ. 'BAP') .AND.&
+            ELSE IF ((POLLUT .EQ. 'BAP') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 4.44D-06
-            ELSE IF ((POLLUT .EQ. 'SO2') .AND.&
+            ELSE IF ((POLLUT .EQ. 'SO2') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 1.83D-05
-            ELSE IF ((POLLUT .EQ. 'NO2') .AND.&
+            ELSE IF ((POLLUT .EQ. 'NO2') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 1.4D-05
             ELSE IF (IMIT .NE. 1) THEN
@@ -5457,21 +5457,21 @@ SUBROUTINE GASDEP
             CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
 !              Check The Numerical Field
 !              MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-            IF ((POLLUT .EQ. 'HG0') .AND. (DNUM .EQ. 0.0D0)) THEN
+            IF ((POLLUT .EQ. 'HG0') .and. (DNUM .EQ. 0.0D0)) THEN
                DNUM = 1.0D05
-            ELSE IF ((POLLUT .EQ. 'HGII') .AND.&
+            ELSE IF ((POLLUT .EQ. 'HGII') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 1.0D05
-            ELSE IF ((POLLUT .EQ. 'TCDD') .AND.&
+            ELSE IF ((POLLUT .EQ. 'TCDD') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 9.67D0
-            ELSE IF ((POLLUT .EQ. 'BAP') .AND.&
+            ELSE IF ((POLLUT .EQ. 'BAP') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 4.41D-01
-            ELSE IF ((POLLUT .EQ. 'SO2') .AND.&
+            ELSE IF ((POLLUT .EQ. 'SO2') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 7.32D02
-            ELSE IF ((POLLUT .EQ. 'NO2') .AND.&
+            ELSE IF ((POLLUT .EQ. 'NO2') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 1.2D04
             ELSE IF (IMIT .NE. 1) THEN
@@ -5486,21 +5486,21 @@ SUBROUTINE GASDEP
             CALL STODBL(FIELD(7),ILEN_FLD,DNUM,IMIT)
 !              Check The Numerical Field
 !              MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-            IF ((POLLUT .EQ. 'HG0') .AND. (DNUM .EQ. 0.0D0)) THEN
+            IF ((POLLUT .EQ. 'HG0') .and. (DNUM .EQ. 0.0D0)) THEN
                DNUM = 7.19D02
-            ELSE IF ((POLLUT .EQ. 'HGII') .AND.&
+            ELSE IF ((POLLUT .EQ. 'HGII') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 7.2D-05
-            ELSE IF ((POLLUT .EQ. 'TCDD') .AND.&
+            ELSE IF ((POLLUT .EQ. 'TCDD') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 1.46D0
-            ELSE IF ((POLLUT .EQ. 'BAP') .AND.&
+            ELSE IF ((POLLUT .EQ. 'BAP') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 4.6D-02
-            ELSE IF ((POLLUT .EQ. 'SO2') .AND.&
+            ELSE IF ((POLLUT .EQ. 'SO2') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 7.2D01
-            ELSE IF ((POLLUT .EQ. 'NO2') .AND.&
+            ELSE IF ((POLLUT .EQ. 'NO2') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 8.444D03
             ELSE IF (IMIT .NE. 1) THEN
@@ -5577,7 +5577,7 @@ SUBROUTINE METH_2
    IF (LID .EQ. HID) THEN
 !        Search For The Index
       CALL SINDEX(SRCID,NSRC,SOID,ISDX,FOUND)
-      IF (FOUND .AND. .NOT.L_METHOD2(ISDX) .AND.&
+      IF (FOUND .and. .NOT.L_METHOD2(ISDX) .and.&
       &IWRK2(ISDX,5).EQ.0) THEN
          L_METHOD2(ISDX) = .TRUE.
 
@@ -5592,26 +5592,26 @@ SUBROUTINE METH_2
             GO TO 999
          END IF
 !           MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-         IF ((POLLUT .EQ. 'AR') .AND. (DNUM .EQ. 0.0D0)) THEN
+         IF ((POLLUT .EQ. 'AR') .and. (DNUM .EQ. 0.0D0)) THEN
             DNUM = 7.5D-01
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'CD') .AND.&
+         ELSE IF ((POLLUT .EQ. 'CD') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 7.0D-01
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'PB') .AND.&
+         ELSE IF ((POLLUT .EQ. 'PB') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 7.5D-01
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'HG') .AND.&
+         ELSE IF ((POLLUT .EQ. 'HG') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 8.0D-01
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'POC') .AND.&
+         ELSE IF ((POLLUT .EQ. 'POC') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 9.0D-01
             DLOOKUP=.TRUE.
-         ELSE IF (DNUM .LT. 0.0D0 .OR. DNUM .GT. 1.0D0) THEN
+         ELSE IF (DNUM .LT. 0.0D0 .or. DNUM .GT. 1.0D0) THEN
 !              WRITE Error Message: Mass Fraction Out-of-Range
             CALL ERRHDL(PATH,MODNAM,'E','332',SRCID(ISDX))
          END IF
@@ -5626,23 +5626,23 @@ SUBROUTINE METH_2
          IF (IMIT .NE. 1) THEN
             CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
             GO TO 999
-         ELSE IF ((POLLUT .EQ. 'AR') .AND.&
+         ELSE IF ((POLLUT .EQ. 'AR') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 5.0D-01
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'CD') .AND.&
+         ELSE IF ((POLLUT .EQ. 'CD') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 6.0D-01
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'PB') .AND.&
+         ELSE IF ((POLLUT .EQ. 'PB') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 5.0D-01
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'HG') .AND.&
+         ELSE IF ((POLLUT .EQ. 'HG') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 4.0D-01
             DLOOKUP=.TRUE.
-         ELSE IF ((POLLUT .EQ. 'POC') .AND.&
+         ELSE IF ((POLLUT .EQ. 'POC') .and.&
          &(DNUM .EQ. 0.0D0)) THEN
             DNUM = 1.0D-01
             DLOOKUP=.TRUE.
@@ -5662,11 +5662,11 @@ SUBROUTINE METH_2
             CALL ERRHDL(PATH,MODNAM,'W','473',SRCID(ISDX))
          END IF
 
-      ELSE IF (FOUND .AND. L_METHOD2(ISDX)) THEN
+      ELSE IF (FOUND .and. L_METHOD2(ISDX)) THEN
 ! ---       Write Error Message     ! Source ID identified twice
          CALL ERRHDL(PATH,MODNAM,'E','387',SRCID(ISDX))
 
-      ELSE IF (FOUND .AND. IWRK2(ISDX,5) .GT. 0) THEN
+      ELSE IF (FOUND .and. IWRK2(ISDX,5) .GT. 0) THEN
 ! ---       Write Error Message     ! Source ID identified as Method 1
          CALL ERRHDL(PATH,MODNAM,'E','386',SRCID(ISDX))
 
@@ -5678,7 +5678,7 @@ SUBROUTINE METH_2
 !        First Check Range for Upper Value < Lower Value
       CALL SETIDG(LID,LID1,IL,LID2)
       CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR. (HID2.LT.LID2)) THEN
+      IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or. (HID2.LT.LID2)) THEN
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
          CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
          GO TO 999
@@ -5688,7 +5688,7 @@ SUBROUTINE METH_2
          CALL ASNGRP(SRCID(I),LID,HID,INGRP)
          IF (INGRP) THEN
             ISDX = I
-            IF (.NOT.L_METHOD2(ISDX) .AND. IWRK2(ISDX,5) .EQ. 0) THEN
+            IF (.NOT.L_METHOD2(ISDX) .and. IWRK2(ISDX,5) .EQ. 0) THEN
                L_METHOD2(ISDX) = .TRUE.
             ELSE IF (L_METHOD2(ISDX)) THEN
 ! ---             Write Error Message     ! Source ID identified twice
@@ -5709,22 +5709,22 @@ SUBROUTINE METH_2
                GO TO 999
             END IF
 !              MW D068 10/30/2020 check variable name and use preassigned value if field is 0 and polluntant is in lookup list
-            IF (DNUM .LT. 0.0D0 .OR. DNUM .GT. 1.0D0) THEN
+            IF (DNUM .LT. 0.0D0 .or. DNUM .GT. 1.0D0) THEN
 !                 WRITE Error Message: Mass Fraction Out-of-Range
                CALL ERRHDL(PATH,MODNAM,'E','332',SRCID(ISDX))
-            ELSE IF ((POLLUT .EQ. 'AR') .AND.&
+            ELSE IF ((POLLUT .EQ. 'AR') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 7.5D-01
-            ELSE IF ((POLLUT .EQ. 'CD') .AND.&
+            ELSE IF ((POLLUT .EQ. 'CD') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 7.0D-01
-            ELSE IF ((POLLUT .EQ. 'PB') .AND.&
+            ELSE IF ((POLLUT .EQ. 'PB') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 7.5D-01
-            ELSE IF ((POLLUT .EQ. 'HG') .AND.&
+            ELSE IF ((POLLUT .EQ. 'HG') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 8.0D-01
-            ELSE IF ((POLLUT .EQ. 'POC') .AND.&
+            ELSE IF ((POLLUT .EQ. 'POC') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 9.0D-01
             END IF
@@ -5741,19 +5741,19 @@ SUBROUTINE METH_2
             IF (IMIT .NE. 1) THEN
                CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
                GO TO 999
-            ELSE IF ((POLLUT .EQ. 'AR') .AND.&
+            ELSE IF ((POLLUT .EQ. 'AR') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 5.0D-01
-            ELSE IF ((POLLUT .EQ. 'CD') .AND.&
+            ELSE IF ((POLLUT .EQ. 'CD') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 6.0D-01
-            ELSE IF ((POLLUT .EQ. 'PB') .AND.&
+            ELSE IF ((POLLUT .EQ. 'PB') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 5.0D-01
-            ELSE IF ((POLLUT .EQ. 'HG') .AND.&
+            ELSE IF ((POLLUT .EQ. 'HG') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 4.0D-01
-            ELSE IF ((POLLUT .EQ. 'POC') .AND.&
+            ELSE IF ((POLLUT .EQ. 'POC') .and.&
             &(DNUM .EQ. 0.0D0)) THEN
                DNUM = 1.0D-01
             END IF
@@ -5812,7 +5812,7 @@ SUBROUTINE SOGRP
 !        Error Message: No Parameters
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LE. 3 .AND. FIELD(3) .NE. 'ALL') THEN
+   ELSE IF (IFC .LE. 3 .and. FIELD(3) .NE. 'ALL') THEN
 !        Error Message: Not Enough Parameters
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
@@ -5859,7 +5859,7 @@ SUBROUTINE SOGRP
    END IF
 
 !     Set Up The Source Group Array and Check for inclusion of BACKGROUND
-   IF (GRPID(IGRP) .EQ. 'ALL' .AND. .NOT.CONT) THEN
+   IF (GRPID(IGRP) .EQ. 'ALL' .and. .NOT.CONT) THEN
 ! ---    SRCGROUP ALL has been specified; assign all sources to this group
       DO I = 1, NUMSRC
          IGROUP(I,IGRP) = 1
@@ -5867,13 +5867,13 @@ SUBROUTINE SOGRP
 ! ---    Include BACKGRND concentrations as specified by the user;
 !        Note the BACKGRND is NOT automatically included in source group ALL
       IF (L_BACKGRND) THEN
-         IF (FIELD(4) .EQ. 'NOBACKGROUND' .OR.&
+         IF (FIELD(4) .EQ. 'NOBACKGROUND' .or.&
          &FIELD(4) .EQ. 'NOBACKGRND') THEN
 ! ---          User specified to NOT include BACKGRND concentrations in group ALL
             GRP_BACK(IGRP) = .FALSE.
 !              Write message indicating that BACKGRND is NOT included in group ALL
             CALL ERRHDL(PATH,MODNAM,'W','298','NOBACKGROUND')
-         ELSE IF (FIELD(4) .EQ. 'BACKGROUND' .OR.&
+         ELSE IF (FIELD(4) .EQ. 'BACKGROUND' .or.&
          &FIELD(4) .EQ. 'BACKGRND') THEN
 ! ---          Include BACKGRND concentrations in group ALL
             GRP_BACK(IGRP) = .TRUE.
@@ -5891,7 +5891,7 @@ SUBROUTINE SOGRP
 !           Check for BACKGRND or BACKGROUND with SrcGroup ALL, without
 !           background data provided
          IF (IFC .GT. 3) THEN
-            IF (FIELD(4) .EQ. 'BACKGROUND' .OR.&
+            IF (FIELD(4) .EQ. 'BACKGROUND' .or.&
             &FIELD(4) .EQ. 'BACKGRND') THEN
 ! ---             Write error message: BACKGRND specified for group ALL w/o BACKGRND keyword
                CALL ERRHDL(PATH,MODNAM,'E','323',GRPID(IGRP))
@@ -5906,13 +5906,13 @@ SUBROUTINE SOGRP
       DO I = 4, IFC
 ! ---       First check for inclusion of BACKGROUND in SrcGroups
          IF (L_BACKGRND) THEN
-            IF (FIELD(I) .EQ. 'BACKGROUND' .OR.&
+            IF (FIELD(I) .EQ. 'BACKGROUND' .or.&
             &FIELD(I) .EQ. 'BACKGRND') THEN
                GRP_BACK(IGRP) = .TRUE.
 ! ---             Cycle to next input field
                CYCLE
             END IF
-         ELSE IF (FIELD(I) .EQ. 'BACKGROUND' .OR.&
+         ELSE IF (FIELD(I) .EQ. 'BACKGROUND' .or.&
          &FIELD(I) .EQ. 'BACKGRND') THEN
 ! ---          Write error message: BACKGRND specified w/o BACKGRND keyword
             CALL ERRHDL(PATH,MODNAM,'E','323',GRPID(IGRP))
@@ -5951,7 +5951,7 @@ SUBROUTINE SOGRP
 !              First Check Range for Upper Value < Lower Value
             CALL SETIDG(LOWID,LID1,IL,LID2)
             CALL SETIDG(HIGID,HID1,IH,HID2)
-            IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR.&
+            IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or.&
             &(HID2.LT.LID2)) THEN
 ! ---             WRITE Error Message:  Invalid Range,  Upper < Lower
                CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
@@ -6011,9 +6011,9 @@ SUBROUTINE ASNGRP(INID,LOWID,HIGID,INGRP)
    CALL SETIDG(HIGID,HID1,IH,HID2)
 
 !     Do Comparisons of Character and Numeric Fields, All Must Satisfy Ranges
-   IF ((IID1.GE.LID1 .AND. IID1.LE.HID1) .AND.&
-   &(IN.GE.IL .AND. IN.LE.IH) .AND.&
-   &(IID2.GE.LID2 .AND. IID2.LE.HID2)) THEN
+   IF ((IID1.GE.LID1 .and. IID1.LE.HID1) .and.&
+   &(IN.GE.IL .and. IN.LE.IH) .and.&
+   &(IID2.GE.LID2 .and. IID2.LE.HID2)) THEN
       INGRP = .TRUE.
    END IF
 
@@ -6072,7 +6072,7 @@ SUBROUTINE SETIDG(INID,IDCHR1,IDNUM,IDCHR2)
    HIT    = .FALSE.
 
 !     Find The Length of the Input Field, II (<= 12)
-   DO WHILE (.NOT.HIT .AND. I.GE.1)
+   DO WHILE (.NOT.HIT .and. I.GE.1)
       CHKI = INID(I:I)
       IF (CHKI .NE. ' ') THEN
          II = I
@@ -6086,7 +6086,7 @@ SUBROUTINE SETIDG(INID,IDCHR1,IDNUM,IDCHR2)
    ISTR = I
    CHKI = INID(I:I)
 !     Get first character part
-   DO WHILE (CHKI .LT. '0' .OR. CHKI .GT. '9')
+   DO WHILE (CHKI .LT. '0' .or. CHKI .GT. '9')
       IDCHR1 = INID(ISTR:I)
       I = I + 1
       IF (I .GT. II) THEN
@@ -6098,7 +6098,7 @@ SUBROUTINE SETIDG(INID,IDCHR1,IDNUM,IDCHR2)
 
 !     Get integer part
    ISTR = I
-   DO WHILE (CHKI .GE. '0' .AND. CHKI .LE. '9')
+   DO WHILE (CHKI .GE. '0' .and. CHKI .LE. '9')
       NUMID = INID(ISTR:I)
       I = I + 1
       IF (I .GT. II) THEN
@@ -6370,7 +6370,7 @@ SUBROUTINE HREMIS
 !        Multiple_BuoyLines_D41_Wood: Begin
 !           Set the flag indicating that there is one
 !            (or more) buoyant line sources in the hourly emissions file
-         IF (SRCTYP(K) .EQ. 'BUOYLINE' .AND. .NOT. L_BLHOURLY) THEN
+         IF (SRCTYP(K) .EQ. 'BUOYLINE' .and. .NOT. L_BLHOURLY) THEN
             L_BLHOURLY = .TRUE.
          END IF
 !        Multiple_BuoyLines_D41_Wood: End
@@ -6384,7 +6384,7 @@ SUBROUTINE HREMIS
 !           First Check Range for Upper Value < Lower Value
          CALL SETIDG(LOWID,LID1,IL,LID2)
          CALL SETIDG(HIGID,HID1,IH,HID2)
-         IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR. (HID2.LT.LID2)) THEN
+         IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or. (HID2.LT.LID2)) THEN
 !              WRITE Error Message:  Invalid Range,  Upper < Lower
             CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
             CYCLE
@@ -6394,7 +6394,7 @@ SUBROUTINE HREMIS
             IF (INGRP) THEN
                QFLAG(K) = 'HOURLY'
 !              Multiple_BuoyLines_D41_Wood: Begin
-               IF ((SRCTYP(K) .EQ. 'BUOYLINE' .AND.&
+               IF ((SRCTYP(K) .EQ. 'BUOYLINE' .and.&
                &.NOT. L_BLHOURLY)) THEN
                   L_BLHOURLY = .TRUE.
                END IF
@@ -6459,7 +6459,7 @@ SUBROUTINE URBANS
 
 !     Check for 'URBANSRC ALL' option identified in PRESET
    IF (L_URBAN_ALL) THEN
-      IF (IFC .EQ. 3 .AND. FIELD(3) .EQ. 'ALL') THEN
+      IF (IFC .EQ. 3 .and. FIELD(3) .EQ. 'ALL') THEN
          URBSRC(:) = 'Y'
          IURBGRP(:,:) = 1
          GO TO 999
@@ -6521,7 +6521,7 @@ SUBROUTINE URBANS
 !           First Check Range for Upper Value < Lower Value
          CALL SETIDG(LOWID,LID1,IL,LID2)
          CALL SETIDG(HIGID,HID1,IH,HID2)
-         IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR. (HID2.LT.LID2)) THEN
+         IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or. (HID2.LT.LID2)) THEN
 !              WRITE Error Message:  Invalid Range,  Upper < Lower
             CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
             CYCLE
@@ -6540,9 +6540,9 @@ SUBROUTINE URBANS
 !     CRO 3/28/2022 D132 Remove alpha requirement for RLINE (wasn't working in 21112 anyway)
 !     Added check to require ALPHA with RLINEXT or RLINE urban sources.
 !      DO K = 1, NUMSRC
-!        IF((SRCTYP(K) .EQ. 'RLINE') .OR.
+!        IF((SRCTYP(K) .EQ. 'RLINE') .or.
 !     &           (SRCTYP(K) .EQ. 'RLINEXT')) THEN
-!          IF((URBSRC(K) .EQ. 'Y') .AND. .NOT.L_ALPHA) THEN
+!          IF((URBSRC(K) .EQ. 'Y') .and. .NOT.L_ALPHA) THEN
 !              WRITE Error Message: ALPHA required for RLINE/RLINEXT URBANSRC
 !               CALL ERRHDL(PATH,MODNAM,'E','281', SRCID(K))
 !          END IF
@@ -6593,7 +6593,7 @@ SUBROUTINE HBPSOURCE
 
 !     Check for 'HBPSRCID ALL' option identified in PRESET
    IF (L_HBP_ALL) THEN
-      IF (IFC .EQ. 3 .AND. FIELD(3) .EQ. 'ALL') THEN
+      IF (IFC .EQ. 3 .and. FIELD(3) .EQ. 'ALL') THEN
          DO K = 1, NUMSRC
             IF (SRCTYP(K)(1:5) .EQ. 'POINT') THEN
                HBPSRC(K) = 'Y'
@@ -6644,7 +6644,7 @@ SUBROUTINE HBPSOURCE
 !           First Check Range for Upper Value < Lower Value
          CALL SETIDG(LOWID,LID1,IL,LID2)
          CALL SETIDG(HIGID,HID1,IH,HID2)
-         IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR. (HID2.LT.LID2)) THEN
+         IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or. (HID2.LT.LID2)) THEN
 !              WRITE Error Message:  Invalid Range,  Upper < Lower
             CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
             CYCLE
@@ -6726,7 +6726,7 @@ SUBROUTINE NO2RAT
             CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
             GO TO 999
          END IF
-         IF (DNUM .LT. 0.0D0 .OR. DNUM .GT. 1.0D0) THEN
+         IF (DNUM .LT. 0.0D0 .or. DNUM .GT. 1.0D0) THEN
 !              WRITE Error Message: NO2_Ratio Out-of-Range
             CALL ERRHDL(PATH,MODNAM,'E','336',SRCID(ISDX))
          END IF
@@ -6740,7 +6740,7 @@ SUBROUTINE NO2RAT
 !        First Check Range for Upper Value < Lower Value
       CALL SETIDG(LID,LID1,IL,LID2)
       CALL SETIDG(HID,HID1,IH,HID2)
-      IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR. (HID2.LT.LID2)) THEN
+      IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or. (HID2.LT.LID2)) THEN
 !           WRITE Error Message:  Invalid Range,  Upper < Lower
          CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
          GO TO 999
@@ -6756,7 +6756,7 @@ SUBROUTINE NO2RAT
                CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
                GO TO 999
             END IF
-            IF (DNUM .LT. 0.0D0 .OR. DNUM .GT. 1.0D0) THEN
+            IF (DNUM .LT. 0.0D0 .or. DNUM .GT. 1.0D0) THEN
 !                 WRITE Error Message: NO2_Ratio Out-of-Range
                CALL ERRHDL(PATH,MODNAM,'E','336',SRCID(I))
             END IF
@@ -6809,7 +6809,7 @@ SUBROUTINE OLMGRP
 !        Error Message: No Parameters
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LE. 3 .AND. FIELD(3) .NE. 'ALL') THEN
+   ELSE IF (IFC .LE. 3 .and. FIELD(3) .NE. 'ALL') THEN
 !        Error Message: Not Enough Parameters
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
@@ -6855,7 +6855,7 @@ SUBROUTINE OLMGRP
    END IF
 
 !     Set Up The OLM Group Array
-   IF (OLMID(IOLM) .EQ. 'ALL' .AND. .NOT.CONT) THEN
+   IF (OLMID(IOLM) .EQ. 'ALL' .and. .NOT.CONT) THEN
 ! ---    Check for whether all sources have been defined yet,
 !        based on NSRC determined during PRESET vs. NUMSRC
 !        determined during normal SETUP.
@@ -6900,7 +6900,7 @@ SUBROUTINE OLMGRP
 !              First Check Range for Upper Value < Lower Value
             CALL SETIDG(LOWID,LID1,IL,LID2)
             CALL SETIDG(HIGID,HID1,IH,HID2)
-            IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR.&
+            IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or.&
             &(HID2.LT.LID2)) THEN
 !                 WRITE Error Message:  Invalid Range,  Upper < Lower
                CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
@@ -7013,8 +7013,8 @@ SUBROUTINE PSDGRP
 !       Only INCRCONS (increment consuming), RETRBASE (retired baseline),
 !       and NONRBASE (non-retired basleine) are allowable; any other
 !       PSD group name, including ALL, is not allowed
-   IF( PSDID(IPSD) .EQ. 'INCRCONS' .OR.&
-   &PSDID(IPSD) .EQ. 'RETRBASE' .OR.&
+   IF( PSDID(IPSD) .EQ. 'INCRCONS' .or.&
+   &PSDID(IPSD) .EQ. 'RETRBASE' .or.&
    &PSDID(IPSD) .EQ. 'NONRBASE' )THEN
 
 !        Valid PSD Source Group; Loop Through Fields
@@ -7048,7 +7048,7 @@ SUBROUTINE PSDGRP
 !              First Check Range for Upper Value < Lower Value
             CALL SETIDG(LOWID,LID1,IL,LID2)
             CALL SETIDG(HIGID,HID1,IH,HID2)
-            IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR.&
+            IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or.&
             &(HID2.LT.LID2)) THEN
 !                 WRITE Error Message:  Invalid Range,  Upper < Lower
                CALL ERRHDL(PATH,MODNAM,'E','203','PSDRANGE')
@@ -7133,7 +7133,7 @@ SUBROUTINE BLPGRP
 !        Error Message: No Parameters
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF (IFC .LE. 3 .AND. FIELD(3) .NE. 'ALL') THEN
+   ELSE IF (IFC .LE. 3 .and. FIELD(3) .NE. 'ALL') THEN
 !        Error Message: Not Enough Parameters
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
@@ -7212,7 +7212,7 @@ SUBROUTINE BLPGRP
 ! ---    The BLP group ID, as defined on a BLPINPUT record, has been found
 
 !        Set Up The BLP Group Array
-      IF (BL_GRPID(IGRPNUM) .EQ. 'ALL' .AND. .NOT.CONT) THEN
+      IF (BL_GRPID(IGRPNUM) .EQ. 'ALL' .and. .NOT.CONT) THEN
 ! ---       BLPGROUP set to ALL
 !           Assign all sources to this BLPGROUP
          DO KK = 1, NUMSRC
@@ -7257,7 +7257,7 @@ SUBROUTINE BLPGRP
 !                 First Check Range for Upper Value < Lower Value
                CALL SETIDG(LOWID,LID1,IL,LID2)
                CALL SETIDG(HIGID,HID1,IH,HID2)
-               IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR.&
+               IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or.&
                &(HID2.LT.LID2)) THEN
 !                    WRITE Error Message:  Invalid Range,  Upper < Lower
                   CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
@@ -7369,8 +7369,8 @@ SUBROUTINE BACK_GRND
       I = 3
 
 ! ---    Check for inconsistent non-HOURLY BACKGRND options for the same sector
-      IF (IBGMAX(IBGSECT) .GE. 1 .AND.&
-      &BFLAG(IBGSECT) .NE. FIELD(I) .AND.&
+      IF (IBGMAX(IBGSECT) .GE. 1 .and.&
+      &BFLAG(IBGSECT) .NE. FIELD(I) .and.&
       &FIELD(I) .NE. 'HOURLY') THEN
 !           Issue error message for inconsistent options
          CALL ERRHDL(PATH,MODNAM,'E','165',FIELD(I))
@@ -7417,15 +7417,15 @@ SUBROUTINE BACK_GRND
 ! ---    Determine user-specified sector
       IF (FIELD(3) .EQ. 'SECT1') THEN
          IBGSECT = 1
-      ELSE IF (FIELD(3) .EQ. 'SECT2' .AND. NUMBGSects .GE. 2) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT2' .and. NUMBGSects .GE. 2) THEN
          IBGSECT = 2
-      ELSE IF (FIELD(3) .EQ. 'SECT3' .AND. NUMBGSects .GE. 3) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT3' .and. NUMBGSects .GE. 3) THEN
          IBGSECT = 3
-      ELSE IF (FIELD(3) .EQ. 'SECT4' .AND. NUMBGSects .GE. 4) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT4' .and. NUMBGSects .GE. 4) THEN
          IBGSECT = 4
-      ELSE IF (FIELD(3) .EQ. 'SECT5' .AND. NUMBGSects .GE. 5) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT5' .and. NUMBGSects .GE. 5) THEN
          IBGSECT = 5
-      ELSE IF (FIELD(3) .EQ. 'SECT6' .AND. NUMBGSects .EQ. 6) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT6' .and. NUMBGSects .EQ. 6) THEN
          IBGSECT = 6
       ELSE
 !           Error Message: Invalid sector field
@@ -7437,8 +7437,8 @@ SUBROUTINE BACK_GRND
       I = 4
 
 ! ---    Check for inconsistent non-HOURLY BACKGRND options for the same sector
-      IF (IBGMAX(IBGSECT) .GE. 1 .AND.&
-      &BFLAG(IBGSECT) .NE. FIELD(I) .AND.&
+      IF (IBGMAX(IBGSECT) .GE. 1 .and.&
+      &BFLAG(IBGSECT) .NE. FIELD(I) .and.&
       &FIELD(I) .NE. 'HOURLY') THEN
 !           Issue error message for inconsistent options
          IF (LEN_TRIM(FIELD(I)) .GT. 6) THEN
@@ -7470,7 +7470,7 @@ SUBROUTINE BACK_GRND
    END IF
 
 ! --- First check for hourly background file
-   IF (L_BGFile(IBGSECT) .AND. FIELD(I) .EQ. 'HOURLY') THEN
+   IF (L_BGFile(IBGSECT) .and. FIELD(I) .EQ. 'HOURLY') THEN
 ! ---    Hourly background concentration option selected;
 
       IF ((LOCE(I+1)-LOCB(I+1)) .LE. (ILEN_FLD - 1) ) THEN
@@ -7531,21 +7531,21 @@ SUBROUTINE BACK_GRND
 !                 format statement may include 4I2, and also allow for
 !                 either F, E, or D format for the data variable.
                DO J = 1, LEN_TRIM(BGFORM(IBGSECT))
-                  IF (BGFORM(IBGSECT)(J:J).EQ.'I' .OR.&
+                  IF (BGFORM(IBGSECT)(J:J).EQ.'I' .or.&
                   &BGFORM(IBGSECT)(J:J).EQ.'i') THEN
                      NumInt  = NumInt  + 1
-                  ELSE IF (BGFORM(IBGSECT)(J:J).EQ.'F' .OR.&
+                  ELSE IF (BGFORM(IBGSECT)(J:J).EQ.'F' .or.&
                   &BGFORM(IBGSECT)(J:J).EQ.'f') THEN
                      NumReal = NumReal + 1
-                  ELSE IF (BGFORM(IBGSECT)(J:J).EQ.'E' .OR.&
+                  ELSE IF (BGFORM(IBGSECT)(J:J).EQ.'E' .or.&
                   &BGFORM(IBGSECT)(J:J).EQ.'e') THEN
                      NumReal = NumReal + 1
-                  ELSE IF (BGFORM(IBGSECT)(J:J).EQ.'D' .OR.&
+                  ELSE IF (BGFORM(IBGSECT)(J:J).EQ.'D' .or.&
                   &BGFORM(IBGSECT)(J:J).EQ.'d') THEN
                      NumReal = NumReal + 1
-                  ELSE IF (BGFORM(IBGSECT)(J:J).EQ."'" .OR.&
-                  &BGFORM(IBGSECT)(J:J).EQ.'"' .OR.&
-                  &BGFORM(IBGSECT)(J:J).EQ.'-' .OR.&
+                  ELSE IF (BGFORM(IBGSECT)(J:J).EQ."'" .or.&
+                  &BGFORM(IBGSECT)(J:J).EQ.'"' .or.&
+                  &BGFORM(IBGSECT)(J:J).EQ.'-' .or.&
                   &BGFORM(IBGSECT)(J:J).EQ.';') THEN
 !                       Check for invalid characters in BGFORM and issue
 !                       Warning Message for dash, semicolon, single or
@@ -7555,7 +7555,7 @@ SUBROUTINE BACK_GRND
                      CALL ERRHDL(PATH,MODNAM,'W','292',DUMMY)
                   END IF
                END DO
-               IF (NumInt.LT.1 .OR. NumInt.GT.4) THEN
+               IF (NumInt.LT.1 .or. NumInt.GT.4) THEN
 !                    WRITE Warning Message:  Potential problem with BGFORM
                   WRITE(DUMMY,'(''NumInts= '',I3)') NumInt
                   CALL ERRHDL(PATH,MODNAM,'W','292',DUMMY)
@@ -7756,9 +7756,9 @@ SUBROUTINE BACK_UNIT
 
    IF (FIELD(3).EQ.'UG/M3') THEN
       BackUnits = FIELD(3)
-   ELSE IF (FIELD(3).EQ.'PPM' .OR. FIELD(3).EQ.'PPB') THEN
-      IF (POLLUT .EQ. 'NO2' .OR. POLLUT .EQ. 'SO2'&
-      &.OR. POLLUT .EQ. 'CO') THEN
+   ELSE IF (FIELD(3).EQ.'PPM' .or. FIELD(3).EQ.'PPB') THEN
+      IF (POLLUT .EQ. 'NO2' .or. POLLUT .EQ. 'SO2'&
+      &.or. POLLUT .EQ. 'CO') THEN
 !RCO D14 AERMOD will only convert background from ppb or ppm for
 !    SO2, NO2, or CO so do not let these units be specified
 !    unless using these pollutants.
@@ -7832,7 +7832,7 @@ SUBROUTINE BGSECTOR
          CYCLE
       END IF
       BGSECT(I-2) = DNUM
-      IF (BGSECT(I-2) .LT. 0.0D0 .OR. BGSECT(I-2) .GT. 360.0D0) THEN
+      IF (BGSECT(I-2) .LT. 0.0D0 .or. BGSECT(I-2) .GT. 360.0D0) THEN
 !           Sector value out-of-range
          IF (BGSECT(I-2) .GT. 9999.0D0) THEN
             WRITE(DUMMY,'("BGSECT>9999.")')
@@ -8224,7 +8224,7 @@ SUBROUTINE BL_ROTATE1 (KK)
             BL_YCOORD_CHK = .TRUE.
 
          ELSE
-            IF (BLINEPARMS(IL)%YBEG_TR1 .GT. YLBSAV .AND.&
+            IF (BLINEPARMS(IL)%YBEG_TR1 .GT. YLBSAV .and.&
             &BLINEPARMS(IL)%YEND_TR1 .GT. YLESAV) THEN
 !                 The pair of lines are in the correct 'order' -
 !                 save the coordinates and check the next pair
@@ -8371,7 +8371,7 @@ SUBROUTINE RLINEBAR_INPUTS
    END IF
 
 !     ERROR handling for barrier parameters
-   IF ((RLSOURCE(INDEXS)%HTWALL.LT. 0.0D0) .OR.&
+   IF ((RLSOURCE(INDEXS)%HTWALL.LT. 0.0D0) .or.&
    &(RLSOURCE(INDEXS)%HTWALL2.LT. 0.0D0)) THEN
 !        WRITE Error Message:  Negative barrier height: HTWALL
       CALL ERRHDL(PATH,MODNAM,'E','209',' HTWALL ')
@@ -8474,7 +8474,7 @@ SUBROUTINE RLINEDPR_INPUTS
       CALL ERRHDL(PATH,MODNAM,'E','320',' WTOP ')
    ENDIF
 
-   IF (RLSOURCE(INDEXS)%WBOTTOM .LT. 0.0D0 .OR.&
+   IF (RLSOURCE(INDEXS)%WBOTTOM .LT. 0.0D0 .or.&
    &RLSOURCE(INDEXS)%WBOTTOM .GT. RLSOURCE(INDEXS)%WTOP) THEN
 !        WRITE Error Message:  WBOTTOM is negative or is greater than WTOP
       CALL ERRHDL(PATH,MODNAM,'E','320',' WBOTTOM ')
@@ -8524,7 +8524,7 @@ SUBROUTINE AIRCRAFT
 
 !     Check for 'ARCFTSRC ALL' option identified in PRESET
    IF (L_ARCFT_ALL) THEN
-      IF (IFC .EQ. 3 .AND. FIELD(3) .EQ. 'ALL') THEN
+      IF (IFC .EQ. 3 .and. FIELD(3) .EQ. 'ALL') THEN
          AFTSRC(:) = 'Y'
          GO TO 999
       ELSE
@@ -8561,7 +8561,7 @@ SUBROUTINE AIRCRAFT
 !           First Check Range for Upper Value < Lower Value
          CALL SETIDG(LOWID,LID1,IL,LID2)
          CALL SETIDG(HIGID,HID1,IH,HID2)
-         IF ((HID1.LT.LID1) .OR. (IH.LT.IL) .OR. (HID2.LT.LID2)) THEN
+         IF ((HID1.LT.LID1) .or. (IH.LT.IL) .or. (HID2.LT.LID2)) THEN
 !              WRITE Error Message:  Invalid Range,  Upper < Lower
             CALL ERRHDL(PATH,MODNAM,'E','203','SRCRANGE')
             CYCLE

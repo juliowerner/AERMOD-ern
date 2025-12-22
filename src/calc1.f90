@@ -95,13 +95,13 @@ SUBROUTINE CALC
          CALL ACALC
 
 ! ---    Added option to process RLINE source
-      ELSE IF ((SRCTYP(ISRC) .EQ. 'RLINE') .OR.&
+      ELSE IF ((SRCTYP(ISRC) .EQ. 'RLINE') .or.&
       &(SRCTYP(ISRC) .EQ. 'RLINEXT')) THEN
 !           Calculate RLINE Source Values                   ---   CALL RLCALC
          CALL RLCALC
          RLPROCESSED = .TRUE.
 
-      ELSE IF (SRCTYP(ISRC) .EQ. 'BUOYLINE' .AND.&
+      ELSE IF (SRCTYP(ISRC) .EQ. 'BUOYLINE' .and.&
       &(.NOT. BLPROCESSED)) THEN
 
 ! Multiple_BuoyLines_D41_Wood
@@ -143,9 +143,9 @@ SUBROUTINE CALC
    END DO SOURCE_LOOP
 !     End Source LOOP
 
-   IF (L_BACKGRND .AND. .NOT.ARM2 .AND.&
-   &.NOT.OLM .AND. .NOT.GRSM .AND.&
-   &.NOT.RUNTTRM .AND. .NOT.PVMRM) THEN
+   IF (L_BACKGRND .and. .NOT.ARM2 .and.&
+   &.NOT.OLM .and. .NOT.GRSM .and.&
+   &.NOT.RUNTTRM .and. .NOT.PVMRM) THEN
 ! ---    User-specified background concentrations are included;
 !        add to modeled concentrations by source group, unless
 !        NO2 options are specified, which are handled separately
@@ -339,7 +339,7 @@ SUBROUTINE PCALC
                EXIT
             END IF
          END DO
-         IF (STABLE .OR. L_MorningTrans(IURB)) THEN
+         IF (STABLE .or. L_MorningTrans(IURB)) THEN
             URBSTAB = .TRUE.
             ZI = MAX( ZIURB(IURB), ZIMECH )
             GRIDSV = GRDSVU(1:MXGLVL,IURB)
@@ -358,7 +358,7 @@ SUBROUTINE PCALC
             OBULEN = RUROBULEN
             USTAR  = RURUSTR
          END IF
-      ELSE IF (URBAN .AND. URBSRC(ISRC) .EQ. 'N') THEN
+      ELSE IF (URBAN .and. URBSRC(ISRC) .EQ. 'N') THEN
          URBSTAB = .FALSE.
          ZI = ZIRUR
          GRIDSV = GRDSVR
@@ -430,7 +430,7 @@ SUBROUTINE PCALC
          &F7.4,' DEG K/M')
       END IF
 
-      IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+      IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !           Use iterative approach to stable plume rise calculations
          KITER = 0
 50       ZPLM = HSP + 0.5D0 * DHFAER
@@ -541,7 +541,7 @@ SUBROUTINE PCALC
       XFINAL = XMAX
       DHCRIT = DHFAER
       XMIXED = ZI * UAVG / SWAVG
-      IF (UNSTAB .AND. HS.LT.ZI) THEN
+      IF (UNSTAB .and. HS.LT.ZI) THEN
 !           Check for XMIXED smaller than 1.25*XFINAL
          IF (XMIXED .LT. 1.25D0*XFINAL) THEN
             XFINAL = 0.8D0 * XMIXED
@@ -552,25 +552,25 @@ SUBROUTINE PCALC
 
 
 ! ---    Initialize PDF parameters for use in calculating ZSUBP
-      IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+      IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
          CALL PDF
       END IF
 !        Set Dry Deposition Variables for this Source
-      IF (LUSERVD .AND. LDGAS .AND. NPD.EQ.0) THEN
+      IF (LUSERVD .and. LDGAS .and. NPD.EQ.0) THEN
 !           Assign user-specified gas dry deposition velocity (GASDEPVD option)
          VDEPG = USERVD
-      ELSE IF (LDPART .OR. (.NOT.LUSERVD .AND. LDGAS .AND.&
+      ELSE IF (LDPART .or. (.NOT.LUSERVD .and. LDGAS .and.&
       &NPD.EQ.0)) THEN
 !           Calculate Deposition Velocities for this Source    ---   CALL VDP
          CALL VDP
       END IF
-      IF (LWPART .OR. LWGAS) THEN
+      IF (LWPART .or. LWGAS) THEN
 !PES        Set value of ZSUBP = MAX( ZI, TOP OF PLUME ), where
 !PES        TOP OF PLUME is defined as plume height (HE) plus 2.15*SZ,
 !PES        evaluated at a distance of 20 kilometers downwind.
 !PES        Apply minimum value of 500m and maximum value of 10,000m.
          CALL HEFF (20000.0D0)
-         IF( STABLE .OR. (UNSTAB .AND. HS .GE. ZI) )THEN
+         IF( STABLE .or. (UNSTAB .and. HS .GE. ZI) )THEN
             HE = HSP + DHCRIT
             CALL SIGZ(20000.0D0)
             ZSUBP = MAX( 500.0D0, ZI, HE + SZCOEF*SZAS )
@@ -689,7 +689,7 @@ SUBROUTINE PCALC
          BC = 0.0D0
          PLATSZ0 = 0.0D0
          DUM = 0.0D0
-         IF ((PLATWB(ISRC) > 0.0D0) .AND. (PLATHB(ISRC) > 0.0D0)) THEN
+         IF ((PLATWB(ISRC) > 0.0D0) .and. (PLATHB(ISRC) > 0.0D0)) THEN
             CALL PLAT_DOWNWASH (2.2D0*PLATHB(ISRC),&
             &PLATHB(ISRC)+0.0D0, PLATWB(ISRC), 0.0D0,&
             &PLATSZ0, DUM)
@@ -742,7 +742,7 @@ SUBROUTINE PCALC
 
       RECEPTOR_LOOP: DO IREC = 1, NUMREC
 !CRT        D063 Platform Downwash Debug
-         IF (PLATFMDBG .AND. OSPLAT(ISRC)) THEN
+         IF (PLATFMDBG .and. OSPLAT(ISRC)) THEN
             WRITE(PLATFMDBUNT,'(A, A, I4, 3(2X, A, I4), A)')&
             &'-------------',&
             &'JDAY= ', JDAY,&
@@ -766,7 +766,7 @@ SUBROUTINE PCALC
 
 ! ---       First check for receptor exceeding minimum distance (1m) or
 !           maximum distance (80km for FASTALL or 1.0D20 otherwise).
-         IF (DISTR .LT. 0.99D0 .OR. DISTR .GT. MAXDIST) THEN
+         IF (DISTR .LT. 0.99D0 .or. DISTR .GT. MAXDIST) THEN
 !              Receptor distance exceeds the minimum or maximum distance;
 !              assign 0.0 to applicable arrays, and cycle to next receptor
             HRVAL(:)  = 0.0D0
@@ -774,8 +774,8 @@ SUBROUTINE PCALC
             AERPAN(:) = 0.0D0
             PRMVAL(:) = 0.0D0
 
-            IF (PVMRM .OR. OLM .OR. ARM2 .OR.&
-            &RUNTTRM .OR. GRSM) THEN
+            IF (PVMRM .or. OLM .or. ARM2 .or.&
+            &RUNTTRM .or. GRSM) THEN
 ! ---             Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                 cycling to the next receptor to avoid
 !                 persisting value from previous hour.
@@ -789,7 +789,7 @@ SUBROUTINE PCALC
                   BLDFAC(IREC,ISRC) = 0.0D0
                   PRMVAL_Src1 = 0.0D0
                END IF
-               IF (PVMRM .OR. GRSM) THEN
+               IF (PVMRM .or. GRSM) THEN
                   HECNTR(IREC,ISRC)  = 0.0D0
                   UEFFS(IREC,ISRC)   = 0.0D0
                   EPSEF(IREC,ISRC)   = 0.0D0
@@ -816,7 +816,7 @@ SUBROUTINE PCALC
 
 ! ---       CERC 11/30/20 Calculate the conc*travel time for the Gaussian plume
          IF(GRSM)THEN
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                UCHM=UEFF
             ELSE
                UCHM=UEFFD
@@ -854,7 +854,7 @@ SUBROUTINE PCALC
 
 ! ---          CERC 11/30/20 Calculate the conc*travel time for the "pancake" component
             IF(GRSM)THEN
-               IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+               IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                   UCHM=UEFF
                ELSE
                   UCHM=UEFFD
@@ -871,7 +871,7 @@ SUBROUTINE PCALC
 
 ! ---          Calculate fraction of random kinetic energy to total kinetic energy.
 !              Note that these effective parameters are based on the radial dist.
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                CALL MEANDR( UEFF, SVEFF, FRAN )
             ELSE IF (UNSTAB) THEN
                CALL MEANDR( UEFFD, SVEFFD, FRAN )
@@ -884,7 +884,7 @@ SUBROUTINE PCALC
             END IF
 
 ! Added for TTRM; AECOM
-            IF (RUNTTRM .AND. UNSTAB) THEN
+            IF (RUNTTRM .and. UNSTAB) THEN
 !CRFL
 !CRFL    Revised emission rate terms:  for CHID & CHIN, to QTK*(1-PPF),
 !CRFL    and for CHI3 to QTK*PPF.  Ref:  P.D.F. Model for Dispersion in
@@ -932,7 +932,7 @@ SUBROUTINE PCALC
             END DO
          END IF
 
-         IF (WAKE .AND. (STABLE .OR. HS.LE.ZI)) THEN
+         IF (WAKE .and. (STABLE .or. HS.LE.ZI)) THEN
 ! ---          Apply wake effects - note that wake effects are not applied
 !              for stack heights > ZI.
 ! ---          Calculate receptor coordinates relative to upwind face of bldg.:
@@ -1005,7 +1005,7 @@ SUBROUTINE PCALC
          END IF
 ! Added for HBPDEBUG; JAN 2023
 ! Write out results to debug file
-         IF (HBPLUME .AND. HBPDBG) THEN
+         IF (HBPLUME .and. HBPDBG) THEN
             IF(PPFN .LT. 1)THEN
                WRITE(HBPUNT,7717) KURDAT,IREC,SRCID(isrc),ZICONV,ZIMECH,&
                &ZICONVN,ZIMECHN,ZIAVG,HE3,SZ3DBG,HHTOP,&
@@ -1038,7 +1038,7 @@ SUBROUTINE PCALC
             DO ITYP = 1, NUMTYP
                CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
             END DO
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                HECNTR(IREC,ISRC) = HE
                UEFFS(IREC,ISRC)  = UEFF
                EPSEF(IREC,ISRC)  = EPSEFF
@@ -1126,7 +1126,7 @@ SUBROUTINE PCALC
                CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
             END DO
 
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                HECNTR(IREC,ISRC) = HE
                UEFFS(IREC,ISRC)  = UEFF
                EPSEF(IREC,ISRC)  = EPSEFF
@@ -1267,13 +1267,13 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
    END IF
 
 !     Determine Deposition Correction Factors
-   IF (NPD .EQ. 0 .AND. (LDGAS .OR. LWGAS)) THEN
+   IF (NPD .EQ. 0 .and. (LDGAS .or. LWGAS)) THEN
       CALL PDEPG (XARG)
    ELSE
       DQCORG = 1.0D0
       WQCORG = 1.0D0
    END IF
-   IF (NPD .GT. 0 .AND. (LDPART .OR. LWPART)) THEN
+   IF (NPD .GT. 0 .and. (LDPART .or. LWPART)) THEN
       CALL PDEP (XARG)
    ELSE IF (NPD .GT. 0) THEN
 !        Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
@@ -1286,7 +1286,7 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
    SVEFF = SVS
    SWEFF = SWS
    TGEFF = TGS
-   IF ( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+   IF ( UNSTAB  .and.  (HS .LT. ZI) ) THEN
       UEFFD  = US
       SVEFFD = SVS
       SWEFFD = SWS
@@ -1334,7 +1334,7 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                     ---   CALL PDF
-   IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
       CALL PDF
    END IF
 
@@ -1349,7 +1349,7 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
 !        PLAT_DOWNWASH, and PLAT_CUBIC (all contained in calc1.f).
 !        Michelle G. Snyder, WOOD, 8/5/2021
 !CRT     D063
-   IF (OSPLAT(ISRC) .AND. (XARG > 0.0D0)) THEN
+   IF (OSPLAT(ISRC) .and. (XARG > 0.0D0)) THEN
       IF (STABLE) THEN
          DHP = DHP - PLAT_GRADPLUMADJ( XARG )
       ELSE !modify direct plume downdraft (DHP1) only
@@ -1371,7 +1371,7 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
    CALL IBLVAL ( XARG )
 
 !     Call PDF & HEFF again for final CBL plume heights
-   IF (UNSTAB .AND. (HS.LT.ZI) ) THEN
+   IF (UNSTAB .and. (HS.LT.ZI) ) THEN
       CALL PDF
       CALL HEFF ( XARG )
    END IF
@@ -1387,7 +1387,7 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
 !           for FASTALL option to optimize meander using effective sigma-y.
 !           Note that these effective parameters are based on the downwind distance,
 !           rather than the radial distance used in the standard meander approach
-         IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
             CALL MEANDR( UEFF, SVEFF, FRAN )
          ELSE IF (UNSTAB) THEN
             CALL MEANDR( UEFFD, SVEFFD, FRAN )
@@ -1410,7 +1410,7 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
                CALL FYPLM(SYEFF,FYOUT)
             END IF
          ELSE
-            IF (X.LT.1.0D0 .OR. DABS(Y) .GT. NUMSYEFF*SYEFF) THEN
+            IF (X.LT.1.0D0 .or. DABS(Y) .GT. NUMSYEFF*SYEFF) THEN
 !                 Receptor is upwind of source or more than 4 sigmas off
 !                 ceenterline, skip calculation
                FYOUT = 0.0D0
@@ -1438,7 +1438,7 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
 
 !     Calculate the 'y-term' contribution to dispersion
 !     for the penetrated plume, FSUBY3
-   IF( UNSTAB  .AND.  (HS .LT. ZI)  .AND. (PPF .GT. 0.0D0) )THEN
+   IF( UNSTAB  .and.  (HS .LT. ZI)  .and. (PPF .GT. 0.0D0) )THEN
 !        Compute meander fraction of horizontal distribution function
 !        from Venky's memo of 6/24/98.
       IF (L_PLUME) THEN
@@ -1473,7 +1473,7 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
 
 !     Check for zero "y-terms"; if zero then skip calculations
 !     and go to next receptor.
-   IF( FSUBY.EQ.0.0D0 .AND. FSUBY3.EQ.0.0D0 )THEN
+   IF( FSUBY.EQ.0.0D0 .and. FSUBY3.EQ.0.0D0 )THEN
 !        Set AEROUT(NUMTYP) array to 0.0
       AEROUT(:) = 0.0D0
 
@@ -1486,14 +1486,14 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
 
          ADJ = DQCORG * WQCORG
 
-         IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !              Calculate height of the "effective reflecting surface"
             CALL REFL_HT (HE, XARG, SZB, 0.0D0, HSBL)
          ELSEIF ( UNSTAB ) THEN
             HSBL = 0.0D0
          END IF
 
-         IF (UNSTAB .AND. (HS.LT.ZI) .AND. (PPF.GT.0.0D0)) THEN
+         IF (UNSTAB .and. (HS.LT.ZI) .and. (PPF.GT.0.0D0)) THEN
 !              Calculate height of the "effective reflecting surface"
             CALL REFL_HT (HE3, XARG, SZB3, 0.0D0, HPEN)
          ELSE
@@ -1526,7 +1526,7 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
 !              depletion
             ADJ = PHI(J) * DQCOR(J) * WQCOR(J)
 
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !                 Calculate height of the "effective reflecting surface"
 !                 Calculate Settled Plume Height(s), HESETL
                HESETL = MAX( 0.0D0, HE - HV )
@@ -1536,7 +1536,7 @@ SUBROUTINE AERCALC( XARG, L_PLUME, AEROUT )
                HSBL = 0.0D0
             END IF
 
-            IF (UNSTAB .AND. (HS.LT.ZI) .AND. (PPF.GT.0.0D0)) THEN
+            IF (UNSTAB .and. (HS.LT.ZI) .and. (PPF.GT.0.0D0)) THEN
 !                 Calculate height of the "effective reflecting surface"
 !                 Calculate Settled Plume Height(s), HE3SETL
                HE3SETL = MAX( 0.0D0, HE3 - HV )
@@ -1649,14 +1649,14 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
 !     center of upwind bldg. face                  ---  CALL POSITION
    call POSITION(xbrec,ybrec,zflag,ipositn)
 
-   if(ipositn.EQ.4 .AND. X.LE.0.0D0) then
+   if(ipositn.EQ.4 .and. X.LE.0.0D0) then
 ! ---    Receptor is upwind of sources and is not within
 ! ---    a building wake - use AERMOD calculation
 ! ---    Set PRMVAL(NUMTYP) array = AERVAL(NUMTYP) array
       PRMVAL = AERVAL
       IF(GRSM) PRMVAL_Src1 = AERVAL(1)
 
-   elseif(ipositn.NE.2 .AND. distr .LT. 0.99D0) then
+   elseif(ipositn.NE.2 .and. distr .LT. 0.99D0) then
 ! ---    Receptor Too Close to Source for Calculation and is not
 ! ---    within a building near-wake (cavity) - use AERMOD calculation
 ! ---    Set PRMVAL(NUMTYP) array = AERVAL(NUMTYP) array
@@ -1684,7 +1684,7 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
       ZLO = 0.0D0
 
 ! --- AWMA version D20350
-      IF (L_AWMA_UTurb .OR. L_AWMA_UTurbHX) THEN
+      IF (L_AWMA_UTurb .or. L_AWMA_UTurbHX) THEN
 !---        The values of ZHI and ZLO in the regulatory version of
 !           AERMOD are replaced with the values below for AWMADWNW option
          BetaJ = 1.0D0/3.0D0 + US/VS
@@ -1724,7 +1724,7 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
       END IF
 
 ! ---    AWMA version D20350
-      IF (L_AWMA_UTurb  .OR. L_AWMA_UTurbHX) THEN
+      IF (L_AWMA_UTurb  .or. L_AWMA_UTurbHX) THEN
 !---        Additional calculations for AWMADW -
 !              "effective" parameters (at 30m) for use in wake_u_turb
 !           Note: alternate algorithm to extract 30m value directly may
@@ -1765,7 +1765,7 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
       UEFF  = MAX( UEFF, WSMIN )
 
 ! ---    AWMA version D20350
-      IF (L_AWMA_UTurb .OR. L_AWMA_UTurbHX )THEN
+      IF (L_AWMA_UTurb .or. L_AWMA_UTurbHX )THEN
          sw30 =  max (sw30, swmin)
          sv30 =  max (sv30, svmin, svumin*u30)
          IF (L_VECTORWS) u30 = dsqrt (u30*u30 +2.d0*sv30*sv30)
@@ -1774,7 +1774,7 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
 
       if (PRIMEDBG) then
          write(PRMDBUNT,*) 'PRIME Effective Parameters: '
-         if (L_AWMA_UTurb . or. L_AWMA_UTurbHX) then
+         if (L_AWMA_UTurb .or. L_AWMA_UTurbHX) then
             write(PRMDBUNT,*) '  AWMAUturb/HX applied to eff params'
          end if
          write(PRMDBUNT,*)   '  ZLO, ZHI     = ', zlo, zhi
@@ -1798,7 +1798,7 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
 !        Determine Effective Plume Height             ---   CALL PRMHEFF
       CALL PRMHEFF
 
-      IF (UNSTAB .AND. HE .GE. ZI) THEN
+      IF (UNSTAB .and. HE .GE. ZI) THEN
 !           Plume is above ZI, set PRMVAL = AERVAL and return
          PRMVAL = AERVAL
          IF(GRSM) PRMVAL_Src1 = AERVAL(1)
@@ -1893,7 +1893,7 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
 
             IF (NPD .EQ. 0) THEN
 !                 Determine Deposition Correction Factors
-               IF ((LDGAS.OR.LWGAS) .AND. IS.NE.3 .AND.&
+               IF ((LDGAS.or.LWGAS) .and. IS.NE.3 .and.&
                &X.GT.1.0D0) THEN
 !                    Do not apply depletion for "inside cavity source", IS=3
                   CALL PRM_PDEPG (X)
@@ -1912,7 +1912,7 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
                CALL PRM_PCHI( ADJ, VDEPG, 0, is )                    ! ORD (EMM) change
 
             ELSE
-               IF ((LDPART.OR.LWPART) .AND. IS.NE.3 .AND.&
+               IF ((LDPART.or.LWPART) .and. IS.NE.3 .and.&
                &X.GT.1.0D0) THEN
 !                    Do not apply depletion for "inside cavity source", IS=3
                   CALL PRM_PDEP (X)
@@ -1940,7 +1940,7 @@ SUBROUTINE PRMCALC (XBREC, YBREC)
             END IF
 
 !              If this is source 1, store the concentration for GRSM
-            IF(GRSM .AND. is==1) PRMVAL_Src1 = PRMVAL(1)
+            IF(GRSM .and. is==1) PRMVAL_Src1 = PRMVAL(1)
 
          END IF
 
@@ -1996,7 +1996,7 @@ SUBROUTINE GAMCALC ( XARG, YARG )
 ! --- Variable Initializations
    MODNAM = 'GAMCALC'
 
-   IF (XARG .LE. 0.0D0 .OR. .NOT.WAKE) THEN
+   IF (XARG .LE. 0.0D0 .or. .NOT.WAKE) THEN
 ! ---    Receptor is upwind of building or no WAKE, set GAMFACT = 0.0 to
 ! ---    use AERVAL only.
       GAMFACT = 0.0D0
@@ -2045,7 +2045,7 @@ SUBROUTINE GAMCALC ( XARG, YARG )
       END IF
 
 !        Calculate gamma weighting factor, GAMFACT
-      IF (EXPARG_XG.GT.EXPLIM .AND. EXPARG_YG.GT.EXPLIM .AND.&
+      IF (EXPARG_XG.GT.EXPLIM .and. EXPARG_YG.GT.EXPLIM .and.&
       &EXPARG_ZG.GT.EXPLIM) THEN
          GAMFACT = DEXP(EXPARG_XG)*DEXP(EXPARG_YG)*DEXP(EXPARG_ZG)
       ELSE
@@ -2093,17 +2093,17 @@ SUBROUTINE CENTROID (XARG)
 
    xtmp = max( xarg, 1.0D0 )
 
-   IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
 !----    Calculate plume centerline height without PDF adjustments
       IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
          CALL CBLPRD ( xtmp )
          HTEFF = MIN (HSP+DHP1, ZI)
 !**  Added for Aircraft Plume Rise; UNC-IE
-      ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .AND.&
+      ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and.&
       &AFTSRC(ISRC) .EQ. 'Y') THEN
          CALL ACBLPRD ( xtmp )
          HTEFF = MIN (HSP+DHP1, ZI)
-      ELSE IF (SRCTYP(ISRC) (1:4) .EQ. 'AREA' .AND.&
+      ELSE IF (SRCTYP(ISRC) (1:4) .EQ. 'AREA' .and.&
       &AFTSRC(ISRC) .EQ. 'Y') THEN
          CALL ACBLPRD ( xtmp )
          HTEFF = MIN (HSP+DHP1, ZI)
@@ -2132,7 +2132,7 @@ SUBROUTINE CENTROID (XARG)
          SURFAC = .FALSE.
       END IF
 
-   ELSE IF( UNSTAB .AND. (HS .GE. ZI) )THEN
+   ELSE IF( UNSTAB .and. (HS .GE. ZI) )THEN
       SURFAC = .FALSE.
       CENTER = HSP
 ! ----   Account for distance-dependent CENTER and SURFAC
@@ -2443,7 +2443,7 @@ SUBROUTINE VCALC
                EXIT
             END IF
          END DO
-         IF (STABLE .OR. L_MorningTrans(IURB)) THEN
+         IF (STABLE .or. L_MorningTrans(IURB)) THEN
             URBSTAB = .TRUE.
             ZI = MAX( ZIURB(IURB), ZIMECH )
             GRIDSV = GRDSVU(1:MXGLVL,IURB)
@@ -2462,7 +2462,7 @@ SUBROUTINE VCALC
             OBULEN = RUROBULEN
             USTAR  = RURUSTR
          END IF
-      ELSE IF (URBAN .AND. URBSRC(ISRC) .EQ. 'N') THEN
+      ELSE IF (URBAN .and. URBSRC(ISRC) .EQ. 'N') THEN
          URBSTAB = .FALSE.
          ZI = ZIRUR
          GRIDSV = GRDSVR
@@ -2518,7 +2518,7 @@ SUBROUTINE VCALC
             &F7.4,' DEG K/M')
          END IF
 
-         IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !            Use iterative approach to stable plume rise calculations
             KITER = 0
 50          ZPLM = HSP + 0.5D0 * DHFAER
@@ -2639,7 +2639,7 @@ SUBROUTINE VCALC
          XFINAL = XMAX
          DHCRIT = DHFAER
          XMIXED = ZI * UAVG / SWAVG
-         IF (UNSTAB .AND. HS.LT.ZI) THEN
+         IF (UNSTAB .and. HS.LT.ZI) THEN
 !            Check for XMIXED smaller than 1.25*XFINAL
             IF (XMIXED .LT. 1.25D0*XFINAL) THEN
                XFINAL = 0.8D0 * XMIXED
@@ -2671,25 +2671,25 @@ SUBROUTINE VCALC
       END IF                    ! Added for Aircraft; UNC-IE
 
 ! ---    Initialize PDF parameters for use in calculating ZSUBP
-      IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+      IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
          CALL PDF
       END IF
 !        Set Dry Deposition Variables for this Source
-      IF (LUSERVD .AND. LDGAS .AND. NPD.EQ.0) THEN
+      IF (LUSERVD .and. LDGAS .and. NPD.EQ.0) THEN
 !           Assign user-specified gas dry deposition velocity (GASDEPVD option)
          VDEPG = USERVD
-      ELSE IF (LDPART .OR. (.NOT.LUSERVD .AND. LDGAS .AND.&
+      ELSE IF (LDPART .or. (.NOT.LUSERVD .and. LDGAS .and.&
       &NPD.EQ.0)) THEN
 !           Calculate Deposition Velocities for this Source    ---   CALL VDP
          CALL VDP
       END IF
-      IF (LWPART .OR. LWGAS) THEN
+      IF (LWPART .or. LWGAS) THEN
 !PES        Set value of ZSUBP = MAX( ZI, TOP OF PLUME ), where
 !PES        TOP OF PLUME is defined as plume height (HE) plus 2.15*SZ,
 !PES        evaluated at a distance of 20 kilometers downwind.
 !PES        Apply minimum value of 500m and maximum value of 10,000m.
          CALL HEFF (20000.0D0)
-         IF( STABLE .OR. (UNSTAB .AND. HS .GE. ZI) )THEN
+         IF( STABLE .or. (UNSTAB .and. HS .GE. ZI) )THEN
 !**  Added for Aircraft Plume Rise; UNC-IE
             IF (AFTSRC(ISRC) .EQ. 'Y') THEN
                HE = HSP + DHCRIT
@@ -2816,14 +2816,14 @@ SUBROUTINE VCALC
 
 ! ---       First check for receptor exceeding minimum distance (1m) or
 !           maximum distance (80km for FASTALL or 1.0D20 otherwise).
-         IF( DISTR.LT.(XRAD+0.99D0) .OR. (DISTR.GT.MAXDIST) )THEN
+         IF( DISTR.LT.(XRAD+0.99D0) .or. (DISTR.GT.MAXDIST) )THEN
 !              Receptor too close to source for calculation or
 !              receptor is beyond the maximum distance from source.
             HRVAL(:)  = 0.0D0
             AERPLM(:) = 0.0D0
             AERPAN(:) = 0.0D0
-            IF (PVMRM .OR. OLM .OR. ARM2&
-            &.OR. RUNTTRM .OR. GRSM) THEN
+            IF (PVMRM .or. OLM .or. ARM2&
+            &.or. RUNTTRM .or. GRSM) THEN
 ! ---             Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                 cycling to the next receptor to avoid
 !                 persisting value from previous hour.
@@ -2834,7 +2834,7 @@ SUBROUTINE VCALC
                   CHI_TTRAVAER = 0.0D0
                   CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
                END IF
-               IF (PVMRM .OR. GRSM) THEN
+               IF (PVMRM .or. GRSM) THEN
                   HECNTR(IREC,ISRC)  = 0.0D0
                   UEFFS(IREC,ISRC)   = 0.0D0
                   EPSEF(IREC,ISRC)   = 0.0D0
@@ -2870,7 +2870,7 @@ SUBROUTINE VCALC
 
 ! ---          CERC 11/30/20 Calculate the conc*travel time for the Gaussian plume
             IF(GRSM)THEN
-               IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+               IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                   UCHM=UEFF
                ELSE
                   UCHM=UEFFD
@@ -2906,7 +2906,7 @@ SUBROUTINE VCALC
             CALL VOLCALC( DISTR, L_PLUME, AERPAN )
 ! ---          CERC 11/30/20 Calculate the conc*travel time for the Gaussian plume
             IF(GRSM)THEN
-               IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+               IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                   UCHM=UEFF
                ELSE
                   UCHM=UEFFD
@@ -2923,7 +2923,7 @@ SUBROUTINE VCALC
 
 ! ---          Calculate fraction of random kinetic energy to total kinetic energy.
 !              Note that these effective parameters are based on the radial dist.
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                CALL MEANDR( UEFF, SVEFF, FRAN )
             ELSE IF (UNSTAB) THEN
                CALL MEANDR( UEFFD, SVEFFD, FRAN )
@@ -2983,7 +2983,7 @@ SUBROUTINE VCALC
             DO ITYP = 1, NUMTYP
                CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
             END DO
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                HECNTR(IREC,ISRC) = HE
                UEFFS(IREC,ISRC)  = UEFF
                EPSEF(IREC,ISRC)  = EPSEFF
@@ -3071,7 +3071,7 @@ SUBROUTINE VCALC
                CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
             END DO
 
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                HECNTR(IREC,ISRC) = HE
                UEFFS(IREC,ISRC)  = UEFF
                EPSEF(IREC,ISRC)  = EPSEFF
@@ -3195,13 +3195,13 @@ SUBROUTINE VOLCALC( XARG, L_PLUME, AEROUT )
    AERTMP = 0.0D0
 
 !     Determine Deposition Correction Factors
-   IF (NPD .EQ. 0 .AND. (LDGAS .OR. LWGAS)) THEN
+   IF (NPD .EQ. 0 .and. (LDGAS .or. LWGAS)) THEN
       CALL PDEPG (XARG)
    ELSE
       DQCORG = 1.0D0
       WQCORG = 1.0D0
    END IF
-   IF (NPD .GT. 0 .AND. (LDPART .OR. LWPART)) THEN
+   IF (NPD .GT. 0 .and. (LDPART .or. LWPART)) THEN
       CALL PDEP (XARG)
    ELSE IF (NPD .GT. 0) THEN
 !        Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
@@ -3214,7 +3214,7 @@ SUBROUTINE VOLCALC( XARG, L_PLUME, AEROUT )
    SVEFF = SVS
    SWEFF = SWS
    TGEFF = TGS
-   IF ( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+   IF ( UNSTAB  .and.  (HS .LT. ZI) ) THEN
       UEFFD  = US
       SVEFFD = SVS
       SWEFFD = SWS
@@ -3270,7 +3270,7 @@ SUBROUTINE VOLCALC( XARG, L_PLUME, AEROUT )
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                     ---   CALL PDF
-   IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
       CALL PDF
    END IF
 
@@ -3282,7 +3282,7 @@ SUBROUTINE VOLCALC( XARG, L_PLUME, AEROUT )
    CALL IBLVAL ( XARG )
 
 !     Call PDF & HEFF again for final CBL plume heights
-   IF (UNSTAB .AND. (HS.LT.ZI) ) THEN
+   IF (UNSTAB .and. (HS.LT.ZI) ) THEN
       CALL PDF
       CALL HEFF ( XARG )
    END IF
@@ -3300,7 +3300,7 @@ SUBROUTINE VOLCALC( XARG, L_PLUME, AEROUT )
 !           and for the Beta option that uses an effective sigma-y value.
 !           Note that these effective parameters are based on the downwind distance,
 !           rather than the radial distance used in the standard meander approach
-         IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
             CALL MEANDR( UEFF, SVEFF, FRAN )
          ELSE IF (UNSTAB) THEN
             CALL MEANDR( UEFFD, SVEFFD, FRAN )
@@ -3345,7 +3345,7 @@ SUBROUTINE VOLCALC( XARG, L_PLUME, AEROUT )
    IF (AFTSRC(ISRC) .EQ. 'Y') THEN
 !      Calculate the 'y-term' contribution to dispersion
 !      for the penetrated plume, FSUBY3
-      IF( UNSTAB  .AND.  (HS .LT. ZI)  .AND. (PPF .GT. 0.0D0) )THEN
+      IF( UNSTAB  .and.  (HS .LT. ZI)  .and. (PPF .GT. 0.0D0) )THEN
 !        Compute meander fraction of horizontal distribution function
 !        from Venky's memo of 6/24/98.
          IF (L_PLUME) THEN
@@ -3385,7 +3385,7 @@ SUBROUTINE VOLCALC( XARG, L_PLUME, AEROUT )
 
 !     Check for zero "y-terms"; if zero then skip calculations
 !     and go to next receptor.
-   IF( FSUBY.EQ.0.0D0 .AND. FSUBY3.EQ.0.0D0 )THEN
+   IF( FSUBY.EQ.0.0D0 .and. FSUBY3.EQ.0.0D0 )THEN
       AEROUT = 0.0D0
 
    ELSE
@@ -3396,7 +3396,7 @@ SUBROUTINE VOLCALC( XARG, L_PLUME, AEROUT )
 
          ADJ = DQCORG * WQCORG
 
-         IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !              Calculate height of the "effective reflecting surface"
 !**  Added for Aircraft Plume Rise; UNC-IE
             IF (AFTSRC(ISRC) .EQ. 'Y') THEN
@@ -3411,7 +3411,7 @@ SUBROUTINE VOLCALC( XARG, L_PLUME, AEROUT )
 
 !**  Added for Aircraft Plume Rise; UNC-IE
          IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-            IF (UNSTAB .AND. (HS.LT.ZI) .AND. (PPF.GT.0.0D0)) THEN
+            IF (UNSTAB .and. (HS.LT.ZI) .and. (PPF.GT.0.0D0)) THEN
 !               Calculate height of the "effective reflecting surface"
                CALL REFL_HT (HE3, XARG, SZB3, VSIGZ, HPEN)
             ELSE
@@ -3446,7 +3446,7 @@ SUBROUTINE VOLCALC( XARG, L_PLUME, AEROUT )
 !              depletion
             ADJ = PHI(J) * DQCOR(J) * WQCOR(J)
 
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !                 Calculate height of the "effective reflecting surface"
                HESETL = MAX( 0.0D0, HE - HV )
 !**  Added for Aircraft Plume Rise; UNC-IE
@@ -3464,7 +3464,7 @@ SUBROUTINE VOLCALC( XARG, L_PLUME, AEROUT )
 
 !**  Added for Aircraft Plume Rise; UNC-IE
             IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-               IF (UNSTAB .AND. (HS.LT.ZI) .AND. (PPF.GT.0.0D0)) THEN
+               IF (UNSTAB .and. (HS.LT.ZI) .and. (PPF.GT.0.0D0)) THEN
 !                 Calculate height of the "effective reflecting surface"
 !                 Calculate Settled Plume Height(s), HE3SETL
                   HE3SETL = MAX( 0.0D0, HE3 - HV )
@@ -3635,7 +3635,7 @@ SUBROUTINE ACALC
                EXIT
             END IF
          END DO
-         IF (STABLE .OR. L_MorningTrans(IURB)) THEN
+         IF (STABLE .or. L_MorningTrans(IURB)) THEN
             URBSTAB = .TRUE.
             ZI = MAX( ZIURB(IURB), ZIMECH )
             GRIDSV = GRDSVU(1:MXGLVL,IURB)
@@ -3654,7 +3654,7 @@ SUBROUTINE ACALC
             OBULEN = RUROBULEN
             USTAR  = RURUSTR
          END IF
-      ELSE IF (URBAN .AND. URBSRC(ISRC) .EQ. 'N') THEN
+      ELSE IF (URBAN .and. URBSRC(ISRC) .EQ. 'N') THEN
          URBSTAB = .FALSE.
          ZI = ZIRUR
          GRIDSV = GRDSVR
@@ -3710,7 +3710,7 @@ SUBROUTINE ACALC
             &F7.4,' DEG K/M')
          END IF
 
-         IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !            Use iterative approach to stable plume rise calculations
             KITER = 0
 50          ZPLM = HSP + 0.5D0 * DHFAER
@@ -3831,7 +3831,7 @@ SUBROUTINE ACALC
          XFINAL = XMAX
          DHCRIT = DHFAER
          XMIXED = ZI * UAVG / SWAVG
-         IF (UNSTAB .AND. HS.LT.ZI) THEN
+         IF (UNSTAB .and. HS.LT.ZI) THEN
 !            Check for XMIXED smaller than 1.25*XFINAL
             IF (XMIXED .LT. 1.25D0*XFINAL) THEN
                XFINAL = 0.8D0 * XMIXED
@@ -3860,25 +3860,25 @@ SUBROUTINE ACALC
       END IF                    ! Added for Aircraft; UNC-IE
 
 ! ---    Initialize PDF parameters for use in calculating ZSUBP
-      IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+      IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
          CALL PDF
       END IF
 !        Set Dry Deposition Variables for this Source
-      IF (LUSERVD .AND. LDGAS .AND. NPD.EQ.0) THEN
+      IF (LUSERVD .and. LDGAS .and. NPD.EQ.0) THEN
 !           Assign user-specified gas dry deposition velocity (GASDEPVD option)
          VDEPG = USERVD
-      ELSE IF (LDPART .OR. (.NOT.LUSERVD .AND. LDGAS .AND.&
+      ELSE IF (LDPART .or. (.NOT.LUSERVD .and. LDGAS .and.&
       &NPD.EQ.0)) THEN
 !           Calculate Deposition Velocities for this Source    ---   CALL VDP
          CALL VDP
       END IF
-      IF (LWPART .OR. LWGAS) THEN
+      IF (LWPART .or. LWGAS) THEN
 !PES        Set value of ZSUBP = MAX( ZI, TOP OF PLUME ), where
 !PES        TOP OF PLUME is defined as plume height (HE) plus 2.15*SZ,
 !PES        evaluated at a distance of 20 kilometers downwind.
 !PES        Apply minimum value of 500m and maximum value of 10,000m.
          CALL HEFF (20000.0D0)
-         IF( STABLE .OR. (UNSTAB .AND. HS .GE. ZI) )THEN
+         IF( STABLE .or. (UNSTAB .and. HS .GE. ZI) )THEN
 !**  Added for Aircraft Plume Rise; UNC-IE
             IF (AFTSRC(ISRC) .EQ. 'Y') THEN
                HE = HSP + DHCRIT
@@ -4027,7 +4027,7 @@ SUBROUTINE ACALC
 !           distance from source; assigned value of 80km
 !           for obsolescent TOXICS option or new FASTAREA or
 !           FASTALL options; otherwise "unlimited" (1.0D20)
-         IF (XMAXR .LT. 1.0D0 .OR. DISTR .GT. MAXDIST) THEN
+         IF (XMAXR .LT. 1.0D0 .or. DISTR .GT. MAXDIST) THEN
 !     Added for TTRM; AECOM
 !           For TTRM, reset radial distance if the receptor is upwind or
 !           the maximum distance from the source
@@ -4039,8 +4039,8 @@ SUBROUTINE ACALC
 !              maximum distance from source; set CHI = 0.0 for current
 !              REC and SRC and set NO2 option variables to 0.0 before
 !              cycling to next receptor
-            IF (PVMRM .OR. OLM .OR. ARM2&
-            &.OR. RUNTTRM .OR. GRSM) THEN
+            IF (PVMRM .or. OLM .or. ARM2&
+            &.or. RUNTTRM .or. GRSM) THEN
 ! ---             Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                 cycling to the next receptor to avoid
 !                 persisting value from previous hour.
@@ -4048,7 +4048,7 @@ SUBROUTINE ACALC
                IF(GRSM)THEN
                   CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
                END IF
-               IF (PVMRM .OR. GRSM) THEN
+               IF (PVMRM .or. GRSM) THEN
                   HECNTR(IREC,ISRC)  = 0.0D0
                   UEFFS(IREC,ISRC)   = 0.0D0
                   EPSEF(IREC,ISRC)   = 0.0D0
@@ -4078,7 +4078,7 @@ SUBROUTINE ACALC
          SVEFF = SVS
          SWEFF = SWS
          TGEFF = TGS
-         IF ( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+         IF ( UNSTAB  .and.  (HS .LT. ZI) ) THEN
             UEFFD  = US
             SVEFFD = SVS
             SWEFFD = SWS
@@ -4121,8 +4121,8 @@ SUBROUTINE ACALC
 !                     projected area source; set CHI = 0.0 for current
 !                     REC and SRC and set NO2 option variables to 0.0
 !                     before cycling to next receptor.
-                  IF (PVMRM .OR. OLM .OR. ARM2&
-                  &.OR. RUNTTRM .OR. GRSM) THEN
+                  IF (PVMRM .or. OLM .or. ARM2&
+                  &.or. RUNTTRM .or. GRSM) THEN
 ! ---                    Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                        cycling to the next receptor to avoid
 !                        persisting value from previous hour.
@@ -4130,7 +4130,7 @@ SUBROUTINE ACALC
                      IF(GRSM)THEN
                         CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
                      END IF
-                     IF (PVMRM .OR. GRSM) THEN
+                     IF (PVMRM .or. GRSM) THEN
                         HECNTR(IREC,ISRC)  = 0.0D0
                         UEFFS(IREC,ISRC)   = 0.0D0
                         EPSEF(IREC,ISRC)   = 0.0D0
@@ -4184,17 +4184,17 @@ SUBROUTINE ACALC
 ! ---       Assign XDIST for use in dry depletion (FUNCTION F2INT)
          XDIST = X
 
-         IF ( (.NOT.FASTAREA .AND. .NOT.FASTALL) .OR.&
-         &((FASTAREA .OR. FASTALL) .AND. X .LT. XPOINT)) THEN
+         IF ( (.NOT.FASTAREA .and. .NOT.FASTALL) .or.&
+         &((FASTAREA .or. FASTALL) .and. X .LT. XPOINT)) THEN
             IF (ARDPLETE) THEN
 
-               IF (NPD .EQ. 0 .AND. (LDGAS .OR. LWGAS)) THEN
+               IF (NPD .EQ. 0 .and. (LDGAS .or. LWGAS)) THEN
                   CALL PDEPG (XDEP)
                ELSE
                   DQCORG = 1.0D0
                   WQCORG = 1.0D0
                END IF
-               IF (NPD .GT. 0 .AND. (LDPART .OR. LWPART)) THEN
+               IF (NPD .GT. 0 .and. (LDPART .or. LWPART)) THEN
                   CALL PDEP (XDEP)
                ELSE IF (NPD .GT. 0) THEN
 !                    Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
@@ -4222,7 +4222,7 @@ SUBROUTINE ACALC
                   CALL AREAIN
                   AEROUT_PAN = HRVAL(ITYP)
 
-                  IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+                  IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                      CALL MEANDR( UEFF, SVEFF, FRAN )
                   ELSE IF (UNSTAB) THEN
                      CALL MEANDR( UEFFD, SVEFFD, FRAN )
@@ -4238,8 +4238,8 @@ SUBROUTINE ACALC
 !              Use point source approximation
 !              Save emissions per unit area and calculate total emissions
             QTKSAV = QTK
-            IF (SRCTYP(ISRC) .EQ. 'AREA' .OR.&
-            &SRCTYP(ISRC) .EQ. 'LINE' .OR.&
+            IF (SRCTYP(ISRC) .EQ. 'AREA' .or.&
+            &SRCTYP(ISRC) .EQ. 'LINE' .or.&
             &SRCTYP(ISRC) .EQ. 'AREAPOLY') THEN
 !                 Note that XINIT and YINIT are equivalent values for AREAPOLY
                QTK = QTK * XINIT * YINIT
@@ -4249,13 +4249,13 @@ SUBROUTINE ACALC
             SYINIT = 0.0D0
 
 !              Determine Deposition Correction Factors
-            IF (NPD .EQ. 0 .AND. (LDGAS .OR. LWGAS)) THEN
+            IF (NPD .EQ. 0 .and. (LDGAS .or. LWGAS)) THEN
                CALL PDEPG (X)
             ELSE
                DQCORG = 1.0D0
                WQCORG = 1.0D0
             END IF
-            IF (NPD .GT. 0 .AND. (LDPART .OR. LWPART)) THEN
+            IF (NPD .GT. 0 .and. (LDPART .or. LWPART)) THEN
                CALL PDEP (X)
             ELSE IF (NPD .GT. 0) THEN
 !                 Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
@@ -4277,7 +4277,7 @@ SUBROUTINE ACALC
 !              If the atmosphere is unstable and the stack
 !              top is below the mixing height, calculate
 !              the CBL PDF coefficients                     ---   CALL PDF
-            IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+            IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
                CALL PDF
             END IF
 
@@ -4289,7 +4289,7 @@ SUBROUTINE ACALC
             CALL IBLVAL (X)
 
 !              Call PDF & HEFF again for final CBL plume heights
-            IF (UNSTAB .AND. (HS.LT.ZI) ) THEN
+            IF (UNSTAB .and. (HS.LT.ZI) ) THEN
                CALL PDF
                CALL HEFF (X)
             END IF
@@ -4309,7 +4309,7 @@ SUBROUTINE ACALC
 
 !              Check for zero "y-terms"; if zero then skip calculations
 !              and go to next receptor.
-            IF( FSUBY.EQ.0.0D0 .AND. FSUBY3.EQ.0.0D0 )THEN
+            IF( FSUBY.EQ.0.0D0 .and. FSUBY3.EQ.0.0D0 )THEN
 !      Added for TTRM; AECOM
 !              For TTRM, if the "y-terms" are zero then set the radial
 !              distance to zero.
@@ -4318,8 +4318,8 @@ SUBROUTINE ACALC
                END IF
 !      End TTRM insert; Feb. 2021
 !                 FSUBY terms are both 0.0; assign 0.0 to arrays
-               IF (PVMRM .OR. OLM .OR. ARM2&
-               &.OR. RUNTTRM .OR. GRSM) THEN
+               IF (PVMRM .or. OLM .or. ARM2&
+               &.or. RUNTTRM .or. GRSM) THEN
 ! ---                Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                    cycling to the next receptor to avoid
 !                    persisting value from previous hour.
@@ -4327,7 +4327,7 @@ SUBROUTINE ACALC
                   IF(GRSM)THEN
                      CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
                   END IF
-                  IF (PVMRM .OR. GRSM) THEN
+                  IF (PVMRM .or. GRSM) THEN
                      HECNTR(IREC,ISRC)  = 0.0D0
                      UEFFS(IREC,ISRC)   = 0.0D0
                      EPSEF(IREC,ISRC)   = 0.0D0
@@ -4359,7 +4359,7 @@ SUBROUTINE ACALC
 
                   ADJ = DQCORG * WQCORG
 
-                  IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+                  IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !                       Calculate height of the "effective reflecting surface"
 !**  Added for Aircraft Plume Rise; UNC-IE
                      IF (AFTSRC(ISRC) .EQ. 'Y') THEN
@@ -4374,7 +4374,7 @@ SUBROUTINE ACALC
 
 !**  Added for Aircraft Plume Rise; UNC-IE
                   IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-                     IF (UNSTAB.AND.(HS.LT.ZI).AND.(PPF.GT.0.0D0))THEN
+                     IF (UNSTAB.and.(HS.LT.ZI).and.(PPF.GT.0.0D0))THEN
 !               Calculate height of the "effective reflecting surface"
                         CALL REFL_HT (HE3, X, SZB3, VSIGZ, HPEN)
                      ELSE
@@ -4410,7 +4410,7 @@ SUBROUTINE ACALC
 !                       depletion
                      ADJ = PHI(J) * DQCOR(J) * WQCOR(J)
 
-                     IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+                     IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !                          Calculate height of the "effective reflecting surface"
 !                          Calculate Settled Plume Height(s), HESETL
                         HESETL = MAX( 0.0D0, HE - HV )
@@ -4429,7 +4429,7 @@ SUBROUTINE ACALC
 
 !**  Added for Aircraft Plume Rise; UNC-IE
                      IF (AFTSRC(ISRC) .EQ. 'Y') THEN
-                        IF(UNSTAB.AND.(HS.LT.ZI).AND.(PPF.GT.0.0D0))THEN
+                        IF(UNSTAB.and.(HS.LT.ZI).and.(PPF.GT.0.0D0))THEN
 !                 Calculate height of the "effective reflecting surface"
 !                 Calculate Settled Plume Height(s), HE3SETL
                            HE3SETL = MAX( 0.0D0, HE3 - HV )
@@ -4470,7 +4470,7 @@ SUBROUTINE ACALC
             DO ITYP = 1, NUMTYP
                CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
             END DO
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                HECNTR(IREC,ISRC) = HE
                UEFFS(IREC,ISRC)  = UEFF
                EPSEF(IREC,ISRC)  = EPSEFF
@@ -4547,7 +4547,7 @@ SUBROUTINE ACALC
          ELSE IF (GRSM) THEN
 
 !              Calculate the effective wind speed
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                UCHM=UEFF
             ELSE
                UCHM=UEFFD
@@ -4568,7 +4568,7 @@ SUBROUTINE ACALC
                CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
             END DO
 
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                HECNTR(IREC,ISRC) = HE
                UEFFS(IREC,ISRC)  = UEFF
                EPSEF(IREC,ISRC)  = EPSEFF
@@ -4872,7 +4872,7 @@ SUBROUTINE OCALC
             EXIT
          END IF
       END DO
-      IF (STABLE .OR. L_MorningTrans(IURB)) THEN
+      IF (STABLE .or. L_MorningTrans(IURB)) THEN
          URBSTAB = .TRUE.
          ZI = MAX( ZIURB(IURB), ZIMECH )
          GRIDSV = GRDSVU(1:MXGLVL,IURB)
@@ -4891,7 +4891,7 @@ SUBROUTINE OCALC
          OBULEN = RUROBULEN
          USTAR  = RURUSTR
       END IF
-   ELSE IF (URBAN .AND. URBSRC(ISRC) .EQ. 'N') THEN
+   ELSE IF (URBAN .and. URBSRC(ISRC) .EQ. 'N') THEN
       URBSTAB = .FALSE.
       ZI = ZIRUR
       GRIDSV = GRDSVR
@@ -5017,7 +5017,7 @@ SUBROUTINE OCALC
       CALL EVLINI
    END IF
 
-   IF ((QEFF.NE.0.0D0) .AND. (STABLE .OR. (HS.LE.ZI))) THEN
+   IF ((QEFF.NE.0.0D0) .and. (STABLE .or. (HS.LE.ZI))) THEN
 !        Initialize miscellaneous variables
       FB  = 0.0D0
       FM  = 0.0D0
@@ -5038,25 +5038,25 @@ SUBROUTINE OCALC
       QTKSAV = QTK
 
 ! ---    Initialize PDF parameters for use in calculating ZSUBP
-      IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+      IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
          CALL PDF
       END IF
 !        Set Dry Deposition Variables for this Source
-      IF (LUSERVD .AND. LDGAS .AND. NPD.EQ.0) THEN
+      IF (LUSERVD .and. LDGAS .and. NPD.EQ.0) THEN
 !           Assign user-specified gas dry deposition velocity (GASDEPVD option)
          VDEPG = USERVD
-      ELSE IF (LDPART .OR. (.NOT.LUSERVD .AND. LDGAS .AND.&
+      ELSE IF (LDPART .or. (.NOT.LUSERVD .and. LDGAS .and.&
       &NPD.EQ.0)) THEN
 !           Calculate Deposition Velocities for this Source    ---   CALL VDP
          CALL VDP
       END IF
-      IF (LWPART .OR. LWGAS) THEN
+      IF (LWPART .or. LWGAS) THEN
 !PES        Set value of ZSUBP = MAX( ZI, TOP OF PLUME ), where
 !PES        TOP OF PLUME is defined as plume height (HE) plus 2.15*SZ,
 !PES        evaluated at a distance of 20 kilometers downwind.
 !PES        Apply minimum value of 500m and maximum value of 10,000m.
          CALL HEFF (20000.0D0)
-         IF( STABLE .OR. (UNSTAB .AND. HS .GE. ZI) )THEN
+         IF( STABLE .or. (UNSTAB .and. HS .GE. ZI) )THEN
             CALL SIGZ(20000.0D0)
             ZSUBP = MAX( 500.0D0, ZI, HS + SZCOEF*SZAS )
          ELSE IF (UNSTAB) THEN
@@ -5083,7 +5083,7 @@ SUBROUTINE OCALC
          IF (INOUT .GT. 0) THEN
 !              Receptor is within boundary - skip to next receptor
 
-            IF (PVMRM .OR. OLM .OR. ARM2 .OR. GRSM) THEN
+            IF (PVMRM .or. OLM .or. ARM2 .or. GRSM) THEN
 ! ---             Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                 cycling to the next receptor to avoid
 !                 persisting value from previous hour.
@@ -5091,7 +5091,7 @@ SUBROUTINE OCALC
                IF(GRSM)THEN
                   CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
                END IF
-               IF (PVMRM .OR. GRSM) THEN
+               IF (PVMRM .or. GRSM) THEN
                   HECNTR(IREC,ISRC)  = 0.0D0
                   UEFFS(IREC,ISRC)   = 0.0D0
                   EPSEF(IREC,ISRC)   = 0.0D0
@@ -5126,9 +5126,9 @@ SUBROUTINE OCALC
 !           distance from source; assigned value of 80km for
 !           the obsolescent TOXICS option or new FASTALL option;
 !           otherwise "unlimited" (1.0D20)
-         IF (XMAXR .LT. 1.0D0 .OR. DISTR .GT. MAXDIST) THEN
-            IF (PVMRM .OR. OLM .OR. ARM2&
-            &.OR. RUNTTRM .OR. GRSM) THEN
+         IF (XMAXR .LT. 1.0D0 .or. DISTR .GT. MAXDIST) THEN
+            IF (PVMRM .or. OLM .or. ARM2&
+            &.or. RUNTTRM .or. GRSM) THEN
 ! ---             Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                 cycling to the next receptor to avoid
 !                 persisting value from previous hour.
@@ -5136,7 +5136,7 @@ SUBROUTINE OCALC
                IF(GRSM)THEN
                   CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
                END IF
-               IF (PVMRM .OR. GRSM) THEN
+               IF (PVMRM .or. GRSM) THEN
                   HECNTR(IREC,ISRC)  = 0.0D0
                   UEFFS(IREC,ISRC)   = 0.0D0
                   EPSEF(IREC,ISRC)   = 0.0D0
@@ -5166,7 +5166,7 @@ SUBROUTINE OCALC
          SVEFF = SVS
          SWEFF = SWS
          TGEFF = TGS
-         IF ( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+         IF ( UNSTAB  .and.  (HS .LT. ZI) ) THEN
             UEFFD  = US
             SVEFFD = SVS
             SWEFFD = SWS
@@ -5185,8 +5185,8 @@ SUBROUTINE OCALC
             IF ((DABS(Y)-0.5D0*WIDTH) .GE. 5.0D0*SY) THEN
 ! ---             Receptor is beyond the edge of plume; set CHI = 0.0
 !                 and cycle to next receptor
-               IF (PVMRM .OR. OLM .OR. ARM2&
-               &.OR. RUNTTRM .OR. GRSM) THEN
+               IF (PVMRM .or. OLM .or. ARM2&
+               &.or. RUNTTRM .or. GRSM) THEN
 ! ---                Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                    cycling to the next receptor to avoid
 !                    persisting value from previous hour.
@@ -5194,7 +5194,7 @@ SUBROUTINE OCALC
                   IF(GRSM)THEN
                      CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
                   END IF
-                  IF (PVMRM .OR. GRSM) THEN
+                  IF (PVMRM .or. GRSM) THEN
                      HECNTR(IREC,ISRC)  = 0.0D0
                      UEFFS(IREC,ISRC)   = 0.0D0
                      EPSEF(IREC,ISRC)   = 0.0D0
@@ -5243,17 +5243,17 @@ SUBROUTINE OCALC
 
 !           Calculate distance for switch to point source approx. for FASTAREA
          XPOINT = 1.5D0*LENGTH + VP_FACT*WIDTH
-         IF ( (.NOT.FASTAREA .AND. .NOT.FASTALL) .OR.&
-         &((FASTAREA .OR. FASTALL) .AND. X .LT. XPOINT)) THEN
+         IF ( (.NOT.FASTAREA .and. .NOT.FASTALL) .or.&
+         &((FASTAREA .or. FASTALL) .and. X .LT. XPOINT)) THEN
             IF (ARDPLETE) THEN
 
-               IF (NPD .EQ. 0 .AND. (LDGAS .OR. LWGAS)) THEN
+               IF (NPD .EQ. 0 .and. (LDGAS .or. LWGAS)) THEN
                   CALL PDEPG (XDEP)
                ELSE
                   DQCORG = 1.0D0
                   WQCORG = 1.0D0
                END IF
-               IF (NPD .GT. 0 .AND. (LDPART .OR. LWPART)) THEN
+               IF (NPD .GT. 0 .and. (LDPART .or. LWPART)) THEN
                   CALL PDEP (XDEP)
                ELSE IF (NPD .GT. 0) THEN
 !                    Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
@@ -5277,13 +5277,13 @@ SUBROUTINE OCALC
             SYINIT = 0.0D0
 
 !              Determine Deposition Correction Factors
-            IF (NPD .EQ. 0 .AND. (LDGAS .OR. LWGAS)) THEN
+            IF (NPD .EQ. 0 .and. (LDGAS .or. LWGAS)) THEN
                CALL PDEPG (X)
             ELSE
                DQCORG = 1.0D0
                WQCORG = 1.0D0
             END IF
-            IF (NPD .GT. 0 .AND. (LDPART .OR. LWPART)) THEN
+            IF (NPD .GT. 0 .and. (LDPART .or. LWPART)) THEN
                CALL PDEP (X)
             ELSE IF (NPD .GT. 0) THEN
 !                 Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
@@ -5298,7 +5298,7 @@ SUBROUTINE OCALC
 !              If the atmosphere is unstable and the stack
 !              top is below the mixing height, calculate
 !              the CBL PDF coefficients                     ---   CALL PDF
-            IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+            IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
                CALL PDF
             END IF
 
@@ -5310,7 +5310,7 @@ SUBROUTINE OCALC
             CALL IBLVAL (X)
 
 !              Call PDF & HEFF again for final CBL plume heights
-            IF (UNSTAB .AND. (HS.LT.ZI) ) THEN
+            IF (UNSTAB .and. (HS.LT.ZI) ) THEN
                CALL PDF
                CALL HEFF (X)
             END IF
@@ -5330,9 +5330,9 @@ SUBROUTINE OCALC
 
 !              Check for zero "y-terms"; if zero then skip calculations
 !              and go to next receptor.
-            IF( FSUBY.EQ.0.0D0 .AND. FSUBY3.EQ.0.0D0 )THEN
+            IF( FSUBY.EQ.0.0D0 .and. FSUBY3.EQ.0.0D0 )THEN
 !                 FSUBY terms are both 0.0; assign 0.0 to arrays
-               IF (PVMRM .OR. OLM .OR. ARM2 .OR. GRSM)THEN
+               IF (PVMRM .or. OLM .or. ARM2 .or. GRSM)THEN
 ! ---                Assign 0.0 to CHI(IREC,ISRC,ITYP) before
 !                    cycling to the next receptor to avoid
 !                    persisting value from previous hour.
@@ -5340,7 +5340,7 @@ SUBROUTINE OCALC
                   IF(GRSM)THEN
                      CHI_TTRAVCHM(IREC,ISRC) = 0.0D0
                   END IF
-                  IF (PVMRM .OR. GRSM) THEN
+                  IF (PVMRM .or. GRSM) THEN
                      HECNTR(IREC,ISRC)  = 0.0D0
                      UEFFS(IREC,ISRC)   = 0.0D0
                      EPSEF(IREC,ISRC)   = 0.0D0
@@ -5369,7 +5369,7 @@ SUBROUTINE OCALC
 
                   ADJ = DQCORG * WQCORG
 
-                  IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+                  IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !                       Calculate height of the "effective reflecting surface"
                      CALL REFL_HT (HE, X, 0.0D0, VSIGZ, HSBL)
                   ELSE IF ( UNSTAB ) THEN
@@ -5403,7 +5403,7 @@ SUBROUTINE OCALC
 !                       depletion
                      ADJ = PHI(J) * DQCOR(J) * WQCOR(J)
 
-                     IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+                     IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !                          Calculate height of the "effective reflecting surface"
 !                          Calculate Settled Plume Height(s), HESETL
                         HESETL = MAX( 0.0D0, HE - HV )
@@ -5443,7 +5443,7 @@ SUBROUTINE OCALC
             DO ITYP = 1, NUMTYP
                CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
             END DO
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                HECNTR(IREC,ISRC) = HE
                UEFFS(IREC,ISRC)  = UEFF
                EPSEF(IREC,ISRC)  = EPSEFF
@@ -5520,7 +5520,7 @@ SUBROUTINE OCALC
          ELSE IF (GRSM) THEN
 
 !              Calculate the effective wind speed
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                UCHM=UEFF
             ELSE
                UCHM=UEFFD
@@ -5541,7 +5541,7 @@ SUBROUTINE OCALC
                CHI(IREC,ISRC,ITYP) = HRVAL(ITYP)
             END DO
 
-            IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+            IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
                HECNTR(IREC,ISRC) = HE
                UEFFS(IREC,ISRC)  = UEFF
                EPSEF(IREC,ISRC)  = EPSEFF
@@ -5720,7 +5720,7 @@ SUBROUTINE SETSRC
       END IF
 !**  End Aircraft Plume Rise insert; April 2023
 
-   ELSE IF (SRCTYP(ISRC) .EQ. 'AREA' .OR.&
+   ELSE IF (SRCTYP(ISRC) .EQ. 'AREA' .or.&
    &SRCTYP(ISRC) .EQ. 'LINE') THEN
       XS = AXS(ISRC)
       YS = AYS(ISRC)
@@ -5744,7 +5744,7 @@ SUBROUTINE SETSRC
       XCNTR = AXCNTR(ISRC)
       YCNTR = AYCNTR(ISRC)
 !**  Added for Aircraft Plume Rise; UNC-IE
-      IF (SRCTYP(ISRC) .EQ. 'AREA' .AND.&
+      IF (SRCTYP(ISRC) .EQ. 'AREA' .and.&
       &AFTSRC(ISRC) .EQ. 'Y') THEN
 !        Find Aircraft Index for This Source
 !        Aircraft Engine Parameters
@@ -6048,7 +6048,7 @@ SUBROUTINE HEFF ( XARG )
    DHP3PLAT = 0.0D0     !D142 initialized DHP3PLAT 2/2/23 WSP
 
 !     Compute the effective plume height
-   IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
 !        The atmosphere is stable or the release is above the CBL
 !        mixing ht.
       HE = HSP + DHP
@@ -6062,7 +6062,7 @@ SUBROUTINE HEFF ( XARG )
       HE3  = 0.0D0
 
 !CRT     D063 Platform Downwash Debug
-      IF (PLATFMDBG .AND. OSPLAT(ISRC)) THEN
+      IF (PLATFMDBG .and. OSPLAT(ISRC)) THEN
          WRITE(PLATFMDBUNT,'(A, 1(2X, A, F12.3), 3(2X, A, F7.3))')&
          &'calc1.f/HEFF(STABLE): ',&
          &'XARG = ', XARG,&
@@ -6114,7 +6114,7 @@ SUBROUTINE HEFF ( XARG )
       END IF
 
 !CRT     D063 Platform Downwash Debug
-      IF (PLATFMDBG .AND. OSPLAT(ISRC)) THEN
+      IF (PLATFMDBG .and. OSPLAT(ISRC)) THEN
          WRITE(PLATFMDBUNT,'(A, 1(2X, A, F12.3), 12(2X, A, F7.3))')&
          &'calc1.f/HEFF(UNSTABLE): ',&
          &'XARG = ', XARG,&
@@ -6261,7 +6261,7 @@ SUBROUTINE PDIS ( XARG )
 !     Calculate the buoyancy-induced dispersion parameters
    IF( NOBID )THEN
 !        Set BID Terms to 0.0
-      IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) )THEN
+      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
          SYB = 0.0D0
          SZB = 0.0D0
 
@@ -6315,7 +6315,7 @@ SUBROUTINE PDIS ( XARG )
          CALL PLAT_DOWNWASH (XARG, PLATHB(ISRC)+0.0D0,&
          &PLATWB(ISRC), HE, PLATSZ, PLATSY)
 
-      ELSEIF (UNSTAB .AND. (HS .GE. ZI)) THEN
+      ELSEIF (UNSTAB .and. (HS .GE. ZI)) THEN
 
 !              Do not apply to injected plume
          CONTINUE
@@ -6648,7 +6648,7 @@ SUBROUTINE AER_PCHI( XARG, ADJ, VDINP, JIN, AEROUT )
 
    END IF
 
-   IF (DEPOS .OR. DDEP) THEN
+   IF (DEPOS .or. DDEP) THEN
 !        Calculate DRYFLUX, vertical term for wet deposition
 !----    Calculate the contribution due to horizontal plume, CWRAP
       IF (FOPT .EQ. 0.0D0) THEN
@@ -6671,7 +6671,7 @@ SUBROUTINE AER_PCHI( XARG, ADJ, VDINP, JIN, AEROUT )
       &
    END IF
 
-   IF (DEPOS .OR. WDEP) THEN
+   IF (DEPOS .or. WDEP) THEN
 !        Calculate WETFLUX, vertical term for wet deposition.
 !        Note that the SRT2PI for the integrated vertical term
 !        has been removed since it should be divided by SRT2PI.
@@ -6693,7 +6693,7 @@ SUBROUTINE AER_PCHI( XARG, ADJ, VDINP, JIN, AEROUT )
 
    IF (DEPOS) THEN
       ITYP = ITYP + 1
-      IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) ) THEN
+      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
          AEROUT(ITYP) = ADJ * VDINP * EMIFAC(ITYP) * DRYFLUX +&
          &QTK * WETFLUX * EMIFAC(ITYP) * FSUBY/UEFF
       ELSE IF (UNSTAB) THEN
@@ -6733,7 +6733,7 @@ SUBROUTINE AER_PCHI( XARG, ADJ, VDINP, JIN, AEROUT )
 
    IF (WDEP) THEN
       ITYP = ITYP + 1
-      IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) ) THEN
+      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
          AEROUT(ITYP) = QTK * WETFLUX * EMIFAC(ITYP) * FSUBY/UEFF
       ELSE IF (UNSTAB) THEN
          AEROUT(ITYP) = QTK * WETFLUX * EMIFAC(ITYP) *&
@@ -6847,7 +6847,7 @@ SUBROUTINE PRM_PCHI(ADJ, VDINP, JIN, INSRC)                       ! ORD(EMM) cha
 
       CALL ANYAVG ( MXGLVL, GRIDHT, GRIDWS, ZFLAG ,NDXBLOe+1,&
       &ZPHT, NDXBHIe, UEFFe )
-      IF ((INSRC.eq.2) .OR. (INSRC .eq. 3)) THEN
+      IF ((INSRC.eq.2) .or. (INSRC .eq. 3)) THEN
          UEFFe = US
       END IF
 
@@ -6916,7 +6916,7 @@ SUBROUTINE PRM_PCHI(ADJ, VDINP, JIN, INSRC)                       ! ORD(EMM) cha
       &(FOPT * CWRAP + (1.0D0 - FOPT) * CLIFT) * D
    END IF
 
-   IF (DEPOS .OR. DDEP) THEN
+   IF (DEPOS .or. DDEP) THEN
 !        Calculate DRYFLUX, vertical term for wet deposition
 !----    Calculate the contribution due to horizontal plume, CWRAP
       IF (FOPT .EQ. 0.0D0) THEN
@@ -6938,7 +6938,7 @@ SUBROUTINE PRM_PCHI(ADJ, VDINP, JIN, INSRC)                       ! ORD(EMM) cha
       DRYFLUX = (FOPT * CWRAP + (1.0D0 - FOPT) * CLIFT) * D
    END IF
 
-   IF (DEPOS .OR. WDEP) THEN
+   IF (DEPOS .or. WDEP) THEN
 !        Calculate WETFLUX, vertical term for wet deposition
 !        Note that the SRT2PI for the integrated vertical term
 !        has been removed since it should be divided by SRT2PI.
@@ -7089,7 +7089,7 @@ SUBROUTINE AER_ACHI( XARG, ADJ, VDINP, JIN, FYARG, POUT )
       POUT = ADJ * (FOPT * CWRAP + (1.0D0 - FOPT) * CLIFT) * D
 
    END IF
-   IF (SDEPOS .OR. SDDEP) THEN
+   IF (SDEPOS .or. SDDEP) THEN
 !----    Get Concentration or Deposition due to horizontal plume, CWRAP
       IF (FOPT .EQ. 0.0D0) THEN
          CWRAP = 0.0D0
@@ -7113,7 +7113,7 @@ SUBROUTINE AER_ACHI( XARG, ADJ, VDINP, JIN, FYARG, POUT )
       DRYFLUX = ADJ * (FOPT * CWRAP + (1.0D0 - FOPT) * CLIFT) * D
 
    END IF
-   IF (SDEPOS .OR. SWDEP) THEN
+   IF (SDEPOS .or. SWDEP) THEN
 !        Calculate WETFLUX, vertical term for wet deposition
 !        Note that the SRT2PI for the integrated vertical term
 !        has been removed since it should be divided by SRT2PI.
@@ -7133,7 +7133,7 @@ SUBROUTINE AER_ACHI( XARG, ADJ, VDINP, JIN, FYARG, POUT )
       END IF
    END IF
    IF (SDEPOS) THEN
-      IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) ) THEN
+      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
          POUT = VDINP*DRYFLUX + WETFLUX*FYARG/UEFF
       ELSE IF (UNSTAB) THEN
          POUT = VDINP*DRYFLUX + WETFLUX*FYARG/UEFFD
@@ -7143,7 +7143,7 @@ SUBROUTINE AER_ACHI( XARG, ADJ, VDINP, JIN, FYARG, POUT )
       POUT = VDINP*DRYFLUX
    END IF
    IF (SWDEP) THEN
-      IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) ) THEN
+      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
          POUT = WETFLUX*FYARG/UEFF
       ELSE IF (UNSTAB) THEN
          POUT = WETFLUX*FYARG/UEFFD
@@ -7212,7 +7212,7 @@ SUBROUTINE DEBOUT
    MODNAM = 'DEBOUT'
 
 !     Calculate contributions from each "plume"
-   IF (STABLE .OR. (UNSTAB .AND. HS.GE.ZI)) THEN
+   IF (STABLE .or. (UNSTAB .and. HS.GE.ZI)) THEN
       CHID = HRVAL(1)
    ELSE IF (UNSTAB) THEN
 !CRFL
@@ -7223,7 +7223,7 @@ SUBROUTINE DEBOUT
 !CRFL
       CHID = (QTK*EMIFAC(1) * (1.0D0-PPF) / UEFFD) * (FSUBYD*FSUBZD)
       CHIN = (QTK*EMIFAC(1) * (1.0D0-PPF) / UEFFN) * (FSUBYN*FSUBZN)
-      IF (PPF.GT.0.0D0 .AND. UEFF3.GT.0.0D0) THEN
+      IF (PPF.GT.0.0D0 .and. UEFF3.GT.0.0D0) THEN
          CHI3 = (QTK * EMIFAC(1) * PPF / UEFF3) * (FSUBY3*FSUBZ3)
       ELSE
          CHI3 = 0.0D0
@@ -7246,7 +7246,7 @@ SUBROUTINE DEBOUT
 !     Write the data that was used in the plume computations,
 !      which is stability-dependent.
 !
-   IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
       WRITE ( DBGUNT, 400 ) PPF,QTK,HE,SYAMB,VSIGY,SYB,SY,&
       &FSUBY,SZAMB,VSIGZ,SZB,SZSURF,SZ,FSUBZ,CHID
 
@@ -7357,7 +7357,7 @@ SUBROUTINE PENFCT
    IF( STABLE ) THEN
       PPF = 0.0D0
 
-   ELSE IF (UNSTAB .AND. (HS .GE. ZI) )THEN
+   ELSE IF (UNSTAB .and. (HS .GE. ZI) )THEN
       PPF = 1.0D0
 
    ELSE
@@ -7456,7 +7456,7 @@ SUBROUTINE CPLUME (ZARG, COUT)
 !     Assign receptor height for vertical term calculations
    ZR = ZARG
 
-   IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) ) THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
 !        Calculate the vertical term, FSUBZ              ---   CALL VRTSBL
 !        With stable plume reflections and effective Zi
       IF (ZR .LE. HSBL) THEN
@@ -7509,7 +7509,7 @@ SUBROUTINE CPLUME (ZARG, COUT)
          FSUBZ3 = FSUBZ
 ! Added for HIGHLY BUOYANT PLUME (HBP), JAN 2023
 ! Apply HBP only for identified sources
-         IF ((HBPLUME) .AND. (HBPSRC(ISRC).EQ.'Y')) THEN
+         IF ((HBPLUME) .and. (HBPSRC(ISRC).EQ.'Y')) THEN
             IF (PPF .LT. 1.0D0) THEN
 !  ************************************* modified code JAN 2023  --kja
                COUT = (QTK * (1.0D0-PPF) / UEFFD) * ( FSUBYD*FSUBZD ) +&
@@ -7576,7 +7576,7 @@ SUBROUTINE PRM_PLUME (ZARG, UEFFPH, COUT)                   ! ORD (EMM) change
 
    IF (STABLE) THEN
       CALL VRTSBN (SZ, HE)
-   ELSE IF (UNSTAB .AND. HE.LE.ZI) THEN
+   ELSE IF (UNSTAB .and. HE.LE.ZI) THEN
       CALL VRTSBL (SZ, HE, ZI)
    ELSE
       FSUBZ = 0.0D0
@@ -7660,7 +7660,7 @@ SUBROUTINE ACPLUME (ZARG, FYARG, COUT)
 !     Assign lateral term
    FSUBY = FYARG
 
-   IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) ) THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
 !        Calculate the vertical term, FSUBZ              ---   CALL VRTSBL
 !        With stable plume reflections
       IF (ZR .LE. HSBL) THEN
@@ -8010,7 +8010,7 @@ subroutine VDP
 !PES       Ta = Tcel+273.2
 !PES      end if
 
-   if (npd .eq. 0 .AND. LDGAS .AND. .NOT.LUSERVD) then
+   if (npd .eq. 0 .and. LDGAS .and. .NOT.LUSERVD) then
 ! ...    Assign parameters for gas deposition
 
 ! ...    Assign land use category for this direction based on user input.
@@ -8032,7 +8032,7 @@ subroutine VDP
       Rgo     = Restab(LANUSE,6,ISEA5)
 ! ...    Compute rLAI and reference solar irradiance as a function of
 !        land use category and season.
-      if (ISEA5.EQ.1 .OR. ISEA5.EQ.3 .OR. ISEA5.EQ.4) THEN
+      if (ISEA5.EQ.1 .or. ISEA5.EQ.3 .or. ISEA5.EQ.4) THEN
          F = 1.0D0
       else if (ISEA5 .EQ. 2) then
 !           Assign user-supplied value for season 2, default it 0.50
@@ -8049,7 +8049,7 @@ subroutine VDP
          Gr = 100.0D0
       end if
 
-   else if (npd .eq. 0 .AND. LDGAS .AND. LUSERVD) then
+   else if (npd .eq. 0 .and. LDGAS .and. LUSERVD) then
       return
 
    end if
@@ -8099,7 +8099,7 @@ subroutine VDP
    &(1.0D0+0.0132D0*(Pressure-Po))
 
 !***
-   if (npd .eq. 0 .AND. LDGAS) then
+   if (npd .eq. 0 .and. LDGAS) then
 
 ! ...    Compute gas deposition velocity, vdepg
 
@@ -8248,7 +8248,7 @@ subroutine VDP
 
          end do
 ! ***
-         if(DEBUG .OR. DEPOSDBG)then
+         if(DEBUG .or. DEPOSDBG)then
             write(DBGUNT,*)
             write(DBGUNT,*)'RA (s/m)    = ',ra
             write(DBGUNT,*)'RD (s/m)    = ',(rd(n),n=1,npd)
@@ -8283,18 +8283,18 @@ subroutine VDP
 ! ... Write resistances and deposition velocities to separate files:
 !     GDEP.DAT for gas deposition and PDEP.DAT for particle deposition.
 
-   IF (DEBUG .OR. DEPOSDBG) THEN
-      if (LDGAS .AND. npd .eq. 0) then
+   IF (DEBUG .or. DEPOSDBG) THEN
+      if (LDGAS .and. npd .eq. 0) then
          write(GDEPDBG,1001) kurdat, isrc, ra, rb, rc, vdepg
 1001     format(1x,i8,1x,i6,4(2x,e12.6))
       end if
-      if (LDPART .AND. .NOT. L_METHOD2(ISRC)) then
+      if (LDPART .and. .NOT. L_METHOD2(ISRC)) then
          do i = 1, npd
             write(PDEPDBG,1002) kurdat, isrc, i, ra, rd(i), vgrav(i),&
             &vdep(i)
 1002        format(1x,i8,1x,i6,2x,i3,'  METHOD_1 ',4(2x,e12.6))
          end do
-      else if (LDPART .AND. L_METHOD2(ISRC)) then
+      else if (LDPART .and. L_METHOD2(ISRC)) then
          write(PDEPDBG,1003) kurdat, isrc, ra, rp, vgrav(1), vdep(1)
 1003     format(1x,i8,1x,i6,4x,'-  METHOD_2 ',4(2x,e12.6))
       end if
@@ -8351,7 +8351,7 @@ subroutine scavrat
    &TABS, TRES, REYNOLD, STOKE, SSTAR, KAPPA,&
    &TERM1, TERM2, TERM3
 
-   if(DEBUG .OR. DEPOSDBG)then
+   if(DEBUG .or. DEPOSDBG)then
       write(DBGUNT,*)
       write(DBGUNT,*)'SUBR. SCAVRAT -- Inputs'
       write(DBGUNT,*)'IPCODE               = ',ipcode
@@ -8518,7 +8518,7 @@ subroutine scavrat
 
    end if
 
-   if(DEBUG .OR. DEPOSDBG)then
+   if(DEBUG .or. DEPOSDBG)then
       write(DBGUNT,*)'SUBR. SCAVRAT -- Results'
       if (npd .eq. 0) then
          write(DBGUNT,*)'GSCVRT (1/s)= ',gscvrt
@@ -8573,7 +8573,7 @@ SUBROUTINE PDEP (XARG)
          VSETL = VGRAV(I)
          CALL DEPLETE(VDEP(I),XARG,ROMBERG,DQCOR(I))
       END IF
-      IF (WDPLETE .AND. PSCVRT(I).GT.0.0D0) THEN
+      IF (WDPLETE .and. PSCVRT(I).GT.0.0D0) THEN
 !           Determine source depletion factor from wet removal
 !           Simple Terrain Model
          WQCOR(I) = DEXP(-PSCVRT(I)*XARG/US)
@@ -8621,7 +8621,7 @@ SUBROUTINE PDEPG (XARG)
 !        Determine factor for dry depletion
       CALL DEPLETE( VDEPG, XARG, ROMBERG, DQCORG)
    END IF
-   IF (WDPLETE .AND. GSCVRT.GT.0.0D0) THEN
+   IF (WDPLETE .and. GSCVRT.GT.0.0D0) THEN
 !        Determine source depletion factor
 !        from wet removal (GASES)
 !        Simple Terrain Model
@@ -8735,7 +8735,7 @@ function f2int(xi)
    SVEFF = SVS
    SWEFF = SWS
    TGEFF = TGS
-   IF ( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+   IF ( UNSTAB  .and.  (HS .LT. ZI) ) THEN
       UEFFD  = US
       SVEFFD = SVS
       SWEFFD = SWS
@@ -8768,13 +8768,13 @@ function f2int(xi)
       CALL DELTAH ( XI )
    END IF
 !**  Added for Aircraft Plume Rise; UNC-IE
-   IF (SRCTYP(ISRC) .EQ. 'VOLUME' .AND.&
+   IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and.&
    &AFTSRC(ISRC) .EQ. 'Y') THEN
 !        Calculate the plume rise                     ---   CALL ADELTAH
       CALL ADELTAH (XI)
    END IF
 
-   IF (SRCTYP(ISRC) (1:4) .EQ. 'AREA' .AND.&
+   IF (SRCTYP(ISRC) (1:4) .EQ. 'AREA' .and.&
    &AFTSRC(ISRC) .EQ. 'Y') THEN
 !        Calculate the plume rise                     ---   CALL ADELTAH
       CALL ADELTAH (XI)
@@ -8784,7 +8784,7 @@ function f2int(xi)
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                     ---   CALL PDF
-   IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
       CALL PDF
    END IF
 
@@ -8796,7 +8796,7 @@ function f2int(xi)
    CALL IBLVAL ( XI )
 
 !     Call PDF & HEFF again for final CBL plume heights
-   IF (UNSTAB .AND. (HS.LT.ZI) ) THEN
+   IF (UNSTAB .and. (HS.LT.ZI) ) THEN
       CALL PDF
       CALL HEFF ( XI )
    END IF
@@ -8807,7 +8807,7 @@ function f2int(xi)
 !     Calculate Plume Tilt Due to Settling, HV
    HV = (XI/US) * VSETL
 
-   IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+   IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !        Calculate height of the "effective reflecting surface"
 !        Calculate Settled Plume Height(s), HESETL
       HESETL = MAX( 0.0D0, HE - HV )
@@ -8817,7 +8817,7 @@ function f2int(xi)
       HSBL = 0.0D0
    END IF
 
-   IF (UNSTAB .AND. (HS.LT.ZI) .AND. (PPF.GT.0.0D0)) THEN
+   IF (UNSTAB .and. (HS.LT.ZI) .and. (PPF.GT.0.0D0)) THEN
 !        Calculate height of the "effective reflecting surface"
 !        Calculate Settled Plume Height(s), HE3SETL
       HE3SETL = MAX( 0.0D0, HE3 - HV )
@@ -8843,7 +8843,7 @@ function f2int(xi)
 !        Assign receptor height for vertical term calculations
       ZR = ZRT + ZRDEP
 
-      IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) ) THEN
+      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
 !           Calculate the vertical term, FSUBZ              ---   CALL VRTSBL
 !           With stable plume reflections and effective Zi
          IF (ZR .LE. HSBL) THEN
@@ -8927,7 +8927,7 @@ function f2int(xi)
 !        Assign receptor height for vertical term calculations
       ZR = ZRDEP
 
-      IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) ) THEN
+      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) ) THEN
 !           Calculate the vertical term, FSUBZ              ---   CALL VRTSBL
 !           With stable plume reflections and effective Zi
          IF (ZR .LE. HSBL) THEN
@@ -9052,7 +9052,7 @@ SUBROUTINE PRM_PDEP (XARG)
          VSETL = VGRAV(I)
          CALL PRM_DEPLETE(VDEP(I),XARG,ROMBERG,DQCOR(I))
       END IF
-      IF (WDPLETE .AND. PSCVRT(I).GT.0.0D0) THEN
+      IF (WDPLETE .and. PSCVRT(I).GT.0.0D0) THEN
 !           Determine source depletion factor from wet removal
 !           Simple Terrain Model
          WQCOR(I) = DEXP(-PSCVRT(I)*XARG/US)
@@ -9100,7 +9100,7 @@ SUBROUTINE PRM_PDEPG (XARG)
 !        Determine factor for dry depletion
       CALL PRM_DEPLETE( VDEPG, XARG, ROMBERG, DQCORG)
    END IF
-   IF (WDPLETE .AND. GSCVRT.GT.0.0D0) THEN
+   IF (WDPLETE .and. GSCVRT.GT.0.0D0) THEN
 !        Determine source depletion factor
 !        from wet removal (GASES)
 !        Simple Terrain Model
@@ -9236,7 +9236,7 @@ function PRM_f2int(xi)
 
    IF (STABLE) THEN
       CALL VRTSBN (SZ, HE)
-   ELSE IF (UNSTAB .AND. HE.LE.ZI) THEN
+   ELSE IF (UNSTAB .and. HE.LE.ZI) THEN
       CALL VRTSBL (SZ, HE, ZI)
    ELSE
       FSUBZ = 0.0D0
@@ -9255,7 +9255,7 @@ function PRM_f2int(xi)
       ZR = ZRDEP
       IF (STABLE) THEN
          CALL VRTSBN (SZ, HE)
-      ELSE IF (UNSTAB .AND. HE.LE.ZI) THEN
+      ELSE IF (UNSTAB .and. HE.LE.ZI) THEN
          CALL VRTSBL (SZ, HE, ZI)
       ELSE
          FSUBZ = 0.0D0
@@ -9344,7 +9344,7 @@ subroutine qatr2(xl,xu,eps,ndim,fct,y,ier,i,aux)
    aux(1)=half*(fct(xl)+fct(xu))
    h=xu-xl
 
-   if(h .EQ. 0.0D0 .OR. aux(1) .EQ. 0.0D0) then
+   if(h .EQ. 0.0D0 .or. aux(1) .EQ. 0.0D0) then
       ier=0
       y = 0.0D0
       return
@@ -9608,7 +9608,7 @@ SUBROUTINE OLM_CALC
 !              Determine if combined plume is O3 limited, and assign
 !              PercentNO2 to OLMGroup for CONC (ITYP=1); Apply full
 !              conversion if O3MISS
-            IF (.NOT. O3MISS .AND. (O3CONC/48.0D0) .LT.&
+            IF (.NOT. O3MISS .and. (O3CONC/48.0D0) .LT.&
             &((NO_VAL(IOLM))/30.0D0)) THEN
 ! ---             .NOT. O3MISS and NO2 conversion is O3-limited;
 !                 compute O3-limited NO2 concentration (OLMTEMP)
@@ -9662,7 +9662,7 @@ SUBROUTINE OLM_CALC
 !! Added for TTRM2
 !! Perform comparison of calculated hourly NO2 values between OLM and TTRM
                            IF (RUNTTRM2) THEN
-                              IF (TTRM2DBG .AND. (CMETH .LT. 3)) THEN
+                              IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
                                  WRITE(TTRM2TMP(2),PSTFRM,ERR=85) AXR(IREC),&
                                  &AYR(IREC), HRVAL(1), AZELEV(IREC),&
                                  &AZHILL(IREC), AZFLAG(IREC), CHRAVE(1),&
@@ -9676,7 +9676,7 @@ SUBROUTINE OLM_CALC
                               IF (TTRMCOMPARE(IGRP,ISRC,IREC,ITYP) .LT. HRVAL(ITYP)) THEN
                                  HRVAL(ITYP) = TTRMCOMPARE(IGRP,ISRC,IREC,ITYP)
                               ENDIF
-                              IF (TTRM2DBG .AND. (CMETH .LT. 3)) THEN
+                              IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
                                  WRITE(TTRM2TMP(3),PSTFRM,ERR=95) AXR(IREC),&
                                  &AYR(IREC), HRVAL(1), AZELEV(IREC),&
                                  &AZHILL(IREC), AZFLAG(IREC), CHRAVE(1),&
@@ -9724,7 +9724,7 @@ SUBROUTINE OLM_CALC
 ! ---          Determine if CONC is O3-limited; if not, then no conversion needed
 !              First check for missing O3 data (O3MISS) and apply full conversion
 !              (subject to equilibrium ratio)
-                  IF (.NOT. O3MISS .AND. (O3CONC/48.0D0) .LT.&
+                  IF (.NOT. O3MISS .and. (O3CONC/48.0D0) .LT.&
                   &(NO/30.0D0)) THEN
 ! ---             .NOT. O3MISS and NO2 conversion is O3-limited;
 !                 compute O3-limited NO2 concentration (OLMTEMP)
@@ -9755,7 +9755,7 @@ SUBROUTINE OLM_CALC
 !! Added for TTRM2
 !! Perform comparison of calculated hourly NO2 values between OLM and TTRM
                      IF (RUNTTRM2) THEN
-                        IF (TTRM2DBG .AND. (CMETH .LT. 3)) THEN
+                        IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
                            WRITE(TTRM2TMP(2),PSTFRM,ERR=86) AXR(IREC),&
                            &AYR(IREC), HRVAL(1),  AZELEV(IREC),&
                            &AZHILL(IREC), AZFLAG(IREC), CHRAVE(1),&
@@ -9769,7 +9769,7 @@ SUBROUTINE OLM_CALC
                         IF (TTRMCOMPARE(IGRP,ISRC,IREC,ITYP) .LT. HRVAL(ITYP)) THEN
                            HRVAL(ITYP) = TTRMCOMPARE(IGRP,ISRC,IREC,ITYP)
                         ENDIF
-                        IF (TTRM2DBG .AND. (CMETH .LT. 3)) THEN
+                        IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
                            WRITE(TTRM2TMP(3),PSTFRM,ERR=96) AXR(IREC),&
                            &AYR(IREC), HRVAL(1), AZELEV(IREC),&
                            &AZHILL(IREC), AZFLAG(IREC), CHRAVE(1),&
@@ -9902,7 +9902,7 @@ SUBROUTINE OLM_CALC
 ! ---          Determine if CONC is O3-limited; if not, then no conversion needed
 !              First check for missing O3 data (O3MISS) and apply full conversion
 !              (subject to equilibrium ratio)
-               IF (.NOT. O3MISS .AND. (O3CONC/48.0D0) .LT.&
+               IF (.NOT. O3MISS .and. (O3CONC/48.0D0) .LT.&
                &(NO/30.0D0)) THEN
 ! ---             .NOT. O3MISS and NO2 conversion is O3-limited;
 !                 compute O3-limited NO2 concentration (OLMTEMP)
@@ -10113,8 +10113,8 @@ SUBROUTINE TTRM_CALC
                NOX = (1.0D0-ANO2_RATIO(ISRC))*CHI(IREC,ISRC,1)  ! Total NO
 
 !     Perform TTRM for POINT, VOLUME or AREA type sources
-               IF ((SRCTYP(ISRC)(1:5) .EQ. 'POINT') .OR.&
-               &(SRCTYP(ISRC) .EQ. 'VOLUME') .OR.&
+               IF ((SRCTYP(ISRC)(1:5) .EQ. 'POINT') .or.&
+               &(SRCTYP(ISRC) .EQ. 'VOLUME') .or.&
                &(SRCTYP(ISRC)(1:4) .EQ. 'AREA')) THEN
 !                Calculate the final TTRM time based on the source type,
 !                stability and plume dispersion type
@@ -10144,7 +10144,7 @@ SUBROUTINE TTRM_CALC
                            TTRMSUB(ITYP)  = HRVAL(ITYP)
                         END IF
 ! Calculate for downwash cases
-                        IF (WAKE .AND. (STABLE .OR. HS.LE.ZI)) THEN
+                        IF (WAKE .and. (STABLE .or. HS.LE.ZI)) THEN
                            TTRMFRAC_AER(ITYP) = TTRMFRAC(ITYP)
 !   Calculate Prime contribution (using travel time for downwash)
                            IF (TTRMTIME_PRM .GT. 0.0) THEN
@@ -10199,7 +10199,7 @@ SUBROUTINE TTRM_CALC
                   ENDDO
                END IF
 ! Save values for TTRM2 evaluation file, if requested
-               IF (TTRM2DBG .AND. (CMETH .LT. 3)) THEN
+               IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
                   WRITE(TTRM2TMP(1),PSTFRM,ERR=77) AXR(IREC), AYR(IREC),&
                   &TTRMCOMPARE(IGRP,ISRC,IREC,1),&
                   &AZELEV(IREC), AZHILL(IREC),&
@@ -10214,7 +10214,7 @@ SUBROUTINE TTRM_CALC
 
 ! Once all the sources in a group are complete, if requested, write output to debug file
                IF (IGROUP(ISRC,IGRP) .EQ. 1) THEN
-                  IF (TTRMDBG .AND. (CMETH .LT. 3)) THEN
+                  IF (TTRMDBG .and. (CMETH .LT. 3)) THEN
                      IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
                         write(TTRMUNT,77882,ERR=7781) kurdat, AXR(IREC),&
                         &AYR(IREC), grpid(igrp), srcid(isrc), O3CONC,&
@@ -10359,8 +10359,8 @@ SUBROUTINE TTRM_CALC
             NOX = (1.0D0-ANO2_RATIO(ISRC))*CHI(1,ISRC,1) ! Total NO
 !
 !     Perform TTRM for POINT, VOLUME or AREA type sources
-            IF ((SRCTYP(ISRC)(1:5) .EQ. 'POINT') .OR.&
-            &(SRCTYP(ISRC) .EQ. 'VOLUME') .OR.&
+            IF ((SRCTYP(ISRC)(1:5) .EQ. 'POINT') .or.&
+            &(SRCTYP(ISRC) .EQ. 'VOLUME') .or.&
             &(SRCTYP(ISRC)(1:4) .EQ. 'AREA')) THEN
 !                Calculate the final TTRM time based on the source type,
 !                stability and plume dispersion type
@@ -10389,7 +10389,7 @@ SUBROUTINE TTRM_CALC
                         TTRMSUB(ITYP)  = HRVAL(ITYP)
                      END IF
 ! Calculate for downwash cases
-                     IF (WAKE .AND. (STABLE .OR. HS.LE.ZI)) THEN
+                     IF (WAKE .and. (STABLE .or. HS.LE.ZI)) THEN
                         TTRMFRAC_AER(ITYP) = TTRMFRAC(ITYP)
 !   Calculate Prime contribution (using travel time for downwash)
                         IF (TTRMTIME_PRM .GT. 0.0) THEN
@@ -10453,7 +10453,7 @@ SUBROUTINE TTRM_CALC
 
 ! If requested, write output to debug file
             IF (IGROUP(ISRC,IGRP) .EQ. 1) THEN
-               IF (TTRMDBG .AND. (CMETH .LT. 3)) THEN
+               IF (TTRMDBG .and. (CMETH .LT. 3)) THEN
                   IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
                      write(TTRMUNT,97882,ERR=9781) kurdat,&
                      &ievent, EVNAME(IEVENT), EVAPER(IEVENT),&
@@ -10614,7 +10614,7 @@ SUBROUTINE TTRM_STEP
 !     Perform TTRM calculations based on SRCTYPE, dominant plume dispersion type and stability
    IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
 !       Calculate travel time if POINT source is subject to downwash
-      IF (WAKE .AND. (STABLE .OR. HS.LE.ZI)) THEN
+      IF (WAKE .and. (STABLE .or. HS.LE.ZI)) THEN
          IF(TTRMOUT(IREC,ISRC,24) .GT. 0.0) THEN
             TTRMTIME_PRM = DABS(TTRMOUT(IREC,ISRC,10) /&
             &TTRMOUT(IREC,ISRC,24)) ! X / UEFFe ! Use downwind distance and wind speed for downwash (UEFFe)
@@ -11063,7 +11063,7 @@ SUBROUTINE ARM2_CALC
                   HRVAL(ITYP) = CHI(IREC,ISRC,ITYP) * RatioARM2
 !! Added for TTRM2
                   IF (RUNTTRM2) THEN
-                     IF (TTRM2DBG .AND. (CMETH .LT. 3)) THEN
+                     IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
                         WRITE(TTRM2TMP(2),PSTFRM,ERR=87) AXR(IREC), AYR(IREC),&
                         &HRVAL(1),&
                         &AZELEV(IREC), AZHILL(IREC), AZFLAG(IREC),&
@@ -11077,7 +11077,7 @@ SUBROUTINE ARM2_CALC
                      IF (TTRMCOMPARE(IGRP,ISRC,IREC,ITYP) .LT. HRVAL(ITYP)) THEN
                         HRVAL(ITYP) = TTRMCOMPARE(IGRP,ISRC,IREC,ITYP)
                      ENDIF
-                     IF (TTRM2DBG .AND. (CMETH .LT. 3)) THEN
+                     IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
                         WRITE(TTRM2TMP(3),PSTFRM,ERR=97) AXR(IREC), AYR(IREC),&
                         &HRVAL(1),&
                         &AZELEV(IREC), AZHILL(IREC), AZFLAG(IREC),&
@@ -11206,7 +11206,7 @@ SUBROUTINE ARM2_CALC
       END DO EV_SOURCE_LOOP
 
 !        Sum BACKGRND to HRVALS, EV_AVEVAL, GRPVAL and GRPAV Arrays ---   CALL EV_SUMBACK
-      IF (IDXEV(IEVENT) .EQ. IGRP .AND.&
+      IF (IDXEV(IEVENT) .EQ. IGRP .and.&
       &GRP_BACK(IDXEV(IEVENT))) THEN
          CALL EV_SUMBACK
 
@@ -11402,18 +11402,18 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
 !              Included FDOM fraction in call to MAJOR_CONT (via IDOM srcid)
             CALL MAJOR_CONT(MAXCONC,IDOM)
 
-         ELSE IF (PSDCREDIT .AND. TRIM(SRCS2USE) .EQ. 'NAAQSRC') THEN
+         ELSE IF (PSDCREDIT .and. TRIM(SRCS2USE) .EQ. 'NAAQSRC') THEN
 !              Emission credit run: Increment Consumption+Nonretired Baseline=NAAQS
-            IF (PSDSRCTYP(ISRC) .EQ. 'IC' .OR.&
+            IF (PSDSRCTYP(ISRC) .EQ. 'IC' .or.&
             &PSDSRCTYP(ISRC) .EQ. 'NB') THEN
                CALL MAJOR_CONT(MAXCONC,IDOM)
             ELSE
                CYCLE SOURCE_LOOP1
             END IF
 
-         ELSE IF (PSDCREDIT .AND. TRIM(SRCS2USE) .EQ. 'ALLBASE') THEN
+         ELSE IF (PSDCREDIT .and. TRIM(SRCS2USE) .EQ. 'ALLBASE') THEN
 !              Emission credit run: Nonretired Baseline and Retired Baseline
-            IF (PSDSRCTYP(ISRC) .EQ. 'NB' .OR.&
+            IF (PSDSRCTYP(ISRC) .EQ. 'NB' .or.&
             &PSDSRCTYP(ISRC) .EQ. 'RB') THEN
                CALL MAJOR_CONT(MAXCONC,IDOM)
             ELSE
@@ -11427,7 +11427,7 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
 !        Use terrain weighting factor for dominant source (FDOM) to
 !        combine heights for horizontal and terrain responding plumes.
       BVERT = FDOM*(HMXH - HMNH) + (1.0D0-FDOM)*(HMXT - HMNT)
-      IF (UNSTAB .AND. PPFACT(IREC,IDOM) .GT. 0.0D0) THEN
+      IF (UNSTAB .and. PPFACT(IREC,IDOM) .GT. 0.0D0) THEN
          BVERT3 = FDOM*(HMXH3 - HMNH3) + (1.0D0-FDOM)*(HMXT3 - HMNT3)
       ELSE
          BVERT3 = 0.0D0
@@ -11452,7 +11452,7 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
       ISRC = IDOM
 
 ! ---    Calculate Distance from Dominant Source (and other parameters)
-      IF (SRCTYP(IDOM)(1:4) .EQ. 'AREA' .OR.&
+      IF (SRCTYP(IDOM)(1:4) .EQ. 'AREA' .or.&
       &SRCTYP(IDOM) .EQ. 'LINE') THEN
 ! ---       Calculations for AREA source types
          CALL SETSRC
@@ -11574,15 +11574,15 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
          &0.0D0,VOLDOM)
       END IF
 
-      IF (UNSTAB .AND. DISTDOM .GE. XMIXED) THEN
+      IF (UNSTAB .and. DISTDOM .GE. XMIXED) THEN
 ! ---       Set BVERT = 0.0 if X is >/= distance to uniform vertical mixing
          BVERT = 0.0D0
       ELSE
          BVERT = FDOM*(HMXH - HMNH) + (1.0D0-FDOM)*(HMXT - HMNT)
       END IF
 
-      IF (BVERT .GT. 0.0D0 .OR. BVERT3 .GT. 0.0D0 .OR.&
-      &BHORIZ .GT. 0.0D0 .OR. BHORIZ3 .GT. 0.0D0) THEN
+      IF (BVERT .GT. 0.0D0 .or. BVERT3 .GT. 0.0D0 .or.&
+      &BHORIZ .GT. 0.0D0 .or. BHORIZ3 .GT. 0.0D0) THEN
 !           Calculate volume of dominant plus major contributing sources
          CALL PLUME_VOL(DISTDOM,IREC,IDOM,BVERT,BVERT3,&
          &BHORIZ,BHORIZ3,VOLSUM)
@@ -11639,8 +11639,8 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
 
 !        get moles of NOx in the dominant plume
 !        Use molecular weight of NO2 (46) since emission calcs are based on NO2
-      IF (SRCTYP(IDOM) .EQ. 'AREA' .OR.&
-      &SRCTYP(IDOM) .EQ. 'AREAPOLY' .OR.&
+      IF (SRCTYP(IDOM) .EQ. 'AREA' .or.&
+      &SRCTYP(IDOM) .EQ. 'AREAPOLY' .or.&
       &SRCTYP(IDOM) .EQ. 'LINE') THEN
          domNOxmoles = QTK*XINIT*YINIT *&
          &(1.0D0-ANO2_RATIO(IDOM)) * DISTDOM/(UDOM*46.0D0)
@@ -11673,18 +11673,18 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
 !              Full PVMRM run
             CALL MOLES_NOX(IDOM)
 
-         ELSE IF (PSDCREDIT .AND. TRIM(SRCS2USE) .EQ. 'NAAQSRC') THEN
+         ELSE IF (PSDCREDIT .and. TRIM(SRCS2USE) .EQ. 'NAAQSRC') THEN
 !              Emission credit run: Increment Consumption+Nonretired Baseline=NAAQS
-            IF (PSDSRCTYP(ISRC) .EQ. 'IC' .OR.&
+            IF (PSDSRCTYP(ISRC) .EQ. 'IC' .or.&
             &PSDSRCTYP(ISRC) .EQ. 'NB') THEN
                CALL MOLES_NOX(IDOM)
             ELSE
                CYCLE SOURCE_LOOP2
             END IF
 
-         ELSE IF (PSDCREDIT .AND. TRIM(SRCS2USE) .EQ. 'ALLBASE') THEN
+         ELSE IF (PSDCREDIT .and. TRIM(SRCS2USE) .EQ. 'ALLBASE') THEN
 !              Emission credit run: Nonretired Baseline and Retired Basline
-            IF (PSDSRCTYP(ISRC) .EQ. 'NB' .OR.&
+            IF (PSDSRCTYP(ISRC) .EQ. 'NB' .or.&
             &PSDSRCTYP(ISRC) .EQ. 'RB') THEN
                CALL MOLES_NOX(IDOM)
             ELSE
@@ -11696,7 +11696,7 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
 
 !----    Check for QSUM = 0.0 error (i.e., dominant source not inc. in sum)
 !        This condition should never be encountered.
-      IF (QSUM .EQ. 0.0D0 .AND. QSUM3 .EQ. 0.0D0) THEN
+      IF (QSUM .EQ. 0.0D0 .and. QSUM3 .EQ. 0.0D0) THEN
 ! ---      Issue warning messages for cases with QSUM = 0.0
          IF (EVONLY) THEN
             IF (IEVENT .LE. 999) THEN
@@ -11801,7 +11801,7 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
 !! Added for TTRM2
 !! Perform comparison of calculated hourly NO2 values between PVMRM and TTRM
                   IF (RUNTTRM2) THEN
-                     IF(TTRM2DBG .AND. (CMETH .LT. 3)) THEN
+                     IF(TTRM2DBG .and. (CMETH .LT. 3)) THEN
                         WRITE(TTRM2TMP(2),PSTFRM,ERR=47) AXR(IREC), AYR(IREC),&
                         &HRVAL(1),&
                         &AZELEV(IREC), AZHILL(IREC), AZFLAG(IREC),&
@@ -11815,7 +11815,7 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
                      IF (TTRMCOMPARE(IGRP,ISRC,IREC,ITYP) .LT. HRVAL(ITYP)) THEN
                         HRVAL(ITYP) = TTRMCOMPARE(IGRP,ISRC,IREC,ITYP)
                      ENDIF
-                     IF (TTRM2DBG .AND. (CMETH .LT. 3)) THEN
+                     IF (TTRM2DBG .and. (CMETH .LT. 3)) THEN
                         WRITE(TTRM2TMP(3),PSTFRM,ERR=37) AXR(IREC), AYR(IREC),&
                         &HRVAL(1),&
                         &AZELEV(IREC), AZHILL(IREC), AZFLAG(IREC),&
@@ -11833,7 +11833,7 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
                IF (EVONLY) THEN
 !                 Sum HRVAL to EV_AVEVAL, GRPVAL and GRPAVE Arrays  ---   CALL EV_SUMVAL
 
-                  IF (IDXEV(IEVENT) .EQ. IGRP .AND.&
+                  IF (IDXEV(IEVENT) .EQ. IGRP .and.&
                   &IGROUP(ISRC,IGRP) .EQ. 1) THEN
                      CALL EV_SUMVAL
 
@@ -11908,7 +11908,7 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
 ! --          Include BACKGROUND contributions in PVMRM debug files
 !             in needed
 
-               IF (IDXEV(IEVENT) .EQ. IGRP .AND.&
+               IF (IDXEV(IEVENT) .EQ. IGRP .and.&
                &GRP_BACK(idxev(ievent)) )THEN
 ! ---            This SRCGROUP includes BACKGROUND; Call EV_SUMBACK which
 !                sums values for the current EVENT
@@ -11959,13 +11959,13 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
 
          END DO GROUP_LOOP
 
-      ELSE IF (PSDCREDIT .AND. TRIM(SRCS2USE) .EQ. 'NAAQSRC') THEN
+      ELSE IF (PSDCREDIT .and. TRIM(SRCS2USE) .EQ. 'NAAQSRC') THEN
 !           IC = increment consuming source
 !           NB = nonretired baseline source
 !           Use ABVAL to store combined results rather than HRVAL
          DO ISRC = 1, NUMSRC
             DO ITYP = 1, NUMTYP
-               IF( PSDSRCTYP(ISRC) .EQ. 'IC' .OR.&
+               IF( PSDSRCTYP(ISRC) .EQ. 'IC' .or.&
                &PSDSRCTYP(ISRC) .EQ. 'NB' )THEN
                   ABVAL(IREC,ITYP) = ABVAL(IREC,ITYP) +&
                   &CHI(IREC,ISRC,ITYP) * PercentNO2
@@ -11976,13 +11976,13 @@ SUBROUTINE PVMRM_CALC(SRCS2USE)
 !           Sum ABVAL to AVEVAL and ANNVAL Arrays  ---   CALL SUMVALPSD
          CALL SUMVALPSD(SRCS2USE)
 
-      ELSE IF (PSDCREDIT .AND. TRIM(SRCS2USE) .EQ. 'ALLBASE') THEN
+      ELSE IF (PSDCREDIT .and. TRIM(SRCS2USE) .EQ. 'ALLBASE') THEN
 !           NB = nonretired baseline source
 !           RB =    retired baseline source
 !           Use BCVAL to store combined results rather than HRVAL
          DO ISRC = 1, NUMSRC
             DO ITYP = 1, NUMTYP
-               IF( PSDSRCTYP(ISRC) .EQ. 'NB' .OR.&
+               IF( PSDSRCTYP(ISRC) .EQ. 'NB' .or.&
                &PSDSRCTYP(ISRC) .EQ. 'RB' )THEN
                   BCVAL(IREC,ITYP) = BCVAL(IREC,ITYP) +&
                   &CHI(IREC,ISRC,ITYP) * PercentNO2
@@ -12058,7 +12058,7 @@ SUBROUTINE MAJOR_CONT(MAXCONC,IDOM)
 
    IF (CHI(IREC,ISRC,1) .GE. MAJCONT_THRESH*MAXCONC) THEN
 ! ---    This is a major contributing source
-      IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .OR.&
+      IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .or.&
       &SRCTYP(ISRC) .EQ. 'LINE') THEN
          CALL SETSRC
 !           Calls to ARDIST modified to include XMINR, minimum downwind distance
@@ -12246,7 +12246,7 @@ SUBROUTINE MOLES_NOX(IDOM)
 !     Variable Initializations
    MODNAM = 'MOLES_NOX'
 
-   IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .OR.&
+   IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .or.&
    &SRCTYP(ISRC) .EQ. 'LINE') THEN
 ! ---    Determine NOX moles for AREA, AREACIRC, AREAPOLY,
 !        and LINE sources
@@ -12323,15 +12323,15 @@ SUBROUTINE MOLES_NOX(IDOM)
 !     Check for crosswind distance between MIN and MAX of projected width
 !     and for downwind distance between MIN and MAX of downwind distances
 !     of major contributing sources
-   IF( (CWDIST .GE. CWMIN-EPS .AND. CWDIST .LE. CWMAX+EPS) .AND.&
-   &(DWDIST .GE. DWMIN-EPS .AND. DWDIST .LE. DWMAX+EPS) )THEN
+   IF( (CWDIST .GE. CWMIN-EPS .and. CWDIST .LE. CWMAX+EPS) .and.&
+   &(DWDIST .GE. DWMIN-EPS .and. DWDIST .LE. DWMAX+EPS) )THEN
 !           Source is located within the horizontal "box" of major contributing sources;
 !           Also check min/max plume height ranges for terrain-responding (HMNT/HMXT)
 !           and horizontal (HMNH/HMXH) plumes
-      IF( HECNTR(IREC,ISRC) .GE. HMNT-EPS .AND.&
+      IF( HECNTR(IREC,ISRC) .GE. HMNT-EPS .and.&
       &HECNTR(IREC,ISRC) .LE. HMXT+EPS )THEN
-         IF (SRCTYP(ISRC).EQ.'AREA' .OR.&
-         &SRCTYP(ISRC).EQ.'AREAPOLY' .OR.&
+         IF (SRCTYP(ISRC).EQ.'AREA' .or.&
+         &SRCTYP(ISRC).EQ.'AREAPOLY' .or.&
          &SRCTYP(ISRC).EQ.'LINE') THEN
 ! ---           Add contribution from AREA, AREAPOLY, and LINE sources
 ! ---           Note that XINIT and YINIT are "effective" dimensions for
@@ -12362,10 +12362,10 @@ SUBROUTINE MOLES_NOX(IDOM)
          END IF
       ENDIF
 
-      IF( (HECNTR(IREC,ISRC)-ZRT) .GE. HMNH-EPS .AND.&
+      IF( (HECNTR(IREC,ISRC)-ZRT) .GE. HMNH-EPS .and.&
       &(HECNTR(IREC,ISRC)-ZRT) .LE. HMXH+EPS )THEN
-         IF (SRCTYP(ISRC).EQ.'AREA' .OR.&
-         &SRCTYP(ISRC).EQ.'AREAPOLY' .OR.&
+         IF (SRCTYP(ISRC).EQ.'AREA' .or.&
+         &SRCTYP(ISRC).EQ.'AREAPOLY' .or.&
          &SRCTYP(ISRC).EQ.'LINE') THEN
 ! ---           Add contribution from AREA, AREAPOLY, and LINE sources
 ! ---           Note that XINIT and YINIT are "effective" dimensions for
@@ -12393,9 +12393,9 @@ SUBROUTINE MOLES_NOX(IDOM)
       ENDIF
    ENDIF
 
-   IF( (CWDIST .GE. CWMIN3-EPS .AND. CWDIST .LE. CWMAX3+EPS) .AND.&
-   &(DWDIST .GE. DWMIN3-EPS .AND. DWDIST .LE. DWMAX3+EPS) )THEN
-      IF( HECNTR3(IREC,ISRC) .GE. HMNT3-EPS .AND.&
+   IF( (CWDIST .GE. CWMIN3-EPS .and. CWDIST .LE. CWMAX3+EPS) .and.&
+   &(DWDIST .GE. DWMIN3-EPS .and. DWDIST .LE. DWMAX3+EPS) )THEN
+      IF( HECNTR3(IREC,ISRC) .GE. HMNT3-EPS .and.&
       &HECNTR3(IREC,ISRC) .LE. HMXT3+EPS )THEN
          IF( SRCTYP(ISRC)(1:5) .EQ. 'POINT' )THEN
 ! ---            Add contribution from POINT and VOLUME sources
@@ -12405,7 +12405,7 @@ SUBROUTINE MOLES_NOX(IDOM)
          END IF
       ENDIF
 
-      IF( (HECNTR3(IREC,ISRC)-ZRT) .GE. HMNH3-EPS .AND.&
+      IF( (HECNTR3(IREC,ISRC)-ZRT) .GE. HMNH3-EPS .and.&
       &(HECNTR3(IREC,ISRC)-ZRT) .LE. HMXH3+EPS )THEN
          IF( SRCTYP(ISRC)(1:5) .EQ. 'POINT' )THEN
 ! ---            Add contribution from POINT and VOLUME sources
@@ -12540,7 +12540,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 !     and uses "relative" dispersion coefficients for UNSTABLE conditions.
 !     Assign SRMIN and NSUBZ based on stability:
 !     Use HS based on ISDX
-   IF (STABLE .OR. (UNSTAB .AND. (AHS(ISDX) .GE. ZI))) THEN
+   IF (STABLE .or. (UNSTAB .and. (AHS(ISDX) .GE. ZI))) THEN
 ! ---    Assign SRMIN and NSUBZ for STABLE or UNSTAB and HS .ge. ZI
       SRMIN = SRMINS
       NSUBZ = NSUBZS
@@ -12550,7 +12550,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
       NSUBZ = NSUBZU
    END IF
 
-   if( PVMRMDBG .AND. DEBUG .AND. KURDAT .GT. 0 )then
+   if( PVMRMDBG .and. DEBUG .and. KURDAT .GT. 0 )then
 ! ---    PVMRM and MODEL DEBUG options have been selected; include the
 !        RELDISP Calcs in the MODEL DEBUG file
       write(RDISPUNT,*)
@@ -12574,7 +12574,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
             EXIT
          END IF
       END DO
-      IF (STABLE .OR. L_MorningTrans(IURB)) THEN
+      IF (STABLE .or. L_MorningTrans(IURB)) THEN
          URBSTAB = .TRUE.
          ZI = MAX( ZIURB(IURB), ZIMECH )
          GRIDSV = GRDSVU(1:MXGLVL,IURB)
@@ -12593,7 +12593,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
          OBULEN = RUROBULEN
          USTAR  = RURUSTR
       END IF
-   ELSE IF (URBAN .AND. URBSRC(ISRC) .EQ. 'N') THEN
+   ELSE IF (URBAN .and. URBSRC(ISRC) .EQ. 'N') THEN
       URBSTAB = .FALSE.
       ZI = ZIRUR
       GRIDSV = GRDSVR
@@ -12613,9 +12613,9 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 !     Calculate the initial meteorological variables     ---   CALL METINI
    CALL METINI
 
-   IF ((SRCTYP(ISRC) .EQ. 'VOLUME' .AND. AFTSRC(ISRC) .EQ. 'N').OR.&  ! Added for Aircraft; UNC-IE
-   &SRCTYP(ISRC) .EQ. 'LINE' .OR.&
-   &(SRCTYP(ISRC)(1:4) .EQ. 'AREA'.AND.AFTSRC(ISRC).EQ.'N') .OR.&  ! Added for Aircraft; UNC-IE
+   IF ((SRCTYP(ISRC) .EQ. 'VOLUME' .and. AFTSRC(ISRC) .EQ. 'N').or.&  ! Added for Aircraft; UNC-IE
+   &SRCTYP(ISRC) .EQ. 'LINE' .or.&
+   &(SRCTYP(ISRC)(1:4) .EQ. 'AREA'.and.AFTSRC(ISRC).EQ.'N') .or.&  ! Added for Aircraft; UNC-IE
    &SRCTYP(ISRC) .EQ. 'OPENPIT') THEN
       FB  = 0.0D0
       FM  = 0.0D0
@@ -12640,8 +12640,8 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
       END IF
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .OR.&
-   &SRCTYP(ISRC) .EQ. 'AREA'  .AND.&
+   ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .or.&
+   &SRCTYP(ISRC) .EQ. 'AREA'  .and.&
    &AFTSRC(ISRC) .EQ. 'Y') THEN
 !        Calculate Buoyancy Flux                            ---   CALL AFLUXES
       CALL AFLUXES
@@ -12662,7 +12662,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 !        Calculate the plume penetration factor             ---   CALL PENFCT
       CALL PENFCT
 
-      IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+      IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !           Use iterative approach to stable plume rise calculations
          KITER = 0
 150      ZPLM = HSP + 0.5D0 * DHFAER
@@ -12755,7 +12755,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
       XFINAL = XMAX
       DHCRIT = DHFAER
       XMIXED = ZI * UAVG / SWAVG
-      IF (UNSTAB .AND. HS.LT.ZI) THEN
+      IF (UNSTAB .and. HS.LT.ZI) THEN
 !           Check for XMIXED smaller than 1.25*XFINAL
          IF (XMIXED .LT. 1.25D0*XFINAL) THEN
             XFINAL = 0.8D0 * XMIXED
@@ -12806,7 +12806,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 !        Calculate the plume penetration factor             ---   CALL PENFCT
       CALL PENFCT
 
-      IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+      IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !           Use iterative approach to stable plume rise calculations
          KITER = 0
 50       ZPLM = HSP + 0.5D0 * DHFAER
@@ -12890,7 +12890,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
       XFINAL = XMAX
       DHCRIT = DHFAER
       XMIXED = ZI * UAVG / SWAVG
-      IF (UNSTAB .AND. HS.LT.ZI) THEN
+      IF (UNSTAB .and. HS.LT.ZI) THEN
 !           Check for XMIXED smaller than 1.25*XFINAL
          IF (XMIXED .LT. 1.25D0*XFINAL) THEN
             XFINAL = 0.8D0 * XMIXED
@@ -12934,11 +12934,11 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 !           Calculate the plume rise                  ---   CALL DELTAH
          CALL DELTAH ( XINP )
 !**  Added for Aircraft Plume Rise; UNC-IE
-      ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .AND.&
+      ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and.&
       &AFTSRC(ISRC) .EQ. 'Y') THEN
 !           Calculate the plume rise                  ---   CALL ADELTAH
          CALL ADELTAH ( XINP )
-      ELSE IF (SRCTYP(ISRC) (1:4) .EQ. 'AREA' .AND.&
+      ELSE IF (SRCTYP(ISRC) (1:4) .EQ. 'AREA' .and.&
       &AFTSRC(ISRC) .EQ. 'Y') THEN
 !           Calculate the plume rise                  ---   CALL ADELTAH
          CALL ADELTAH ( XINP )
@@ -12954,7 +12954,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 !        If the atmosphere is unstable and the stack
 !        top is below the mixing height, calculate
 !        the CBL PDF coefficients                     ---   CALL PDF
-      IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+      IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
          CALL PDF
       END IF
 
@@ -12966,27 +12966,27 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
       CALL IBLVAL ( XINP )
 
 !        Call PDF & HEFF again for final CBL plume heights
-      IF (UNSTAB .AND. (HS.LT.ZI) ) THEN
+      IF (UNSTAB .and. (HS.LT.ZI) ) THEN
          CALL PDF
          CALL HEFF ( XINP )
       END IF
 
-      IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT' .AND. .NOT.NOBID) THEN
+      IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT' .and. .NOT.NOBID) THEN
 !           Call BID to get buoyancy-induced dispersion terms
          CALL BID
 !**  Added for Aircraft Plume Rise; UNC-IE
-      ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .AND. .NOT.NOBID .AND.&
+      ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and. .NOT.NOBID .and.&
       &AFTSRC(ISRC) .EQ. 'Y') THEN
 !           Call BID to get buoyancy-induced dispersion terms
          CALL BID
-      ELSE IF (SRCTYP(ISRC) (1:4) .EQ. 'AREA'.AND..NOT.NOBID .AND.&
+      ELSE IF (SRCTYP(ISRC) (1:4) .EQ. 'AREA'.and..NOT.NOBID .and.&
       &AFTSRC(ISRC) .EQ. 'Y') THEN
 !           Call BID to get buoyancy-induced dispersion terms
          CALL BID
 !**  End Aircraft Plume Rise insert; April 2023
       ELSE
 !           Set BID Terms to 0.0
-         IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) )THEN
+         IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
             SYB = 0.0D0
             SZB = 0.0D0
 
@@ -13004,7 +13004,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 !        and UNSTAB conditions with HS .GE. ZI and use "relative"
 !        dispersion coefficients for UNSTAB conditions with HS .LT. ZI
 !
-      IF (STABLE .OR. (UNSTAB  .AND.  (HS .GE. ZI)) )THEN
+      IF (STABLE .or. (UNSTAB  .and.  (HS .GE. ZI)) )THEN
          IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
 ! ---         Call PDIS to get SY and SZ for POINT sources
             CALL PDIS( XINP )
@@ -13021,7 +13021,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 
 ! ---         Assign SR3 = 0.0 for non-POINT sources
             SR3(I) = 0.0D0
-         ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .OR.&
+         ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .or.&
          &SRCTYP(ISRC)      .EQ. 'OPENPIT') THEN
 ! ---         Call ADISY and ADISZ to get SY and SZ for AREA and OPENPIT sources
             CALL ADISY( XINP )
@@ -13086,7 +13086,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 
       END IF
 
-      if( PVMRMDBG .AND. DEBUG )then
+      if( PVMRMDBG .and. DEBUG )then
 ! ---       PVMRM and MODEL DEBUG options have been selected; include the
 !           RELDISP Calcs in the MODEL DEBUG file
          write(RDISPUNT,111) SRCID(ISRC), I, XINP, SR(I), SR3(I),&
@@ -13096,7 +13096,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
 
 !        Calculate vertical dimension (VERT) taking into account ZI limit
       VERT = BVARG + 2.0D0*NSUBZ*SIGR
-      IF (UNSTAB .AND. VERT .GT. ZI) THEN
+      IF (UNSTAB .and. VERT .GT. ZI) THEN
          VERT  = ZI
          BVTMP = MAX( 0.0D0, ZI-2.0D0*NSUBZ*SIGR )
          IF (2.0D0*NSUBZ*SIGR .GT. ZI) THEN
@@ -13115,7 +13115,7 @@ SUBROUTINE PLUME_VOL(XARG,IRDX,ISDX,BVARG,BVARG3,&
       &VERT*BHARG +&
       &2.0D0*NSUBZ*SIGR*BVTMP) * DELTAX
 
-      IF (UNSTAB .AND. PPFACT(IREC,ISRC) .GT. 0.0D0) THEN
+      IF (UNSTAB .and. PPFACT(IREC,ISRC) .GT. 0.0D0) THEN
 ! ---       Compute SUM3 for penetrated source plume if needed
 
 ! ---       Use a PPF-weighted average of NSUBZS and NSUBZU for penetrated plumes
@@ -13201,7 +13201,7 @@ SUBROUTINE RELDISP(XARG,SROUT,SROUT3)
       VSIGR = 0.0D0
    END IF
 
-   IF( STABLE .OR. (UNSTAB .AND. (HS .GE. ZI)) )THEN
+   IF( STABLE .or. (UNSTAB .and. (HS .GE. ZI)) )THEN
 !        The atmosphere is stable or the release is above the CBL mixing ht.
       TLR = AR1 * ZI/SWEFF
       SRAMB = (A1 * DSQRT(EPSEFF) * (XARG/UEFF)**1.5D0)/&
@@ -13273,7 +13273,7 @@ SUBROUTINE AERMAX(SRCS2USE,MAXARG,DOMARG)
       DO I = 1, NUMTYP
          DO J = 1, NUMREC
             DO K = 1, NUMSRC
-               IF (PSDSRCTYP(K) .EQ. 'IC' .OR.&
+               IF (PSDSRCTYP(K) .EQ. 'IC' .or.&
                &PSDSRCTYP(K) .EQ. 'NB') THEN
                   IF(CHI(J,K,I) .GT. MAXARG(J,I) )THEN
                      MAXARG(J,I) = CHI(J,K,I)
@@ -13289,7 +13289,7 @@ SUBROUTINE AERMAX(SRCS2USE,MAXARG,DOMARG)
       DO I = 1, NUMTYP
          DO J = 1, NUMREC
             DO K = 1, NUMSRC
-               IF (PSDSRCTYP(K) .EQ. 'NB' .OR.&
+               IF (PSDSRCTYP(K) .EQ. 'NB' .or.&
                &PSDSRCTYP(K) .EQ. 'RB') THEN
                   IF(CHI(J,K,I) .GT. MAXARG(J,I) )THEN
                      MAXARG(J,I) = CHI(J,K,I)
@@ -13374,10 +13374,10 @@ SUBROUTINE PLAT_DOWNWASH(XD,HB,W,HE,SIGZ0,SIGY0)
    IF( A .GT. 3.0D0 ) THEN
       SIGY0 = 0.0D0
       SIGZ0 = 0.0D0
-   ELSEIF( (1.2D0 .LT. A) .AND. (A .LE. 3.0D0) ) THEN
+   ELSEIF( (1.2D0 .LT. A) .and. (A .LE. 3.0D0) ) THEN
       SIGY0 = 0.0D0
       SIGZ0 = 0.5D0*(3.0D0-A)*SZOP
-   ELSEIF( (1.0D0 .LT. A) .AND. (A. LE. 1.2D0) ) THEN
+   ELSEIF( (1.0D0 .LT. A) .and. (A.LE. 1.2D0) ) THEN
       SIGY0 = 0.5D0*(6.0D0-5.0D0*A)*SYOP
       SIGZ0 = 0.5D0*(3.0D0-A)*SZOP
    ELSE
@@ -13464,10 +13464,10 @@ DOUBLE PRECISION FUNCTION PLAT_GRADPLUMADJ( XARG )
 
    DELH = 0.0D0 !intitalize
 
-   IF (STABLE  .OR.  (UNSTAB  .AND.  (HS .GE. ZI))) THEN
+   IF (STABLE  .or.  (UNSTAB  .and.  (HS .GE. ZI))) THEN
       CC = -1.0D0 * DHP * DHP * DHP !OCD PRI01260 & PRI01620; AERMOD calculates distance-dependent DHP in prise.f/SBLRIS, Neutral limit is applied in SBLRIS
       SCOEFF=AC+BC+CC !AC & BC are distance independent (MAIN1) and computed in calc1.f/PCALC
-      IF((SCOEFF.NE.0.0D0) .AND. (XARG < XMAX)) THEN
+      IF((SCOEFF.NE.0.0D0) .and. (XARG < XMAX)) THEN
          DELH = PLAT_CUBIC(AC,BC,CC,DHP,TOL)
       END IF
    ELSE !modify direct plume downdraft (DHP1) only
@@ -13726,21 +13726,21 @@ SUBROUTINE SWCALC
 
 !        Wind angle cases:
 !        April, 2022; Added symmetric conditions between 300 - 360 degrees
-      IF ((SWTHETA .EQ. 0.0D0) .OR.&
+      IF ((SWTHETA .EQ. 0.0D0) .or.&
       &(SWTHETA .EQ. 360.0D0)) THEN
 
 !            CALL PERPEN(BHS, BLS, BWS, HSS, SX1, SY1, SWZ, SWTHETA,
 !     &                  U_AMB, QS, SWCONC)
          CALL PERPEN
 
-      ELSEIF ((SWTHETA .GE. 15.0D0) .AND.&
+      ELSEIF ((SWTHETA .GE. 15.0D0) .and.&
       &(SWTHETA .LE. 60.0D0)) THEN
 
 !            CALL OBLIQUE(BHS, BLS, BWS, HSS, SX1, SY1, SWZ, SWTHETA,
 !     &                   U_AMB, QS, SWCONC)
          CALL OBLIQUE
 
-      ELSEIF ((SWTHETA .GT. 0.0D0) .AND.&
+      ELSEIF ((SWTHETA .GT. 0.0D0) .and.&
       &(SWTHETA .LT. 15.0D0)) THEN
 
 !           Initialize variables
@@ -13768,7 +13768,7 @@ SUBROUTINE SWCALC
          SWTHETA = TMPTHETA ! Restore calculated SWTHETA value
          SWCONC = CONC_P*SWEPSILON + CONC_SW*(1-SWEPSILON)
 
-      ELSEIF ((SWTHETA .GE. 300.0D0) .AND.&
+      ELSEIF ((SWTHETA .GE. 300.0D0) .and.&
       &(SWTHETA .LE. 345.0D0)) THEN
 
          SY1 = -1.0D0*SY1
@@ -13781,7 +13781,7 @@ SUBROUTINE SWCALC
 
          SWTHETA = TMPTHETA ! Restore calculated SWTHETA value
 
-      ELSEIF ((SWTHETA .GT. 345.0D0) .AND.&
+      ELSEIF ((SWTHETA .GT. 345.0D0) .and.&
       &(SWTHETA .LT. 360.0D0)) THEN
 
 !           Initialize variables

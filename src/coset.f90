@@ -119,7 +119,7 @@ SUBROUTINE COCARD
 !           Process Pollutant ID Option                     ---   CALL POLLID
          CALL POLLID
       END IF
-   ELSE IF (KEYWRD .EQ. 'HALFLIFE' .OR.&
+   ELSE IF (KEYWRD .EQ. 'HALFLIFE' .or.&
    &KEYWRD .EQ. 'DCAYCOEF') THEN
       IF (KEYWRD .EQ. 'HALFLIFE') THEN
 !           Check for Previous DCAYCOEF Keyword in Runstream File
@@ -180,7 +180,7 @@ SUBROUTINE COCARD
 !           Process Option to Run Model or Not              ---   CALL RUNNOT
          CALL RUNNOT
       END IF
-   ELSE IF (.NOT.EVONLY .AND. KEYWRD .EQ. 'EVENTFIL') THEN
+   ELSE IF (.NOT.EVONLY .and. KEYWRD .EQ. 'EVENTFIL') THEN
 !        Set Status Switch
       ICSTAT(13) = ICSTAT(13) + 1
       IF (ICSTAT(13) .NE. 1) THEN
@@ -194,7 +194,7 @@ SUBROUTINE COCARD
 !           Process EVENT File Option                       ---   CALL EVNTFL
          CALL EVNTFL
       END IF
-   ELSE IF (.NOT.EVONLY .AND. KEYWRD .EQ. 'SAVEFILE') THEN
+   ELSE IF (.NOT.EVONLY .and. KEYWRD .EQ. 'SAVEFILE') THEN
 !        Set Status Switch
       ICSTAT(14) = ICSTAT(14) + 1
       IF (ICSTAT(14) .NE. 1) THEN
@@ -204,7 +204,7 @@ SUBROUTINE COCARD
 !           Process Model Re-start Save File Option         ---   CALL SAVEFL
          CALL SAVEFL
       END IF
-   ELSE IF (.NOT.EVONLY .AND. KEYWRD .EQ. 'INITFILE') THEN
+   ELSE IF (.NOT.EVONLY .and. KEYWRD .EQ. 'INITFILE') THEN
 !        Set Status Switch
       ICSTAT(15) = ICSTAT(15) + 1
       IF (ICSTAT(15) .NE. 1) THEN
@@ -214,7 +214,7 @@ SUBROUTINE COCARD
 !           Process Re-start Initialization File Option     ---   CALL INITFL
          CALL INITFL
       END IF
-   ELSE IF (.NOT.EVONLY .AND. KEYWRD .EQ. 'MULTYEAR') THEN
+   ELSE IF (.NOT.EVONLY .and. KEYWRD .EQ. 'MULTYEAR') THEN
 !        Set Status Switch
       ICSTAT(16) = ICSTAT(16) + 1
       IF (ICSTAT(16) .NE. 1) THEN
@@ -297,7 +297,7 @@ SUBROUTINE COCARD
    ELSE IF (KEYWRD .EQ. 'OZONEVAL') THEN
 !        Set Status Switch
       ICSTAT(24) = ICSTAT(24) + 1
-      IF (PVMRM .OR. OLM .OR. RUNTTRM .OR. GRSM) THEN
+      IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
 !           Process O3 Value Option                         ---   CALL O3VAL
          CALL O3VAL
       ELSE
@@ -308,7 +308,7 @@ SUBROUTINE COCARD
    ELSE IF (KEYWRD .EQ. 'O3VALUES') THEN
 !        Set Status Switch
       ICSTAT(25) = ICSTAT(25) + 1
-      IF (PVMRM .OR. OLM .OR. RUNTTRM .OR. GRSM) THEN
+      IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
 !           Process O3 Value Option                         ---   CALL O3VALS
          CALL O3VALS
       ELSE
@@ -318,7 +318,7 @@ SUBROUTINE COCARD
    ELSE IF (KEYWRD .EQ. 'OZONEFIL') THEN
 !        Set Status Switch
       ICSTAT(26) = ICSTAT(26) + 1
-      IF (PVMRM .OR. OLM .OR. RUNTTRM .OR. GRSM) THEN
+      IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
 !           Process O3 File Option                          ---   CALL O3FILE
          CALL O3FILE
       ELSE
@@ -332,7 +332,7 @@ SUBROUTINE COCARD
 !           WRITE Error Message: Repeat Non-repeatable Keyword
          CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
       ELSE
-         IF (PVMRM .OR. OLM .OR. RUNTTRM .OR. GRSM) THEN
+         IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
 !              Process the OZONUNIT Card                    ---   CALL OZON_UNIT
             CALL OZON_UNIT
          ELSE
@@ -347,7 +347,7 @@ SUBROUTINE COCARD
 !           WRITE Error Message: Repeat Non-repeatable Keyword
          CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
       ELSE
-         IF (PVMRM .OR. OLM .OR. RUNTTRM .OR. GRSM) THEN
+         IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
 !              Process NO2Stack Option                      ---   CALL NO2STK
             CALL NO2STK
          ELSE
@@ -363,7 +363,7 @@ SUBROUTINE COCARD
          CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
       ELSE
 ! Add equilibrium limit for GRSM also?
-         IF (PVMRM .OR. OLM .OR. RUNTTRM) THEN
+         IF (PVMRM .or. OLM .or. RUNTTRM) THEN
 !              Process NO2Equil Option                      ---   CALL NO2EQ
             CALL NO2EQ
          ELSE
@@ -391,7 +391,7 @@ SUBROUTINE COCARD
 !           WRITE Error Message: Repeat Non-repeatable Keyword
          CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
       ELSE
-         IF (PVMRM .OR. OLM .OR. RUNTTRM .OR. GRSM) THEN
+         IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
 !              Process O3SECTOR keyword                     ---   CALL O3SECTOR
             CALL O3SECTOR
          ELSE
@@ -551,9 +551,9 @@ SUBROUTINE COCARD
          CALL ERRHDL(PATH,MODNAM,'E','130','RUNORNOT')
       END IF
 
-      IF (OLM .OR. PVMRM .OR. RUNTTRM .OR. GRSM) THEN
+      IF (OLM .or. PVMRM .or. RUNTTRM .or. GRSM) THEN
 ! ---       Check for background Ozone options for OLM/PVMRM/GRSM
-         IF (ICSTAT(24).EQ.0 .AND. ICSTAT(25).EQ.0 .AND.&
+         IF (ICSTAT(24).EQ.0 .and. ICSTAT(25).EQ.0 .and.&
          &ICSTAT(26).EQ.0) THEN
 !              Write Error Message:  Ozone value or data file needed
             IF (OLM) THEN
@@ -566,7 +566,7 @@ SUBROUTINE COCARD
                DUMMY = 'TTRM Option  '
             END IF
             CALL ERRHDL(PATH,MODNAM,'E','283',DUMMY)
-         ELSE IF (ICSTAT(24).GT.0 .AND. ICSTAT(25).GT.0) THEN
+         ELSE IF (ICSTAT(24).GT.0 .and. ICSTAT(25).GT.0) THEN
 ! ---          Both OZONEVAL and O3VALUES keywords have been specified;
 !              issue error message if needed; first check for O3SECTOR option
             IF (.NOT. L_O3Sector) THEN
@@ -585,7 +585,7 @@ SUBROUTINE COCARD
             ELSE
 ! ---             Loop through O3SECTORs for both OZONEVAL & O3VALUES
                DO I = 1, NUMO3sects
-                  IF (L_O3VAL(I) .AND. L_O3VALUES(I)) THEN
+                  IF (L_O3VAL(I) .and. L_O3VALUES(I)) THEN
 !                       Issue error message; OZONEVAL & O3VALUES for this sector
                      IF (OLM) THEN
                         WRITE(DUMMY,'(''  OLM SECT'',I1)') I
@@ -604,7 +604,7 @@ SUBROUTINE COCARD
 !           CERC 11/30/20
          IF (GRSM) THEN
 ! ---         Check for background NOx options for GRSM
-            IF (ICSTAT(36).EQ.0 .AND. ICSTAT(37).EQ.0 .AND.&
+            IF (ICSTAT(36).EQ.0 .and. ICSTAT(37).EQ.0 .and.&
             &ICSTAT(39).EQ.0 ) THEN
 !               No NOx background has been specified so it will be calculated from NO2 equilibrium
 ! If the background NOX is missing, is it appropriate to compute from the equilibrium?
@@ -613,7 +613,7 @@ SUBROUTINE COCARD
 !               Write Wng Message:  NOx calculated from NO2
                DUMMY = 'for GRSM'
                CALL ERRHDL(PATH,MODNAM,'W','612',DUMMY)
-            ELSE IF (ICSTAT(36).GT.0 .AND. ICSTAT(37).GT.0) THEN
+            ELSE IF (ICSTAT(36).GT.0 .and. ICSTAT(37).GT.0) THEN
 ! ---           Both NOXVALUE and NOX_VALS keywords have been specified;
 !               issue error message if needed; first check for NOXSECTOR option
                IF (.NOT. L_NOxSector) THEN
@@ -622,7 +622,7 @@ SUBROUTINE COCARD
                ELSE
 ! ---             Loop through NOxSECTORs for both NOXVALUE & NOX_VALS
                   DO I = 1, NUMNOxsects
-                     IF (L_NOXVALUE(I) .AND. L_NOX_VALS(I)) THEN
+                     IF (L_NOXVALUE(I) .and. L_NOX_VALS(I)) THEN
 !                       Issue error message; NOXVALUE & NOX_VALS for this sector
                         WRITE(DUMMY,'(''GRSM SECT'',I1)') I
                         CALL ERRHDL(PATH,MODNAM,'E','605',DUMMY)
@@ -631,8 +631,8 @@ SUBROUTINE COCARD
                END IF
             END IF
          END IF
-         IF ((PVMRM .OR. OLM .OR. RUNTTRM .OR. GRSM)&
-         &.AND. ICSTAT(28).EQ.0) THEN
+         IF ((PVMRM .or. OLM .or. RUNTTRM .or. GRSM)&
+         &.and. ICSTAT(28).EQ.0) THEN
 !              No NO2STACK card specified for PVMRM, OLM, TTRM or GRSM options.
 !              Reinitialize ANO2_RATIO array to -9.0 to track whether
 !              NO2/NOx ratios are applied on the SO Pathway with
@@ -640,11 +640,11 @@ SUBROUTINE COCARD
             ANO2_RATIO(:) = -9.0D0
          END IF
 ! ---       Check for OZONUNIT keyword without O3VALUES keyword
-         IF (ICSTAT(25) .EQ. 0 .AND. ICSTAT(27) .GT. 0) THEN
+         IF (ICSTAT(25) .EQ. 0 .and. ICSTAT(27) .GT. 0) THEN
             CALL ERRHDL(PATH,MODNAM,'E','193','CO O3VALUES')
          END IF
 ! ---       CERC 11/30/20 Check for NOXUNIT keyword without NOX_VALS keyword
-         IF (ICSTAT(37) .EQ. 0 .AND. ICSTAT(38) .GT. 0) THEN
+         IF (ICSTAT(37) .EQ. 0 .and. ICSTAT(38) .GT. 0) THEN
             CALL ERRHDL(PATH,MODNAM,'E','193','CO NOX_VALS')
          END IF
       END IF
@@ -675,7 +675,7 @@ SUBROUTINE COCARD
       IF (RSTINP) THEN
          IF (RSTSAV) THEN
 ! ---          First check for filename conflicts with SAVEFILEs
-            IF (INIFIL .EQ. SAVFIL .OR. INIFIL .EQ. SAVFL2) THEN
+            IF (INIFIL .EQ. SAVFIL .or. INIFIL .EQ. SAVFL2) THEN
 ! ---             The INITFILE name matches a SAVEFILE name;
 !                 issue error message
                CALL ERRHDL(PATH,MODNAM,'E','590','       ')
@@ -713,40 +713,40 @@ SUBROUTINE COCARD
 !         IF GAS DEPOSITION PARAMETERS AND NO ALPHA OPTION
 !     ISSUE ERROR.  THERE IS ALSO A CHECK FOR GASDEPOS AND
 !     ALPHA IN SOCARD
-      IF (DFAULT .AND. ICSTAT(18) .GT. 0) THEN
+      IF (DFAULT .and. ICSTAT(18) .GT. 0) THEN
 !           Write Error Message:  Gas Dry Deposition Option w/ DFAULT Option
          CALL ERRHDL(PATH,MODNAM,'E','196','GDSEASON')
-      ELSEIF (.NOT. L_ALPHA .AND. ICSTAT(18) .GT. 0) THEN !JAT ADDED 7/2/19
+      ELSEIF (.NOT. L_ALPHA .and. ICSTAT(18) .GT. 0) THEN !JAT ADDED 7/2/19
 !           Write Error Message:  Gas Dry Deposition Option w/o ALPHA Option
          CALL ERRHDL(PATH,MODNAM,'E','198','GDSEASON')
       ELSE IF (ICSTAT(18) .GT. 0) THEN
 !           Set flag for use of non-DEFAULT option
          L_NonDFAULT = .TRUE.
       END IF
-      IF (DFAULT .AND. ICSTAT(19) .GT. 0) THEN
+      IF (DFAULT .and. ICSTAT(19) .GT. 0) THEN
 !           Write Error Message:  Gas Dry Deposition Option w/ DFAULT Option
          CALL ERRHDL(PATH,MODNAM,'E','196','GASDEPDF')
-      ELSEIF (.NOT. L_ALPHA .AND. ICSTAT(19) .GT. 0) THEN !JAT ADDED 7/2/19
+      ELSEIF (.NOT. L_ALPHA .and. ICSTAT(19) .GT. 0) THEN !JAT ADDED 7/2/19
 !           Write Error Message:  Gas Dry Deposition Option w/o ALPHA Option
          CALL ERRHDL(PATH,MODNAM,'E','198','GASDEPDF')
       ELSE IF (ICSTAT(19) .GT. 0) THEN
 !           Set flag for use of non-DEFAULT option
          L_NonDFAULT = .TRUE.
       END IF
-      IF (DFAULT .AND. ICSTAT(20) .GT. 0) THEN
+      IF (DFAULT .and. ICSTAT(20) .GT. 0) THEN
 !           Write Error Message:  Gas Dry Deposition Option w/ DFAULT Option
          CALL ERRHDL(PATH,MODNAM,'E','196','GDLANUSE')
-      ELSEIF (.NOT. L_ALPHA .AND. ICSTAT(20) .GT. 0) THEN !JAT ADDED 7/2/19
+      ELSEIF (.NOT. L_ALPHA .and. ICSTAT(20) .GT. 0) THEN !JAT ADDED 7/2/19
 !           Write Error Message:  Gas Dry Deposition Option w/o ALPHA Option
          CALL ERRHDL(PATH,MODNAM,'E','198','GDLANUSE')
       ELSE IF (ICSTAT(20) .GT. 0) THEN
 !           Set flag for use of non-DEFAULT option
          L_NonDFAULT = .TRUE.
       END IF
-      IF (DFAULT .AND. ICSTAT(21) .GT. 0) THEN
+      IF (DFAULT .and. ICSTAT(21) .GT. 0) THEN
 !           Write Error Message:  Gas Dry Deposition Option w/ DFAULT Option
          CALL ERRHDL(PATH,MODNAM,'E','196','GASDEPVD')
-      ELSEIF (.NOT. L_ALPHA .AND. ICSTAT(21) .GT. 0) THEN !JAT ADDED 7/2/19
+      ELSEIF (.NOT. L_ALPHA .and. ICSTAT(21) .GT. 0) THEN !JAT ADDED 7/2/19
 !           Write Error Message:  Gas Dry Deposition Option w/o ALPHA Option
          CALL ERRHDL(PATH,MODNAM,'E','198','GASDEPVD')
       ELSE IF (ICSTAT(21) .GT. 0) THEN
@@ -755,22 +755,22 @@ SUBROUTINE COCARD
       END IF
 
 ! ---    Check for incompatibilities with user-specified deposition velocity
-      IF (LUSERVD .AND. (DEPOS .OR. WDEP .OR. WDPLETE)) THEN
+      IF (LUSERVD .and. (DEPOS .or. WDEP .or. WDPLETE)) THEN
 !           Write Error Message: Wet deposition output incompatible with GASDEPVD option
          CALL ERRHDL(PATH,MODNAM,'E','243','GASDEPVD')
       END IF
 
 ! ---    Check for incompatible gas deposition inputs with GASDEPVD option for
 !        user-specified gas dry deposition velocity
-      IF (LUSERVD .AND. ICSTAT(18) .GT. 0) THEN
+      IF (LUSERVD .and. ICSTAT(18) .GT. 0) THEN
 !           Write Error Message:  Gas Dry Deposition Option w/ user-specified GASDEPVD
          CALL ERRHDL(PATH,MODNAM,'E','195','GDSEASON')
       END IF
-      IF (LUSERVD .AND. ICSTAT(19) .GT. 0) THEN
+      IF (LUSERVD .and. ICSTAT(19) .GT. 0) THEN
 !           Write Error Message:  Gas Dry Deposition Option w/ user-specified GASDEPVD
          CALL ERRHDL(PATH,MODNAM,'E','195','GASDEPDF')
       END IF
-      IF (LUSERVD .AND. ICSTAT(20) .GT. 0) THEN
+      IF (LUSERVD .and. ICSTAT(20) .GT. 0) THEN
 !           Write Error Message:  Gas Dry Deposition Option w/ user-specified GASDEPVD
          CALL ERRHDL(PATH,MODNAM,'E','195','GDLANUSE')
       END IF
@@ -868,13 +868,13 @@ SUBROUTINE COCARD
       ENDIF
 
 ! ---    Add labels for non-DFAULT ALPHA and BETA Options
-      IF (.NOT. DFAULT .AND. L_ALPHA) THEN
+      IF (.NOT. DFAULT .and. L_ALPHA) THEN
          MODOPS(19) = 'ALPHA'
-      ELSE IF (.NOT. DFAULT .AND. BETA) THEN
+      ELSE IF (.NOT. DFAULT .and. BETA) THEN
          MODOPS(19) = 'BETA'
-      ELSE IF (DFAULT .AND. BETA) THEN
+      ELSE IF (DFAULT .and. BETA) THEN
          CALL ERRHDL(PATH,MODNAM,'E','204','BETA')
-      ELSE IF (DFAULT .AND. L_ALPHA) THEN
+      ELSE IF (DFAULT .and. L_ALPHA) THEN
          CALL ERRHDL(PATH,MODNAM,'E','204','ALPHA')
       END IF
 
@@ -910,7 +910,7 @@ SUBROUTINE COCARD
 
 !**  Added for Aircraft Plume Rise; UNC-IE
 ! ---    Add MODOPS field for Aircraft
-      IF (NAFTSRC .EQ. NSRC .OR. NAFTSRC .GT. 0.0D0) THEN
+      IF (NAFTSRC .EQ. NSRC .or. NAFTSRC .GT. 0.0D0) THEN
 ! ---       Aircraft sources
          MODOPS(24) = 'AIRCRAFT'
 !             Check for ALPHA and DFAULT conflicts
@@ -943,15 +943,15 @@ SUBROUTINE COCARD
 !        with the ADJ_U* option in AERMET or using MMIF-generated met inputs
 !        are identified based on flags included in the surface file header.
 
-      IF (SCIM .AND. NUMAVE.GT.0) THEN
+      IF (SCIM .and. NUMAVE.GT.0) THEN
 !           Write Error Message:  Cannot use SCIM with short term averages
          CALL ERRHDL(PATH,MODNAM,'E','154','ST AVES')
       END IF
-      IF (SCIM .AND. PERIOD) THEN
+      IF (SCIM .and. PERIOD) THEN
 !           Write Error Message:  Cannot use SCIM with PERIOD average
          CALL ERRHDL(PATH,MODNAM,'E','154','PERIOD')
       END IF
-      IF (SCIM .AND. DEPOS) THEN
+      IF (SCIM .and. DEPOS) THEN
 !           Write Warning Message:  Ignore DEPOS when using SCIM
          DEPOS = .FALSE.
          NUMTYP = NUMTYP - 1
@@ -961,7 +961,7 @@ SUBROUTINE COCARD
 !        Adjust output label for ANNUAL average deposition fluxes
       IF (ANNUAL) THEN
          DO ITYP = 1, NUMTYP
-            IF (.NOT.CONC .OR. ITYP.GT.1) THEN
+            IF (.NOT.CONC .or. ITYP.GT.1) THEN
                PERLBL(ITYP) = 'GRAMS/M**2/YR'
             END IF
          END DO
@@ -986,7 +986,7 @@ SUBROUTINE COCARD
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','261',DUMMY)
                   END IF
-               ELSE IF (.NOT. L_O3VALUES(I).AND.&
+               ELSE IF (.NOT. L_O3VALUES(I).and.&
                &.NOT. L_O3VAL(I)) THEN
 ! ---                WRITE Warning Message: HOURLY O3FILE but no O3VALs avail for this Sector;
 !                    full conversion assumed for missing hourly data (subject to equilibrium
@@ -1009,7 +1009,7 @@ SUBROUTINE COCARD
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','261',DUMMY)
                   END IF
-               ELSE IF (.NOT. L_O3VALUES(I).AND.&
+               ELSE IF (.NOT. L_O3VALUES(I).and.&
                &.NOT. L_O3VAL(I)) THEN
 !                    WRITE Error Message: No O3VALUES values and no O3FILE - Missing Sector
                   WRITE(DUMMY,'(''O3SECT'',I1,'' Msg'')') I
@@ -1030,7 +1030,7 @@ SUBROUTINE COCARD
                   WRITE(DUMMY,'(''NumVals='',I4)') IO3SET(I)
                   CALL ERRHDL(PATH,MODNAM,'E','261',DUMMY)
                END IF
-            ELSE IF (.NOT. L_O3VALUES(I) .AND.&
+            ELSE IF (.NOT. L_O3VALUES(I) .and.&
             &.NOT. L_O3VAL(I)) THEN
 ! ---             WRITE Warning Message: HOURLY O3FILE but no O3VALs avail for this Sector;
 !                 full conversion assumed for missing hourly data (subject to equilibrium
@@ -1069,7 +1069,7 @@ SUBROUTINE COCARD
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','603',DUMMY)
                   END IF
-               ELSE IF (.NOT. L_NOX_VALS(I).AND.&
+               ELSE IF (.NOT. L_NOX_VALS(I).and.&
                &.NOT. L_NOXVALUE(I)) THEN
 ! ---                WRITE Warning Message: HOURLY NOX_FILE but no NOX_VALS avail for this Sector;
 !                    give zero concentration
@@ -1091,7 +1091,7 @@ SUBROUTINE COCARD
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','603',DUMMY)
                   END IF
-               ELSE IF (.NOT. L_NOX_VALS(I).AND.&
+               ELSE IF (.NOT. L_NOX_VALS(I).and.&
                &.NOT. L_NOXVALUE(I)) THEN
 !                    WRITE Error Message: No NOX_VALS values and no NOXFILE - Missing Sector
                   WRITE(DUMMY,'(''NOXSECT'',I1,'' Msg'')') I
@@ -1112,7 +1112,7 @@ SUBROUTINE COCARD
                   WRITE(DUMMY,'(''NumVals='',I4)') INOXSET(I)
                   CALL ERRHDL(PATH,MODNAM,'E','603',DUMMY)
                END IF
-            ELSE IF (.NOT. L_NOX_VALS(I) .AND.&
+            ELSE IF (.NOT. L_NOX_VALS(I) .and.&
             &.NOT. L_NOXVALUE(I)) THEN
 ! ---             WRITE Warning Message: HOURLY NOX_FILE but no NOXVALs avail for this Sector;
 !                 give zero concentration
@@ -1121,7 +1121,7 @@ SUBROUTINE COCARD
          ELSE IF (.NOT. L_NOXFile(I)) THEN
             IF(L_NOX_VALS(I))THEN
 !                 No NOXFILE but NOX_VALS values available for this sector; check completeness
-               IF (INOXSET(I) . LT. INOXMAX(I)) THEN
+               IF (INOXSET(I) .LT. INOXMAX(I)) THEN
 !                    WRITE Error Message: Not Enough NOX_VALS values
                   WRITE(DUMMY,'(''NumVals'',I4)') INOXSET(I)
                   CALL ERRHDL(PATH,MODNAM,'E','603',DUMMY)
@@ -1141,14 +1141,14 @@ SUBROUTINE COCARD
       END IF
 
 ! ---    Check for PM25 processing
-      IF ((POLLUT .EQ. 'PM25'  .OR. POLLUT .EQ. 'PM-2.5' .OR.&
-      &POLLUT .EQ. 'PM-25' .OR. POLLUT .EQ. 'PM2.5')) THEN
-         IF(.NOT.L_NO_PM25AVE .AND. .NOT.NOCHKD .AND.&
-         &.NOT.L_WARNCHKD   .AND. .NOT.EVONLY) THEN
+      IF ((POLLUT .EQ. 'PM25'  .or. POLLUT .EQ. 'PM-2.5' .or.&
+      &POLLUT .EQ. 'PM-25' .or. POLLUT .EQ. 'PM2.5')) THEN
+         IF(.NOT.L_NO_PM25AVE .and. .NOT.NOCHKD .and.&
+         &.NOT.L_WARNCHKD   .and. .NOT.EVONLY) THEN
 ! ---          Set logical flag for PM25 processing, averaged across years
             PM25AVE = .TRUE.
 ! ---          Now check for appropriate averaging periods for PM2.5
-            IF (NUMAVE.GT.1 .OR. (NUMAVE.EQ.1 .AND.&
+            IF (NUMAVE.GT.1 .or. (NUMAVE.EQ.1 .and.&
             &KAVE(1).NE.24)) THEN
 ! ---             Write Error Message: Short Term average must be 24-hr only
                DO I = 1, NUMAVE
@@ -1164,7 +1164,7 @@ SUBROUTINE COCARD
                CALL ERRHDL(PATH,MODNAM,'E','363','PERIOD Ave')
                PM25AVE = .FALSE.
             END IF
-         ELSE IF (.NOT.SCREEN .AND. .NOT.EVONLY) THEN
+         ELSE IF (.NOT.SCREEN .and. .NOT.EVONLY) THEN
 ! ---          Set to false for NOCHKD or WARNCHKD options, without the SCREEN or
 !              EVONLY options, and issue warning message
             IF (NOCHKD) THEN
@@ -1174,7 +1174,7 @@ SUBROUTINE COCARD
             END IF
             CALL ERRHDL(PATH,MODNAM,'W','363',DUMMY)
             PM25AVE = .FALSE.
-         ELSE IF (SCREEN .OR. EVONLY .OR. L_NO_PM25AVE) THEN
+         ELSE IF (SCREEN .or. EVONLY .or. L_NO_PM25AVE) THEN
 ! ---          Set PM25AVE to .FALSE. for SCREEN or EVONLY options or with
 !              L_NO_PM25AVE option, without any warnings
             PM25AVE = .FALSE.
@@ -1182,24 +1182,24 @@ SUBROUTINE COCARD
       END IF
 
 ! ---    Check for NO2 1-hour NAAQS processing (NO2AVE = .T.)
-      IF (POLLUT .EQ. 'NO2' .AND. .NOT.L_NO_NO2AVE .AND.&
-      &.NOT.NOCHKD .AND. .NOT.L_WARNCHKD  .AND.&
-      &.NOT.SCREEN .AND. .NOT.EVONLY) THEN
+      IF (POLLUT .EQ. 'NO2' .and. .NOT.L_NO_NO2AVE .and.&
+      &.NOT.NOCHKD .and. .NOT.L_WARNCHKD  .and.&
+      &.NOT.SCREEN .and. .NOT.EVONLY) THEN
 ! ---       No options precluding NO2 1-hr NAAQS processing are specified;
 !           next check for averaging periods to determine if multi-year
 !           processing of maximum daily 1-hour averages is being done
-         IF (NUMAVE.EQ.1 .AND. KAVE(1).EQ.1 .AND. .NOT.PERIOD&
-         &.AND. .NOT.ANNUAL) THEN
+         IF (NUMAVE.EQ.1 .and. KAVE(1).EQ.1 .and. .NOT.PERIOD&
+         &.and. .NOT.ANNUAL) THEN
 ! ---          Set logical flag for 1-hr NO2 processing, averaged across years,
 !              without PERIOD or ANNUAL averages
             NO2AVE = .TRUE.
-         ELSE IF (NUMAVE.EQ.1 .AND. KAVE(1).EQ.1 .AND. PERIOD&
-         &.AND. MULTYR) THEN
+         ELSE IF (NUMAVE.EQ.1 .and. KAVE(1).EQ.1 .and. PERIOD&
+         &.and. MULTYR) THEN
 ! ---          Set logical flag for 1-hr NO2 processing, averaged across years,
 !              using MULTYEAR option to address PERIOD averages
             NO2AVE = .TRUE.
-         ELSE IF (NUMAVE.EQ.1 .AND. KAVE(1).EQ.1 .AND.&
-         &(PERIOD .OR. ANNUAL) .AND.&
+         ELSE IF (NUMAVE.EQ.1 .and. KAVE(1).EQ.1 .and.&
+         &(PERIOD .or. ANNUAL) .and.&
          &.NOT.MULTYR) THEN
 ! ---          Write Warning Message: PERIOD averages should not be
 !              processed with 1-hour averages for NO2 unless only 1 year
@@ -1209,9 +1209,9 @@ SUBROUTINE COCARD
 ! ---          Allow processing to continue, but long-term results
 !              may be wrong.
             NO2AVE = .TRUE.
-         ELSE IF (NUMAVE.GT.1 .OR.&
-         &(NUMAVE.EQ.1 .AND. KAVE(1).NE.1) .AND.&
-         &(PERIOD .OR. ANNUAL) .AND.&
+         ELSE IF (NUMAVE.GT.1 .or.&
+         &(NUMAVE.EQ.1 .and. KAVE(1).NE.1) .and.&
+         &(PERIOD .or. ANNUAL) .and.&
          &.NOT.MULTYR) THEN
 ! ---          Write Warning Message: PERIOD averages should not be
 !              processed with 1-hour averages for NO2 unless only 1 year
@@ -1229,8 +1229,8 @@ SUBROUTINE COCARD
                END IF
             END DO
             NO2AVE = .FALSE.
-         ELSE IF (NUMAVE.GT.1 .OR.&
-         &(NUMAVE.EQ.1 .AND. KAVE(1).NE.1) ) THEN
+         ELSE IF (NUMAVE.GT.1 .or.&
+         &(NUMAVE.EQ.1 .and. KAVE(1).NE.1) ) THEN
 ! ---          Write Warning Message: Non-standard short term average for NO2
 ! ---          Write Warning Message: Short Term average should be 1-hr only for NO2
             DO I = 1, NUMAVE
@@ -1245,16 +1245,16 @@ SUBROUTINE COCARD
 !              processing
             NO2AVE = .FALSE.
          END IF
-      ELSE IF (POLLUT .EQ. 'NO2' .AND. .NOT.SCREEN .AND.&
+      ELSE IF (POLLUT .EQ. 'NO2' .and. .NOT.SCREEN .and.&
       &.NOT.EVONLY) THEN
 ! ---       Set NO2AVE to false for NOCHKD, WARNCHKD and L_NO_NO2AVE options, without
 !           the SCREEN or EVONLY options; issue warning messages for NOCHKD or WARNCHKD
 !           (message has already been issued for L_NO_NO2AVE), and disable special
 !           processing for 1-hour NAAQS.
-         IF (NUMAVE.EQ.1 .AND. KAVE(1).EQ.1 .AND.&
-         &((.NOT.PERIOD .AND. .NOT.ANNUAL) .OR.&
-         &(PERIOD .AND. MULTYR) .OR.&
-         &((PERIOD .OR. ANNUAL) .AND. .NOT.MULTYR)) )THEN
+         IF (NUMAVE.EQ.1 .and. KAVE(1).EQ.1 .and.&
+         &((.NOT.PERIOD .and. .NOT.ANNUAL) .or.&
+         &(PERIOD .and. MULTYR) .or.&
+         &((PERIOD .or. ANNUAL) .and. .NOT.MULTYR)) )THEN
             IF (NOCHKD) THEN
                DUMMY = 'NOCHKD'
                CALL ERRHDL(PATH,MODNAM,'W','362',DUMMY)
@@ -1264,28 +1264,28 @@ SUBROUTINE COCARD
             END IF
             NO2AVE = .FALSE.
          END IF
-      ELSE IF (POLLUT .EQ. 'NO2' .AND. (SCREEN .OR. EVONLY)) THEN
+      ELSE IF (POLLUT .EQ. 'NO2' .and. (SCREEN .or. EVONLY)) THEN
 ! ---       Set NO2AVE to .FALSE. for SCREEN or EVONLY options, without any warnings
          NO2AVE = .FALSE.
       END IF
 
 ! ---    Check for SO2 1-hour NAAQS processing (SO2AVE = .T.)
-      IF (POLLUT .EQ. 'SO2' .AND. .NOT.NOCHKD .AND. .NOT.L_NO_SO2AVE&
-      &.AND. .NOT.L_WARNCHKD .AND. .NOT.EVONLY) THEN
+      IF (POLLUT .EQ. 'SO2' .and. .NOT.NOCHKD .and. .NOT.L_NO_SO2AVE&
+      &.and. .NOT.L_WARNCHKD .and. .NOT.EVONLY) THEN
 ! ---       No options precluding SO2 1-hr NAAQS processing are specified;
 !           next check for averaging periods to determine if multi-year
 !           processing of maximum daily 1-hour averages is being done
-         IF (NUMAVE.EQ.1 .AND. KAVE(1).EQ.1 .AND. .NOT.PERIOD&
-         &.AND. .NOT.ANNUAL) THEN
+         IF (NUMAVE.EQ.1 .and. KAVE(1).EQ.1 .and. .NOT.PERIOD&
+         &.and. .NOT.ANNUAL) THEN
 ! ---          Set logical flag for 1-hr SO2 processing, averaged across years
             SO2AVE = .TRUE.
-         ELSE IF (NUMAVE.EQ.1 .AND. KAVE(1).EQ.1 .AND. PERIOD&
-         &.AND. MULTYR) THEN
+         ELSE IF (NUMAVE.EQ.1 .and. KAVE(1).EQ.1 .and. PERIOD&
+         &.and. MULTYR) THEN
 ! ---          Set logical flag for 1-hr SO2 processing, averaged across years,
 !              using MULTYEAR option to address PERIOD averages
             SO2AVE = .TRUE.
-         ELSE IF (NUMAVE.EQ.1 .AND. KAVE(1).EQ.1 .AND.&
-         &(PERIOD .OR. ANNUAL) .AND.&
+         ELSE IF (NUMAVE.EQ.1 .and. KAVE(1).EQ.1 .and.&
+         &(PERIOD .or. ANNUAL) .and.&
          &.NOT.MULTYR) THEN
 ! ---          Write Warning Message: PERIOD averages should not be
 !              processed with 1-hour averages for SO2 unless only 1 year
@@ -1295,8 +1295,8 @@ SUBROUTINE COCARD
 ! ---          Allow processing to continue, but long-term results
 !              may be wrong.
             SO2AVE = .TRUE.
-         ELSE IF (NUMAVE.GT.1 .AND. MINVAL(KAVE).EQ.1 .AND.&
-         &(PERIOD .OR. ANNUAL) .AND.&
+         ELSE IF (NUMAVE.GT.1 .and. MINVAL(KAVE).EQ.1 .and.&
+         &(PERIOD .or. ANNUAL) .and.&
          &.NOT.MULTYR) THEN
 ! ---          Write Warning Message: PERIOD averages should not be
 !              processed with 1-hour averages for SO2 unless only 1 year
@@ -1315,7 +1315,7 @@ SUBROUTINE COCARD
 ! ---          Allow processing to continue, but without special processing
 !              of 1-hr values averaged across years
             SO2AVE = .FALSE.
-         ELSE IF (NUMAVE.GT.1 .AND. MINVAL(KAVE).EQ.1) THEN
+         ELSE IF (NUMAVE.GT.1 .and. MINVAL(KAVE).EQ.1) THEN
 ! ---          Write Warning Message: Non-standard short term average for SO2,
 !              and disable special processing for 1-hour NAAQS.
             DO I = 1, NUMAVE
@@ -1332,15 +1332,15 @@ SUBROUTINE COCARD
 !              processing
             SO2AVE = .FALSE.
          END IF
-      ELSE IF (POLLUT .EQ. 'SO2' .AND. .NOT.SCREEN .AND.&
+      ELSE IF (POLLUT .EQ. 'SO2' .and. .NOT.SCREEN .and.&
       &.NOT.EVONLY) THEN
 ! ---       Set SO2AVE to false for NOCHKD or WARNCHKD options, without the
 !           SCREEN or EVONLY options, issue warning message, and disable
 !           special processing for 1-hour NAAQS.
-         IF (NUMAVE.EQ.1 .AND. KAVE(1).EQ.1 .AND.&
-         &((.NOT.PERIOD .AND. .NOT.ANNUAL) .OR.&
-         &(PERIOD .AND. MULTYR) .OR.&
-         &((PERIOD .OR. ANNUAL) .AND. .NOT.MULTYR)) )THEN
+         IF (NUMAVE.EQ.1 .and. KAVE(1).EQ.1 .and.&
+         &((.NOT.PERIOD .and. .NOT.ANNUAL) .or.&
+         &(PERIOD .and. MULTYR) .or.&
+         &((PERIOD .or. ANNUAL) .and. .NOT.MULTYR)) )THEN
             IF (NOCHKD) THEN
                DUMMY = 'NOCHKD'
             ELSE IF (L_WARNCHKD) THEN
@@ -1349,13 +1349,13 @@ SUBROUTINE COCARD
             CALL ERRHDL(PATH,MODNAM,'W','362',DUMMY)
             SO2AVE = .FALSE.
          END IF
-      ELSE IF (POLLUT .EQ. 'SO2' .AND. (SCREEN .OR. EVONLY)) THEN
+      ELSE IF (POLLUT .EQ. 'SO2' .and. (SCREEN .or. EVONLY)) THEN
 ! ---       Set SO2AVE to .FALSE. for SCREEN or EVONLY options, without any warnings
          SO2AVE = .FALSE.
       END IF
 
 ! ---    Check for pollutant ID = 'NO2' for PVMRM, OLM, ARM2 and GRSM options
-      IF ((PVMRM .OR. OLM .OR. ARM2 .OR. GRSM) .AND.&
+      IF ((PVMRM .or. OLM .or. ARM2 .or. GRSM) .and.&
       &POLLUT .NE. 'NO2') THEN
 !           Write Error Message:  Pollutant ID doesn't match option
          CALL ERRHDL(PATH,MODNAM,'E','284',' NO2 ')
@@ -1363,7 +1363,7 @@ SUBROUTINE COCARD
 
 ! ---    Check for PM25, NO2, or SO2 processing based on ranked values
 !        averaged across years, and adjust PLOTFILE format accordingly
-      IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+      IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
          PLTFRM = '(3(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,A5,5X,A8,2X,&
          &               10(F13.5,2X,I8.8,2X:))'
       END IF
@@ -1375,7 +1375,7 @@ SUBROUTINE COCARD
 !          be specified.  Check for that here.  A similar check is performed
 !          in ORD_DOWNWASH
 
-      IF (L_AWMA_UEFF .AND. L_ORD_UEFF) THEN
+      IF (L_AWMA_UEFF .and. L_ORD_UEFF) THEN
 ! ---       Write error message
          CALL ERRHDL(PATH,MODNAM,'E','124','  ')
       END IF
@@ -1383,7 +1383,7 @@ SUBROUTINE COCARD
 ! ---    Check for conflicts between AWMA and ORD Ueff options (which
 !         is an error) as well as AWMAUTurb and AWMAUturbHX (which only
 !         issues a warning)
-      IF (L_AWMA_UTurb .AND. L_AWMA_UTurbHX) THEN
+      IF (L_AWMA_UTurb .and. L_AWMA_UTurbHX) THEN
          CALL ERRHDL(PATH,MODNAM,'W','478',' ')
       END IF
 
@@ -1586,7 +1586,7 @@ SUBROUTINE MODOPT
 !     First Check for Presence of DFAULT Switch
    DO I = 3, IFC
       KOPT = FIELD(I)
-      IF (KOPT .EQ. 'DFAULT' .OR. KOPT .EQ. 'DEFAULT') THEN
+      IF (KOPT .EQ. 'DFAULT' .or. KOPT .EQ. 'DEFAULT') THEN
          DFAULT      = .TRUE.
          ELEV        = .TRUE.
          FLAT        = .FALSE.
@@ -1649,9 +1649,9 @@ SUBROUTINE MODOPT
 !     Next Check for Presence of BETA Switch
    DO I = 3, IFC
       KOPT = FIELD(I)
-      IF (KOPT .EQ. 'BETA' .AND. .NOT.DFAULT) THEN
+      IF (KOPT .EQ. 'BETA' .and. .NOT.DFAULT) THEN
          BETA = .TRUE.
-      ELSE IF (KOPT .EQ. 'ALPHA' .AND. .NOT.DFAULT) THEN
+      ELSE IF (KOPT .EQ. 'ALPHA' .and. .NOT.DFAULT) THEN
          L_ALPHA = .TRUE.
       END IF
    END DO
@@ -1660,7 +1660,7 @@ SUBROUTINE MODOPT
 !     Loop Through Fields Again Setting All Swithes
    DO I = 3, IFC
       KOPT = FIELD(I)
-      IF (KOPT .EQ. 'DFAULT' .OR. KOPT .EQ. 'DEFAULT') THEN
+      IF (KOPT .EQ. 'DFAULT' .or. KOPT .EQ. 'DEFAULT') THEN
          DFAULT = .TRUE.
       ELSE IF (KOPT .EQ. 'CONC') THEN
          IF (.NOT. CONC) THEN
@@ -1682,21 +1682,21 @@ SUBROUTINE MODOPT
             WDEP   = .TRUE.
             NUMTYP = NUMTYP + 1
          END IF
-      ELSE IF (KOPT .EQ. 'FLAT' .OR. KOPT .EQ. 'ELEV') THEN
+      ELSE IF (KOPT .EQ. 'FLAT' .or. KOPT .EQ. 'ELEV') THEN
          CYCLE
-      ELSE IF (KOPT .EQ. 'DRYDPLT' .AND. .NOT.NODRYDPLT) THEN
+      ELSE IF (KOPT .EQ. 'DRYDPLT' .and. .NOT.NODRYDPLT) THEN
          DDPLETE = .TRUE.
          DRYDPLT = .TRUE.
-      ELSE IF (KOPT .EQ. 'DRYDPLT' .AND. NODRYDPLT) THEN
+      ELSE IF (KOPT .EQ. 'DRYDPLT' .and. NODRYDPLT) THEN
 ! ---       Write Error Message        ! Conflicting options specified
          CALL ERRHDL(PATH,MODNAM,'E','149',KOPT)
-      ELSE IF (KOPT .EQ. 'NODRYDPLT' .AND. .NOT.DRYDPLT) THEN
+      ELSE IF (KOPT .EQ. 'NODRYDPLT' .and. .NOT.DRYDPLT) THEN
 !           Dry depletion is now standard - include "option" to override it
          DDPLETE = .FALSE.
 !           Set separate logical for user-specified option to ensure that
 !           it is reflected in the page header
          NODRYDPLT = .TRUE.
-      ELSE IF (KOPT .EQ. 'NODRYDPLT' .AND. DRYDPLT) THEN
+      ELSE IF (KOPT .EQ. 'NODRYDPLT' .and. DRYDPLT) THEN
 ! ---       Write Error Message        ! Conflicting options specified
          CALL ERRHDL(PATH,MODNAM,'E','149',KOPT)
       ELSE IF (KOPT .EQ. 'ROMBERG') THEN
@@ -1710,19 +1710,19 @@ SUBROUTINE MODOPT
 !              WRITE Error Message     ! Non-DEFAULT Option Conflict
             CALL ERRHDL(PATH,MODNAM,'E','204',KOPT)
          END IF
-      ELSE IF (KOPT .EQ. 'WETDPLT' .AND. .NOT.NOWETDPLT) THEN
+      ELSE IF (KOPT .EQ. 'WETDPLT' .and. .NOT.NOWETDPLT) THEN
          WDPLETE = .TRUE.
          WETDPLT = .TRUE.
-      ELSE IF (KOPT .EQ. 'WETDPLT' .AND. NOWETDPLT) THEN
+      ELSE IF (KOPT .EQ. 'WETDPLT' .and. NOWETDPLT) THEN
 ! ---       Write Error Message        ! Conflicting options specified
          CALL ERRHDL(PATH,MODNAM,'E','149',KOPT)
-      ELSE IF (KOPT .EQ. 'NOWETDPLT' .AND. .NOT.WETDPLT) THEN
+      ELSE IF (KOPT .EQ. 'NOWETDPLT' .and. .NOT.WETDPLT) THEN
 !           Wet depletion is now standard - include "option" to override it
          WDPLETE = .FALSE.
 !           Set separate logical for user-specified option to ensure that
 !           it is reflected in the page header
          NOWETDPLT = .TRUE.
-      ELSE IF (KOPT .EQ. 'NOWETDPLT' .AND. WETDPLT) THEN
+      ELSE IF (KOPT .EQ. 'NOWETDPLT' .and. WETDPLT) THEN
 ! ---       Write Error Message        ! Conflicting options specified
          CALL ERRHDL(PATH,MODNAM,'E','149',KOPT)
       ELSE IF (KOPT .EQ. 'NOSTD') THEN
@@ -1736,9 +1736,9 @@ SUBROUTINE MODOPT
       ELSE IF (KOPT .EQ. 'NOWARN') THEN
          NOWARN = .TRUE.
       ELSE IF (KOPT .EQ. 'NOCHKD') THEN
-         IF (.NOT. DFAULT .AND. .NOT.L_WARNCHKD) THEN
+         IF (.NOT. DFAULT .and. .NOT.L_WARNCHKD) THEN
             NOCHKD = .TRUE.
-         ELSE IF (.NOT.DFAULT .AND. L_WARNCHKD) THEN
+         ELSE IF (.NOT.DFAULT .and. L_WARNCHKD) THEN
 ! ---          Write Error Message        ! Conflicting options specified
             CALL ERRHDL(PATH,MODNAM,'E','149',KOPT)
          ELSE
@@ -1775,13 +1775,13 @@ SUBROUTINE MODOPT
 ! ---       WRITE Warning Message        ! TOXICS option is obsolete
 !           If this run includes area or openpit sources, refer to
 !           FASTAREA option and set the logical flag
-         IF (NAREA .GT. 0 .OR. NLINE .GT. 0 .OR. NPIT .GT. 0) THEN
+         IF (NAREA .GT. 0 .or. NLINE .GT. 0 .or. NPIT .GT. 0) THEN
             CALL ERRHDL(PATH,MODNAM,'W','198','FASTAREA')
          ELSE
             CALL ERRHDL(PATH,MODNAM,'W','198','        ')
          END IF
          IF (.NOT. DFAULT) THEN
-            IF (NAREA .GT. 0 .OR. NLINE .GT. 0 .OR. NPIT .GT. 0) THEN
+            IF (NAREA .GT. 0 .or. NLINE .GT. 0 .or. NPIT .GT. 0) THEN
 ! ---             Assign FASTAREA option to TRUE for consistency with
 !                 area source optimizations under obsolete TOXICS option
                FASTAREA = .TRUE.
@@ -1850,9 +1850,9 @@ SUBROUTINE MODOPT
 
 !CRT 1/29/2018 Move PSDCREDIT from BETA to ALPHA option
       ELSE IF (KOPT .EQ. 'PSDCREDIT') THEN                           ! jop 093006
-         IF (L_ALPHA .AND. .NOT. DFAULT) THEN
+         IF (L_ALPHA .and. .NOT. DFAULT) THEN
             PSDCREDIT = .TRUE.
-         ELSE IF (.NOT. L_ALPHA .AND. .NOT. DFAULT) THEN
+         ELSE IF (.NOT. L_ALPHA .and. .NOT. DFAULT) THEN
 !              WRITE Error Message     ! ALPHA Option Required for PSDCREDIT
             CALL ERRHDL(PATH,MODNAM,'E','198',KOPT)
          ELSE
@@ -1985,8 +1985,8 @@ SUBROUTINE MODOPT
 !RCO 1/7/21 D074 Add NOMINO3 option
       ELSE IF (KOPT .EQ. 'NOMINO3') THEN
          NOMINO3 = .TRUE.
-         IF (.NOT.OLM .AND. .NOT.PVMRM .AND. .NOT.GRSM&
-         &.AND. .NOT.RUNTTRM) THEN
+         IF (.NOT.OLM .and. .NOT.PVMRM .and. .NOT.GRSM&
+         &.and. .NOT.RUNTTRM) THEN
 !              WRITE Warning Message  ! NOMINO3 set without NO2 technique
 !              D154 Changed the warning message to an error is NOMINO3 is set without NO2 technique 1/31/23 WSP
 !               CALL ERRHDL(PATH,MODNAM,'W','621',KOPT)
@@ -2003,80 +2003,80 @@ SUBROUTINE MODOPT
    END DO
 
 ! --- Check for conflicting NO2 options:
-   IF (OLM .AND. PVMRM) THEN
+   IF (OLM .and. PVMRM) THEN
 !        WRITE Error Message       ! Can't specify OLM & PVMRM
       CALL ERRHDL(PATH,MODNAM,'E','141','OLM & PVMRM')
-   ELSE IF (OLM .AND. ARM2) THEN
+   ELSE IF (OLM .and. ARM2) THEN
 !        WRITE Error Message       ! Can't specify OLM & ARM2
       CALL ERRHDL(PATH,MODNAM,'E','141','OLM & ARM2')
-   ELSE IF (OLM .AND. GRSM) THEN
+   ELSE IF (OLM .and. GRSM) THEN
 !        WRITE Error Message       ! Can't specify OLM & GRSM
       CALL ERRHDL(PATH,MODNAM,'E','141','OLM & GRSM')
-   ELSE IF (PVMRM .AND. ARM2) THEN
+   ELSE IF (PVMRM .and. ARM2) THEN
 !        WRITE Error Message       ! Can't specify PVMRM & ARM2
       CALL ERRHDL(PATH,MODNAM,'E','141','PVMRM & ARM2')
-   ELSE IF (PVMRM .AND. GRSM) THEN
+   ELSE IF (PVMRM .and. GRSM) THEN
 !        WRITE Error Message       ! Can't specify PVMRM & GRSM
       CALL ERRHDL(PATH,MODNAM,'E','141','PVMRM & GRSM')
-   ELSE IF (ARM2 .AND. GRSM) THEN
+   ELSE IF (ARM2 .and. GRSM) THEN
 !        WRITE Error Message       ! Can't specify ARM2 & GRSM
       CALL ERRHDL(PATH,MODNAM,'E','141','ARM2 & GRSM')
-   ELSE IF ((.NOT. RUNTTRM2) .AND. (RUNTTRM .AND. ARM2)) THEN
+   ELSE IF ((.NOT. RUNTTRM2) .and. (RUNTTRM .and. ARM2)) THEN
 !        WRITE Error Message       ! Can't specify TTRM & ARM2
       CALL ERRHDL(PATH,MODNAM,'E','141','TTRM & ARM2')
-   ELSE IF ((.NOT. RUNTTRM2) .AND. (RUNTTRM .AND. OLM)) THEN
+   ELSE IF ((.NOT. RUNTTRM2) .and. (RUNTTRM .and. OLM)) THEN
 !        WRITE Error Message       ! Can't specify TTRM & OLM
       CALL ERRHDL(PATH,MODNAM,'E','141','TTRM & OLM')
-   ELSE IF ((.NOT. RUNTTRM2) .AND. (RUNTTRM .AND. PVMRM)) THEN
+   ELSE IF ((.NOT. RUNTTRM2) .and. (RUNTTRM .and. PVMRM)) THEN
 !        WRITE Error Message       ! Can't specify TTRM & PVMRM
       CALL ERRHDL(PATH,MODNAM,'E','141','TTRM & PVMRM')
-   ELSE IF (RUNTTRM .AND. GRSM) THEN
+   ELSE IF (RUNTTRM .and. GRSM) THEN
 !        WRITE Error Message       ! Can't specify TTRM & GRSM
       CALL ERRHDL(PATH,MODNAM,'E','141','TTRM & GRSM')
 !! Added Nov. 2021
-   ELSE IF (RUNTTRM2 .AND. GRSM ) THEN
+   ELSE IF (RUNTTRM2 .and. GRSM ) THEN
 !        WRITE Error Message       ! Can't specify TTRM & ARM2
       CALL ERRHDL(PATH,MODNAM,'E','141','TTRM2 & GRSM')
-   ELSE IF (RUNTTRM2 .AND. OLM .AND. ARM2) THEN
+   ELSE IF (RUNTTRM2 .and. OLM .and. ARM2) THEN
 !        WRITE Error Message       ! Can't specify TTRM & OLM
       CALL ERRHDL(PATH,MODNAM,'E','141','TTRM2 & >2 NO2 Options')
-   ELSE IF (RUNTTRM2 .AND. PVMRM .AND. ARM2) THEN
+   ELSE IF (RUNTTRM2 .and. PVMRM .and. ARM2) THEN
 !        WRITE Error Message       ! Can't specify TTRM & PVMRM
       CALL ERRHDL(PATH,MODNAM,'E','141','TTRM2 & >2 NO2 Options')
-   ELSE IF (RUNTTRM2 .AND. OLM .AND. PVMRM) THEN
+   ELSE IF (RUNTTRM2 .and. OLM .and. PVMRM) THEN
 !        WRITE Error Message       ! Can't specify TTRM & GRSM
       CALL ERRHDL(PATH,MODNAM,'E','141','TTRM2 & >2 NO2 Options')
 !! End Nov. 2021 TTRM insert
    END IF
 
-   IF (PSDCREDIT .AND. .NOT.PVMRM) THEN
+   IF (PSDCREDIT .and. .NOT.PVMRM) THEN
 !        WRITE Error Message       ! Can't specify PSDCREDIT without PVMRM
       CALL ERRHDL(PATH,MODNAM,'E','143','PSDCREDIT')
    END IF
 
-   IF (PSDCREDIT .AND. EVONLY) THEN
+   IF (PSDCREDIT .and. EVONLY) THEN
 !        WRITE Error Message       ! Can't use PSDCREDIT with EVONLY Processing
       CALL ERRHDL(PATH,MODNAM,'E','147',' EVENTS ')
    END IF
 
 ! --- Check for Non-DFAULT options used without DFAULT; this will be used to
 !     set the option label in the file headers.
-!_OLD      IF (.NOT. DFAULT .AND.
-!_OLD     &    (FLAT .OR. FLATSRCS .OR. ARDPLETE .OR. NOSTD .OR. NOCHKD .OR.
-!_OLD     &     SCREEN .OR. SCIM .OR. PVMRM .OR. PSDCREDIT .OR.
-!_OLD     &      OLM .OR. ARM2 .OR. BETA .OR. FASTAREA .OR. FASTALL .OR.
-!_OLD     &     L_LowWind1 .OR. L_LowWind2 .OR. L_LowWind3
-!_OLD     &                                .OR. .NOT.L_UrbanTransition)) THEN
+!_OLD      IF (.NOT. DFAULT .and.
+!_OLD     &    (FLAT .or. FLATSRCS .or. ARDPLETE .or. NOSTD .or. NOCHKD .or.
+!_OLD     &     SCREEN .or. SCIM .or. PVMRM .or. PSDCREDIT .or.
+!_OLD     &      OLM .or. ARM2 .or. BETA .or. FASTAREA .or. FASTALL .or.
+!_OLD     &     L_LowWind1 .or. L_LowWind2 .or. L_LowWind3
+!_OLD     &                                .or. .NOT.L_UrbanTransition)) THEN
 !_OLD
 !_OLD         L_NonDFAULT = .TRUE.
 !_OLD      END IF
 !CRT  1/29/2018: Added L_ALPHA to conditions for non-default options
 !CRT  4/11/2022: D131 FRAN Alpha - Add L_PBal to non-default options
-   IF (.NOT. DFAULT .AND.&
-   &(FLAT .OR. FLATSRCS .OR. ARDPLETE .OR. NOSTD .OR. NOCHKD .OR.&
-   &SCREEN .OR. SCIM .OR. PSDCREDIT .OR. BETA .OR. FASTAREA .OR.&
-   &FASTALL .OR. LOW_WIND .OR. L_ALPHA .OR. GRSM .OR. L_PBal&
-   &.OR. .NOT.L_UrbanTransition)) THEN
+   IF (.NOT. DFAULT .and.&
+   &(FLAT .or. FLATSRCS .or. ARDPLETE .or. NOSTD .or. NOCHKD .or.&
+   &SCREEN .or. SCIM .or. PSDCREDIT .or. BETA .or. FASTAREA .or.&
+   &FASTALL .or. LOW_WIND .or. L_ALPHA .or. GRSM .or. L_PBal&
+   &.or. .NOT.L_UrbanTransition)) THEN
 
       L_NonDFAULT = .TRUE.
    END IF
@@ -2312,8 +2312,8 @@ SUBROUTINE MODOPT
 ! --- Modify PLTFRM, PSTFRM and MXDFRM if needed for more than one output type
 !     and for EXP format (note that FILE_FORMAT is set during PRESET).
 
-   IF (NUMTYP .GT. 1 .AND. FILE_FORMAT .EQ. 'FIX') THEN
-      IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+   IF (NUMTYP .GT. 1 .and. FILE_FORMAT .EQ. 'FIX') THEN
+      IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
          WRITE(PLTFRM,1009) NUMTYP+2
 1009     FORMAT('(',I1,'(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,A5,5X,',&
          &'A8,2X,10(F13.5,2X,I8.8,2X:))')
@@ -2328,8 +2328,8 @@ SUBROUTINE MODOPT
       WRITE(MXDFRM,1039) NUMTYP+2
 1039  FORMAT('(',I1,'(1X,F13.5),3(1X,F8.2),2X,A6,2X,A8,2X,I4,2X,I3,',&
       &'2X,I8.8,2X,A8)')
-   ELSE IF (NUMTYP .GT. 1 .AND. FILE_FORMAT .EQ. 'EXP') THEN
-      IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+   ELSE IF (NUMTYP .GT. 1 .and. FILE_FORMAT .EQ. 'EXP') THEN
+      IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
          WRITE(PLTFRM,2009) NUMTYP
 2009     FORMAT('(2(1X,F13.5),',I1,'(1X,E13.6),3(1X,F8.2),2X,A6,2X,',&
          &'A8,2X,A5,5X,A8,2X,10(E13.6,2X,I8.8,2X:))')
@@ -2400,10 +2400,10 @@ SUBROUTINE AVETIM
 10 CONTINUE
 
 ! --- Check for Both PERIOD and ANNUAL
-   IF (PERIOD .AND. ANNUAL) THEN
+   IF (PERIOD .and. ANNUAL) THEN
 !        Write Error Message; both PERIOD and ANNUAL specified
       CALL ERRHDL(PATH,MODNAM,'E','294',KEYWRD)
-   ELSE IF (PERIOD .OR. ANNUAL) THEN
+   ELSE IF (PERIOD .or. ANNUAL) THEN
 !        Check for Too Many Averaging Periods
       IF (IFC .GT. NAVE+3) THEN
 !           WRITE Error Message: Too Many Period Or Time Fields
@@ -2420,7 +2420,7 @@ SUBROUTINE AVETIM
    J = 0
    DO 20 I = 3, IFC
       KOPT = FIELD(I)
-      IF (KOPT .NE. 'PERIOD' .AND. KOPT .NE. 'ANNUAL') THEN
+      IF (KOPT .NE. 'PERIOD' .and. KOPT .NE. 'ANNUAL') THEN
          IF (KOPT .NE. 'MONTH') THEN
             CALL STONUM(KOPT,8,AVENUM,IMIT)
             IF (IMIT .NE. 1) THEN
@@ -2428,7 +2428,7 @@ SUBROUTINE AVETIM
                CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
             END IF
 !              Check for Valid Averaging Period
-            IF ((MOD(24,NINT(AVENUM)).EQ.0 .AND.&
+            IF ((MOD(24,NINT(AVENUM)).EQ.0 .and.&
             &IMIT.EQ.1)) THEN
                J = J + 1
                IF (J .LE. NAVE) THEN
@@ -2515,16 +2515,16 @@ SUBROUTINE POLLID
    ELSE IF (IFC .EQ. 4) THEN
 ! ---    Check for POLLUT IDs associated with "special" processing;
 !        NO2 or SO2 or PM25 (including all PM25 variants)
-      IF (FIELD(3) .EQ. 'NO2'  .OR. FIELD(3) .EQ. 'SO2' .OR.&
-      &FIELD(3) .EQ. 'PM25' .OR. FIELD(3) .EQ. 'PM-2.5' .OR.&
-      &FIELD(3) .EQ. 'PM-25'.OR. FIELD(3) .EQ. 'PM2.5') THEN
+      IF (FIELD(3) .EQ. 'NO2'  .or. FIELD(3) .EQ. 'SO2' .or.&
+      &FIELD(3) .EQ. 'PM25' .or. FIELD(3) .EQ. 'PM-2.5' .or.&
+      &FIELD(3) .EQ. 'PM-25'.or. FIELD(3) .EQ. 'PM2.5') THEN
 ! ---       This POLLID allows optional input in field 4; assign POLLUT
          POLLUT = FIELD(3)
       ELSE
 ! ---       User-specified POLLID doesn't allow for field 4; assign
 !           POLLUT but issue an error message
          POLLUT = FIELD(3)
-         IF (FIELD(4) .EQ. 'H1H' .OR. FIELD(4) .EQ. 'H2H' .OR.&
+         IF (FIELD(4) .EQ. 'H1H' .or. FIELD(4) .EQ. 'H2H' .or.&
          &FIELD(4) .EQ. 'INC') THEN
 !              Error Message: 'H1H', 'H2H', and 'INC' processing not
 !              applicable to this POLLUT
@@ -2542,7 +2542,7 @@ SUBROUTINE POLLID
       END IF
 !        Now check for options to disable "special" processing for
 !        these pollutants
-      IF (FIELD(4) .EQ. 'H1H' .OR. FIELD(4) .EQ. 'H2H' .OR.&
+      IF (FIELD(4) .EQ. 'H1H' .or. FIELD(4) .EQ. 'H2H' .or.&
       &FIELD(4) .EQ. 'INC') THEN
          IF (POLLUT .EQ. 'NO2') THEN
             L_NO_NO2AVE = .TRUE.
@@ -2558,8 +2558,8 @@ SUBROUTINE POLLID
             &FIELD(4)(1:3)
 !              Issue Warning Message: user disabled special processing
             CALL ERRHDL(PATH,MODNAM,'W','276',DUMMY)
-         ELSE IF (POLLUT .EQ. 'PM25' .OR. POLLUT .EQ. 'PM-2.5' .OR.&
-         &POLLUT .EQ. 'PM-25'.OR. POLLUT .EQ. 'PM2.5') THEN
+         ELSE IF (POLLUT .EQ. 'PM25' .or. POLLUT .EQ. 'PM-2.5' .or.&
+         &POLLUT .EQ. 'PM-25'.or. POLLUT .EQ. 'PM2.5') THEN
             L_NO_PM25AVE = .TRUE.
             PM25_FIELD4 = FIELD(4)(1:3)
             WRITE(DUMMY,'(A,1X,A3)') POLLUT(1:LEN_TRIM(POLLUT)),&
@@ -2640,7 +2640,7 @@ SUBROUTINE EDECAY
 
 ! --- Check for Urban Regulatory Default for SO2; use L_PRESET_URBAN rather then
 !     URBAN to allow flexibility in order of keywords
-   IF (DFAULT .AND. L_PRESET_URBAN .AND. POLLUT.EQ.'SO2') THEN
+   IF (DFAULT .and. L_PRESET_URBAN .and. POLLUT.EQ.'SO2') THEN
       IF (DECOEF .NE. 4.81D-5) THEN
 !           WRITE Warning Message: Attempt to Override Regulatory Default
          CALL ERRHDL(PATH,MODNAM,'W','206','DCAYCOEF')
@@ -2652,7 +2652,7 @@ SUBROUTINE EDECAY
          CALL ERRHDL(PATH,MODNAM,'W','206','DCAYCOEF')
       END IF
       DECOEF = 0.0D0
-   ELSE IF (.NOT. DFAULT .AND. DECOEF .NE. 0.0D0) THEN
+   ELSE IF (.NOT. DFAULT .and. DECOEF .NE. 0.0D0) THEN
 !        Set flag for use of non-DEFAULT option
       L_NonDFAULT = .TRUE.
    END IF
@@ -2749,9 +2749,9 @@ SUBROUTINE FLAGDF
 !           Write Error Message:Invalid Numerical Field
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
       END IF
-      IF (ZFLG .GE. 0.0D0 .AND. IMIT .EQ. 1) THEN
+      IF (ZFLG .GE. 0.0D0 .and. IMIT .EQ. 1) THEN
          AZFLAG(:) = ZFLG
-      ELSE IF (ZFLG .LT. 0.0D0 .AND. IMIT .EQ. 1) THEN
+      ELSE IF (ZFLG .LT. 0.0D0 .and. IMIT .EQ. 1) THEN
 !            WRITE Error Message: Invalid Data. Negative value specified
          CALL ERRHDL(PATH,MODNAM,'E','209','ZFLAG')
       ELSE
@@ -2838,7 +2838,7 @@ SUBROUTINE EVNTFL
    END IF
 
 !     Check for Invalid EVPARM
-   IF (EVPARM .NE. 'SOCONT' .AND. EVPARM .NE. 'DETAIL') THEN
+   IF (EVPARM .NE. 'SOCONT' .and. EVPARM .NE. 'DETAIL') THEN
 !        WRITE Warning Message         ! Invalid Parameter - Use Default
       CALL ERRHDL(PATH,MODNAM,'W','203','EVPARM')
    END IF
@@ -3316,43 +3316,43 @@ SUBROUTINE DEBOPT
    END IF
 
 ! --- Check for debug options without associated model option being used
-   IF (PVMRMDBG .AND. .NOT. PVMRM) THEN
+   IF (PVMRMDBG .and. .NOT. PVMRM) THEN
 !        Write Error Message:  PVMRM debug without PVMRM option
       CALL ERRHDL(PATH,MODNAM,'E','194','PVMRMDBG')
    END IF
-   IF (OLMDEBUG .AND. .NOT.OLM) THEN
+   IF (OLMDEBUG .and. .NOT.OLM) THEN
 !        Write Error Message:  OLM debug without OLM option
       CALL ERRHDL(PATH,MODNAM,'E','194','OLMDEBUG')
    END IF
-   IF (ARM2DEBUG .AND. .NOT.ARM2) THEN
+   IF (ARM2DEBUG .and. .NOT.ARM2) THEN
 !        Write Error Message:  ARM2 debug without ARM2 option
       CALL ERRHDL(PATH,MODNAM,'E','194','ARM2DEBUG')
    END IF
-   IF (GRSMDEBUG .AND. .NOT.GRSM) THEN
+   IF (GRSMDEBUG .and. .NOT.GRSM) THEN
 !        Write Error Message:  GRSM debug without GRSM option
       CALL ERRHDL(PATH,MODNAM,'E','194','GRSMDEBUG')
    END IF
-   IF (TTRMDBG .AND. .NOT. RUNTTRM) THEN
+   IF (TTRMDBG .and. .NOT. RUNTTRM) THEN
 !        Write Error Message:  TTRM debug without TTRM option
       CALL ERRHDL(PATH,MODNAM,'E','194','TTRMDEBUG')
    END IF
-   IF (TTRM2DBG .AND. .NOT. RUNTTRM2) THEN
+   IF (TTRM2DBG .and. .NOT. RUNTTRM2) THEN
 !        Write Error Message:  TTRM2 debug without TTRM2 option
       CALL ERRHDL(PATH,MODNAM,'E','194','TTRM2DEBUG')
    END IF
 ! Added for HBP, added Jan 2023
-   IF (HBPDBG .AND. .NOT. HBPLUME) THEN
+   IF (HBPDBG .and. .NOT. HBPLUME) THEN
 !        Write Error Message:  HBPDBG debug without HBP option
       CALL ERRHDL(PATH,MODNAM,'E','194','HBPDBG')
    ENDIF
 ! End HBP add
-   IF (DEPOSDBG .AND. .NOT.DEPOS .AND. .NOT.DDEP .AND.&
+   IF (DEPOSDBG .and. .NOT.DEPOS .and. .NOT.DDEP .and.&
    &.NOT.WDEP) THEN
 !        Write Error Message:  DEPOS debug without deposition options
       CALL ERRHDL(PATH,MODNAM,'E','194','DEPOSDBG')
    END IF
-   IF (AREADBG .AND. NAREA.EQ.0 .AND. NCIRC.EQ.0 .AND. NLINE.EQ.0&
-   &.AND. NPIT.EQ.0) THEN
+   IF (AREADBG .and. NAREA.EQ.0 .and. NCIRC.EQ.0 .and. NLINE.EQ.0&
+   &.and. NPIT.EQ.0) THEN
 !        Write Error Message:  AREA/LINE debug without any applicable
 !        sources
       IF (FIELD(IAREA) .EQ. 'AREA') THEN
@@ -3362,39 +3362,39 @@ SUBROUTINE DEBOPT
       END IF
    END IF
 !CRCO D095 Added for urban debug 8/3/2021
-   IF (NURB .EQ. 0 .AND. URBDBUG) THEN
+   IF (NURB .EQ. 0 .and. URBDBUG) THEN
 !        Write Error Message:  URBDBUG debug without applicable sources
       CALL ERRHDL(PATH,MODNAM,'E','194','URBANDB')
    END IF
 !C END URBDBUG insert
-   IF (PRIMEDBG .AND. NSEC.EQ.0) THEN
+   IF (PRIMEDBG .and. NSEC.EQ.0) THEN
 !        Write Error Message:  PRIME debug without any applicable sources
       CALL ERRHDL(PATH,MODNAM,'E','194','PRIMEDBG')
    END IF
 
-   IF (AWMADWDBG .AND. NSEC.EQ.0) THEN
+   IF (AWMADWDBG .and. NSEC.EQ.0) THEN
 !        Write Error Message:  AWMADW debug without any applicable sources
       CALL ERRHDL(PATH,MODNAM,'E','194','AWMADWDBG')
    END IF
 !CRCO D095 added for BLP debug 12/9/2021
-   IF (NBLP .EQ. 0 .AND. BLPDBUG) THEN
+   IF (NBLP .EQ. 0 .and. BLPDBUG) THEN
 !        Write Error Message:  BLPDBUG debug without applicable sources
       CALL ERRHDL(PATH,MODNAM,'E','194','BLPDBUG')
    END IF
 
-   IF (RLINEDBG .AND. NRLINES.EQ.0) THEN
+   IF (RLINEDBG .and. NRLINES.EQ.0) THEN
 !        Write Error Message:  RLINE debug without any applicable sources
       CALL ERRHDL(PATH,MODNAM,'E','194','RLINEDBG')
    END IF
 
 !CRT     D063 Platform Downwash Debug
-   IF (PLATFMDBG .AND. NPNT.EQ.0) THEN
+   IF (PLATFMDBG .and. NPNT.EQ.0) THEN
 !        Write Error Message:  PLATFORM debug without any applicable sources
       CALL ERRHDL(PATH,MODNAM,'E','194','PLATFMDBG')
    END IF
 
 !     CRT 3/25/02022 D113 Added for sidewash debug
-   IF (SWDBG .AND. NSWP .EQ. 0) THEN
+   IF (SWDBG .and. NSWP .EQ. 0) THEN
 !        Write Error Message:  SWDBG debug without any applicable sources
       CALL ERRHDL(PATH,MODNAM,'E','194','SWDBG')
    END IF
@@ -3402,8 +3402,8 @@ SUBROUTINE DEBOPT
 !** Added for Aircraft Plume Rise; UNC-IE
 !MGS Changed conditional to be consistant with debug conditionals above.
 !MSG (D151 - WSP 6/1/2023)
-!MGS      IF (ARCFTDEBUG .AND. .NOT. NAFTSRC .GT. 0.0D0) THEN
-   IF (ARCFTDEBUG .AND. NAFTSRC .EQ. 0) THEN
+!MGS      IF (ARCFTDEBUG .and. .NOT. NAFTSRC .GT. 0.0D0) THEN
+   IF (ARCFTDEBUG .and. NAFTSRC .EQ. 0) THEN
 !        Write Error Message:  ARCFT debug without Aircraft option
       CALL ERRHDL(PATH,MODNAM,'E','194','ARCFTDEBUG')
    END IF
@@ -3412,25 +3412,25 @@ SUBROUTINE DEBOPT
 ! --- Check for user-specified filenames, which should immediately
 !     follow the keyword option in the input file
    IF (DEBUG) THEN
-      IF (IFC .GE. IMOD+1 .AND.&
-      &FIELD(IMOD+1) .NE. 'METEOR' .AND.&
-      &FIELD(IMOD+1) .NE. 'AREA' .AND.&
-      &FIELD(IMOD+1) .NE. 'LINE' .AND.&
-      &FIELD(IMOD+1) .NE. 'RLINE' .AND.&
-      &FIELD(IMOD+1) .NE. 'PRIME' .AND.&
-      &FIELD(IMOD+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IMOD+1) .NE. 'OLM' .AND.&
-      &FIELD(IMOD+1) .NE. 'ARM2' .AND.&
-      &FIELD(IMOD+1) .NE. 'GRSM' .AND.&
-      &FIELD(IMOD+1) .NE. 'DEPOS'.AND.&
-      &FIELD(IMOD+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IMOD+1) .NE. 'TTRM' .AND.&
-      &FIELD(IMOD+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IMOD+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IMOD+1) .NE. 'URBANDB' .AND.&
-      &FIELD(IMOD+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(IMOD+1) .NE. 'SWPOINT' .AND.&
-      &FIELD(IMOD+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. IMOD+1 .and.&
+      &FIELD(IMOD+1) .NE. 'METEOR' .and.&
+      &FIELD(IMOD+1) .NE. 'AREA' .and.&
+      &FIELD(IMOD+1) .NE. 'LINE' .and.&
+      &FIELD(IMOD+1) .NE. 'RLINE' .and.&
+      &FIELD(IMOD+1) .NE. 'PRIME' .and.&
+      &FIELD(IMOD+1) .NE. 'PVMRM' .and.&
+      &FIELD(IMOD+1) .NE. 'OLM' .and.&
+      &FIELD(IMOD+1) .NE. 'ARM2' .and.&
+      &FIELD(IMOD+1) .NE. 'GRSM' .and.&
+      &FIELD(IMOD+1) .NE. 'DEPOS'.and.&
+      &FIELD(IMOD+1) .NE. 'AWMADW' .and.&
+      &FIELD(IMOD+1) .NE. 'TTRM' .and.&
+      &FIELD(IMOD+1) .NE. 'TTRM2' .and.&
+      &FIELD(IMOD+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IMOD+1) .NE. 'URBANDB' .and.&
+      &FIELD(IMOD+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(IMOD+1) .NE. 'SWPOINT' .and.&
+      &FIELD(IMOD+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(IMOD+1) .NE. 'HBPDBG' ) THEN
 
 ! ---       Assign user-specified filename for the MODEL debug option
@@ -3442,25 +3442,25 @@ SUBROUTINE DEBOPT
    END IF
 
    IF (METEORDBG) THEN
-      IF (IFC .GE. IMET+1 .AND.&
-      &FIELD(IMET+1) .NE. 'MODEL' .AND.&
-      &FIELD(IMET+1) .NE. 'AREA' .AND.&
-      &FIELD(IMET+1) .NE. 'LINE' .AND.&
-      &FIELD(IMET+1) .NE. 'RLINE' .AND.&
-      &FIELD(IMET+1) .NE. 'PRIME' .AND.&
-      &FIELD(IMET+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IMET+1) .NE. 'OLM' .AND.&
-      &FIELD(IMET+1) .NE. 'ARM2' .AND.&
-      &FIELD(IMET+1) .NE. 'GRSM' .AND.&
-      &FIELD(IMET+1) .NE. 'DEPOS' .AND.&
-      &FIELD(IMET+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IMET+1) .NE. 'TTRM' .AND.&
-      &FIELD(IMET+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IMET+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IMET+1) .NE. 'URBANDB' .AND.&
-      &FIELD(IMET+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(IMET+1) .NE. 'SWPOINT' .AND.&
-      &FIELD(IMET+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. IMET+1 .and.&
+      &FIELD(IMET+1) .NE. 'MODEL' .and.&
+      &FIELD(IMET+1) .NE. 'AREA' .and.&
+      &FIELD(IMET+1) .NE. 'LINE' .and.&
+      &FIELD(IMET+1) .NE. 'RLINE' .and.&
+      &FIELD(IMET+1) .NE. 'PRIME' .and.&
+      &FIELD(IMET+1) .NE. 'PVMRM' .and.&
+      &FIELD(IMET+1) .NE. 'OLM' .and.&
+      &FIELD(IMET+1) .NE. 'ARM2' .and.&
+      &FIELD(IMET+1) .NE. 'GRSM' .and.&
+      &FIELD(IMET+1) .NE. 'DEPOS' .and.&
+      &FIELD(IMET+1) .NE. 'AWMADW' .and.&
+      &FIELD(IMET+1) .NE. 'TTRM' .and.&
+      &FIELD(IMET+1) .NE. 'TTRM2' .and.&
+      &FIELD(IMET+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IMET+1) .NE. 'URBANDB' .and.&
+      &FIELD(IMET+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(IMET+1) .NE. 'SWPOINT' .and.&
+      &FIELD(IMET+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(IMET+1) .NE. 'HBPDBG') THEN
 
 ! ---       Assign user-specified filename for the METEOR debug option
@@ -3472,24 +3472,24 @@ SUBROUTINE DEBOPT
    END IF
 
    IF (AREADBG) THEN
-      IF (IFC .GE. IAREA+1 .AND.&
-      &FIELD(IAREA+1) .NE. 'MODEL' .AND.&
-      &FIELD(IAREA+1) .NE. 'METEOR' .AND.&
-      &FIELD(IAREA+1) .NE. 'RLINE' .AND.&
-      &FIELD(IAREA+1) .NE. 'PRIME' .AND.&
-      &FIELD(IAREA+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IAREA+1) .NE. 'OLM' .AND.&
-      &FIELD(IAREA+1) .NE. 'ARM2' .AND.&
-      &FIELD(IAREA+1) .NE. 'GRSM' .AND.&
-      &FIELD(IAREA+1) .NE. 'DEPOS' .AND.&
-      &FIELD(IAREA+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IAREA+1) .NE. 'TTRM' .AND.&
-      &FIELD(IAREA+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IAREA+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IAREA+1) .NE. 'URBANDB' .AND.&
-      &FIELD(IAREA+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(IAREA+1) .NE. 'SWPOINT'.AND.&
-      &FIELD(IAREA+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. IAREA+1 .and.&
+      &FIELD(IAREA+1) .NE. 'MODEL' .and.&
+      &FIELD(IAREA+1) .NE. 'METEOR' .and.&
+      &FIELD(IAREA+1) .NE. 'RLINE' .and.&
+      &FIELD(IAREA+1) .NE. 'PRIME' .and.&
+      &FIELD(IAREA+1) .NE. 'PVMRM' .and.&
+      &FIELD(IAREA+1) .NE. 'OLM' .and.&
+      &FIELD(IAREA+1) .NE. 'ARM2' .and.&
+      &FIELD(IAREA+1) .NE. 'GRSM' .and.&
+      &FIELD(IAREA+1) .NE. 'DEPOS' .and.&
+      &FIELD(IAREA+1) .NE. 'AWMADW' .and.&
+      &FIELD(IAREA+1) .NE. 'TTRM' .and.&
+      &FIELD(IAREA+1) .NE. 'TTRM2' .and.&
+      &FIELD(IAREA+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IAREA+1) .NE. 'URBANDB' .and.&
+      &FIELD(IAREA+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(IAREA+1) .NE. 'SWPOINT'.and.&
+      &FIELD(IAREA+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(IAREA+1) .NE. 'HBPDBG') THEN
 
 ! ---       Assign user-specified filename for the AREA debug option
@@ -3501,25 +3501,25 @@ SUBROUTINE DEBOPT
    END IF
 
    IF (PRIMEDBG) THEN
-      IF (IFC .GE. IPRM+1 .AND.&
-      &FIELD(IPRM+1) .NE. 'MODEL' .AND.&
-      &FIELD(IPRM+1) .NE. 'METEOR' .AND.&
-      &FIELD(IPRM+1) .NE. 'AREA' .AND.&
-      &FIELD(IPRM+1) .NE. 'LINE' .AND.&
-      &FIELD(IPRM+1) .NE. 'RLINE' .AND.&
-      &FIELD(IPRM+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IPRM+1) .NE. 'OLM' .AND.&
-      &FIELD(IPRM+1) .NE. 'ARM2' .AND.&
-      &FIELD(IPRM+1) .NE. 'GRSM' .AND.&
-      &FIELD(IPRM+1) .NE. 'DEPOS' .AND.&
-      &FIELD(IPRM+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IPRM+1) .NE. 'TTRM' .AND.&
-      &FIELD(IPRM+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IPRM+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IPRM+1) .NE. 'URBANDB' .AND.&
-      &FIELD(IPRM+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(IPRM+1) .NE. 'SWPOINT' .AND.&
-      &FIELD(IPRM+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. IPRM+1 .and.&
+      &FIELD(IPRM+1) .NE. 'MODEL' .and.&
+      &FIELD(IPRM+1) .NE. 'METEOR' .and.&
+      &FIELD(IPRM+1) .NE. 'AREA' .and.&
+      &FIELD(IPRM+1) .NE. 'LINE' .and.&
+      &FIELD(IPRM+1) .NE. 'RLINE' .and.&
+      &FIELD(IPRM+1) .NE. 'PVMRM' .and.&
+      &FIELD(IPRM+1) .NE. 'OLM' .and.&
+      &FIELD(IPRM+1) .NE. 'ARM2' .and.&
+      &FIELD(IPRM+1) .NE. 'GRSM' .and.&
+      &FIELD(IPRM+1) .NE. 'DEPOS' .and.&
+      &FIELD(IPRM+1) .NE. 'AWMADW' .and.&
+      &FIELD(IPRM+1) .NE. 'TTRM' .and.&
+      &FIELD(IPRM+1) .NE. 'TTRM2' .and.&
+      &FIELD(IPRM+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IPRM+1) .NE. 'URBANDB' .and.&
+      &FIELD(IPRM+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(IPRM+1) .NE. 'SWPOINT' .and.&
+      &FIELD(IPRM+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(IPRM+1) .NE. 'HBPDBG') THEN
 
 ! ---       Assign user-specified filename for the PRIME debug option
@@ -3531,25 +3531,25 @@ SUBROUTINE DEBOPT
    END IF
 
    IF (PVMRMDBG) THEN
-      IF (IFC .GE. IPVM+1 .AND.&
-      &FIELD(IPVM+1) .NE. 'MODEL' .AND.&
-      &FIELD(IPVM+1) .NE. 'METEOR' .AND.&
-      &FIELD(IPVM+1) .NE. 'AREA' .AND.&
-      &FIELD(IPVM+1) .NE. 'LINE' .AND.&
-      &FIELD(IPVM+1) .NE. 'RLINE' .AND.&
-      &FIELD(IPVM+1) .NE. 'PRIME' .AND.&
-      &FIELD(IPVM+1) .NE. 'OLM' .AND.&
-      &FIELD(IPVM+1) .NE. 'ARM2' .AND.&
-      &FIELD(IPVM+1) .NE. 'GRSM' .AND.&
-      &FIELD(IPVM+1) .NE. 'DEPOS' .AND.&
-      &FIELD(IPVM+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IPVM+1) .NE. 'TTRM' .AND.&
-      &FIELD(IPVM+1) .NE. 'TTRM2'.AND.&
-      &FIELD(IPVM+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IPVM+1) .NE. 'URBANDB' .AND.&
-      &FIELD(IPVM+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(IPVM+1) .NE. 'SWPOINT'.AND.&
-      &FIELD(IPVM+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. IPVM+1 .and.&
+      &FIELD(IPVM+1) .NE. 'MODEL' .and.&
+      &FIELD(IPVM+1) .NE. 'METEOR' .and.&
+      &FIELD(IPVM+1) .NE. 'AREA' .and.&
+      &FIELD(IPVM+1) .NE. 'LINE' .and.&
+      &FIELD(IPVM+1) .NE. 'RLINE' .and.&
+      &FIELD(IPVM+1) .NE. 'PRIME' .and.&
+      &FIELD(IPVM+1) .NE. 'OLM' .and.&
+      &FIELD(IPVM+1) .NE. 'ARM2' .and.&
+      &FIELD(IPVM+1) .NE. 'GRSM' .and.&
+      &FIELD(IPVM+1) .NE. 'DEPOS' .and.&
+      &FIELD(IPVM+1) .NE. 'AWMADW' .and.&
+      &FIELD(IPVM+1) .NE. 'TTRM' .and.&
+      &FIELD(IPVM+1) .NE. 'TTRM2'.and.&
+      &FIELD(IPVM+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IPVM+1) .NE. 'URBANDB' .and.&
+      &FIELD(IPVM+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(IPVM+1) .NE. 'SWPOINT'.and.&
+      &FIELD(IPVM+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(IPVM+1) .NE. 'HBPDBG') THEN
 
 ! ---       Assign user-specified filename for the PVMRM debug option
@@ -3565,25 +3565,25 @@ SUBROUTINE DEBOPT
    END IF
 
    IF (OLMDEBUG) THEN
-      IF (IFC .GE. IOLMD+1 .AND.&
-      &FIELD(IOLMD+1) .NE. 'MODEL' .AND.&
-      &FIELD(IOLMD+1) .NE. 'METEOR' .AND.&
-      &FIELD(IOLMD+1) .NE. 'AREA' .AND.&
-      &FIELD(IOLMD+1) .NE. 'LINE' .AND.&
-      &FIELD(IOLMD+1) .NE. 'RLINE' .AND.&
-      &FIELD(IOLMD+1) .NE. 'PRIME' .AND.&
-      &FIELD(IOLMD+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IOLMD+1) .NE. 'ARM2' .AND.&
-      &FIELD(IOLMD+1) .NE. 'GRSM' .AND.&
-      &FIELD(IOLMD+1) .NE. 'DEPOS' .AND.&
-      &FIELD(IOLMD+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IOLMD+1) .NE. 'TTRM' .AND.&
-      &FIELD(IOLMD+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IOLMD+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IOLMD+1) .NE. 'URBANDB' .AND.&
-      &FIELD(IOLMD+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(IOLMD+1) .NE. 'SWPOINT' .AND.&
-      &FIELD(IOLMD+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. IOLMD+1 .and.&
+      &FIELD(IOLMD+1) .NE. 'MODEL' .and.&
+      &FIELD(IOLMD+1) .NE. 'METEOR' .and.&
+      &FIELD(IOLMD+1) .NE. 'AREA' .and.&
+      &FIELD(IOLMD+1) .NE. 'LINE' .and.&
+      &FIELD(IOLMD+1) .NE. 'RLINE' .and.&
+      &FIELD(IOLMD+1) .NE. 'PRIME' .and.&
+      &FIELD(IOLMD+1) .NE. 'PVMRM' .and.&
+      &FIELD(IOLMD+1) .NE. 'ARM2' .and.&
+      &FIELD(IOLMD+1) .NE. 'GRSM' .and.&
+      &FIELD(IOLMD+1) .NE. 'DEPOS' .and.&
+      &FIELD(IOLMD+1) .NE. 'AWMADW' .and.&
+      &FIELD(IOLMD+1) .NE. 'TTRM' .and.&
+      &FIELD(IOLMD+1) .NE. 'TTRM2' .and.&
+      &FIELD(IOLMD+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IOLMD+1) .NE. 'URBANDB' .and.&
+      &FIELD(IOLMD+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(IOLMD+1) .NE. 'SWPOINT' .and.&
+      &FIELD(IOLMD+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(IOLMD+1) .NE. 'HBPDBG') THEN
 
 ! ---       Assign user-specified filename for the OLM debug option
@@ -3595,25 +3595,25 @@ SUBROUTINE DEBOPT
    END IF
 
    IF (ARM2DEBUG) THEN
-      IF (IFC .GE. IARM2+1 .AND.&
-      &FIELD(IARM2+1) .NE. 'MODEL' .AND.&
-      &FIELD(IARM2+1) .NE. 'METEOR' .AND.&
-      &FIELD(IARM2+1) .NE. 'AREA' .AND.&
-      &FIELD(IARM2+1) .NE. 'LINE' .AND.&
-      &FIELD(IARM2+1) .NE. 'RLINE' .AND.&
-      &FIELD(IARM2+1) .NE. 'PRIME' .AND.&
-      &FIELD(IARM2+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IARM2+1) .NE. 'OLM' .AND.&
-      &FIELD(IARM2+1) .NE. 'GRSM' .AND.&
-      &FIELD(IARM2+1) .NE. 'DEPOS' .AND.&
-      &FIELD(IARM2+1) .NE. 'AWMADW'.AND.&
-      &FIELD(IARM2+1) .NE. 'TTRM' .AND.&
-      &FIELD(IARM2+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IARM2+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IARM2+1) .NE. 'URBANDB' .AND.&
-      &FIELD(IARM2+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(IARM2+1) .NE. 'SWPOINT' .AND.&
-      &FIELD(IARM2+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. IARM2+1 .and.&
+      &FIELD(IARM2+1) .NE. 'MODEL' .and.&
+      &FIELD(IARM2+1) .NE. 'METEOR' .and.&
+      &FIELD(IARM2+1) .NE. 'AREA' .and.&
+      &FIELD(IARM2+1) .NE. 'LINE' .and.&
+      &FIELD(IARM2+1) .NE. 'RLINE' .and.&
+      &FIELD(IARM2+1) .NE. 'PRIME' .and.&
+      &FIELD(IARM2+1) .NE. 'PVMRM' .and.&
+      &FIELD(IARM2+1) .NE. 'OLM' .and.&
+      &FIELD(IARM2+1) .NE. 'GRSM' .and.&
+      &FIELD(IARM2+1) .NE. 'DEPOS' .and.&
+      &FIELD(IARM2+1) .NE. 'AWMADW'.and.&
+      &FIELD(IARM2+1) .NE. 'TTRM' .and.&
+      &FIELD(IARM2+1) .NE. 'TTRM2' .and.&
+      &FIELD(IARM2+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IARM2+1) .NE. 'URBANDB' .and.&
+      &FIELD(IARM2+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(IARM2+1) .NE. 'SWPOINT' .and.&
+      &FIELD(IARM2+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(IARM2+1) .NE. 'HBPDBG') THEN
 
 ! ---       Assign user-specified filename for the ARM2 debug option
@@ -3626,25 +3626,25 @@ SUBROUTINE DEBOPT
 
 !     CERC 11/30/20 Code for determining GRSM debug file name
    IF (GRSMDEBUG) THEN
-      IF (IFC .GE. IGRSM+1 .AND.&
-      &FIELD(IGRSM+1) .NE. 'MODEL' .AND.&
-      &FIELD(IGRSM+1) .NE. 'METEOR' .AND.&
-      &FIELD(IGRSM+1) .NE. 'AREA' .AND.&
-      &FIELD(IGRSM+1) .NE. 'LINE' .AND.&
-      &FIELD(IGRSM+1) .NE. 'RLINE' .AND.&
-      &FIELD(IGRSM+1) .NE. 'PRIME' .AND.&
-      &FIELD(IGRSM+1) .NE. 'OLM' .AND.&
-      &FIELD(IGRSM+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IGRSM+1) .NE. 'ARM2' .AND.&
-      &FIELD(IGRSM+1) .NE. 'DEPOS' .AND.&
-      &FIELD(IGRSM+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IGRSM+1) .NE. 'TTRM' .AND.&
-      &FIELD(IGRSM+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IGRSM+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IGRSM+1) .NE. 'URBANDB' .AND.&
-      &FIELD(IGRSM+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(IGRSM+1) .NE. 'SWPOINT' .AND.&
-      &FIELD(IGRSM+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. IGRSM+1 .and.&
+      &FIELD(IGRSM+1) .NE. 'MODEL' .and.&
+      &FIELD(IGRSM+1) .NE. 'METEOR' .and.&
+      &FIELD(IGRSM+1) .NE. 'AREA' .and.&
+      &FIELD(IGRSM+1) .NE. 'LINE' .and.&
+      &FIELD(IGRSM+1) .NE. 'RLINE' .and.&
+      &FIELD(IGRSM+1) .NE. 'PRIME' .and.&
+      &FIELD(IGRSM+1) .NE. 'OLM' .and.&
+      &FIELD(IGRSM+1) .NE. 'PVMRM' .and.&
+      &FIELD(IGRSM+1) .NE. 'ARM2' .and.&
+      &FIELD(IGRSM+1) .NE. 'DEPOS' .and.&
+      &FIELD(IGRSM+1) .NE. 'AWMADW' .and.&
+      &FIELD(IGRSM+1) .NE. 'TTRM' .and.&
+      &FIELD(IGRSM+1) .NE. 'TTRM2' .and.&
+      &FIELD(IGRSM+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IGRSM+1) .NE. 'URBANDB' .and.&
+      &FIELD(IGRSM+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(IGRSM+1) .NE. 'SWPOINT' .and.&
+      &FIELD(IGRSM+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(IGRSM+1) .NE. 'HBPDBG') THEN
 
 ! ---       Assign user-specified filename for the GRSM debug option
@@ -3656,25 +3656,25 @@ SUBROUTINE DEBOPT
    END IF
 
    IF (AWMADWDBG) THEN
-      IF (IFC .GE. IPRM2+1 .AND.&
-      &FIELD(IPRM2+1) .NE. 'MODEL' .AND.&
-      &FIELD(IPRM2+1) .NE. 'METEOR' .AND.&
-      &FIELD(IPRM2+1) .NE. 'AREA' .AND.&
-      &FIELD(IPRM2+1) .NE. 'LINE' .AND.&
-      &FIELD(IPRM2+1) .NE. 'RLINE' .AND.&
-      &FIELD(IPRM2+1) .NE. 'PRIME' .AND.&
-      &FIELD(IPRM2+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IPRM2+1) .NE. 'OLM' .AND.&
-      &FIELD(IPRM2+1) .NE. 'ARM2' .AND.&
-      &FIELD(IPRM2+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IPRM2+1) .NE. 'GRSM' .AND.&
-      &FIELD(IPRM2+1) .NE. 'TTRM' .AND.&
-      &FIELD(IPRM2+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IPRM2+1) .NE. 'DEPOS' .AND.&
-      &FIELD(IPRM2+1) .NE. 'URBANDB' .AND.&
-      &FIELD(IPRM2+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(IPRM2+1) .NE. 'SWPOINT' .AND.&
-      &FIELD(IPRM2+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. IPRM2+1 .and.&
+      &FIELD(IPRM2+1) .NE. 'MODEL' .and.&
+      &FIELD(IPRM2+1) .NE. 'METEOR' .and.&
+      &FIELD(IPRM2+1) .NE. 'AREA' .and.&
+      &FIELD(IPRM2+1) .NE. 'LINE' .and.&
+      &FIELD(IPRM2+1) .NE. 'RLINE' .and.&
+      &FIELD(IPRM2+1) .NE. 'PRIME' .and.&
+      &FIELD(IPRM2+1) .NE. 'PVMRM' .and.&
+      &FIELD(IPRM2+1) .NE. 'OLM' .and.&
+      &FIELD(IPRM2+1) .NE. 'ARM2' .and.&
+      &FIELD(IPRM2+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IPRM2+1) .NE. 'GRSM' .and.&
+      &FIELD(IPRM2+1) .NE. 'TTRM' .and.&
+      &FIELD(IPRM2+1) .NE. 'TTRM2' .and.&
+      &FIELD(IPRM2+1) .NE. 'DEPOS' .and.&
+      &FIELD(IPRM2+1) .NE. 'URBANDB' .and.&
+      &FIELD(IPRM2+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(IPRM2+1) .NE. 'SWPOINT' .and.&
+      &FIELD(IPRM2+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(IPRM2+1) .NE. 'HBPDBG') THEN
 
 ! ---       Assign user-specified filename for the PRIME debug option
@@ -3686,25 +3686,25 @@ SUBROUTINE DEBOPT
    END IF
 
    IF (RLINEDBG) THEN
-      IF (IFC .GE. IRLINE +1 .AND.&
-      &FIELD(IRLINE+1) .NE. 'MODEL' .AND.&
-      &FIELD(IRLINE+1) .NE. 'METEOR' .AND.&
-      &FIELD(IRLINE+1) .NE. 'AREA' .AND.&
-      &FIELD(IRLINE+1) .NE. 'LINE' .AND.&
-      &FIELD(IRLINE+1) .NE. 'PRIME' .AND.&
-      &FIELD(IRLINE+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IRLINE+1) .NE. 'OLM' .AND.&
-      &FIELD(IRLINE+1) .NE. 'ARM2' .AND.&
-      &FIELD(IRLINE+1) .NE. 'GRSM' .AND.&
-      &FIELD(IRLINE+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IRLINE+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IRLINE+1) .NE. 'TTRM' .AND.&
-      &FIELD(IRLINE+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IRLINE+1) .NE. 'URBANDB'.AND.&
-      &FIELD(IRLINE+1) .NE. 'DEPOS' .AND.&
-      &FIELD(IRLINE+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(IRLINE+1) .NE. 'SWPOINT' .AND.&
-      &FIELD(IRLINE+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. IRLINE +1 .and.&
+      &FIELD(IRLINE+1) .NE. 'MODEL' .and.&
+      &FIELD(IRLINE+1) .NE. 'METEOR' .and.&
+      &FIELD(IRLINE+1) .NE. 'AREA' .and.&
+      &FIELD(IRLINE+1) .NE. 'LINE' .and.&
+      &FIELD(IRLINE+1) .NE. 'PRIME' .and.&
+      &FIELD(IRLINE+1) .NE. 'PVMRM' .and.&
+      &FIELD(IRLINE+1) .NE. 'OLM' .and.&
+      &FIELD(IRLINE+1) .NE. 'ARM2' .and.&
+      &FIELD(IRLINE+1) .NE. 'GRSM' .and.&
+      &FIELD(IRLINE+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IRLINE+1) .NE. 'AWMADW' .and.&
+      &FIELD(IRLINE+1) .NE. 'TTRM' .and.&
+      &FIELD(IRLINE+1) .NE. 'TTRM2' .and.&
+      &FIELD(IRLINE+1) .NE. 'URBANDB'.and.&
+      &FIELD(IRLINE+1) .NE. 'DEPOS' .and.&
+      &FIELD(IRLINE+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(IRLINE+1) .NE. 'SWPOINT' .and.&
+      &FIELD(IRLINE+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(IRLINE+1) .NE. 'HBPDBG') THEN
 
 ! ---       Assign user-specified filename for the RLINE debug option
@@ -3724,24 +3724,24 @@ SUBROUTINE DEBOPT
 
 !CRT  D063 Platform Downwash Debug
    IF (PLATFMDBG) THEN
-      IF (IFC .GE. IPLATFM+1 .AND.&
-      &FIELD(IPLATFM+1) .NE. 'MODEL' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'METEOR' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'AREA' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'LINE' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'RLINE' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'PRIME' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'OLM' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'ARM2' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'DEPOS' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'GRSM' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'TTRM' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'URBANDB'.AND.&
-      &FIELD(IPLATFM+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IPLATFM+1) .NE. 'SWPOINT'.AND.&
-      &FIELD(IPLATFM+1) .NE. 'AIRCRAFT'.AND.&
+      IF (IFC .GE. IPLATFM+1 .and.&
+      &FIELD(IPLATFM+1) .NE. 'MODEL' .and.&
+      &FIELD(IPLATFM+1) .NE. 'METEOR' .and.&
+      &FIELD(IPLATFM+1) .NE. 'AREA' .and.&
+      &FIELD(IPLATFM+1) .NE. 'LINE' .and.&
+      &FIELD(IPLATFM+1) .NE. 'RLINE' .and.&
+      &FIELD(IPLATFM+1) .NE. 'PRIME' .and.&
+      &FIELD(IPLATFM+1) .NE. 'PVMRM' .and.&
+      &FIELD(IPLATFM+1) .NE. 'OLM' .and.&
+      &FIELD(IPLATFM+1) .NE. 'ARM2' .and.&
+      &FIELD(IPLATFM+1) .NE. 'DEPOS' .and.&
+      &FIELD(IPLATFM+1) .NE. 'GRSM' .and.&
+      &FIELD(IPLATFM+1) .NE. 'TTRM' .and.&
+      &FIELD(IPLATFM+1) .NE. 'TTRM2' .and.&
+      &FIELD(IPLATFM+1) .NE. 'URBANDB'.and.&
+      &FIELD(IPLATFM+1) .NE. 'AWMADW' .and.&
+      &FIELD(IPLATFM+1) .NE. 'SWPOINT'.and.&
+      &FIELD(IPLATFM+1) .NE. 'AIRCRAFT'.and.&
       &FIELD(IPLATFM+1) .NE. 'HBPDBG') THEN
 
 ! ---       Assign user-specified filename for the PRIME debug option
@@ -3761,27 +3761,27 @@ SUBROUTINE DEBOPT
 !         regardless if MODEL debug is chosen.  if model debug
 !         not chosen, file is fort.24.  change to DEPOS.DBG
 !         if dbgfil not named or next field is not MODEL
-      IF (TRIM(ADJUSTL(DBGFIL)) .EQ. '' .OR. FIELD(IDEP+1) .NE.&
+      IF (TRIM(ADJUSTL(DBGFIL)) .EQ. '' .or. FIELD(IDEP+1) .NE.&
       &'MODEL') DBGFIL='DEPOS.DBG'
-      IF (IFC .GE. IDEP+1 .AND.&
-      &FIELD(IDEP+1) .NE. 'MODEL' .AND.&
-      &FIELD(IDEP+1) .NE. 'METEOR' .AND.&
-      &FIELD(IDEP+1) .NE. 'AREA' .AND.&
-      &FIELD(IDEP+1) .NE. 'LINE' .AND.&
-      &FIELD(IDEP+1) .NE. 'PRIME' .AND.&
-      &FIELD(IDEP+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IDEP+1) .NE. 'ARM2' .AND.&
-      &FIELD(IDEP+1) .NE. 'OLM' .AND.&
-      &FIELD(IDEP+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IDEP+1) .NE. 'GRSM' .AND.&
-      &FIELD(IDEP+1) .NE. 'TTRM' .AND.&
-      &FIELD(IDEP+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IDEP+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IDEP+1) .NE. 'RLINE' .AND.&
-      &FIELD(IDEP+1) .NE. 'URBANDB' .AND.&
-      &FIELD(IDEP+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(IDEP+1) .NE. 'SWPOINT' .AND.&
-      &FIELD(IDEP+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. IDEP+1 .and.&
+      &FIELD(IDEP+1) .NE. 'MODEL' .and.&
+      &FIELD(IDEP+1) .NE. 'METEOR' .and.&
+      &FIELD(IDEP+1) .NE. 'AREA' .and.&
+      &FIELD(IDEP+1) .NE. 'LINE' .and.&
+      &FIELD(IDEP+1) .NE. 'PRIME' .and.&
+      &FIELD(IDEP+1) .NE. 'PVMRM' .and.&
+      &FIELD(IDEP+1) .NE. 'ARM2' .and.&
+      &FIELD(IDEP+1) .NE. 'OLM' .and.&
+      &FIELD(IDEP+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IDEP+1) .NE. 'GRSM' .and.&
+      &FIELD(IDEP+1) .NE. 'TTRM' .and.&
+      &FIELD(IDEP+1) .NE. 'AWMADW' .and.&
+      &FIELD(IDEP+1) .NE. 'TTRM2' .and.&
+      &FIELD(IDEP+1) .NE. 'RLINE' .and.&
+      &FIELD(IDEP+1) .NE. 'URBANDB' .and.&
+      &FIELD(IDEP+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(IDEP+1) .NE. 'SWPOINT' .and.&
+      &FIELD(IDEP+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(IDEP+1) .NE. 'HBPDBG') THEN
 
 ! ---       Write warning message regarding DEPOS debug filenames
@@ -3791,26 +3791,26 @@ SUBROUTINE DEBOPT
 
 !     Added for TTRM; AECOM
    IF (TTRMDBG) THEN
-      IF (IFC .GE. ITTRMD+1 .AND.&
-      &FIELD(ITTRMD+1) .NE. 'METEOR' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'MODEL' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'PRIME' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'PVMRM' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'OLM' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'ARM2' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'GRSM' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'AREA' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'LINE' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'AWMADW' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'RLINE' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'DEPOS' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'TTRM2' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'DEPOS'.AND.&
-      &FIELD(ITTRMD+1) .NE. 'URBANDB'.AND.&
-      &FIELD(ITTRMD+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'SWPOINT' .AND.&
-      &FIELD(ITTRMD+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. ITTRMD+1 .and.&
+      &FIELD(ITTRMD+1) .NE. 'METEOR' .and.&
+      &FIELD(ITTRMD+1) .NE. 'MODEL' .and.&
+      &FIELD(ITTRMD+1) .NE. 'PRIME' .and.&
+      &FIELD(ITTRMD+1) .NE. 'PVMRM' .and.&
+      &FIELD(ITTRMD+1) .NE. 'OLM' .and.&
+      &FIELD(ITTRMD+1) .NE. 'ARM2' .and.&
+      &FIELD(ITTRMD+1) .NE. 'GRSM' .and.&
+      &FIELD(ITTRMD+1) .NE. 'AREA' .and.&
+      &FIELD(ITTRMD+1) .NE. 'LINE' .and.&
+      &FIELD(ITTRMD+1) .NE. 'AWMADW' .and.&
+      &FIELD(ITTRMD+1) .NE. 'RLINE' .and.&
+      &FIELD(ITTRMD+1) .NE. 'PLATFORM' .and.&
+      &FIELD(ITTRMD+1) .NE. 'DEPOS' .and.&
+      &FIELD(ITTRMD+1) .NE. 'TTRM2' .and.&
+      &FIELD(ITTRMD+1) .NE. 'DEPOS'.and.&
+      &FIELD(ITTRMD+1) .NE. 'URBANDB'.and.&
+      &FIELD(ITTRMD+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(ITTRMD+1) .NE. 'SWPOINT' .and.&
+      &FIELD(ITTRMD+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(ITTRMD+1) .NE. 'HBPDBG') THEN
 
 !      added for TTRM; AECOM
@@ -3824,7 +3824,7 @@ SUBROUTINE DEBOPT
 !     End TTRM insert; Feb. 2021
 
 !     Open TTRM2 debug files; the filenames are hard-wired
-   IF (RUNTTRM2 .AND. TTRM2DBG) THEN
+   IF (RUNTTRM2 .and. TTRM2DBG) THEN
       OPEN(UNIT=TTRM2TMP(1),FILE='AFTER_TTRM.DBG',&
       &ERR=779,STATUS='REPLACE')
 !       Assign 2nd TTRM2 debug file based on selected method
@@ -3867,25 +3867,25 @@ SUBROUTINE DEBOPT
 
 !RCO D095 Added for urban debug 8/3/2021
    IF (URBDBUG) THEN
-      IF (IFC .GE. IURBD+1 .AND.&
-      &FIELD(IURBD+1) .NE. 'METEOR' .AND.&
-      &FIELD(IURBD+1) .NE. 'MODEL' .AND.&
-      &FIELD(IURBD+1) .NE. 'AREA' .AND.&
-      &FIELD(IURBD+1) .NE. 'LINE' .AND.&
-      &FIELD(IURBD+1) .NE. 'PRIME' .AND.&
-      &FIELD(IURBD+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IURBD+1) .NE. 'OLM' .AND.&
-      &FIELD(IURBD+1) .NE. 'ARM2' .AND.&
-      &FIELD(IURBD+1) .NE. 'GRSM' .AND.&
-      &FIELD(IURBD+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IURBD+1) .NE. 'DEPOS'.AND.&
-      &FIELD(IURBD+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IURBD+1) .NE. 'TTRM' .AND.&
-      &FIELD(IURBD+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IURBD+1) .NE. 'RLINE' .AND.&
-      &FIELD(IURBD+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(IURBD+1) .NE. 'SWPOINT' .AND.&
-      &FIELD(IURBD+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. IURBD+1 .and.&
+      &FIELD(IURBD+1) .NE. 'METEOR' .and.&
+      &FIELD(IURBD+1) .NE. 'MODEL' .and.&
+      &FIELD(IURBD+1) .NE. 'AREA' .and.&
+      &FIELD(IURBD+1) .NE. 'LINE' .and.&
+      &FIELD(IURBD+1) .NE. 'PRIME' .and.&
+      &FIELD(IURBD+1) .NE. 'PVMRM' .and.&
+      &FIELD(IURBD+1) .NE. 'OLM' .and.&
+      &FIELD(IURBD+1) .NE. 'ARM2' .and.&
+      &FIELD(IURBD+1) .NE. 'GRSM' .and.&
+      &FIELD(IURBD+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IURBD+1) .NE. 'DEPOS'.and.&
+      &FIELD(IURBD+1) .NE. 'AWMADW' .and.&
+      &FIELD(IURBD+1) .NE. 'TTRM' .and.&
+      &FIELD(IURBD+1) .NE. 'TTRM2' .and.&
+      &FIELD(IURBD+1) .NE. 'RLINE' .and.&
+      &FIELD(IURBD+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(IURBD+1) .NE. 'SWPOINT' .and.&
+      &FIELD(IURBD+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(IURBD+1) .NE. 'HBPDBG') THEN
 
 ! ---       Assign user-specified filename for the URBDBUG debug option
@@ -3904,25 +3904,25 @@ SUBROUTINE DEBOPT
 
 !     CRCO D095 BLP Debug
    IF (BLPDBUG) THEN
-      IF (IFC .GE. IBLP+1 .AND.&
-      &FIELD(IBLP+1) .NE. 'METEOR' .AND.&
-      &FIELD(IBLP+1) .NE. 'MODEL' .AND.&
-      &FIELD(IBLP+1) .NE. 'AREA' .AND.&
-      &FIELD(IBLP+1) .NE. 'LINE' .AND.&
-      &FIELD(IBLP+1) .NE. 'PRIME' .AND.&
-      &FIELD(IBLP+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IBLP+1) .NE. 'OLM' .AND.&
-      &FIELD(IBLP+1) .NE. 'ARM2' .AND.&
-      &FIELD(IBLP+1) .NE. 'GRSM' .AND.&
-      &FIELD(IBLP+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IBLP+1) .NE. 'DEPOS'.AND.&
-      &FIELD(IBLP+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IBLP+1) .NE. 'TTRM' .AND.&
-      &FIELD(IBLP+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IBLP+1) .NE. 'RLINE' .AND.&
-      &FIELD(IBLP+1) .NE. 'URBANDB' .AND.&
-      &FIELD(IBLP+1) .NE. 'SWPOINT' .AND.&
-      &FIELD(IBLP+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. IBLP+1 .and.&
+      &FIELD(IBLP+1) .NE. 'METEOR' .and.&
+      &FIELD(IBLP+1) .NE. 'MODEL' .and.&
+      &FIELD(IBLP+1) .NE. 'AREA' .and.&
+      &FIELD(IBLP+1) .NE. 'LINE' .and.&
+      &FIELD(IBLP+1) .NE. 'PRIME' .and.&
+      &FIELD(IBLP+1) .NE. 'PVMRM' .and.&
+      &FIELD(IBLP+1) .NE. 'OLM' .and.&
+      &FIELD(IBLP+1) .NE. 'ARM2' .and.&
+      &FIELD(IBLP+1) .NE. 'GRSM' .and.&
+      &FIELD(IBLP+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IBLP+1) .NE. 'DEPOS'.and.&
+      &FIELD(IBLP+1) .NE. 'AWMADW' .and.&
+      &FIELD(IBLP+1) .NE. 'TTRM' .and.&
+      &FIELD(IBLP+1) .NE. 'TTRM2' .and.&
+      &FIELD(IBLP+1) .NE. 'RLINE' .and.&
+      &FIELD(IBLP+1) .NE. 'URBANDB' .and.&
+      &FIELD(IBLP+1) .NE. 'SWPOINT' .and.&
+      &FIELD(IBLP+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(IBLP+1) .NE. 'HBPDBG') THEN
 
 ! ---       Assign user-specified filename for the DISTANCE debug option
@@ -3936,24 +3936,24 @@ SUBROUTINE DEBOPT
 
 !     CRT, 3/25/2022 D113 Updated for SIDEWASH
    IF (SWDBG) THEN
-      IF (IFC .GE. ISW+1 .AND.&
-      &FIELD(ISW+1) .NE. 'METEOR' .AND.&
-      &FIELD(ISW+1) .NE. 'MODEL' .AND.&
-      &FIELD(ISW+1) .NE. 'PRIME' .AND.&
-      &FIELD(ISW+1) .NE. 'PVMRM' .AND.&
-      &FIELD(ISW+1) .NE. 'OLM' .AND.&
-      &FIELD(ISW+1) .NE. 'ARM2' .AND.&
-      &FIELD(ISW+1) .NE. 'GRSM' .AND.&
-      &FIELD(ISW+1) .NE. 'AREA' .AND.&
-      &FIELD(ISW+1) .NE. 'LINE' .AND.&
-      &FIELD(ISW+1) .NE. 'AWMADW' .AND.&
-      &FIELD(ISW+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(ISW+1) .NE. 'DEPOS' .AND.&
-      &FIELD(ISW+1) .NE. 'TTRM' .AND.&
-      &FIELD(ISW+1) .NE. 'TTRM2' .AND.&
-      &FIELD(ISW+1) .NE. 'RLINE' .AND.&
-      &FIELD(ISW+1) .NE. 'URBANDB'.AND.&
-      &FIELD(ISW+1) .NE. 'AIRCRAFT' .AND.&
+      IF (IFC .GE. ISW+1 .and.&
+      &FIELD(ISW+1) .NE. 'METEOR' .and.&
+      &FIELD(ISW+1) .NE. 'MODEL' .and.&
+      &FIELD(ISW+1) .NE. 'PRIME' .and.&
+      &FIELD(ISW+1) .NE. 'PVMRM' .and.&
+      &FIELD(ISW+1) .NE. 'OLM' .and.&
+      &FIELD(ISW+1) .NE. 'ARM2' .and.&
+      &FIELD(ISW+1) .NE. 'GRSM' .and.&
+      &FIELD(ISW+1) .NE. 'AREA' .and.&
+      &FIELD(ISW+1) .NE. 'LINE' .and.&
+      &FIELD(ISW+1) .NE. 'AWMADW' .and.&
+      &FIELD(ISW+1) .NE. 'PLATFORM' .and.&
+      &FIELD(ISW+1) .NE. 'DEPOS' .and.&
+      &FIELD(ISW+1) .NE. 'TTRM' .and.&
+      &FIELD(ISW+1) .NE. 'TTRM2' .and.&
+      &FIELD(ISW+1) .NE. 'RLINE' .and.&
+      &FIELD(ISW+1) .NE. 'URBANDB'.and.&
+      &FIELD(ISW+1) .NE. 'AIRCRAFT' .and.&
       &FIELD(ISW+1) .NE. 'HBPDBG') THEN
 
 ! ---       Assign user-specified filename for the SIDEWASH debug option
@@ -3966,23 +3966,23 @@ SUBROUTINE DEBOPT
 
 !**   Added for Aircraft Plume Rise; UNC-IE
    IF (ARCFTDEBUG) THEN
-      IF (IFC .GE. IARCFT+1 .AND.&
-      &FIELD(IARCFT+1) .NE. 'METEOR' .AND.&
-      &FIELD(IARCFT+1) .NE. 'MODEL' .AND.&
-      &FIELD(IARCFT+1) .NE. 'AREA' .AND.&
-      &FIELD(IARCFT+1) .NE. 'LINE' .AND.&
-      &FIELD(IARCFT+1) .NE. 'PRIME' .AND.&
-      &FIELD(IARCFT+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IARCFT+1) .NE. 'OLM' .AND.&
-      &FIELD(IARCFT+1) .NE. 'ARM2' .AND.&
-      &FIELD(IARCFT+1) .NE. 'GRSM' .AND.&
-      &FIELD(IARCFT+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IARCFT+1) .NE. 'DEPOS'.AND.&
-      &FIELD(IARCFT+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IARCFT+1) .NE. 'TTRM'.AND.&
-      &FIELD(IARCFT+1) .NE. 'RLINE' .AND.&
-      &FIELD(IARCFT+1) .NE. 'URBANDB'.AND.&
-      &FIELD(IARCFT+1) .NE. 'BLPDBUG' .AND.&
+      IF (IFC .GE. IARCFT+1 .and.&
+      &FIELD(IARCFT+1) .NE. 'METEOR' .and.&
+      &FIELD(IARCFT+1) .NE. 'MODEL' .and.&
+      &FIELD(IARCFT+1) .NE. 'AREA' .and.&
+      &FIELD(IARCFT+1) .NE. 'LINE' .and.&
+      &FIELD(IARCFT+1) .NE. 'PRIME' .and.&
+      &FIELD(IARCFT+1) .NE. 'PVMRM' .and.&
+      &FIELD(IARCFT+1) .NE. 'OLM' .and.&
+      &FIELD(IARCFT+1) .NE. 'ARM2' .and.&
+      &FIELD(IARCFT+1) .NE. 'GRSM' .and.&
+      &FIELD(IARCFT+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IARCFT+1) .NE. 'DEPOS'.and.&
+      &FIELD(IARCFT+1) .NE. 'AWMADW' .and.&
+      &FIELD(IARCFT+1) .NE. 'TTRM'.and.&
+      &FIELD(IARCFT+1) .NE. 'RLINE' .and.&
+      &FIELD(IARCFT+1) .NE. 'URBANDB'.and.&
+      &FIELD(IARCFT+1) .NE. 'BLPDBUG' .and.&
       &FIELD(IARCFT+1) .NE. 'HBPDBG') THEN
 ! ---       Assign user-specified filename for the AIRCRAFT debug option
          DBARCFTFIL = RUNST1(LOCB(IARCFT+1):LOCE(IARCFT+1))
@@ -3995,26 +3995,26 @@ SUBROUTINE DEBOPT
 
 ! Added for HBP DEBUG, JAN 2023
    IF (HBPDBG) THEN
-      IF (IFC .GE. IHBP+1 .AND.&
-      &FIELD(IHBP+1) .NE. 'METEOR' .AND.&
-      &FIELD(IHBP+1) .NE. 'MODEL' .AND.&
-      &FIELD(IHBP+1) .NE. 'AREA' .AND.&
-      &FIELD(IHBP+1) .NE. 'LINE' .AND.&
-      &FIELD(IHBP+1) .NE. 'PRIME' .AND.&
-      &FIELD(IHBP+1) .NE. 'PVMRM' .AND.&
-      &FIELD(IHBP+1) .NE. 'OLM' .AND.&
-      &FIELD(IHBP+1) .NE. 'ARM2' .AND.&
-      &FIELD(IHBP+1) .NE. 'GRSM' .AND.&
-      &FIELD(IHBP+1) .NE. 'PLATFORM' .AND.&
-      &FIELD(IHBP+1) .NE. 'DEPOS'.AND.&
-      &FIELD(IHBP+1) .NE. 'AWMADW' .AND.&
-      &FIELD(IHBP+1) .NE. 'TTRM'.AND.&
-      &FIELD(IHBP+1) .NE. 'TTRM2' .AND.&
-      &FIELD(IHBP+1) .NE. 'RLINE' .AND.&
-      &FIELD(IHBP+1) .NE. 'URBANDB' .AND.&
-      &FIELD(IHBP+1) .NE. 'SWPOINT' .AND.&
-      &FIELD(IHBP+1) .NE. 'BLPDBUG' .AND.&
-      &FIELD(IHBP+1) .NE. 'URBANDB'.AND.&
+      IF (IFC .GE. IHBP+1 .and.&
+      &FIELD(IHBP+1) .NE. 'METEOR' .and.&
+      &FIELD(IHBP+1) .NE. 'MODEL' .and.&
+      &FIELD(IHBP+1) .NE. 'AREA' .and.&
+      &FIELD(IHBP+1) .NE. 'LINE' .and.&
+      &FIELD(IHBP+1) .NE. 'PRIME' .and.&
+      &FIELD(IHBP+1) .NE. 'PVMRM' .and.&
+      &FIELD(IHBP+1) .NE. 'OLM' .and.&
+      &FIELD(IHBP+1) .NE. 'ARM2' .and.&
+      &FIELD(IHBP+1) .NE. 'GRSM' .and.&
+      &FIELD(IHBP+1) .NE. 'PLATFORM' .and.&
+      &FIELD(IHBP+1) .NE. 'DEPOS'.and.&
+      &FIELD(IHBP+1) .NE. 'AWMADW' .and.&
+      &FIELD(IHBP+1) .NE. 'TTRM'.and.&
+      &FIELD(IHBP+1) .NE. 'TTRM2' .and.&
+      &FIELD(IHBP+1) .NE. 'RLINE' .and.&
+      &FIELD(IHBP+1) .NE. 'URBANDB' .and.&
+      &FIELD(IHBP+1) .NE. 'SWPOINT' .and.&
+      &FIELD(IHBP+1) .NE. 'BLPDBUG' .and.&
+      &FIELD(IHBP+1) .NE. 'URBANDB'.and.&
       &FIELD(IHBP+1) .NE. 'AIRCRAFT') THEN
 ! ---       Assign user-specified filename for the HBPBUG debug option
          HBPFIL = RUNST1(LOCB(IHBP+1):LOCE(IHBP+1))
@@ -4033,7 +4033,7 @@ SUBROUTINE DEBOPT
 !     JAT 05/08/2020 ADD CODE TO OPEN IF DEBUG OR DEPOSDBG
 !     BECAUSE IT USES THE DEBUGFIL AS WELL
 !      IF (DEBUG) THEN
-   IF (DEBUG .OR. DEPOSDBG) THEN
+   IF (DEBUG .or. DEPOSDBG) THEN
 !        Open debug output file
       DUMMY = 'DebugFile'
       OPEN (UNIT=DBGUNT,FILE=DBGFIL,ERR=91,STATUS='REPLACE')
@@ -4324,15 +4324,15 @@ SUBROUTINE MYEAR
    ELSE IF (RSTINP) THEN
       CALL ERRHDL(PATH,MODNAM,'E','150','INITFILE')
 
-   ELSE IF (.NOT. (POLLUT .EQ. 'PM10' .OR. POLLUT .EQ. 'PM-10' .OR.&
-   &POLLUT .EQ. 'NO2'  .OR. POLLUT .EQ. 'SO2'   .OR.&
-   &POLLUT .EQ. 'LEAD' .OR. POLLUT .EQ. 'OTHER' .OR.&
-   &POLLUT .EQ. 'PM25' .OR. POLLUT .EQ. 'PM-2.5'.OR.&
-   &POLLUT .EQ. 'PM-25'.OR. POLLUT .EQ. 'PM2.5') )THEN
+   ELSE IF (.NOT. (POLLUT .EQ. 'PM10' .or. POLLUT .EQ. 'PM-10' .or.&
+   &POLLUT .EQ. 'NO2'  .or. POLLUT .EQ. 'SO2'   .or.&
+   &POLLUT .EQ. 'LEAD' .or. POLLUT .EQ. 'OTHER' .or.&
+   &POLLUT .EQ. 'PM25' .or. POLLUT .EQ. 'PM-2.5'.or.&
+   &POLLUT .EQ. 'PM-25'.or. POLLUT .EQ. 'PM2.5') )THEN
 !        WRITE Error Message:  Conflicting Options MULTYEAR For Wrong POLLUT
       CALL ERRHDL(PATH,MODNAM,'E','150',POLLUT)
 
-   ELSE IF (IFC .GE. 4 .AND. FIELD(3) .EQ. 'H6H') THEN
+   ELSE IF (IFC .GE. 4 .and. FIELD(3) .EQ. 'H6H') THEN
 ! ---    Write Warning Message:  The 'H6H' field is no longer required
 !        for the MULTYEAR keyword
       CALL ERRHDL(PATH,MODNAM,'W','352','Keyword ')
@@ -4384,7 +4384,7 @@ SUBROUTINE MYEAR
 !           WRITE Error Message           ! Too Many Parameters
          CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       END IF
-   ELSE IF (IFC .GE. 3 .AND. FIELD(3) .NE. 'H6H') THEN
+   ELSE IF (IFC .GE. 3 .and. FIELD(3) .NE. 'H6H') THEN
 ! ---    Process input parameters without the 'H6H' keyword
       IF (IFC .EQ. 3) THEN
          MULTYR = .TRUE.
@@ -4434,7 +4434,7 @@ SUBROUTINE MYEAR
 !           WRITE Error Message           ! Too Many Parameters
          CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       END IF
-   ELSE IF (IFC .EQ. 3 .AND. FIELD(3) .EQ. 'H6H') THEN
+   ELSE IF (IFC .EQ. 3 .and. FIELD(3) .EQ. 'H6H') THEN
 !        WRITE Error Message           ! Not Enough Parameters
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
    ELSE IF (IFC .LT. 3) THEN
@@ -4582,7 +4582,7 @@ SUBROUTINE GDSEAS
 !           Assign The Field
          IF (ISET .LE. 12) THEN
             ISEA_NDX = NINT(FNUM)
-            IF (ISEA_NDX .GE. 1 .AND. ISEA_NDX .LE. 5) THEN
+            IF (ISEA_NDX .GE. 1 .and. ISEA_NDX .LE. 5) THEN
                ISEAS_GD(ISET) = ISEA_NDX
             ELSE
 !                 WRITE Error Message    ! Season Index out-of-range
@@ -4723,7 +4723,7 @@ SUBROUTINE GDLAND
 !           Assign The Field
          IF (ISET .LE. 36) THEN
             ILAND_NDX = NINT(FNUM)
-            IF (ILAND_NDX .GE. 1 .AND. ILAND_NDX .LE. 9) THEN
+            IF (ILAND_NDX .GE. 1 .and. ILAND_NDX .LE. 9) THEN
                ILAND_GD(ISET) = ILAND_NDX
             ELSE
 !                 WRITE Error Message    ! Land Use Index out-of-range
@@ -4798,19 +4798,19 @@ SUBROUTINE URBOPT
    MODNAM = 'URBOPT'
 
 !     Determine Whether There Are Too Few Or Too Many Parameter Fields
-   IF ((.NOT. L_MULTURB .AND. IFC .LT. 3) .OR.&
-   &(L_MULTURB .AND. IFC .LT. 4)) THEN
+   IF ((.NOT. L_MULTURB .and. IFC .LT. 3) .or.&
+   &(L_MULTURB .and. IFC .LT. 4)) THEN
 !        WRITE Error Message: Missing Parameters
       CALL ERRHDL(PATH,MODNAM,'E','200',KEYWRD)
       GO TO 999
-   ELSE IF ((.NOT. L_MULTURB .AND. IFC .GT. 5) .OR.&
-   &(L_MULTURB .AND. IFC .GT. 6)) THEN
+   ELSE IF ((.NOT. L_MULTURB .and. IFC .GT. 5) .or.&
+   &(L_MULTURB .and. IFC .GT. 6)) THEN
 !        Error Message: Too Many Parameters
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
    END IF
 
-   IF (.NOT. L_URBAN_ALL .AND. L_MULTURB) THEN
+   IF (.NOT. L_URBAN_ALL .and. L_MULTURB) THEN
 !        READ in the Urban ID for multiple urban areas
       IF ((LOCE(3)-LOCB(3)) .LE. 7) THEN
 !*          Retrieve Source ID Character Substring
@@ -4873,11 +4873,11 @@ SUBROUTINE URBOPT
 !              Write Error Message:Invalid Numerical Field
             CALL ERRHDL(PATH,MODNAM,'E','208','URBAN_Z0')
          ELSE
-            IF (DFAULT .AND. URBZ0(IURB) .NE. 1.0D0) THEN
+            IF (DFAULT .and. URBZ0(IURB) .NE. 1.0D0) THEN
 !                 Write Warning Message: Non-default urban roughness length
                CALL ERRHDL(PATH,MODNAM,'W','206','URBAN_Z0')
                URBZ0(IURB) = 1.0D0
-            ELSE IF (.NOT. DFAULT .AND. URBZ0(IURB) .NE. 1.0D0) THEN
+            ELSE IF (.NOT. DFAULT .and. URBZ0(IURB) .NE. 1.0D0) THEN
 !                 Set flag for use of non-DEFAULT option
                L_NonDFAULT = .TRUE.
             END IF
@@ -4885,7 +4885,7 @@ SUBROUTINE URBOPT
 !                 Write Warning Message: Urban roughness out of range
                WRITE(DUMMY,'(F8.2)') URBZ0(IURB)
                CALL ERRHDL(PATH,MODNAM,'W','353',DUMMY)
-            ELSE IF (URBZ0(IURB) .GT. 1.50D0 .AND.&
+            ELSE IF (URBZ0(IURB) .GT. 1.50D0 .and.&
             &URBZ0(IURB) .LT. 5.0D0) THEN
 !                 Write Warning Message: Urban roughness out of range
                WRITE(DUMMY,'(F8.2)') URBZ0(IURB)
@@ -4899,7 +4899,7 @@ SUBROUTINE URBOPT
          URBZ0(IURB) = 1.0D0
       END IF
 
-   ELSE IF (L_URBAN_ALL .AND. L_MULTURB) THEN
+   ELSE IF (L_URBAN_ALL .and. L_MULTURB) THEN
 !        Write Error Message: URBANSRC ALL option with
 !        multiple URBAN areas
       CALL ERRHDL(PATH,MODNAM,'E','279','URBANSRC ALL')
@@ -4939,11 +4939,11 @@ SUBROUTINE URBOPT
 !              Write Error Message:Invalid Numerical Field
             CALL ERRHDL(PATH,MODNAM,'E','208','URBAN_Z0')
          ELSE
-            IF (DFAULT .AND. URBZ0(IURB) .NE. 1.0D0) THEN
+            IF (DFAULT .and. URBZ0(IURB) .NE. 1.0D0) THEN
 !                 Write Warning Message: Non-default urban roughness length
                CALL ERRHDL(PATH,MODNAM,'W','206','URBAN_Z0')
                URBZ0(IURB) = 1.0D0
-            ELSE IF (.NOT. DFAULT .AND. URBZ0(IURB) .NE. 1.0D0) THEN
+            ELSE IF (.NOT. DFAULT .and. URBZ0(IURB) .NE. 1.0D0) THEN
 !                 Set flag for use of non-DEFAULT option
                L_NonDFAULT = .TRUE.
             END IF
@@ -4951,7 +4951,7 @@ SUBROUTINE URBOPT
 !                 Write Warning Message: Urban roughness out of range
                WRITE(DUMMY,'(F8.2)') URBZ0(IURB)
                CALL ERRHDL(PATH,MODNAM,'W','353',DUMMY)
-            ELSE IF (URBZ0(IURB) .GT. 1.50D0 .AND.&
+            ELSE IF (URBZ0(IURB) .GT. 1.50D0 .and.&
             &URBZ0(IURB) .LT. 5.0D0) THEN
 !                 Write Warning Message: Urban roughness out of range
                WRITE(DUMMY,'(F8.2)') URBZ0(IURB)
@@ -5090,7 +5090,7 @@ SUBROUTINE O3VAL
 
 !     Check for units of ozone value
    IF (IFC .EQ. I+1) THEN
-      IF (FIELD(I+1).EQ.'PPM' .OR. FIELD(I+1).EQ.'PPB' .OR.&
+      IF (FIELD(I+1).EQ.'PPM' .or. FIELD(I+1).EQ.'PPB' .or.&
       &FIELD(I+1).EQ.'UG/M3') THEN
          O3VALUNITS = FIELD(I+1)
       ELSE
@@ -5106,7 +5106,7 @@ SUBROUTINE O3VAL
    END IF
 
 !     Check range of value
-   IF (O3BACK(IO3SECT) .LE. 0.0D0 .OR.&
+   IF (O3BACK(IO3SECT) .LE. 0.0D0 .or.&
    &O3BACK(IO3SECT) .GT. 500.0D0)THEN
       CALL ERRHDL(PATH,MODNAM,'W','320',' O3BACK ')
    END IF
@@ -5225,7 +5225,7 @@ SUBROUTINE NOXVAL
 
 !     Check for units of NOx value
    IF (IFC .EQ. I+1) THEN
-      IF (FIELD(I+1).EQ.'PPM' .OR. FIELD(I+1).EQ.'PPB' .OR.&
+      IF (FIELD(I+1).EQ.'PPM' .or. FIELD(I+1).EQ.'PPB' .or.&
       &FIELD(I+1).EQ.'UG/M3') THEN
          NOXVALUNITS = FIELD(I+1)
       ELSE
@@ -5333,15 +5333,15 @@ SUBROUTINE O3FILE
       END IF
       IF (FIELD(3) .EQ. 'SECT1') THEN
          IO3SECT = 1
-      ELSE IF (FIELD(3) .EQ. 'SECT2' .AND. NUMO3Sects .GE. 2) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT2' .and. NUMO3Sects .GE. 2) THEN
          IO3SECT = 2
-      ELSE IF (FIELD(3) .EQ. 'SECT3' .AND. NUMO3Sects .GE. 3) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT3' .and. NUMO3Sects .GE. 3) THEN
          IO3SECT = 3
-      ELSE IF (FIELD(3) .EQ. 'SECT4' .AND. NUMO3Sects .GE. 4) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT4' .and. NUMO3Sects .GE. 4) THEN
          IO3SECT = 4
-      ELSE IF (FIELD(3) .EQ. 'SECT5' .AND. NUMO3Sects .GE. 5) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT5' .and. NUMO3Sects .GE. 5) THEN
          IO3SECT = 5
-      ELSE IF (FIELD(3) .EQ. 'SECT6' .AND. NUMO3Sects .EQ. 6) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT6' .and. NUMO3Sects .EQ. 6) THEN
          IO3SECT = 6
       ELSE
 !           Error Message: Invalid sector field
@@ -5397,16 +5397,16 @@ SUBROUTINE O3FILE
    END IF
 
 !     Check for optional units of ozone value
-   IF (I .EQ. 3 .AND. IFC .GE. 4) THEN
-      IF (FIELD(4).EQ.'PPM' .OR. FIELD(4).EQ.'PPB' .OR.&
+   IF (I .EQ. 3 .and. IFC .GE. 4) THEN
+      IF (FIELD(4).EQ.'PPM' .or. FIELD(4).EQ.'PPB' .or.&
       &FIELD(4).EQ.'UG/M3') THEN
          O3FILUNITS = FIELD(4)
       ELSE
 !           Write Error Message:  Invalid units for ozone value
          CALL ERRHDL(PATH,MODNAM,'E','203',' O3UNITS')
       END IF
-   ELSE IF (I .EQ. 4 .AND. IFC .GE. 5) THEN
-      IF (FIELD(5).EQ.'PPM' .OR. FIELD(5).EQ.'PPB' .OR.&
+   ELSE IF (I .EQ. 4 .and. IFC .GE. 5) THEN
+      IF (FIELD(5).EQ.'PPM' .or. FIELD(5).EQ.'PPB' .or.&
       &FIELD(5).EQ.'UG/M3') THEN
          O3FILUNITS = FIELD(5)
       ELSE
@@ -5434,21 +5434,21 @@ SUBROUTINE O3FILE
 !              format statement may include 4I2, and also allow for
 !              either F, E, or D format for the data variable.
             DO I = 1, LEN_TRIM(O3FORM(IO3SECT))
-               IF (O3FORM(IO3SECT)(I:I).EQ.'I' .OR.&
+               IF (O3FORM(IO3SECT)(I:I).EQ.'I' .or.&
                &O3FORM(IO3SECT)(I:I).EQ.'i') THEN
                   NumInt  = NumInt  + 1
-               ELSE IF (O3FORM(IO3SECT)(I:I).EQ.'F' .OR.&
+               ELSE IF (O3FORM(IO3SECT)(I:I).EQ.'F' .or.&
                &O3FORM(IO3SECT)(I:I).EQ.'f') THEN
                   NumReal = NumReal + 1
-               ELSE IF (O3FORM(IO3SECT)(I:I).EQ.'E' .OR.&
+               ELSE IF (O3FORM(IO3SECT)(I:I).EQ.'E' .or.&
                &O3FORM(IO3SECT)(I:I).EQ.'e') THEN
                   NumReal = NumReal + 1
-               ELSE IF (O3FORM(IO3SECT)(I:I).EQ.'D' .OR.&
+               ELSE IF (O3FORM(IO3SECT)(I:I).EQ.'D' .or.&
                &O3FORM(IO3SECT)(I:I).EQ.'d') THEN
                   NumReal = NumReal + 1
                END IF
             END DO
-            IF (NumInt.LT.1 .OR. NumInt.GT.4) THEN
+            IF (NumInt.LT.1 .or. NumInt.GT.4) THEN
 !                 WRITE Warning Message:  Potential problem with O3FORM
                WRITE(DUMMY,'(''NumInts= '',I3)') NumInt
                CALL ERRHDL(PATH,MODNAM,'W','292',DUMMY)
@@ -5554,15 +5554,15 @@ SUBROUTINE NOXFILE
       END IF
       IF (FIELD(3) .EQ. 'SECT1') THEN
          INOXSECT = 1
-      ELSE IF (FIELD(3) .EQ. 'SECT2' .AND. NUMNOxSects .GE. 2) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT2' .and. NUMNOxSects .GE. 2) THEN
          INOXSECT = 2
-      ELSE IF (FIELD(3) .EQ. 'SECT3' .AND. NUMNOxSects .GE. 3) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT3' .and. NUMNOxSects .GE. 3) THEN
          INOXSECT = 3
-      ELSE IF (FIELD(3) .EQ. 'SECT4' .AND. NUMNOxSects .GE. 4) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT4' .and. NUMNOxSects .GE. 4) THEN
          INOXSECT = 4
-      ELSE IF (FIELD(3) .EQ. 'SECT5' .AND. NUMNOxSects .GE. 5) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT5' .and. NUMNOxSects .GE. 5) THEN
          INOXSECT = 5
-      ELSE IF (FIELD(3) .EQ. 'SECT6' .AND. NUMNOxSects .EQ. 6) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT6' .and. NUMNOxSects .EQ. 6) THEN
          INOXSECT = 6
       ELSE
 !           Error Message: Invalid sector field
@@ -5618,16 +5618,16 @@ SUBROUTINE NOXFILE
    END IF
 
 !     Check for optional units of NOx value
-   IF (I .EQ. 3 .AND. IFC .GE. 4) THEN
-      IF (FIELD(4).EQ.'PPM' .OR. FIELD(4).EQ.'PPB' .OR.&
+   IF (I .EQ. 3 .and. IFC .GE. 4) THEN
+      IF (FIELD(4).EQ.'PPM' .or. FIELD(4).EQ.'PPB' .or.&
       &FIELD(4).EQ.'UG/M3') THEN
          NOXFILUNITS = FIELD(4)
       ELSE
 !           Write Error Message:  Invalid units for NOx value
          CALL ERRHDL(PATH,MODNAM,'E','203','NOXUNITS')
       END IF
-   ELSE IF (I .EQ. 4 .AND. IFC .GE. 5) THEN
-      IF (FIELD(5).EQ.'PPM' .OR. FIELD(5).EQ.'PPB' .OR.&
+   ELSE IF (I .EQ. 4 .and. IFC .GE. 5) THEN
+      IF (FIELD(5).EQ.'PPM' .or. FIELD(5).EQ.'PPB' .or.&
       &FIELD(5).EQ.'UG/M3') THEN
          NOXFILUNITS = FIELD(5)
       ELSE
@@ -5655,21 +5655,21 @@ SUBROUTINE NOXFILE
 !              format statement may include 4I2, and also allow for
 !              either F, E, or D format for the data variable.
             DO I = 1, LEN_TRIM(NOXFORM(INOXSECT))
-               IF (NOXFORM(INOXSECT)(I:I).EQ.'I' .OR.&
+               IF (NOXFORM(INOXSECT)(I:I).EQ.'I' .or.&
                &NOXFORM(INOXSECT)(I:I).EQ.'i') THEN
                   NumInt  = NumInt  + 1
-               ELSE IF (NOXFORM(INOXSECT)(I:I).EQ.'F' .OR.&
+               ELSE IF (NOXFORM(INOXSECT)(I:I).EQ.'F' .or.&
                &NOXFORM(INOXSECT)(I:I).EQ.'f') THEN
                   NumReal = NumReal + 1
-               ELSE IF (NOXFORM(INOXSECT)(I:I).EQ.'E' .OR.&
+               ELSE IF (NOXFORM(INOXSECT)(I:I).EQ.'E' .or.&
                &NOXFORM(INOXSECT)(I:I).EQ.'e') THEN
                   NumReal = NumReal + 1
-               ELSE IF (NOXFORM(INOXSECT)(I:I).EQ.'D' .OR.&
+               ELSE IF (NOXFORM(INOXSECT)(I:I).EQ.'D' .or.&
                &NOXFORM(INOXSECT)(I:I).EQ.'d') THEN
                   NumReal = NumReal + 1
                END IF
             END DO
-            IF (NumInt.LT.1 .OR. NumInt.GT.4) THEN
+            IF (NumInt.LT.1 .or. NumInt.GT.4) THEN
 !                 WRITE Warning Message:  Potential problem with NOXFORM
                WRITE(DUMMY,'(''NumInts= '',I3)') NumInt
                CALL ERRHDL(PATH,MODNAM,'W','292',DUMMY)
@@ -5749,7 +5749,7 @@ SUBROUTINE NO2EQ
    NO2Equil = DNUM
 
 !     Check range of value
-   IF (NO2Equil .LT. 0.10D0 .OR. NO2Equil .GT. 1.0D0) THEN
+   IF (NO2Equil .LT. 0.10D0 .or. NO2Equil .GT. 1.0D0) THEN
       CALL ERRHDL(PATH,MODNAM,'E','380','NO2Equil')
    END IF
 
@@ -5807,7 +5807,7 @@ SUBROUTINE NO2STK
    NO2Stack = DNUM
 
 !     Check range of value
-   IF (NO2Stack .LT. 0.0D0 .OR. NO2Stack .GT. 1.0D0) THEN
+   IF (NO2Stack .LT. 0.0D0 .or. NO2Stack .GT. 1.0D0) THEN
       CALL ERRHDL(PATH,MODNAM,'E','380','NO2Stack')
       GO TO 999
    END IF
@@ -5846,7 +5846,7 @@ SUBROUTINE ARM2_Ratios
    MODNAM = 'ARM2_Ratios'
 
 !     Check The Number Of The Fields
-   IF (ARM2 .AND. IFC .LT. 4) THEN
+   IF (ARM2 .and. IFC .LT. 4) THEN
 !        Error Message: Too Few Parameters
       CALL ERRHDL(PATH,MODNAM,'E','201',KEYWRD)
       GO TO 999
@@ -5868,13 +5868,13 @@ SUBROUTINE ARM2_Ratios
 !     D157 WSP 3/28/23 Changed ARMRATIO restictions to match user's guide
 !     DFAULT ARMRATIO is 0.5 <= ARMRATIO <= 0.9
 !     NONDFAULT ARMRATIO is 0.0 < ARMRATIO <= 1.0
-   IF (ARM2_Min .LT. 0.50D0 .AND. ARM2_Min .GT. 0.0D0) THEN
+   IF (ARM2_Min .LT. 0.50D0 .and. ARM2_Min .GT. 0.0D0) THEN
       IF( DFAULT )THEN
          CALL ERRHDL(PATH,MODNAM,'E','380',' ARM2Min')
       ELSE
          CALL ERRHDL(PATH,MODNAM,'W','737',' ARM2Min')
       END IF
-   ELSE IF (ARM2_Min .GT. 0.90D0 . AND. ARM2_Min .LE. 1.0D0) THEN
+   ELSE IF (ARM2_Min .GT. 0.90D0 .and. ARM2_Min .LE. 1.0D0) THEN
       IF( DFAULT )THEN
          CALL ERRHDL(PATH,MODNAM,'E','380', ' ARM2Min')
       ELSE
@@ -5924,13 +5924,13 @@ SUBROUTINE ARM2_Ratios
 !     D157 WSP 3/28/23 Changed ARMRATIO restictions to match user's guide
 !     DFAULT ARMRATIO is 0.5 <= ARMRATIO <= 0.9
 !     NONDFAULT ARMRATIO is 0.0 < ARMRATIO <= 1.0
-   IF (ARM2_Max .LT. 0.50D0 .AND. ARM2_Max .GT. 0.0D0) THEN
+   IF (ARM2_Max .LT. 0.50D0 .and. ARM2_Max .GT. 0.0D0) THEN
       IF( DFAULT )THEN
          CALL ERRHDL(PATH,MODNAM,'E','380',' ARM2Max')
       ELSE
          CALL ERRHDL(PATH,MODNAM,'W','737',' ARM2Max')
       END IF
-   ELSE IF (ARM2_Max .GT. 0.90D0 . AND. ARM2_Max .LE. 1.0D0) THEN
+   ELSE IF (ARM2_Max .GT. 0.90D0 .and. ARM2_Max .LE. 1.0D0) THEN
       IF( DFAULT )THEN
          CALL ERRHDL(PATH,MODNAM,'E','380',' ARM2Max')
       ELSE
@@ -6037,7 +6037,7 @@ SUBROUTINE O3VALS
       IO3SECT = 1
       I = 3
       L_O3VALUES(IO3SECT) = .TRUE.
-      IF (IO3MAX(IO3SECT) .GE. 1 .AND.&
+      IF (IO3MAX(IO3SECT) .GE. 1 .and.&
       &O3FLAG(IO3SECT) .NE. FIELD(I)) THEN
          CALL ERRHDL(PATH,MODNAM,'E','167',FIELD(I))
       ELSE
@@ -6067,15 +6067,15 @@ SUBROUTINE O3VALS
 ! ---    Determine user-specified sector
       IF (FIELD(3) .EQ. 'SECT1') THEN
          IO3SECT = 1
-      ELSE IF (FIELD(3) .EQ. 'SECT2' .AND. NUMO3Sects .GE. 2) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT2' .and. NUMO3Sects .GE. 2) THEN
          IO3SECT = 2
-      ELSE IF (FIELD(3) .EQ. 'SECT3' .AND. NUMO3Sects .GE. 3) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT3' .and. NUMO3Sects .GE. 3) THEN
          IO3SECT = 3
-      ELSE IF (FIELD(3) .EQ. 'SECT4' .AND. NUMO3Sects .GE. 4) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT4' .and. NUMO3Sects .GE. 4) THEN
          IO3SECT = 4
-      ELSE IF (FIELD(3) .EQ. 'SECT5' .AND. NUMO3Sects .GE. 5) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT5' .and. NUMO3Sects .GE. 5) THEN
          IO3SECT = 5
-      ELSE IF (FIELD(3) .EQ. 'SECT6' .AND. NUMO3Sects .EQ. 6) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT6' .and. NUMO3Sects .EQ. 6) THEN
          IO3SECT = 6
       ELSE
 !           Error Message: Invalid sector field
@@ -6086,7 +6086,7 @@ SUBROUTINE O3VALS
 !        assign the option to O3FLAG variable
       I = 4
       L_O3VALUES(IO3SECT) = .TRUE.
-      IF (IO3MAX(IO3SECT) .GE. 1 .AND.&
+      IF (IO3MAX(IO3SECT) .GE. 1 .and.&
       &O3FLAG(IO3SECT) .NE. FIELD(I)) THEN
          IF (LEN_TRIM(FIELD(I)) .GT. 6) THEN
             WRITE(DUMMY,'(''SEC'',I1,1X,A)') IO3SECT,&
@@ -6202,7 +6202,7 @@ SUBROUTINE NOXVALS
       INOXSECT = 1
       I = 3
       L_NOX_VALS(INOXSECT) = .TRUE.
-      IF (INOXMAX(INOXSECT) .GE. 1 .AND.&
+      IF (INOXMAX(INOXSECT) .GE. 1 .and.&
       &NOXFLAG(INOXSECT) .NE. FIELD(I)) THEN
          CALL ERRHDL(PATH,MODNAM,'E','606',FIELD(I))
       ELSE
@@ -6232,15 +6232,15 @@ SUBROUTINE NOXVALS
 ! ---    Determine user-specified sector
       IF (FIELD(3) .EQ. 'SECT1') THEN
          INOXSECT = 1
-      ELSE IF (FIELD(3) .EQ. 'SECT2' .AND. NUMNOxSects .GE. 2) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT2' .and. NUMNOxSects .GE. 2) THEN
          INOXSECT = 2
-      ELSE IF (FIELD(3) .EQ. 'SECT3' .AND. NUMNOxSects .GE. 3) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT3' .and. NUMNOxSects .GE. 3) THEN
          INOXSECT = 3
-      ELSE IF (FIELD(3) .EQ. 'SECT4' .AND. NUMNOxSects .GE. 4) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT4' .and. NUMNOxSects .GE. 4) THEN
          INOXSECT = 4
-      ELSE IF (FIELD(3) .EQ. 'SECT5' .AND. NUMNOxSects .GE. 5) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT5' .and. NUMNOxSects .GE. 5) THEN
          INOXSECT = 5
-      ELSE IF (FIELD(3) .EQ. 'SECT6' .AND. NUMNOxSects .EQ. 6) THEN
+      ELSE IF (FIELD(3) .EQ. 'SECT6' .and. NUMNOxSects .EQ. 6) THEN
          INOXSECT = 6
       ELSE
 !           Error Message: Invalid sector field
@@ -6251,7 +6251,7 @@ SUBROUTINE NOXVALS
 !        assign the option to NOXFLAG variable
       I = 4
       L_NOX_VALS(INOXSECT) = .TRUE.
-      IF (INOXMAX(INOXSECT) .GE. 1 .AND.&
+      IF (INOXMAX(INOXSECT) .GE. 1 .and.&
       &NOXFLAG(INOXSECT) .NE. FIELD(I)) THEN
          IF (LEN_TRIM(FIELD(I)) .GT. 6) THEN
             WRITE(DUMMY,'(''SEC'',I1,1X,A)') INOXSECT,&
@@ -6500,7 +6500,7 @@ SUBROUTINE OZON_UNIT
    END IF
 
 !     Check for units of background values
-   IF (FIELD(3).EQ.'PPM' .OR. FIELD(3).EQ.'PPB' .OR.&
+   IF (FIELD(3).EQ.'PPM' .or. FIELD(3).EQ.'PPB' .or.&
    &FIELD(3).EQ.'UG/M3') THEN
       OzoneUnits = FIELD(3)
    ELSE
@@ -6549,7 +6549,7 @@ SUBROUTINE NOX_UNIT
    END IF
 
 !     Check for units of background values
-   IF (FIELD(3).EQ.'PPM' .OR. FIELD(3).EQ.'PPB' .OR.&
+   IF (FIELD(3).EQ.'PPM' .or. FIELD(3).EQ.'PPB' .or.&
    &FIELD(3).EQ.'UG/M3') THEN
       NOxUnits = FIELD(3)
    ELSE
@@ -6619,7 +6619,7 @@ SUBROUTINE O3SECTOR
          CYCLE
       END IF
       O3SECT(I-2) = DNUM
-      IF (O3SECT(I-2) .LT. 0.0D0 .OR. O3SECT(I-2) .GT. 360.0D0) THEN
+      IF (O3SECT(I-2) .LT. 0.0D0 .or. O3SECT(I-2) .GT. 360.0D0) THEN
 !           Sector value out-of-range
          IF (O3SECT(I-2) .GT. 9999.0D0) THEN
             WRITE(DUMMY,'("O3SECT>9999.")')
@@ -6727,7 +6727,7 @@ SUBROUTINE NOXSECTOR
          CYCLE
       END IF
       NOXSECT(I-2) = DNUM
-      IF(NOXSECT(I-2) .LT. 0.0D0 .OR. NOXSECT(I-2) .GT. 360.0D0)THEN
+      IF(NOXSECT(I-2) .LT. 0.0D0 .or. NOXSECT(I-2) .GT. 360.0D0)THEN
 !           Sector value out-of-range
          IF (NOXSECT(I-2) .GT. 999.0D0) THEN
             WRITE(DUMMY,'("NOXSECT>999.")')
@@ -6834,7 +6834,7 @@ SUBROUTINE LOW_WND
 
 !     Check for acceptable range for SVMIN
    IF (.NOT. L_Error) THEN
-      IF (SVMIN .LT. 0.01D0 .OR. SVMIN .GT. 1.001D0) THEN
+      IF (SVMIN .LT. 0.01D0 .or. SVMIN .GT. 1.001D0) THEN
          WRITE(DUMMY,'("SVMIN=",F5.2)') SVMIN
          CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
          L_Error = .TRUE.
@@ -6860,7 +6860,7 @@ SUBROUTINE LOW_WND
       END IF
 !        Check for acceptable range for WSMIN
       IF (.NOT. L_Error) THEN
-         IF (WSMIN .LT. 0.01D0 .OR. WSMIN .GT. 1.001D0) THEN
+         IF (WSMIN .LT. 0.01D0 .or. WSMIN .GT. 1.001D0) THEN
             WRITE(DUMMY,'("WSMIN=",F5.2)') WSMIN
             CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
          ELSE
@@ -6886,7 +6886,7 @@ SUBROUTINE LOW_WND
       END IF
 !        Check for acceptable range for FRANMAX
       IF (.NOT. L_Error) THEN
-         IF (FRANMAX .LT. 0.0D0 .OR. FRANMAX .GT. 1.0D0) THEN
+         IF (FRANMAX .LT. 0.0D0 .or. FRANMAX .GT. 1.0D0) THEN
             WRITE(DUMMY,'("FRANMAX=",F4.2)') FRANMAX
             CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
          ELSE
@@ -6911,7 +6911,7 @@ SUBROUTINE LOW_WND
       END IF
 !        Check for acceptable range for SWMIN
       IF (.NOT. L_Error) THEN
-         IF (SWMIN .LT. 0.0D0 .OR. SWMIN .GT. 3.0D0) THEN
+         IF (SWMIN .LT. 0.0D0 .or. SWMIN .GT. 3.0D0) THEN
             WRITE(DUMMY,'("SWMIN=",F4.2)') SWMIN
             CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
          ELSE
@@ -6937,7 +6937,7 @@ SUBROUTINE LOW_WND
       END IF
 !        Check for acceptable range for BIGT
       IF (.NOT. L_Error) THEN
-         IF (BIGT .LT. 0.5D0 .OR. BIGT .GT. 48.0D0) THEN
+         IF (BIGT .LT. 0.5D0 .or. BIGT .GT. 48.0D0) THEN
             WRITE(DUMMY,'("BIGT=",F4.2)') BIGT
             CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
          ELSE
@@ -6963,7 +6963,7 @@ SUBROUTINE LOW_WND
 !        Check for acceptable range for FRANMIN and less than FRANMAX
       IF (.NOT. L_Error) THEN
 !           FRANMIN cannot be < 0 or > 100
-         IF (FRANMIN .LT. 0.0D0 .OR. FRANMIN .GT. 1.0D0) THEN
+         IF (FRANMIN .LT. 0.0D0 .or. FRANMIN .GT. 1.0D0) THEN
             WRITE(DUMMY,'("FRANMIN=",F4.2)') FRANMIN
             CALL ERRHDL(PATH,MODNAM,'E','380',DUMMY)
 !           FRANMIN cannot be > FRANMAX
@@ -6980,7 +6980,7 @@ SUBROUTINE LOW_WND
 !CRT  4/11/2022, D131 FRAN Alpha Formulation - Momentum Balance (PBal)
    IF (IFC .GE. 9) THEN
 !        Get PBal - momentum balance FRAN option
-      IF (FIELD(9) .EQ. 'PBAL' .OR.&
+      IF (FIELD(9) .EQ. 'PBAL' .or.&
       &FIELD(9) .EQ. 'PBALANCE') THEN
          L_PBal = .TRUE.
 !           Issue warning message with new BIGT
@@ -7070,7 +7070,7 @@ SUBROUTINE AWMA_DOWNWASH
 
    IF (IFC .EQ. 3) THEN
 ! ---    Only one parameter specified
-      IF (FIELD(3) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(3) .EQ. 'STREAMLINE' .or.&
       &FIELD(3) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7093,7 +7093,7 @@ SUBROUTINE AWMA_DOWNWASH
 
    IF (IFC .EQ. 4) THEN
 ! ---    Two parameters specified
-      IF (FIELD(3) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(3) .EQ. 'STREAMLINE' .or.&
       &FIELD(3) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7113,7 +7113,7 @@ SUBROUTINE AWMA_DOWNWASH
          CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(3))
       END IF
 
-      IF (FIELD(4) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(4) .EQ. 'STREAMLINE' .or.&
       &FIELD(4) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7142,7 +7142,7 @@ SUBROUTINE AWMA_DOWNWASH
 
    IF (IFC .EQ. 5) THEN
 !        Three parameters specified
-      IF (FIELD(3) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(3) .EQ. 'STREAMLINE' .or.&
       &FIELD(3) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7162,7 +7162,7 @@ SUBROUTINE AWMA_DOWNWASH
          CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(3))
       END IF
 
-      IF (FIELD(4) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(4) .EQ. 'STREAMLINE' .or.&
       &FIELD(4) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7182,7 +7182,7 @@ SUBROUTINE AWMA_DOWNWASH
          CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(4))
       END IF
 
-      IF (FIELD(5) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(5) .EQ. 'STREAMLINE' .or.&
       &FIELD(5) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7227,7 +7227,7 @@ SUBROUTINE AWMA_DOWNWASH
    IF (IFC .EQ. 6) THEN
 
 !        Four parameters specified
-      IF (FIELD(3) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(3) .EQ. 'STREAMLINE' .or.&
       &FIELD(3) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7247,7 +7247,7 @@ SUBROUTINE AWMA_DOWNWASH
          CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(3))
       END IF
 
-      IF (FIELD(4) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(4) .EQ. 'STREAMLINE' .or.&
       &FIELD(4) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7267,7 +7267,7 @@ SUBROUTINE AWMA_DOWNWASH
          CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(4))
       END IF
 
-      IF (FIELD(5) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(5) .EQ. 'STREAMLINE' .or.&
       &FIELD(5) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7287,7 +7287,7 @@ SUBROUTINE AWMA_DOWNWASH
          CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(5))
       END IF
 
-      IF (FIELD(6) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(6) .EQ. 'STREAMLINE' .or.&
       &FIELD(6) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7349,7 +7349,7 @@ SUBROUTINE AWMA_DOWNWASH
 !CRT  specified, warning message is output and AWMAUTurbHX is used.
    IF (IFC .EQ. 7) THEN
 !        Five, i.e. all, parameters specified
-      IF (FIELD(3) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(3) .EQ. 'STREAMLINE' .or.&
       &FIELD(3) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7369,7 +7369,7 @@ SUBROUTINE AWMA_DOWNWASH
          CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(3))
       END IF
 
-      IF (FIELD(4) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(4) .EQ. 'STREAMLINE' .or.&
       &FIELD(4) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7389,7 +7389,7 @@ SUBROUTINE AWMA_DOWNWASH
          CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(4))
       END IF
 
-      IF (FIELD(5) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(5) .EQ. 'STREAMLINE' .or.&
       &FIELD(5) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7409,7 +7409,7 @@ SUBROUTINE AWMA_DOWNWASH
          CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(5))
       END IF
 
-      IF (FIELD(6) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(6) .EQ. 'STREAMLINE' .or.&
       &FIELD(6) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7429,7 +7429,7 @@ SUBROUTINE AWMA_DOWNWASH
          CALL ERRHDL(PATH,MODNAM,'E','203',FIELD(5))
       END IF
 
-      IF (FIELD(7) .EQ. 'STREAMLINE' .OR.&
+      IF (FIELD(7) .EQ. 'STREAMLINE' .or.&
       &FIELD(7) .EQ. 'STREAMLINED') THEN
 ! ---       Process all structures as streamlined buildings
          L_STRMLN_BLDG = .TRUE.
@@ -7512,8 +7512,8 @@ SUBROUTINE AWMA_DOWNWASH
 !     CONFLICT WITH 125 (PATHS NOT FINISHED)
 !CRT  2/2/2021: STREAMLINE should also work with AWMAUTurbHX option
 !CRT  Update conditional statement to include L_AWMA_UTurbHX
-   IF (L_STRMLN_BLDG .AND.&
-   &(.NOT. L_AWMA_UTurb .AND. .NOT. L_AWMA_UTurbHX)) THEN
+   IF (L_STRMLN_BLDG .and.&
+   &(.NOT. L_AWMA_UTurb .and. .NOT. L_AWMA_UTurbHX)) THEN
 !        WRITE Error Message    ! AWMADWUTurb option required
 !         CALL ERRHDL(PATH,MODNAM,'E','125',KEYWRD)
       CALL ERRHDL(PATH,MODNAM,'E','126',KEYWRD)

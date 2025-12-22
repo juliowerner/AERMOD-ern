@@ -97,8 +97,8 @@ RECURSIVE SUBROUTINE RECARD
       IF (IRSTAT(9) .NE. 1) THEN
 !           WRITE Error Message: Repeat Non-repeatable Keyword
          CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
-      ELSE IF (IRSTAT(2) .GT. 0 .OR. IRSTAT(3) .GT. 0 .OR.&
-      &IRSTAT(4) .GT. 0 .OR. IRSTAT(5) .GT. 0 .OR.&
+      ELSE IF (IRSTAT(2) .GT. 0 .or. IRSTAT(3) .GT. 0 .or.&
+      &IRSTAT(4) .GT. 0 .or. IRSTAT(5) .GT. 0 .or.&
       &IRSTAT(8) .GT. 0) THEN
 !           Write Error Message: ELEVUNIT must be first card after STARTING
          CALL ERRHDL(PATH,MODNAM,'E','152','  RE')
@@ -180,7 +180,7 @@ RECURSIVE SUBROUTINE RECARD
 ! Multiple_BuoyLines_D41_Wood
 !        Process receptors based on BL sources/groups
 
-      IF (NBLTOTAL. GE. 1) THEN
+      IF (NBLTOTAL.ge. 1) THEN
          BL_RFLAG = .false.
          DO KK = 1, NUMBLGRPS
             CALL BLRECP(KK)                      !  ---   CALL BLRECP
@@ -283,16 +283,16 @@ SUBROUTINE RECART
    END IF
 
    NETIDT = FIELD(3)
-   IF (.NOT.NEWID .AND. (NETIDT.EQ.'    ' .OR.&
-   &NETIDT.EQ.'XYINC' .OR. NETIDT.EQ.'XPNTS' .OR.&
-   &NETIDT.EQ.'YPNTS' .OR. NETIDT.EQ.'ELEV' .OR.&
-   &NETIDT.EQ.'HILL'  .OR.&
-   &NETIDT.EQ.'FLAG'  .OR. NETIDT.EQ.'END')) THEN
+   IF (.NOT.NEWID .and. (NETIDT.EQ.'    ' .or.&
+   &NETIDT.EQ.'XYINC' .or. NETIDT.EQ.'XPNTS' .or.&
+   &NETIDT.EQ.'YPNTS' .or. NETIDT.EQ.'ELEV' .or.&
+   &NETIDT.EQ.'HILL'  .or.&
+   &NETIDT.EQ.'FLAG'  .or. NETIDT.EQ.'END')) THEN
       NETIDT = PNETID
       KTYPE = FIELD(3)
-   ELSE IF (.NOT.NEWID .AND. NETIDT.EQ.PNETID) THEN
+   ELSE IF (.NOT.NEWID .and. NETIDT.EQ.PNETID) THEN
       KTYPE = FIELD(4)
-   ELSE IF (NEWID .AND. NETIDT.NE.' ') THEN
+   ELSE IF (NEWID .and. NETIDT.NE.' ') THEN
       NEWID = .FALSE.
       KTYPE = FIELD(4)
 !        The Keyword Counter
@@ -349,7 +349,7 @@ SUBROUTINE RECART
 !        Set the Uniform Spacing Receptor Network           ---   CALL GENCAR
       CALL GENCAR
       INCSET = INCSET + 1
-   ELSE IF (KTYPE.EQ.'XPNTS' .OR. KTYPE.EQ.'YPNTS') THEN
+   ELSE IF (KTYPE.EQ.'XPNTS' .or. KTYPE.EQ.'YPNTS') THEN
       IF (.NOT. ISTA) THEN
 !*          Write Error: MISSING STA OF THE BLOCK DATA
          CALL ERRHDL(PATH,MODNAM,'E','200','  STA   ')
@@ -397,38 +397,38 @@ SUBROUTINE RECART
       ISTA = .FALSE.
       NEWID = .TRUE.
 !        Check If The Secondary Parameter Has Been Specified
-      IF (IXYSET.EQ.0 .AND. INCSET.EQ.0) THEN
+      IF (IXYSET.EQ.0 .and. INCSET.EQ.0) THEN
 !           WRITE Error Message: Missing (X,Y) Point Setting
          CALL ERRHDL(PATH,MODNAM,'E','212',NETIDT)
       END IF
 
 !        Warning: Elevated Terrain Inputs Inconsistent With Options
-      IF (ELEV .AND. (IEVSET.EQ.0 .OR. IHLSET.EQ.0)) THEN
+      IF (ELEV .and. (IEVSET.EQ.0 .or. IHLSET.EQ.0)) THEN
          CALL ERRHDL(PATH,MODNAM,'W','214',NETIDT)
          IRZE = IRXR
          IRZH = IRZE
-      ELSE IF (FLAT .AND. IEVSET.NE.0) THEN
+      ELSE IF (FLAT .and. IEVSET.NE.0) THEN
          CALL ERRHDL(PATH,MODNAM,'W','213',NETIDT)
          IRZE = IRXR
          IRZH = IRZE
-      ELSE IF (FLAT .AND. IEVSET.EQ.0) THEN
+      ELSE IF (FLAT .and. IEVSET.EQ.0) THEN
          IRZE = IRXR
          IRZH = IRZE
       END IF
 
 !        Warning: Flagpole Receptor Inputs Inconsistent With Options
-      IF (FLGPOL .AND. IFGSET.EQ.0) THEN
+      IF (FLGPOL .and. IFGSET.EQ.0) THEN
          CALL ERRHDL(PATH,MODNAM,'W','216',NETIDT)
          IRZF = IRXR
-      ELSE IF (.NOT.FLGPOL .AND. IFGSET.NE.0) THEN
+      ELSE IF (.NOT.FLGPOL .and. IFGSET.NE.0) THEN
          CALL ERRHDL(PATH,MODNAM,'W','215',NETIDT)
          IRZF = IRXR
-      ELSE IF (.NOT.FLGPOL .AND. IFGSET.EQ.0) THEN
+      ELSE IF (.NOT.FLGPOL .and. IFGSET.EQ.0) THEN
          IRZF = IRXR
       END IF
 
 !        Check If The Number of Elev & Flag Is Match
-      IF (ELEV .AND. IEVSET.NE.0) THEN
+      IF (ELEV .and. IEVSET.NE.0) THEN
          IF (ICOUNT*JCOUNT .NE. IZE) THEN
 !              Write Out The Error Message: No. Of ELEV not match
             CALL ERRHDL(PATH,MODNAM,'E','218','ELEV')
@@ -438,7 +438,7 @@ SUBROUTINE RECART
             CALL ERRHDL(PATH,MODNAM,'E','218','ZHILL')
          END IF
       END IF
-      IF (FLGPOL .AND. IFGSET.NE.0) THEN
+      IF (FLGPOL .and. IFGSET.NE.0) THEN
          IF (ICOUNT*JCOUNT .NE. IZF) THEN
 !              Write Out The Error Message: No. Of FLAG not match
             CALL ERRHDL(PATH,MODNAM,'E','218','FLAG')
@@ -714,7 +714,7 @@ SUBROUTINE SETCAR
 !     Variable Initializations
    MODNAM = 'SETCAR'
 
-   IF (ICOUNT.NE.0 .AND. JCOUNT.NE.0) THEN
+   IF (ICOUNT.NE.0 .and. JCOUNT.NE.0) THEN
 !        Setup The Coordinate Of The Receptors
       NETSTA(INNET) = IRXR + 1
       ISET = IRXR
@@ -859,17 +859,17 @@ SUBROUTINE REPOLR
 
 !     READ in the Netid and Nettype
    NETIDT = FIELD(3)
-   IF (.NOT.NEWID .AND. (NETIDT.EQ.'    ' .OR.&
-   &NETIDT.EQ.'ORIG' .OR. NETIDT.EQ.'DIST' .OR.&
-   &NETIDT.EQ.'DDIR' .OR. NETIDT.EQ.'ELEV' .OR.&
-   &NETIDT.EQ.'HILL' .OR.&
-   &NETIDT.EQ.'FLAG' .OR. NETIDT.EQ.'GDIR' .OR.&
+   IF (.NOT.NEWID .and. (NETIDT.EQ.'    ' .or.&
+   &NETIDT.EQ.'ORIG' .or. NETIDT.EQ.'DIST' .or.&
+   &NETIDT.EQ.'DDIR' .or. NETIDT.EQ.'ELEV' .or.&
+   &NETIDT.EQ.'HILL' .or.&
+   &NETIDT.EQ.'FLAG' .or. NETIDT.EQ.'GDIR' .or.&
    &NETIDT.EQ.'END')) THEN
       NETIDT = PNETID
       KTYPE = FIELD(3)
-   ELSE IF (.NOT.NEWID .AND. NETIDT.EQ.PNETID) THEN
+   ELSE IF (.NOT.NEWID .and. NETIDT.EQ.PNETID) THEN
       KTYPE = FIELD(4)
-   ELSE IF (NEWID .AND. NETIDT.NE.'    ') THEN
+   ELSE IF (NEWID .and. NETIDT.NE.'    ') THEN
       NEWID = .FALSE.
       KTYPE = FIELD(4)
 !        The Keyword Counter
@@ -1005,37 +1005,37 @@ SUBROUTINE REPOLR
          CALL ERRHDL(PATH,MODNAM,'E','221',NETIDT)
       END IF
 !        Error Message: Missing Degree Or Rad Setting
-      IF (IGRSET.EQ.0 .AND. IDRSET.EQ.0) THEN
+      IF (IGRSET.EQ.0 .and. IDRSET.EQ.0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','221',NETIDT)
       END IF
 
 !        Warning: Elevated Terrain Inputs Inconsistent With Options
-      IF (ELEV .AND. (IEVSET.EQ.0 .OR. IHLSET.EQ.0)) THEN
+      IF (ELEV .and. (IEVSET.EQ.0 .or. IHLSET.EQ.0)) THEN
          CALL ERRHDL(PATH,MODNAM,'W','214',NETIDT)
          IRZE = IRXR
          IRZH = IRZE
-      ELSE IF (FLAT .AND. IEVSET.NE.0) THEN
+      ELSE IF (FLAT .and. IEVSET.NE.0) THEN
          CALL ERRHDL(PATH,MODNAM,'W','213',NETIDT)
          IRZE = IRXR
          IRZH = IRZE
-      ELSE IF (FLAT .AND. IEVSET.EQ.0) THEN
+      ELSE IF (FLAT .and. IEVSET.EQ.0) THEN
          IRZE = IRXR
          IRZH = IRZE
       END IF
 
 !        Warning: Flagpole Receptor Inputs Inconsistent With Options
-      IF (FLGPOL .AND. IFGSET.EQ.0) THEN
+      IF (FLGPOL .and. IFGSET.EQ.0) THEN
          CALL ERRHDL(PATH,MODNAM,'W','216',NETIDT)
          IRZF = IRXR
-      ELSE IF (.NOT.FLGPOL .AND. IFGSET.NE.0) THEN
+      ELSE IF (.NOT.FLGPOL .and. IFGSET.NE.0) THEN
          CALL ERRHDL(PATH,MODNAM,'W','215',NETIDT)
          IRZF = IRXR
-      ELSE IF (.NOT.FLGPOL .AND. IFGSET.EQ.0) THEN
+      ELSE IF (.NOT.FLGPOL .and. IFGSET.EQ.0) THEN
          IRZF = IRXR
       END IF
 
 !        Check If The Number of Elev & Flag Is Match
-      IF (ELEV .AND. IEVSET.NE.0) THEN
+      IF (ELEV .and. IEVSET.NE.0) THEN
          IF (ICOUNT*JCOUNT .NE. IZE) THEN
 !              Write Out The Error Message: No. Of ELEV not match
             CALL ERRHDL(PATH,MODNAM,'E','218','ELEV')
@@ -1045,7 +1045,7 @@ SUBROUTINE REPOLR
             CALL ERRHDL(PATH,MODNAM,'E','218','ZHILL')
          END IF
       END IF
-      IF (FLGPOL .AND. IFGSET.NE.0) THEN
+      IF (FLGPOL .and. IFGSET.NE.0) THEN
          IF (ICOUNT*JCOUNT .NE. IZF) THEN
 !              Write Out The Error Message: No. Of FLAG not match
             CALL ERRHDL(PATH,MODNAM,'E','218','FLAG')
@@ -1441,7 +1441,7 @@ SUBROUTINE SETPOL
 !     Variable Initializations
    MODNAM = 'SETPOL'
 
-   IF (ICOUNT.NE.0 .AND. JCOUNT.NE.0) THEN
+   IF (ICOUNT.NE.0 .and. JCOUNT.NE.0) THEN
 !        Setup The Coordinate Of The Receptors
       NETSTA(INNET) = IRXR + 1
       ISET = IRXR
@@ -1850,26 +1850,26 @@ SUBROUTINE DISCAR
 !        Error Message: Too Many Parameters
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
-   ELSE IF (ELEV .AND. FLGPOL .AND. IFC.LT.7) THEN
+   ELSE IF (ELEV .and. FLGPOL .and. IFC.LT.7) THEN
 !        WRITE Warning Message: Default(s) Used for Missing Parameter(s)
       CALL ERRHDL(PATH,MODNAM,'W','228',KEYWRD)
-   ELSE IF (ELEV .AND. .NOT.FLGPOL .AND. IFC .LT. 6) THEN
+   ELSE IF (ELEV .and. .NOT.FLGPOL .and. IFC .LT. 6) THEN
 !        WRITE Warning Message: Default(s) Used for Missing Parameter(s)
       CALL ERRHDL(PATH,MODNAM,'W','228',KEYWRD)
-   ELSE IF (ELEV .AND. .NOT.FLGPOL .AND. IFC .GT. 6) THEN
+   ELSE IF (ELEV .and. .NOT.FLGPOL .and. IFC .GT. 6) THEN
 !        WRITE Warning Message: Parameter Ignored, ZFLAG
       CALL ERRHDL(PATH,MODNAM,'W','229',KEYWRD)
-   ELSE IF (FLGPOL .AND. .NOT.ELEV .AND. IFC .GT. 5) THEN
+   ELSE IF (FLGPOL .and. .NOT.ELEV .and. IFC .GT. 5) THEN
 !        WRITE Warning Message: Parameter Ignored, ZELEV & ZHILL
       CALL ERRHDL(PATH,MODNAM,'W','229',KEYWRD)
-   ELSE IF (.NOT.ELEV .AND. .NOT.FLGPOL .AND. IFC .GT. 4) THEN
+   ELSE IF (.NOT.ELEV .and. .NOT.FLGPOL .and. IFC .GT. 4) THEN
 !        WRITE Warning Message: Parameters Ignored, ZELEV ZHILL & ZFLAG
       CALL ERRHDL(PATH,MODNAM,'W','229',KEYWRD)
    END IF
 
 !     Check Whether The Maximum Number of Receptors is Exceeded
-   IF (I1.EQ.NREC .OR. I2.EQ.NREC .OR. I3.EQ.NREC .OR.&
-   &I4.EQ.NREC .OR. I5.EQ.NREC) THEN
+   IF (I1.EQ.NREC .or. I2.EQ.NREC .or. I3.EQ.NREC .or.&
+   &I4.EQ.NREC .or. I5.EQ.NREC) THEN
 !        Error Msg: Maximum Number Of Receptors Exceeded
 !        This shouldn't occur since limits are dynamically allocated
       WRITE(DUMMY,'(''NREC='',I7)') NREC
@@ -1896,7 +1896,7 @@ SUBROUTINE DISCAR
       AYR(I2 + 1) = DNUM
    END IF
 
-   IF (ELEV .AND. FLGPOL) THEN
+   IF (ELEV .and. FLGPOL) THEN
       IF (IFC .GE. 5) THEN
          CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
 !           Check The Numerical Field
@@ -1924,7 +1924,7 @@ SUBROUTINE DISCAR
             AZFLAG(I4 + 1) = DNUM
          END IF
       END IF
-   ELSE IF (ELEV .AND. .NOT.FLGPOL) THEN
+   ELSE IF (ELEV .and. .NOT.FLGPOL) THEN
       IF (IFC .GE. 5) THEN
          CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
 !           Check The Numerical Field
@@ -1943,7 +1943,7 @@ SUBROUTINE DISCAR
             AZHILL(I5 + 1) = DNUM
          END IF
       ENDIF
-   ELSE IF (FLGPOL .AND. .NOT.ELEV) THEN
+   ELSE IF (FLGPOL .and. .NOT.ELEV) THEN
       IF (IFC .EQ. 5) THEN
          CALL STODBL(FIELD(5),ILEN_FLD,DNUM,IMIT)
 !           Check The Numerical Field
@@ -2025,26 +2025,26 @@ SUBROUTINE DISPOL
 !        Error Message: Too Many Parameters
       CALL ERRHDL(PATH,MODNAM,'E','202',KEYWRD)
       GO TO 999
-   ELSE IF (ELEV .AND. FLGPOL .AND. IFC.LT.8) THEN
+   ELSE IF (ELEV .and. FLGPOL .and. IFC.LT.8) THEN
 !        WRITE Warning Message: Default(s) Used for Missing Parameter(s)
       CALL ERRHDL(PATH,MODNAM,'W','228',KEYWRD)
-   ELSE IF (ELEV .AND. .NOT.FLGPOL .AND. IFC .LT. 7) THEN
+   ELSE IF (ELEV .and. .NOT.FLGPOL .and. IFC .LT. 7) THEN
 !        WRITE Warning Message: Default(s) Used for Missing Parameter(s)
       CALL ERRHDL(PATH,MODNAM,'W','228',KEYWRD)
-   ELSE IF (ELEV .AND. .NOT.FLGPOL .AND. IFC .GT. 7) THEN
+   ELSE IF (ELEV .and. .NOT.FLGPOL .and. IFC .GT. 7) THEN
 !        WRITE Warning Message: Parameter Ignored, ZFLAG
       CALL ERRHDL(PATH,MODNAM,'W','229',' ZFLAG ')
-   ELSE IF (FLGPOL .AND. .NOT.ELEV .AND. IFC .GT. 6) THEN
+   ELSE IF (FLGPOL .and. .NOT.ELEV .and. IFC .GT. 6) THEN
 !        WRITE Warning Message: Parameter Ignored, ZELEV & ZHILL
       CALL ERRHDL(PATH,MODNAM,'W','229',KEYWRD)
-   ELSE IF (.NOT.ELEV .AND. .NOT.FLGPOL .AND. IFC .GT. 5) THEN
+   ELSE IF (.NOT.ELEV .and. .NOT.FLGPOL .and. IFC .GT. 5) THEN
 !        WRITE Warning Message: Parameters Ignored, ZELEV ZHILL & ZFLAG
       CALL ERRHDL(PATH,MODNAM,'W','229',KEYWRD)
    END IF
 
 !     Check Whether The Maximum Number of Receptors is Exceeded
-   IF (I1.EQ.NREC .OR. I2.EQ.NREC .OR. I3.EQ.NREC .OR.&
-   &I4.EQ.NREC .OR. I5.EQ.NREC) THEN
+   IF (I1.EQ.NREC .or. I2.EQ.NREC .or. I3.EQ.NREC .or.&
+   &I4.EQ.NREC .or. I5.EQ.NREC) THEN
 !        Error Msg: Maximum Number Of Receptors Exceeded
 !        This shouldn't occur since limits are dynamically allocated
       WRITE(DUMMY,'(''NREC='',I7)') NREC
@@ -2081,7 +2081,7 @@ SUBROUTINE DISPOL
       DIRECT = DIRECT + 360.0D0
    END IF
 
-   IF (ELEV .AND. FLGPOL) THEN
+   IF (ELEV .and. FLGPOL) THEN
       IF (IFC .GE. 6) THEN
          CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
 !           Check The Numerical Field
@@ -2109,7 +2109,7 @@ SUBROUTINE DISPOL
             AZFLAG(I4 + 1) = DNUM
          END IF
       END IF
-   ELSE IF (ELEV .AND. .NOT.FLGPOL) THEN
+   ELSE IF (ELEV .and. .NOT.FLGPOL) THEN
       IF (IFC .GE. 6) THEN
          CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
 !           Check The Numerical Field
@@ -2128,7 +2128,7 @@ SUBROUTINE DISPOL
             AZHILL(I5 + 1) = DNUM
          END IF
       ENDIF
-   ELSE IF (FLGPOL .AND. .NOT.ELEV) THEN
+   ELSE IF (FLGPOL .and. .NOT.ELEV) THEN
       IF (IFC .EQ. 6) THEN
          CALL STODBL(FIELD(6),ILEN_FLD,DNUM,IMIT)
 !           Check The Numerical Field
@@ -2278,8 +2278,8 @@ SUBROUTINE EVCART
    END IF
 
 !     Check Whether The Maximum Number of Receptors is Exceeded
-   IF (I1.EQ.NREC .OR. I2.EQ.NREC .OR. I3.EQ.NREC .OR.&
-   &I4.EQ.NREC .OR. I5.EQ.NREC) THEN
+   IF (I1.EQ.NREC .or. I2.EQ.NREC .or. I3.EQ.NREC .or.&
+   &I4.EQ.NREC .or. I5.EQ.NREC) THEN
 !        Error Msg: Maximum Number Of Receptors Exceeded
 !        This shouldn't occur since limits are dynamically allocated
       WRITE(DUMMY,'(''NREC='',I7)') NREC
@@ -2333,7 +2333,7 @@ SUBROUTINE EVCART
 !     Read ARCID Field, First Check for Previous Occurrence of This ARCID
    FOUND = .FALSE.
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMARC)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMARC)
       IF (FIELD(8) .EQ. ARCID(J)) THEN
          FOUND = .TRUE.
          NDXARC(I1 + 1) = J
@@ -2509,9 +2509,9 @@ SUBROUTINE BLRECP(KK)
 ! Multiple_BuoyLines_D41_Wood
 !     Set the receptor flag by BL group
    DO NR = 1,NUMREC
-      IF( YR_SCS(NR,KK) .LE. (YLMAX + 0.1D0) .AND.&
-      &YR_SCS(NR,KK) .GE. (YLMIN - 0.1D0) .AND.&
-      &XR_SCS(NR,KK) .LE. (XLMAX + 0.1D0) .AND.&
+      IF( YR_SCS(NR,KK) .LE. (YLMAX + 0.1D0) .and.&
+      &YR_SCS(NR,KK) .GE. (YLMIN - 0.1D0) .and.&
+      &XR_SCS(NR,KK) .LE. (XLMAX + 0.1D0) .and.&
       &XR_SCS(NR,KK) .GE. (XLMIN - 0.1D0)) THEN
          NRECIN = NRECIN + 1
          BL_RFLAG(NR,KK) = .true.

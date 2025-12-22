@@ -439,7 +439,7 @@ SUBROUTINE DISTF
 !     Variable Initializations
    MODNAM = 'DISTF'
 
-   IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
 
 !        Compute the distance to final rise, XMAX;
 !        The negative sign appears on the FB term to insure that the
@@ -486,7 +486,7 @@ SUBROUTINE DISTF
 ! height.  HEDHH is not calculated in the subroutine PENFCT and not used in DELTAH
 ! for stacks at or above mixing height
 !            IF( HSP+DHFAER .GE. ZI )THEN
-         IF( HSP+DHFAER .GE. ZI .AND. HSP .LT. ZI )THEN
+         IF( HSP+DHFAER .GE. ZI .and. HSP .LT. ZI )THEN
 ! ---          Stack height + plume rise is .GE. ZI; use pseudo-penetrated plume
 !              approach for URBAN SBL cases
 
@@ -613,7 +613,7 @@ SUBROUTINE WAKFLG
    END IF
 
 !     Set Initial Wake Switches Based on Building Dimensions
-   IF (DSBH .LE. 1.0D-5 .OR. DSBW .LE. 1.0D-5) THEN
+   IF (DSBH .LE. 1.0D-5 .or. DSBW .LE. 1.0D-5) THEN
 ! ---    No building inputs defined for this source, set WAKE = .F.
       WAKE   = .FALSE.
    ELSE
@@ -903,7 +903,7 @@ SUBROUTINE MEANDR( UEF, SVEF, FRAN )
 ! --- Issue informational messages for FRAN > FRANMAX
 !CRT  5/1/2018: Add logical variable to condition so message is written
 !CRT  only if FRANMAX is specified by user under LOW_WIND option
-   IF( L_UserFRANmax .AND. (FRAN .GT. FRANMAX) )THEN
+   IF( L_UserFRANmax .and. (FRAN .GT. FRANMAX) )THEN
       WRITE( DUMMY,'(I2.2,1X,I2.2,1X,I2.2,1X,I3)') IMONTH, IDAY,&
       &IHOUR,&
       &MIN(ISRC,999)
@@ -911,7 +911,7 @@ SUBROUTINE MEANDR( UEF, SVEF, FRAN )
    ENDIF
 
 ! --- Wood 3/18/2022 D127 Issue informational messages for FRAN < FRANMIN
-   IF( L_UserFRANmin .AND. (FRAN .LT. FRANMIN) )THEN
+   IF( L_UserFRANmin .and. (FRAN .LT. FRANMIN) )THEN
       WRITE( DUMMY,'(I2.2,1X,I2.2,1X,I2.2,1X,I3)') IMONTH, IDAY,&
       &IHOUR,&
       &MIN(ISRC,999)
@@ -1024,7 +1024,7 @@ SUBROUTINE CRITDS (HEARG)
       HHILL = MIN( ZHILL - ZS, ZELEV - ZS + HEARG )
    END IF
 
-   IF ( STABLE .AND. ELEV .AND. HHILL .GT. 0.0D0 ) THEN
+   IF ( STABLE .and. ELEV .and. HHILL .GT. 0.0D0 ) THEN
 !        The hill elevation is above the source elevation and we are
 !        using elevated terrain;
 
@@ -1041,7 +1041,7 @@ SUBROUTINE CRITDS (HEARG)
 !     &                  GRIDHT(NDX4HC+1), GRIDWS(NDX4HC+1),
 !     &                  HHILL, UATHH )
 
-      IF ((SRCTYP(ISRC) .EQ. 'RLINE') .OR.&
+      IF ((SRCTYP(ISRC) .EQ. 'RLINE') .or.&
       &(SRCTYP(ISRC) .EQ. 'RLINEXT')) THEN
          CALL GINTRP ( GRIDHT(NDX4HC), RL_GRIDWS(NDX4HC,I_ALPHA),&
          &GRIDHT(NDX4HC+1), RL_GRIDWS(NDX4HC+1,I_ALPHA),&
@@ -1067,7 +1067,7 @@ SUBROUTINE CRITDS (HEARG)
 ! - Wood 7/5/2022       LS(NL) = 0.5D0 * GRIDWS(NL) * GRIDWS(NL)
 
 ! begin - Use RLINE windspeeds if RLINE sourcetype - Wood 7/5/2022
-         IF ((SRCTYP(ISRC) .EQ. 'RLINE') .OR.&
+         IF ((SRCTYP(ISRC) .EQ. 'RLINE') .or.&
          &(SRCTYP(ISRC) .EQ. 'RLINEXT')) THEN
             LS(NL) = 0.5D0 * RL_GRIDWS(NL,I_ALPHA) *&
             &RL_GRIDWS(NL,I_ALPHA)
@@ -1134,7 +1134,7 @@ SUBROUTINE CRITDS (HEARG)
 ! Wood 7/5/2022 HTOP  = GRIDHT(IT)
 
 ! begin - Use RLINE wind speed if RLINE or RLINEXT source
-            IF ((SRCTYP(ISRC) .EQ. 'RLINE') .OR.&
+            IF ((SRCTYP(ISRC) .EQ. 'RLINE') .or.&
             &(SRCTYP(ISRC) .EQ. 'RLINEXT')) THEN
                WSTOP = RL_GRIDWS(IT,I_ALPHA)
                HTOP  = GRIDHT(IT)
@@ -1150,7 +1150,7 @@ SUBROUTINE CRITDS (HEARG)
 ! Wood 7/5/2022 DWS = (WSTOP - GRIDWS(IB)) / (HTOP - HBOT)
 
 ! begin - Use RLINE wind speed if RLINE or RLINEXT source
-         IF ((SRCTYP(ISRC) .EQ. 'RLINE') .OR.&
+         IF ((SRCTYP(ISRC) .EQ. 'RLINE') .or.&
          &(SRCTYP(ISRC) .EQ. 'RLINEXT')) THEN
             DWS = (WSTOP - RL_GRIDWS(IB, I_ALPHA)) / (HTOP - HBOT)
          ELSE
@@ -1171,7 +1171,7 @@ SUBROUTINE CRITDS (HEARG)
          B2 = B * B
          AC4 = 4.0D0 * A * C
 !crfl 6/19/96 Avoid sqrt (neg #) when near zero.
-         IF ((B2-AC4)/B2.LT.0.0D0 .AND. (B2-AC4)/B2.GT.-0.001D0) THEN
+         IF ((B2-AC4)/B2.LT.0.0D0 .and. (B2-AC4)/B2.GT.-0.001D0) THEN
             AC4 = B2
          END IF
 !crflendtest
@@ -1614,14 +1614,14 @@ SUBROUTINE DECAY (XARG)
    D = 1.0D0
    DC1=DECOEF !SET TEMPORARY DECAY HOLDER JAT
 
-!      IF (DFAULT .AND. URBAN .AND. POLLUT.EQ.'SO2' .AND.
+!      IF (DFAULT .and. URBAN .and. POLLUT.EQ.'SO2' .and.
 !     &    URBSRC(ISRC).EQ.'Y') THEN !commented out 9/12/17 JAT
 !     modified 9/29/17 JAT, use half-life for SO2 URBAN even without DFAULT
 !     if HALFLIFE or DCAYCOEF used, use that value, not 4-hours
-   IF (URBAN .AND. POLLUT.EQ.'SO2' .AND. URBSRC(ISRC).EQ.'Y' .AND.&
-   &((ICSTAT(7) .EQ. 0 .AND. ICSTAT(8) .EQ. 0) .OR. DFAULT)) THEN !urban SO2 source
+   IF (URBAN .and. POLLUT.EQ.'SO2' .and. URBSRC(ISRC).EQ.'Y' .and.&
+   &((ICSTAT(7) .EQ. 0 .and. ICSTAT(8) .EQ. 0) .or. DFAULT)) THEN !urban SO2 source
       DECOEF = 4.81D-5
-   ELSE IF ((POLLUT.EQ.'SO2' .AND. URBSRC(ISRC).EQ.'N') .OR.&
+   ELSE IF ((POLLUT.EQ.'SO2' .and. URBSRC(ISRC).EQ.'N') .or.&
    &DFAULT) THEN  !rural source for SO2 or default modified 10/12/17
       DECOEF = 0.0D0
 !      ELSE IF (DFAULT) THEN !removed and moved to else if above JAT 10/12/17
@@ -1629,7 +1629,7 @@ SUBROUTINE DECAY (XARG)
    END IF
 
    IF (DECOEF .GT. 0.0D0) THEN
-      IF (STABLE .OR. (UNSTAB .AND. HS.GE.ZI)) THEN
+      IF (STABLE .or. (UNSTAB .and. HS.GE.ZI)) THEN
          D = DEXP (MAX (EXPLIM, -DECOEF*XARG/UEFF))
       ELSE
          D = DEXP (MAX (EXPLIM, -DECOEF*XARG/UEFFD))
@@ -1887,7 +1887,7 @@ SUBROUTINE VRTCBL (HE1, HE2, SZ1, SZ2, FACT)
          T2 = 0.0D0
          TWOIZI = 2.0D0*DBLE(I)*ZI * FACT
 !           Check for FACT < 0 and skip first term.
-         IF (FACT .LT. 0.0D0 .AND. I .EQ. 0) CYCLE
+         IF (FACT .LT. 0.0D0 .and. I .EQ. 0) CYCLE
 
          HEARG1 = TWOIZI+HE1
          HEARG2 = TWOIZI+HE2
@@ -1926,7 +1926,7 @@ SUBROUTINE VRTCBL (HE1, HE2, SZ1, SZ2, FACT)
          T2 = 0.0D0
          TWOIZI = 2.0D0*DBLE(I)*ZITMP * FACT
 !           Check for FACT < 0 and skip first term.
-         IF (FACT .LT. 0.0D0 .AND. I .EQ. 0) CYCLE
+         IF (FACT .LT. 0.0D0 .and. I .EQ. 0) CYCLE
 !
 !      Note:  The following code can be used for the indirect plume
 !      as well as the direct plume, since HEn, for the indirect plume,
@@ -2010,7 +2010,7 @@ SUBROUTINE PFRACT (HEARG)
    MODNAM = 'PFRACT'
    PHEE = 0.0D0
 
-   IF (STABLE .AND. (HCRIT .GT. 0.0D0)) THEN
+   IF (STABLE .and. (HCRIT .GT. 0.0D0)) THEN
 
 !        Define HCINT = MIN( HSBL, HCRIT) as the limit of the integral,
 !        where HSBL = MAX( HE, ZI).
@@ -2055,7 +2055,7 @@ SUBROUTINE PFRACT (HEARG)
 
 !        Check for PHEE > 1.01 and Set = 1.0
 !        (this patch may need to be changed).
-      IF (PHEE .GT. 1.01D0 .AND. .NOT. L_SkipMessages)  THEN
+      IF (PHEE .GT. 1.01D0 .and. .NOT. L_SkipMessages)  THEN
          WRITE(DUMMY,'(I8.8)') KURDAT
          CALL ERRHDL(PATH,MODNAM,'I','405',DUMMY)
          PHEE = 1.0D0
@@ -2154,7 +2154,7 @@ SUBROUTINE SUMVAL
                &AVEVAL(IREC,IGRP,IAVE,ITYP)
             END DO
 !              End Averaging Period LOOP
-            IF (PERIOD .OR. ANNUAL) THEN
+            IF (PERIOD .or. ANNUAL) THEN
                ANNVAL(IREC,IGRP,ITYP) = HRVAL(ITYP) +&
                &ANNVAL(IREC,IGRP,ITYP)
             END IF
@@ -2218,7 +2218,7 @@ SUBROUTINE SUMBACK
 ! ---       Include background for this source group
       BCKGRD = BGCONC*EMIFAC(ITYP)/1.0D6
       BACKAVE(IGRP) = BACKAVE(IGRP) + BGCONC*EMIFAC(ITYP)/1.0D6
-      IF (PERIOD .OR. ANNUAL) THEN
+      IF (PERIOD .or. ANNUAL) THEN
          BACKANN(IGRP) = BACKANN(IGRP) + BGCONC*EMIFAC(ITYP)/1.0D6
       END IF
       IF (ISEAHR(IGRP) .EQ. 1) THEN
@@ -2235,7 +2235,7 @@ SUBROUTINE SUMBACK
       &AVEVAL(1:NUMREC,IGRP,IAVE,ITYP)
    END DO
 !        End Averaging Period LOOP
-   IF (PERIOD .OR. ANNUAL) THEN
+   IF (PERIOD .or. ANNUAL) THEN
       ANNVAL(1:NUMREC,IGRP,ITYP) = BCKGRD +&
       &ANNVAL(1:NUMREC,IGRP,ITYP)
    END IF
@@ -2294,10 +2294,10 @@ SUBROUTINE SUMBACK_NO2
 !         should not be added to deposition (g/m^2)
    ITYP=1
 !      DO ITYP = 1, NUMTYP  !RCO comment out do loop since ITYP only = 1
-   IF (GRP_BACK(IGRP) .AND. BGCONC .GT. 0.0D0) THEN
+   IF (GRP_BACK(IGRP) .and. BGCONC .GT. 0.0D0) THEN
 ! ---       Include background for this source group
       BACKAVE(IGRP) = BACKAVE(IGRP) + BGCONC*EMIFAC(ITYP)/1.0D6
-      IF (PERIOD .OR. ANNUAL) THEN
+      IF (PERIOD .or. ANNUAL) THEN
          BACKANN(IGRP) = BACKANN(IGRP) +&
          &BGCONC*EMIFAC(ITYP)/1.0D6
       END IF
@@ -2314,7 +2314,7 @@ SUBROUTINE SUMBACK_NO2
          &AVEVAL(IREC,IGRP,IAVE,ITYP)
       END DO
 !           End Averaging Period LOOP
-      IF (PERIOD .OR. ANNUAL) THEN
+      IF (PERIOD .or. ANNUAL) THEN
          ANNVAL(IREC,IGRP,ITYP) = BGCONC*EMIFAC(ITYP)/1.0D6 +&
          &ANNVAL(IREC,IGRP,ITYP)
       END IF
@@ -2382,7 +2382,7 @@ SUBROUTINE SUMVALPSD(SRCS2USE)
       END DO
 
 !        Check for ANNUAL or PERIOD Averaging
-      IF (PERIOD .OR. ANNUAL) THEN
+      IF (PERIOD .or. ANNUAL) THEN
 
          IF( TRIM(SRCS2USE) .EQ. 'NAAQSRC' )THEN
 !              NAAQS group: assign to (A+B) group 1
@@ -2440,17 +2440,17 @@ SUBROUTINE AVER
       &DNINT(DBLE(NUMHRS(IAVE))*0.75D0+0.4D0))
 !        D081 - Add warning message - less than 18 hours used for 24-hr avg (WSP, 4/2023))
       IF(DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) .LT. 18&
-      &.AND. KAVE(IAVE) .EQ. 24) THEN
+      &.and. KAVE(IAVE) .EQ. 24) THEN
          WRITE(DUMMY,'(I10)') FULLDATE
          CALL ERRHDL(PATH,MODNAM,'W','732',DUMMY)
 !        D081 - Add warning message - less than 6 hours used for 8-hr avg (CRT, 5/1/2023)
       ELSEIF (DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) .LT. 6&
-      &.AND. KAVE(IAVE) .EQ. 8) THEN
+      &.and. KAVE(IAVE) .EQ. 8) THEN
          WRITE(DUMMY,'(I10)') FULLDATE
          CALL ERRHDL(PATH,MODNAM,'W','733',DUMMY)
 !        D081 - Add warning message - less than 3 hours used for 3-hr avg (CRT, 5/1/2023)
       ELSEIF (DBLE(NUMHRS(IAVE)-NUMCLM(IAVE)-NUMMSG(IAVE)) .LT. 3&
-      &.AND. KAVE(IAVE) .EQ. 3) THEN
+      &.and. KAVE(IAVE) .EQ. 3) THEN
          WRITE(DUMMY,'(I10)') FULLDATE
          CALL ERRHDL(PATH,MODNAM,'W','734',DUMMY)
       END IF
@@ -2493,7 +2493,7 @@ SUBROUTINE HIVALS
 
 !     Check for High/Max Value Options - Skip Update If KAVE=1,
 !     And No CALCS Were Made for the Current Hour
-   IF (CALCS .OR. KAVE(IAVE).NE.1) THEN
+   IF (CALCS .or. KAVE(IAVE).NE.1) THEN
       IF (INHI(IAVE) .EQ. 1) THEN
          DO ITYP = 1, NUMTYP
 !              Update High Values for Each Receptor            ---   CALL NHIGH
@@ -2559,7 +2559,7 @@ SUBROUTINE NHIGH
                   &HIVALU(IREC,J,IGRP,IAVE,ITYP)) THEN
                      HIVALU(IREC,J+1,IGRP,IAVE,ITYP) =&
                      &AVEVAL(IREC,IGRP,IAVE,ITYP)
-                     IF (NUMCLM(IAVE).EQ.0 .AND.&
+                     IF (NUMCLM(IAVE).EQ.0 .and.&
                      &NUMMSG(IAVE).EQ.0) THEN
                         HCLMSG(IREC,J+1,IGRP,IAVE,ITYP) = ' '
                      ELSE
@@ -2579,7 +2579,7 @@ SUBROUTINE NHIGH
                      IF (J .EQ. 1) THEN
                         HIVALU(IREC,1,IGRP,IAVE,ITYP) =&
                         &AVEVAL(IREC,IGRP,IAVE,ITYP)
-                        IF (NUMCLM(IAVE).EQ.0 .AND.&
+                        IF (NUMCLM(IAVE).EQ.0 .and.&
                         &NUMMSG(IAVE).EQ.0) THEN
                            HCLMSG(IREC,1,IGRP,IAVE,ITYP) = ' '
                         ELSE
@@ -2595,7 +2595,7 @@ SUBROUTINE NHIGH
             IF (AVEVAL(IREC,IGRP,IAVE,ITYP) .GT.&
             &HIVALU(IREC,1,IGRP,IAVE,ITYP)) THEN
                HIVALU(IREC,1,IGRP,IAVE,ITYP) = AVEVAL(IREC,IGRP,IAVE,ITYP)
-               IF (NUMCLM(IAVE).EQ.0 .AND.&
+               IF (NUMCLM(IAVE).EQ.0 .and.&
                &NUMMSG(IAVE).EQ.0) THEN
                   HCLMSG(IREC,1,IGRP,IAVE,ITYP) = ' '
                ELSE
@@ -2647,25 +2647,25 @@ SUBROUTINE HSETFG(INDT,J)
 
    IF (INDT .EQ. 0) THEN
 !        Set Indicator Of Calm and Missing
-      IF (NUMCLM(IAVE).NE.0 .AND.&
+      IF (NUMCLM(IAVE).NE.0 .and.&
       &NUMMSG(IAVE).EQ.0) THEN
          HCLMSG(IREC,J+1,IGRP,IAVE,ITYP) = 'c'
-      ELSE IF (NUMCLM(IAVE).EQ.0 .AND.&
+      ELSE IF (NUMCLM(IAVE).EQ.0 .and.&
       &NUMMSG(IAVE).NE.0) THEN
          HCLMSG(IREC,J+1,IGRP,IAVE,ITYP) = 'm'
-      ELSE IF (NUMCLM(IAVE).NE.0 .AND.&
+      ELSE IF (NUMCLM(IAVE).NE.0 .and.&
       &NUMMSG(IAVE).NE.0) THEN
          HCLMSG(IREC,J+1,IGRP,IAVE,ITYP) = 'b'
       END IF
    ELSE IF (INDT .EQ. 1) THEN
 !        Set Indicator Of Calm and Missing
-      IF (NUMCLM(IAVE).NE.0 .AND.&
+      IF (NUMCLM(IAVE).NE.0 .and.&
       &NUMMSG(IAVE).EQ.0) THEN
          HCLMSG(IREC,1,IGRP,IAVE,ITYP) = 'c'
-      ELSE IF (NUMCLM(IAVE).EQ.0 .AND.&
+      ELSE IF (NUMCLM(IAVE).EQ.0 .and.&
       &NUMMSG(IAVE).NE.0) THEN
          HCLMSG(IREC,1,IGRP,IAVE,ITYP) = 'm'
-      ELSE IF (NUMCLM(IAVE).NE.0 .AND.&
+      ELSE IF (NUMCLM(IAVE).NE.0 .and.&
       &NUMMSG(IAVE).NE.0) THEN
          HCLMSG(IREC,1,IGRP,IAVE,ITYP) = 'b'
       END IF
@@ -2719,7 +2719,7 @@ SUBROUTINE MAXVALUE
                   IF(AVEVAL(IREC,IGRP,IAVE,ITYP) .LE.&
                   &RMXVAL(J,IGRP,IAVE,ITYP)) THEN
                      RMXVAL(J+1,IGRP,IAVE,ITYP) = AVEVAL(IREC,IGRP,IAVE,ITYP)
-                     IF (NUMCLM(IAVE).EQ.0 .AND.&
+                     IF (NUMCLM(IAVE).EQ.0 .and.&
                      &NUMMSG(IAVE).EQ.0) THEN
                         MCLMSG(J+1,IGRP,IAVE,ITYP) = ' '
                      ELSE
@@ -2737,7 +2737,7 @@ SUBROUTINE MAXVALUE
                      MXLOCA(J+1,IGRP,IAVE,ITYP) = MXLOCA(J,IGRP,IAVE,ITYP)
                      IF (J .EQ. 1) THEN
                         RMXVAL(1,IGRP,IAVE,ITYP) = AVEVAL(IREC,IGRP,IAVE,ITYP)
-                        IF (NUMCLM(IAVE).EQ.0 .AND.&
+                        IF (NUMCLM(IAVE).EQ.0 .and.&
                         &NUMMSG(IAVE).EQ.0) THEN
                            MCLMSG(1,IGRP,IAVE,ITYP) = ' '
                         ELSE
@@ -2754,7 +2754,7 @@ SUBROUTINE MAXVALUE
             IF (AVEVAL(IREC,IGRP,IAVE,ITYP) .GT.&
             &RMXVAL(1,IGRP,IAVE,ITYP)) THEN
                RMXVAL(1,IGRP,IAVE,ITYP) = AVEVAL(IREC,IGRP,IAVE,ITYP)
-               IF (NUMCLM(IAVE).EQ.0 .AND.&
+               IF (NUMCLM(IAVE).EQ.0 .and.&
                &NUMMSG(IAVE).EQ.0) THEN
                   MCLMSG(1,IGRP,IAVE,ITYP) = ' '
                ELSE
@@ -2804,25 +2804,25 @@ SUBROUTINE MSETFG(INDT,J)
 
    IF (INDT .EQ. 0) THEN
 !        Set Indicator Of Calm and Missing
-      IF (NUMCLM(IAVE).NE.0 .AND.&
+      IF (NUMCLM(IAVE).NE.0 .and.&
       &NUMMSG(IAVE).EQ.0) THEN
          MCLMSG(J+1,IGRP,IAVE,ITYP) = 'c'
-      ELSE IF (NUMCLM(IAVE).EQ.0 .AND.&
+      ELSE IF (NUMCLM(IAVE).EQ.0 .and.&
       &NUMMSG(IAVE).NE.0) THEN
          MCLMSG(J+1,IGRP,IAVE,ITYP) = 'm'
-      ELSE IF (NUMCLM(IAVE).NE.0 .AND.&
+      ELSE IF (NUMCLM(IAVE).NE.0 .and.&
       &NUMMSG(IAVE).NE.0) THEN
          MCLMSG(J+1,IGRP,IAVE,ITYP) = 'b'
       END IF
    ELSE IF (INDT .EQ. 1) THEN
 !        Set Indicator Of Calm and Missing
-      IF (NUMCLM(IAVE).NE.0 .AND.&
+      IF (NUMCLM(IAVE).NE.0 .and.&
       &NUMMSG(IAVE).EQ.0) THEN
          MCLMSG(1,IGRP,IAVE,ITYP) = 'c'
-      ELSE IF (NUMCLM(IAVE).EQ.0 .AND.&
+      ELSE IF (NUMCLM(IAVE).EQ.0 .and.&
       &NUMMSG(IAVE).NE.0) THEN
          MCLMSG(1,IGRP,IAVE,ITYP) = 'm'
-      ELSE IF (NUMCLM(IAVE).NE.0 .AND.&
+      ELSE IF (NUMCLM(IAVE).NE.0 .and.&
       &NUMMSG(IAVE).NE.0) THEN
          MCLMSG(1,IGRP,IAVE,ITYP) = 'b'
       END IF
@@ -2866,7 +2866,7 @@ SUBROUTINE MAXFIL
 
 !     Check for High/Max Value Options - Skip Update If KAVE=1,
 !     And No CALCS Were Made for the Current Hour
-   IF (CALCS .OR. KAVE(IAVE).NE.1) THEN
+   IF (CALCS .or. KAVE(IAVE).NE.1) THEN
 !        Begin Source Group LOOP
       DO IGRP = 1, NUMGRP
 !           Check for MAXIFILE Option for This IGRP,IAVE Combination
@@ -3074,7 +3074,7 @@ SUBROUTINE MXDLYFL
          END IF
       END DO RECEPTOR_LOOP
 !        End Receptor LOOP
-      IF (RSTSAV .AND. IMXDLY(IGRP) .EQ. 1) THEN
+      IF (RSTSAV .and. IMXDLY(IGRP) .EQ. 1) THEN
 !           Saving Intermediate Results to File for Later Re-start
 !           Close MAXDAILY file and Reposition to End
          CLOSE (IMDUNT(IGRP))
@@ -3130,7 +3130,7 @@ SUBROUTINE TOXXFL
 
 !     Check for TOXXFILE Option - Skip Update If KAVE=1,
 !     And No CALCS Were Made for the Current Hour
-   IF (ITOXFL(IAVE).EQ.1 .AND. (CALCS .OR. KAVE(IAVE).NE.1)) THEN
+   IF (ITOXFL(IAVE).EQ.1 .and. (CALCS .or. KAVE(IAVE).NE.1)) THEN
 !        Convert TOXXFILE Threshold to User Units
       CUTOFF = TOXTHR(IAVE) * EMIFAC(1)
 
@@ -3337,7 +3337,7 @@ SUBROUTINE PRTDAY
       END DO
 !        End LOOP Through Networks
 
-      IF (IRSTAT(4).NE.0 .OR. IRSTAT(8).NE.0) THEN
+      IF (IRSTAT(4).NE.0 .or. IRSTAT(8).NE.0) THEN
 !RWB        Include EVALCART receptors with DISCCART receptors.  2/14/95
 !           Print Out The Coord. & Concentrations For Discrete Cart Receptors
          INDC = 0
@@ -3487,9 +3487,9 @@ SUBROUTINE RSDUMP
    NDUMP = NDUMP + 1
 
 !     Check for Monthly Averages and Only Dump at End of Month
-   IF (MONTH .AND. .NOT.ENDMON)  GO TO 1000
+   IF (MONTH .and. .NOT.ENDMON)  GO TO 1000
 
-   IF (SAVFIL .EQ. SAVFL2 .OR. MOD(NDUMP,2) .NE. 0) THEN
+   IF (SAVFIL .EQ. SAVFL2 .or. MOD(NDUMP,2) .NE. 0) THEN
       OPEN(UNIT=IDPUNT,ERR=99,FILE=SAVFIL,FORM='UNFORMATTED',&
       &IOSTAT=IOERRN,STATUS='REPLACE')
       WRITE(IDPUNT) FULLDATE, NTOTHRS
@@ -3505,7 +3505,7 @@ SUBROUTINE RSDUMP
 
 ! ---       Include arrays associated with multi-year processing of high
 !           ranked values for 24-hr PM2.5, 1-hr NO2, and 1-hr SO2 NAAQS
-         IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+         IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
             WRITE(IDPUNT) NUMYRS
             WRITE(IDPUNT) (((SUMHNH(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
             &K=1,NHIVAL)
@@ -3575,7 +3575,7 @@ SUBROUTINE RSDUMP
 
 ! ---       Include arrays associated with multi-year processing of high
 !           ranked values for 24-hr PM2.5, 1-hr NO2, and 1-hr SO2 NAAQS
-         IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+         IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
             WRITE(IDPUN2) NUMYRS
             WRITE(IDPUN2) (((SUMHNH(I,J,K),I=1,NUMREC),J=1,NUMGRP),&
             &K=1,NHIVAL)
@@ -3761,7 +3761,7 @@ SUBROUTINE EVALCK
 !RJP
 !RJP     Use appropriate effective parameters
 !RJP
-      IF( STABLE .OR. (UNSTAB .AND. (HS .GE. ZI) ) )  THEN
+      IF( STABLE .or. (UNSTAB .and. (HS .GE. ZI) ) )  THEN
          UMAX(INDEX)   = UEFF
          SVMAX(INDEX)  = SVEFF
          SWMAX(INDEX)  = SWEFF
@@ -3862,7 +3862,7 @@ SUBROUTINE EVALFL
 !RWB         CWIC = SRT2PI * SYMAX(I) * ARCCL(I)
 !RWB     Modify CWIC to be sum of CWIC's of individual "plumes".  2/13/95
 !RWB     Note that WRAP and LIFT components are included in ARCCL.
-      IF( STABLE .OR. (UNSTAB .AND. HS.GE.ZI) )THEN
+      IF( STABLE .or. (UNSTAB .and. HS.GE.ZI) )THEN
          CWIC  = SRT2PI * SYMAX(I) * ARCCL(I)
 !           Now calculate CWIC with U*ZI normalization,
 !           using maximum of HE & ZI, instead of ZI.
@@ -3946,7 +3946,7 @@ SUBROUTINE EVALFL
 !            END IF
 
 !           Calculate nondimensional distance when L < 0
-         IF (UMAX(I) .GE. 1.0D-10 .AND. ZI .GE. 1.0D-10) THEN
+         IF (UMAX(I) .GE. 1.0D-10 .and. ZI .GE. 1.0D-10) THEN
             XNDIM = DXMAX(I) * WSTAR / (UMAX(I) * ZI)
          ELSE
             XNDIM = -999.0D0
@@ -3980,7 +3980,7 @@ SUBROUTINE EVALFL
 !RWB     Modified to output CHI's for individual "plumes".  2/13/95
 !RWB     First select appropriate sigma-y to print out. Use SY3 for mostly
 !RWB     penetrated plumes.
-      IF (UNSTAB .AND. HS.LT.ZI .AND. PPF.GT.0.999D0) THEN
+      IF (UNSTAB .and. HS.LT.ZI .and. PPF.GT.0.999D0) THEN
          UOUT  = U3MAX(I)
          SYOUT = SY3MX(I)
       ELSE
@@ -4063,7 +4063,7 @@ SUBROUTINE MXDYBYYR(N)
 ! --- Assign character label for rank
    IF (N .LE. 10) THEN
       CHRVAL = RANK(N)
-   ELSE IF (MOD(N,100) .GT. 10 .AND.&
+   ELSE IF (MOD(N,100) .GT. 10 .and.&
    &MOD(N,100) .LT. 20) THEN
       IDEC = INT(N/10)
       IMOD = MOD(N,10)
@@ -4092,7 +4092,7 @@ SUBROUTINE MXDYBYYR(N)
 !            D001 Call LONG_DATE and determine the longform date Wood 9/15/22
             CALL LONG_DATE(ICDAT8,ICDAT,ICYR,ICYR)
 ! ---  D001 remove original calculation of year Wood 9/15/22
-!               IF (ICYR .GE. ISTRT_WIND .AND. ICYR .LE. 99) THEN
+!               IF (ICYR .GE. ISTRT_WIND .and. ICYR .LE. 99) THEN
 !                  ICYR  = ISTRT_CENT*100 + ICYR
 !                  ICDAT = ISTRT_CENT*100000000 + ICDAT8
 !               ELSE IF (ICYR .LT. ISTRT_WIND) THEN
@@ -4106,7 +4106,7 @@ SUBROUTINE MXDYBYYR(N)
 !               ICHR =  ICDAT - (ICDAT/100)*100
 !              Calculate JULIAN Day for Start and End Dates
 !              but first make sure date variables are not 0
-            IF (ICMN.GT.0 .AND. ICDY.GT.0) THEN
+            IF (ICMN.GT.0 .and. ICDY.GT.0) THEN
                CALL JULIAN (ICYR,ICMN,ICDY,ICJDY)
             ELSE
                ICJDY = 0

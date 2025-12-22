@@ -121,9 +121,9 @@ SUBROUTINE OUCARD
          CALL ERRHDL(PATH,MODNAM,'E','135',KEYWRD)
       END IF
    ELSE IF (KEYWRD .EQ. 'MAXDAILY') THEN
-      IF (NO2AVE .OR. SO2AVE .OR. PM25AVE) THEN
+      IF (NO2AVE .or. SO2AVE .or. PM25AVE) THEN
          DO IAVE = 1, NUMAVE
-            IF (KAVE(IAVE) .EQ. 1 .OR. KAVE(IAVE) .EQ. 24) THEN
+            IF (KAVE(IAVE) .EQ. 1 .or. KAVE(IAVE) .EQ. 24) THEN
 !                 Process Maximum Daily 1-hr File Output Option ---   CALL OUMAXDLY
                CALL OUMAXDLY
 !                 Set Status Switch
@@ -141,9 +141,9 @@ SUBROUTINE OUCARD
          CALL ERRHDL(PATH,MODNAM,'E','162',KEYWRD)
       END IF
    ELSE IF (KEYWRD .EQ. 'MXDYBYYR') THEN
-      IF (NO2AVE .OR. SO2AVE .OR. PM25AVE) THEN
+      IF (NO2AVE .or. SO2AVE .or. PM25AVE) THEN
          DO IAVE = 1, NUMAVE
-            IF (KAVE(IAVE) .EQ. 1 .OR. KAVE(IAVE) .EQ. 24) THEN
+            IF (KAVE(IAVE) .EQ. 1 .or. KAVE(IAVE) .EQ. 24) THEN
 !                 Process Maximum Daily 1-hr File Output Option ---   CALL OUMXDLY_BYYR
                CALL OUMXDLY_BYYR
 !                 Set Status Switch
@@ -161,9 +161,9 @@ SUBROUTINE OUCARD
          CALL ERRHDL(PATH,MODNAM,'E','162',KEYWRD)
       END IF
    ELSE IF (KEYWRD .EQ. 'MAXDCONT') THEN
-      IF (NO2AVE .OR. SO2AVE .OR. PM25AVE) THEN
+      IF (NO2AVE .or. SO2AVE .or. PM25AVE) THEN
          DO IAVE = 1, NUMAVE
-            IF (KAVE(IAVE) .EQ. 1 .OR. KAVE(IAVE) .EQ. 24) THEN
+            IF (KAVE(IAVE) .EQ. 1 .or. KAVE(IAVE) .EQ. 24) THEN
 !                 Process Maximum Daily 1-hr File Output Option ---   CALL OUMAXD_CONT
                CALL OUMAXD_CONT
 !                 Set Status Switch
@@ -275,7 +275,7 @@ SUBROUTINE OUTQA
          OUTOPT = .TRUE.
       END IF
    END DO
-   IF (.NOT.OUTOPT .AND. .NOT.PERIOD .AND. .NOT.ANNUAL) THEN
+   IF (.NOT.OUTOPT .and. .NOT.PERIOD .and. .NOT.ANNUAL) THEN
 !        WRITE Error Message - No Output Keywords and No PERIOD Averages
       CALL ERRHDL(PATH,MODNAM,'E','189','  ')
    END IF
@@ -287,7 +287,7 @@ SUBROUTINE OUTQA
             IDCST1 = 1
          END IF
       END DO
-      IF (IDCST1.EQ.0 .AND. MAXAVE(IAVE).EQ.0 .AND.&
+      IF (IDCST1.EQ.0 .and. MAXAVE(IAVE).EQ.0 .and.&
       &IDYTAB(IAVE).EQ.0) THEN
          WRITE(KEYMSG,'(I3.3,A3)') KAVE(IAVE), MSG1
          CALL ERRHDL(PATH,MODNAM,'W','540',KEYMSG)
@@ -295,17 +295,17 @@ SUBROUTINE OUTQA
    END DO
 
 !     Check for DAYTABLE Option With SAVEFILE or INITFILE Options
-   IF (DAYTAB .AND. (RSTSAV .OR. RSTINP)) THEN
+   IF (DAYTAB .and. (RSTSAV .or. RSTINP)) THEN
 !        WRITE Warning Message: DAYTABLE Results Overwritten on Re-start
       CALL ERRHDL(PATH,MODNAM,'W','190','DAYTABLE')
    END IF
 !     Check for TOXXFILE Option With SAVEFILE or INITFILE Options
-   IF (TXFILE .AND. (RSTSAV .OR. RSTINP)) THEN
+   IF (TXFILE .and. (RSTSAV .or. RSTINP)) THEN
 !        WRITE Error Message: Incompatible Options
       CALL ERRHDL(PATH,MODNAM,'E','190','TOXXFILE')
    END IF
 !     Check for EVALFILE Option With SAVEFILE or INITFILE Options
-   IF (RSTSAV .OR. RSTINP) THEN
+   IF (RSTSAV .or. RSTINP) THEN
       DO I = 1, NUMSRC
          IF (EVAL(I)) THEN
 !              WRITE Warning Message: EVALFILE results overwritten on Re-start
@@ -316,7 +316,7 @@ SUBROUTINE OUTQA
    END IF
 
 !     Check for PM-2.5, NO2, or SO2 processing with EVENTFIL and no MAXIFILE
-   IF ((PM25AVE .OR. NO2AVE .OR. SO2AVE) .AND. EVENTS .AND.&
+   IF ((PM25AVE .or. NO2AVE .or. SO2AVE) .and. EVENTS .and.&
    &.NOT.MXFILE) THEN
 !        Write Warning Message:  EVENTFIL option not compatible
 !        with PM-2.5, NO2, or SO2 processing without MAXIFILE option
@@ -325,16 +325,16 @@ SUBROUTINE OUTQA
    END IF
 
 !     Check for EVALFILE Option without EVALCART Inputs
-   IF (IOSTAT(11) .GT. 0 .AND. NUMARC .EQ. 0) THEN
+   IF (IOSTAT(11) .GT. 0 .and. NUMARC .EQ. 0) THEN
       CALL ERRHDL(PATH,MODNAM,'E','256','NUMARC=0')
    END IF
 
 ! --- Check for FILEFORM keyword without applicable output file options
-   IF (IOSTAT(13) .GT. 0 .AND. FILE_FORMAT .EQ. 'EXP') THEN
-      IF (.NOT.MXFILE .AND. .NOT.PPFILE .AND. .NOT.PLFILE .AND.&
-      &.NOT.RKFILE .AND.&
-      &.NOT.ANPOST .AND. .NOT.ANPLOT .AND. .NOT.SEASONHR .AND.&
-      &.NOT.MXDAILY .AND. .NOT.MXDAILY_BYYR .AND.&
+   IF (IOSTAT(13) .GT. 0 .and. FILE_FORMAT .EQ. 'EXP') THEN
+      IF (.NOT.MXFILE .and. .NOT.PPFILE .and. .NOT.PLFILE .and.&
+      &.NOT.RKFILE .and.&
+      &.NOT.ANPOST .and. .NOT.ANPLOT .and. .NOT.SEASONHR .and.&
+      &.NOT.MXDAILY .and. .NOT.MXDAILY_BYYR .and.&
       &.NOT.L_MAXDCONT) THEN
 !           Write Warning Message: FILEFORM keyword ignored
          CALL ERRHDL(PATH,MODNAM,'W','399','FILEFORM')
@@ -348,39 +348,39 @@ SUBROUTINE OUTQA
          NumNoHeader = NumNoHeader + 1
       END IF
    END DO
-   IF (NumNoHeader .GT. 0 .AND. NumNoHeader .LT. 8) THEN
+   IF (NumNoHeader .GT. 0 .and. NumNoHeader .LT. 8) THEN
 ! ---    NOHEADER option selected for at least one output
 !        type, but not all; check for output type on the
 !        NOHEADER keyword that was not specified by user
-      IF (L_NoHeader(1) .AND. IOSTAT(5) .LT. 1) THEN
+      IF (L_NoHeader(1) .and. IOSTAT(5) .LT. 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','MAXIFILE')
       END IF
-      IF (L_NoHeader(2) .AND. IOSTAT(6) .LT. 1) THEN
+      IF (L_NoHeader(2) .and. IOSTAT(6) .LT. 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','POSTFILE')
       END IF
-      IF (L_NoHeader(3) .AND. IOSTAT(7) .LT. 1) THEN
+      IF (L_NoHeader(3) .and. IOSTAT(7) .LT. 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','PLOTFILE')
       END IF
-      IF (L_NoHeader(4) .AND. IOSTAT(9) .LT. 1) THEN
+      IF (L_NoHeader(4) .and. IOSTAT(9) .LT. 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','SEASONHR')
       END IF
-      IF (L_NoHeader(5) .AND. IOSTAT(10) .LT. 1) THEN
+      IF (L_NoHeader(5) .and. IOSTAT(10) .LT. 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','RANKFILE')
       END IF
-      IF (L_NoHeader(6) .AND. IOSTAT(14) .LT. 1) THEN
+      IF (L_NoHeader(6) .and. IOSTAT(14) .LT. 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','MAXDAILY')
       END IF
-      IF (L_NoHeader(7) .AND. IOSTAT(15) .LT. 1) THEN
+      IF (L_NoHeader(7) .and. IOSTAT(15) .LT. 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','MXDYBYYR')
       END IF
-      IF (L_NoHeader(8) .AND. IOSTAT(16) .LT. 1) THEN
+      IF (L_NoHeader(8) .and. IOSTAT(16) .LT. 1) THEN
 !           Write Error Message:  Invalid output file type
          CALL ERRHDL(PATH,MODNAM,'E','164','MAXDCONT')
       END IF
@@ -393,7 +393,7 @@ SUBROUTINE OUTQA
          DO K = 1, NUMAVE
             DO L = 1, NUMGRP
                DO M = 1, NUMAVE
-                  IF (PLTFIL(I,J,K) .EQ. PSTFIL(L,M) .AND.&
+                  IF (PLTFIL(I,J,K) .EQ. PSTFIL(L,M) .and.&
                   &IPLUNT(I,J,K) .NE. IPSUNT(L,M)) THEN
 !              Write Error Message: Conflicting Inputs
                      IF (L .GT. 999) THEN
@@ -403,7 +403,7 @@ SUBROUTINE OUTQA
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .NE. PSTFIL(L,M) .AND.&
+                  ELSE IF (PLTFIL(I,J,K) .NE. PSTFIL(L,M) .and.&
                   &IPLUNT(I,J,K) .EQ. IPSUNT(L,M)) THEN
 !              Write Error Message: Conflicting Inputs
                      IF (L .GT. 999) THEN
@@ -413,7 +413,7 @@ SUBROUTINE OUTQA
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .EQ. THRFIL(L,M) .AND.&
+                  ELSE IF (PLTFIL(I,J,K) .EQ. THRFIL(L,M) .and.&
                   &IPLUNT(I,J,K) .NE. IMXUNT(L,M)) THEN
 !              Write Error Message: Conflicting Inputs
                      IF (L .GT. 999) THEN
@@ -423,7 +423,7 @@ SUBROUTINE OUTQA
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .NE. THRFIL(L,M) .AND.&
+                  ELSE IF (PLTFIL(I,J,K) .NE. THRFIL(L,M) .and.&
                   &IPLUNT(I,J,K) .EQ. IMXUNT(L,M)) THEN
 !              Write Error Message: Conflicting Inputs
                      IF (L .GT. 999) THEN
@@ -433,7 +433,7 @@ SUBROUTINE OUTQA
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .EQ. ANNPST(L) .AND.&
+                  ELSE IF (PLTFIL(I,J,K) .EQ. ANNPST(L) .and.&
                   &IPLUNT(I,J,K) .NE. IAPUNT(L)) THEN
 !              Write Error Message: Conflicting Inputs
                      IF (L .GT. 999) THEN
@@ -443,7 +443,7 @@ SUBROUTINE OUTQA
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .NE. ANNPST(L) .AND.&
+                  ELSE IF (PLTFIL(I,J,K) .NE. ANNPST(L) .and.&
                   &IPLUNT(I,J,K) .EQ. IAPUNT(L)) THEN
 !              Write Error Message: Conflicting Inputs
                      IF (L .GT. 999) THEN
@@ -453,7 +453,7 @@ SUBROUTINE OUTQA
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .EQ. ANNPLT(L) .AND.&
+                  ELSE IF (PLTFIL(I,J,K) .EQ. ANNPLT(L) .and.&
                   &IPLUNT(I,J,K) .NE. IPPUNT(L)) THEN
 !              Write Error Message: Conflicting Inputs
                      IF (L .GT. 999) THEN
@@ -463,7 +463,7 @@ SUBROUTINE OUTQA
                      END IF
                      CALL ERRHDL(PATH,MODNAM,'E','555',DUMMY)
                      CYCLE
-                  ELSE IF (PLTFIL(I,J,K) .NE. ANNPLT(L) .AND.&
+                  ELSE IF (PLTFIL(I,J,K) .NE. ANNPLT(L) .and.&
                   &IPLUNT(I,J,K) .EQ. IPPUNT(L)) THEN
 !              Write Error Message: Conflicting Inputs
                      IF (L .GT. 999) THEN
@@ -555,7 +555,7 @@ SUBROUTINE OUHIGH
          ILOCH(I) = 1
       END DO
       FOUND = .TRUE.
-   ELSE IF (FIELD(3) .EQ. 'MONTH' .AND. MONTH) THEN
+   ELSE IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
 !        Set Value of IPRDT = 720 for MONTHly Averages
       IPRDT = 720
 !        Search The Period to find out the Location
@@ -608,7 +608,7 @@ SUBROUTINE OUHIGH
          IPRDT2 = NINT(FNUM)
 !           Search The Period to find out the Location
          DO I = 1, NUMAVE
-            IF (KAVE(I).GE.IPRDT1 .AND.&
+            IF (KAVE(I).GE.IPRDT1 .and.&
             &KAVE(I).LE.IPRDT2) THEN
                FOUND = .TRUE.
                INHI(I) = 1
@@ -644,26 +644,26 @@ SUBROUTINE OUHIGH
       IF (IMIT .EQ. 1) THEN
          IEPRD = INT(FNUM)
       END IF
-      IF (ISPRD .GT. 999 .OR. IEPRD .GT. 999) THEN
+      IF (ISPRD .GT. 999 .or. IEPRD .GT. 999) THEN
 !           Write Error Message:Illegal Parameter Field
          CALL ERRHDL(PATH,MODNAM,'E','203','HIVALU')
          CYCLE
       END IF
-      IF (ISPRD .EQ. 0 .OR. IEPRD .EQ. 0) THEN
+      IF (ISPRD .EQ. 0 .or. IEPRD .EQ. 0) THEN
 !           Check for acceptable character string if non-numeric
          DO J = 1, 10
-            IF (LPRD.EQ.NCHR1(J) .OR.&
+            IF (LPRD.EQ.NCHR1(J) .or.&
             &LPRD.EQ.NCHR2(J)) ISPRD = J
-            IF (HPRD.EQ.NCHR1(J) .OR.&
+            IF (HPRD.EQ.NCHR1(J) .or.&
             &HPRD.EQ.NCHR2(J)) IEPRD = J
          END DO
       END IF
-      IF (ISPRD.EQ.0 .OR. IEPRD.EQ.0) THEN
+      IF (ISPRD.EQ.0 .or. IEPRD.EQ.0) THEN
 !           Write Error Message:Illegal Parameter Field
          CALL ERRHDL(PATH,MODNAM,'E','203','HIVALU')
          CYCLE
       END IF
-      IF (ISPRD.GT.NVAL .OR. IEPRD.GT.NVAL) THEN
+      IF (ISPRD.GT.NVAL .or. IEPRD.GT.NVAL) THEN
 !           Write Error Message: High Value Requested Exceeds NVAL
 !           This shouldn't occur since limits are dynamically allocated
          WRITE(DUMMY,'(''NVAL='',I7)') NVAL
@@ -680,7 +680,7 @@ SUBROUTINE OUHIGH
 !     And Set the Maximum Number of High Values, NHIVAL
    DO I = 1, NUMAVE
       DO J = 1, NVAL
-         IF (HIGHST(J).EQ.1 .AND. ILOCH(I).EQ.1) THEN
+         IF (HIGHST(J).EQ.1 .and. ILOCH(I).EQ.1) THEN
             NHIAVE(J,I) = 1
             IF (J .GT. NHIVAL) THEN
                NHIVAL = J
@@ -745,7 +745,7 @@ SUBROUTINE OUMXVL
       END DO
       FOUND = .TRUE.
    ELSE
-      IF (FIELD(3) .EQ. 'MONTH' .AND. MONTH) THEN
+      IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
 !           Set Value of IPRDT = 720 for MONTHly Averages
          IPRDT = 720
       ELSE
@@ -759,7 +759,7 @@ SUBROUTINE OUMXVL
       END IF
 !        Check Averaging Period Against KAVE Array
       J = 1
-      DO WHILE (.NOT.FOUND .AND. J.LE.NUMAVE)
+      DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
          IF (IPRDT .EQ. KAVE(J)) THEN
             FOUND = .TRUE.
             INDAVE = J
@@ -846,7 +846,7 @@ SUBROUTINE OUDALY
       DAYTAB = .TRUE.
    ELSE
       DO I = 3, IFC
-         IF (FIELD(I) .EQ. 'MONTH' .AND. MONTH) THEN
+         IF (FIELD(I) .EQ. 'MONTH' .and. MONTH) THEN
 !              Set Value of IPRDT = 720 for MONTHly Averages
             IPRDT = 720
          ELSE
@@ -861,7 +861,7 @@ SUBROUTINE OUDALY
          END IF
 !           Check Averaging Period Against KAVE Array
          J = 1
-         DO WHILE (.NOT.FOUND .AND. J.LE.NUMAVE)
+         DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
             IF (IPRDT .EQ. KAVE(J)) THEN
                FOUND = .TRUE.
                IDYTAB(J) = 1
@@ -949,7 +949,7 @@ SUBROUTINE OUMXFL
    END IF
 
 !     Retrieve Averaging Period
-   IF (FIELD(3) .EQ. 'MONTH' .AND. MONTH) THEN
+   IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
 !        Set Value of IPRDT = 720 for MONTHly Averages
       IPRDT = 720
    ELSE
@@ -966,7 +966,7 @@ SUBROUTINE OUMXFL
    FOUND = .FALSE.
    INDAVE = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMAVE)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
       IF (IPRDT .EQ. KAVE(J)) THEN
          FOUND = .TRUE.
          INDAVE = J
@@ -985,7 +985,7 @@ SUBROUTINE OUMXFL
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMGRP)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
       IF (INPGRP .EQ. GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
@@ -1052,7 +1052,7 @@ SUBROUTINE OUMXFL
    ELSE
 !        Dynamically Allocate File Unit (100's)
       IMXUNT(INDGRP,INDAVE) = 100 + INDGRP*10 + INDAVE
-      IF (INDGRP .GE. 10 .OR. INDAVE .GE. 10) THEN
+      IF (INDGRP .GE. 10 .or. INDAVE .GE. 10) THEN
 !           WRITE Warning Message: Dynamic FUnit Allocation May Have Conflict
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
       END IF
@@ -1062,16 +1062,16 @@ SUBROUTINE OUMXFL
    FOUND = .FALSE.
    DO J = 1, NUMAVE
       DO I = 1, NUMGRP
-         IF (I .NE. INDGRP .OR. J .NE. INDAVE) THEN
-            IF (THRFIL(INDGRP,INDAVE) .EQ. THRFIL(I,J) .AND.&
+         IF (I .NE. INDGRP .or. J .NE. INDAVE) THEN
+            IF (THRFIL(INDGRP,INDAVE) .EQ. THRFIL(I,J) .and.&
             &IMXUNT(INDGRP,INDAVE) .EQ. IMXUNT(I,J)) THEN
                FOUND = .TRUE.
-            ELSE IF (THRFIL(INDGRP,INDAVE) .EQ. THRFIL(I,J) .AND.&
+            ELSE IF (THRFIL(INDGRP,INDAVE) .EQ. THRFIL(I,J) .and.&
             &IMXUNT(INDGRP,INDAVE) .NE. IMXUNT(I,J)) THEN
 !                 Write Error Message: Conflicting Inputs
                CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
                GO TO 999
-            ELSE IF (THRFIL(INDGRP,INDAVE) .NE. THRFIL(I,J) .AND.&
+            ELSE IF (THRFIL(INDGRP,INDAVE) .NE. THRFIL(I,J) .and.&
             &IMXUNT(INDGRP,INDAVE) .EQ. IMXUNT(I,J)) THEN
 !                 Write Error Message: Conflicting Inputs
                CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -1118,7 +1118,7 @@ SUBROUTINE OUMXFL
 !            D001 Call LONG_DATE and determine the longform date Wood 9/15/22
                CALL LONG_DATE(IDAT8,IDAT,IRSYR,IRSYR) !Determine the longform date
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
-!                  IF (IRSYR .GE. ISTRT_WIND .AND. IRSYR .LE. 99) THEN
+!                  IF (IRSYR .GE. ISTRT_WIND .and. IRSYR .LE. 99) THEN
 !                     IRSYR = ISTRT_CENT*100 + IRSYR
 !                     IDAT  = ISTRT_CENT*100000000 + IDAT8
 !                  ELSE IF (IRSYR .LT. ISTRT_WIND) THEN
@@ -1153,7 +1153,7 @@ SUBROUTINE OUMXFL
          &FILE=THRFIL(INDGRP,INDAVE),&
          &IOSTAT=IOERRN,STATUS='REPLACE')
       END IF
-   ELSE IF (FOUND .AND. RSTINP) THEN
+   ELSE IF (FOUND .and. RSTINP) THEN
 !        This file is already open, and this run is a
 !        Re-start from an earlier run
 !        Skip Header Records
@@ -1161,7 +1161,7 @@ SUBROUTINE OUMXFL
    END IF
 
 !     Write Header to File.  Skip Header if FATAL.
-   IF (RUN .AND. .NOT.FATAL .AND. .NOT.L_NoHeader(1)) THEN
+   IF (RUN .and. .NOT.FATAL .and. .NOT.L_NoHeader(1)) THEN
       WRITE(IMXUNT(INDGRP,INDAVE),9005) VERSN, TITLE1(1:68),&
       &RUNDAT
 9005  FORMAT('* AERMOD (',A6,'): ',A68,5X,A8)
@@ -1284,22 +1284,22 @@ SUBROUTINE OUPOST
    END IF
 
 !     Retrieve Averaging Period
-   IF (FIELD(3) .EQ. 'PERIOD' .AND. PERIOD) THEN
+   IF (FIELD(3) .EQ. 'PERIOD' .and. PERIOD) THEN
 !        Post File is for PERIOD Averages                   ---   CALL PERPST
       CALL PERPST
 !        Exit to End
       GO TO 999
-   ELSE IF (FIELD(3) .EQ. 'ANNUAL' .AND. ANNUAL) THEN
+   ELSE IF (FIELD(3) .EQ. 'ANNUAL' .and. ANNUAL) THEN
 !        Post File is for PERIOD Averages                   ---   CALL PERPST
       CALL PERPST
 !        Exit to End
       GO TO 999
-   ELSE IF (FIELD(3).EQ.'PERIOD' .OR. FIELD(3).EQ.'ANNUAL') THEN
+   ELSE IF (FIELD(3).EQ.'PERIOD' .or. FIELD(3).EQ.'ANNUAL') THEN
 !        Period Post File Selected But No PERIOD Averages Calculated
 !        WRITE Error Message: Invalid Averaging Period Selected for POSTFILE
       CALL ERRHDL(PATH,MODNAM,'E','203',' AVEPER ')
       GO TO 999
-   ELSE IF (FIELD(3) .EQ. 'MONTH' .AND. MONTH) THEN
+   ELSE IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
 !        Set Value of IPRDT = 720 for MONTHly Averages
       IPRDT = 720
    ELSE
@@ -1316,7 +1316,7 @@ SUBROUTINE OUPOST
    FOUND = .FALSE.
    INDAVE = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMAVE)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
       IF (IPRDT .EQ. KAVE(J)) THEN
          FOUND = .TRUE.
          INDAVE = J
@@ -1335,7 +1335,7 @@ SUBROUTINE OUPOST
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMGRP)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
       IF (INPGRP .EQ. GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
@@ -1403,7 +1403,7 @@ SUBROUTINE OUPOST
    ELSE
 !        Dynamically Allocate File Unit (200's)
       IPSUNT(INDGRP,INDAVE) = 200 + INDGRP*10 + INDAVE
-      IF (INDGRP .GE. 10 .OR. INDAVE .GE. 10) THEN
+      IF (INDGRP .GE. 10 .or. INDAVE .GE. 10) THEN
 !           WRITE Warning Message: Dynamic FUnit Allocation May Have Conflict
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
       END IF
@@ -1413,16 +1413,16 @@ SUBROUTINE OUPOST
    FOUND = .FALSE.
    DO J = 1, NUMAVE
       DO I = 1, NUMGRP
-         IF (I .NE. INDGRP .OR. J .NE. INDAVE) THEN
-            IF (PSTFIL(INDGRP,INDAVE) .EQ. PSTFIL(I,J) .AND.&
+         IF (I .NE. INDGRP .or. J .NE. INDAVE) THEN
+            IF (PSTFIL(INDGRP,INDAVE) .EQ. PSTFIL(I,J) .and.&
             &IPSUNT(INDGRP,INDAVE) .EQ. IPSUNT(I,J)) THEN
                FOUND = .TRUE.
-            ELSE IF (PSTFIL(INDGRP,INDAVE) .EQ. PSTFIL(I,J) .AND.&
+            ELSE IF (PSTFIL(INDGRP,INDAVE) .EQ. PSTFIL(I,J) .and.&
             &IPSUNT(INDGRP,INDAVE) .NE. IPSUNT(I,J)) THEN
 !                 Write Error Message: Conflicting Inputs
                CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
                GO TO 999
-            ELSE IF (PSTFIL(INDGRP,INDAVE) .NE. PSTFIL(I,J) .AND.&
+            ELSE IF (PSTFIL(INDGRP,INDAVE) .NE. PSTFIL(I,J) .and.&
             &IPSUNT(INDGRP,INDAVE) .EQ. IPSUNT(I,J)) THEN
 !                 Write Error Message: Conflicting Inputs
                CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -1434,15 +1434,15 @@ SUBROUTINE OUPOST
 
 !     Check Against POSTFILEs for PERIOD Averages
    DO I = 1, NUMGRP
-      IF (PSTFIL(INDGRP,INDAVE) .EQ. ANNPST(I) .AND.&
+      IF (PSTFIL(INDGRP,INDAVE) .EQ. ANNPST(I) .and.&
       &IPSUNT(INDGRP,INDAVE) .EQ. IAPUNT(I)) THEN
          FOUND = .TRUE.
-      ELSE IF (PSTFIL(INDGRP,INDAVE) .EQ. ANNPST(I) .AND.&
+      ELSE IF (PSTFIL(INDGRP,INDAVE) .EQ. ANNPST(I) .and.&
       &IPSUNT(INDGRP,INDAVE) .NE. IAPUNT(I)) THEN
 !           Write Error Message: Conflicting Inputs
          CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
          GO TO 999
-      ELSE IF (PSTFIL(INDGRP,INDAVE) .NE. ANNPST(I) .AND.&
+      ELSE IF (PSTFIL(INDGRP,INDAVE) .NE. ANNPST(I) .and.&
       &IPSUNT(INDGRP,INDAVE) .EQ. IAPUNT(I)) THEN
 !           Write Error Message: Conflicting Inputs
          CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -1485,7 +1485,7 @@ SUBROUTINE OUPOST
 !            D001 Call LONG_DATE and determine the longform date Wood 9/15/22
                CALL LONG_DATE(IDAT8,IDAT,IRSYR,IRSYR) !Determine the longform date
 ! ---        D001 remove original calculation of year Wood 9/15/22
-!                  IF (IRSYR .GE. ISTRT_WIND .AND. IRSYR .LE. 99) THEN
+!                  IF (IRSYR .GE. ISTRT_WIND .and. IRSYR .LE. 99) THEN
 !                     IRSYR = ISTRT_CENT*100 + IRSYR
 !                     IDAT  = ISTRT_CENT*100000000 + IDAT8
 !                  ELSE IF (IRSYR .LT. ISTRT_WIND) THEN
@@ -1559,7 +1559,7 @@ SUBROUTINE OUPOST
 !            D001 Call LONG_DATE and determine the longform date Wood 9/15/22
                   CALL LONG_DATE(IDAT8,IDAT,IRSYR,IRSYR) !Determine the longform date
 ! ---        D001 remove original calculation of year Wood 9/15/22
-!                     IF (IRSYR .GE. ISTRT_WIND .AND. IRSYR .LE. 99) THEN
+!                     IF (IRSYR .GE. ISTRT_WIND .and. IRSYR .LE. 99) THEN
 !                        IRSYR = ISTRT_CENT*100 + IRSYR
 !                        IDAT  = ISTRT_CENT*100000000 + IDAT8
 !                     ELSE IF (IRSYR .LT. ISTRT_WIND) THEN
@@ -1598,7 +1598,7 @@ SUBROUTINE OUPOST
             &IOSTAT=IOERRN,FORM='FORMATTED',STATUS='REPLACE')
          END IF
       END IF
-   ELSE IF (FOUND .AND. RSTINP) THEN
+   ELSE IF (FOUND .and. RSTINP) THEN
 !        This file is already open, and this run is a
 !        Re-start from an earlier run
 !        Skip Header Records
@@ -1606,7 +1606,7 @@ SUBROUTINE OUPOST
    END IF
 
 !     Write Header to File for Formatted Plot Files.  Skip Header if FATAL.
-   IF (RUN .AND. .NOT.FATAL .AND. FIELD(5).EQ.'PLOT' .AND.&
+   IF (RUN .and. .NOT.FATAL .and. FIELD(5).EQ.'PLOT' .and.&
    &.NOT.L_NoHeader(2)) THEN
       WRITE(IPSUNT(INDGRP,INDAVE),9005) VERSN, TITLE1(1:68),&
       &RUNDAT
@@ -1702,22 +1702,22 @@ SUBROUTINE OUPLOT
    END IF
 
 !     Retrieve Averaging Period
-   IF (FIELD(3) .EQ. 'PERIOD' .AND. PERIOD) THEN
+   IF (FIELD(3) .EQ. 'PERIOD' .and. PERIOD) THEN
 !        Plot File is for PERIOD Averages                   ---   CALL PERPLT
       CALL PERPLT
 !        Exit to End
       GO TO 999
-   ELSE IF (FIELD(3) .EQ. 'ANNUAL' .AND. ANNUAL) THEN
+   ELSE IF (FIELD(3) .EQ. 'ANNUAL' .and. ANNUAL) THEN
 !        Plot File is for PERIOD Averages                   ---   CALL PERPLT
       CALL PERPLT
 !        Exit to End
       GO TO 999
-   ELSE IF (FIELD(3).EQ.'PERIOD' .OR. FIELD(3).EQ.'ANNUAL') THEN
+   ELSE IF (FIELD(3).EQ.'PERIOD' .or. FIELD(3).EQ.'ANNUAL') THEN
 !        Period Plot File Selected But No PERIOD Averages Calculated
 !        WRITE Error Message: Invalid Averaging Period Selected for PLOTFILE
       CALL ERRHDL(PATH,MODNAM,'E','203',' AVEPER ')
       GO TO 999
-   ELSE IF (FIELD(3) .EQ. 'MONTH' .AND. MONTH) THEN
+   ELSE IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
 !        Set Value of IPRDT = 720 for MONTHly Averages
       IPRDT = 720
    ELSE
@@ -1734,7 +1734,7 @@ SUBROUTINE OUPLOT
    FOUND = .FALSE.
    INDAVE = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMAVE)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
       IF (IPRDT .EQ. KAVE(J)) THEN
          FOUND = .TRUE.
          INDAVE = J
@@ -1753,7 +1753,7 @@ SUBROUTINE OUPLOT
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMGRP)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
       IF (INPGRP .EQ. GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
@@ -1776,7 +1776,7 @@ SUBROUTINE OUPLOT
       INDVAL = INT(FNUM)
    ELSE
       DO I = 1, 10
-         IF (FIELD(5).EQ.NCHR1(I) .OR. FIELD(5).EQ.NCHR2(I)) THEN
+         IF (FIELD(5).EQ.NCHR1(I) .or. FIELD(5).EQ.NCHR2(I)) THEN
             FOUND = .TRUE.
             INDVAL = I
          END IF
@@ -1843,7 +1843,7 @@ SUBROUTINE OUPLOT
    ELSE
 !        Dynamically Allocate File Unit (> 400)
       IPLUNT(INDVAL,INDGRP,INDAVE) = (INDVAL+3)*100+INDGRP*10+INDAVE
-      IF (INDGRP .GE. 10 .OR. INDAVE .GE. 10) THEN
+      IF (INDGRP .GE. 10 .or. INDAVE .GE. 10) THEN
 !           WRITE Warning Message: Dynamic FUnit Allocation May Have Conflict
          CALL ERRHDL(PATH,MODNAM,'W','565',KEYWRD)
       END IF
@@ -1854,16 +1854,16 @@ SUBROUTINE OUPLOT
    DO K = 1, NUMAVE
       DO J = 1, NUMGRP
          DO I = 1, NHIVAL
-            IF (I.NE.INDVAL .OR. J.NE.INDGRP .OR. K.NE.INDAVE) THEN
-               IF (PLTFIL(INDVAL,INDGRP,INDAVE) .EQ. PLTFIL(I,J,K) .AND.&
+            IF (I.NE.INDVAL .or. J.NE.INDGRP .or. K.NE.INDAVE) THEN
+               IF (PLTFIL(INDVAL,INDGRP,INDAVE) .EQ. PLTFIL(I,J,K) .and.&
                &IPLUNT(INDVAL,INDGRP,INDAVE) .EQ. IPLUNT(I,J,K)) THEN
                   FOUND = .TRUE.
-               ELSEIF (PLTFIL(INDVAL,INDGRP,INDAVE).EQ.PLTFIL(I,J,K).AND.&
+               ELSEIF (PLTFIL(INDVAL,INDGRP,INDAVE).EQ.PLTFIL(I,J,K).and.&
                &IPLUNT(INDVAL,INDGRP,INDAVE).NE.IPLUNT(I,J,K))THEN
 !               Write Error Message: Conflicting Inputs
                   CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
                   GO TO 999
-               ELSEIF (PLTFIL(INDVAL,INDGRP,INDAVE).NE.PLTFIL(I,J,K).AND.&
+               ELSEIF (PLTFIL(INDVAL,INDGRP,INDAVE).NE.PLTFIL(I,J,K).and.&
                &IPLUNT(INDVAL,INDGRP,INDAVE).EQ.IPLUNT(I,J,K))THEN
 !               Write Error Message: Conflicting Inputs
                   CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -1876,15 +1876,15 @@ SUBROUTINE OUPLOT
 
 !     Check Against PLOTFILEs for PERIOD Averages
    DO I = 1, NUMGRP
-      IF (PLTFIL(INDVAL,INDGRP,INDAVE) .EQ. ANNPLT(I) .AND.&
+      IF (PLTFIL(INDVAL,INDGRP,INDAVE) .EQ. ANNPLT(I) .and.&
       &IPLUNT(INDVAL,INDGRP,INDAVE) .EQ. IPPUNT(I)) THEN
          FOUND = .TRUE.
-      ELSE IF (PLTFIL(INDVAL,INDGRP,INDAVE) .EQ. ANNPLT(I) .AND.&
+      ELSE IF (PLTFIL(INDVAL,INDGRP,INDAVE) .EQ. ANNPLT(I) .and.&
       &IPLUNT(INDVAL,INDGRP,INDAVE) .NE. IPPUNT(I)) THEN
 !          Write Error Message: Conflicting Inputs
          CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
          GO TO 999
-      ELSE IF (PLTFIL(INDVAL,INDGRP,INDAVE) .NE. ANNPLT(I) .AND.&
+      ELSE IF (PLTFIL(INDVAL,INDGRP,INDAVE) .NE. ANNPLT(I) .and.&
       &IPLUNT(INDVAL,INDGRP,INDAVE) .EQ. IPPUNT(I)) THEN
 !          Write Error Message: Conflicting Inputs
          CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -1956,7 +1956,7 @@ SUBROUTINE PERPST
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMGRP)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
       IF (INPGRP .EQ. GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
@@ -2034,15 +2034,15 @@ SUBROUTINE PERPST
    FOUND = .FALSE.
    DO I = 1, NUMGRP
       IF (I .NE. INDGRP) THEN
-         IF (ANNPST(INDGRP) .EQ. ANNPST(I) .AND.&
+         IF (ANNPST(INDGRP) .EQ. ANNPST(I) .and.&
          &IAPUNT(INDGRP) .EQ. IAPUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (ANNPST(INDGRP) .EQ. ANNPST(I) .AND.&
+         ELSE IF (ANNPST(INDGRP) .EQ. ANNPST(I) .and.&
          &IAPUNT(INDGRP) .NE. IAPUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (ANNPST(INDGRP) .NE. ANNPST(I) .AND.&
+         ELSE IF (ANNPST(INDGRP) .NE. ANNPST(I) .and.&
          &IAPUNT(INDGRP) .EQ. IAPUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -2054,15 +2054,15 @@ SUBROUTINE PERPST
 !     Check Against POSTFILEs for Short Term Averages
    DO J = 1, NUMAVE
       DO I = 1, NUMGRP
-         IF (ANNPST(INDGRP) .EQ. PSTFIL(I,J) .AND.&
+         IF (ANNPST(INDGRP) .EQ. PSTFIL(I,J) .and.&
          &IAPUNT(INDGRP) .EQ. IPSUNT(I,J)) THEN
             FOUND = .TRUE.
-         ELSE IF (ANNPST(INDGRP) .EQ. PSTFIL(I,J) .AND.&
+         ELSE IF (ANNPST(INDGRP) .EQ. PSTFIL(I,J) .and.&
          &IAPUNT(INDGRP) .NE. IPSUNT(I,J)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (ANNPST(INDGRP) .NE. PSTFIL(I,J) .AND.&
+         ELSE IF (ANNPST(INDGRP) .NE. PSTFIL(I,J) .and.&
          &IAPUNT(INDGRP) .EQ. IPSUNT(I,J)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -2142,7 +2142,7 @@ SUBROUTINE PERPLT
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMGRP)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
       IF (INPGRP .EQ. GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
@@ -2209,15 +2209,15 @@ SUBROUTINE PERPLT
    FOUND = .FALSE.
    DO I = 1, NUMGRP
       IF (I .NE. INDGRP) THEN
-         IF (ANNPLT(INDGRP) .EQ. ANNPLT(I) .AND.&
+         IF (ANNPLT(INDGRP) .EQ. ANNPLT(I) .and.&
          &IPPUNT(INDGRP) .EQ. IPPUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (ANNPLT(INDGRP) .EQ. ANNPLT(I) .AND.&
+         ELSE IF (ANNPLT(INDGRP) .EQ. ANNPLT(I) .and.&
          &IPPUNT(INDGRP) .NE. IPPUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (ANNPLT(INDGRP) .NE. ANNPLT(I) .AND.&
+         ELSE IF (ANNPLT(INDGRP) .NE. ANNPLT(I) .and.&
          &IPPUNT(INDGRP) .EQ. IPPUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -2230,15 +2230,15 @@ SUBROUTINE PERPLT
    DO K = 1, NUMAVE
       DO J = 1, NUMGRP
          DO I = 1, NHIVAL
-            IF (ANNPLT(INDGRP) .EQ. PLTFIL(I,J,K) .AND.&
+            IF (ANNPLT(INDGRP) .EQ. PLTFIL(I,J,K) .and.&
             &IPPUNT(INDGRP) .EQ. IPLUNT(I,J,K)) THEN
                FOUND = .TRUE.
-            ELSE IF (ANNPLT(INDGRP) .EQ. PLTFIL(I,J,K) .AND.&
+            ELSE IF (ANNPLT(INDGRP) .EQ. PLTFIL(I,J,K) .and.&
             &IPPUNT(INDGRP) .NE. IPLUNT(I,J,K)) THEN
 !                 Write Error Message: Conflicting Inputs
                CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
                GO TO 999
-            ELSE IF (ANNPLT(INDGRP) .NE. PLTFIL(I,J,K) .AND.&
+            ELSE IF (ANNPLT(INDGRP) .NE. PLTFIL(I,J,K) .and.&
             &IPPUNT(INDGRP) .EQ. IPLUNT(I,J,K)) THEN
 !                 Write Error Message: Conflicting Inputs
                CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -2316,7 +2316,7 @@ SUBROUTINE OUTOXX
    END IF
 
 !     Retrieve Averaging Period
-   IF (FIELD(3) .EQ. 'MONTH' .AND. MONTH) THEN
+   IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
 !        Set Value of IPRDT = 720 for MONTHly Averages
       IPRDT = 720
    ELSE
@@ -2333,7 +2333,7 @@ SUBROUTINE OUTOXX
    FOUND = .FALSE.
    INDAVE = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMAVE)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
       IF (IPRDT .EQ. KAVE(J)) THEN
          FOUND = .TRUE.
          INDAVE = J
@@ -2416,15 +2416,15 @@ SUBROUTINE OUTOXX
    FOUND = .FALSE.
    DO I = 1, NUMAVE
       IF (I .NE. INDAVE) THEN
-         IF (TOXFIL(INDAVE) .EQ. TOXFIL(I) .AND.&
+         IF (TOXFIL(INDAVE) .EQ. TOXFIL(I) .and.&
          &ITXUNT(INDAVE) .EQ. ITXUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (TOXFIL(INDAVE) .EQ. TOXFIL(I) .AND.&
+         ELSE IF (TOXFIL(INDAVE) .EQ. TOXFIL(I) .and.&
          &ITXUNT(INDAVE) .NE. ITXUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (TOXFIL(INDAVE) .NE. TOXFIL(I) .AND.&
+         ELSE IF (TOXFIL(INDAVE) .NE. TOXFIL(I) .and.&
          &ITXUNT(INDAVE) .EQ. ITXUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -2513,7 +2513,7 @@ SUBROUTINE OUSEAS
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMGRP)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
       IF (INPGRP .EQ. GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
@@ -2580,15 +2580,15 @@ SUBROUTINE OUSEAS
    FOUND = .FALSE.
    DO I = 1, NUMGRP
       IF (I .NE. INDGRP) THEN
-         IF (SEAHRS(INDGRP) .EQ. SEAHRS(I) .AND.&
+         IF (SEAHRS(INDGRP) .EQ. SEAHRS(I) .and.&
          &ISHUNT(INDGRP) .EQ. ISHUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (SEAHRS(INDGRP) .EQ. SEAHRS(I) .AND.&
+         ELSE IF (SEAHRS(INDGRP) .EQ. SEAHRS(I) .and.&
          &ISHUNT(INDGRP) .NE. ISHUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (SEAHRS(INDGRP) .NE. SEAHRS(I) .AND.&
+         ELSE IF (SEAHRS(INDGRP) .NE. SEAHRS(I) .and.&
          &ISHUNT(INDGRP) .EQ. ISHUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -2659,7 +2659,7 @@ SUBROUTINE OURANK
    END IF
 
 !     Retrieve Averaging Period
-   IF (FIELD(3) .EQ. 'MONTH' .AND. MONTH) THEN
+   IF (FIELD(3) .EQ. 'MONTH' .and. MONTH) THEN
 !        Set Value of IPRDT = 720 for MONTHly Averages
       IPRDT = 720
    ELSE
@@ -2676,7 +2676,7 @@ SUBROUTINE OURANK
    FOUND = .FALSE.
    INDAVE = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMAVE)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMAVE)
       IF (IPRDT .EQ. KAVE(J)) THEN
          FOUND = .TRUE.
          INDAVE = J
@@ -2756,15 +2756,15 @@ SUBROUTINE OURANK
    FOUND = .FALSE.
    DO I = 1, NUMAVE
       IF (I .NE. INDAVE) THEN
-         IF (RNKFIL(INDAVE) .EQ. RNKFIL(I) .AND.&
+         IF (RNKFIL(INDAVE) .EQ. RNKFIL(I) .and.&
          &IRKUNT(INDAVE) .EQ. IRKUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (RNKFIL(INDAVE) .EQ. RNKFIL(I) .AND.&
+         ELSE IF (RNKFIL(INDAVE) .EQ. RNKFIL(I) .and.&
          &IRKUNT(INDAVE) .NE. IRKUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (RNKFIL(INDAVE) .NE. RNKFIL(I) .AND.&
+         ELSE IF (RNKFIL(INDAVE) .NE. RNKFIL(I) .and.&
          &IRKUNT(INDAVE) .EQ. IRKUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -2842,7 +2842,7 @@ SUBROUTINE OUEVAL
    FOUND = .FALSE.
    INDSRC = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMSRC)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMSRC)
       IF (INPSRC .EQ. SRCID(J)) THEN
          FOUND = .TRUE.
          INDSRC = J
@@ -2899,15 +2899,15 @@ SUBROUTINE OUEVAL
    FOUND = .FALSE.
    DO I = 1, NUMSRC
       IF (I .NE. INDSRC) THEN
-         IF (EVLFIL(INDSRC) .EQ. EVLFIL(I) .AND.&
+         IF (EVLFIL(INDSRC) .EQ. EVLFIL(I) .and.&
          &IELUNT(INDSRC) .EQ. IELUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (EVLFIL(INDSRC) .EQ. EVLFIL(I) .AND.&
+         ELSE IF (EVLFIL(INDSRC) .EQ. EVLFIL(I) .and.&
          &IELUNT(INDSRC) .NE. IELUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             EXIT
-         ELSE IF (EVLFIL(INDSRC) .NE. EVLFIL(I) .AND.&
+         ELSE IF (EVLFIL(INDSRC) .NE. EVLFIL(I) .and.&
          &IELUNT(INDSRC) .EQ. IELUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -3055,7 +3055,7 @@ SUBROUTINE FILEFORM
          &'(1X,I3,1X,A8,1X,I8.8,2(1X,F13.5),3(1X,F7.2),1X,E13.6)'
          PSTFRM =&
          &'(2(1X,F13.5),1X,E13.6,3(1X,F8.2),2X,A6,2X,A8,2X,I8.8,2X,A8)'
-         IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+         IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
             PLTFRM =&
             &'(2(1X,F13.5),1X,E13.6,3(1X,F8.2),2X,A6,2X,A8,2X,A5,5X,A8,2X,&
             &10(E13.6,2X,I8.8,2X:))'
@@ -3142,7 +3142,7 @@ SUBROUTINE OUMAXDLY
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMGRP)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
       IF (INPGRP .EQ. GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
@@ -3209,15 +3209,15 @@ SUBROUTINE OUMAXDLY
    FOUND = .FALSE.
    DO I = 1, NUMGRP
       IF (I .NE. INDGRP) THEN
-         IF (MAXDLY(INDGRP) .EQ. MAXDLY(I) .AND.&
+         IF (MAXDLY(INDGRP) .EQ. MAXDLY(I) .and.&
          &IMDUNT(INDGRP) .EQ. IMDUNT(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (MAXDLY(INDGRP) .EQ. MAXDLY(I) .AND.&
+         ELSE IF (MAXDLY(INDGRP) .EQ. MAXDLY(I) .and.&
          &IMDUNT(INDGRP) .NE. IMDUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (MAXDLY(INDGRP) .NE. MAXDLY(I) .AND.&
+         ELSE IF (MAXDLY(INDGRP) .NE. MAXDLY(I) .and.&
          &IMDUNT(INDGRP) .EQ. IMDUNT(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -3267,7 +3267,7 @@ SUBROUTINE OUMAXDLY
 !            D001 Call LONG_DATE and determine the longform date Wood 9/15/22
                CALL LONG_DATE(IDAT8,IDAT,IRSYR,IRSYR) !Determine the longform date
 ! ---        D001 remove original calculation of year Wood 9/15/22
-!                  IF (IRSYR .GE. ISTRT_WIND .AND. IRSYR .LE. 99) THEN
+!                  IF (IRSYR .GE. ISTRT_WIND .and. IRSYR .LE. 99) THEN
 !                     IRSYR = ISTRT_CENT*100 + IRSYR
 !                     IDAT  = ISTRT_CENT*100000000 + IDAT8
 !                  ELSE IF (IRSYR .LT. ISTRT_WIND) THEN
@@ -3303,7 +3303,7 @@ SUBROUTINE OUMAXDLY
          OPEN(IMDUNT(INDGRP),ERR=99, FILE=MAXDLY(INDGRP),&
          &IOSTAT=IOERRN,FORM='FORMATTED',STATUS='REPLACE')
       END IF
-   ELSE IF (FOUND .AND. RSTINP) THEN
+   ELSE IF (FOUND .and. RSTINP) THEN
 !        This file is already open, and this run is a
 !        Re-start from an earlier run
 !        Skip Header Records
@@ -3311,7 +3311,7 @@ SUBROUTINE OUMAXDLY
    END IF
 
 !     Write Header to File.  Skip Header if FATAL.
-   IF (RUN .AND. .NOT.FATAL .AND. .NOT.L_NoHeader(6)) THEN
+   IF (RUN .and. .NOT.FATAL .and. .NOT.L_NoHeader(6)) THEN
       WRITE(IMDUNT(INDGRP),9005) VERSN, TITLE1(1:68), RUNDAT
 9005  FORMAT('* AERMOD (',A6,'): ',A68,5X,A8)
       WRITE(IMDUNT(INDGRP),9007) C_METVER, RUNTIM,&
@@ -3413,7 +3413,7 @@ SUBROUTINE OUMXDLY_BYYR
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMGRP)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
       IF (INPGRP .EQ. GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
@@ -3480,15 +3480,15 @@ SUBROUTINE OUMXDLY_BYYR
    FOUND = .FALSE.
    DO I = 1, NUMGRP
       IF (I .NE. INDGRP) THEN
-         IF (MAXDLY_BYYR(INDGRP) .EQ. MAXDLY_BYYR(I) .AND.&
+         IF (MAXDLY_BYYR(INDGRP) .EQ. MAXDLY_BYYR(I) .and.&
          &IMDUNT_BYYR(INDGRP) .EQ. IMDUNT_BYYR(I)) THEN
             FOUND = .TRUE.
-         ELSE IF (MAXDLY_BYYR(INDGRP) .EQ. MAXDLY_BYYR(I) .AND.&
+         ELSE IF (MAXDLY_BYYR(INDGRP) .EQ. MAXDLY_BYYR(I) .and.&
          &IMDUNT_BYYR(INDGRP) .NE. IMDUNT_BYYR(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSE IF (MAXDLY_BYYR(INDGRP) .NE. MAXDLY_BYYR(I) .AND.&
+         ELSE IF (MAXDLY_BYYR(INDGRP) .NE. MAXDLY_BYYR(I) .and.&
          &IMDUNT_BYYR(INDGRP) .EQ. IMDUNT_BYYR(I)) THEN
 !             Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
@@ -3537,7 +3537,7 @@ SUBROUTINE OUMXDLY_BYYR
 !            D001 Call LONG_DATE and determine the longform date Wood 9/15/22
                CALL LONG_DATE(IDAT8,IDAT,IRSYR,IRSYR) !Determine the longform date
 ! ---  D001 remove original calculation of year Wood 9/15/22
-!                  IF (IRSYR .GE. ISTRT_WIND .AND. IRSYR .LE. 99) THEN
+!                  IF (IRSYR .GE. ISTRT_WIND .and. IRSYR .LE. 99) THEN
 !                     IRSYR = ISTRT_CENT*100 + IRSYR
 !                     IDAT  = ISTRT_CENT*100000000 + IDAT8
 !                  ELSE IF (IRSYR .LT. ISTRT_WIND) THEN
@@ -3573,7 +3573,7 @@ SUBROUTINE OUMXDLY_BYYR
          OPEN(IMDUNT_BYYR(INDGRP),ERR=99, FILE=MAXDLY_BYYR(INDGRP),&
          &IOSTAT=IOERRN,FORM='FORMATTED',STATUS='REPLACE')
       END IF
-   ELSE IF (FOUND .AND. RSTINP) THEN
+   ELSE IF (FOUND .and. RSTINP) THEN
 !        This file is already open, and this run is a
 !        Re-start from an earlier run
 !        Skip Header Records
@@ -3581,7 +3581,7 @@ SUBROUTINE OUMXDLY_BYYR
    END IF
 
 !     Write Header to File.  Skip Header if FATAL.
-   IF (RUN .AND. .NOT.FATAL .AND. .NOT.L_NoHeader(7)) THEN
+   IF (RUN .and. .NOT.FATAL .and. .NOT.L_NoHeader(7)) THEN
       WRITE(IMDUNT_BYYR(INDGRP),9005) VERSN,TITLE1(1:68), RUNDAT
 9005  FORMAT('* AERMOD (',A6,'): ',A68,5X,A8)
       WRITE(IMDUNT_BYYR(INDGRP),9007) C_METVER, RUNTIM,&
@@ -3710,7 +3710,7 @@ SUBROUTINE OUMAXD_CONT
    FOUND = .FALSE.
    INDGRP = 0
    J = 1
-   DO WHILE (.NOT.FOUND .AND. J.LE.NUMGRP)
+   DO WHILE (.NOT.FOUND .and. J.LE.NUMGRP)
       IF (INPGRP .EQ. GRPID(J)) THEN
          FOUND = .TRUE.
          INDGRP = J
@@ -3808,16 +3808,16 @@ SUBROUTINE OUMAXD_CONT
 
 ! ---    Check for use of MAXDCONT THRESH option with limited range of
 !        ranks on RECTABLE keyword
-      IF ( (SO2AVE .AND. NHIVAL.LE. 8) .OR.&
-      &(NO2AVE .AND. NHIVAL.LE.12) .OR.&
-      &(PM25AVE .AND. NHIVAL.LE.12) ) THEN
+      IF ( (SO2AVE .and. NHIVAL.LE. 8) .or.&
+      &(NO2AVE .and. NHIVAL.LE.12) .or.&
+      &(PM25AVE .and. NHIVAL.LE.12) ) THEN
 ! ---       NHIVAL is less than or equal to the design value rank + 4
 !           for the THRESH option; issue fatal ERROR message
          WRITE(DUMMY,'(''Max Rank ='',I2)') NHIVAL
          CALL ERRHDL(PATH,MODNAM,'E','273',DUMMY)
-      ELSE IF ( (SO2AVE .AND. NHIVAL.LE.24) .OR.&
-      &(NO2AVE .AND. NHIVAL.LE.28) .OR.&
-      &(PM25AVE .AND. NHIVAL.LE.28) ) THEN
+      ELSE IF ( (SO2AVE .and. NHIVAL.LE.24) .or.&
+      &(NO2AVE .and. NHIVAL.LE.28) .or.&
+      &(PM25AVE .and. NHIVAL.LE.28) ) THEN
 ! ---       NHIVAL is less than or equal to the design value rank + 20
 !           for the THRESH option; issue non-fatal WARNING message
          WRITE(DUMMY,'(''Max Rank ='',I2)') NHIVAL
@@ -3906,15 +3906,15 @@ SUBROUTINE OUMAXD_CONT
    FOUND = .FALSE.
    DO I = 1, NUMGRP
       IF (I .NE. INDGRP) THEN
-         IF (MAXDCONT_FILE(INDGRP).EQ.MAXDCONT_FILE(I) .AND.&
+         IF (MAXDCONT_FILE(INDGRP).EQ.MAXDCONT_FILE(I) .and.&
          &IMXDCUNT(INDGRP).EQ.IMXDCUNT(I)) THEN
             FOUND = .TRUE.
-         ELSEIF(MAXDCONT_FILE(INDGRP).EQ.MAXDCONT_FILE(I) .AND.&
+         ELSEIF(MAXDCONT_FILE(INDGRP).EQ.MAXDCONT_FILE(I) .and.&
          &IMXDCUNT(INDGRP).NE.IMXDCUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)
             GO TO 999
-         ELSEIF(MAXDCONT_FILE(INDGRP).NE.MAXDCONT_FILE(I) .AND.&
+         ELSEIF(MAXDCONT_FILE(INDGRP).NE.MAXDCONT_FILE(I) .and.&
          &IMXDCUNT(INDGRP).EQ.IMXDCUNT(I)) THEN
 !              Write Error Message: Conflicting Inputs
             CALL ERRHDL(PATH,MODNAM,'E','550',KEYWRD)

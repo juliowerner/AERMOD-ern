@@ -63,7 +63,7 @@ SUBROUTINE GRDWS
 !        Now begin looping over the observed profile
 !        -------------------------------------------
 !
-      DO WHILE( GRIDWS(GINDEX).LT.-90.0D0 .AND. PINDEX.LE.NPLVLS )
+      DO WHILE( GRIDWS(GINDEX).LT.-90.0D0 .and. PINDEX.LE.NPLVLS )
 !
          IF( PFLWS(PINDEX) .GE. 0.0D0 )THEN
 !
@@ -144,7 +144,7 @@ SUBROUTINE GRDWS
 !           processing
 !           ---------------------------------------------------------
 !
-         IF( (GRIDWS(GINDEX) .LT. 0.0D0)  .AND.&
+         IF( (GRIDWS(GINDEX) .LT. 0.0D0)  .and.&
          &(PINDEX .LT. NPLVLS) )THEN
             PINDEX = PINDEX + 1
          ENDIF
@@ -250,14 +250,14 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !     unstable amosphere, positive for a stable atmosphere).
 !     -------------------------------------------------------------
 !
-   IF( (UREFHT .GT. VLDLB)  .AND.  (UREFHT .LE. ZI) )THEN
+   IF( (UREFHT .GT. VLDLB)  .and.  (UREFHT .LE. ZI) )THEN
 !
 !        ----------------------------------------------------------
 !        The reference height is above the valid lower bound height
 !        and below the mixing height
 !        ----------------------------------------------------------
 !
-      IF( (PRFLHT .GT. VLDLB)  .AND.  (PRFLHT .LE. ZI) )THEN
+      IF( (PRFLHT .GT. VLDLB)  .and.  (PRFLHT .LE. ZI) )THEN
 !
 !           ---------------------------------------------------------
 !           The required height is above the valid lower bound height
@@ -318,7 +318,7 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !        -----------------------------------------------
 !
 
-      IF( (PRFLHT .GT. VLDLB)  .AND.  (PRFLHT .LE. ZI) )THEN
+      IF( (PRFLHT .GT. VLDLB)  .and.  (PRFLHT .LE. ZI) )THEN
 !
 !           ---------------------------------------------------------
 !           The required height is above the valid lower bound height
@@ -366,7 +366,7 @@ SUBROUTINE REFWS( PRFLHT, UTHEOR )
 !
       UFACT2 = UREFHT/VLDLB
 
-      IF( (PRFLHT .GT. VLDLB)  .AND.  (PRFLHT .LE. ZI) )THEN
+      IF( (PRFLHT .GT. VLDLB)  .and.  (PRFLHT .LE. ZI) )THEN
 !
 !           ---------------------------------------------------------
 !           The required height is above the valid lower bound height
@@ -777,7 +777,7 @@ SUBROUTINE GRDWD
 !        Now begin looping over the observed profile
 !        -------------------------------------------
 !
-      DO WHILE( GRIDWD(GINDEX).LT.-90.0D0 .AND. PINDEX.LE.NPLVLS )
+      DO WHILE( GRIDWD(GINDEX).LT.-90.0D0 .and. PINDEX.LE.NPLVLS )
 !
          IF( PFLWD(PINDEX) .GE. 0.0D0 )THEN
 !
@@ -872,7 +872,7 @@ SUBROUTINE GRDWD
 !           grid level was not computed on this pass
 !           ---------------------------------------------------------
 !
-         IF( (GRIDWD(GINDEX) .LT. 0.0D0)  .AND.&
+         IF( (GRIDWD(GINDEX) .LT. 0.0D0)  .and.&
          &(PINDEX .LT. NPLVLS) )THEN
             PINDEX = PINDEX + 1
          ENDIF

@@ -125,7 +125,7 @@ SUBROUTINE SETUP
 !        the next record; unless PATH = 'RE' for EVENT
       IF (LEN_TRIM(RUNST1) .EQ. 0) THEN
          WRITE(IOUNIT,*)
-         IF (PATH .NE. 'RE' .AND. PATH .NE. 'OU') THEN
+         IF (PATH .NE. 'RE' .and. PATH .NE. 'OU') THEN
 !              Skip echo of blank field to Event file for RE pathway
             WRITE(ITEVUT,*)
          END IF
@@ -141,8 +141,8 @@ SUBROUTINE SETUP
 !        Get the Contents of the Fields                     ---   CALL GETFLD
       CALL GETFLD
 
-      IF (ECHO .AND.&
-      &(FIELD(1).EQ.'OU' .AND. FIELD(2).EQ.'FINISHED')) THEN
+      IF (ECHO .and.&
+      &(FIELD(1).EQ.'OU' .and. FIELD(2).EQ.'FINISHED')) THEN
 !           Echo Last Input Card to Output File (Use Character Substring to
 !           Avoid Echoing ^Z Which May Appear at "End of File" for Some
 !           Editors).  Also, Allow for Shift in the Input Runstream File of
@@ -166,7 +166,7 @@ SUBROUTINE SETUP
       END IF
 
 !        Check for 'NO ECHO' In First Two Fields
-      IF (FIELD(1) .EQ. 'NO' .AND. FIELD(2) .EQ. 'ECHO') THEN
+      IF (FIELD(1) .EQ. 'NO' .and. FIELD(2) .EQ. 'ECHO') THEN
          ECHO = .FALSE.
          CYCLE
       END IF
@@ -221,8 +221,8 @@ SUBROUTINE SETUP
          CALL COCARD
 ! ---       Echo Runstream Image to Temporary Event File (Except EVENTFIL,
 !           SAVEFILE, INITFILE & MULTYEAR)
-         IF (KEYWRD.NE.'EVENTFIL' .AND. KEYWRD.NE.'SAVEFILE' .AND.&
-         &KEYWRD.NE.'INITFILE' .AND. KEYWRD.NE.'MULTYEAR') THEN
+         IF (KEYWRD.NE.'EVENTFIL' .and. KEYWRD.NE.'SAVEFILE' .and.&
+         &KEYWRD.NE.'INITFILE' .and. KEYWRD.NE.'MULTYEAR') THEN
             WRITE(ITEVUT,'(a:)') RUNST1(1:LEN_TRIM(RUNST1))
          END IF
       ELSE IF (PATH .EQ. 'SO') THEN
@@ -238,7 +238,7 @@ SUBROUTINE SETUP
          CALL MECARD
 !           Echo Runstream Image to Temporary Event File (Except STARTEND
 !           & DAYRANGE)
-         IF (KEYWRD.NE.'STARTEND' .AND. KEYWRD.NE.'DAYRANGE') THEN
+         IF (KEYWRD.NE.'STARTEND' .and. KEYWRD.NE.'DAYRANGE') THEN
             WRITE(ITEVUT,'(a:)') RUNST1(1:LEN_TRIM(RUNST1))
          END IF
 
@@ -272,7 +272,7 @@ SUBROUTINE SETUP
 !        Check for 'OU FINISHED' Card.  Exit DO WHILE Loop By Branching
 !        to Statement 999 in Order to Avoid Reading a ^Z "End of File"
 !        Marker That May Be Present For Some Editors.
-      IF (PATH .EQ. 'OU' .AND. KEYWRD .EQ. 'FINISHED') THEN
+      IF (PATH .EQ. 'OU' .and. KEYWRD .EQ. 'FINISHED') THEN
          GO TO 999
       END IF
 
@@ -285,8 +285,8 @@ SUBROUTINE SETUP
    ILINE = 0
 
 !     Check That All Pathways Were Finished
-   IF (ICSTAT(50).NE.1 .OR. ISSTAT(50).NE.1 .OR. IRSTAT(50).NE.1 .OR.&
-   &IMSTAT(50).NE.1 .OR. IOSTAT(50).NE.1) THEN
+   IF (ICSTAT(50).NE.1 .or. ISSTAT(50).NE.1 .or. IRSTAT(50).NE.1 .or.&
+   &IMSTAT(50).NE.1 .or. IOSTAT(50).NE.1) THEN
 !        Runstream File Incomplete, Save I?STAT to IFSTAT and Write Message
       IFSTAT = ICSTAT(50)*10000 + ISSTAT(50)*1000 + IRSTAT(50)*100 +&
       &IMSTAT(50)*10 + IOSTAT(50)
@@ -307,7 +307,7 @@ SUBROUTINE SETUP
 ! --- Check for non-DFAULT options for "optimized" area source,
 !     FASTAREA, or for all source types, FASTALL; set MAXDIST = 80KM
 !     if FASTALL or FASTAREA, otherwise MAXDIST = 1.0D20
-   IF (FASTALL .OR. FASTAREA) THEN
+   IF (FASTALL .or. FASTAREA) THEN
       MAXDIST = 8.0D04
    ELSE
       MAXDIST = 1.0D20
@@ -443,7 +443,7 @@ SUBROUTINE DEFINE
 !     Loop through the Data Fields
    DO I = LOCB(1)+12, ISTRG
 
-      IF (.NOT.INFLD .AND. RUNST(I).EQ.'"') THEN
+      IF (.NOT.INFLD .and. RUNST(I).EQ.'"') THEN
 !           Location is the Beginning of a Field using "'s
 !           Set Mark of not Blank Line
          BLINE = .FALSE.
@@ -462,7 +462,7 @@ SUBROUTINE DEFINE
          END IF
 !           Record the Location of Beginning of the Field
          LOCB(IFC) = I + 1
-      ELSE IF (.NOT.INFLD .AND. RUNST(I).NE.' ') THEN
+      ELSE IF (.NOT.INFLD .and. RUNST(I).NE.' ') THEN
 !           Location is the Beginning of a Field
 !           Set Mark of not Blank Line
          BLINE = .FALSE.
@@ -479,7 +479,7 @@ SUBROUTINE DEFINE
          END IF
 !           Record the Location of Beginning of the Field
          LOCB(IFC) = I
-      ELSE IF (INQUOTE .AND. RUNST(I).EQ.'"') THEN
+      ELSE IF (INQUOTE .and. RUNST(I).EQ.'"') THEN
 !           Location is the End of a Field
 !           Set Mark of Not In a field
          INFLD = .FALSE.
@@ -487,7 +487,7 @@ SUBROUTINE DEFINE
          INQUOTE = .FALSE.
 !           Record the Location of Ending of the Field
          LOCE(IFC) = I - 1
-      ELSE IF (.NOT.INQUOTE .AND. INFLD .AND. RUNST(I).EQ.' ') THEN
+      ELSE IF (.NOT.INQUOTE .and. INFLD .and. RUNST(I).EQ.' ') THEN
 !           Location is the End of a Field
 !           Set Mark of Not In a field
          INFLD = .FALSE.
@@ -497,7 +497,7 @@ SUBROUTINE DEFINE
 
 !        Check for End of Input String
 !        (Length of ISTRG is Set as a PARAMETER in MAIN1)
-      IF (INFLD .AND. I.EQ.ISTRG) THEN
+      IF (INFLD .and. I.EQ.ISTRG) THEN
          LOCE(IFC) = ISTRG
       END IF
 
@@ -702,7 +702,7 @@ SUBROUTINE SETORD
    MODNAM = 'SETORD'
 
    IF (KEYWRD .EQ. 'STARTING') THEN
-      IF (ISTART .OR. .NOT.IFINIS) THEN
+      IF (ISTART .or. .NOT.IFINIS) THEN
 !           WRITE Error Message: Starting Out of Order
          CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
       ELSE IF (IPNUM .NE. IPPNUM+1) THEN
@@ -714,10 +714,10 @@ SUBROUTINE SETORD
 !        Set Finished Indicator
       IFINIS = .FALSE.
    ELSE IF (KEYWRD .EQ. 'FINISHED') THEN
-      IF (IFINIS .OR. .NOT.ISTART) THEN
+      IF (IFINIS .or. .NOT.ISTART) THEN
 !           WRITE Error Message: Finished Out of Order
          CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
-      ELSE IF (ISTART .AND. PATH.NE.PPATH) THEN
+      ELSE IF (ISTART .and. PATH.NE.PPATH) THEN
 !           WRITE Warning Message: Pathway Out of Order
          CALL ERRHDL(PPATH,MODNAM,'E','120',PATH)
       END IF
@@ -725,10 +725,10 @@ SUBROUTINE SETORD
       ISTART = .FALSE.
 !        Set Finished Indicator
       IFINIS = .TRUE.
-   ELSE IF (.NOT.ISTART .OR. IFINIS) THEN
+   ELSE IF (.NOT.ISTART .or. IFINIS) THEN
 !        WRITE Error Message: Starting or Finished Out of Order
       CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
-   ELSE IF (ISTART .AND. PATH.NE.PPATH) THEN
+   ELSE IF (ISTART .and. PATH.NE.PPATH) THEN
 !        WRITE Warning Message: Pathway Out of Order
       CALL ERRHDL(PPATH,MODNAM,'E','120',PATH)
    END IF
@@ -783,11 +783,11 @@ SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
    FDEC  = 1.
 
 !     Beginning the Processing
-   DO WHILE (.NOT.MEND .AND. I.LE.LENGTH)
+   DO WHILE (.NOT.MEND .and. I.LE.LENGTH)
       CHK = STRVAR(I:I)
       IF (CHK .NE. ' ') THEN
          IN = .TRUE.
-         IF (CHK.GE.'0' .AND. CHK.LE.'9') THEN
+         IF (CHK.GE.'0' .and. CHK.LE.'9') THEN
 !              CHK is a Number, Assign a Value
             IF (.NOT. DMARK) THEN
                CNUM = CNUM*10.+FLOAT(INDEX(NUMS,CHK)-1)
@@ -798,7 +798,7 @@ SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
             END IF
          ELSE
 !              Handle The E-Type Real Number
-            IF (DMARK .AND. .NOT.EMARK .AND. CHK.EQ.'E') THEN
+            IF (DMARK .and. .NOT.EMARK .and. CHK.EQ.'E') THEN
                EMARK = .TRUE.
                IF (.NOT.NMARK) THEN
                   HEAD = CNUM
@@ -808,16 +808,16 @@ SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
                DMARK = .FALSE.
                NMARK = .FALSE.
                CNUM = 0.0
-            ELSE IF (.NOT.PMARK .AND. CHK.EQ.'+') THEN
+            ELSE IF (.NOT.PMARK .and. CHK.EQ.'+') THEN
 !                 Set Positive Indicator
                PMARK = .TRUE.
-            ELSE IF (.NOT.NMARK .AND. CHK.EQ.'-') THEN
+            ELSE IF (.NOT.NMARK .and. CHK.EQ.'-') THEN
 !                 Set Negative Indicator
                NMARK = .TRUE.
-            ELSE IF (.NOT.DMARK .AND. CHK.EQ.'.') THEN
+            ELSE IF (.NOT.DMARK .and. CHK.EQ.'.') THEN
 !                 Set Decimal Indicator
                DMARK = .TRUE.
-            ELSE IF (.NOT.MMARK .AND. CHK.EQ.'*' .AND.&
+            ELSE IF (.NOT.MMARK .and. CHK.EQ.'*' .and.&
             &.NOT.NMARK) THEN
 !                 Set Repeat Number
                MMARK = .TRUE.
@@ -828,7 +828,7 @@ SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
                GO TO 9999
             END IF
          END IF
-      ELSE IF (IN .AND. CHK.EQ.' ') THEN
+      ELSE IF (IN .and. CHK.EQ.' ') THEN
          MEND = .TRUE.
       END IF
       I = I + 1
@@ -842,9 +842,9 @@ SUBROUTINE STONUM(STRVAR,LENGTH,FNUM,IMUTI)
    END IF
 
 !     In Case of E-Format, Check for Exponents Out of Range
-   IF (EMARK .AND. ABS(FNUM) .LE. 30.) THEN
+   IF (EMARK .and. ABS(FNUM) .LE. 30.) THEN
       FNUM = HEAD*10.0**(FNUM)
-   ELSE IF (EMARK .AND. ABS(FNUM) .GT. 30.) THEN
+   ELSE IF (EMARK .and. ABS(FNUM) .GT. 30.) THEN
       IF (FNUM .LT. 0.0) THEN
          FNUM = 0.0
       ELSE IF (FNUM .GT. 0.0) THEN
@@ -910,11 +910,11 @@ SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
    IMUTI = 1
 
 !     Beginning the Processing
-   DO WHILE (.NOT.MEND .AND. I.LE.LEN)
+   DO WHILE (.NOT.MEND .and. I.LE.LEN)
       CHK = STRVAR(I:I)
       IF (CHK .NE. ' ') THEN
          IN = .TRUE.
-         IF (CHK.GE.'0' .AND. CHK.LE.'9') THEN
+         IF (CHK.GE.'0' .and. CHK.LE.'9') THEN
 !              CHK is a Number, Assign a Value
             IF (.NOT. DMARK) THEN
                CNUM = CNUM*10.0D0+DBLE(INDEX(NUMS,CHK)-1)
@@ -925,8 +925,8 @@ SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
             END IF
          ELSE
 !              Handle The E-Type (or D-Type) Real Number
-            IF ((DMARK .AND. .NOT.EMARK .AND. CHK.EQ.'E') .OR.&
-            &(DMARK .AND. .NOT.EMARK .AND. CHK.EQ.'D')) THEN
+            IF ((DMARK .and. .NOT.EMARK .and. CHK.EQ.'E') .or.&
+            &(DMARK .and. .NOT.EMARK .and. CHK.EQ.'D')) THEN
                EMARK = .TRUE.
                IF (.NOT.NMARK) THEN
                   HEAD = CNUM
@@ -936,16 +936,16 @@ SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
                DMARK = .FALSE.
                NMARK = .FALSE.
                CNUM = 0.0D0
-            ELSE IF (.NOT.PMARK .AND. CHK.EQ.'+') THEN
+            ELSE IF (.NOT.PMARK .and. CHK.EQ.'+') THEN
 !                 Set Positive Indicator
                PMARK = .TRUE.
-            ELSE IF (.NOT.NMARK .AND. CHK.EQ.'-') THEN
+            ELSE IF (.NOT.NMARK .and. CHK.EQ.'-') THEN
 !                 Set Negative Indicator
                NMARK = .TRUE.
-            ELSE IF (.NOT.DMARK .AND. CHK.EQ.'.') THEN
+            ELSE IF (.NOT.DMARK .and. CHK.EQ.'.') THEN
 !                 Set Decimal Indicator
                DMARK = .TRUE.
-            ELSE IF (.NOT.MMARK .AND. CHK.EQ.'*' .AND.&
+            ELSE IF (.NOT.MMARK .and. CHK.EQ.'*' .and.&
             &.NOT.NMARK) THEN
 !                 Set Repeat Indicator
                MMARK = .TRUE.
@@ -956,7 +956,7 @@ SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
                GO TO 9999
             END IF
          END IF
-      ELSE IF (IN .AND. CHK.EQ.' ') THEN
+      ELSE IF (IN .and. CHK.EQ.' ') THEN
          MEND = .TRUE.
       END IF
       I = I + 1
@@ -970,9 +970,9 @@ SUBROUTINE STODBL(STRVAR,LEN,FNUM,IMUTI)
    END IF
 
 !     In Case of *E* Format, Check for Exponents Out of Range
-   IF (EMARK .AND. DABS(FNUM) .LE. 30.0D0) THEN
+   IF (EMARK .and. DABS(FNUM) .LE. 30.0D0) THEN
       FNUM = HEAD*10.0D0**(FNUM)
-   ELSE IF (EMARK .AND. DABS(FNUM) .GT. 30.0D0) THEN
+   ELSE IF (EMARK .and. DABS(FNUM) .GT. 30.0D0) THEN
       IF (FNUM .LT. 0.0D0) THEN
          FNUM = 0.0D0
       ELSE IF (FNUM .GT. 0.0D0) THEN
@@ -1021,7 +1021,7 @@ SUBROUTINE SINDEX(ARRIN,IDIM,ELEM,INDEXS,FOUND)
    I = 1
    INDEXS = 0
 
-   DO WHILE (.NOT.FOUND .AND. I.LE.IDIM)
+   DO WHILE (.NOT.FOUND .and. I.LE.IDIM)
       IF (ELEM .EQ. ARRIN(I)) THEN
          FOUND = .TRUE.
          INDEXS = I
@@ -1077,12 +1077,12 @@ SUBROUTINE FSPLIT(PATHIN,KEYIN,INPFLD,LENGTH,DELIM,LFLAG,&
    LFLAG = .FALSE.
 
 !     Begin the Processing
-   DO WHILE (.NOT.MEND .AND. I.GE.1)
+   DO WHILE (.NOT.MEND .and. I.GE.1)
       CHK = INPFLD(I:I)
       IF (CHK .NE. ' ') THEN
          IN = .TRUE.
 !           Check for the Group Delimiter
-         IF (.NOT.LFLAG .AND. CHK.EQ.DELIM) THEN
+         IF (.NOT.LFLAG .and. CHK.EQ.DELIM) THEN
             LFLAG = .TRUE.
             IDELM = I
             ENDFLD = INPFLD(I+1:LENGTH)
@@ -1091,11 +1091,11 @@ SUBROUTINE FSPLIT(PATHIN,KEYIN,INPFLD,LENGTH,DELIM,LFLAG,&
                CALL ERRHDL(PATHIN,MODNAM,'E','203',KEYIN)
                GO TO 999
             END IF
-         ELSE IF (LFLAG .AND. CHK.EQ.DELIM) THEN
+         ELSE IF (LFLAG .and. CHK.EQ.DELIM) THEN
 !              WRITE Error Message  ! More Than One Delimiter in a Field
             CALL ERRHDL(PATHIN,MODNAM,'E','217',KEYIN)
          END IF
-      ELSE IF (IN .AND. CHK.EQ.' ') THEN
+      ELSE IF (IN .and. CHK.EQ.' ') THEN
          MEND = .TRUE.
          IF (LFLAG) THEN
             BEGFLD = INPFLD(1:IDELM-1)
@@ -1579,14 +1579,14 @@ SUBROUTINE VARINI
       IGRP_OLM(:,:) = 0
       L_OLMGRP(:) = .FALSE.
    END IF
-   IF (PVMRM .OR. OLM .OR. GRSM) THEN
+   IF (PVMRM .or. OLM .or. GRSM) THEN
       ANO2_RATIO(:) = -9.0D0
       IF (PSDCREDIT) THEN
          PSDSRCTYP(:)  = '  '
          L_PSDGRP(:)   = .FALSE.
          IGRP_PSD(:,:) = 0
       END IF
-      IF (PVMRM .OR. GRSM) THEN
+      IF (PVMRM .or. GRSM) THEN
          PPFACT(:,:)  = 0.0D0
          HECNTR(:,:)  = 0.0D0
          HECNTR3(:,:) = 0.0D0
@@ -1992,7 +1992,7 @@ SUBROUTINE INCLUD
       CALL GETFLD
 
 !        Check for 'NO ECHO' In First Two Fields
-      IF (FIELD(1) .EQ. 'NO' .AND. FIELD(2) .EQ. 'ECHO') THEN
+      IF (FIELD(1) .EQ. 'NO' .and. FIELD(2) .EQ. 'ECHO') THEN
 !           Skip record with NO ECHO in INCLUDED file, but leave ECHO "on"
          CYCLE
       END IF
@@ -2025,7 +2025,7 @@ SUBROUTINE INCLUD
 !        since these keywords are not allowed in INCLUDED files.
 !        This also allows INCLUD to be used for standard
 !        processing and EVENT processing.
-      IF (KEYWRD .NE. 'STARTING' .AND.&
+      IF (KEYWRD .NE. 'STARTING' .and.&
       &KEYWRD .NE. 'FINISHED') CALL SETORD
 
 !        First Check for Invalid Keywords (STARTING, FINISHED, INCLUDED)

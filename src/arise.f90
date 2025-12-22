@@ -62,7 +62,7 @@ SUBROUTINE AFLUXES
 !     For Turbofan and Turbojet Engines
    IF(BYPR .GT. 0.0D0) THEN
 !     Check for Positive Fuel burn rate and Thrust
-      IF (MFUEL .GT. 0.0D0 .AND. THRUST .GT. 0.0D0) THEN
+      IF (MFUEL .GT. 0.0D0 .and. THRUST .GT. 0.0D0) THEN
          MAIR = MFUEL * AFR * (1.D0 + BYPR)                             ! Total Mass Flow (Equation 22)
          VE   = VAA + (THRUST / MAIR)                                   ! Exhaust Velocity (Equation 24)
          TE   = (HFUEL*MFUEL/MAIR-((VE*VE)-(VAA*VAA))/2.0D0)/CPA + TA   ! Exhaust Temperature (By substituting eqns 22 and 27 in eqn 21)
@@ -101,7 +101,7 @@ SUBROUTINE AFLUXES
       RHOE = PAA / (RAA * TE)                                        ! Exhaust Density (Equation 26 or 33)
    END IF
 
-   IF (QEE .LT. 0.0D0 .OR. QEE .EQ. 1.0D-10) THEN
+   IF (QEE .LT. 0.0D0 .or. QEE .EQ. 1.0D-10) THEN
       FB = 1.0D-10
    ELSE
       FB = G * QEE / (PI * RHOE * CPA * TA)                          ! Buoyancy Flux (Equation 5 or 25)
@@ -285,7 +285,7 @@ SUBROUTINE ADISTF
 !     than 1.0D-10 buoyancy flux
    IF ( FB .GT. 1.0D-10 ) THEN
 
-      IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) )THEN
+      IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
 !        Compute the distance to final rise, XMAX;
 !        The negative sign appears on the FB term to ensure that the
 !        resulting angle is between 0 and PI (i.e., positive)
@@ -581,13 +581,13 @@ SUBROUTINE ADELTAH ( XARG )
    MODNAM = 'ADELTAH'
 
 
-   IF( (STABLE  .OR.  (UNSTAB  .AND.  (HS .GE. ZI)))  .AND.&
+   IF( (STABLE  .or.  (UNSTAB  .and.  (HS .GE. ZI)))  .and.&
    &(XARG .GE. XMAX) )THEN
 !        Use final stable plume rise (DHF) calculated in DISTF (DHP)
 !        at XMAX
       DHP = DHFAER
 
-   ELSE IF( (STABLE  .OR. (UNSTAB  .AND.  (HS .GE. ZI))) .AND.&
+   ELSE IF( (STABLE  .or. (UNSTAB  .and.  (HS .GE. ZI))) .and.&
    &(XARG .LT. XMAX) ) THEN
 !----    Compute stable plume rise for the distance XARG   --- CALL ASBLRIS
 !        Use iterative approach to plume rise calculations.
@@ -664,7 +664,7 @@ SUBROUTINE ADELTAH ( XARG )
       ENDIF
 
 !        Check for convergence
-      IF(DHP.GT.0.0D0 .AND. DABS((DHPOLD-DHP)/DHP).LT.0.001D0 .AND.&
+      IF(DHP.GT.0.0D0 .and. DABS((DHPOLD-DHP)/DHP).LT.0.001D0 .and.&
       &KITER .GE. 5)THEN
          IF( DHP .LE. 1.0D-5 )THEN
             DHP = 1.0D-5
@@ -778,7 +778,7 @@ SUBROUTINE ASBLRIS ( XARG )
    CALL MOMENTUM_PLUMERISE (XARG)                                   ! CALL MOMENTUM_PLUMERISE
 
 !     For turbofan and non-turbofan/shaft-based engines
-   IF (BYPR .GT. 0.0D0 .OR. BYPR .EQ. -999.0D0 .AND.&
+   IF (BYPR .GT. 0.0D0 .or. BYPR .EQ. -999.0D0 .and.&
    &FB .GT. 1.0D-10) THEN
 
 !       Calculation of DHP is based on the equation 6 of Pandey et al. (2023)
@@ -862,7 +862,7 @@ SUBROUTINE ACBLPRD ( XARG )
    CALL MOMENTUM_PLUMERISE (XARG)                                   ! CALL MOMENTUM_PLUMERISE
 
 !     For turbofan and non-turbofan/shaft-based engines
-   IF (BYPR .GT. 0.0D0 .OR. BYPR .EQ. -999.0D0 .AND.&
+   IF (BYPR .GT. 0.0D0 .or. BYPR .EQ. -999.0D0 .and.&
    &FB .GT. 1.0D-10) THEN
 
 !      Calculation of DHP is based on the equation 6 of Pandey et al. (2023)

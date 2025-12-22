@@ -258,10 +258,10 @@ SUBROUTINE PRTOPT(IOUNT)
 
 !     Dry Depostion Logic
 
-   IF (LDGAS .AND. LUSERVD) THEN
+   IF (LDGAS .and. LUSERVD) THEN
       WRITE(IOUNT,*) '     * User-specified GAS DRY ',&
       &' DEPOSITION Velocity Provided.'
-   ELSE IF (LDGAS .OR. LWGAS) THEN
+   ELSE IF (LDGAS .or. LWGAS) THEN
       WRITE(IOUNT,*) '     * GAS DEPOSITION Data Provided.'
    ELSE
       WRITE(IOUNT,*) '     * NO GAS DEPOSITION Data Provided.'
@@ -341,7 +341,7 @@ SUBROUTINE PRTOPT(IOUNT)
 
 !     Exponential Decay (SO2)
    IF (DFAULT) THEN
-      IF (URBAN .AND. POLLUT .EQ. 'SO2') THEN
+      IF (URBAN .and. POLLUT .EQ. 'SO2') THEN
          WRITE(IOUNT,*) '     * Half-life of 4 hrs for',&
          &' URBAN SO2.'
       ELSE
@@ -350,8 +350,8 @@ SUBROUTINE PRTOPT(IOUNT)
    END IF
    IF (.NOT.DFAULT) THEN
 ! ---    Check for Non-DFAULT Half-life for URBAN SO2 application
-      IF (URBAN .AND. POLLUT.EQ.'SO2') THEN
-         IF( ICSTAT(7) .EQ. 1 .OR. ICSTAT(8) .EQ. 1 )THEN
+      IF (URBAN .and. POLLUT.EQ.'SO2') THEN
+         IF( ICSTAT(7) .EQ. 1 .or. ICSTAT(8) .EQ. 1 )THEN
 ! ----           User-specified HALFLIFE or DCAYCOEF
             IF (DABS(DECOEF-4.81D-5) .LE. 5.0D-8) THEN
                WRITE(IOUNT,*) '     * Half-life of 4 hrs for',&
@@ -360,7 +360,7 @@ SUBROUTINE PRTOPT(IOUNT)
                WRITE(IOUNT,*) '     * Non-DFAULT Half-life for ',&
                &' URBAN SO2.'
             END IF
-         ELSE IF (ICSTAT(7) .EQ. 0 .AND. ICSTAT(8) .EQ. 0) THEN
+         ELSE IF (ICSTAT(7) .EQ. 0 .and. ICSTAT(8) .EQ. 0) THEN
             WRITE(IOUNT,*) '     * Half-life of 4 hrs for',&
             &' URBAN SO2.'
          END IF
@@ -403,7 +403,7 @@ SUBROUTINE PRTOPT(IOUNT)
             WRITE(IOUNT,90912)
 90912       FORMAT('        with NO OLMGROUPs')
          END IF
-      ELSE IF (RUNTTRM .OR. RUNTTRM) THEN
+      ELSE IF (RUNTTRM .or. RUNTTRM) THEN
          WRITE(IOUNT,*) '     * Travel Time Reaction Method',&
          &'Used for NO2 Conversion'
          WRITE(IOUNT,90901) NO2Equil
@@ -446,7 +446,7 @@ SUBROUTINE PRTOPT(IOUNT)
          &F11.1,' ;  Urban Roughness Length = ',F6.3,' m')
       END IF
 
-      IF (MAXVAL(URBZ0).NE.1.0D0 .OR.&
+      IF (MAXVAL(URBZ0).NE.1.0D0 .or.&
       &MINVAL(URBZ0).NE.1.0D0) THEN
          WRITE(IOUNT,*) '     * Non-DFAULT Urban ',&
          &'Roughness Length(s) Used.'
@@ -463,7 +463,7 @@ SUBROUTINE PRTOPT(IOUNT)
    END IF
 
 !     Capped Option Used
-   IF ( NUMCAP.GT.0 .OR. NUMHOR.GT.0 ) THEN
+   IF ( NUMCAP.GT.0 .or. NUMHOR.GT.0 ) THEN
       WRITE(IOUNT,*) '     * Option for Capped &',&
       &' Horiz Stacks Selected With:'
       WRITE(IOUNT,9092) NUMCAP, NUMHOR
@@ -522,8 +522,8 @@ SUBROUTINE PRTOPT(IOUNT)
 !     4/12/2022 CRT - add more summary info for user-specified options
    IF (LOW_WIND) THEN
       WRITE(IOUNT,*)'     * Use LOW_WIND ALPHA option'
-      IF (L_UserSVmin .OR. L_UserWSmin .OR. L_UserFRANmax .OR.&
-      &L_UserSWmin .OR. L_UserBigT .OR. L_UserFRANmin .OR.&
+      IF (L_UserSVmin .or. L_UserWSmin .or. L_UserFRANmax .or.&
+      &L_UserSWmin .or. L_UserBigT .or. L_UserFRANmin .or.&
       &L_PBal) THEN
          WRITE(IOUNT,*)&
          &'        with the following parameters:'
@@ -660,15 +660,15 @@ SUBROUTINE PRTOPT(IOUNT)
 ! --- Include note regarding 24-hr PM2.5, 1-hr NO2 and 1-hr SO2 processing;
 !     including a note regarding 1hr NO2/SO2 and 24hr PM25 NAAQS processing
 !     being disabled by user, if applicable.
-   IF ((POLLUT .EQ. 'PM25' .OR. POLLUT .EQ. 'PM-2.5' .OR.&
-   &POLLUT .EQ. 'PM-25'.OR. POLLUT .EQ. 'PM2.5') .AND.&
+   IF ((POLLUT .EQ. 'PM25' .or. POLLUT .EQ. 'PM-2.5' .or.&
+   &POLLUT .EQ. 'PM-25'.or. POLLUT .EQ. 'PM2.5') .and.&
    &.NOT.EVONLY) THEN
       IF (PM25AVE) THEN
          WRITE(IOUNT,99090)
       ELSE IF (L_NO_PM25AVE) THEN
          WRITE(IOUNT,99190)
       END IF
-   ELSE IF (POLLUT .EQ. 'NO2' .AND. .NOT.EVONLY) THEN
+   ELSE IF (POLLUT .EQ. 'NO2' .and. .NOT.EVONLY) THEN
       IF (NO2AVE) THEN
 ! ---       Special processing for 1-hr NO2 NAAQS
 !           is applicable
@@ -677,7 +677,7 @@ SUBROUTINE PRTOPT(IOUNT)
 ! ---       User has disabled special processing for
 !           1-hr NO2 NAAQS processing
          WRITE(IOUNT,99191) NO2_FIELD4(1:3)
-      ELSE IF (.NOT.NO2AVE .AND. .NOT.L_NO_NO2AVE) THEN
+      ELSE IF (.NOT.NO2AVE .and. .NOT.L_NO_NO2AVE) THEN
 ! ---       Special processing for 1-hr NO2 NAAQS is NOT
 !           applicable due to non-standard averaging period(s)
          DO I = 1, NUMAVE
@@ -688,7 +688,7 @@ SUBROUTINE PRTOPT(IOUNT)
          END DO
          WRITE(IOUNT,99291) CHRAVES
       END IF
-   ELSE IF (POLLUT .EQ. 'SO2' .AND. .NOT.EVONLY) THEN
+   ELSE IF (POLLUT .EQ. 'SO2' .and. .NOT.EVONLY) THEN
       IF (SO2AVE) THEN
 ! ---       Special processing for 1-hr SO2 NAAQS
 !           is applicable
@@ -697,7 +697,7 @@ SUBROUTINE PRTOPT(IOUNT)
 ! ---       User has disabled special processing for
 !           1-hr SO2 NAAQS processing
          WRITE(IOUNT,99192) SO2_FIELD4(1:3)
-      ELSE IF (.NOT.SO2AVE .AND. .NOT.L_NO_SO2AVE) THEN
+      ELSE IF (.NOT.SO2AVE .and. .NOT.L_NO_SO2AVE) THEN
 ! ---       Special processing for 1-hr SO2 NAAQS is NOT
 !           applicable due to non-standard averaging period(s)
          DO I = 1, NUMAVE
@@ -744,7 +744,7 @@ SUBROUTINE PRTOPT(IOUNT)
 
 !     CRT, 3/18/2022 D063 Write number of point, pointhor, pointcap
 !     sources subject to platform downwash
-   IF ((NUMPNT .GT. 0 .OR. NUMCAP .GT. 0 .OR. NUMHOR .GT. 0) .AND.&
+   IF ((NUMPNT .GT. 0 .or. NUMCAP .GT. 0 .or. NUMHOR .GT. 0) .and.&
    &NumPFSrcs .GT. 0) THEN
       WRITE (IOUNT, 9059) NumPFSrcs
 9059  FORMAT(1X,'**Number of Platform Point Sources:', I6)
@@ -759,7 +759,7 @@ SUBROUTINE PRTOPT(IOUNT)
 9061     FORMAT(10X, 'AWMAUEFF')
       END IF
 
-      IF (L_AWMA_UTurb .AND. .NOT. L_AWMA_UTurbHX) THEN
+      IF (L_AWMA_UTurb .and. .NOT. L_AWMA_UTurbHX) THEN
          WRITE (IOUNT, 9062)
 9062     FORMAT(10X, 'AWMAUTURB')
       END IF
@@ -867,7 +867,7 @@ SUBROUTINE PRTOPT(IOUNT)
 
 ! ---       Summarize Non-HOURLY BACKGRND options for missing HOURLY
          DO I = 1, NUMBGsects
-            IF (L_BGValues(I) .AND. L_BGFile(I)) THEN
+            IF (L_BGValues(I) .and. L_BGFile(I)) THEN
                ILEN1 = LEN_TRIM(BFLAG_String)
                ILEN2 = LEN_TRIM(BFLAG(I))
                WRITE(BFLAG_TempString,'(A,1x,A)')&
@@ -926,7 +926,7 @@ SUBROUTINE PRTOPT(IOUNT)
 
    END IF
 
-   IF (OLM .OR. PVMRM .OR. GRSM) THEN
+   IF (OLM .or. PVMRM .or. GRSM) THEN
 ! ---    Summarize OZONE data inputs, includeing O3SECTOR options
 ! ---    First summarize how many Sectors
       IF (L_O3Sector) THEN
@@ -962,7 +962,7 @@ SUBROUTINE PRTOPT(IOUNT)
          O3SECT_String = ''
          O3SECT_TempString = ''
          DO I = 1, NUMO3sects
-            IF (IO3SET(I) .GT. 0 .OR. L_O3VAL(I)) THEN
+            IF (IO3SET(I) .GT. 0 .or. L_O3VAL(I)) THEN
                WRITE(O3SECT_TempString,'(A,I4)')& ! MKP D196, write to temp string, avoid write-to-self warning
                &O3SECT_String(1:LEN_TRIM(O3SECT_String)),&
                &NINT(O3SECT(I))
@@ -985,7 +985,7 @@ SUBROUTINE PRTOPT(IOUNT)
 
 ! ---       Summarize Non-HOURLY OZONE options for missing HOURLY O3
          DO I = 1, NUMO3sects
-            IF ((IO3SET(I).GT.0 .OR. L_O3VAL(I)) .AND.&
+            IF ((IO3SET(I).GT.0 .or. L_O3VAL(I)) .and.&
             &L_O3File(I)) THEN
                IF (IO3SET(I) .GT. 0) THEN
                   ILEN1 = LEN_TRIM(O3FLAG_String)
@@ -1012,7 +1012,7 @@ SUBROUTINE PRTOPT(IOUNT)
          O3FLAG_String = ''
          O3FLAG_TempString = ''
          DO I = 1, NUMO3sects
-            IF (IO3SET(I) .GT. 0 .OR. L_O3VAL(I)) THEN
+            IF (IO3SET(I) .GT. 0 .or. L_O3VAL(I)) THEN
                IF (IO3SET(I) .GT. 0) THEN
                   ILEN1 = LEN_TRIM(O3FLAG_String)
                   ILEN2 = LEN_TRIM(O3FLAG(I))
@@ -1098,7 +1098,7 @@ SUBROUTINE PRTOPT(IOUNT)
          NOXSECT_String = ''
          NOXSECT_TempString = ''
          DO I = 1, NUMNOxSects
-            IF (INOXSET(I) .GT. 0 .OR. L_NOXVALUE(I)) THEN
+            IF (INOXSET(I) .GT. 0 .or. L_NOXVALUE(I)) THEN
                WRITE(NOXSECT_TempString,'(A,I4)')& ! MKP D196, write to temp string, avoid write-to-self warning
                &NOXSECT_String(1:LEN_TRIM(NOXSECT_String)),&
                &NINT(NOXSECT(I))
@@ -1120,7 +1120,7 @@ SUBROUTINE PRTOPT(IOUNT)
 
 ! ---       Summarize Non-Hourly NOX options for missing HOURLY NOx
          DO I = 1, NumNOxsects
-            IF ((INOXSET(I).GT.0 .OR. L_NOXVALUE(I)) .AND.&
+            IF ((INOXSET(I).GT.0 .or. L_NOXVALUE(I)) .and.&
             &L_NOxFile(I)) THEN
                IF(INOXSET(I).GT.0)THEN
                   ILEN1=LEN_TRIM(NOXFLAG_String)
@@ -1147,7 +1147,7 @@ SUBROUTINE PRTOPT(IOUNT)
          NOxFLAG_String = ''
          NOxFLAG_TempString = ''
          DO I = 1, NUMNOxSects
-            IF (INOxSET(I) .GT. 0 .OR. L_NOXVALUE(I)) THEN
+            IF (INOxSET(I) .GT. 0 .or. L_NOXVALUE(I)) THEN
                IF (INOxSET(I) .GT. 0) THEN
                   ILEN1 = LEN_TRIM(NOxFLAG_String)
                   ILEN2 = LEN_TRIM(NOxFLAG(I))
@@ -1283,15 +1283,15 @@ SUBROUTINE PRTOPT(IOUNT)
    END IF
 
 ! --- Check for user-specified option for exponential-format outputs
-   IF ( FILE_FORMAT .EQ. 'EXP' .AND.&
-   &(MXFILE .OR. PPFILE .OR. RKFILE .OR. ANPOST .OR. ANPLOT .OR.&
+   IF ( FILE_FORMAT .EQ. 'EXP' .and.&
+   &(MXFILE .or. PPFILE .or. RKFILE .or. ANPOST .or. ANPLOT .or.&
    &SEASONHR) ) THEN
       WRITE(IOUNT,9099)
       WRITE(IOUNT,99075)
    END IF
 
 !     Write Explanatory Note About Calm and Missing Flags
-   IF (CLMPRO .OR. MSGPRO) THEN
+   IF (CLMPRO .or. MSGPRO) THEN
       WRITE(IOUNT,9099)
       WRITE(IOUNT,9079) CHIDEP(3,1)
    END IF
@@ -1330,12 +1330,12 @@ SUBROUTINE PRTOPT(IOUNT)
 !     Model I/O Setting Summary
    WRITE(IOUNT,9099)
    ILMAX = MIN( 96, ILEN_FLD )
-   IF (INPFIL .NE. ' ' .OR. OUTFIL .NE. ' ') THEN
+   IF (INPFIL .NE. ' ' .or. OUTFIL .NE. ' ') THEN
       WRITE(IOUNT,9080) INPFIL(1:ILMAX), OUTFIL(1:ILMAX)
    END IF
-   IF (RSTINP .AND. .NOT.MULTYR) THEN
+   IF (RSTINP .and. .NOT.MULTYR) THEN
       WRITE(IOUNT,9081) INIFIL(1:ILMAX)
-   ELSE IF (RSTINP .AND. MULTYR) THEN
+   ELSE IF (RSTINP .and. MULTYR) THEN
       WRITE(IOUNT,99081) INIFIL(1:ILMAX)
    END IF
 ! --- Summarize DEBUGOPTs selected by the user
@@ -2148,7 +2148,7 @@ SUBROUTINE PRTSRC
 !      processed for this hour
    BLOUTPROCESSED = .FALSE.
 
-   IF (ISSTAT(8) .EQ. 0 .AND. ISSTAT(17) .EQ. 0 .AND.&
+   IF (ISSTAT(8) .EQ. 0 .and. ISSTAT(17) .EQ. 0 .and.&
    &ISSTAT(18) .EQ. 0) THEN
 !        Write Default Emission Rate Units
       IQUN = ' (GRAMS/SEC)'
@@ -2170,8 +2170,8 @@ SUBROUTINE PRTSRC
          IF (NSEC .GT. 0) THEN
 ! ---          Check for building data for this source
             DO J = 1, NSEC
-               IF(ADSBH(J,I).NE.0.0D0 .AND. ADSBW(J,I).NE.0.0D0&
-               &.AND. ADSBL(J,I).NE.0.0D0) THEN
+               IF(ADSBH(J,I).NE.0.0D0 .and. ADSBW(J,I).NE.0.0D0&
+               &.and. ADSBL(J,I).NE.0.0D0) THEN
 ! -----------------------------------------------------------------
                   BLDING = 'YES'
                   EXIT
@@ -2236,7 +2236,7 @@ SUBROUTINE PRTSRC
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9074) IQUN
          END IF
-         IF (QFLAG(I) .EQ. 'HOURLY' .AND. L_HRLYSIG(I)) THEN
+         IF (QFLAG(I) .EQ. 'HOURLY' .and. L_HRLYSIG(I)) THEN
 !              Source uses HOUREMIS option with hourly varying sigmas
             CQFLG = 'HRLYSIG'
          ELSE
@@ -2279,7 +2279,7 @@ SUBROUTINE PRTSRC
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9076) IQUN
          END IF
-         IF (QFLAG(I) .EQ. 'HOURLY' .AND. L_HRLYSIG(I)) THEN
+         IF (QFLAG(I) .EQ. 'HOURLY' .and. L_HRLYSIG(I)) THEN
 !              Source uses HOUREMIS option with hourly varying sigmas
             CQFLG = 'HRLYSIG'
          ELSE
@@ -2322,7 +2322,7 @@ SUBROUTINE PRTSRC
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9078) IQUN
          END IF
-         IF (QFLAG(I) .EQ. 'HOURLY' .AND. L_HRLYSIG(I)) THEN
+         IF (QFLAG(I) .EQ. 'HOURLY' .and. L_HRLYSIG(I)) THEN
 !              Source uses HOUREMIS option with hourly varying sigmas
             CQFLG = 'HRLYSIG'
          ELSE
@@ -2365,7 +2365,7 @@ SUBROUTINE PRTSRC
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9080) IQUN
          END IF
-         IF (QFLAG(I) .EQ. 'HOURLY' .AND. L_HRLYSIG(I)) THEN
+         IF (QFLAG(I) .EQ. 'HOURLY' .and. L_HRLYSIG(I)) THEN
 !              Source uses HOUREMIS option with hourly varying sigmas
             CQFLG = 'HRLYSIG'
          ELSE
@@ -2401,7 +2401,7 @@ SUBROUTINE PRTSRC
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,89076) IQUN
          END IF
-         IF (QFLAG(I) .EQ. 'HOURLY' .AND. L_HRLYSIG(I)) THEN
+         IF (QFLAG(I) .EQ. 'HOURLY' .and. L_HRLYSIG(I)) THEN
 !              Source uses HOUREMIS option with hourly varying sigmas
             CQFLG = 'HRLYSIG'
          ELSE
@@ -2416,7 +2416,7 @@ SUBROUTINE PRTSRC
 !     Write Out The RLINE Source Data, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF ((SRCTYP(I) .EQ. 'RLINE') .OR.&
+      IF ((SRCTYP(I) .EQ. 'RLINE') .or.&
       &(SRCTYP(I) .EQ. 'RLINEXT')) THEN
          INDC = INDC + 1
          IF (URBSRC(I) .EQ. 'Y') THEN
@@ -2456,7 +2456,7 @@ SUBROUTINE PRTSRC
 !     Barriers, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF ((SRCTYP(I) .EQ. 'RLINE') .OR.&
+      IF ((SRCTYP(I) .EQ. 'RLINE') .or.&
       &(SRCTYP(I) .EQ. 'RLINEXT')) THEN
          IF (RLSOURCE(I)%HTWALL > 0.0) THEN
             INDC = INDC + 1
@@ -2474,7 +2474,7 @@ SUBROUTINE PRTSRC
 !     Depressed Roadways, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF ((SRCTYP(I) .EQ. 'RLINE') .OR.&
+      IF ((SRCTYP(I) .EQ. 'RLINE') .or.&
       &(SRCTYP(I) .EQ. 'RLINEXT')) THEN
          IF (RLSOURCE(I)%DEPTH .NE. 0.0) THEN
             INDC = INDC + 1
@@ -2521,7 +2521,7 @@ SUBROUTINE PRTSRC
 !     Write Out The Buoyant Line Source Data, If Any
    INDC = 0
    DO I = 1, NUMSRC
-      IF  (SRCTYP(I) .EQ. 'BUOYLINE' .AND.&
+      IF  (SRCTYP(I) .EQ. 'BUOYLINE' .and.&
       &(.NOT. BLOUTPROCESSED)) THEN
 !           BLOUTPROCESSED lets AERMOD know that all lines associated
 !            with the buoyant line source were written on the first pass
@@ -2606,9 +2606,9 @@ SUBROUTINE PRTSRC
                CALL HEADER(IOUNIT)
                WRITE(IOUNIT,9058)
             END IF
-            IF (K .EQ. 1 .AND. K .EQ. NL) THEN
+            IF (K .EQ. 1 .and. K .EQ. NL) THEN
                WRITE(IOUNIT,9068) GRPID(J), (WORKID(I),I=1,INGRP)
-            ELSE IF (K .EQ. 1 .AND. K .NE. NL) THEN
+            ELSE IF (K .EQ. 1 .and. K .NE. NL) THEN
                WRITE(IOUNIT,9068) GRPID(J), (WORKID(I),I=1,8*K)
             ELSE IF (K .EQ. NL) THEN
                WRITE(IOUNIT,9067) (WORKID(I),I=1+8*(K-1),INGRP)
@@ -2637,9 +2637,9 @@ SUBROUTINE PRTSRC
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,9059)
          END IF
-         IF (K .EQ. 1 .AND. K .EQ. NL) THEN
+         IF (K .EQ. 1 .and. K .EQ. NL) THEN
             WRITE(IOUNIT,9068) OLMID(J), (WORKID(I),I=1,INGRP)
-         ELSE IF (K .EQ. 1 .AND. K .NE. NL) THEN
+         ELSE IF (K .EQ. 1 .and. K .NE. NL) THEN
             WRITE(IOUNIT,9068) OLMID(J), (WORKID(I),I=1,8*K)
          ELSE IF (K .EQ. NL) THEN
             WRITE(IOUNIT,9067) (WORKID(I),I=1+8*(K-1),INGRP)
@@ -2667,9 +2667,9 @@ SUBROUTINE PRTSRC
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,99059)
          END IF
-         IF (K .EQ. 1 .AND. K .EQ. NL) THEN
+         IF (K .EQ. 1 .and. K .EQ. NL) THEN
             WRITE(IOUNIT,9068) PSDID(J), (WORKID(I),I=1,INGRP)
-         ELSE IF (K .EQ. 1 .AND. K .NE. NL) THEN
+         ELSE IF (K .EQ. 1 .and. K .NE. NL) THEN
             WRITE(IOUNIT,9068) PSDID(J), (WORKID(I),I=1,8*K)
          ELSE IF (K .EQ. NL) THEN
             WRITE(IOUNIT,9067) (WORKID(I),I=1+8*(K-1),INGRP)
@@ -2697,10 +2697,10 @@ SUBROUTINE PRTSRC
             CALL HEADER(IOUNIT)
             WRITE(IOUNIT,99058)
          END IF
-         IF (K .EQ. 1 .AND. K .EQ. NL) THEN
+         IF (K .EQ. 1 .and. K .EQ. NL) THEN
             WRITE(IOUNIT,99068) URBID(J), URBPOP(J),&
             &(WORKID(I),I=1,INGRP)
-         ELSE IF (K .EQ. 1 .AND. K .NE. NL) THEN
+         ELSE IF (K .EQ. 1 .and. K .NE. NL) THEN
             WRITE(IOUNIT,99068) URBID(J), URBPOP(J),&
             &(WORKID(I),I=1,8*K)
          ELSE IF (K .EQ. NL) THEN
@@ -2712,7 +2712,7 @@ SUBROUTINE PRTSRC
    END DO
 
 !     Print out NO2_RATIO Data for OLM, PVMRM and TTRM Options
-   IF (OLM .OR. PVMRM .OR. RUNTTRM .OR. GRSM) THEN
+   IF (OLM .or. PVMRM .or. RUNTTRM .or. GRSM) THEN
       INDC = 0
       DO I = 1, NUMSRC, 4
          INDC = INDC + 1
@@ -2742,7 +2742,7 @@ SUBROUTINE PRTSRC
    INDC = 0
    DO I = 1, NUMSRC
       NPD = INPD(I)
-      IF (NPD .NE. 0 .AND. .NOT.L_METHOD2(I)) THEN
+      IF (NPD .NE. 0 .and. .NOT.L_METHOD2(I)) THEN
          INDC = INDC + 1
          IF (MOD(INDC-1,3) .EQ. 0) THEN
             CALL HEADER(IOUNIT)
@@ -2752,7 +2752,7 @@ SUBROUTINE PRTSRC
          WRITE(IOUNIT,9051) (APHI(J,I),J=1,NPD)
          WRITE(IOUNIT,9052) (APDIAM(J,I),J=1,NPD)
          WRITE(IOUNIT,9053) (APDENS(J,I),J=1,NPD)
-      ELSE IF (NPD .NE. 0 .AND. L_METHOD2(I)) THEN
+      ELSE IF (NPD .NE. 0 .and. L_METHOD2(I)) THEN
 !           Summarize inputs for Method 2 particle deposition
          INDC = INDC + 1
          IF (MOD(INDC-1,3) .EQ. 0) THEN
@@ -2763,7 +2763,7 @@ SUBROUTINE PRTSRC
          WRITE(IOUNIT,99051) (FINEMASS(I),J=1,NPD)
          WRITE(IOUNIT,9052)  (APDIAM(J,I),J=1,NPD)
          WRITE(IOUNIT,9053)  (APDENS(J,I),J=1,NPD)
-      ELSE IF (LWGAS .OR. (LDGAS .AND. .NOT.LUSERVD)) THEN
+      ELSE IF (LWGAS .or. (LDGAS .and. .NOT.LUSERVD)) THEN
 !           Summarize inputs for gas deposition option
          INDC = INDC + 1
          IF (MOD(INDC-1,3) .EQ. 0) THEN
@@ -2788,8 +2788,8 @@ SUBROUTINE PRTSRC
       IF (NSEC .GT. 0) THEN
 ! ---       Check for building data for this source
          DO J = 1, NSEC
-            IF(ADSBH(J,I).NE.0.0D0 .AND. ADSBW(J,I).NE.0.0D0&
-            &.AND. ADSBL(J,I).NE.0.0D0) THEN
+            IF(ADSBH(J,I).NE.0.0D0 .and. ADSBW(J,I).NE.0.0D0&
+            &.and. ADSBL(J,I).NE.0.0D0) THEN
 ! --------------------------------------------------------------
                BLDING = 'YES'
                EXIT
@@ -3726,7 +3726,7 @@ SUBROUTINE PRTREC
       END IF
    END DO
 
-   IF (IRSTAT(4).NE.0 .OR. IRSTAT(8).NE.0) THEN
+   IF (IRSTAT(4).NE.0 .or. IRSTAT(8).NE.0) THEN
 ! ---    Include EVALCART receptors with DISCCART receptors.
 !        Print Out The Coordinates, Height , Hill Height & Flags For
 !        Discrete Cart Receptors
@@ -3886,7 +3886,7 @@ SUBROUTINE CHKREC
          XRAD = 2.15D0 * ASYINI(ISRC)
          XSRC = AXS(ISRC)
          YSRC = AYS(ISRC)
-      ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .OR.&
+      ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .or.&
       &SRCTYP(ISRC) .EQ. 'LINE') THEN
 !           Set XRAD to -1 since no minimum distance for
 !           AREA and LINE source types.  Use center coordinates
@@ -4029,7 +4029,7 @@ SUBROUTINE PRTMET(IOUNT)
       WRITE(IOUNT,9037) (IPROC(I),I = 1, 365)
    ENDIF
 
-   IF (ISDATE .NE. 0 .OR. IEDATE .NE. 2147123124) THEN
+   IF (ISDATE .NE. 0 .or. IEDATE .NE. 2147123124) THEN
 !        Write Out User-specified Start and End Dates
       WRITE(IOUNT,9038) ISYR, ISMN, ISDY, ISHR,&
       &IEYR, IEMN, IEDY, IEHR
@@ -4129,17 +4129,17 @@ SUBROUTINE RSINIT
 !     restarts and warning message for MULTYEAR restarts;
 !     IF IRSDATE > ISDATE for MULTYEAR restarts, then issue fatal error
 !     message since this implies overlapping data periods.
-   IF (.NOT.MULTYR .AND. IMSTAT(6) .EQ. 1 .AND.&
+   IF (.NOT.MULTYR .and. IMSTAT(6) .EQ. 1 .and.&
    &IRSDATE .LT. ISDATE) THEN
 !        Re-start date is less than start date based on STARTEND keyword
       CALL ERRHDL(PATH,MODNAM,'E','484','STARTEND')
       RUNERR = .TRUE.
       GO TO 1000
-   ELSE IF (MULTYR .AND. IMSTAT(6) .EQ. 1 .AND.&
+   ELSE IF (MULTYR .and. IMSTAT(6) .EQ. 1 .and.&
    &IRSDATE .LT. ISDATE) THEN
       CALL ERRHDL(PATH,MODNAM,'W','485','STARTEND')
 
-   ELSE IF (MULTYR .AND. IMSTAT(6) .EQ. 1 .AND.&
+   ELSE IF (MULTYR .and. IMSTAT(6) .EQ. 1 .and.&
    &IRSDATE .GT. ISDATE) THEN
       WRITE(DUMMY,'(I10.10)') IRSDATE - (IRSDATE/100000000)*100000000
       CALL ERRHDL(PATH,MODNAM,'E','486',DUMMY)
@@ -4164,7 +4164,7 @@ SUBROUTINE RSINIT
 
 ! ---    Include arrays associated with multi-year processing of high
 !        ranked values for 24-hr PM2.5, 1-hr NO2, and 1-hr SO2 NAAQS
-      IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+      IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
          READ(IRSUNT,ERR=99,END=999) NUMYRS
          READ(IRSUNT,ERR=99,END=999) (((SUMHNH(I,J,K),I=1,NUMREC),&
          &J=1,NUMGRP),K=1,NHIVAL)

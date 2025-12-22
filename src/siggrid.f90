@@ -63,7 +63,7 @@ SUBROUTINE GRDSV ()
 !        Now begin looping over the observed profile
 !        -------------------------------------------
 !
-      DO WHILE( GRIDSV(GINDEX) .LT. -90.0D0 .AND. PINDEX.LE.NPLVLS )
+      DO WHILE( GRIDSV(GINDEX) .LT. -90.0D0 .and. PINDEX.LE.NPLVLS )
 !
          IF( PFLSV(PINDEX) .GE. 0.0D0 )THEN
 !
@@ -143,7 +143,7 @@ SUBROUTINE GRDSV ()
 !           processing
 !           ---------------------------------------------------------
 !
-         IF( (GRIDSV(GINDEX) .LT. 0.0D0)  .AND.&
+         IF( (GRIDSV(GINDEX) .LT. 0.0D0)  .and.&
          &(PINDEX .LT. NPLVLS) )THEN
             PINDEX = PINDEX + 1
          ENDIF
@@ -293,7 +293,7 @@ SUBROUTINE REFSVC ( HTINP, VALUE )
    IF( HEIGHT  .LE.  ZICONV )THEN
       VALUE = DSQRT( SV2 )
 
-   ELSEIF( HEIGHT .GT. ZICONV  .AND.  HEIGHT .LE. ZDCRS )THEN
+   ELSEIF( HEIGHT .GT. ZICONV  .and.  HEIGHT .LE. ZDCRS )THEN
 !        COMPUTE sigmaV at 1.2*ZI
       SV2DCR = MIN( SV2, 0.25D0 )
 !        INTERPOLATE between value of SV2 at ZI and at 1.2*ZI
@@ -592,7 +592,7 @@ SUBROUTINE GRDSW ()
 !        Now begin looping over the observed profile
 !        -------------------------------------------
 !
-      DO WHILE( GRIDSW(GINDEX) .LT. -90.0D0 .AND. PINDEX.LE.NPLVLS )
+      DO WHILE( GRIDSW(GINDEX) .LT. -90.0D0 .and. PINDEX.LE.NPLVLS )
 !
          IF( PFLSW(PINDEX) .GE. 0.0D0 )THEN
 !
@@ -672,7 +672,7 @@ SUBROUTINE GRDSW ()
 !           processing
 !           ---------------------------------------------------------
 !
-         IF( (GRIDSW(GINDEX) .LT. 0.0D0)  .AND.&
+         IF( (GRIDSW(GINDEX) .LT. 0.0D0)  .and.&
          &(PINDEX .LT. NPLVLS) )THEN
             PINDEX = PINDEX + 1
          ENDIF
@@ -844,7 +844,7 @@ SUBROUTINE REFSWC ( HTINP, VALUE )
       SW2 = 1.6D0 * ( HEIGHT / ZICONV )**(2.0D0*THIRD) * WSTAR**2
       VALUE  = DSQRT( SW2 )
 
-   ELSEIF( HEIGHT .GT. 0.1D0*ZICONV  .AND.  HEIGHT .LE. ZICONV )THEN
+   ELSEIF( HEIGHT .GT. 0.1D0*ZICONV  .and.  HEIGHT .LE. ZICONV )THEN
       VALUE = DSQRT( 0.35D0 * WSTAR**2 )
 
    ELSEIF( HEIGHT .GT. ZICONV )THEN

@@ -75,7 +75,7 @@ SUBROUTINE IBLVAL (XARG)
 !  *********************************added code end --kja
 !RWB  Initialize the effective parameters based on
 !RWB  values at plume height
-   IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
       HTEFF = HE
       CALL LOCATE(GRIDHT, 1, MXGLVL, HTEFF, NDXEFF)
       CALL GINTRP( GRIDHT(NDXEFF), GRIDWS(NDXEFF),&
@@ -86,7 +86,7 @@ SUBROUTINE IBLVAL (XARG)
       &GRIDHT(NDXEFF+1), GRIDSW(NDXEFF+1), HTEFF,SWEFF)
       CALL GINTRP( GRIDHT(NDXEFF), GRIDTG(NDXEFF),&
       &GRIDHT(NDXEFF+1), GRIDTG(NDXEFF+1), HTEFF,TGEFF)
-      IF (PVMRM .OR. GRSM) THEN
+      IF (PVMRM .or. GRSM) THEN
          CALL GINTRP( GRIDHT(NDXEFF), GRIDEPS(NDXEFF),&
          &GRIDHT(NDXEFF+1), GRIDEPS(NDXEFF+1),HTEFF,EPSEFF)
       END IF
@@ -111,7 +111,7 @@ SUBROUTINE IBLVAL (XARG)
          &' m/s; SWeff = ',F7.2,' m/s.',/)
       ENDIF
 
-   ELSE IF (UNSTAB .AND. (HS.LT.ZI)) THEN
+   ELSE IF (UNSTAB .and. (HS.LT.ZI)) THEN
 
 !        Direct and Indirect Source
 
@@ -127,7 +127,7 @@ SUBROUTINE IBLVAL (XARG)
          &GRIDHT(NDXEFF+1), GRIDSV(NDXEFF+1),HTEFF,SVEFFD)
          CALL GINTRP( GRIDHT(NDXEFF), GRIDSW(NDXEFF),&
          &GRIDHT(NDXEFF+1), GRIDSW(NDXEFF+1),HTEFF,SWEFFD)
-         IF (PVMRM .OR. GRSM) THEN
+         IF (PVMRM .or. GRSM) THEN
             CALL GINTRP( GRIDHT(NDXEFF), GRIDEPS(NDXEFF),&
             &GRIDHT(NDXEFF+1), GRIDEPS(NDXEFF+1),HTEFF,EPSEFFD)
          END IF
@@ -160,11 +160,11 @@ SUBROUTINE IBLVAL (XARG)
 !  ****** FOR HIGHLY BUOYANT PLUME ****** added code JAN 2023--kja
 ! ** determine next hour mix height ZIN from mechanical and convective heights
          IF (HBPLUME) THEN
-            IF(ZICONVN .GT. 0.0D0 .AND. ZIMECHN .GT. 0.0D00) THEN
+            IF(ZICONVN .GT. 0.0D0 .and. ZIMECHN .GT. 0.0D00) THEN
                ZIN = MAX(ZICONVN,ZIMECHN)
-            ELSEIF( ZICONVN .LT. 0.0D0 .AND. ZIMECHN .GT. 0.0D0) THEN
+            ELSEIF( ZICONVN .LT. 0.0D0 .and. ZIMECHN .GT. 0.0D0) THEN
                ZIN = ZIMECHN
-            ELSEIF( ZICONVN .GT. 0.0D0 .AND. ZIMECHN .LT. 0.0D0) THEN
+            ELSEIF( ZICONVN .GT. 0.0D0 .and. ZIMECHN .LT. 0.0D0) THEN
                ZIN = ZICONVN
             ELSE
                ZIN = ZI
@@ -188,7 +188,7 @@ SUBROUTINE IBLVAL (XARG)
          &GRIDHT(NDXEFF+1), GRIDSW(NDXEFF+1), HTEFF,SWEFF3)
          CALL GINTRP( GRIDHT(NDXEFF), GRIDTG(NDXEFF),&
          &GRIDHT(NDXEFF+1), GRIDTG(NDXEFF+1), HTEFF,TGEFF3)
-         IF (PVMRM .OR. GRSM) THEN
+         IF (PVMRM .or. GRSM) THEN
             CALL GINTRP( GRIDHT(NDXEFF), GRIDEPS(NDXEFF),&
             &GRIDHT(NDXEFF+1), GRIDEPS(NDXEFF+1),HTEFF,EPSEFF3)
          END IF
@@ -226,20 +226,20 @@ SUBROUTINE IBLVAL (XARG)
    ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME') THEN
 !        Determine Dispersion Parameters              ---   CALL VDIS
       CALL VDIS ( XARG )
-   ELSE IF (SRCTYP(ISRC) .EQ. 'AREA' .OR.&
-   &SRCTYP(ISRC) .EQ. 'AREAPOLY' .OR.&
-   &SRCTYP(ISRC) .EQ. 'AREACIRC' .OR.&
-   &SRCTYP(ISRC) .EQ. 'LINE' .OR.&
+   ELSE IF (SRCTYP(ISRC) .EQ. 'AREA' .or.&
+   &SRCTYP(ISRC) .EQ. 'AREAPOLY' .or.&
+   &SRCTYP(ISRC) .EQ. 'AREACIRC' .or.&
+   &SRCTYP(ISRC) .EQ. 'LINE' .or.&
    &SRCTYP(ISRC) .EQ. 'OPENPIT') THEN
 !        Determine Vertical Dispersion Parameters     ---   CALL ADISZ
       CALL ADISZ ( XARG )
    END IF
 
-   IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
 
       SZNEW  = SZ
       CENTER = HE
-      IF (CENTER .LE. 5.0D0 .AND. ZRT .LE. 5.0D0) THEN
+      IF (CENTER .LE. 5.0D0 .and. ZRT .LE. 5.0D0) THEN
          ZHI = 5.0D0
          ZHI = MIN( ZHI, ZI )
          ZLO = 0.0D0
@@ -284,7 +284,7 @@ SUBROUTINE IBLVAL (XARG)
       &ZHI,NDXBHI,SWEFF )
       CALL ANYAVG ( MXGLVL, GRIDHT, GRIDTG, ZLO,NDXALO,&
       &ZHI,NDXBHI,TGEFF )
-      IF (PVMRM .OR. GRSM) THEN
+      IF (PVMRM .or. GRSM) THEN
          CALL ANYAVG ( MXGLVL, GRIDHT, GRIDEPS, ZLO,NDXALO,&
          &ZHI,NDXBHI,EPSEFF )
       END IF
@@ -310,7 +310,7 @@ SUBROUTINE IBLVAL (XARG)
          &' m/s; SWeff = ',F7.2,' m/s.',/)
       END IF
 
-   ELSE IF (UNSTAB .AND. (HS.LT.ZI)) THEN
+   ELSE IF (UNSTAB .and. (HS.LT.ZI)) THEN
 !RJP
 !RJP  Process effective values for direct and penetrated plumes
 !RJP
@@ -401,7 +401,7 @@ SUBROUTINE IBLVAL (XARG)
          &ZHI,NDXBHI,SWEFF3 )
          CALL ANYAVG ( MXGLVL, GRIDHT, GRIDTG,ZLO,NDXALO,&
          &ZHI,NDXBHI,TGEFF3 )
-         IF (PVMRM .OR. GRSM) THEN
+         IF (PVMRM .or. GRSM) THEN
             CALL ANYAVG ( MXGLVL, GRIDHT, GRIDEPS, ZLO,NDXALO,&
             &ZHI,NDXBHI,EPSEFF3 )
          END IF
@@ -437,7 +437,7 @@ SUBROUTINE IBLVAL (XARG)
          SZDNEW = SZDAVG
 
 !RWB        Change ZEFF to ZRT in following block. RWB 1/23/95
-         IF (CENTER .LE. 5.0D0 .AND. ZRT .LE. 5.0D0) THEN
+         IF (CENTER .LE. 5.0D0 .and. ZRT .LE. 5.0D0) THEN
             ZHI = MIN( 5.0D0, ZI )
             ZHI = MIN( ZHI, ZI )
             ZLO = 0.0D0
@@ -488,7 +488,7 @@ SUBROUTINE IBLVAL (XARG)
             &NDXALO,ZHI,NDXBHI,SVEFFD )
             CALL ANYAVG ( MXGLVL, GRIDHT, GRIDSW, ZLO,&
             &NDXALO,ZHI,NDXBHI,SWEFFD )
-            IF (PVMRM .OR. GRSM) THEN
+            IF (PVMRM .or. GRSM) THEN
                CALL ANYAVG ( MXGLVL, GRIDHT, GRIDEPS, ZLO,&
                &NDXALO,ZHI,NDXBHI,EPSEFFD )
             END IF
@@ -502,7 +502,7 @@ SUBROUTINE IBLVAL (XARG)
             &GRIDHT(NDXEFF+1), GRIDSV(NDXEFF+1), HTEFF,SVEFFD)
             CALL GINTRP( GRIDHT(NDXEFF), GRIDSW(NDXEFF),&
             &GRIDHT(NDXEFF+1), GRIDSW(NDXEFF+1), HTEFF,SWEFFD)
-            IF (PVMRM .OR. GRSM) THEN
+            IF (PVMRM .or. GRSM) THEN
                CALL GINTRP( GRIDHT(NDXEFF), GRIDEPS(NDXEFF),&
                &GRIDHT(NDXEFF+1), GRIDEPS(NDXEFF+1), HTEFF,EPSEFFD)
             END IF
@@ -535,7 +535,7 @@ SUBROUTINE IBLVAL (XARG)
    END IF
 
 !RWB  Set effective parameters for indirect source = direct source
-   IF (UNSTAB .AND. HS.LT.ZI) THEN
+   IF (UNSTAB .and. HS.LT.ZI) THEN
       UEFFN  = UEFFD
       SVEFFN = SVEFFD
       SWEFFN = SWEFFD
@@ -695,7 +695,7 @@ SUBROUTINE METINI
 !     and determine nearest 10-degree sector.  Note, we shouldn't
 !     reach this point if CLMHR or MSGHR is .TRUE.
 !
-   IF( .NOT.CLMHR .AND. .NOT.MSGHR )THEN
+   IF( .NOT.CLMHR .and. .NOT.MSGHR )THEN
 !
 !---->   wind direction = wind direction in degrees * DTORAD
 
@@ -735,8 +735,8 @@ SUBROUTINE METINI
    SWP = SWS       ! Added for ARISE; UNC-IE
 !     Compute the Brunt-Vaisala frequency, BVF, at stack height for STABLE
 !     conditions or for UNSTAB releases above ZI.  Check for TGS < 0 first.
-   IF ( (TGS.GT.0.0D0) .AND.&
-   &(STABLE .OR. (UNSTAB .AND. HS.GE.ZI)) ) THEN
+   IF ( (TGS.GT.0.0D0) .and.&
+   &(STABLE .or. (UNSTAB .and. HS.GE.ZI)) ) THEN
       BVF = DSQRT( G * TGS / PTS )
    ELSE
       BVF = 1.0D-10

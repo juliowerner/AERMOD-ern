@@ -52,14 +52,14 @@ SUBROUTINE DELTAH ( XARG )
 !     Variable Initializations
    MODNAM = 'DELTAH'
 
-   IF( (STABLE  .OR.  (UNSTAB  .AND.  (HS .GE. ZI)))  .AND.&
+   IF( (STABLE  .or.  (UNSTAB  .and.  (HS .GE. ZI)))  .and.&
    &(XARG .GE. XMAX) )THEN
 !        Use final stable plume rise (DHF) calculated in DISTF (DHP)
 !        at XMAX
       DHP = DHFAER
 
 
-   ELSE IF( (STABLE  .OR. (UNSTAB  .AND.  (HS .GE. ZI))) .AND.&
+   ELSE IF( (STABLE  .or. (UNSTAB  .and.  (HS .GE. ZI))) .and.&
    &(XARG .LT. XMAX) ) THEN
 !----    Compute stable plume rise for the distance XARG   --- CALL SBLRIS
 !        Use iterative approach to plume rise calculations.
@@ -127,7 +127,7 @@ SUBROUTINE DELTAH ( XARG )
       ENDIF
 
 !        Check for convergence
-      IF(DHP.GT.0.0D0 .AND. DABS((DHPOLD-DHP)/DHP).LT.0.001D0 .AND.&
+      IF(DHP.GT.0.0D0 .and. DABS((DHPOLD-DHP)/DHP).LT.0.001D0 .and.&
       &KITER .GE. 5)THEN
          IF( DHP .LE. 1.0D-5 )THEN
             DHP = 1.0D-5

@@ -477,7 +477,7 @@ SUBROUTINE PLOTFL
    MODNAM = 'PLOTFL'
 
 !     Create Header Format for Columns
-   IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+   IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
       WRITE(HDRFRM,9019) NUMYRS, NUMYRS
    ELSE
       WRITE(HDRFRM,9020) NUMTYP, CHIDEP(3,1), NUMTYP+2
@@ -495,7 +495,7 @@ SUBROUTINE PLOTFL
 ! ---             Assign character label for rank
                IF (IVAL .LE. 10) THEN
                   CHRVAL = NCHR2(IVAL)
-               ELSE IF (MOD(IVAL,100) .GT. 10 .AND.&
+               ELSE IF (MOD(IVAL,100) .GT. 10 .and.&
                &MOD(IVAL,100) .LT. 20) THEN
                   IDEC = INT(IVAL/10)
                   IMOD = MOD(IVAL,10)
@@ -514,7 +514,7 @@ SUBROUTINE PLOTFL
                   WRITE(IPLUNT(IVAL,IGRP,IAVE),9007) C_METVER,&
                   &TITLE2(1:68),RUNTIM,&
                   &MODOPS_String(1:LEN_TRIM(MODOPS_String))
-                  IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+                  IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
                      WRITE(IPLUNT(IVAL,IGRP,IAVE),9009) CHRVAL,&
                      &CHRAVE(IAVE), NUMYRS, GRPID(IGRP), NUMREC,&
                      &PLTFRM
@@ -522,7 +522,7 @@ SUBROUTINE PLOTFL
                      WRITE(IPLUNT(IVAL,IGRP,IAVE),9010) CHRVAL,&
                      &CHRAVE(IAVE), GRPID(IGRP), NUMREC, PLTFRM
                   END IF
-                  IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+                  IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
                      WRITE(IPLUNT(IVAL,IGRP,IAVE),HDRFRM) CHIDEP(1,1),&
                      &CHIDEP(2,1),CHIDEP(3,1),&
                      &(NCHR1(I),NCHR1(I),I=1,NUMYRS)
@@ -535,7 +535,7 @@ SUBROUTINE PLOTFL
 
 !                 Begin Receptor LOOP
                DO IREC = 1, NUMREC
-                  IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+                  IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
                      WRITE(IPLUNT(IVAL,IGRP,IAVE),PLTFRM,ERR=99)&
                      &AXR(IREC), AYR(IREC), SUMHNH(IREC,IGRP,IVAL),&
                      &AZELEV(IREC),AZHILL(IREC),AZFLAG(IREC),&
@@ -628,26 +628,26 @@ SUBROUTINE OUTPUT
    MODNAM = 'OUTPUT'
    PATH = 'OU'
 
-   IF (PERIOD .OR. ANNUAL) THEN
+   IF (PERIOD .or. ANNUAL) THEN
       DO ITYP = 1, NUMTYP
 !           Print Out Summary of Period Averages            ---   CALL PRTANN
          CALL PRTANN
       END DO
    END IF
 
-   IF (PM25AVE .AND. NUMAVE.EQ.1) THEN
+   IF (PM25AVE .and. NUMAVE.EQ.1) THEN
 !        Print Out Table of Average High-N-High Values for PM2.5
       DO ITYP = 1, NUMTYP
          CALL PRTPM25
       END DO
       CALL MAXPM25
-   ELSE IF (NO2AVE .AND. NUMAVE.GE.1) THEN
+   ELSE IF (NO2AVE .and. NUMAVE.GE.1) THEN
 !        Print Out Table of Average High-N-High Values for NO2
       DO ITYP = 1, NUMTYP
          CALL PRTPM25
       END DO
       CALL MAXPM25
-   ELSE IF (SO2AVE .AND. NUMAVE.GE.1) THEN
+   ELSE IF (SO2AVE .and. NUMAVE.GE.1) THEN
 !        Print Out Table of Average High-N-High Values for SO2
       DO ITYP = 1, NUMTYP
          CALL PRTPM25
@@ -673,7 +673,7 @@ SUBROUTINE OUTPUT
       END DO
    END IF
 
-   IF (PERIOD .OR. ANNUAL .OR. NHIVAL .GT. 0) THEN
+   IF (PERIOD .or. ANNUAL .or. NHIVAL .GT. 0) THEN
       DO ITYP = 1, NUMTYP
 ! ---       Print Out Summary of Results                    ---   CALL PRTSUM
 !           Note that summary of short-term results for PM25 24h, NO2/SO2 1h
@@ -686,7 +686,7 @@ SUBROUTINE OUTPUT
    END IF
 
 ! --- Print out summary of short-term results for PM25 24h, NO2/SO2 1h
-   IF (PM25AVE .AND. NHIVAL .GT. 0) THEN
+   IF (PM25AVE .and. NHIVAL .GT. 0) THEN
       DO ITYP = 1, NUMTYP
 !           Print Out Summary of PM-2.5 Results             ---   CALL PRTPM25SUM
          CALL PRTPM25SUM(IOUNIT)
@@ -694,7 +694,7 @@ SUBROUTINE OUTPUT
             CALL PRTPM25SUM(ISUMUNT)
          END IF
       END DO
-   ELSE IF (NO2AVE .AND. NHIVAL .GT. 0) THEN
+   ELSE IF (NO2AVE .and. NHIVAL .GT. 0) THEN
       DO ITYP = 1, NUMTYP
 !           Print Out Summary of NO2 Results                ---   CALL PRTPM25SUM
          CALL PRTPM25SUM(IOUNIT)
@@ -702,7 +702,7 @@ SUBROUTINE OUTPUT
             CALL PRTPM25SUM(ISUMUNT)
          END IF
       END DO
-   ELSE IF (SO2AVE .AND. NHIVAL .GT. 0) THEN
+   ELSE IF (SO2AVE .and. NHIVAL .GT. 0) THEN
       DO ITYP = 1, NUMTYP
 !           Print Out Summary of SO2 Results                ---   CALL PRTPM25SUM
          CALL PRTPM25SUM(IOUNIT)
@@ -899,7 +899,7 @@ SUBROUTINE PRTANN
       END DO
 !        End LOOP Through Networks
 
-      IF (IRSTAT(4).NE.0 .OR. IRSTAT(8).NE.0) THEN
+      IF (IRSTAT(4).NE.0 .or. IRSTAT(8).NE.0) THEN
 ! ---       Include EVALCART receptors with DISCCART receptors.
 !           Print Out The Coord. & Concentrations For Discrete Cart Receptors
          INDC = 0
@@ -1217,7 +1217,7 @@ SUBROUTINE SPRTHT(IHNUM)
 ! --- Assign character label for rank
    IF (IHNUM .LE. 10) THEN
       CHRVAL = CHRVALS(IHNUM)
-   ELSE IF (MOD(IHNUM,100) .GT. 10 .AND.&
+   ELSE IF (MOD(IHNUM,100) .GT. 10 .and.&
    &MOD(IHNUM,100) .LT. 20) THEN
       IDEC = INT(IHNUM/10)
       IMOD = MOD(IHNUM,10)
@@ -1355,7 +1355,7 @@ SUBROUTINE SPRTHT(IHNUM)
       END DO
 !        End LOOP Through Networks
 
-      IF (IRSTAT(4).NE.0 .OR. IRSTAT(8).NE.0) THEN
+      IF (IRSTAT(4).NE.0 .or. IRSTAT(8).NE.0) THEN
 ! ---       Include EVALCART receptors with DISCCART receptors.
 !           Print Out The Coord. & Concentrations For Discrete Cart Receptors
          INDC = 0
@@ -1560,7 +1560,7 @@ SUBROUTINE PRTMAX
                JSTRT = 1 + 80*(L-1)
                DO J = JSTRT, JSTRT+NROWS-1
                   J1 = J + NROWS
-                  IF (L.EQ.NPG .AND. MOD(IMXVAL(IAVE),2).NE.0) THEN
+                  IF (L.EQ.NPG .and. MOD(IMXVAL(IAVE),2).NE.0) THEN
                      J1 = J1 + 1
                   END IF
                   KMAX1 = MXLOCA(J,IGRP,IAVE,ITYP)
@@ -1715,13 +1715,13 @@ SUBROUTINE PRTSUM(IOUNT)
    END IF
 
 !     Print Maximum PERIOD Averages, If Appropriate
-   IF (PERIOD .OR. ANNUAL) THEN
+   IF (PERIOD .or. ANNUAL) THEN
 !        Calculate Number of Groups Per Page, NGPP
       NGPP = MAX( 1, INT(50/(NHIANN+1)) )
       DO IGRP = 1, NUMGRP
          IF (MOD(IGRP-1, NGPP) .EQ. 0) THEN
             CALL HEADER(IOUNT)
-            IF (PERIOD .AND. MULTYR) THEN
+            IF (PERIOD .and. MULTYR) THEN
                WRITE(IOUNT,9020) PERCHR, IANHRS, NUMYRS
             ELSE IF (PERIOD) THEN
                WRITE(IOUNT,9021) PERCHR, IANHRS
@@ -1734,12 +1734,12 @@ SUBROUTINE PRTSUM(IOUNT)
          END IF
          DO IVAL = 1, NHIANN
             INDMX = IMXLOC(IVAL,IGRP,ITYP)
-            IF (IVAL .EQ. 1 .AND. INDMX .NE. 0) THEN
+            IF (IVAL .EQ. 1 .and. INDMX .NE. 0) THEN
                WRITE(IOUNT,1012) GRPID(IGRP), RANK(IVAL),&
                &AMXVAL(IVAL,IGRP,ITYP), AXR(INDMX), AYR(INDMX),&
                &AZELEV(INDMX), AZHILL(INDMX), AZFLAG(INDMX),&
                &RECTYP(INDMX), NETID(INDMX)
-            ELSE IF (IVAL .EQ. 1 .AND. INDMX .EQ. 0) THEN
+            ELSE IF (IVAL .EQ. 1 .and. INDMX .EQ. 0) THEN
                AXR1 = 0.0D0
                AYR1 = 0.0D0
                AZELV1 = 0.0D0
@@ -1771,7 +1771,7 @@ SUBROUTINE PRTSUM(IOUNT)
 
 ! --- Skip "standard" summary of short-term averages for
 !     PM25AVE, NO2AVE, or SO2AVE processing
-   IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) RETURN
+   IF (PM25AVE .or. NO2AVE .or. SO2AVE) RETURN
 
 ! ---
 !     Begin LOOP Through Averaging Periods
@@ -1800,7 +1800,7 @@ SUBROUTINE PRTSUM(IOUNT)
 ! ---          Assign character label for rank
             IF (IWHP(I) .LE. 10) THEN
                CHRVAL = RANK(IWHP(I))
-            ELSE IF (MOD(IWHP(I),100) .GT. 10 .AND.&
+            ELSE IF (MOD(IWHP(I),100) .GT. 10 .and.&
             &MOD(IWHP(I),100) .LT. 20) THEN
                IDEC = INT(IWHP(I)/10)
                IMOD = MOD(IWHP(I),10)
@@ -2012,7 +2012,7 @@ SUBROUTINE EVEFIL
             END IF
             HITIN = .FALSE.
          END IF
-         IF (HITIN .AND. RUNST1(LOCB(1):LOCB(1)+10) .EQ.&
+         IF (HITIN .and. RUNST1(LOCB(1):LOCB(1)+10) .EQ.&
          &'   EVENTPER') THEN
             READ(RUNST1(LOCB(1)+23:),'(I3)') IAVEP
             READ(RUNST1(LOCB(1)+47:),'(F18.5)',ERR=99) CONC1
@@ -2027,7 +2027,7 @@ SUBROUTINE EVEFIL
          CONC1 = 1.0D9
 
 100      CONTINUE
-         IF (HITIN. AND. IAVEP.NE.720 .AND. CONC1.NE.0.0D0) THEN
+         IF (HITIN.and. IAVEP.NE.720 .and. CONC1.NE.0.0D0) THEN
 !              Write Out EVENTPER & EVENTLOC Cards, Allowing for Column Shift
             WRITE(IEVUNT,'(a:)') RUNST1(LOCB(1):LEN_TRIM(RUNST1))
          END IF
@@ -2122,7 +2122,7 @@ SUBROUTINE MXEVNT
                IF (BUFIN(1:1) .EQ. '*') GO TO 11
                READ(BUFIN,THRFRM,ERR=99) IAVEP,&
                &GID, KDATE, XR2, YR2, ZE2, ZH2, ZF2, CONC1
-               IF (IAVEP.NE.720 .AND. IAVEP.EQ.KAVE(IAVE) .AND.&
+               IF (IAVEP.NE.720 .and. IAVEP.EQ.KAVE(IAVE) .and.&
                &GID.EQ.GRPID(IGRP)) THEN
 !                    Increment Event Counter and Generate Event Name
                   NUMEVE = NUMEVE + 1
@@ -2303,7 +2303,7 @@ SUBROUTINE PRTPM25
 ! ---                Assign character label for rank
                      IF (N .LE. 10) THEN
                         CHRVAL = RANK(N)
-                     ELSE IF (MOD(N,100) .GT. 10 .AND.&
+                     ELSE IF (MOD(N,100) .GT. 10 .and.&
                      &MOD(N,100) .LT. 20) THEN
                         IDEC = INT(N/10)
                         IMOD = MOD(N,10)
@@ -2315,7 +2315,7 @@ SUBROUTINE PRTPM25
                         WRITE(CHRVAL,'(I2,A3)') IDEC, RANK(IMOD)(3:5)
                      END IF
 
-                     IF (NO2AVE .OR. SO2AVE) THEN
+                     IF (NO2AVE .or. SO2AVE) THEN
                         WRITE(IOUNIT,90321) CHRVAL,&
                         &(CHIDEP(II,ITYP),II=1,6),NUMYRS,&
                         &GRPID(IGRP),(WORKID(K),K = 1,INDGRP)
@@ -2390,7 +2390,7 @@ SUBROUTINE PRTPM25
          END DO
 !        End LOOP Through Networks
 
-         IF (IRSTAT(4).NE.0 .OR. IRSTAT(8).NE.0) THEN
+         IF (IRSTAT(4).NE.0 .or. IRSTAT(8).NE.0) THEN
 ! ---       Include EVALCART receptors with DISCCART receptors.
 !           Print Out The Coord. & Concentrations For Discrete Cart Receptors
             INDC = 0
@@ -2403,7 +2403,7 @@ SUBROUTINE PRTPM25
 ! ---                   Assign character label for rank
                         IF (N .LE. 10) THEN
                            CHRVAL = RANK(N)
-                        ELSE IF (MOD(N,100) .GT. 10 .AND.&
+                        ELSE IF (MOD(N,100) .GT. 10 .and.&
                         &MOD(N,100) .LT. 20) THEN
                            IDEC = INT(N/10)
                            IMOD = MOD(N,10)
@@ -2415,7 +2415,7 @@ SUBROUTINE PRTPM25
                            WRITE(CHRVAL,'(I2,A3)') IDEC, RANK(IMOD)(3:5)
                         END IF
 
-                        IF (NO2AVE .OR. SO2AVE) THEN
+                        IF (NO2AVE .or. SO2AVE) THEN
                            WRITE(IOUNIT,90321) CHRVAL,&
                            &(CHIDEP(II,ITYP),II=1,6),&
                            &NUMYRS,GRPID(IGRP),(WORKID(K),K=1,INDGRP)
@@ -2464,7 +2464,7 @@ SUBROUTINE PRTPM25
 ! ---                   Assign character label for rank
                         IF (N .LE. 10) THEN
                            CHRVAL = RANK(N)
-                        ELSE IF (MOD(N,100) .GT. 10 .AND.&
+                        ELSE IF (MOD(N,100) .GT. 10 .and.&
                         &MOD(N,100) .LT. 20) THEN
                            IDEC = INT(N/10)
                            IMOD = MOD(N,10)
@@ -2476,7 +2476,7 @@ SUBROUTINE PRTPM25
                            WRITE(CHRVAL,'(I2,A3)') IDEC, RANK(IMOD)(3:5)
                         END IF
 
-                        IF (NO2AVE .OR. SO2AVE) THEN
+                        IF (NO2AVE .or. SO2AVE) THEN
                            WRITE(IOUNIT,90321) CHRVAL,&
                            &(CHIDEP(II,ITYP),II=1,6),&
                            &NUMYRS,GRPID(IGRP),(WORKID(K),K=1,INDGRP)
@@ -2684,7 +2684,7 @@ SUBROUTINE PRTPM25SUM(IOUNT)
 ! ---             Assign character label for rank
                IF (N .LE. 10) THEN
                   CHRVAL = RANK(N)
-               ELSE IF (MOD(N,100) .GT. 10 .AND.&
+               ELSE IF (MOD(N,100) .GT. 10 .and.&
                &MOD(N,100) .LT. 20) THEN
                   IDEC = INT(N/10)
                   IMOD = MOD(N,10)
@@ -2698,7 +2698,7 @@ SUBROUTINE PRTPM25SUM(IOUNT)
 
                IF (PM25AVE) THEN
                   WRITE(IOUNT,9091) CHRVAL, CHRAVE(1), NUMYRS
-               ELSE IF (NO2AVE .OR. SO2AVE) THEN
+               ELSE IF (NO2AVE .or. SO2AVE) THEN
                   WRITE(IOUNT,99091) CHRVAL, CHRAVE(1), NUMYRS
                END IF
                WRITE(IOUNT,9011) CHIDEP(3,ITYP), POLLUT, OUTLBL(ITYP)
@@ -2707,12 +2707,12 @@ SUBROUTINE PRTPM25SUM(IOUNT)
             END IF
             DO IVAL = 1, NMXPM
                INDMX = MXPMLOC(IVAL,IGRP,N)
-               IF (IVAL .EQ. 1 .AND. INDMX .NE. 0) THEN
+               IF (IVAL .EQ. 1 .and. INDMX .NE. 0) THEN
                   WRITE(IOUNT,1012) GRPID(IGRP), RANK(IVAL),&
                   &MXPMVAL(IVAL,IGRP,N), AXR(INDMX), AYR(INDMX),&
                   &AZELEV(INDMX), AZHILL(INDMX), AZFLAG(INDMX),&
                   &RECTYP(INDMX), NETID(INDMX)
-               ELSE IF (IVAL .EQ. 1 .AND. INDMX .EQ. 0) THEN
+               ELSE IF (IVAL .EQ. 1 .and. INDMX .EQ. 0) THEN
                   AXR1 = 0.0D0
                   AYR1 = 0.0D0
                   AZELV1 = 0.0D0
@@ -2934,7 +2934,7 @@ SUBROUTINE RANKFL
                      EXIT
                   END IF
                END DO
-               IF (.NOT.FOUND .AND. IRANK.LT.IRKVAL(IAVE)) THEN
+               IF (.NOT.FOUND .and. IRANK.LT.IRKVAL(IAVE)) THEN
                   IRANK = IRANK + 1
                   IREC  = MXLOCA(I,IGRP,IAVE,ITYP)
                   IDATSV(IRANK) = MXDATE(I,IGRP,IAVE,ITYP)
@@ -3061,7 +3061,7 @@ SUBROUTINE MAXDCALC
                ATS(ISRC) =  AATS(IHR_NDX,IYR_NDX,ISRC)
                AVS(ISRC) =  AAVS(IHR_NDX,IYR_NDX,ISRC)
 !**  Added for Aircraft Plume Rise; UNC-IE
-            ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .AND.&
+            ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and.&
             &AFTSRC(ISRC) .EQ. 'Y') THEN
                AMFUEL(ISRC) = AAMFUEL(IHR_NDX,IYR_NDX,ISRC)
                ATHRUST(ISRC) = AATHRUST(IHR_NDX,IYR_NDX,ISRC)
@@ -3070,8 +3070,8 @@ SUBROUTINE MAXDCALC
                ABYPR(ISRC) = AABYPR(IHR_NDX,IYR_NDX,ISRC)
                ASRCANGLE(ISRC) = AASRCANGLE(IHR_NDX,IYR_NDX,ISRC)
                ARPWR(ISRC) = AARPWR(IHR_NDX,IYR_NDX,ISRC)
-            ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .AND.&
-            &L_HRLYSIG(ISRC).AND.&
+            ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and.&
+            &L_HRLYSIG(ISRC).and.&
             &AFTSRC(ISRC) .EQ. 'Y') THEN
                AHS(ISRC)    =  AAHS(IHR_NDX,IYR_NDX,ISRC)
                ASYINI(ISRC) =  AASYINI(IHR_NDX,IYR_NDX,ISRC)
@@ -3084,14 +3084,14 @@ SUBROUTINE MAXDCALC
                ASRCANGLE(ISRC) = AASRCANGLE(IHR_NDX,IYR_NDX,ISRC)
                ARPWR(ISRC) = AARPWR(IHR_NDX,IYR_NDX,ISRC)
 !**  End Aircarft Plume Rise insert; April 2023
-            ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .AND.&
-            &AFTSRC(ISRC) .EQ. 'N'     .AND.&   ! Added for Aircraft; UNC-IE
+            ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and.&
+            &AFTSRC(ISRC) .EQ. 'N'     .and.&   ! Added for Aircraft; UNC-IE
             &L_HRLYSIG(ISRC)) THEN
                AHS(ISRC)    =  AAHS(IHR_NDX,IYR_NDX,ISRC)
                ASYINI(ISRC) =  AASYINI(IHR_NDX,IYR_NDX,ISRC)
                ASZINI(ISRC) =  AASZINI(IHR_NDX,IYR_NDX,ISRC)
 !**  Added for Aircraft Plume Rise; UNC-IE
-            ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .AND.&
+            ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .and.&
             &AFTSRC(ISRC) .EQ. 'Y') THEN
                AMFUEL(ISRC) = AAMFUEL(IHR_NDX,IYR_NDX,ISRC)
                ATHRUST(ISRC) = AATHRUST(IHR_NDX,IYR_NDX,ISRC)
@@ -3100,8 +3100,8 @@ SUBROUTINE MAXDCALC
                ABYPR(ISRC) = AABYPR(IHR_NDX,IYR_NDX,ISRC)
                ASRCANGLE(ISRC) = AASRCANGLE(IHR_NDX,IYR_NDX,ISRC)
                ARPWR(ISRC) = AARPWR(IHR_NDX,IYR_NDX,ISRC)
-            ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .AND.&
-            &L_HRLYSIG(ISRC).AND.&
+            ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .and.&
+            &L_HRLYSIG(ISRC).and.&
             &AFTSRC(ISRC) .EQ. 'Y') THEN
                AHS(ISRC)    =  AAHS(IHR_NDX,IYR_NDX,ISRC)
                ASZINI(ISRC) =  AASZINI(IHR_NDX,IYR_NDX,ISRC)
@@ -3113,13 +3113,13 @@ SUBROUTINE MAXDCALC
                ASRCANGLE(ISRC) = AASRCANGLE(IHR_NDX,IYR_NDX,ISRC)
                ARPWR(ISRC) = AARPWR(IHR_NDX,IYR_NDX,ISRC)
 !**  End Aircraft Plume Rise insert; April 2023
-            ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .AND.&
-            &AFTSRC(ISRC) .EQ. 'N'     .AND.&  ! Added for Aircraft; UNC-IE
+            ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .and.&
+            &AFTSRC(ISRC) .EQ. 'N'     .and.&  ! Added for Aircraft; UNC-IE
             &L_HRLYSIG(ISRC)) THEN
                AHS(ISRC)    =  AAHS(IHR_NDX,IYR_NDX,ISRC)
                ASZINI(ISRC) =  AASZINI(IHR_NDX,IYR_NDX,ISRC)
 
-            ELSE IF (SRCTYP(ISRC) .EQ. 'LINE' .AND.&
+            ELSE IF (SRCTYP(ISRC) .EQ. 'LINE' .and.&
             &L_HRLYSIG(ISRC)) THEN
                AHS(ISRC)    =  AAHS(IHR_NDX,IYR_NDX,ISRC)
                ASZINI(ISRC) =  AASZINI(IHR_NDX,IYR_NDX,ISRC)
@@ -3146,7 +3146,7 @@ SUBROUTINE MAXDCALC
       BGCONC = 0.0D0
    END IF
 
-   IF (PVMRM .OR. OLM .OR. RUNTTRM .OR. GRSM) THEN
+   IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
 ! ---    Assign background Ozone concentration based on the
 !        hour and year index; this value accounts for hourly O3
 !        with or without substitution based on other temporally-
@@ -3177,13 +3177,13 @@ SUBROUTINE MAXDCALC
       END IF
    END IF
 
-   IF (FULLDATE.GE.ISDATE .AND. FULLDATE.LE.IEDATE) THEN
+   IF (FULLDATE.GE.ISDATE .and. FULLDATE.LE.IEDATE) THEN
 
-      IF (CLMHR .AND. CLMPRO) THEN
+      IF (CLMHR .and. CLMPRO) THEN
 !           Check for Calm Hr & Processing and Increment Counters
          NUMHRS(1) = NUMHRS(1) + 1
          NUMCLM(1) = NUMCLM(1) + 1
-      ELSE IF (MSGHR .AND. MSGPRO) THEN
+      ELSE IF (MSGHR .and. MSGPRO) THEN
 !           Check for Missing Hour & Processing and Increment Counters
          NUMHRS(1) = NUMHRS(1) + 1
          NUMMSG(1) = NUMMSG(1) + 1
@@ -3199,7 +3199,7 @@ SUBROUTINE MAXDCALC
          CALL CALC
       END IF
 
-      IF (.NOT.CLMHR .AND. .NOT.MSGHR) THEN
+      IF (.NOT.CLMHR .and. .NOT.MSGHR) THEN
 ! ---       Non-calm, non-missing hour; apply NO2 options as appropriate
 
 !! Added for TTRM2
@@ -3211,7 +3211,7 @@ SUBROUTINE MAXDCALC
             CALL TTRM_CALC
 ! ---          Flush HRVAL Arrays (1:NUMTYP)
             HRVAL(:)   = 0.0D0
-            IF (PVMRM .AND. .NOT. PSDCREDIT) THEN
+            IF (PVMRM .and. .NOT. PSDCREDIT) THEN
                CALL PVMRM_CALC('ALLSRCS')
             ELSE IF (OLM) THEN
                CALL OLM_CALC
@@ -3220,11 +3220,11 @@ SUBROUTINE MAXDCALC
             END IF
             GO TO 8857
          END IF
-         IF (PVMRM .AND. .NOT.PSDCREDIT) THEN
+         IF (PVMRM .and. .NOT.PSDCREDIT) THEN
 ! ---          Process Hourly Values for PVMRM Option
             CALL PVMRM_CALC('ALLSRCS')
 
-         ELSE IF (PVMRM .AND. PSDCREDIT) THEN
+         ELSE IF (PVMRM .and. PSDCREDIT) THEN
 ! ---          Process Hourly Values for PVMRM Option and PSD credits
 ! ---          Need to process two separate sets of sources - the
 !              increment consumption sources ('NAAQSRC') and the
@@ -3258,7 +3258,7 @@ SUBROUTINE MAXDCALC
 
       IAVE = 1
 !        Check for End of Averaging Period
-      IF (KAVE(1).NE.1 .AND. MOD(IHOUR,KAVE(1)).EQ.0) THEN
+      IF (KAVE(1).NE.1 .and. MOD(IHOUR,KAVE(1)).EQ.0) THEN
 !           Calculate Applicable Averages          ---   CALL AVER
          CALL AVER
 ! ---       Reinitialize NUMHRS, NUMCLM and NUMMSG
@@ -3272,8 +3272,8 @@ SUBROUTINE MAXDCALC
       AERVAL  = 0.0D0
       PRMVAL  = 0.0D0
 
-      IF (PVMRM .OR. OLM .OR. ARM2&
-      &.OR. RUNTTRM .OR. GRSM) THEN
+      IF (PVMRM .or. OLM .or. ARM2&
+      &.or. RUNTTRM .or. GRSM) THEN
 !           Flush CHI(NUMREC,NUMSRC,NUMTYP) Array
          CHI(:,:,:) = 0.0D0
          IF(RUNTTRM2)THEN
@@ -3361,7 +3361,7 @@ SUBROUTINE MAXDCNT_FILE(IGRP1,IVAL)
 ! --- Assign character label for rank
    IF (IVAL .LE. 10) THEN
       CHRVAL = NCHR2(IVAL)
-   ELSE IF (MOD(IVAL,100) .GT. 10 .AND.&
+   ELSE IF (MOD(IVAL,100) .GT. 10 .and.&
    &MOD(IVAL,100) .LT. 20) THEN
       IDEC = INT(IVAL/10)
       IMOD = MOD(IVAL,10)
@@ -3388,7 +3388,7 @@ SUBROUTINE MAXDCNT_FILE(IGRP1,IVAL)
             WRITE(IMXDCUNT(IGRP1),9108) CHRVAL,CHRAVE(1),&
             &NUMYRS, GRPID(IGRP1), NREC, NUMGRP, MXDFMT
          END IF
-      ELSE IF (NO2AVE .OR. SO2AVE) THEN
+      ELSE IF (NO2AVE .or. SO2AVE) THEN
          IF (MAXD_THRESH(IGRP1) .GT. 0.0D0) THEN
             WRITE(IMXDCUNT(IGRP1),9009) CHRVAL,CHRAVE(1),&
             &NUMYRS, GRPID(IGRP1), MAXD_THRESH(IGRP1),&

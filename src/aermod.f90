@@ -599,7 +599,7 @@ PROGRAM AERMOD
 ! --- Write the model options and debug data template to the
 !     debug file if PRIME is specified on the DEBUGOPT keyword
 !     and model run includes sources with building downwash (NSEC > 0)
-   IF (PRIMEDBG .AND. NSEC .GT. 0) THEN
+   IF (PRIMEDBG .and. NSEC .GT. 0) THEN
 ! ---    Write main header records for PRIME debug file
       WRITE(PRMDBUNT,9028) VERSN, TITLE1(1:68), RUNDAT
       IF( EVONLY )THEN
@@ -620,8 +620,8 @@ PROGRAM AERMOD
 ! --- Write the model options and debug data template to the
 !     debug file if AREA/LINE is specified on the DEBUGOPT keyword
 !     and model run includes AREA, LINE, or OPENPIT sources
-   IF( AREADBG .AND. (NAREA.GT.0 .OR. NCIRC.GT.0 .OR.&
-   &NLINE.GT.0 .OR. NPIT.GT.0) )THEN
+   IF( AREADBG .and. (NAREA.GT.0 .or. NCIRC.GT.0 .or.&
+   &NLINE.GT.0 .or. NPIT.GT.0) )THEN
 ! ---    Write main header records for METEOR debug file, then reset METDBGHDR = .F.
       WRITE(AREADBUNT,9028) VERSN, TITLE1(1:68), RUNDAT
       IF( EVONLY )THEN
@@ -668,7 +668,7 @@ PROGRAM AERMOD
 
 ! Added for HBPDEBUG; Jan. 2023
 ! added all the header information for the HBP debug file:
-   IF (HBPLUME .AND. HBPDBG) THEN
+   IF (HBPLUME .and. HBPDBG) THEN
 !        Write the title(s) to the debug output file
       WRITE ( HBPUNT, 7601 )
       WRITE ( HBPUNT, 7100 ) TITLE1(1:68), TITLE2(1:68)
@@ -770,7 +770,7 @@ PROGRAM AERMOD
 
 !     Open file for GDEP output from gas dry deposition algorithms,
 !     but first check for potential file unit conflict
-   IF ((DEBUG .OR. DEPOSDBG) .AND. LDGAS) THEN
+   IF ((DEBUG .or. DEPOSDBG) .and. LDGAS) THEN
       L_OPENED = .FALSE.
       INQUIRE (FILE='GDEP.DAT',OPENED=L_OPENED)
       IF (.NOT.L_OPENED) THEN
@@ -791,7 +791,7 @@ PROGRAM AERMOD
 
 !     Open file for PDEP output from particle dry deposition algorithms,
 !     but first check for potential file unit conflict
-   IF ((DEBUG .OR. DEPOSDBG) .AND. LDPART) THEN
+   IF ((DEBUG .or. DEPOSDBG) .and. LDPART) THEN
       L_OPENED = .FALSE.
       INQUIRE (FILE='PDEP.DAT',OPENED=L_OPENED)
       IF (.NOT.L_OPENED) THEN
@@ -884,7 +884,7 @@ PROGRAM AERMOD
 ! --- Set up common for PRIME building cavity model         ---   CALL PRIME1
    CALL PRIME1
 
-   IF (.NOT.RUN .OR. FATAL .OR. IWRN .GT. 0) THEN
+   IF (.NOT.RUN .or. FATAL .or. IWRN .GT. 0) THEN
 !        Write Out Summary Of Setup Error/Message Stats     ---   CALL SUMTBL
       WRITE(IOUNIT,9111)
 9111  FORMAT(//2X,'*** Message Summary For AERMOD Model Setup ***'/)
@@ -910,7 +910,7 @@ PROGRAM AERMOD
       CALL INPSUM
 
 !        Write Headers to GDEP.DAT and PDEP.DAT Files for new deposition algorithms
-      IF ((DEBUG .OR. DEPOSDBG) .AND. LDGAS) THEN
+      IF ((DEBUG .or. DEPOSDBG) .and. LDGAS) THEN
 !           Write the model options (MODOPS) to the debug output file
          WRITE ( GDEPDBG, 200 )&
          &MODOPS_String(1:LEN_TRIM(MODOPS_String))
@@ -918,7 +918,7 @@ PROGRAM AERMOD
 9901     FORMAT(1X,'YYMMDDHH',3X,'ISRC',4X,'Ra',12X,'Rb',12X,'Rc',&
          &12X,'Vdepg')
       END IF
-      IF ((DEBUG .OR. DEPOSDBG) .AND. LDPART) THEN
+      IF ((DEBUG .or. DEPOSDBG) .and. LDPART) THEN
          WRITE(PDEPDBG,9902)
 !           Write the model options (MODOPS) to the debug output file
          WRITE ( PDEPDBG, 200 )&
@@ -929,13 +929,13 @@ PROGRAM AERMOD
 
    END IF
 
-   IF (.NOT.FATAL .AND. RUN .AND. EVONLY) THEN
+   IF (.NOT.FATAL .and. RUN .and. EVONLY) THEN
 !        No Fatal Errors in Setup and RUN Option Selected and EVENT Processing
 
 !        Process The Data For Each Event                    ---   CALL EVLOOP
       CALL EVLOOP
 
-   ELSE IF (.NOT.FATAL .AND. RUN .AND. .NOT.EVONLY) THEN
+   ELSE IF (.NOT.FATAL .and. RUN .and. .NOT.EVONLY) THEN
 !        No Fatal Errors in Setup and RUN Option Selected and Normal Processing
 
 !        Reinitialize Results Arrays With Zeroes            ---   CALL RESINI
@@ -950,28 +950,28 @@ PROGRAM AERMOD
       CALL HRLOOP
 
 ! ---    Check total precipitation if wet deposition is being used
-      IF ((WDPLETE .OR. DEPOS .OR. WDEP) .AND.&
+      IF ((WDPLETE .or. DEPOS .or. WDEP) .and.&
       &TOTAL_PRECIP .LT. 0.0001D0) THEN
 ! ---       Write warning message for no precip with wet deposition
          CALL ERRHDL(PATH,MODNAM,'W','496','WetDepos')
       END IF
 
-      IF ((PM25AVE .OR. NO2AVE .OR. SO2AVE .OR. ANNUAL)&
-      &.AND. MULTYR&
-      &.AND. .NOT.RUNERR) THEN
+      IF ((PM25AVE .or. NO2AVE .or. SO2AVE .or. ANNUAL)&
+      &.and. MULTYR&
+      &.and. .NOT.RUNERR) THEN
 ! ---       Results arrays for MULTYEAR applications WITH ANNUAL average,
 !           or other outputs averaged across years, need to be "dumped" to
 !           SAVEFILE BEFORE calculating averages
 ! ---                                                       ---   CALL RSDUMP
          CALL RSDUMP
 
-         IF (SEASONHR .AND. .NOT.RUNERR) THEN
+         IF (SEASONHR .and. .NOT.RUNERR) THEN
 ! ---          Calculate averages for season by hour-of-day results
             IF (CONC) THEN
                CALL SHAVE
 ! ---             Check for values exceeding fixed-format field width (F13.8)
 !                 without FILE_FORMAT = 'EXP'
-               IF (FILE_FORMAT .NE. 'EXP' .AND.&
+               IF (FILE_FORMAT .NE. 'EXP' .and.&
                &MAXVAL(SHVALS) .GT. 9999.99999999D0) THEN
                   CALL ERRHDL(PATH,MODNAM,'W','400','= EXP')
                END IF
@@ -980,14 +980,14 @@ PROGRAM AERMOD
 
       END IF
 
-      IF ( (PM25AVE .OR. NO2AVE .OR. SO2AVE .OR. ANNUAL)&
-      &.AND. .NOT.RUNERR) THEN
+      IF ( (PM25AVE .or. NO2AVE .or. SO2AVE .or. ANNUAL)&
+      &.and. .NOT.RUNERR) THEN
 ! ---       Compute averages of the High-N-High 24-hr PM25, 1-hr NO2,
 !           1-hr SO2, and annual values
          IF (NUMYRS .GT. 0) THEN
             DO IGRP = 1, NUMGRP
                DO IREC = 1, NUMREC
-                  IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+                  IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
                      SUMHNH(IREC,IGRP,1:NHIVAL) =&
                      &SUMHNH(IREC,IGRP,1:NHIVAL) / DBLE(NUMYRS)
                   END IF
@@ -1028,16 +1028,16 @@ PROGRAM AERMOD
          END IF
       END IF
 
-      IF ((PERIOD.OR.ANNUAL) .AND. (.NOT. RUNERR) .AND.&
+      IF ((PERIOD.or.ANNUAL) .and. (.NOT. RUNERR) .and.&
       &NTOTHRS.GT.0) THEN
 ! ---       PERIOD Average Selected and No Runtime/Meteorology Errors
-         IF (CONC .AND. PERIOD) THEN
+         IF (CONC .and. PERIOD) THEN
 !              Calculate Period Average Concentrations      ---   CALL PERAVE
             CALL PERAVE
          END IF
 ! ---       Check for values exceeding fixed-format field width (F13.5)
 !           without FILE_FORMAT = 'EXP'
-         IF (FILE_FORMAT .NE. 'EXP' .AND.&
+         IF (FILE_FORMAT .NE. 'EXP' .and.&
          &MAXVAL(ANNVAL) .GT. 9999999.99999D0) THEN
             CALL ERRHDL(PATH,MODNAM,'W','400','= EXP')
          END IF
@@ -1048,7 +1048,7 @@ PROGRAM AERMOD
 !          JAT 9/21/2017: MODIFIED CALL TO PSTANN TO ONLY WHEN PERIOD AVERAGES
 !          TO AVOID WRITING ANNUAL AVERAGE ACROSS MODELED PERIOD TO ANNUAL
 !          POSTFILE WHEN ONLY INDIVIDUAL YEARS SHOULD BE WRITTEN TO ANNUAL POSTFILE
-         IF (ANPOST .AND. PERIOD) THEN
+         IF (ANPOST .and. PERIOD) THEN
 !              Write PERIOD/ANNUAL Results to Post File     ---   CALL PSTANN
             CALL PSTANN
          END IF
@@ -1058,8 +1058,8 @@ PROGRAM AERMOD
          END IF
       END IF
 
-      IF (MULTYR .AND. .NOT.RUNERR .AND.&
-      &.NOT.(ANNUAL .OR. PM25AVE .OR. NO2AVE .OR.&
+      IF (MULTYR .and. .NOT.RUNERR .and.&
+      &.NOT.(ANNUAL .or. PM25AVE .or. NO2AVE .or.&
       &SO2AVE)) THEN
 ! ---       Results arrays for MULTYEAR applications WITHOUT ANNUAL average,
 !           or other outputs averaged across years, need to be "dumped" to
@@ -1068,32 +1068,32 @@ PROGRAM AERMOD
          CALL RSDUMP
       END IF
 
-      IF (.NOT.(MULTYR .AND. (ANNUAL .OR. PM25AVE .OR.&
-      &NO2AVE .OR.&
-      &SO2AVE) ) .AND.&
-      &SEASONHR .AND. .NOT.RUNERR) THEN
+      IF (.NOT.(MULTYR .and. (ANNUAL .or. PM25AVE .or.&
+      &NO2AVE .or.&
+      &SO2AVE) ) .and.&
+      &SEASONHR .and. .NOT.RUNERR) THEN
          IF (CONC) THEN
             CALL SHAVE
 ! ---          Check for values exceeding fixed-format field width (F13.8)
 !              without FILE_FORMAT = 'EXP'
-            IF (FILE_FORMAT .NE. 'EXP' .AND.&
+            IF (FILE_FORMAT .NE. 'EXP' .and.&
             &MAXVAL(SHVALS) .GT. 9999.99999999D0) THEN
                CALL ERRHDL(PATH,MODNAM,'W','400','= EXP')
             END IF
          END IF
       END IF
 
-      IF (PLFILE .AND. (.NOT. RUNERR)) THEN
+      IF (PLFILE .and. (.NOT. RUNERR)) THEN
 !           Write Short Term High Values to Plot File       ---   CALL PLOTFL
 ! ---       Check for values exceeding fixed-format field width (F13.5)
 !           without FILE_FORMAT = 'EXP'
          IF (FILE_FORMAT .NE. 'EXP') THEN
-            IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+            IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
                IF (MAXVAL(SUMHNH) .GT. 9999999.99999D0) THEN
                   CALL ERRHDL(PATH,MODNAM,'W','400','= EXP')
                END IF
-            ELSE IF (.NOT.PM25AVE .AND. .NOT.NO2AVE .AND. .NOT.SO2AVE&
-            &.AND.MAXVAL(HIVALU).GT.9999999.99999D0) THEN
+            ELSE IF (.NOT.PM25AVE .and. .NOT.NO2AVE .and. .NOT.SO2AVE&
+            &.and.MAXVAL(HIVALU).GT.9999999.99999D0) THEN
                CALL ERRHDL(PATH,MODNAM,'W','400','= EXP')
             END IF
          END IF
@@ -1104,13 +1104,13 @@ PROGRAM AERMOD
       IF (.NOT. RUNERR) THEN
 ! ---       Check for values exceeding fixed-format field width (F13.5)
 !           without FILE_FORMAT = 'EXP'
-         IF (.NOT.PLFILE .AND. FILE_FORMAT .NE. 'EXP') THEN
-            IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+         IF (.NOT.PLFILE .and. FILE_FORMAT .NE. 'EXP') THEN
+            IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
                IF (MAXVAL(SUMHNH) .GT. 9999999.99999D0) THEN
                   CALL ERRHDL(PATH,MODNAM,'W','400','= EXP')
                END IF
-            ELSE IF (.NOT.PM25AVE .AND. .NOT.NO2AVE .AND. .NOT.SO2AVE&
-            &.AND.MAXVAL(HIVALU).GT.9999999.99999D0) THEN
+            ELSE IF (.NOT.PM25AVE .and. .NOT.NO2AVE .and. .NOT.SO2AVE&
+            &.and.MAXVAL(HIVALU).GT.9999999.99999D0) THEN
                CALL ERRHDL(PATH,MODNAM,'W','400','= EXP')
             END IF
          END IF
@@ -1120,9 +1120,9 @@ PROGRAM AERMOD
 
 ! ---    Check for MAXDCONT options to evaluate source group contributions
 !        based on rank for PM2.5 24hr, NO2 1hr or SO2 1hr NAAQS
-      IF (.NOT. RUNERR .AND.&
-      &L_MAXDCONT .AND.&
-      &(PM25AVE .OR. NO2AVE .OR. SO2AVE) ) THEN
+      IF (.NOT. RUNERR .and.&
+      &L_MAXDCONT .and.&
+      &(PM25AVE .or. NO2AVE .or. SO2AVE) ) THEN
 
          IF (PVMRMDBG) THEN
 ! ---          PVMRM Debug option selected; print header record to delimit
@@ -1159,7 +1159,7 @@ PROGRAM AERMOD
             &'BuoyLine Rec Arrays for MAXDCONT!'
          END IF
 
-         IF( IASTAT .NE. 0 .OR. IBSTAT .NE. 0) THEN
+         IF( IASTAT .NE. 0 .or. IBSTAT .NE. 0) THEN
             GO TO 9999
          END IF
 
@@ -1194,7 +1194,7 @@ PROGRAM AERMOD
 !     Skip to here if error occurs during allocation of arrays
 9999 CONTINUE
 
-   IF (FATAL .OR. RUNERR) THEN
+   IF (FATAL .or. RUNERR) THEN
       IF (RUNERR) THEN
          WRITE(*,99112)
 99112    FORMAT('+','Fatal Error Occurred During Runtime Phase!')
@@ -1367,7 +1367,7 @@ SUBROUTINE HRLOOP
    FULLDATE = 0
 
 !     Begin Hourly LOOP
-   HOUR_LOOP: DO WHILE (FULLDATE.LE.IEDATE .AND. .NOT.EOF)
+   HOUR_LOOP: DO WHILE (FULLDATE.LE.IEDATE .and. .NOT.EOF)
 !        Retrieve One Hour of Meteorology                   ---   CALL METEXT
 !        Call to METEXT also determines the sector IDs for
 !        BACKGRND and/or OZONE data and/or NOx data, IBGSECT, IO3SECT and INOXSECT
@@ -1379,20 +1379,20 @@ SUBROUTINE HRLOOP
          EXIT HOUR_LOOP
       END IF
 
-      IF (FULLDATE.GE.ISDATE .AND. FULLDATE.LE.IEDATE .AND.&
-      &( (.NOT.L_LeapYear.AND.IPROC (JDAY).EQ.1) .OR.&
-      &(L_LeapYear.AND.IPROCL(JDAY).EQ.1) ) .AND.&
+      IF (FULLDATE.GE.ISDATE .and. FULLDATE.LE.IEDATE .and.&
+      &( (.NOT.L_LeapYear.and.IPROC (JDAY).EQ.1) .or.&
+      &(L_LeapYear.and.IPROCL(JDAY).EQ.1) ) .and.&
       &.NOT.EOF) THEN
 !           Increment counter for total number of hours processed
          IF (.NOT.L_SkipMessages) NTOTHRS = NTOTHRS + 1
-      ELSE IF (FULLDATE.LT.IEDATE .AND. IEDATE.LT.2147123124 .AND.&
+      ELSE IF (FULLDATE.LT.IEDATE .and. IEDATE.LT.2147123124 .and.&
       &EOF) THEN
 ! ---       End of met data file(s) reached before user-specified End Date
 !           Issue fatal error message
          CALL ERRHDL(PATH,MODNAM,'E','580','MET-DATA')
 !           Exit hourly loop
          EXIT HOUR_LOOP
-      ELSE IF (EOF .OR. FULLDATE .GT. IEDATE) THEN
+      ELSE IF (EOF .or. FULLDATE .GT. IEDATE) THEN
 ! ---       End of File or data period has been reached; EXIT hour loop
          EXIT HOUR_LOOP
       END IF
@@ -1433,7 +1433,7 @@ SUBROUTINE HRLOOP
                   CALL HRQEXT(ISRC)
                END IF
 
-               IF (.NOT.RSTINP .AND. L_MAXDCONT .AND.&
+               IF (.NOT.RSTINP .and. L_MAXDCONT .and.&
                &FULLDATE.GE.ISDATE) THEN
 ! ---                Save hourly emissions for MAXDCONT option
                   AAQS(IHR_NDX,IYR_NDX,ISRC) = AQS(ISRC)
@@ -1441,16 +1441,16 @@ SUBROUTINE HRLOOP
                   IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
                      AATS(IHR_NDX,IYR_NDX,ISRC) = ATS(ISRC)
                      AAVS(IHR_NDX,IYR_NDX,ISRC) = AVS(ISRC)
-                  ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .AND.&
+                  ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME' .and.&
                   &L_HRLYSIG(ISRC)) THEN
                      AAHS(IHR_NDX,IYR_NDX,ISRC)    = AHS(ISRC)
                      AASYINI(IHR_NDX,IYR_NDX,ISRC) = ASYINI(ISRC)
                      AASZINI(IHR_NDX,IYR_NDX,ISRC) = ASZINI(ISRC)
-                  ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .AND.&
+                  ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .and.&
                   &L_HRLYSIG(ISRC)) THEN
                      AAHS(IHR_NDX,IYR_NDX,ISRC)    = AHS(ISRC)
                      AASZINI(IHR_NDX,IYR_NDX,ISRC) = ASZINI(ISRC)
-                  ELSE IF (SRCTYP(ISRC) .EQ. 'LINE' .AND.&
+                  ELSE IF (SRCTYP(ISRC) .EQ. 'LINE' .and.&
                   &L_HRLYSIG(ISRC)) THEN
                      AAHS(IHR_NDX,IYR_NDX,ISRC)    = AHS(ISRC)
                      AASZINI(IHR_NDX,IYR_NDX,ISRC) = ASZINI(ISRC)
@@ -1531,7 +1531,7 @@ SUBROUTINE HRLOOP
 !        Exit HOUR_LOOP if runtime error found
       IF (RUNERR) EXIT HOUR_LOOP
 
-      IF (L_BACKGRND .AND. .NOT.RSTINP .AND. L_MAXDCONT .AND.&
+      IF (L_BACKGRND .and. .NOT.RSTINP .and. L_MAXDCONT .and.&
       &FULLDATE.GE.ISDATE) THEN
 ! ---       Save hourly background concentration for MAXDCONT option
          ABGCONC(IHR_NDX,IYR_NDX) = BGCONC
@@ -1548,7 +1548,7 @@ SUBROUTINE HRLOOP
       ENDIF
 !! End of TTRM2 insert; Nov. 2021
 
-      IF (PVMRM .OR. OLM .OR. RUNTTRM .OR. GRSM) THEN
+      IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
 !-----      Read Ozone Data File if available
          IF (L_O3Hourly) THEN
 !*             Increment IOLINE counter to reflect line number of Hourly O3 file
@@ -1590,7 +1590,7 @@ SUBROUTINE HRLOOP
             O3CONC = 0.0D0
          END IF
 
-         IF (.NOT.RSTINP .AND. L_MAXDCONT .AND.&
+         IF (.NOT.RSTINP .and. L_MAXDCONT .and.&
          &FULLDATE.GE.ISDATE) THEN
 ! ---          Save hourly ozone concentration for MAXDCONT option
 !JAT  06/10/2020  ISSUE D47 ADDED FROM 19191
@@ -1649,7 +1649,7 @@ SUBROUTINE HRLOOP
             NOXBGCONC = 0.0D0
          END IF
 
-         IF (.NOT.RSTINP .AND. L_MAXDCONT .AND.&
+         IF (.NOT.RSTINP .and. L_MAXDCONT .and.&
          &FULLDATE.GE.ISDATE) THEN
 ! ---          Save hourly NOX concentration for MAXDCONT option
             ANOXBGCONC(IHR_NDX,IYR_NDX) = NOXBGCONC
@@ -1665,7 +1665,7 @@ SUBROUTINE HRLOOP
       ILINE = ILSAVE
 
 !*       Check for IHOUR = 1 and Write Update to the Screen For PC Version
-      IF ((IHOUR.EQ.1 .OR. ILINE.EQ.1) .AND. .NOT.NOCHKD) THEN
+      IF ((IHOUR.EQ.1 .or. ILINE.EQ.1) .and. .NOT.NOCHKD) THEN
 !*          Write Out Update to the Screen by Julian Day
          WRITE(*,909) JDAY, IYR
 909      FORMAT('+','Now Processing Data For Day No. ',I4,' of ',I4)
@@ -1677,7 +1677,7 @@ SUBROUTINE HRLOOP
 !*----
 !*#
 
-      IF (SCIM .AND. .NOT.EOF) THEN
+      IF (SCIM .and. .NOT.EOF) THEN
          SCIMHR = .FALSE.
 
 !           User has specified SCIM option.  Check for whether current
@@ -1690,11 +1690,11 @@ SUBROUTINE HRLOOP
 !                  to no. of hours sampled.
          NSKIPTOT = NSKIPTOT + 1
 
-         IF( ILINE .LE. 24 .AND. IHOUR .EQ. NREGSTART )THEN
+         IF( ILINE .LE. 24 .and. IHOUR .EQ. NREGSTART )THEN
 !              Current hour is to be sampled - first SCIM'd hour.
             IFIRSTHR = ILINE
             SCIMHR   = .TRUE.
-         ELSE IF( ILINE .GT. NREGSTART .AND.&
+         ELSE IF( ILINE .GT. NREGSTART .and.&
          &MOD( ILINE-IFIRSTHR, NREGINT ) .EQ. 0 )THEN
 !              Current hour is to be sampled - SCIM'd hour
             SCIMHR   = .TRUE.
@@ -1710,23 +1710,23 @@ SUBROUTINE HRLOOP
          END IF
       END IF
 
-      IF (FULLDATE.GE.ISDATE .AND. FULLDATE.LE.IEDATE .AND.&
-      &( (.NOT.L_LeapYear.AND.IPROC (JDAY).EQ.1) .OR.&
-      &(L_LeapYear.AND.IPROCL(JDAY).EQ.1) ) .AND.&
-      &.NOT.EOF .AND. .NOT.RUNERR) THEN
+      IF (FULLDATE.GE.ISDATE .and. FULLDATE.LE.IEDATE .and.&
+      &( (.NOT.L_LeapYear.and.IPROC (JDAY).EQ.1) .or.&
+      &(L_LeapYear.and.IPROCL(JDAY).EQ.1) ) .and.&
+      &.NOT.EOF .and. .NOT.RUNERR) THEN
 
 ! ---       Check for calm winds or missing met data, for which model
 !           calculations cannot be made; increment counters for number
 !           of hours, but do not include background concentrations, if
 !           specified through the BACKGRND keyword.
-         IF (CLMHR .AND. CLMPRO) THEN
+         IF (CLMHR .and. CLMPRO) THEN
 !              Check for Calm Hr & Processing and Increment Counters
             DO IAVE = 1, NUMAVE
                NUMHRS(IAVE) = NUMHRS(IAVE) + 1
                NUMCLM(IAVE) = NUMCLM(IAVE) + 1
             END DO
-            IF (PERIOD .OR. ANNUAL) THEN
-               IF (.NOT.SCIM .OR. (SCIM.AND.SCIMHR)) THEN
+            IF (PERIOD .or. ANNUAL) THEN
+               IF (.NOT.SCIM .or. (SCIM.and.SCIMHR)) THEN
                   IANHRS = IANHRS + 1
                   IANCLM = IANCLM + 1
                END IF
@@ -1735,14 +1735,14 @@ SUBROUTINE HRLOOP
                NSEAHR(ISEAS,IHOUR) = NSEAHR(ISEAS,IHOUR) + 1
                NSEACM(ISEAS,IHOUR) = NSEACM(ISEAS,IHOUR) + 1
             END IF
-         ELSE IF (MSGHR .AND. MSGPRO) THEN
+         ELSE IF (MSGHR .and. MSGPRO) THEN
 !              Check for Missing Hour & Processing and Increment Counters
             DO IAVE = 1, NUMAVE
                NUMHRS(IAVE) = NUMHRS(IAVE) + 1
                NUMMSG(IAVE) = NUMMSG(IAVE) + 1
             END DO
-            IF (PERIOD .OR. ANNUAL) THEN
-               IF (.NOT.SCIM .OR. (SCIM.AND.SCIMHR)) THEN
+            IF (PERIOD .or. ANNUAL) THEN
+               IF (.NOT.SCIM .or. (SCIM.and.SCIMHR)) THEN
                   IANHRS = IANHRS + 1
                   IANMSG = IANMSG + 1
                END IF
@@ -1760,8 +1760,8 @@ SUBROUTINE HRLOOP
             DO IAVE = 1, NUMAVE
                NUMHRS(IAVE) = NUMHRS(IAVE) + 1
             END DO
-            IF (PERIOD .OR. ANNUAL) THEN
-               IF (.NOT.SCIM .OR. (SCIM.AND.SCIMHR)) THEN
+            IF (PERIOD .or. ANNUAL) THEN
+               IF (.NOT.SCIM .or. (SCIM.and.SCIMHR)) THEN
                   IANHRS = IANHRS + 1
                END IF
             END IF
@@ -1774,8 +1774,8 @@ SUBROUTINE HRLOOP
             DO IAVE = 1, NUMAVE
                NUMHRS(IAVE) = NUMHRS(IAVE) + 1
             END DO
-            IF (PERIOD .OR. ANNUAL) THEN
-               IF (.NOT.SCIM .OR. (SCIM.AND.SCIMHR)) THEN
+            IF (PERIOD .or. ANNUAL) THEN
+               IF (.NOT.SCIM .or. (SCIM.and.SCIMHR)) THEN
                   IANHRS = IANHRS + 1
                END IF
             END IF
@@ -1797,7 +1797,7 @@ SUBROUTINE HRLOOP
             CALL CALC
          END IF
 
-         IF (.NOT.CLMHR .AND. .NOT.MSGHR) THEN
+         IF (.NOT.CLMHR .and. .NOT.MSGHR) THEN
 ! ---          Non-calm, non-missing hour; apply NO2 options as appropriate
 !! Added for TTRM2
 !! If TTRM2 (TTRM with the compare option) is requested then
@@ -1813,11 +1813,11 @@ SUBROUTINE HRLOOP
 !                 Flush HRVAL Arrays (1:NUMTYP)
                HRVAL(:)   = 0.0D0
             ENDIF
-            IF (PVMRM .AND. .NOT.PSDCREDIT) THEN
+            IF (PVMRM .and. .NOT.PSDCREDIT) THEN
 ! ---             Process Hourly Values for PVMRM Option
                CALL PVMRM_CALC('ALLSRCS')
 
-            ELSE IF (PVMRM .AND. PSDCREDIT) THEN
+            ELSE IF (PVMRM .and. PSDCREDIT) THEN
 ! ---             Process Hourly Values for PVMRM Option and PSD credits
 ! ---             Need to process two separate sets of sources - the
 !                 increment consumption sources ('NAAQSRC') and the
@@ -1851,8 +1851,8 @@ SUBROUTINE HRLOOP
 !           Begin Averaging Period LOOP
          DO IAVE = 1, NUMAVE
 !              Check for End of Averaging Period
-            IF (MOD(IHOUR,KAVE(IAVE)).EQ.0 .OR.&
-            &(KAVE(IAVE).EQ.720 .AND. ENDMON)) THEN
+            IF (MOD(IHOUR,KAVE(IAVE)).EQ.0 .or.&
+            &(KAVE(IAVE).EQ.720 .and. ENDMON)) THEN
                IF (CONC) THEN
 !                    Calculate Applicable Averages          ---   CALL AVER
                   CALL AVER
@@ -1860,7 +1860,7 @@ SUBROUTINE HRLOOP
 !                 Update High Value Arrays                  ---   CALL HIVALS
                CALL HIVALS
 
-               IF( (NO2AVE .OR. SO2AVE) .AND. KAVE(IAVE).EQ.1 )THEN
+               IF( (NO2AVE .or. SO2AVE) .and. KAVE(IAVE).EQ.1 )THEN
 ! ---                Loop through SRCGRPs again to get max daily 1hr cumulative value
                   DO IGRP = 1, NUMGRP
                      DO IREC = 1, NUMREC
@@ -1873,7 +1873,7 @@ SUBROUTINE HRLOOP
                   END DO
                END IF
 
-               IF( PM25AVE .AND. MOD(IHOUR,24).EQ.0 .AND.&
+               IF( PM25AVE .and. MOD(IHOUR,24).EQ.0 .and.&
                &KAVE(IAVE).EQ.24 )THEN
 ! ---                Loop through source groups again to get max daily 24-hr cumulative value
                   DO IGRP = 1, NUMGRP
@@ -1887,7 +1887,7 @@ SUBROUTINE HRLOOP
                   END DO
                END IF
 
-               IF (DAYTAB .AND. IDYTAB(IAVE).EQ.1) THEN
+               IF (DAYTAB .and. IDYTAB(IAVE).EQ.1) THEN
                   DO ITYP = 1, NUMTYP
 !                       Print Out Daily Value Tables        ---   CALL PRTDAY
                      CALL PRTDAY
@@ -1914,14 +1914,14 @@ SUBROUTINE HRLOOP
 ! ---       Check for PM25AVE, NO2AVE or SO2AVE to update daily
 !           maximum value arrays; also output to MAXDAILY file,
 !           if requested
-         IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+         IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
             IF (MOD(IHOUR,24).EQ.0) THEN
 ! ---             End of day reached, call MXDLYFL
                CALL MXDLYFL
             END IF
          END IF
 
-         IF (RSTSAV .AND. IHOUR.EQ.24) THEN
+         IF (RSTSAV .and. IHOUR.EQ.24) THEN
             NDAYS = NDAYS + 1
             IF (NDAYS .EQ. INCRST) THEN
 !                 Save Results to File for Later Re-start   ---   CALL RSDUMP
@@ -1937,8 +1937,8 @@ SUBROUTINE HRLOOP
          IF (ALLOCATED(BACKAVE)) BACKAVE(:)  = 0.0D0
          IF (ALLOCATED(BACKHR))  BACKHR(:,:) = 0.0D0
 
-         IF (PVMRM .OR. OLM .OR. ARM2 .OR.&
-         &RUNTTRM .OR. GRSM) THEN
+         IF (PVMRM .or. OLM .or. ARM2 .or.&
+         &RUNTTRM .or. GRSM) THEN
 !              Flush CHI(NUMREC,NUMSRC,NUMTYP) Array
             CHI(:,:,:) = 0.0D0
             IF(GRSM)THEN
@@ -1962,17 +1962,17 @@ SUBROUTINE HRLOOP
 !        Check for end of year of data for PM25, NO2, SO2, or MULTYR processing;
 !        but skip if NOCHKD option or WARNCHKD option is used (this also includes
 !        SCREEN option since SCREEN ==> NOCHKD)
-      IF (FULLDATE.GT.ISDATE .AND. .NOT.EOF .AND. .NOT.NOCHKD .AND.&
-      &.NOT.L_WARNCHKD .AND.&
-      &(PM25AVE .OR. NO2AVE .OR. SO2AVE .OR.&
-      &ANNUAL .OR. MULTYR)) THEN
+      IF (FULLDATE.GT.ISDATE .and. .NOT.EOF .and. .NOT.NOCHKD .and.&
+      &.NOT.L_WARNCHKD .and.&
+      &(PM25AVE .or. NO2AVE .or. SO2AVE .or.&
+      &ANNUAL .or. MULTYR)) THEN
 
          CALL CHK_ENDYR
 
-      ELSEIF(FULLDATE.EQ.ISDATE .AND..NOT.EOF .AND..NOT.NOCHKD .AND.&
-      &.NOT.L_WARNCHKD .AND.&
-      &(PM25AVE .OR. NO2AVE .OR. SO2AVE .OR.&
-      &ANNUAL .OR. MULTYR)) THEN
+      ELSEIF(FULLDATE.EQ.ISDATE .and..NOT.EOF .and..NOT.NOCHKD .and.&
+      &.NOT.L_WARNCHKD .and.&
+      &(PM25AVE .or. NO2AVE .or. SO2AVE .or.&
+      &ANNUAL .or. MULTYR)) THEN
 
          NREMAIN = NREMAIN + 1
 
@@ -2053,7 +2053,7 @@ SUBROUTINE JULIAN(INYR,INMN,INDY,JDY)
    JDY = 0
 
 !     Check for Invalid Month or Day
-   IF (INMN.LT.1 .OR. INMN.GT.12) THEN
+   IF (INMN.LT.1 .or. INMN.GT.12) THEN
 !        WRITE Error Message    ! Invalid Month
       WRITE(DUMMY,'(''MONTH = '',I2)') INMN
       CALL ERRHDL(PATH,MODNAM,'E','203',DUMMY)
@@ -2068,10 +2068,10 @@ SUBROUTINE JULIAN(INYR,INMN,INDY,JDY)
    END IF
 
 !     Determine JULIAN Day Number; For Non-Leap Year First
-   IF ((MOD(INYR,4) .NE. 0) .OR.&
-   &(MOD(INYR,100) .EQ. 0 .AND. MOD(INYR,400) .NE. 0)) THEN
+   IF ((MOD(INYR,4) .NE. 0) .or.&
+   &(MOD(INYR,100) .EQ. 0 .and. MOD(INYR,400) .NE. 0)) THEN
 !        Not a Leap Year
-      IF (INMN.NE.2 .OR. (INMN.EQ.2 .AND. INDY.LE.28)) THEN
+      IF (INMN.NE.2 .or. (INMN.EQ.2 .and. INDY.LE.28)) THEN
          JDY = INDY + NDAY(INMN)
       ELSE
 !           WRITE Error Message    ! Invalid Date; 2/29 in a Non-Leap Year
@@ -2128,19 +2128,19 @@ SUBROUTINE GREGOR(INYR,INMN,JDY,IDY)
    MODNAM = 'GREGOR'
 
 !     Check for Invalid Month or Julian Day
-   IF (INMN.LT.1 .OR. INMN.GT.12) THEN
+   IF (INMN.LT.1 .or. INMN.GT.12) THEN
 !        WRITE Error Message    ! Invalid Month
       CALL ERRHDL(PATH,MODNAM,'E','203','MONTH')
       GO TO 999
-   ELSE IF (JDY.LT.1 .OR. JDY.GT.366) THEN
+   ELSE IF (JDY.LT.1 .or. JDY.GT.366) THEN
 !        WRITE Error Message    ! Invalid Julian Day
       CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
       GO TO 999
    END IF
 
 !     Determine Day-of-Month Number; For Non-Leap Year First
-   IF ((MOD(INYR,4) .NE. 0) .OR.&
-   &(MOD(INYR,100).EQ.0 .AND. MOD(INYR,400).NE.0)) THEN
+   IF ((MOD(INYR,4) .NE. 0) .or.&
+   &(MOD(INYR,100).EQ.0 .and. MOD(INYR,400).NE.0)) THEN
 !        Not a Leap Year
       IDY = JDY - NDAY(INMN)
    ELSE
@@ -2295,7 +2295,7 @@ SUBROUTINE HRQREAD (IS)
 !C     year for comparison with FULLDATE based on met data file
 !      IF (IHYEAR .LE. 99) THEN
 !         IHYEAR2 = IHYEAR
-!         IF (IHYEAR2 .GE. ISTRT_WIND .AND.
+!         IF (IHYEAR2 .GE. ISTRT_WIND .and.
 !     &                        IHYEAR2 .LE. 99) THEN
 !            IHYEAR = ISTRT_CENT*100 + IHYEAR2
 !         ELSE IF (IHYEAR2 .LT. ISTRT_WIND) THEN
@@ -2338,7 +2338,7 @@ SUBROUTINE HRQREAD (IS)
 
 ! ------------------------ Begin correct # of parameters for source type
 
-   ELSE IF (SRCTYP(IS)(1:5) .EQ. 'POINT' .AND. IFC.EQ.10) THEN
+   ELSE IF (SRCTYP(IS)(1:5) .EQ. 'POINT' .and. IFC.EQ.10) THEN
 !*       Assign emission rate, exit temperature and exit velocity
 !*       for POINT sources
 
@@ -2371,13 +2371,13 @@ SUBROUTINE HRQREAD (IS)
          GO TO 999
       END IF
 
-   ELSE IF (SRCTYP(IS) .EQ. 'VOLUME' .AND. IFC.EQ.11) THEN
+   ELSE IF (SRCTYP(IS) .EQ. 'VOLUME' .and. IFC.EQ.11) THEN
 !*       Assign emission rate, release height and initial sigmas
 !*       for VOLUME source.
 !*       Assign logical variable indicating hourly sigmas, L_HRLYSIG
       IF (ILSAVE .EQ. 1) THEN
          L_HRLYSIG(IS) = .TRUE.
-      ELSE IF (ILSAVE .GT. 1 .AND. .NOT. L_HRLYSIG(IS)) THEN
+      ELSE IF (ILSAVE .GT. 1 .and. .NOT. L_HRLYSIG(IS)) THEN
 !*          This volume source should not include hourly sigmas;
 !*          issue error message
          WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -2423,7 +2423,7 @@ SUBROUTINE HRQREAD (IS)
          GO TO 999
       END IF
 
-   ELSE IF (SRCTYP(IS) .EQ. 'VOLUME' .AND. IFC.EQ.8) THEN
+   ELSE IF (SRCTYP(IS) .EQ. 'VOLUME' .and. IFC.EQ.8) THEN
 !*       Assign emission rate for volume sources
 !*       Check logical variable indicating hourly sigmas, L_HRLYSIG
       IF (L_HRLYSIG(IS)) THEN
@@ -2450,14 +2450,14 @@ SUBROUTINE HRQREAD (IS)
          CALL ERRHDL(PATH,MODNAM,'W','341',DUMMY)
       END IF
 
-   ELSE IF ((SRCTYP(IS)(1:4).EQ.'AREA' .OR. SRCTYP(IS).EQ.'LINE'&
-   &.OR. SRCTYP(IS).EQ.'RLINE' .OR. SRCTYP(IS).EQ.'RLINEXT')&
-   &.AND. IFC.EQ.10) THEN
+   ELSE IF ((SRCTYP(IS)(1:4).EQ.'AREA' .or. SRCTYP(IS).EQ.'LINE'&
+   &.or. SRCTYP(IS).EQ.'RLINE' .or. SRCTYP(IS).EQ.'RLINEXT')&
+   &.and. IFC.EQ.10) THEN
 !*       Assign emission rate for AREA and LINE sources
 !*       Assign logical variable indicating hourly sigmas, L_HRLYSIG
       IF (ILSAVE .EQ. 1) THEN
          L_HRLYSIG(IS) = .TRUE.
-      ELSE IF (ILSAVE .GT. 1 .AND. .NOT. L_HRLYSIG(IS)) THEN
+      ELSE IF (ILSAVE .GT. 1 .and. .NOT. L_HRLYSIG(IS)) THEN
          WRITE(DUMMY,'(I10.10)') FULLHRQ
          CALL ERRHDL(PATH,MODNAM,'E','345',DUMMY)
          HRQS = 0.0D0
@@ -2494,9 +2494,9 @@ SUBROUTINE HRQREAD (IS)
          GO TO 999
       END IF
 
-   ELSE IF ((SRCTYP(IS)(1:4).EQ.'AREA' .OR. SRCTYP(IS).EQ.'LINE'&
-   &.OR. SRCTYP(IS).EQ.'RLINE' .OR. SRCTYP(IS).EQ.'RLINEXT')&
-   &.AND. IFC.EQ.8) THEN
+   ELSE IF ((SRCTYP(IS)(1:4).EQ.'AREA' .or. SRCTYP(IS).EQ.'LINE'&
+   &.or. SRCTYP(IS).EQ.'RLINE' .or. SRCTYP(IS).EQ.'RLINEXT')&
+   &.and. IFC.EQ.8) THEN
 !*       Assign emission rate for AREA and LINE sources
 !*       Check logical variable indicating hourly sigmas, L_HRLYSIG
       IF (L_HRLYSIG(IS)) THEN
@@ -2523,7 +2523,7 @@ SUBROUTINE HRQREAD (IS)
          CALL ERRHDL(PATH,MODNAM,'W','341',DUMMY)
       END IF
 
-   ELSE IF (SRCTYP(IS) .EQ. 'OPENPIT' .AND. IFC.EQ.8) THEN
+   ELSE IF (SRCTYP(IS) .EQ. 'OPENPIT' .and. IFC.EQ.8) THEN
 !*       Assign emission rate for OPENPIT sources
       CALL STODBL(FIELD(8), ILEN_FLD, HRQS, IMIT)
       IF (IMIT .NE. 1) THEN
@@ -2540,7 +2540,7 @@ SUBROUTINE HRQREAD (IS)
          CALL ERRHDL(PATH,MODNAM,'W','341',DUMMY)
       END IF
 
-   ELSE IF (SRCTYP(IS) .EQ. 'BUOYLINE' .AND. IFC.EQ.9) THEN
+   ELSE IF (SRCTYP(IS) .EQ. 'BUOYLINE' .and. IFC.EQ.9) THEN
 !*       Assign emission rate (field 8) and average buoyancy parameter
 !        (field 9) for BUOYANT LINE sources
 
@@ -2569,7 +2569,7 @@ SUBROUTINE HRQREAD (IS)
 ! -------------------------- End of correct # parameters for source type
 ! -------------------------- Begin too many parameters for source type
 
-   ELSE IF (SRCTYP(IS)(1:5).EQ.'POINT' .AND. IFC.GT.10) THEN
+   ELSE IF (SRCTYP(IS)(1:5).EQ.'POINT' .and. IFC.GT.10) THEN
 !*       Too many parameters - WRITE Error Message
 !*       Assign zeros to all parameters
       WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -2579,9 +2579,9 @@ SUBROUTINE HRQREAD (IS)
       HRVS = 0.0D0
       RUNERR = .TRUE.
 
-   ELSE IF (SRCTYP(IS).EQ.'VOLUME' .AND.&
-   &((L_HRLYSIG(IS) .AND. IFC.GT.11) .OR.&
-   &(.NOT.L_HRLYSIG(IS) .AND. IFC.GT.8))) THEN
+   ELSE IF (SRCTYP(IS).EQ.'VOLUME' .and.&
+   &((L_HRLYSIG(IS) .and. IFC.GT.11) .or.&
+   &(.NOT.L_HRLYSIG(IS) .and. IFC.GT.8))) THEN
 !*       Too many parameters - WRITE Error Message
 !*       Assign zeros to all parameters
       WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -2592,10 +2592,10 @@ SUBROUTINE HRQREAD (IS)
       HRSZ = 0.0D0
       RUNERR = .TRUE.
 
-   ELSE IF ((SRCTYP(IS)(1:4).EQ.'AREA' .OR. SRCTYP(IS).EQ.'LINE'&
-   &.OR. SRCTYP(IS).EQ.'RLINE' .OR. SRCTYP(IS) .EQ. 'RLINEXT')&
-   &.AND. ((L_HRLYSIG(IS) .AND. IFC.GT.10) .OR.&
-   &(.NOT.L_HRLYSIG(IS) .AND. IFC.GT.8))) THEN
+   ELSE IF ((SRCTYP(IS)(1:4).EQ.'AREA' .or. SRCTYP(IS).EQ.'LINE'&
+   &.or. SRCTYP(IS).EQ.'RLINE' .or. SRCTYP(IS) .EQ. 'RLINEXT')&
+   &.and. ((L_HRLYSIG(IS) .and. IFC.GT.10) .or.&
+   &(.NOT.L_HRLYSIG(IS) .and. IFC.GT.8))) THEN
 !*       Too many parameters - WRITE Error Message
 !*       Assign zeros to all parameters
       WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -2605,7 +2605,7 @@ SUBROUTINE HRQREAD (IS)
       HRSZ = 0.0D0
       RUNERR = .TRUE.
 
-   ELSE IF (SRCTYP(IS).EQ.'OPENPIT' .AND. IFC.GT.8) THEN
+   ELSE IF (SRCTYP(IS).EQ.'OPENPIT' .and. IFC.GT.8) THEN
 !*       Too many parameters - WRITE Error Message
 !*       Assign zeros to all parameters
       WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -2613,7 +2613,7 @@ SUBROUTINE HRQREAD (IS)
       HRQS = 0.0D0
       RUNERR = .TRUE.
 
-   ELSE IF (SRCTYP(IS) .EQ. 'BUOYLINE' .AND. IFC.GT.9) THEN
+   ELSE IF (SRCTYP(IS) .EQ. 'BUOYLINE' .and. IFC.GT.9) THEN
 !*       Too many parameters - WRITE Error Message
 !*       Assign zeros to all parameters
       WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -2635,9 +2635,9 @@ SUBROUTINE HRQREAD (IS)
       HRVS = 0.0D0
       RUNERR = .TRUE.
 
-   ELSE IF (SRCTYP(IS) .EQ. 'VOLUME' .AND.&
-   &((L_HRLYSIG(IS) .AND. IFC.LT.11) .OR.&
-   &(.NOT.L_HRLYSIG(IS) .AND. IFC.LT.8))) THEN
+   ELSE IF (SRCTYP(IS) .EQ. 'VOLUME' .and.&
+   &((L_HRLYSIG(IS) .and. IFC.LT.11) .or.&
+   &(.NOT.L_HRLYSIG(IS) .and. IFC.LT.8))) THEN
 !*       Some missing parameters - WRITE Error Message
 !*       Assign zeros to all parameters
       WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -2648,10 +2648,10 @@ SUBROUTINE HRQREAD (IS)
       HRSZ = 0.0D0
       RUNERR = .TRUE.
 
-   ELSE IF ((SRCTYP(IS)(1:4).EQ.'AREA' .OR. SRCTYP(IS).EQ.'LINE'&
-   &.OR. SRCTYP(IS).EQ.'RLINE' .OR. SRCTYP(IS) .EQ. 'RLINEXT')&
-   &.AND. ((L_HRLYSIG(IS) .AND. IFC.LT.10) .OR.&
-   &(.NOT.L_HRLYSIG(IS) .AND. IFC.LT.8))) THEN
+   ELSE IF ((SRCTYP(IS)(1:4).EQ.'AREA' .or. SRCTYP(IS).EQ.'LINE'&
+   &.or. SRCTYP(IS).EQ.'RLINE' .or. SRCTYP(IS) .EQ. 'RLINEXT')&
+   &.and. ((L_HRLYSIG(IS) .and. IFC.LT.10) .or.&
+   &(.NOT.L_HRLYSIG(IS) .and. IFC.LT.8))) THEN
 !*       Some missing parameters - WRITE Error Message
 !*       Assign zeros to all parameters
       WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -2762,20 +2762,20 @@ SUBROUTINE HRQEXT (IS)
       IF (SRCTYP(IS)(1:5) .EQ. 'POINT') THEN
          ATS(IS) = EV_HRTS(IS,IHOUR)
          AVS(IS) = EV_HRVS(IS,IHOUR)
-      ELSE IF (SRCTYP(IS) .EQ. 'VOLUME' .AND. L_HRLYSIG(IS)) THEN
+      ELSE IF (SRCTYP(IS) .EQ. 'VOLUME' .and. L_HRLYSIG(IS)) THEN
          AHS(IS)    = EV_HRHS(IS,IHOUR)
          ASYINI(IS) = EV_HRSY(IS,IHOUR)
          ASZINI(IS) = EV_HRSZ(IS,IHOUR)
-      ELSE IF (SRCTYP(IS)(1:4) .EQ. 'AREA' .AND. L_HRLYSIG(IS)) THEN
+      ELSE IF (SRCTYP(IS)(1:4) .EQ. 'AREA' .and. L_HRLYSIG(IS)) THEN
          AHS(IS)    = EV_HRHS(IS,IHOUR)
          ASZINI(IS) = EV_HRSZ(IS,IHOUR)
-      ELSE IF (SRCTYP(IS) .EQ. 'LINE' .AND. L_HRLYSIG(IS)) THEN
+      ELSE IF (SRCTYP(IS) .EQ. 'LINE' .and. L_HRLYSIG(IS)) THEN
          AHS(IS)    = EV_HRHS(IS,IHOUR)
          ASZINI(IS) = EV_HRSZ(IS,IHOUR)
-      ELSE IF (SRCTYP(IS) .EQ. 'RLINE' .AND. L_HRLYSIG(IS)) THEN
+      ELSE IF (SRCTYP(IS) .EQ. 'RLINE' .and. L_HRLYSIG(IS)) THEN
          AHS(IS)    = EV_HRHS(IS,IHOUR)
          ASZINI(IS) = EV_HRSZ(IS,IHOUR)
-      ELSE IF (SRCTYP(IS) .EQ. 'RLINEXT' .AND. L_HRLYSIG(IS)) THEN
+      ELSE IF (SRCTYP(IS) .EQ. 'RLINEXT' .and. L_HRLYSIG(IS)) THEN
          AHS(IS)    = EV_HRHS(IS,IHOUR)
          ASZINI(IS) = EV_HRSZ(IS,IHOUR)
       ELSE IF (SRCTYP(IS) .EQ. 'BUOYLINE') THEN
@@ -2801,20 +2801,20 @@ SUBROUTINE HRQEXT (IS)
       IF (SRCTYP(IS)(1:5) .EQ. 'POINT') THEN
          ATS(IS) = HRTS
          AVS(IS) = HRVS
-      ELSE IF (SRCTYP(IS) .EQ. 'VOLUME' .AND. L_HRLYSIG(IS)) THEN
+      ELSE IF (SRCTYP(IS) .EQ. 'VOLUME' .and. L_HRLYSIG(IS)) THEN
          AHS(IS)    = HRHS
          ASYINI(IS) = HRSY
          ASZINI(IS) = HRSZ
-      ELSE IF (SRCTYP(IS)(1:4) .EQ. 'AREA' .AND. L_HRLYSIG(IS)) THEN
+      ELSE IF (SRCTYP(IS)(1:4) .EQ. 'AREA' .and. L_HRLYSIG(IS)) THEN
          AHS(IS)    = HRHS
          ASZINI(IS) = HRSZ
-      ELSE IF (SRCTYP(IS) .EQ. 'LINE' .AND. L_HRLYSIG(IS)) THEN
+      ELSE IF (SRCTYP(IS) .EQ. 'LINE' .and. L_HRLYSIG(IS)) THEN
          AHS(IS)    = HRHS
          ASZINI(IS) = HRSZ
-      ELSE IF (SRCTYP(IS) .EQ. 'RLINE' .AND. L_HRLYSIG(IS)) THEN
+      ELSE IF (SRCTYP(IS) .EQ. 'RLINE' .and. L_HRLYSIG(IS)) THEN
          AHS(IS)    = HRHS
          ASZINI(IS) = HRSZ
-      ELSE IF (SRCTYP(IS) .EQ. 'RLINEXT' .AND. L_HRLYSIG(IS)) THEN
+      ELSE IF (SRCTYP(IS) .EQ. 'RLINEXT' .and. L_HRLYSIG(IS)) THEN
          AHS(IS)    = HRHS
          ASZINI(IS) = HRSZ
       ELSE IF (SRCTYP(IS) .EQ. 'BUOYLINE') THEN
@@ -2846,8 +2846,8 @@ SUBROUTINE HRQEXT (IS)
          IF (.NOT. L_SkipMessages) THEN
             CALL ERRHDL(PATH,MODNAM,'W','320','HRTS')
          END IF
-      ELSE IF ( (DABS(AQS(IS)).GT.0.0D0) .AND.&
-      &(ATS(IS).GT.0.0D0) .AND. (ATS(IS).LT.200.0D0) .AND.&
+      ELSE IF ( (DABS(AQS(IS)).GT.0.0D0) .and.&
+      &(ATS(IS).GT.0.0D0) .and. (ATS(IS).LT.200.0D0) .and.&
       &(AVS(IS).GT.200.0D0) ) THEN
 !*          Exit temp < 200K (about -100F) and exit velocity > 200m/s
 !*          with non-zero emissions; Incorrect units may have been
@@ -2857,8 +2857,8 @@ SUBROUTINE HRQEXT (IS)
             CALL ERRHDL(PATH,MODNAM,'E','320','HRTS')
             RUNERR = .TRUE.
          END IF
-      ELSE IF ( (DABS(AQS(IS)).GT.0.0D0) .AND.&
-      &(ATS(IS).GT.0.0D0) .AND. (ATS(IS).LT.200.0D0) ) THEN
+      ELSE IF ( (DABS(AQS(IS)).GT.0.0D0) .and.&
+      &(ATS(IS).GT.0.0D0) .and. (ATS(IS).LT.200.0D0) ) THEN
 !*          Exit temp < 200K (about -100F) with non-zero emissions;
 !*          Incorrect units may have been used or ATS and AVS may
 !*          have been switched;
@@ -2938,9 +2938,9 @@ SUBROUTINE HRQEXT (IS)
          END IF
       END IF
 
-   ELSE IF (SRCTYP(IS)(1:4).EQ.'AREA' .OR. SRCTYP(IS).EQ.'LINE'&
-   &.OR. SRCTYP(IS).EQ.'RLINE'&
-   &.OR. SRCTYP(IS).EQ.'RLINEXT') THEN
+   ELSE IF (SRCTYP(IS)(1:4).EQ.'AREA' .or. SRCTYP(IS).EQ.'LINE'&
+   &.or. SRCTYP(IS).EQ.'RLINE'&
+   &.or. SRCTYP(IS).EQ.'RLINEXT') THEN
       IF (AHS(IS) .LT. 0.0D0) THEN
 !           WRITE Error Message:  Negative Release Height
          CALL ERRHDL(PATH,MODNAM,'E','209','HRHS')
@@ -3088,7 +3088,7 @@ SUBROUTINE O3EXT(L_ReadErr,ReadErr,EndErr)
 !C              year for comparison with FULLDATE based on met data file
 !               IF (IO3YR .LE. 99) THEN
 !                  IO3YR2 = IO3YR
-!                  IF (IO3YR2 .GE. ISTRT_WIND .AND.
+!                  IF (IO3YR2 .GE. ISTRT_WIND .and.
 !     &                                 IO3YR2 .LE. 99) THEN
 !                     IO3YR  = ISTRT_CENT*100 + IO3YR2
 !                  ELSE IF (IO3YR2 .LT. ISTRT_WIND) THEN
@@ -3100,7 +3100,7 @@ SUBROUTINE O3EXT(L_ReadErr,ReadErr,EndErr)
             FULLO3HR(I) = IO3YR*1000000 + IO3MN*10000 + IO3DY*100&
             &+ IO3HR
 
-            IF (O3CONC .GE. 0.0D0 .AND. O3CONC .LT. 900.0D0) THEN
+            IF (O3CONC .GE. 0.0D0 .and. O3CONC .LT. 900.0D0) THEN
 ! ---             Valid hourly value; convert to ug/m3 if needed
                IF (O3FILUNITS .EQ. 'PPB') THEN
                   O3CONC = O3CONC * O3_PPB
@@ -3115,7 +3115,7 @@ SUBROUTINE O3EXT(L_ReadErr,ReadErr,EndErr)
                      O3MAX24 = MIN ( 78.40D0,&
                      &MAXVAL( O3_Max24hr(:,IO3SECT) ) )
 !                       Adjust minimum O3 value based on OBULEN
-                     IF (OBULEN .GT.  0.0D0 .AND.&
+                     IF (OBULEN .GT.  0.0D0 .and.&
                      &OBULEN .LE. 50.0D0) THEN
                         O3MIN = O3MAX24
                      ELSE IF (OBULEN .GT. 250.0D0) THEN
@@ -3131,7 +3131,7 @@ SUBROUTINE O3EXT(L_ReadErr,ReadErr,EndErr)
                   O3_Max24hr(IO3HR,IO3SECT) = O3CONC
                   O3CONC = MAX( O3CONC, O3MIN )
                END IF
-            ELSE IF (L_O3VALUES(IO3SECT) .OR.&
+            ELSE IF (L_O3VALUES(IO3SECT) .or.&
             &L_O3VAL(IO3SECT)) THEN
 ! ---             Hourly O3 value is missing; assign O3SUB value based on
 !                 O3VALUES or OZONEVAL inputs
@@ -3181,7 +3181,7 @@ SUBROUTINE O3EXT(L_ReadErr,ReadErr,EndErr)
 !C              year for comparison with FULLDATE based on met data file
 !               IF (IO3YR .LE. 99) THEN
 !                  IO3YR2 = IO3YR
-!                  IF (IO3YR2 .GE. ISTRT_WIND .AND.
+!                  IF (IO3YR2 .GE. ISTRT_WIND .and.
 !     &                                 IO3YR2 .LE. 99) THEN
 !                     IO3YR  = ISTRT_CENT*100 + IO3YR2
 !                  ELSE IF (IO3YR2 .LT. ISTRT_WIND) THEN
@@ -3192,7 +3192,7 @@ SUBROUTINE O3EXT(L_ReadErr,ReadErr,EndErr)
             FULLO3HR(I) = IO3YR*1000000 + IO3MN*10000 + IO3DY*100&
             &+ IO3HR
 
-            IF (O3TEMP .GE. 0.0D0 .AND. O3TEMP .LT. 900.0D0) THEN
+            IF (O3TEMP .GE. 0.0D0 .and. O3TEMP .LT. 900.0D0) THEN
 ! ---             Valid hourly value; convert to ug/m3 if needed
                IF (O3FILUNITS .EQ. 'PPB') THEN
                   O3TEMP = O3TEMP * O3_PPB
@@ -3202,7 +3202,7 @@ SUBROUTINE O3EXT(L_ReadErr,ReadErr,EndErr)
 ! ---             Save this hour's O3CONC (in ug/m3) to array of previous
 !                 24 values for this sector
                O3_Max24hr(IO3HR,I) = O3TEMP
-            ELSE IF (L_O3VALUES(I) .OR.&
+            ELSE IF (L_O3VALUES(I) .or.&
             &L_O3VAL(I)) THEN
 ! ---             Hourly O3 value is missing; assign O3SUB value;
 !                 these have already been converted to ug/m3
@@ -3398,7 +3398,7 @@ SUBROUTINE BGEXT(L_ReadErr,ReadErr,EndErr)
 !C              year for comparison with FULLDATE based on met data file
 !               IF (IBGYR .LE. 99) THEN
 !                  IBGYR2 = IBGYR
-!                  IF (IBGYR2 .GE. ISTRT_WIND .AND.
+!                  IF (IBGYR2 .GE. ISTRT_WIND .and.
 !     &                                 IBGYR2 .LE. 99) THEN
 !                     IBGYR  = ISTRT_CENT*100 + IBGYR2
 !                  ELSE IF (IBGYR2 .LT. ISTRT_WIND) THEN
@@ -3444,7 +3444,7 @@ SUBROUTINE BGEXT(L_ReadErr,ReadErr,EndErr)
 !C              year for comparison with FULLDATE based on met data file
 !               IF (IBGYR .LE. 99) THEN
 !                  IBGYR2 = IBGYR
-!                  IF (IBGYR2 .GE. ISTRT_WIND .AND.
+!                  IF (IBGYR2 .GE. ISTRT_WIND .and.
 !     &                                 IBGYR2 .LE. 99) THEN
 !                     IBGYR  = ISTRT_CENT*100 + IBGYR2
 !                  ELSE IF (IBGYR2 .LT. ISTRT_WIND) THEN
@@ -3652,7 +3652,7 @@ SUBROUTINE NOXEXT(L_ReadErr,ReadErr,EndErr)
 !C              year for comparison with FULLDATE based on met data file
 !               IF (INOXYR .LE. 99) THEN
 !                  INOXYR2 = INOXYR
-!                  IF (INOXYR2 .GE. ISTRT_WIND .AND.
+!                  IF (INOXYR2 .GE. ISTRT_WIND .and.
 !     &                                 INOXYR2 .LE. 99) THEN
 !                     INOXYR  = ISTRT_CENT*100 + INOXYR2
 !                  ELSE IF (INOXYR2 .LT. ISTRT_WIND) THEN
@@ -3674,7 +3674,7 @@ SUBROUTINE NOXEXT(L_ReadErr,ReadErr,EndErr)
                END IF
                !Ensure non-negative
                NOXBGCONC = MAX( NOXBGCONC, NOXMIN )
-            ELSE IF (L_NOX_VALS(INOXSECT) .OR.&
+            ELSE IF (L_NOX_VALS(INOXSECT) .or.&
             &L_NOXVALUE(INOXSECT)) THEN
 ! ---             Hourly NOx value is missing; assign NOXSUB value based on
 !                 NOX_VALS or NOXVALUE inputs
@@ -3719,7 +3719,7 @@ SUBROUTINE NOXEXT(L_ReadErr,ReadErr,EndErr)
 !C              year for comparison with FULLDATE based on met data file
 !               IF (INOXYR .LE. 99) THEN
 !                  INOXYR2 = INOXYR
-!                  IF (INOXYR2 .GE. ISTRT_WIND .AND.
+!                  IF (INOXYR2 .GE. ISTRT_WIND .and.
 !     &                                 INOXYR2 .LE. 99) THEN
 !                     INOXYR  = ISTRT_CENT*100 + INOXYR2
 !                  ELSE IF (INOXYR2 .LT. ISTRT_WIND) THEN
@@ -3739,7 +3739,7 @@ SUBROUTINE NOXEXT(L_ReadErr,ReadErr,EndErr)
                ELSE IF (NOXFILUNITS .EQ. 'PPM') then
                   NOXTEMP = NOXTEMP / NO2_PPM
                END IF
-            ELSE IF (L_NOX_VALS(I) .OR.&
+            ELSE IF (L_NOX_VALS(I) .or.&
             &L_NOXVALUE(I)) THEN
 ! ---             Hourly NOx value is missing; assign NOXSUB value;
 !                 these have already been converted to ug/m3
@@ -3877,7 +3877,7 @@ SUBROUTINE ERRHDL(PATHWY,MODNAM,INERTP,INERCD,INPMSG)
    END IF
 
 !     Go To Match The Error Massage
-   DO WHILE (.NOT.FOUND .AND. I.LE.IERRN)
+   DO WHILE (.NOT.FOUND .and. I.LE.IERRN)
       IF (INERCD .EQ. ERRCOD(I)) THEN
          ERRMG1 = ERRMSG(I)
          FOUND = .TRUE.
@@ -3988,15 +3988,15 @@ SUBROUTINE TERRST
             CALL STODBL(INPFLD12,12,DNUM,IMIT)
             ICDAT = IDNINT(DNUM)
             ICYR  = ICDAT/1000000
-            IF (RSTINP .OR. IMSTAT(6).EQ.0 .OR.&
-            &(ICDAT.GE.ISDATE .AND. ICDAT.LE.IEDATE) ) THEN
+            IF (RSTINP .or. IMSTAT(6).EQ.0 .or.&
+            &(ICDAT.GE.ISDATE .and. ICDAT.LE.IEDATE) ) THEN
 ! ---             This hour is between start and end dates,
 !                 or this is a restarted model run, now
 !                 determine Julian day and check IPROC array
 !                 for DAYRANGE.
                ICMN = (ICDAT/10000) - (ICDAT/1000000)*100
                ICDY = (ICDAT/100) - (ICDAT/10000)*100
-               IF (ICMN.GT.0 .AND. ICDY.GT.0) THEN
+               IF (ICMN.GT.0 .and. ICDY.GT.0) THEN
                   CALL JULIAN(ICYR,ICMN,ICDY,ICJDY)
                ELSE
                   ICJDY = 0
@@ -4015,15 +4015,15 @@ SUBROUTINE TERRST
             CALL STODBL(INPFLD12,12,DNUM,IMIT)
             ICDAT = IDNINT(DNUM)
             ICYR   = ICDAT/1000000
-            IF (RSTINP .OR. IMSTAT(6).EQ.0 .OR.&
-            &(ICDAT.GE.ISDATE .AND. ICDAT.LE.IEDATE) ) THEN
+            IF (RSTINP .or. IMSTAT(6).EQ.0 .or.&
+            &(ICDAT.GE.ISDATE .and. ICDAT.LE.IEDATE) ) THEN
 ! ---             This hour is between start and end dates,
 !                 or this is a restarted model run, now
 !                 determine Julian day and check IPROC array
 !                 for DAYRANGE.
                ICMN = (ICDAT/10000) - (ICDAT/1000000)*100
                ICDY = (ICDAT/100) - (ICDAT/10000)*100
-               IF (ICMN.GT.0 .AND. ICDY.GT.0) THEN
+               IF (ICMN.GT.0 .and. ICDY.GT.0) THEN
                   CALL JULIAN(ICYR,ICMN,ICDY,ICJDY)
                ELSE
                   ICJDY = 0
@@ -4129,7 +4129,7 @@ SUBROUTINE SUMTBL(IOUNT)
          &'Applications" (EPA-454/R-99-005).')
       END IF
 ! ---    Output total precipipation if wet deposition algorithms are used
-      IF (WDPLETE .OR. DEPOS .OR. WDEP) THEN
+      IF (WDPLETE .or. DEPOS .or. WDEP) THEN
          WRITE(IOUNT,9020) TOTAL_PRECIP, TOTAL_PRECIP/25.4D0
 9020     FORMAT(/,' Met Data File Includes ',F10.2,' Millimeters (',&
          &F10.3,' Inches) of Precipitation')
@@ -4389,7 +4389,7 @@ SUBROUTINE PNPOLY (PX,PY,X,Y,N,INOUT)
       XI=X(I)-PX
       YI=Y(I)-PY
 !        CHECK WHETHER THE POINT IN QUESTION IS AT THIS VERTEX.
-      IF (XI.EQ.0.0D0 .AND. YI.EQ.0.0D0) THEN
+      IF (XI.EQ.0.0D0 .and. YI.EQ.0.0D0) THEN
          INOUT = 0
          EXIT
       END IF
@@ -4398,30 +4398,30 @@ SUBROUTINE PNPOLY (PX,PY,X,Y,N,INOUT)
       XJ=X(J)-PX
       YJ=Y(J)-PY
 !        IS THIS LINE OF 0 LENGTH ?
-      IF (XI.EQ.XJ .AND. YI.EQ.YJ) CYCLE
+      IF (XI.EQ.XJ .and. YI.EQ.YJ) CYCLE
       IX=XI.GE.0.0D0
       IY=YI.GE.0.0D0
       JX=XJ.GE.0.0D0
       JY=YJ.GE.0.0D0
 !        CHECK WHETHER (PX,PY) IS ON VERTICAL SIDE OF POLYGON.
       L_EOR = EOR(IY,JY)
-      IF (XI.EQ.0.0D0 .AND. XJ.EQ.0.0D0 .AND. L_EOR) THEN
+      IF (XI.EQ.0.0D0 .and. XJ.EQ.0.0D0 .and. L_EOR) THEN
          INOUT = 0
          EXIT
       END IF
 !        CHECK WHETHER (PX,PY) IS ON HORIZONTAL SIDE OF POLYGON.
       L_EOR = EOR(IX,JX)
-      IF (YI.EQ.0.0D0 .AND. YJ.EQ.0.0D0 .AND. L_EOR) THEN
+      IF (YI.EQ.0.0D0 .and. YJ.EQ.0.0D0 .and. L_EOR) THEN
          INOUT = 0
          EXIT
       END IF
 !        CHECK WHETHER BOTH ENDS OF THIS SIDE ARE COMPLETELY 1) TO RIGHT
 !        OF, 2) TO LEFT OF, OR 3) BELOW (PX,PY).
       L_EOR = EOR(IX,JX)
-      IF (.NOT.((IY.OR.JY).AND.L_EOR)) CYCLE
+      IF (.NOT.((IY.or.JY).and.L_EOR)) CYCLE
 !        DOES THIS SIDE OBVIOUSLY CROSS LINE RISING VERTICALLY FROM (PX,PY)
       L_EOR = EOR(IX,JX)
-      IF (.NOT.(IY.AND.JY.AND.L_EOR)) THEN
+      IF (.NOT.(IY.and.JY.and.L_EOR)) THEN
          IF ((YI*XJ-XI*YJ)/(XJ-XI) .LT. 0.0D0) THEN
             CYCLE
          ELSE IF ((YI*XJ-XI*YJ)/(XJ-XI) .EQ. 0.0D0) THEN
@@ -4440,7 +4440,7 @@ SUBROUTINE PNPOLY (PX,PY,X,Y,N,INOUT)
 CONTAINS
    LOGICAL FUNCTION EOR(IX,IY)
       LOGICAL IX, IY
-      EOR = (IX.OR.IY) .AND. .NOT.(IX.AND.IY)
+      EOR = (IX.or.IY) .and. .NOT.(IX.and.IY)
    END FUNCTION
 
 END
@@ -4850,8 +4850,8 @@ SUBROUTINE ALLSETUP
       END IF
    END IF
 
-   IF (PVMRM .OR. OLM .OR. ARM2&
-   &.OR. RUNTTRM .OR. GRSM) THEN
+   IF (PVMRM .or. OLM .or. ARM2&
+   &.or. RUNTTRM .or. GRSM) THEN
       ALLOCATE (ANO2_RATIO(NSRC), CHI(NREC,NSRC,NTYP), STAT=IASTAT)
       IF (IASTAT .NE. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','409','Setup Arrays')
@@ -4860,7 +4860,7 @@ SUBROUTINE ALLSETUP
          &'PVMRM/OLM/ARM2/TTRM/GRSM CHI Array!'
       END IF
 
-      IF (PVMRM .OR. GRSM) THEN
+      IF (PVMRM .or. GRSM) THEN
          ALLOCATE (HECNTR(NREC,NSRC), HECNTR3(NREC,NSRC),&
          &UEFFS(NREC,NSRC), UEFF3S(NREC,NSRC),&
          &EPSEF(NREC,NSRC), EPSEF3(NREC,NSRC),&
@@ -5083,8 +5083,8 @@ SUBROUTINE ALLRESULT
       IF (SEASONHR) THEN
          STORE = STORE + ( 4.*24.*RREC*RGRP*RTYP )
       END IF
-      IF (PVMRM .OR. OLM .OR. RUNTTRM .OR.&
-      &GRSM .OR. RUNTTRM2) THEN
+      IF (PVMRM .or. OLM .or. RUNTTRM .or.&
+      &GRSM .or. RUNTTRM2) THEN
          !RSRC is for ANO2_RATIO, RSRC*RREC*RTYP is for CHI
          STORE = STORE + ( RSRC + RSRC*RREC*RTYP )
          IF (PVMRM) THEN
@@ -5092,7 +5092,7 @@ SUBROUTINE ALLRESULT
             IF (PSDCREDIT) THEN
                STORE = STORE + ( RSRC*(2.+RPSD) + RREC*2.*RTYP )
             END IF
-         ELSE IF (OLM .OR. RUNTTRM) THEN
+         ELSE IF (OLM .or. RUNTTRM) THEN
             STORE = STORE + ( 0.5*ROLM*RSRC + ROLM + RSRC )
          ELSE IF (GRSM) THEN
             !For HECNTR, UEEFS, EPSEF etc:
@@ -5103,23 +5103,23 @@ SUBROUTINE ALLRESULT
             STORE = STORE + ( 6.*RSRC )
          END IF
       END IF
-      IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+      IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
          STORE = STORE + RREC*RGRP*(1.5+1.5*RHIMXDLY+&
          &1.5*RHIMXDLY*RYEARS)
       END IF
       IF (L_MAXDCONT) THEN
          STORE = STORE + RYEARS*(19.*8784.+10.*8784.+&
          &7.*8784.*REAL(MXGLVL))
-         IF (LDGAS.OR.LDPART.OR.LWGAS.OR.LWPART.OR.GRSM) THEN
+         IF (LDGAS.or.LDPART.or.LWGAS.or.LWPART.or.GRSM) THEN
             STORE = STORE + RYEARS*14.*8784.
          END IF
          IF (NSEC .GT. 0) THEN
             STORE = STORE + RYEARS*8784.*REAL(MXGLVL)
          END IF
-         IF (PVMRM .OR. GRSM) THEN
+         IF (PVMRM .or. GRSM) THEN
             STORE = STORE + RYEARS*8784.*REAL(MXGLVL)
          END IF
-         IF (PVMRM .OR. OLM .OR. RUNTTRM .OR. GRSM) THEN
+         IF (PVMRM .or. OLM .or. RUNTTRM .or. GRSM) THEN
             !For Ozone background
             STORE = STORE + RYEARS*8784.
          END IF
@@ -5135,7 +5135,7 @@ SUBROUTINE ALLRESULT
             IF (NPNT .GT. 0) THEN
                STORE = STORE + RYEARS*REAL(2*8784)*RSRC
             END IF
-            IF (NVOL .GT. 0 .OR. NVMAX .GT. 0) THEN
+            IF (NVOL .GT. 0 .or. NVMAX .GT. 0) THEN
                STORE = STORE + RYEARS*REAL(2*8784)*RSRC
             END IF
          END IF
@@ -5180,7 +5180,7 @@ SUBROUTINE ALLRESULT
          &'Short Term Average Results Arrays!'
       END IF
 
-      IF (PERIOD .OR. ANNUAL) THEN
+      IF (PERIOD .or. ANNUAL) THEN
          ALLOCATE  (ANNVAL(NUMREC,NUMGRP,NUMTYP),&
          &AMXVAL(NHIANN,NUMGRP,NUMTYP),&
          &IMXLOC(NHIANN,NUMGRP,NUMTYP),&
@@ -5230,7 +5230,7 @@ SUBROUTINE ALLRESULT
          END IF
       END IF
 
-      IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+      IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
          NHIMXDLY = MAX( NHIMXDLY, NHIVAL )
          ALLOCATE (MXDVAL(NUMREC,NUMGRP),&
          &HIMXDLY(NUMREC,NUMGRP,NHIMXDLY),&
@@ -5271,7 +5271,7 @@ SUBROUTINE ALLRESULT
          END IF
       END IF
 
-      IF (PM25AVE .OR. NO2AVE .OR. SO2AVE) THEN
+      IF (PM25AVE .or. NO2AVE .or. SO2AVE) THEN
          ALLOCATE  (SUMHNH(NUMREC,NUMGRP,NHIVAL),&
          &MXPMVAL(NMXPM,NUMGRP,NHIVAL),&
          &MXPMLOC(NMXPM,NUMGRP,NHIVAL),&
@@ -5388,7 +5388,7 @@ SUBROUTINE ALLRESULT
       END IF
 
 ! ---    Allocate arrays for NO2 options, PVMRM, OLM, GRSM, or TTRM
-      IF (PVMRM .OR. GRSM) THEN
+      IF (PVMRM .or. GRSM) THEN
          ALLOCATE( AGRIDEPS(8784,MXGLVL,NYEARS),&
          &AO3CONC(8784,NYEARS), STAT=IASTAT )
       END IF
@@ -5407,7 +5407,7 @@ SUBROUTINE ALLRESULT
       IF (NSEC .GT. 0) THEN
          ALLOCATE( AGRIDRHO(8784,MXGLVL,NYEARS),STAT=IASTAT )
       END IF
-      IF (LDGAS .OR. LDPART .OR. LWPART .OR. LWGAS .OR. GRSM) THEN
+      IF (LDGAS .or. LDPART .or. LWPART .or. LWGAS .or. GRSM) THEN
          ALLOCATE( ABOWEN(8784,NYEARS),&
          &AALBEDO(8784,NYEARS), AWNEW(8784,NYEARS),&
          &AWOLD(8784,NYEARS), AESTA(8784,NYEARS),&
@@ -5434,7 +5434,7 @@ SUBROUTINE ALLRESULT
             &AAVS(8784,NYEARS,NSRC), AATS(8784,NYEARS,NSRC),&
             &STAT=IASTAT)
          END IF
-         IF (NVOL .GT. 0 .OR. NVMAX .GT. 0) THEN
+         IF (NVOL .GT. 0 .or. NVMAX .GT. 0) THEN
             ALLOCATE(&
             &AASYINI(8784,NYEARS,NSRC), AASZINI(8784,NYEARS,NSRC),&
             &STAT=IASTAT)
@@ -5751,7 +5751,7 @@ SUBROUTINE DCDLAT ()
 
 !        Write a message if the latitude is too far north
 
-      IF( XLAT .GT. 90.0D0  .OR.  XLAT .LT. 0.0D0 )THEN
+      IF( XLAT .GT. 90.0D0  .or.  XLAT .LT. 0.0D0 )THEN
 !           Write a warning to the user - latitude out-of-range
          CALL ERRHDL(PATH,MODNAM,'W','381',ALAT)
       END IF
@@ -5765,7 +5765,7 @@ SUBROUTINE DCDLAT ()
          TSIGN = -1.0D0
          READ( ALAT, '(F9.1)',ERR=1000 ) XLAT
 
-         IF( XLAT .GT. 90.0D0  .OR.  XLAT .LT. 0.0D0 )THEN
+         IF( XLAT .GT. 90.0D0  .or.  XLAT .LT. 0.0D0 )THEN
 !              Write a warning to the user - latitude out-of-range
             CALL ERRHDL(PATH,MODNAM,'W','381',ALAT)
          END IF
@@ -5985,7 +5985,7 @@ SUBROUTINE PRESET
       IF (BLINE) GO TO 10
 
 !        Check for 'NO ECHO' In First Two Fields
-      IF (FIELD(1) .EQ. 'NO' .AND. FIELD(2) .EQ. 'ECHO') THEN
+      IF (FIELD(1) .EQ. 'NO' .and. FIELD(2) .EQ. 'ECHO') THEN
 !           Skip record with NO ECHO during PRESET stage of processing
          GO TO 10
       END IF
@@ -6023,8 +6023,8 @@ SUBROUTINE PRESET
             L_O3Sector = .TRUE.
             CYCLE
 
-         ELSEIF (KEYWRD .EQ. 'OZONEFIL' .OR.&
-         &KEYWRD .EQ. 'O3VALUES' .OR.&
+         ELSEIF (KEYWRD .EQ. 'OZONEFIL' .or.&
+         &KEYWRD .EQ. 'O3VALUES' .or.&
          &KEYWRD .EQ. 'OZONEVAL') THEN
             L_O3Data = .TRUE.
             CYCLE
@@ -6041,8 +6041,8 @@ SUBROUTINE PRESET
             L_NOxSector = .TRUE.
             CYCLE
 
-         ELSEIF (KEYWRD .EQ. 'NOX_FILE' .OR.&
-         &KEYWRD .EQ. 'NOX_VALS' .OR.&
+         ELSEIF (KEYWRD .EQ. 'NOX_FILE' .or.&
+         &KEYWRD .EQ. 'NOX_VALS' .or.&
          &KEYWRD .EQ. 'NOXVALUE')THEN
             L_NOxData = .TRUE.
             CYCLE
@@ -6059,8 +6059,8 @@ SUBROUTINE PRESET
 ! ---          Assign logical variable for BACKGRND
             L_BACKGRND = .TRUE.
             CYCLE
-         ELSE IF (KEYWRD .EQ. 'INCLUDED' .AND.&
-         &(.NOT.L_BGSector .OR. .NOT.L_BACKGRND)) THEN
+         ELSE IF (KEYWRD .EQ. 'INCLUDED' .and.&
+         &(.NOT.L_BGSector .or. .NOT.L_BACKGRND)) THEN
 ! ---          Call PREINCLUD since BGSECTOR and/or BACKGRND, URBANSRC,
 !              and/or BLPINPUT may be in an INCLUDED file
             CALL PREINCLUD
@@ -6089,7 +6089,7 @@ SUBROUTINE PRESET
 
 ! ---       Exit pre-PRESET loop if BGSECTOR and BACKGRND
 !           have been specified
-         IF (L_BGSector .AND. L_BACKGRND) THEN
+         IF (L_BGSector .and. L_BACKGRND) THEN
             EXIT
          END IF
 
@@ -6106,16 +6106,16 @@ SUBROUTINE PRESET
    END DO
 
 ! --- Check for O3SECTOR keyword without O3 data inputs
-   IF (L_O3Sector .AND. .NOT.L_O3Data) THEN
+   IF (L_O3Sector .and. .NOT.L_O3Data) THEN
 ! ----   Issue warning message for O3SECTOR without O3 data
       CALL ERRHDL(PATH,MODNAM,'W','166','O3SECTOR')
    END IF
-   IF (L_BGSector .AND. .NOT.L_BACKGRND) THEN
+   IF (L_BGSector .and. .NOT.L_BACKGRND) THEN
 ! ----   Issue warning message for O3SECTOR without O3 data
       CALL ERRHDL(PATH,MODNAM,'W','166','BGSECTOR')
    END IF
 ! --- Check for NOXSECTR keyword without NOX data inputs
-   IF (L_NOXSector .AND. .NOT.L_NOXData) THEN
+   IF (L_NOXSector .and. .NOT.L_NOXData) THEN
 ! ----   Issue warning message for NOXSECTR without NOX data
       CALL ERRHDL(PATH,MODNAM,'W','166','NOXSECTR')
    END IF
@@ -6152,7 +6152,7 @@ SUBROUTINE PRESET
       CALL GETFLD
 
 !        Check for 'NO ECHO' In First Two Fields
-      IF (FIELD(1) .EQ. 'NO' .AND. FIELD(2) .EQ. 'ECHO') THEN
+      IF (FIELD(1) .EQ. 'NO' .and. FIELD(2) .EQ. 'ECHO') THEN
 !           Skip record with NO ECHO during PRESET stage of processing
          CYCLE
       END IF
@@ -6186,9 +6186,9 @@ SUBROUTINE PRESET
       IF (PATH .EQ. 'CO') THEN
          IF (KEYWRD .EQ. 'MODELOPT') THEN
             DO I = 3, IFC
-               IF (FIELD(I) .EQ. 'CONC'  .OR.&
-               &FIELD(I) .EQ. 'DEPOS' .OR.&
-               &FIELD(I) .EQ. 'DDEP'  .OR.&
+               IF (FIELD(I) .EQ. 'CONC'  .or.&
+               &FIELD(I) .EQ. 'DEPOS' .or.&
+               &FIELD(I) .EQ. 'DDEP'  .or.&
                &FIELD(I) .EQ. 'WDEP') THEN
                   NTYP = NTYP + 1
                END IF
@@ -6223,7 +6223,7 @@ SUBROUTINE PRESET
 
          ELSE IF (KEYWRD .EQ. 'AVERTIME') THEN
             DO I = 3, IFC
-               IF (FIELD(I).NE.'PERIOD' .AND.&
+               IF (FIELD(I).NE.'PERIOD' .and.&
                &FIELD(I).NE.'ANNUAL') THEN
                   NAVE = NAVE + 1
                END IF
@@ -6366,7 +6366,7 @@ SUBROUTINE PRESET
                L_UserSWmin = .TRUE.
                L_UserBigT = .TRUE.
                L_UserFRANmin = .TRUE.
-               IF (FIELD(IFC) .EQ. 'PBAL' .OR.&
+               IF (FIELD(IFC) .EQ. 'PBAL' .or.&
                &FIELD(IFC) .EQ. 'PBALANCE') THEN
                   L_PBal = .TRUE.
                END IF
@@ -6390,11 +6390,11 @@ SUBROUTINE PRESET
             CALL PREINCLUD
          END IF
 
-      ELSE IF (PATH .EQ. 'ME' .AND. KEYWRD .EQ. 'SURFDATA') THEN
+      ELSE IF (PATH .EQ. 'ME' .and. KEYWRD .EQ. 'SURFDATA') THEN
 !           Read start year from SURFDATA card to establish date window
          CALL SET_WINDOW
 
-      ELSE IF (PATH .EQ. 'ME' .AND. KEYWRD .EQ. 'NUMYEARS') THEN
+      ELSE IF (PATH .EQ. 'ME' .and. KEYWRD .EQ. 'NUMYEARS') THEN
 ! ---       Set number of years for allocating the MAXDCONT arrays
          IF (IFC .EQ. 3) THEN
             CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
@@ -6425,12 +6425,12 @@ SUBROUTINE PRESET
                END IF
 ! ---             Now check for character strings NCHR1 or NCHR2
                DO J = 1, 10
-                  IF (LPRD.EQ.NCHR1(J) .OR.&
+                  IF (LPRD.EQ.NCHR1(J) .or.&
                   &LPRD.EQ.NCHR2(J)) ISPRD = J
-                  IF (HPRD.EQ.NCHR1(J) .OR.&
+                  IF (HPRD.EQ.NCHR1(J) .or.&
                   &HPRD.EQ.NCHR2(J)) IEPRD = J
                END DO
-               IF (ISPRD .GT. 999 .OR. IEPRD .GT. 999) THEN
+               IF (ISPRD .GT. 999 .or. IEPRD .GT. 999) THEN
 !                    Write Error Message:Illegal Parameter Field
                   CALL ERRHDL(PATH,MODNAM,'E','203','HIVALU')
                   CYCLE
@@ -6444,7 +6444,7 @@ SUBROUTINE PRESET
 !              End LOOP Through Fields
             END DO
 
-         ELSE IF (KEYWRD .EQ. 'MAXTABLE' .OR.&
+         ELSE IF (KEYWRD .EQ. 'MAXTABLE' .or.&
          &KEYWRD .EQ. 'RANKFILE') THEN
 !              Set Number of Maximum Values to Sort
             CALL STONUM(FIELD(4),ILEN_FLD,FNUM,IMIT)
@@ -6465,7 +6465,7 @@ SUBROUTINE PRESET
 !              Set MAXDCONT logical flag to account for MAXDCONT array needs
             L_MAXDCONT = .TRUE.
 
-         ELSE IF (KEYWRD .EQ. 'FILEFORM' .AND.&
+         ELSE IF (KEYWRD .EQ. 'FILEFORM' .and.&
          &FIELD(3)(1:3) .EQ. 'EXP') THEN
 ! ---          Check for FILEFORM keyword with 'EXP' format in order to
 !              include correct format in output file headers
@@ -6532,11 +6532,11 @@ SUBROUTINE PRESET
 
 ! --- Determine maximum number of vertices for AREA sources, including
 !     AREAPOLY and AREACIRC source types, LINE sources, and OPENPIT sources.
-   IF (NAREA .EQ. 0 .AND. NLINE .EQ. 0 .AND. NPIT .EQ. 0) THEN
+   IF (NAREA .EQ. 0 .and. NLINE .EQ. 0 .and. NPIT .EQ. 0) THEN
 !        No area, line, or openpit sources, set NVMAX to 0
       NVMAX = 0
    ELSE
-      IF (NPOLY .EQ. 0 .AND. NCIRC .EQ. 0) THEN
+      IF (NPOLY .EQ. 0 .and. NCIRC .EQ. 0) THEN
 !           No AREAPOLY or AREACIRC sources; initialize NVMAX to 8
 !           for rectangular AREA, LINE, and/or OPENPIT sources
          NVMAX = 8
@@ -6727,7 +6727,7 @@ SUBROUTINE PREINCLUD
       CALL GETFLD
 
 !        Check for 'NO ECHO' In First Two Fields
-      IF (FIELD(1) .EQ. 'NO' .AND. FIELD(2) .EQ. 'ECHO') THEN
+      IF (FIELD(1) .EQ. 'NO' .and. FIELD(2) .EQ. 'ECHO') THEN
 !           Skip record with NO ECHO during PREINCLUD stage of processing
          CYCLE
       END IF
@@ -6937,7 +6937,7 @@ SUBROUTINE SRCSIZ
       ELSE IF (FIELD(4) .EQ. 'SWPOINT') THEN
 !           Check if required ALPHA flag is present for SWPOINT sources
 !           or if processing INCLUDED keyword (MODELOPTs not set yet!)
-         IF(L_ALPHA .OR. L_PREINC) THEN
+         IF(L_ALPHA .or. L_PREINC) THEN
             NSWP = NSWP + 1
          ELSE
             CALL ERRHDL(PATH,MODNAM,'E','198',' SWPOINT')
@@ -6957,13 +6957,13 @@ SUBROUTINE SRCSIZ
          IF(ARM2) CALL ERRHDL(PATH,MODNAM,'W','726',FIELD(4))
 
       ELSE IF (FIELD(4) .EQ. 'RLINE') THEN    !D150 RLINE requires the BETA keyword while RLINEXt requires the ALPHA keyword. Needed to separate them WSP 1/30/23
-!D150         ELSE IF ((FIELD(4) .EQ. 'RLINE') .OR.
+!D150         ELSE IF ((FIELD(4) .EQ. 'RLINE') .or.
 !D150     &              (FIELD(4) .EQ. 'RLINEXT')) THEN
 !           Check that the required BETA flag is present for RLINE sources
 !        or if processing INCLUDED keyword (MODELOPTs not set yet!)
 
 !MGS D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP (begin)
-!MGS            IF(BETA .OR. L_PREINC) THEN  !D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP
+!MGS            IF(BETA .or. L_PREINC) THEN  !D182_Remove_BETA_flag_GRSM_RLINE_COARE_WSP
          NRLINES = NRLINES + 1
 !MGS            ELSE
 !MGS               CALL ERRHDL(PATH,MODNAM,'E','199',' RLINE BETA Required')
@@ -6985,7 +6985,7 @@ SUBROUTINE SRCSIZ
       ELSE IF (FIELD(4) .EQ. 'RLINEXT') THEN
 !           Check that the required ALPHA flag is present for RLINEXT sources
 !           or if processing INCLUDED keyword (MODELOPTs not set yet!) D150 AKP 05/23/2023
-         IF(L_ALPHA .OR. L_PREINC) THEN
+         IF(L_ALPHA .or. L_PREINC) THEN
             NRLINES = NRLINES + 1
          ELSE
 !              D150 CRT 6/1/2023 - Update error message code to specify ALPHA required
@@ -7129,8 +7129,8 @@ SUBROUTINE SRCSIZ
          PREVSRCID = FIELD(3)
       END IF
 
-   ELSE IF ((KEYWRD.EQ.'BUILDHGT' .OR.&
-   &KEYWRD.EQ.'BUILDWID' .OR.&
+   ELSE IF ((KEYWRD.EQ.'BUILDHGT' .or.&
+   &KEYWRD.EQ.'BUILDWID' .or.&
    &KEYWRD.EQ.'BUILDLEN')) THEN
       NSEC = 36
 
@@ -7202,9 +7202,9 @@ SUBROUTINE SRCSIZ
          NBF = MAX( NBF, 2016)
       END IF
 
-   ELSE IF (KEYWRD .EQ. 'URBANSRC' .AND.&
-   &IFC .EQ. 3 .AND. FIELD(3) .EQ. 'ALL'&
-   &.AND. L_PRESET_URBAN) THEN
+   ELSE IF (KEYWRD .EQ. 'URBANSRC' .and.&
+   &IFC .EQ. 3 .and. FIELD(3) .EQ. 'ALL'&
+   &.and. L_PRESET_URBAN) THEN
       IF (.NOT. L_MULTURB) THEN
 !           Set logical for URBANSRC ALL option (not applicable for
 !           multiple urban areas)
@@ -7218,16 +7218,16 @@ SUBROUTINE SRCSIZ
       END IF
 
 ! --- Check for number of urbansrc
-   ELSE IF (KEYWRD .EQ. 'URBANSRC' .AND. .NOT.L_MULTURB) THEN
+   ELSE IF (KEYWRD .EQ. 'URBANSRC' .and. .NOT.L_MULTURB) THEN
       NURBSRC = NURBSRC + IFC - 2
 
-   ELSE IF (KEYWRD .EQ. 'URBANSRC' .AND. L_MULTURB) THEN
+   ELSE IF (KEYWRD .EQ. 'URBANSRC' .and. L_MULTURB) THEN
       NURBSRC = NURBSRC + IFC - 3
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   ELSE IF (KEYWRD .EQ. 'ARCFTSRC' .AND.&
-   &IFC .EQ. 3 .AND. FIELD(3) .EQ. 'ALL'&
-   &.AND. L_PRESET_ARCFT) THEN
+   ELSE IF (KEYWRD .EQ. 'ARCFTSRC' .and.&
+   &IFC .EQ. 3 .and. FIELD(3) .EQ. 'ALL'&
+   &.and. L_PRESET_ARCFT) THEN
       L_ARCFT_ALL = .TRUE.
 ! --- Assign number of AIRCRAFT sources
       NAFTSRC = NSRC
@@ -7237,8 +7237,8 @@ SUBROUTINE SRCSIZ
 !**  End Aircraft Plume Rise insert; April 2023
 
 ! Added for HBP, JAN 2023
-   ELSE IF (KEYWRD .EQ. 'HBPSRCID' .AND.&
-   &IFC .EQ. 3 .AND. FIELD(3) .EQ. 'ALL') THEN
+   ELSE IF (KEYWRD .EQ. 'HBPSRCID' .and.&
+   &IFC .EQ. 3 .and. FIELD(3) .EQ. 'ALL') THEN
       L_HBP_ALL = .TRUE.
 ! End HBP insert
 
@@ -7288,7 +7288,7 @@ SUBROUTINE SRCSIZ
 ! (Multiple_BuoyLines_D41_Wood)
 ! ---    For legacy input control files that have a buoyant line source
 !         and no BLPGROUP keyword(s); NBLGRP used for array allocation
-      IF (NBLP .GT. 0 .AND. NBLGRP .EQ. 0) THEN
+      IF (NBLP .GT. 0 .and. NBLGRP .EQ. 0) THEN
          NBLGRP = 1
       END IF
       RETURN
@@ -7388,16 +7388,16 @@ SUBROUTINE PRECART
       GO TO 999
    END IF
    NETIDT = FIELD(3)
-   IF (.NOT.NEWID .AND. (NETIDT.EQ.'    ' .OR.&
-   &NETIDT.EQ.'XYINC' .OR. NETIDT.EQ.'XPNTS' .OR.&
-   &NETIDT.EQ.'YPNTS' .OR. NETIDT.EQ.'ELEV' .OR.&
-   &NETIDT.EQ.'HILL'  .OR.&
-   &NETIDT.EQ.'FLAG'  .OR. NETIDT.EQ.'END')) THEN
+   IF (.NOT.NEWID .and. (NETIDT.EQ.'    ' .or.&
+   &NETIDT.EQ.'XYINC' .or. NETIDT.EQ.'XPNTS' .or.&
+   &NETIDT.EQ.'YPNTS' .or. NETIDT.EQ.'ELEV' .or.&
+   &NETIDT.EQ.'HILL'  .or.&
+   &NETIDT.EQ.'FLAG'  .or. NETIDT.EQ.'END')) THEN
       NETIDT = PNETID
       KTYPE = FIELD(3)
-   ELSE IF (.NOT.NEWID .AND. NETIDT.EQ.PNETID) THEN
+   ELSE IF (.NOT.NEWID .and. NETIDT.EQ.PNETID) THEN
       KTYPE = FIELD(4)
-   ELSE IF (NEWID .AND. NETIDT.NE.' ') THEN
+   ELSE IF (NEWID .and. NETIDT.NE.' ') THEN
       NEWID = .FALSE.
       KTYPE = FIELD(4)
 !        The Keyword Counter
@@ -7420,7 +7420,7 @@ SUBROUTINE PRECART
    ELSE IF (KTYPE .EQ. 'XYINC') THEN
 !        Set the Uniform Spacing Receptor Network           ---   CALL PREGENCAR
       CALL PREGENCAR
-   ELSE IF (KTYPE.EQ.'XPNTS' .OR. KTYPE.EQ.'YPNTS') THEN
+   ELSE IF (KTYPE.EQ.'XPNTS' .or. KTYPE.EQ.'YPNTS') THEN
 !        Set the Non-uniform Spacing Receptor Network       ---   CALL PREXYPNTS
       CALL PREXYPNTS
    ELSE IF (KTYPE .EQ. 'END') THEN
@@ -7431,7 +7431,7 @@ SUBROUTINE PRECART
       ISTA = .FALSE.
       NEWID = .TRUE.
 
-   ELSE IF (KTYPE.NE.'ELEV' .AND. KTYPE.NE.'FLAG' .AND.&
+   ELSE IF (KTYPE.NE.'ELEV' .and. KTYPE.NE.'FLAG' .and.&
    &KTYPE.NE.'HILL') THEN
 !        Invalid Secondary Keyword
       RECERR = .TRUE.
@@ -7503,7 +7503,7 @@ SUBROUTINE PREGENCAR
 
 !     Input The Numerical Values
    DO K = 1,6
-      IF (K .EQ. 2 .OR. K .EQ. 5) THEN
+      IF (K .EQ. 2 .or. K .EQ. 5) THEN
          CALL STONUM(FIELD(ISC + K-1),ILEN_FLD,TEMPR(K),IMIT)
 !           Check The Numerical Field
          IF (IMIT .EQ. -1) THEN
@@ -7668,17 +7668,17 @@ SUBROUTINE PREPOLR
 
 !     READ in the Netid and Nettype
    NETIDT = FIELD(3)
-   IF (.NOT.NEWID .AND. (NETIDT.EQ.'    ' .OR.&
-   &NETIDT.EQ.'ORIG' .OR. NETIDT.EQ.'DIST' .OR.&
-   &NETIDT.EQ.'DDIR' .OR. NETIDT.EQ.'ELEV' .OR.&
-   &NETIDT.EQ.'HILL' .OR.&
-   &NETIDT.EQ.'FLAG' .OR. NETIDT.EQ.'GDIR' .OR.&
+   IF (.NOT.NEWID .and. (NETIDT.EQ.'    ' .or.&
+   &NETIDT.EQ.'ORIG' .or. NETIDT.EQ.'DIST' .or.&
+   &NETIDT.EQ.'DDIR' .or. NETIDT.EQ.'ELEV' .or.&
+   &NETIDT.EQ.'HILL' .or.&
+   &NETIDT.EQ.'FLAG' .or. NETIDT.EQ.'GDIR' .or.&
    &NETIDT.EQ.'END')) THEN
       NETIDT = PNETID
       KTYPE = FIELD(3)
-   ELSE IF (.NOT.NEWID .AND. NETIDT.EQ.PNETID) THEN
+   ELSE IF (.NOT.NEWID .and. NETIDT.EQ.PNETID) THEN
       KTYPE = FIELD(4)
-   ELSE IF (NEWID .AND. NETIDT.NE.'    ') THEN
+   ELSE IF (NEWID .and. NETIDT.NE.'    ') THEN
       NEWID = .FALSE.
       KTYPE = FIELD(4)
 !        The Keyword Counter
@@ -7713,8 +7713,8 @@ SUBROUTINE PREPOLR
       ISTA = .FALSE.
       NEWID = .TRUE.
 
-   ELSE IF (KTYPE.NE.'ELEV' .AND. KTYPE.NE.'FLAG' .AND.&
-   &KTYPE.NE.'HILL' .AND. KTYPE.NE.'ORIG') THEN
+   ELSE IF (KTYPE.NE.'ELEV' .and. KTYPE.NE.'FLAG' .and.&
+   &KTYPE.NE.'HILL' .and. KTYPE.NE.'ORIG') THEN
 !        Invalid Secondary Keyword
       RECERR = .TRUE.
       GO TO 999
@@ -7979,7 +7979,7 @@ SUBROUTINE SET_WINDOW
    END IF
    ISYEAR = NINT(FNUM)
 !     Adjusted the if statement to set default window to 1950 only when the year is between 50 and 99 Wood 9/15/22
-   IF (ISYEAR .GE. 50 .AND. ISYEAR .LT. 100) THEN
+   IF (ISYEAR .GE. 50 .and. ISYEAR .LT. 100) THEN
 !      IF (ISYEAR .LT. 100) THEN
 !        Write warning message for 2-digit year, and set default "windowing"
 !        variables, ISTRT_CENT (=19) and ISTRT_WIND (=50).
@@ -8009,7 +8009,7 @@ SUBROUTINE SET_WINDOW
          ISTRT_WIND = 0
       END IF
 !        Check for year .ge. 2148 to avoid integer overflow on FULLDATE
-      IF (ISTRT_CENT .GE. 21 .AND. ISTRT_WIND .GE. 48) THEN
+      IF (ISTRT_CENT .GE. 21 .and. ISTRT_WIND .GE. 48) THEN
          CALL ERRHDL(PATH,MODNAM,'E','365',KEYWRD)
          ISTRT_CENT = 21
          ISTRT_WIND = 47
@@ -8062,16 +8062,16 @@ SUBROUTINE CHK_ENDYR
 !     Variable Initializations
    MODNAM = 'CHK_ENDYR'
 
-   IF( (IENDMN.EQ.2.AND.IENDDY.EQ.29.AND.IMONTH.EQ.2) .AND.&
-   &(MOD(IYR,4).NE.0) .OR.&
-   &(MOD(IYR,100).EQ.0 .AND. MOD(IYR,400).NE.0)) THEN
+   IF( (IENDMN.EQ.2.and.IENDDY.EQ.29.and.IMONTH.EQ.2) .and.&
+   &(MOD(IYR,4).NE.0) .or.&
+   &(MOD(IYR,100).EQ.0 .and. MOD(IYR,400).NE.0)) THEN
 !        Set End Day to 28 for non-leap year February
       IEND_DAY = 28
    ELSE
       IEND_DAY = IENDDY
    END IF
 
-   IF (IMONTH.EQ.IENDMN .AND. IDAY.EQ.IEND_DAY .AND.&
+   IF (IMONTH.EQ.IENDMN .and. IDAY.EQ.IEND_DAY .and.&
    &IHOUR.EQ.IENDHOUR) THEN
 !        End of year reached, increment counter and store High-N-High (HNH) values
       NUMYRS = NUMYRS + 1
@@ -8095,7 +8095,7 @@ SUBROUTINE CHK_ENDYR
          IF (ALLOCATED(AMXVAL))  AMXVAL  = 0.0D0
          IF (ALLOCATED(IMXLOC))  IMXLOC  = 0
       END IF
-      IF ((PM25AVE .OR. NO2AVE .OR. SO2AVE) .AND. NUMAVE.GE.1) THEN
+      IF ((PM25AVE .or. NO2AVE .or. SO2AVE) .and. NUMAVE.GE.1) THEN
 ! ---       Sum the High-N-High 24-hour values for PM-2.5,
 !           or High-N-High 1-hour values for NO2
          DO N = 1, NVAL
@@ -8114,7 +8114,7 @@ SUBROUTINE CHK_ENDYR
                RUNERR = .TRUE.
             END IF
 
-            IF (MXDAILY_BYYR .AND. NHIAVE(N,1) .EQ. 1) THEN
+            IF (MXDAILY_BYYR .and. NHIAVE(N,1) .EQ. 1) THEN
                CALL MXDYBYYR(N)
             ENDIF
          END DO
@@ -8290,7 +8290,7 @@ SUBROUTINE MAXDCONT_LOOP
             DO IR = 1, NREC
 ! ---             Loop through receptors; but skip receptor if
 !                 value is below user-specified threshold
-               IF (SUMHNH(IR,JGRP,IVAL) .LE. 0.0D0 .OR.&
+               IF (SUMHNH(IR,JGRP,IVAL) .LE. 0.0D0 .or.&
                &SUMHNH(IR,JGRP,IVAL) .LT. MAXD_THRESH(JGRP)) CYCLE
 
 !                  IF (BL_RFLAG(IR) .EQ. .true.) CYCLE
@@ -8324,7 +8324,7 @@ SUBROUTINE MAXDCONT_LOOP
                   CALL LONG_DATE(NHIDATMXD_BYYR(IR,JGRP,IVAL,I),IEDATE,ICYR2,ICYR)
 
 ! ---  D001 remove original calculation of year Wood 9/15/22
-!                     IF (ICYR2 .GE. ISTRT_WIND .AND.
+!                     IF (ICYR2 .GE. ISTRT_WIND .and.
 !     &                                    ICYR2 .LE. 99) THEN
 !                        ICYR   = ISTRT_CENT*100 + ICYR2
 !                        IEDATE = ISTRT_CENT*100000000 +
@@ -8335,7 +8335,7 @@ SUBROUTINE MAXDCONT_LOOP
 !     &                           NHIDATMXD_BYYR(IR,JGRP,IVAL,I)
 !                     END IF
 
-                  IF (NO2AVE .OR. SO2AVE) THEN
+                  IF (NO2AVE .or. SO2AVE) THEN
 ! ---                   Assign start date to end date for NO2 or SO2
 !                       since we're only processing 1 hour at a time
                      ISDATE = IEDATE
@@ -8366,7 +8366,7 @@ SUBROUTINE MAXDCONT_LOOP
 !                       An error message will already have been issued in
 !                       subroutine Julian, but exit loop to avoid Fortran
 !                       runtime errors since IHR_NDX may not be valid.
-                     IF (IJDY .EQ. 0 .OR. ICJDAY .EQ. 0) THEN
+                     IF (IJDY .EQ. 0 .or. ICJDAY .EQ. 0) THEN
                         EXIT
                      END IF
 
@@ -8492,7 +8492,7 @@ SUBROUTINE MAXDCONT_LOOP
 
 ! ---       Check for whether MAXD_THRESH specified by user was
 !           not reached
-         IF (MAXD_THRESH(JGRP) .GT. 0.0D0 .AND.&
+         IF (MAXD_THRESH(JGRP) .GT. 0.0D0 .and.&
          &.NOT.HIT_THRESH) THEN
 ! ---          User-specified threshold was not reached within the
 !              range of ranks analyzed, based on the RECTABLE keyword;
@@ -8616,7 +8616,7 @@ SUBROUTINE MAXD_METEXT
       ZIMECHN = AZIMECHN(IHR_NDX,IYR_NDX)
    ENDIF
 ! End HBP insert
-   IF (LDGAS .OR. LDPART .OR. LWPART .OR. LWGAS .OR. GRSM) THEN
+   IF (LDGAS .or. LDPART .or. LWPART .or. LWGAS .or. GRSM) THEN
       BOWEN  = ABOWEN(IHR_NDX,IYR_NDX)
       ALBEDO = AALBEDO(IHR_NDX,IYR_NDX)
       IPCODE = IAPCODE(IHR_NDX,IYR_NDX)
@@ -8660,7 +8660,7 @@ SUBROUTINE MAXD_METEXT
    IF (NSEC .GT. 0) THEN
       GRIDRHO(1:MXGLVL) = AGRIDRHO(IHR_NDX,1:MXGLVL,IYR_NDX)
    END IF
-   IF (PVMRM .OR. GRSM) THEN
+   IF (PVMRM .or. GRSM) THEN
       GRIDEPS(1:MXGLVL) = AGRIDEPS(IHR_NDX,1:MXGLVL,IYR_NDX)
    END IF
 
@@ -8683,7 +8683,7 @@ SUBROUTINE MAXD_METEXT
       END DO
    END IF
 
-   IF (.NOT.CLMHR .AND. .NOT.MSGHR) THEN
+   IF (.NOT.CLMHR .and. .NOT.MSGHR) THEN
 ! ---    Set Meteorological Variables for Current Hour
       CALL SET_METDATA
    END IF
@@ -8745,11 +8745,11 @@ SUBROUTINE AHRQREAD (IS)
    MODNAM = 'AHRQREAD'
 
 !* Catch any sourcetypes not defined as aircraft
-   IF ((SRCTYP(IS)(1:5) .EQ. 'POINT') .OR.&
-   &(SRCTYP(IS) .EQ. 'OPENPIT') .OR.&
-   &(SRCTYP(IS) .EQ. 'LINE') .OR.&
-   &(SRCTYP(IS) .EQ. 'RLINE') .OR.&
-   &(SRCTYP(IS) .EQ. 'RLINEXT') .OR.&
+   IF ((SRCTYP(IS)(1:5) .EQ. 'POINT') .or.&
+   &(SRCTYP(IS) .EQ. 'OPENPIT') .or.&
+   &(SRCTYP(IS) .EQ. 'LINE') .or.&
+   &(SRCTYP(IS) .EQ. 'RLINE') .or.&
+   &(SRCTYP(IS) .EQ. 'RLINEXT') .or.&
    &(SRCTYP(IS) .EQ. 'BUOYLINE')) THEN
 !*       These sources are not defined under aircraft category
 !*       - WRITE Error Message
@@ -8828,7 +8828,7 @@ SUBROUTINE AHRQREAD (IS)
 !     year for comparison with FULLDATE based on met data file
    IF (IHYEAR .LE. 99) THEN
       IHYEAR2 = IHYEAR
-      IF (IHYEAR2 .GE. ISTRT_WIND .AND.&
+      IF (IHYEAR2 .GE. ISTRT_WIND .and.&
       &IHYEAR2 .LE. 99) THEN
          IHYEAR = ISTRT_CENT*100 + IHYEAR2
       ELSE IF (IHYEAR2 .LT. ISTRT_WIND) THEN
@@ -8877,14 +8877,14 @@ SUBROUTINE AHRQREAD (IS)
 !MKP Check for missing fields for volume and area sources when Aircraft
 ! Plume Rise is specified.  Minimum of 15 fields required without HRLYSIG.
 ! Aircraft new fields (7 total): MFUEL,THRUST,VAA,AFR,BYPR,RPWR,SRCANGLE
-   ELSE IF ((SRCTYP(IS) .EQ. 'VOLUME') .AND.&
+   ELSE IF ((SRCTYP(IS) .EQ. 'VOLUME') .and.&
    &(IFC .LE. 11)) THEN
       CALL ERRHDL(PATH,MODNAM,'E','807',SRCID(IS))
       RUNERR = .TRUE.
       GO TO 9990
 !MGS Changed check to only check first 4 characters for AREA (D151 - 6/1/23)
-!MGS      ELSE IF (SRCTYP(IS) .EQ. 'AREA' .AND.
-   ELSE IF ((SRCTYP(IS)(1:4) .EQ. 'AREA') .AND.&
+!MGS      ELSE IF (SRCTYP(IS) .EQ. 'AREA' .and.
+   ELSE IF ((SRCTYP(IS)(1:4) .EQ. 'AREA') .and.&
    &(IFC .LE. 10)) THEN
       CALL ERRHDL(PATH,MODNAM,'E','807',SRCID(IS))
       RUNERR = .TRUE.
@@ -8892,7 +8892,7 @@ SUBROUTINE AHRQREAD (IS)
 ! -------------------------- End too few parameters for source type
 
 ! -------------------------- Begin correct # parameters for source type
-   ELSE IF ((SRCTYP(IS) .EQ. 'VOLUME') .AND.&
+   ELSE IF ((SRCTYP(IS) .EQ. 'VOLUME') .and.&
    &(IFC .EQ. 18)) THEN
 !*      Assign emission rate, release height, initial sigmas and
 !*      Engine parameters for aircraft sources plume rise
@@ -8900,7 +8900,7 @@ SUBROUTINE AHRQREAD (IS)
 !*       Assign logical variable indicating hourly sigmas, L_HRLYSIG
       IF (ILSAVE .EQ. 1) THEN
          L_HRLYSIG(IS) = .TRUE.
-      ELSE IF (ILSAVE .GT. 1 .AND. .NOT. L_HRLYSIG(IS)) THEN
+      ELSE IF (ILSAVE .GT. 1 .and. .NOT. L_HRLYSIG(IS)) THEN
 !*          This volume source should not include hourly sigmas;
 !*          issue error message
          WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -9012,7 +9012,7 @@ SUBROUTINE AHRQREAD (IS)
 ! ---    Check for negative values, could be a missing indicator,
 ! ---    whereas BYPR = -999 is for shaft-based engines aircraft and
 ! ---    BYPR greater than 0 for turbine-based engines aircraft
-      ELSE IF ( HRBYPR .LT. 0.0D0 .AND. HRBYPR .NE. -999.0D0 ) THEN
+      ELSE IF ( HRBYPR .LT. 0.0D0 .and. HRBYPR .NE. -999.0D0 ) THEN
 !*          Assume bypass ratios are missing; assign value of 0.0 and issue Warning;
 !*          Note that AERMOD User's Guide (p. 3-38, 3-39) implies that blanks
 !*          should be used for missing values.
@@ -9029,7 +9029,7 @@ SUBROUTINE AHRQREAD (IS)
 ! ---    Check for negative values, could be a missing indicator,
 ! ---    whereas RPWR = -99999 is for turbine-based engines aircraft
 ! ---    and greater than 0.0 for shaft-based engines aircraft
-      ELSE IF ( HRRPWR .LT. 0.0D0 .AND. HRRPWR .NE. -99999.0D0 )THEN
+      ELSE IF ( HRRPWR .LT. 0.0D0 .and. HRRPWR .NE. -99999.0D0 )THEN
 !*          Assume rated power are missing; assign value of 0.0 and issue Warning;
 !*          Note that AERMOD User's Guide (p. 3-38, 3-39) implies that blanks
 !*          should be used for missing values.
@@ -9044,7 +9044,7 @@ SUBROUTINE AHRQREAD (IS)
          RUNERR = .TRUE.
          GO TO 9990
 ! ---    Check for unrealistics or negative values, could be a missing indicator,
-      ELSE IF ( HRSRCANGLE .LT. -20.0D0 .OR.&
+      ELSE IF ( HRSRCANGLE .LT. -20.0D0 .or.&
       &HRSRCANGLE .GT.  20.0D0 ) THEN
 !*          Assume source angles are missing; assign value of 0.0 and issue Warning;
 !*          Note that AERMOD User's Guide (p. 3-38, 3-39) implies that blanks
@@ -9054,7 +9054,7 @@ SUBROUTINE AHRQREAD (IS)
          CALL ERRHDL(PATH,MODNAM,'W','832',DUMMY)
       END IF
 
-   ELSE IF ((SRCTYP(IS) .EQ. 'VOLUME') .AND.&
+   ELSE IF ((SRCTYP(IS) .EQ. 'VOLUME') .and.&
    &(IFC .EQ. 15)) THEN
 !*       Assign emission rate and engine parameters for
 !*       Aircraft volume sources
@@ -9151,7 +9151,7 @@ SUBROUTINE AHRQREAD (IS)
 ! ---    Check for negative values, could be a missing indicator,
 ! ---    whereas BYPR = -999 is for shaft-based engines aircraft and
 ! ---    BYPR greater than 0 for turbine-based engines aircraft
-      ELSE IF ( HRBYPR .LT. 0.0D0 .AND. HRBYPR .NE. -999.0D0 ) THEN
+      ELSE IF ( HRBYPR .LT. 0.0D0 .and. HRBYPR .NE. -999.0D0 ) THEN
 !*          Assume bypass ratios are missing; assign value of 0.0 and issue Warning;
 !*          Note that AERMOD User's Guide (p. 3-38, 3-39) implies that blanks
 !*          should be used for missing values.
@@ -9168,7 +9168,7 @@ SUBROUTINE AHRQREAD (IS)
 ! ---    Check for negative values, could be a missing indicator,
 ! ---    whereas RPWR = -99999 is for turbine-based engines aircraft
 ! ---    and greater than 0.0 for shaft-based engines aircraft
-      ELSE IF ( HRRPWR .LT. 0.0D0 .AND. HRRPWR .NE. -99999.0D0 )THEN
+      ELSE IF ( HRRPWR .LT. 0.0D0 .and. HRRPWR .NE. -99999.0D0 )THEN
 !*          Assume rated power are missing; assign value of 0.0 and issue Warning;
 !*          Note that AERMOD User's Guide (p. 3-38, 3-39) implies that blanks
 !*          should be used for missing values.
@@ -9183,7 +9183,7 @@ SUBROUTINE AHRQREAD (IS)
          RUNERR = .TRUE.
          GO TO 9990
 ! ---    Check for unrealistics or negative values, could be a missing indicator,
-      ELSE IF ( HRSRCANGLE .LT. -20.0D0 .OR.&
+      ELSE IF ( HRSRCANGLE .LT. -20.0D0 .or.&
       &HRSRCANGLE .GT.  20.0D0 ) THEN
 !*          Assume source angles are missing; assign value of 0.0 and issue Warning;
 !*          Note that AERMOD User's Guide (p. 3-38, 3-39) implies that blanks
@@ -9193,7 +9193,7 @@ SUBROUTINE AHRQREAD (IS)
          CALL ERRHDL(PATH,MODNAM,'W','832',DUMMY)
       END IF
 
-   ELSE IF ((SRCTYP(IS)(1:4) .EQ. 'AREA') .AND.&
+   ELSE IF ((SRCTYP(IS)(1:4) .EQ. 'AREA') .and.&
    &(IFC.EQ.17)) THEN
 !*       Assign emission rate, release height, initial sigma and
 !*      Engine parameters for aircraft sources plume rise
@@ -9201,7 +9201,7 @@ SUBROUTINE AHRQREAD (IS)
 !*       Assign logical variable indicating hourly sigmas, L_HRLYSIG
       IF (ILSAVE .EQ. 1) THEN
          L_HRLYSIG(IS) = .TRUE.
-      ELSE IF (ILSAVE .GT. 1 .AND. .NOT. L_HRLYSIG(IS)) THEN
+      ELSE IF (ILSAVE .GT. 1 .and. .NOT. L_HRLYSIG(IS)) THEN
 !*          This Area source should not include hourly sigmas;
 !*          issue error message
          WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -9308,7 +9308,7 @@ SUBROUTINE AHRQREAD (IS)
 ! ---    Check for negative values, could be a missing indicator,
 ! ---    whereas BYPR = -9990 is for shaft-based engines aircraft and
 ! ---    BYPR greater than 0 for turbine-based engines aircraft
-      ELSE IF ( HRBYPR .LT. 0.0D0 .AND. HRBYPR .NE. -999.0D0 ) THEN
+      ELSE IF ( HRBYPR .LT. 0.0D0 .and. HRBYPR .NE. -999.0D0 ) THEN
 !*          Assume bypass ratios are missing; assign value of 0.0 and issue Warning;
 !*          Note that AERMOD User's Guide (p. 3-38, 3-39) implies that blanks
 !*          should be used for missing values.
@@ -9325,7 +9325,7 @@ SUBROUTINE AHRQREAD (IS)
 ! ---    Check for negative values, could be a missing indicator,
 ! ---    whereas RPWR = -999099 is for turbine-based engines aircraft
 ! ---    and greater than 0.0 for shaft-based engines aircraft
-      ELSE IF ( HRRPWR .LT. 0.0D0 .AND. HRRPWR .NE. -99999.0D0 )THEN
+      ELSE IF ( HRRPWR .LT. 0.0D0 .and. HRRPWR .NE. -99999.0D0 )THEN
 !*          Assume rated power are missing; assign value of 0.0 and issue Warning;
 !*          Note that AERMOD User's Guide (p. 3-38, 3-39) implies that blanks
 !*          should be used for missing values.
@@ -9340,7 +9340,7 @@ SUBROUTINE AHRQREAD (IS)
          RUNERR = .TRUE.
          GO TO 9990
 ! ---    Check for unrealistics or negative values, could be a missing indicator,
-      ELSE IF ( HRSRCANGLE .LT. -20.0D0 .OR.&
+      ELSE IF ( HRSRCANGLE .LT. -20.0D0 .or.&
       &HRSRCANGLE .GT.  20.0D0 ) THEN
 !*          Assume source angles are missing; assign value of 0.0 and issue Warning;
 !*          Note that AERMOD User's Guide (p. 3-38, 3-39) implies that blanks
@@ -9350,7 +9350,7 @@ SUBROUTINE AHRQREAD (IS)
          CALL ERRHDL(PATH,MODNAM,'W','832',DUMMY)
       END IF
 
-   ELSE IF ((SRCTYP(IS)(1:4) .EQ. 'AREA') .AND.&
+   ELSE IF ((SRCTYP(IS)(1:4) .EQ. 'AREA') .and.&
    &(IFC.EQ.15)) THEN
 !*       Assign emission rate and engine parameters for
 !*       Aircraft Area sources
@@ -9447,7 +9447,7 @@ SUBROUTINE AHRQREAD (IS)
 ! ---    Check for negative values, could be a missing indicator,
 ! ---    whereas BYPR = -9990 is for shaft-based engines aircraft and
 ! ---    BYPR greater than 0 for turbine-based engines aircraft
-      ELSE IF ( HRBYPR .LT. 0.0D0 .AND. HRBYPR .NE. -999.0D0 ) THEN
+      ELSE IF ( HRBYPR .LT. 0.0D0 .and. HRBYPR .NE. -999.0D0 ) THEN
 !*          Assume bypass ratios are missing; assign value of 0.0 and issue Warning;
 !*          Note that AERMOD User's Guide (p. 3-38, 3-39) implies that blanks
 !*          should be used for missing values.
@@ -9464,7 +9464,7 @@ SUBROUTINE AHRQREAD (IS)
 ! ---    Check for negative values, could be a missing indicator,
 ! ---    whereas RPWR = -99999 is for turbine-based engines aircraft
 ! ---    and greater than 0.0 for shaft-based engines aircraft
-      ELSE IF ( HRRPWR .LT. 0.0D0 .AND. HRRPWR .NE. -99999.0D0 )THEN
+      ELSE IF ( HRRPWR .LT. 0.0D0 .and. HRRPWR .NE. -99999.0D0 )THEN
 !*          Assume rated power are missing; assign value of 0.0 and issue Warning;
 !*          Note that AERMOD User's Guide (p. 3-38, 3-39) implies that blanks
 !*          should be used for missing values.
@@ -9479,7 +9479,7 @@ SUBROUTINE AHRQREAD (IS)
          RUNERR = .TRUE.
          GO TO 9990
 ! ---    Check for unrealistics or negative values, could be a missing indicator,
-      ELSE IF ( HRSRCANGLE .LT. -20.0D0 .OR.&
+      ELSE IF ( HRSRCANGLE .LT. -20.0D0 .or.&
       &HRSRCANGLE .GT.  20.0D0 ) THEN
 !*          Assume source angles are missing; assign value of 0.0 and issue Warning;
 !*          Note that AERMOD User's Guide (p. 3-38, 3-39) implies that blanks
@@ -9492,15 +9492,15 @@ SUBROUTINE AHRQREAD (IS)
 
 ! -------------------------- Begin too many parameters for source type
 !**  Added for Aircraft Plume Rise; UNC-IE
-   ELSE IF ( SRCTYP(IS) .EQ. 'VOLUME' .AND.&
-   &IFC .GT. 18 .OR. IFC .EQ. 16 ) THEN
+   ELSE IF ( SRCTYP(IS) .EQ. 'VOLUME' .and.&
+   &IFC .GT. 18 .or. IFC .EQ. 16 ) THEN
       IF ( IFC .GT. 16 ) THEN
          L_HRLYSIG(IS) = .TRUE.
       ELSE IF ( IFC .EQ. 16 ) THEN
          L_HRLYSIG(IS) = .FALSE.
       END IF
 
-      IF ( IFC .GT. 18 .AND. L_HRLYSIG(IS) ) THEN
+      IF ( IFC .GT. 18 .and. L_HRLYSIG(IS) ) THEN
 !*       Too many parameters - WRITE Error Message
 !*       Assign zeros to all parameters
          WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -9516,7 +9516,7 @@ SUBROUTINE AHRQREAD (IS)
          HRBYPR = 0.0D0
          HRRPWR = 0.0D0
          HRSRCANGLE = 0.0D0
-      ELSE IF ( IFC .GE. 16 .AND..NOT.L_HRLYSIG(IS) ) THEN
+      ELSE IF ( IFC .GE. 16 .and..NOT.L_HRLYSIG(IS) ) THEN
 !*       Too many parameters - WRITE Error Message
 !*       Assign zeros to all parameters
          WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -9534,15 +9534,15 @@ SUBROUTINE AHRQREAD (IS)
 !**  End Aircraft Plume Rise insert; April 2023
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   ELSE IF ( SRCTYP(IS) (1:4) .EQ. 'AREA' .AND.&
-   &IFC .GT. 17 .OR. IFC .EQ. 16 ) THEN
+   ELSE IF ( SRCTYP(IS) (1:4) .EQ. 'AREA' .and.&
+   &IFC .GT. 17 .or. IFC .EQ. 16 ) THEN
       IF ( IFC .GT. 16 ) THEN
          L_HRLYSIG(IS) = .TRUE.
       ELSE IF ( IFC .EQ. 16 ) THEN
          L_HRLYSIG(IS) = .FALSE.
       END IF
 
-      IF ( IFC .GT. 17 .AND. L_HRLYSIG(IS) ) THEN
+      IF ( IFC .GT. 17 .and. L_HRLYSIG(IS) ) THEN
 !*       Too many parameters - WRITE Error Message
 !*       Assign zeros to all parameters
          WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -9557,7 +9557,7 @@ SUBROUTINE AHRQREAD (IS)
          HRBYPR = 0.0D0
          HRRPWR = 0.0D0
          HRSRCANGLE = 0.0D0
-      ELSE IF ( IFC .GE. 16 .AND..NOT.L_HRLYSIG(IS) ) THEN
+      ELSE IF ( IFC .GE. 16 .and..NOT.L_HRLYSIG(IS) ) THEN
 !*       Too many parameters - WRITE Error Message
 !*       Assign zeros to all parameters
          WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -9577,9 +9577,9 @@ SUBROUTINE AHRQREAD (IS)
 
 ! -------------------------- Begin of too few parameters for source type
 !**  Added for Aircraft Plume Rise; UNC-IE
-   ELSE IF ( SRCTYP(IS) .EQ. 'VOLUME' .AND.&
-   &IFC .EQ. 8 .OR. IFC .EQ. 9 .OR.&
-   &IFC .EQ. 10 .OR. IFC .EQ. 11) THEN
+   ELSE IF ( SRCTYP(IS) .EQ. 'VOLUME' .and.&
+   &IFC .EQ. 8 .or. IFC .EQ. 9 .or.&
+   &IFC .EQ. 10 .or. IFC .EQ. 11) THEN
 
 !*       Some missing parameters - WRITE Error Message
 !*       Assign zeros to all parameters
@@ -9612,17 +9612,17 @@ SUBROUTINE AHRQREAD (IS)
       HRSRCANGLE = 0.0D0
 !         RUNERR = .TRUE.
 
-   ELSE IF ( SRCTYP(IS) .EQ. 'VOLUME' .AND.&
-   &IFC .EQ. 17 .OR. IFC .EQ. 14 .OR.&
-   &IFC .EQ. 13 .OR. IFC .EQ. 12) THEN
+   ELSE IF ( SRCTYP(IS) .EQ. 'VOLUME' .and.&
+   &IFC .EQ. 17 .or. IFC .EQ. 14 .or.&
+   &IFC .EQ. 13 .or. IFC .EQ. 12) THEN
       IF ( IFC .GT. 16 ) THEN
          L_HRLYSIG(IS) = .TRUE.
-      ELSE IF ( IFC .EQ. 14 .OR.&
-      &IFC .EQ. 13 .OR. IFC .EQ. 12) THEN
+      ELSE IF ( IFC .EQ. 14 .or.&
+      &IFC .EQ. 13 .or. IFC .EQ. 12) THEN
          L_HRLYSIG(IS) = .FALSE.
       END IF
 
-      IF ( IFC .LT. 18 .AND. L_HRLYSIG(IS) ) THEN
+      IF ( IFC .LT. 18 .and. L_HRLYSIG(IS) ) THEN
 !*       Some missing parameters - WRITE Error Message
 !*       Assign zeros to all parameters
          WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -9638,7 +9638,7 @@ SUBROUTINE AHRQREAD (IS)
          HRBYPR = 0.0D0
          HRRPWR = 0.0D0
          HRSRCANGLE = 0.0D0
-      ELSE IF ( IFC .GE. 12 .AND..NOT.L_HRLYSIG(IS) ) THEN
+      ELSE IF ( IFC .GE. 12 .and..NOT.L_HRLYSIG(IS) ) THEN
 !*       Some missing parameters - WRITE Error Message
 !*       Assign zeros to all parameters
          WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -9656,8 +9656,8 @@ SUBROUTINE AHRQREAD (IS)
 !**  End Aircraft Plume Rise insert; April 2023
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   ELSE IF ( SRCTYP(IS) (1:4) .EQ. 'AREA' .AND.&
-   &IFC .EQ. 8 .OR. IFC .EQ. 9   .OR.&
+   ELSE IF ( SRCTYP(IS) (1:4) .EQ. 'AREA' .and.&
+   &IFC .EQ. 8 .or. IFC .EQ. 9   .or.&
    &IFC .EQ. 10 ) THEN
 
 !*       Some missing parameters - WRITE Error Message
@@ -9690,17 +9690,17 @@ SUBROUTINE AHRQREAD (IS)
       HRSRCANGLE = 0.0D0
 !         RUNERR = .TRUE.
 
-   ELSE IF ( SRCTYP(IS) (1:4) .EQ. 'AREA' .AND.&
-   &IFC .EQ. 16 .OR. IFC .EQ. 14 .OR.&
-   &IFC .EQ. 13 .OR. IFC .EQ. 12) THEN
+   ELSE IF ( SRCTYP(IS) (1:4) .EQ. 'AREA' .and.&
+   &IFC .EQ. 16 .or. IFC .EQ. 14 .or.&
+   &IFC .EQ. 13 .or. IFC .EQ. 12) THEN
       IF ( IFC .GT. 15 ) THEN
          L_HRLYSIG(IS) = .TRUE.
-      ELSE IF ( IFC .EQ. 14 .OR.&
-      &IFC .EQ. 13 .OR. IFC .EQ. 12) THEN
+      ELSE IF ( IFC .EQ. 14 .or.&
+      &IFC .EQ. 13 .or. IFC .EQ. 12) THEN
          L_HRLYSIG(IS) = .FALSE.
       END IF
 
-      IF ( IFC .LT. 17 .AND. L_HRLYSIG(IS) ) THEN
+      IF ( IFC .LT. 17 .and. L_HRLYSIG(IS) ) THEN
 !*       Some missing parameters - WRITE Error Message
 !*       Assign zeros to all parameters
          WRITE(DUMMY,'(I10.10)') FULLHRQ
@@ -9715,7 +9715,7 @@ SUBROUTINE AHRQREAD (IS)
          HRBYPR = 0.0D0
          HRRPWR = 0.0D0
          HRSRCANGLE = 0.0D0
-      ELSE IF ( IFC .GE. 12 .AND..NOT.L_HRLYSIG(IS) ) THEN
+      ELSE IF ( IFC .GE. 12 .and..NOT.L_HRLYSIG(IS) ) THEN
 !*       Some missing parameters - WRITE Error Message
 !*       Assign zeros to all parameters
          WRITE(DUMMY,'(I10.10)') FULLHRQ

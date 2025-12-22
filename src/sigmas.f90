@@ -48,7 +48,7 @@ SUBROUTINE SIGY( XARG )
 !     Variable Initializations
    MODNAM = 'SIGY'
 
-   IF( STABLE .OR. (UNSTAB .AND. (HS .GE. ZI)) )THEN
+   IF( STABLE .or. (UNSTAB .and. (HS .GE. ZI)) )THEN
 !        The atmosphere is stable or the release is above the CBL mixing ht.
 !        Calculate SV/U, but not less than PARAMETER, SVUMIN = 0.05
       SVOVRU = MAX (SVUMIN, SVEFF/UEFF)
@@ -135,7 +135,7 @@ SUBROUTINE SIGZ( XARG )
 !     Variable Initializations
    MODNAM = 'SIGZ'
 
-   IF( STABLE .OR. (UNSTAB .AND. HS .GE. ZI) )THEN
+   IF( STABLE .or. (UNSTAB .and. HS .GE. ZI) )THEN
 !        The atmosphere is stable or the release was above the CBL mixing ht.
 !        See Eq. 1 of the document by Venkatram referenced above.
 
@@ -270,7 +270,7 @@ SUBROUTINE BID
 !     Calculate the buoyancy-induced contribution, which will be added
 !     to the other contributions in RMSSIG
 
-   IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
 
       SZB = BETA2 * DHP / RTOF2
 
@@ -352,7 +352,7 @@ SUBROUTINE SZSFCL (XARG)
 !---- Calculate the surface layer contribution, which will be added
 !     to the other contributions in RMSSIG, from Eqn 31a
 
-   IF (UNSTAB .AND. SURFAC) THEN
+   IF (UNSTAB .and. SURFAC) THEN
 
       SZSURF = BSUBC * ( 1.0D0 - 10.0D0 * (CENTER / ZI)) *&
       &(USTAR / UEFFD)*(USTAR / UEFFD)  *&
@@ -422,7 +422,7 @@ SUBROUTINE RMSSIG
 !     7/8/2021, MGS: Added debug statements to test/explore platform influence
 !     on total sigmaY & sigmaZ.
 
-   IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
 !----    The atmosphere is stable or the atmosphere is unstable and the
 !        release is above the mixing height
 
@@ -442,8 +442,8 @@ SUBROUTINE RMSSIG
       SZ3  = 0.0D0
 
 !CRT     D063 Platform Downwash Debug
-      IF (PLATFMDBG .AND. OSPLAT(ISRC) .AND.&
-      &(PLATSY > 0.0D0 .OR. PLATSZ > 0.0D0)) THEN
+      IF (PLATFMDBG .and. OSPLAT(ISRC) .and.&
+      &(PLATSY > 0.0D0 .or. PLATSZ > 0.0D0)) THEN
          WRITE(PLATFMDBUNT,'(A, 3(2X, A, F7.3))')&
          &'sigmas.f/RMSSIG (STABLE): ',&
          &'PLATSY=', PLATSY,&
@@ -485,8 +485,8 @@ SUBROUTINE RMSSIG
       ENDIF
 
 !CRT     D063 Platform Downwash Debug
-      IF (PLATFMDBG .AND. OSPLAT(ISRC)) THEN
-         IF (PLATSYD1 > 0.0D0 .OR. PLATSYD2 > 0.0D0) THEN
+      IF (PLATFMDBG .and. OSPLAT(ISRC)) THEN
+         IF (PLATSYD1 > 0.0D0 .or. PLATSYD2 > 0.0D0) THEN
             WRITE(PLATFMDBUNT,'(A, 4(2X, A, F8.3))')&
             &'sigmas.f/RMSSIG (UNSTABLE - Direct Plume): ',&
             &'PLATSYD1=', PLATSYD1,&
@@ -496,7 +496,7 @@ SUBROUTINE RMSSIG
             &+ max(PLATSYD1,PLATSYD2)*max(PLATSYD1,PLATSYD2))
          END IF
 
-         IF (PLATSYN1 > 0.0D0 .OR. PLATSYN2 > 0.0D0) THEN
+         IF (PLATSYN1 > 0.0D0 .or. PLATSYN2 > 0.0D0) THEN
             WRITE(PLATFMDBUNT,'(A, 4(2X, A, 2X, F7.3))')&
             &'sigmas.f/RMSSIG (UNSTABLE - Indirect Plume): ',&
             &'PLATSYN1=', PLATSYN1,&
@@ -506,7 +506,7 @@ SUBROUTINE RMSSIG
             &+ max(PLATSYN1,PLATSYN2)*max(PLATSYN1,PLATSYN2))
          END IF
 
-         IF (PLATSZD1 > 0.0D0 .OR. PLATSZD2 > 0.0D0) THEN
+         IF (PLATSZD1 > 0.0D0 .or. PLATSZD2 > 0.0D0) THEN
             WRITE(PLATFMDBUNT,'(A, 6(2X, A, 2X, F7.3))')&
             &'sigmas.f/RMSSIG (UNSTABLE - Direct Plume): ',&
             &'PLATSZD1=',PLATSZD1,&
@@ -519,7 +519,7 @@ SUBROUTINE RMSSIG
             &+ PLATSZD2*PLATSZD2)
          END IF
 
-         IF (PLATSZN1 > 0.0D0 .OR. PLATSZN2 > 0.0D0) THEN
+         IF (PLATSZN1 > 0.0D0 .or. PLATSZN2 > 0.0D0) THEN
             WRITE(PLATFMDBUNT,'(A, 6(2X, A, 2X, F7.3))')&
             &'sigmas.f/RMSSIG (UNSTABLE - Indirect Plume): ',&
             &'PLATSZN1=',PLATSZN1,&

@@ -107,7 +107,7 @@ SUBROUTINE EVCARD
          CALL LONG_DATE(ISDATE,ISDATE,ISYR,ISYR) !Determine the longform date
 ! ---        D001 remove original calculation of year Wood 9/15/22
 !C           Convert 8-digit EVDATE to 10-digit ISDATE and IEDATE
-!            IF (ISYR .GE. ISTRT_WIND .AND. ISYR .LE. 99) THEN
+!            IF (ISYR .GE. ISTRT_WIND .and. ISYR .LE. 99) THEN
 !               ISYR   = ISTRT_CENT*100 + ISYR
 !               ISDATE = ISTRT_CENT*100000000 + ISDATE
 !            ELSE IF (ISYR .LT. ISTRT_WIND) THEN
@@ -119,7 +119,7 @@ SUBROUTINE EVCARD
 !            D001 Call LONG_DATE and determine the longform date Wood 9/15/22
          CALL LONG_DATE(IEDATE,IEDATE,IEYR,IEYR) !Determine the longform date
 ! ---        D001 remove original calculation of year Wood 9/15/22
-!            IF (IEYR .GE. ISTRT_WIND .AND. IEYR .LE. 99) THEN
+!            IF (IEYR .GE. ISTRT_WIND .and. IEYR .LE. 99) THEN
 !               IEYR   = ISTRT_CENT*100 + IEYR
 !               IEDATE = ISTRT_CENT*100000000 + IEDATE
 !            ELSE IF (IEYR .LT. ISTRT_WIND) THEN
@@ -135,7 +135,7 @@ SUBROUTINE EVCARD
 !            D001 Call LONG_DATE_Opt2 and determine the longform date without updating the short date Wood 9/15/22
             CALL LONG_DATE_Opt2(ITEMPDATE,ITEMPDATE,ITEMPYEAR) !Determine the longform date
 ! ---        D001 remove original calculation of year Wood 9/15/22
-!               IF (ITEMPYEAR.GE.ISTRT_WIND .AND. ITEMPYEAR.LE.99) THEN
+!               IF (ITEMPYEAR.GE.ISTRT_WIND .and. ITEMPYEAR.LE.99) THEN
 !                  ITEMPDATE = ISTRT_CENT*100000000 + ITEMPDATE
 !               ELSE IF (ITEMPYEAR .LT. ISTRT_WIND) THEN
 !                  ITEMPDATE = (ISTRT_CENT+1)*100000000 + ITEMPDATE
@@ -305,7 +305,7 @@ SUBROUTINE EVPER
       CALL CENT_DATE(IEVYR2,IEVYR4)
 ! ---    D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C        Convert to 4-digit year
-!         IF (IEVYR2 .GE. ISTRT_WIND .AND. IEVYR2 .LE. 99) THEN
+!         IF (IEVYR2 .GE. ISTRT_WIND .and. IEVYR2 .LE. 99) THEN
 !            IEVYR4 = ISTRT_CENT*100 + IEVYR2
 !         ELSE IF (IEVYR2 .LT. ISTRT_WIND) THEN
 !            IEVYR4 = (ISTRT_CENT+1)*100 + IEVYR2
@@ -314,7 +314,7 @@ SUBROUTINE EVPER
       IMN = IDNINT(DNUM/10000.D0) - IDNINT(DNUM/1000000.D0)*100
       IDY = IDNINT(DNUM/100.D0) - IDNINT(DNUM/10000.D0)*100
       CALL JULIAN(IEVYR4,IMN,IDY,JDAY)
-      IF (JDAY .GE. 1 .AND. JDAY .LE. 366) THEN
+      IF (JDAY .GE. 1 .and. JDAY .LE. 366) THEN
          IPROC(JDAY) = 1
          EVJDAY(IEVENT) = JDAY
       ELSE
@@ -453,10 +453,10 @@ SUBROUTINE EVLOC
       AZFLAG(ISDX) = 0.0D0
    END IF
 
-   IF (IDNAM1.EQ.'XR=' .AND. IDNAM2.EQ.'YR=') THEN
+   IF (IDNAM1.EQ.'XR=' .and. IDNAM2.EQ.'YR=') THEN
       AXR(ISDX) = SETAXR
       AYR(ISDX) = SETAYR
-   ELSE IF (IDNAM1.EQ.'RNG=' .AND. IDNAM2.EQ.'DIR=') THEN
+   ELSE IF (IDNAM1.EQ.'RNG=' .and. IDNAM2.EQ.'DIR=') THEN
       AXR(ISDX) = SETAXR*DSIN(SETAYR*DTORAD)
       AYR(ISDX) = SETAXR*DCOS(SETAYR*DTORAD)
    ELSE
@@ -569,8 +569,8 @@ SUBROUTINE EV_SETUP
 !        Get the Contents of the Fields                     ---   CALL GETFLD
       CALL GETFLD
 
-      IF (ECHO .AND.&
-      &(FIELD(1).EQ.'OU' .AND. FIELD(2).EQ.'FINISHED')) THEN
+      IF (ECHO .and.&
+      &(FIELD(1).EQ.'OU' .and. FIELD(2).EQ.'FINISHED')) THEN
 !           Echo Last Input Card to Output File (Use Character Substring to
 !           Avoid Echoing ^Z Which May Appear at "End of File" for Some
 !           Editors).  Also, Allow for Shift in the Input Runstream File of
@@ -594,7 +594,7 @@ SUBROUTINE EV_SETUP
       END IF
 
 !        Check for 'NO ECHO' In First Two Fields
-      IF (FIELD(1) .EQ. 'NO' .AND. FIELD(2) .EQ. 'ECHO') THEN
+      IF (FIELD(1) .EQ. 'NO' .and. FIELD(2) .EQ. 'ECHO') THEN
          ECHO = .FALSE.
          CYCLE
       END IF
@@ -659,7 +659,7 @@ SUBROUTINE EV_SETUP
 !           Check for 'OU FINISHED' Card.  Exit DO WHILE Loop By Branching
 !           to Statement 999 in Order to Avoid Reading a ^Z "End of File"
 !           Marker That May Be Present For Some Editors.
-         IF (PATH .EQ. 'OU' .AND. KEYWRD .EQ. 'FINISHED') THEN
+         IF (PATH .EQ. 'OU' .and. KEYWRD .EQ. 'FINISHED') THEN
             GO TO 999
          END IF
       END IF
@@ -676,8 +676,8 @@ SUBROUTINE EV_SETUP
    ILINE = 0
 
 !     Check That All Pathways Were Finished
-   IF (ICSTAT(50).NE.1 .OR. ISSTAT(50).NE.1 .OR. IMSTAT(50).NE.1 .OR.&
-   &IESTAT(50).NE.1 .OR. IOSTAT(50).NE.1) THEN
+   IF (ICSTAT(50).NE.1 .or. ISSTAT(50).NE.1 .or. IMSTAT(50).NE.1 .or.&
+   &IESTAT(50).NE.1 .or. IOSTAT(50).NE.1) THEN
 !        Runstream File Incomplete, Save I?STAT to IFSTAT and Write Message
       IFSTAT = ICSTAT(50)*10000 + ISSTAT(50)*1000 + IMSTAT(50)*100 +&
       &IESTAT(50)*10 + IOSTAT(50)
@@ -694,7 +694,7 @@ SUBROUTINE EV_SETUP
 ! --- Check for non-DFAULT options for "optimized" area source,
 !     FASTAREA, or for all source types, FASTALL; set MAXDIST = 80KM
 !     if FASTALL or FASTAREA, otherwise MAXDIST = 1.0D20
-   IF (FASTALL .OR. FASTAREA) THEN
+   IF (FASTALL .or. FASTAREA) THEN
       MAXDIST = 8.0D04
    ELSE
       MAXDIST = 1.0D20
@@ -729,7 +729,7 @@ SUBROUTINE EV_SETORD
    MODNAM = 'EV_SETORD'
 
    IF (KEYWRD .EQ. 'STARTING') THEN
-      IF (ISTART .OR. .NOT.IFINIS) THEN
+      IF (ISTART .or. .NOT.IFINIS) THEN
 !           WRITE Error Message: Starting Out of Order
          CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
       ELSE IF (IPNUM .NE. IPPNUM+1) THEN
@@ -741,10 +741,10 @@ SUBROUTINE EV_SETORD
 !        Set Finished Indicator
       IFINIS = .FALSE.
    ELSE IF (KEYWRD .EQ. 'FINISHED') THEN
-      IF (IFINIS .OR. .NOT.ISTART) THEN
+      IF (IFINIS .or. .NOT.ISTART) THEN
 !           WRITE Error Message: Finished Out of Order
          CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
-      ELSE IF (ISTART .AND. PATH.NE.PPATH) THEN
+      ELSE IF (ISTART .and. PATH.NE.PPATH) THEN
 !           WRITE Warning Message: Pathway Out of Order
          CALL ERRHDL(PPATH,MODNAM,'E','120',PATH)
       END IF
@@ -752,10 +752,10 @@ SUBROUTINE EV_SETORD
       ISTART = .FALSE.
 !        Set Finished Indicator
       IFINIS = .TRUE.
-   ELSE IF (.NOT.ISTART .OR. IFINIS) THEN
+   ELSE IF (.NOT.ISTART .or. IFINIS) THEN
 !        WRITE Error Message: Starting or Finished Out of Order
       CALL ERRHDL(PPATH,MODNAM,'E','119',PATH)
-   ELSE IF (ISTART .AND. PATH.NE.PPATH) THEN
+   ELSE IF (ISTART .and. PATH.NE.PPATH) THEN
 !        WRITE Warning Message: Pathway Out of Order
       CALL ERRHDL(PPATH,MODNAM,'E','120',PATH)
    END IF
@@ -952,7 +952,7 @@ SUBROUTINE BLEVRECP (IEV,KK)
 ! JAT 7/22/21 D065 REMOVE NRECIN
 !      NRECIN = 0
 
-   IF (NBLTOTAL. GE. 1) THEN
+   IF (NBLTOTAL.ge. 1) THEN
 !        Translate event receptor
       XR_SCS(1,KK) = AXR(IEV) - XOR(KK)
       YR_SCS(1,KK) = AYR(IEV) - YOR(KK)
@@ -1020,9 +1020,9 @@ SUBROUTINE BLEVRECP (IEV,KK)
 
 ! Multiple_BuoyLines_D41_Wood
 !        Second dimension added for multiple buoyant line processing
-      IF( YR_SCS(1,KK) .LE. (YLMAX + 0.1D0) .AND.&
-      &YR_SCS(1,KK) .GE. (YLMIN - 0.1D0) .AND.&
-      &XR_SCS(1,KK) .LE. (XLMAX + 0.1D0) .AND.&
+      IF( YR_SCS(1,KK) .LE. (YLMAX + 0.1D0) .and.&
+      &YR_SCS(1,KK) .GE. (YLMIN - 0.1D0) .and.&
+      &XR_SCS(1,KK) .LE. (XLMAX + 0.1D0) .and.&
       &XR_SCS(1,KK) .GE. (XLMIN - 0.1D0)) THEN
          BL_RFLAG(1,KK) = .true.
          WRITE(DUMMY,'(A8," ",I3)') trim(BL_GRPID(KK)),IEV

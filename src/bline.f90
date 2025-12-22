@@ -166,7 +166,7 @@ SUBROUTINE BL_CALC (KK)
          END IF
       END DO
 
-      IF (STABLE .OR. L_MorningTrans(IURB)) THEN
+      IF (STABLE .or. L_MorningTrans(IURB)) THEN
          URBSTAB = .TRUE.
 
 !              Set AERMET file values to urban values for use below
@@ -198,7 +198,7 @@ SUBROUTINE BL_CALC (KK)
          OBULEN = RUROBULEN
       END IF
 
-   ELSE IF (URBAN .AND. .NOT. L_BLURBAN(KK) ) THEN
+   ELSE IF (URBAN .and. .NOT. L_BLURBAN(KK) ) THEN
 !           Reset ZI and OBULEN back to rural values that were saved in
 !           SET_METDATA and URBCALC (both in metext.f)
 !           KST was not changed and retains the rural/original value
@@ -214,15 +214,15 @@ SUBROUTINE BL_CALC (KK)
 
 !        Use the decay coefficient, DECOEF (default or input by the user),
 !         but only under the conditions noted, for BLP's decay factor (DECFAC)
-!         IF (DFAULT .AND. URBAN .AND. POLLUT.EQ.'SO2' .AND.
+!         IF (DFAULT .and. URBAN .and. POLLUT.EQ.'SO2' .and.
 !        &    L_BLURBAN(KK)) THEN
 !        modified 9/12/17 JAT, use half-life for SO2 URBAN even without DFAULT
 !        if HALFLIFE or DCAYCOEF used, use that value, not 4-hours
 
-   IF (URBAN .AND. POLLUT.EQ.'SO2' .AND. L_BLURBAN(KK) .AND.&
-   &((ICSTAT(7) .EQ. 0 .AND. ICSTAT(8) .EQ. 0) .OR. DFAULT)) THEN
+   IF (URBAN .and. POLLUT.EQ.'SO2' .and. L_BLURBAN(KK) .and.&
+   &((ICSTAT(7) .EQ. 0 .and. ICSTAT(8) .EQ. 0) .or. DFAULT)) THEN
       DECFAC = DECOEF
-   ELSE IF ((POLLUT.EQ.'SO2' .AND. L_BLURBAN(KK)) .OR.&
+   ELSE IF ((POLLUT.EQ.'SO2' .and. L_BLURBAN(KK)) .or.&
    &DFAULT) THEN  !rural source for SO2 or default modified 10/12/17
       DECFAC = 0.0D0
    ELSE
@@ -245,7 +245,7 @@ SUBROUTINE BL_CALC (KK)
          IF (SRCTYP(ISRC) .EQ. 'BUOYLINE') THEN
             LNUM = LNUM + 1
             LSRC = BLINEPARMS(LNUM)%ISRCNUM
-            IF (QFLAG(LSRC) .EQ. 'HOURLY' .AND.&
+            IF (QFLAG(LSRC) .EQ. 'HOURLY' .and.&
             &BLINEPARMS(LNUM)%IBLPGRPNUM .EQ. KK) THEN
                SUMFPRM = SUMFPRM + AFP(LSRC)
             END IF
@@ -456,7 +456,7 @@ SUBROUTINE BL_CALC (KK)
 !                 Check for receptor located inside "boundary" of BUOYLINE sources
 !                   (RWB method)
 !                  DO I = 1, 4
-!                     IF( XR_RCS(I) .LE. XBL_RCS_MAX(I) .AND.
+!                     IF( XR_RCS(I) .LE. XBL_RCS_MAX(I) .and.
 !           &             XR_RCS(I) .GE. XBL_RCS_MIN(I) )THEN
 !                        CHIBL(IREC) = 0.0D0
 !                        CYCLE RECEPTOR_LOOP
@@ -476,13 +476,13 @@ SUBROUTINE BL_CALC (KK)
 
             YLOW  = YMINL - 4.0D0*SYC
             YHIGH = YMAXL + 4.0D0*SYC
-            IF (YRECEP .LT. YLOW .OR. YRECEP .GT. YHIGH) THEN
+            IF (YRECEP .LT. YLOW .or. YRECEP .GT. YHIGH) THEN
                CYCLE RECEPTOR_LOOP
             END IF
 
             YLOW  = YLOW  + DLMIN
             YHIGH = YHIGH - DLMIN
-            IF (YRECEP .LT. YLOW .OR. YRECEP .GT. YHIGH) THEN
+            IF (YRECEP .LT. YLOW .or. YRECEP .GT. YHIGH) THEN
                CYCLE RECEPTOR_LOOP
             END IF
 
@@ -490,7 +490,7 @@ SUBROUTINE BL_CALC (KK)
 !                  (IDW=0=NO,IDW=1=YES)
             IDW = 1
 
-            IF (YRECEP .LT. YMINL .OR. YRECEP .GT. YMAXL) IDW = 0
+            IF (YRECEP .LT. YMINL .or. YRECEP .GT. YMAXL) IDW = 0
 
 !                 Check if receptor is on the downwind side of the line
             IF (XRECEP .LT. XMAXL )THEN
@@ -525,7 +525,7 @@ SUBROUTINE BL_CALC (KK)
                VXYKM  = VIRTXY/1000.0D0
                VXZKM  = VIRTXZ/1000.0D0
 
-               if( VXYKM .LT. 0.0D0 .OR. VXZKM .LT. 0.0D0 )then
+               if( VXYKM .LT. 0.0D0 .or. VXZKM .LT. 0.0D0 )then
 ! ---                   Virtual distance is < 0.0; skip this segment
                   GO TO 495
                endif
@@ -546,7 +546,7 @@ SUBROUTINE BL_CALC (KK)
                TERRAN = TER1 * DMIN1(HNT,THT)
                H = HNT - TERRAN
 
-               IF (H .GT. ZI .AND. KST .LE. 4)GO TO 495
+               IF (H .GT. ZI .and. KST .LE. 4)GO TO 495
 !
 !                    Solve the gaussian point source equation
 !
@@ -572,7 +572,7 @@ SUBROUTINE BL_CALC (KK)
 
 !                 If receptor is within region of influence but not directly
 !                  downwind of any part of the line, and SUM=0.0, CHI=0.0
-            IF (SUMM .LE. 0.0D0 .AND. IDW .NE. 1) THEN
+            IF (SUMM .LE. 0.0D0 .and. IDW .NE. 1) THEN
                CYCLE RECEPTOR_LOOP
             END IF
 !
@@ -626,7 +626,7 @@ SUBROUTINE BL_CALC (KK)
 !                 At least one line segment must be within one SIGMA Y of
 !                  the line (if the receptor is directly downwind of any
 !                  part of the line)
-            IF (IDW .EQ. 1 .AND. IWOSIG .NE. 1) GO TO 758
+            IF (IDW .EQ. 1 .and. IWOSIG .NE. 1) GO TO 758
 
             DIFF = DABS(SUM2-SUMM)
 !MGS               D183_BUOYLINE_EMISUNIT_WSP 3/4/2024: Added the 1.0E6/EMIFAC(1) to leave this
@@ -689,7 +689,7 @@ SUBROUTINE BL_CALC (KK)
                   VXYKM  = VIRTXY/1000.0D0
                   VXZKM  = VIRTXZ/1000.0D0
 
-                  if( VXYKM .LT. 0.0D0 .OR. VXZKM .LT. 0.0D0 )then
+                  if( VXYKM .LT. 0.0D0 .or. VXZKM .LT. 0.0D0 )then
 ! ---                      Virtual distance is < 0.0; skip this segment
                      GO TO 941                                   ! not sure if this is best fix
                   endif
@@ -1099,7 +1099,7 @@ SUBROUTINE BL_RISE(U,ISTAB,S)
    DO 1000 IDIST = 2,7
       X = BL_XDIST(IDIST)
 
-      IF (ISTAB .LE. 4  .OR. X .LT. BL_XFS) THEN
+      IF (ISTAB .LE. 4  .or. X .LT. BL_XFS) THEN
          IF( DABS(X - BL_XFB) .LT. 1.0D-10 )THEN
 !              CONSTANT 0.4420971 = 1./(2.*PI*BETA*BETA) WITH BETA=0.6
             C = -0.4420971D0 * (FPRMXNB/BL_XFB) * (X/U)**3
@@ -1264,7 +1264,7 @@ SUBROUTINE BL_GAUSS(ISTAB,DPBL,CROSSY,SIGY,SIGZ,H,FT)
 
 !     If mixing height (DPBL) GE 5000 meters or for stable conditions,
 !     neglect the reflection terms
-   IF (ISTAB .GE. 5 .OR. DPBL .GT. 5000.0D0) GO TO 451
+   IF (ISTAB .GE. 5 .or. DPBL .GT. 5000.0D0) GO TO 451
 
 !     If SIGZ GT 1.6*DPBL, assume a uniform vertical distribution
    IF (SIGZ .GT. 1.6D0*DPBL) GO TO 460
@@ -1704,7 +1704,7 @@ SUBROUTINE BL_SORT(FTSAVE,IBMIN,IBMAX,IWPBL)
 
    IBMIN = IBMIN - INCRM
    IBMAX = IBMAX + INCRP
-   IF (INCRM .EQ. 0 .AND. INCRP .EQ. 0) GO TO 980
+   IF (INCRM .EQ. 0 .and. INCRP .EQ. 0) GO TO 980
    ISAFE = ISAFE + 1
    IF (ISAFE .GT. 129) GO TO 980
    GO TO 975

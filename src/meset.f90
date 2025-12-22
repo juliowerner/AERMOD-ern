@@ -98,7 +98,7 @@ SUBROUTINE MECARD
          CALL UADATA
       END IF
 
-   ELSE IF (.NOT.EVONLY .AND. KEYWRD .EQ. 'STARTEND') THEN
+   ELSE IF (.NOT.EVONLY .and. KEYWRD .EQ. 'STARTEND') THEN
 !        Set Status Switch
       IMSTAT(6) = IMSTAT(6) + 1
       IF (SCIM) THEN
@@ -114,7 +114,7 @@ SUBROUTINE MECARD
          END IF
       END IF
 
-   ELSE IF (.NOT.EVONLY .AND. KEYWRD .EQ. 'DAYRANGE') THEN
+   ELSE IF (.NOT.EVONLY .and. KEYWRD .EQ. 'DAYRANGE') THEN
 !        Set Status Switch
       IMSTAT(7) = IMSTAT(7) + 1
       IF (SCIM) THEN
@@ -175,7 +175,7 @@ SUBROUTINE MECARD
          CALL WSCATS
       END IF
 
-   ELSE IF (KEYWRD .EQ. 'SCIMBYHR' .AND. SCIM) THEN
+   ELSE IF (KEYWRD .EQ. 'SCIMBYHR' .and. SCIM) THEN
 !        Set Status Switch
       IMSTAT(12) = IMSTAT(12) + 1
       IF (IMSTAT(12) .NE. 1) THEN
@@ -199,10 +199,10 @@ SUBROUTINE MECARD
 
 !     JAT 1/29/21 ISSUE D070 TURBULENCE OPTIONS
 !     ADD CHECK FOR ONE OF THE TURBULENCE KEYWORDS
-   ELSE IF (KEYWRD .EQ. 'NOTURB  ' .OR. KEYWRD .EQ. 'NOTURBST' .OR.&
-   &KEYWRD .EQ. 'NOTURBCO' .OR. KEYWRD .EQ. 'NOSA    ' .OR.&
-   &KEYWRD .EQ. 'NOSW    ' .OR. KEYWRD .EQ. 'NOSAST  ' .OR.&
-   &KEYWRD .EQ. 'NOSWST  ' .OR. KEYWRD .EQ. 'NOSACO  ' .OR.&
+   ELSE IF (KEYWRD .EQ. 'NOTURB  ' .or. KEYWRD .EQ. 'NOTURBST' .or.&
+   &KEYWRD .EQ. 'NOTURBCO' .or. KEYWRD .EQ. 'NOSA    ' .or.&
+   &KEYWRD .EQ. 'NOSW    ' .or. KEYWRD .EQ. 'NOSAST  ' .or.&
+   &KEYWRD .EQ. 'NOSWST  ' .or. KEYWRD .EQ. 'NOSACO  ' .or.&
    &KEYWRD .EQ. 'NOSWCO  ') THEN
 !        Set Status Switch
       IMSTAT(14) = IMSTAT(14) + 1
@@ -240,18 +240,18 @@ SUBROUTINE MECARD
       IF (IMSTAT(10) .EQ. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','130','PROFBASE')
       END IF
-      IF (SCIM .AND. IMSTAT(12) .EQ. 0) THEN
+      IF (SCIM .and. IMSTAT(12) .EQ. 0) THEN
          CALL ERRHDL(PATH,MODNAM,'E','130','SCIMBYHR')
       END IF
 
 !        OPEN Met Data File                                 ---   CALL MEOPEN
-      IF (IMSTAT(2) .NE. 0 .AND. IMSTAT(3) .NE. 0) THEN
+      IF (IMSTAT(2) .NE. 0 .and. IMSTAT(3) .NE. 0) THEN
          CALL MEOPEN
       END IF
 
 ! ---    Assign L_LeapYear variable
-      IF ((MOD(ISYEAR,4) .NE. 0) .OR.&
-      &(MOD(ISYEAR,100) .EQ. 0 .AND. MOD(ISYEAR,400) .NE. 0)) THEN
+      IF ((MOD(ISYEAR,4) .NE. 0) .or.&
+      &(MOD(ISYEAR,100) .EQ. 0 .and. MOD(ISYEAR,400) .NE. 0)) THEN
 !           Not a Leap Year
          L_LeapYear = .FALSE.
       ELSE
@@ -262,8 +262,8 @@ SUBROUTINE MECARD
       IF (MULTYR) THEN
 !           Set the Increment for Saving Results, INCRST, Based on
 !           ISYEAR, Surface Data Year, from SURFDATA Keyword
-         IF ((MOD(ISYEAR,4) .NE. 0) .OR.&
-         &(MOD(ISYEAR,100).EQ.0 .AND. MOD(ISYEAR,400).NE.0)) THEN
+         IF ((MOD(ISYEAR,4) .NE. 0) .or.&
+         &(MOD(ISYEAR,100).EQ.0 .and. MOD(ISYEAR,400).NE.0)) THEN
 !              Not a Leap Year
             INCRST = 365
          ELSE
@@ -274,8 +274,8 @@ SUBROUTINE MECARD
 
 !        Determine Number of Hours to be Processed, NHOURS, For Use
 !        With the TOXXFILE Option - 9/29/92
-      IF ((MOD(ISYEAR,4) .NE. 0) .OR.&
-      &(MOD(ISYEAR,100).EQ.0 .AND. MOD(ISYEAR,400).NE.0)) THEN
+      IF ((MOD(ISYEAR,4) .NE. 0) .or.&
+      &(MOD(ISYEAR,100).EQ.0 .and. MOD(ISYEAR,400).NE.0)) THEN
 !           Not a Leap Year
          ND = 365
       ELSE
@@ -524,7 +524,7 @@ SUBROUTINE SFDATA
    END IF
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C     Check for 2-digit Input and Convert ISYEAR to Four Digits
-!      IF (ISYEAR .GE. ISTRT_WIND .AND. ISYEAR .LE. 99) THEN
+!      IF (ISYEAR .GE. ISTRT_WIND .and. ISYEAR .LE. 99) THEN
 !         ISYEAR = ISTRT_CENT*100 + ISYEAR
 !      ELSE IF (ISYEAR .LT. ISTRT_WIND) THEN
 !         ISYEAR = (ISTRT_CENT+1)*100 + ISYEAR
@@ -626,7 +626,7 @@ SUBROUTINE UADATA
    END IF
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C     Convert IUYEAR to Four Digits
-!      IF (IUYEAR .GE. ISTRT_WIND .AND. IUYEAR .LE. 99) THEN
+!      IF (IUYEAR .GE. ISTRT_WIND .and. IUYEAR .LE. 99) THEN
 !         IUYEAR = ISTRT_CENT*100 + IUYEAR
 !      ELSE IF (IUYEAR .LT. ISTRT_WIND) THEN
 !         IUYEAR = (ISTRT_CENT+1)*100 + IUYEAR
@@ -767,20 +767,20 @@ SUBROUTINE PRBASE
 !     Variable Initializations
    MODNAM = 'PRBASE'
 
-   IF (IFC .EQ. 3 .OR. IFC .EQ. 4) THEN
+   IF (IFC .EQ. 3 .or. IFC .EQ. 4) THEN
       CALL STODBL(FIELD(3),ILEN_FLD,ZBASE,IMIT)
 !        Check The Numerical Field
       IF (IMIT .NE. 1) THEN
          CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
          GO TO 999
       END IF
-      IF (IFC .EQ. 4 .AND. FIELD(4) .EQ. 'FEET') THEN
+      IF (IFC .EQ. 4 .and. FIELD(4) .EQ. 'FEET') THEN
          ZBASE = 0.3048D0 * ZBASE
-      ELSE IF (IFC .EQ. 4 .AND. FIELD(4) .NE. 'METERS') THEN
+      ELSE IF (IFC .EQ. 4 .and. FIELD(4) .NE. 'METERS') THEN
 !           WRITE Warning Message - Invalid ZRUNIT Parameter
          CALL ERRHDL(PATH,MODNAM,'W','203','ZRUNIT')
       END IF
-      IF (ZBASE .LT. 0.0D0 .AND. IMIT .EQ. 1) THEN
+      IF (ZBASE .LT. 0.0D0 .and. IMIT .EQ. 1) THEN
 !           WRITE Warning Message - Possible Error In ZBASE
          CALL ERRHDL(PATH,MODNAM,'W','340',KEYWRD)
       END IF
@@ -885,7 +885,7 @@ SUBROUTINE STAEND
          GO TO 298
       END IF
       ISMN = NINT(FNUM)
-      IF (ISMN .LT. 1 .OR. ISMN .GT. 12) THEN
+      IF (ISMN .LT. 1 .or. ISMN .GT. 12) THEN
 !           WRITE Error Message    ! Invalid Month
          CALL ERRHDL(PATH,MODNAM,'E','203','MONTH')
       END IF
@@ -896,8 +896,8 @@ SUBROUTINE STAEND
          GO TO 398
       END IF
       ISDY = NINT(FNUM)
-      IF (ISMN .GE. 1 .AND. ISMN .LE. 12) THEN
-         IF (ISDY .LT. 1 .OR. ISDY .GT. IDYMAX(ISMN)) THEN
+      IF (ISMN .GE. 1 .and. ISMN .LE. 12) THEN
+         IF (ISDY .LT. 1 .or. ISDY .GT. IDYMAX(ISMN)) THEN
 !              WRITE Error Message    ! Invalid Day
             CALL ERRHDL(PATH,MODNAM,'E','203','DAY')
          END IF
@@ -916,7 +916,7 @@ SUBROUTINE STAEND
          GO TO 598
       END IF
       IEMN = NINT(FNUM)
-      IF (IEMN .LT. 1 .OR. IEMN .GT. 12) THEN
+      IF (IEMN .LT. 1 .or. IEMN .GT. 12) THEN
 !           WRITE Error Message    ! Invalid Month
          CALL ERRHDL(PATH,MODNAM,'E','203','MONTH')
       END IF
@@ -927,8 +927,8 @@ SUBROUTINE STAEND
          GO TO 698
       END IF
       IEDY = NINT(FNUM)
-      IF (IEMN .GE. 1 .AND. IEMN .LE. 12) THEN
-         IF (IEDY .LT. 1 .OR. IEDY .GT. IDYMAX(IEMN)) THEN
+      IF (IEMN .GE. 1 .and. IEMN .LE. 12) THEN
+         IF (IEDY .LT. 1 .or. IEDY .GT. IDYMAX(IEMN)) THEN
 !              WRITE Error Message    ! Invalid Day
             CALL ERRHDL(PATH,MODNAM,'E','203','DAY')
          END IF
@@ -942,7 +942,7 @@ SUBROUTINE STAEND
       END IF
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C        Convert ISYR and IEYR to Four Digits
-!         IF (ISYR .GE. ISTRT_WIND .AND. ISYR .LE. 99) THEN
+!         IF (ISYR .GE. ISTRT_WIND .and. ISYR .LE. 99) THEN
 !            ISYR = ISTRT_CENT*100 + ISYR
 !         ELSE IF (ISYR .LT. ISTRT_WIND) THEN
 !            ISYR = (ISTRT_CENT+1)*100 + ISYR
@@ -954,7 +954,7 @@ SUBROUTINE STAEND
          CALL CENT_DATE(IEYR,IEYR)
       END IF
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
-!         IF (IEYR .GE. ISTRT_WIND .AND. IEYR .LE. 99) THEN
+!         IF (IEYR .GE. ISTRT_WIND .and. IEYR .LE. 99) THEN
 !            IEYR = ISTRT_CENT*100 + IEYR
 !         ELSE IF (IEYR .LT. ISTRT_WIND) THEN
 !            IEYR = (ISTRT_CENT+1)*100 + IEYR
@@ -997,7 +997,7 @@ SUBROUTINE STAEND
          GO TO 299
       END IF
       ISMN = NINT(FNUM)
-      IF (ISMN .LT. 1 .OR. ISMN .GT. 12) THEN
+      IF (ISMN .LT. 1 .or. ISMN .GT. 12) THEN
 !           WRITE Error Message    ! Invalid Month
          CALL ERRHDL(PATH,MODNAM,'E','203','MONTH')
       END IF
@@ -1008,8 +1008,8 @@ SUBROUTINE STAEND
          GO TO 399
       END IF
       ISDY = NINT(FNUM)
-      IF (ISMN .GE. 1 .AND. ISMN .LE. 12) THEN
-         IF (ISDY .LT. 1 .OR. ISDY .GT. IDYMAX(ISMN)) THEN
+      IF (ISMN .GE. 1 .and. ISMN .LE. 12) THEN
+         IF (ISDY .LT. 1 .or. ISDY .GT. IDYMAX(ISMN)) THEN
 !              WRITE Error Message    ! Invalid Day
             CALL ERRHDL(PATH,MODNAM,'E','203','DAY')
          END IF
@@ -1021,7 +1021,7 @@ SUBROUTINE STAEND
          GO TO 499
       END IF
       ISHR = NINT(FNUM)
-      IF (ISHR .LT. 1 .OR. ISHR .GT. 24) THEN
+      IF (ISHR .LT. 1 .or. ISHR .GT. 24) THEN
 !           WRITE Error Message    ! Invalid Hour
          CALL ERRHDL(PATH,MODNAM,'E','203','HOUR')
       END IF
@@ -1039,7 +1039,7 @@ SUBROUTINE STAEND
          GO TO 699
       END IF
       IEMN = NINT(FNUM)
-      IF (IEMN .LT. 1 .OR. IEMN .GT. 12) THEN
+      IF (IEMN .LT. 1 .or. IEMN .GT. 12) THEN
 !           WRITE Error Message    ! Invalid Month
          CALL ERRHDL(PATH,MODNAM,'E','203','MONTH')
       END IF
@@ -1050,8 +1050,8 @@ SUBROUTINE STAEND
          GO TO 799
       END IF
       IEDY = NINT(FNUM)
-      IF (IEMN .GE. 1 .AND. IEMN .LE. 12) THEN
-         IF (IEDY .LT. 1 .OR. IEDY .GT. IDYMAX(IEMN)) THEN
+      IF (IEMN .GE. 1 .and. IEMN .LE. 12) THEN
+         IF (IEDY .LT. 1 .or. IEDY .GT. IDYMAX(IEMN)) THEN
 !              WRITE Error Message    ! Invalid Day
             CALL ERRHDL(PATH,MODNAM,'E','203','DAY')
          END IF
@@ -1063,7 +1063,7 @@ SUBROUTINE STAEND
          GO TO 899
       END IF
       IEHR = NINT(FNUM)
-      IF (IEHR .LT. 1 .OR. IEHR .GT. 24) THEN
+      IF (IEHR .LT. 1 .or. IEHR .GT. 24) THEN
 !           WRITE Error Message    ! Invalid Hour
          CALL ERRHDL(PATH,MODNAM,'E','203','HOUR')
       END IF
@@ -1076,7 +1076,7 @@ SUBROUTINE STAEND
       END IF
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C        Convert ISYR and IEYR to Four Digits
-!         IF (ISYR .GE. ISTRT_WIND .AND. ISYR .LE. 99) THEN
+!         IF (ISYR .GE. ISTRT_WIND .and. ISYR .LE. 99) THEN
 !            ISYR = ISTRT_CENT*100 + ISYR
 !         ELSE IF (ISYR .LT. ISTRT_WIND) THEN
 !            ISYR = (ISTRT_CENT+1)*100 + ISYR
@@ -1088,7 +1088,7 @@ SUBROUTINE STAEND
          CALL CENT_DATE(IEYR,IEYR)
       END IF
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
-!         IF (IEYR .GE. ISTRT_WIND .AND. IEYR .LE. 99) THEN
+!         IF (IEYR .GE. ISTRT_WIND .and. IEYR .LE. 99) THEN
 !            IEYR = ISTRT_CENT*100 + IEYR
 !         ELSE IF (IEYR .LT. ISTRT_WIND) THEN
 !            IEYR = (ISTRT_CENT+1)*100 + IEYR
@@ -1149,7 +1149,7 @@ SUBROUTINE STAEND
 
 !     Check for STARTEND period less than a complete year if
 !     ANNUAL average is specified
-   IF (ANNUAL .OR. MULTYR .OR. L_MAXDCONT) THEN
+   IF (ANNUAL .or. MULTYR .or. L_MAXDCONT) THEN
 !        First check for End Year = Start Year,
 !        then for End Year = Start Year + 1, otherwise
 !        if End Year - Start Year > 1 no further checks needed
@@ -1157,8 +1157,8 @@ SUBROUTINE STAEND
 !           End Year equals Start Year, therefore the
 !           Start Month, Start Day, Start Hour must be 01/01/01, and
 !           End Month, End Day, End Hour must be 12/31/24
-         IF (ISMN .NE.  1 .OR. ISDY .NE.  1 .OR. ISHR .NE.  1 .OR.&
-         &IEMN .NE. 12 .OR. IEDY .NE. 31 .OR. IEHR .NE. 24) THEN
+         IF (ISMN .NE.  1 .or. ISDY .NE.  1 .or. ISHR .NE.  1 .or.&
+         &IEMN .NE. 12 .or. IEDY .NE. 31 .or. IEHR .NE. 24) THEN
 !              WRITE Error Message    ! Incomplete Year for MULTYR or ANNUAL
             CALL ERRHDL(PATH,MODNAM,'E','480',KEYWRD)
          END IF
@@ -1245,11 +1245,11 @@ SUBROUTINE DAYRNG
          CALL FSPLIT(PATH,KEYWRD,FIELD(I),ILEN_FLD,'-',RMARK,&
          &BEGRNG,ENDRNG)
          CALL FSPLIT(PATH,KEYWRD,BEGRNG,8,'/',GMARK,CMN1,CDY1)
-         IF (RMARK .AND. GMARK) THEN
+         IF (RMARK .and. GMARK) THEN
             CALL FSPLIT(PATH,KEYWRD,ENDRNG,8,'/',GMARK,CMN2,CDY2)
          END IF
 
-         IF (.NOT.RMARK .AND. .NOT.GMARK) THEN
+         IF (.NOT.RMARK .and. .NOT.GMARK) THEN
 !              Field Must Be a Single Julian Day
             CALL STONUM(BEGRNG,8,FNUM,IMIT)
 !              Check The Numerical Field
@@ -1259,7 +1259,7 @@ SUBROUTINE DAYRNG
             ELSE
                JDAY = NINT(FNUM)
             END IF
-            IF (JDAY.GE.1 .AND. JDAY.LE.366 .AND. IMIT.EQ.1) THEN
+            IF (JDAY.GE.1 .and. JDAY.LE.366 .and. IMIT.EQ.1) THEN
                IPROC(JDAY)  = 1
 !                 Also need IPROCL array for Leap Years
                IPROCL(JDAY) = 1
@@ -1267,13 +1267,13 @@ SUBROUTINE DAYRNG
 !                 WRITE Error Message    ! Invalid Julian Day
                CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
             END IF
-            IF (JDAY.LT.ISJDAY .OR. JDAY.GT.IEJDAY) THEN
+            IF (JDAY.LT.ISJDAY .or. JDAY.GT.IEJDAY) THEN
 !                 WRITE Warning Message  ! Julian Day Out-of-Range
                WRITE(DUMMY,'(I8)') JDAY
                CALL ERRHDL(PATH,MODNAM,'W','350',DUMMY)
             END IF
 
-         ELSE IF (RMARK .AND. .NOT.GMARK) THEN
+         ELSE IF (RMARK .and. .NOT.GMARK) THEN
 !              Field Must Be a Julian Day Range - Extract Beg & End
             CALL STONUM(BEGRNG,8,FNUM,IMIT)
 !              Check The Numerical Field
@@ -1291,7 +1291,7 @@ SUBROUTINE DAYRNG
             ELSE
                JDAYE = NINT(FNUM)
             END IF
-            IF ((JDAYB .LE. JDAYE) .AND. (JDAYB .GE. 1) .AND.&
+            IF ((JDAYB .LE. JDAYE) .and. (JDAYB .GE. 1) .and.&
             &(JDAYE .LE. 366)) THEN
                DO K = JDAYB, JDAYE
                   IPROC(K)  = 1
@@ -1302,13 +1302,13 @@ SUBROUTINE DAYRNG
 !                 WRITE Error Message    ! Invalid Julian Day Range
                CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
             END IF
-            IF (JDAYB.LT.ISJDAY .OR. JDAYE.GT.IEJDAY) THEN
+            IF (JDAYB.LT.ISJDAY .or. JDAYE.GT.IEJDAY) THEN
 !                 WRITE Warning Message  ! Julian Day Out-of-Range
                WRITE(DUMMY,'(I3,"-",I3)') JDAYB, JDAYE
                CALL ERRHDL(PATH,MODNAM,'W','350',DUMMY)
             END IF
 
-         ELSE IF (.NOT.RMARK .AND. GMARK) THEN
+         ELSE IF (.NOT.RMARK .and. GMARK) THEN
 !              Field Must Be a Single Month/Day
             CALL STONUM(CMN1,8,FNUM,IMIT)
 !              Check The Numerical Field
@@ -1334,13 +1334,13 @@ SUBROUTINE DAYRNG
 !              input by the user.
             CALL JULIAN(ISYEAR,IMN,IDY,JDAY)
 
-            IF ( (MOD(ISYEAR,4) .NE. 0) .OR.&
-            &(MOD(ISYEAR,100) .EQ. 0 .AND.&
+            IF ( (MOD(ISYEAR,4) .NE. 0) .or.&
+            &(MOD(ISYEAR,100) .EQ. 0 .and.&
             &MOD(ISYEAR,400) .NE. 0) ) THEN
 !                 Not a Leap Year; Get JULIAN day number for specified MN/DY
 ! ---             Assign specified MN/DY to IPROC array (used for non-leap years)
 !                 and IPROCL array (used for leap years)
-               IF (JDAY .GE. 1 .AND. JDAY .LE. 365) THEN
+               IF (JDAY .GE. 1 .and. JDAY .LE. 365) THEN
                   IPROC(JDAY) = 1
                   IF (IMN .GT. 2) THEN
                      IPROCL(JDAY+1) = 1
@@ -1352,7 +1352,7 @@ SUBROUTINE DAYRNG
                   CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
                END IF
 ! ---             Check for consistency with STARTEND inputs, if provided
-               IF (JDAY.LT.ISJDAY .OR. JDAY.GT.IEJDAY) THEN
+               IF (JDAY.LT.ISJDAY .or. JDAY.GT.IEJDAY) THEN
 !                    WRITE Warning Message  ! Julian Day Out-of-Range
                   WRITE(DUMMY,'(I8)') JDAY
                   CALL ERRHDL(PATH,MODNAM,'W','350',DUMMY)
@@ -1362,7 +1362,7 @@ SUBROUTINE DAYRNG
 ! ---             Determine JULIAN Day Number; For Leap Year
 ! ---             Assign specified MD/DY to IPROC array (used for non-leap years)
 !                 and IPROCL array (used for leap years)
-               IF (JDAY .GE. 1 .AND. JDAY .LE. 366) THEN
+               IF (JDAY .GE. 1 .and. JDAY .LE. 366) THEN
                   IPROCL(JDAY) = 1
                   IF (IMN .GT. 2) THEN
                      IPROC(JDAY-1) = 1
@@ -1374,14 +1374,14 @@ SUBROUTINE DAYRNG
                   CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
                END IF
 ! ---             Check for consistency with STARTEND inputs, if provided
-               IF (JDAY.LT.ISJDAY .OR. JDAY.GT.IEJDAY) THEN
+               IF (JDAY.LT.ISJDAY .or. JDAY.GT.IEJDAY) THEN
 !                    WRITE Warning Message  ! Julian Day Out-of-Range
                   WRITE(DUMMY,'(I8)') JDAY
                   CALL ERRHDL(PATH,MODNAM,'W','350',DUMMY)
                END IF
             END IF
 
-         ELSE IF (RMARK .AND. GMARK) THEN
+         ELSE IF (RMARK .and. GMARK) THEN
 !              Field Must Be a Greg. Date Range (MN/DY-MN/DY)
             CALL STONUM(CMN1,8,FNUM,IMIT)
 !              Check The Numerical Field
@@ -1417,8 +1417,8 @@ SUBROUTINE DAYRNG
             END IF
 
 ! ---          Determine JULIAN Day Number; For Non-Leap Year First
-            IF ( (MOD(ISYEAR,4) .NE. 0) .OR.&
-            &(MOD(ISYEAR,100) .EQ. 0 .AND.&
+            IF ( (MOD(ISYEAR,4) .NE. 0) .or.&
+            &(MOD(ISYEAR,100) .EQ. 0 .and.&
             &MOD(ISYEAR,400) .NE. 0) ) THEN
 !                 Not a Leap Year; Get JULIAN day numbers for specified
 !                 Start MN/DY and End MN/DY, based on STARTEND
@@ -1427,7 +1427,7 @@ SUBROUTINE DAYRNG
 
 ! ---             Assign specified MN/DY range to IPROC array (used for non-leap years)
 !                 and IPROCL array (used for leap years)
-               IF ((JDAYB .LE. JDAYE) .AND. (JDAYB .GE. 1) .AND.&
+               IF ((JDAYB .LE. JDAYE) .and. (JDAYB .GE. 1) .and.&
                &(JDAYE .LE. 365)) THEN
 ! ---                Assign IPROC array for use with non-leap years
                   DO K = JDAYB, JDAYE
@@ -1447,8 +1447,8 @@ SUBROUTINE DAYRNG
                END IF
 ! ---             Check for consistency with STARTEND inputs, if provided
 ! ---              D146 Changed conditional to reference JDAYB and JDAYE rather than JDAY WSP 10/18/22
-               IF (JDAYB.LT.ISJDAY .OR. JDAYE.GT.IEJDAY) THEN
-!                  IF (JDAY.LT.ISJDAY .OR. JDAY.GT.IEJDAY) THEN
+               IF (JDAYB.LT.ISJDAY .or. JDAYE.GT.IEJDAY) THEN
+!                  IF (JDAY.LT.ISJDAY .or. JDAY.GT.IEJDAY) THEN
 
 !                    WRITE Warning Message  ! Julian Day Out-of-Range
 !  ---               D146 Changed warning to reference JDAYE and JDAYB rather than JDAY WSP 10/18/22
@@ -1465,7 +1465,7 @@ SUBROUTINE DAYRNG
                CALL JULIAN(ISYEAR,IMN2,IDY2,JDAYE)
 ! ---             Assign specified MN/DY range to IPROC array (used for non-leap years)
 !                 and IPROCL array (used for leap years)
-               IF ((JDAYB .LE. JDAYE) .AND. (JDAYB .GE. 1) .AND.&
+               IF ((JDAYB .LE. JDAYE) .and. (JDAYB .GE. 1) .and.&
                &(JDAYE .LE. 366)) THEN
                   DO K = JDAYB, JDAYE
                      IPROCL(K) = 1
@@ -1483,7 +1483,7 @@ SUBROUTINE DAYRNG
                   CALL ERRHDL(PATH,MODNAM,'E','203','Juli Day')
                END IF
 
-               IF (JDAYB.LT.ISJDAY .OR. JDAYE.GT.IEJDAY) THEN
+               IF (JDAYB.LT.ISJDAY .or. JDAYE.GT.IEJDAY) THEN
 !                    WRITE Warning Message  ! Julian Day Out-of-Range
                   WRITE(DUMMY,'(I3,"-",I3)') JDAYB, JDAYE
                   CALL ERRHDL(PATH,MODNAM,'W','350',DUMMY)
@@ -1592,13 +1592,13 @@ SUBROUTINE WSCATS
          IF (IMIT .NE. 1) THEN
 !              WRITE Error Message  ! Invalid Numeric Field Encountered
             CALL ERRHDL(PATH,MODNAM,'E','208',KEYWRD)
-         ELSE IF (DNUM .LT. 1.0D0 .OR. DNUM .GT. 20.0D0) THEN
+         ELSE IF (DNUM .LT. 1.0D0 .or. DNUM .GT. 20.0D0) THEN
 !              WRITE Error Message       ! UCAT Out of Range
             CALL ERRHDL(PATH,MODNAM,'E','380','UCAT')
          ELSE
             IWS = I - 2
             UCAT(IWS) = DNUM
-            IF (IWS.GT.1 .AND. UCAT(IWS).LE.UCAT(IWS-1)) THEN
+            IF (IWS.GT.1 .and. UCAT(IWS).LE.UCAT(IWS-1)) THEN
 !                 WRITE Error Message    ! Invalid UCAT Value, LE Previous
                CALL ERRHDL(PATH,MODNAM,'E','203','UCAT')
             END IF
@@ -1822,7 +1822,7 @@ SUBROUTINE MEOPEN
 
 !     JAT 1/14/21 ISSUE D077; ADD PROG AS WELL AS MMIF TO ACCOMODATE NEW AERMET
 !      IF( INDEX(BUFFER,'MMIF') .NE. 0 )THEN
-   IF( INDEX(BUFFER,'MMIF') .NE. 0 .OR. INDEX(BUFFER,'PROG')&
+   IF( INDEX(BUFFER,'MMIF') .NE. 0 .or. INDEX(BUFFER,'PROG')&
    &.NE. 0 )THEN
 !        Check for use of MMIF option in AERMET
       L_MMIF_Data = .TRUE.
@@ -1830,7 +1830,7 @@ SUBROUTINE MEOPEN
 !        Assign keyword to MODOPS array
       MODOPS(24) = 'MMIF_Data'
 !         IF( INDEX(BUFFER,'MMIF VERSION') .NE. 0 )THEN
-      IF( INDEX(BUFFER,'MMIF VERSION') .NE. 0 .OR.&
+      IF( INDEX(BUFFER,'MMIF VERSION') .NE. 0 .or.&
       &INDEX(BUFFER,'PROG VERSION') .NE. 0 )THEN
 !           Extract MMIF Version info to include in output file
          IF( INDEX(BUFFER,'MMIF VERSION') .NE. 0) THEN
@@ -1940,21 +1940,21 @@ SUBROUTINE MEOPEN
    END IF
 
 !     Check for valid version of meteorological data.
-   IF (SCREEN .AND. C_METVER .NE. 'SCREEN') THEN
+   IF (SCREEN .and. C_METVER .NE. 'SCREEN') THEN
 !        Check for use of screening meteorology under the SCREEN option
       CALL ERRHDL(PATH,MODNAM,'W','397',C_METVER)
-   ELSE IF (.NOT.SCREEN .AND. C_METVER .EQ. 'SCREEN') THEN
+   ELSE IF (.NOT.SCREEN .and. C_METVER .EQ. 'SCREEN') THEN
 !        Check for use of screening meteorology without SCREEN option
       CALL ERRHDL(PATH,MODNAM,'W','398','        ')
    ELSE IF (.NOT.SCREEN) THEN
 !        Read integer Julian date from character field for comparison to
 !        acceptable AERMET version number.
       READ(C_METVER,'(1X,I5)',ERR=109) METVER
-      IF (METVER.GT.MDATE1 .OR. METVER.LT.MDATE2) THEN
+      IF (METVER.GT.MDATE1 .or. METVER.LT.MDATE2) THEN
 ! ---       Issue fatal error for use of invalid met version date
          WRITE(DUMMY,'(2X,I5.5)') METVER
          CALL ERRHDL(PATH,MODNAM,'E','395',DUMMY)
-      ELSE IF (METVER.GE.MDATE2 .AND. METVER.LT.MDATE3) THEN
+      ELSE IF (METVER.GE.MDATE2 .and. METVER.LT.MDATE3) THEN
 ! ---       Issue warning message for use of "outdated" met version date
          WRITE(DUMMY,'(2X,I5.5)') METVER
          CALL ERRHDL(PATH,MODNAM,'W','396',DUMMY)
@@ -1977,14 +1977,14 @@ SUBROUTINE MEOPEN
 
 ! --- Check Station IDs in SURFFILE for agreement with ME pathway;
 !     First check for blank fields in surface file header record
-   IF( LEN_TRIM(CSSI) .EQ. 0 .AND. IDSURF .NE. 0 )THEN
+   IF( LEN_TRIM(CSSI) .EQ. 0 .and. IDSURF .NE. 0 )THEN
 !        Write Warning Message:  SURFDATA ID missing;
       CALL ERRHDL(PATH,MODNAM,'W','531','SURFDATA')
    ELSEIF( ISSI .NE. IDSURF )THEN
 !        Write Warning Message:  SURFDATA id mismatch
       CALL ERRHDL(PATH,MODNAM,'W','530','SURFDATA')
    ENDIF
-   IF( LEN_TRIM(CUSI) .EQ. 0 .AND. IDUAIR .NE. 0 )THEN
+   IF( LEN_TRIM(CUSI) .EQ. 0 .and. IDUAIR .NE. 0 )THEN
 !        Write Warning Message:  UAIRDATA ID missing;
       CALL ERRHDL(PATH,MODNAM,'W','531','UAIRDATA')
    ELSEIF( IUSI .NE. IDUAIR )THEN
@@ -1992,7 +1992,7 @@ SUBROUTINE MEOPEN
       CALL ERRHDL(PATH,MODNAM,'W','530','UAIRDATA')
    ENDIF
    IF( IMSTAT(9) .EQ. 1 )THEN
-      IF( LEN_TRIM(COSI) .EQ. 0 .AND. IDSITE .NE. 0 )THEN
+      IF( LEN_TRIM(COSI) .EQ. 0 .and. IDSITE .NE. 0 )THEN
 !           Write Warning Message:  SITEDATA ID missing;
          CALL ERRHDL(PATH,MODNAM,'W','531','SITEDATA')
       ELSEIF( IOSI .NE. IDSITE )THEN
@@ -2043,8 +2043,8 @@ SUBROUTINE MEOPEN
 
 ! ---    Check for PFLHT > 999m, which could indicate use of
 !        MMIF or other gridded met data inputs
-      IF( PFLHT(LEVEL) .GT. 999.0D0 .OR. PFLHT(LEVEL) .LE. 0.0D0)THEN
-         IF( .NOT. L_MMIF_Data .AND. .NOT. L_MMIF_Profile )THEN
+      IF( PFLHT(LEVEL) .GT. 999.0D0 .or. PFLHT(LEVEL) .LE. 0.0D0)THEN
+         IF( .NOT. L_MMIF_Data .and. .NOT. L_MMIF_Profile )THEN
 ! ---          Issue warning message for PFLHT > 999m if MMIF data
 !              inputs were not specified; message(s) will only be
 !              generated for a single profile
@@ -2130,7 +2130,7 @@ SUBROUTINE SCIMIT
    IMIT5  = 1
    IMIT6  = 1
 
-   IF (IFC .EQ. 4 .OR. IFC .EQ. 6 .OR. IFC .EQ. 8) THEN
+   IF (IFC .EQ. 4 .or. IFC .EQ. 6 .or. IFC .EQ. 8) THEN
       CALL STONUM(FIELD(3),ILEN_FLD,FNUM,IMIT)
 !        Check The Numerical Field
       IF (IMIT .NE. 1) THEN
@@ -2140,7 +2140,7 @@ SUBROUTINE SCIMIT
 !           Assign value for SCIM starting hour
          NREGSTART = NINT( FNUM )
       END IF
-      IF (NREGSTART .LT. 1 .OR. NREGSTART .GT. 24) THEN
+      IF (NREGSTART .LT. 1 .or. NREGSTART .GT. 24) THEN
 !           WRITE Error Message        ! Start Hour out of range
          CALL ERRHDL(PATH,MODNAM,'E','380','StartHr')
       END IF
@@ -2350,7 +2350,7 @@ SUBROUTINE TURBOPT
    I=1
    LFOUND=.FALSE.
 !     LOOK FOR THE KEYWORD IN THE KEYS ARRAY AND SET THE APPROPRIATE VALUE OF TURBOPTS TO TRUE
-   DO WHILE( I .LE. 9 .AND. .NOT. LFOUND)
+   DO WHILE( I .LE. 9 .and. .NOT. LFOUND)
       IF (KEYWRD .EQ. KEYS(I)) THEN
          LFOUND=.TRUE.
          TURBOPTS(I)=.TRUE.
@@ -2375,7 +2375,7 @@ SUBROUTINE TURBOPT
 !     ONLY NOTURB AND NOTURBST CAN BE USED WITH THE DEFAULT KEYWORD
 !     IF ONE OF THE OTHERS ARE USED WITH DEFAULT, THEN ISSUE WARNING AND
 !     RESET TO FALSE
-   IF (I .GT. 2 .AND. DFAULT) THEN
+   IF (I .GT. 2 .and. DFAULT) THEN
       CALL ERRHDL(PATH,MODNAM,'W','444',KEYWRD)
       TURBOPTS(I)=.FALSE.
    ENDIF
@@ -2418,13 +2418,13 @@ SUBROUTINE CENT_DATE(TwoDigitYear,FourDigitYear)
 
 !     Check that FourDigitYear is four digits not two digits
 !     IF FourDigitYear is two digits, save it as the two digit year
-   IF(FourDigitYear .LE. 99 .AND. FourDigitYear .NE. 0) THEN
+   IF(FourDigitYear .LE. 99 .and. FourDigitYear .NE. 0) THEN
       TwoDigitYear = FourDigitYear
    END IF
 
 !MGS   D181_Y2K_WSP: Corrected when the met years cross from 19xx over to 20xx (4/10/2024)
-!MGS      IF (TwoDigitYear .NE. ISTRT_WIND .AND. TwoDigitYear .LE. 99) THEN
-   IF (TwoDigitYear > ISTRT_WIND .AND. TwoDigitYear .LE. 99) THEN
+!MGS      IF (TwoDigitYear .NE. ISTRT_WIND .and. TwoDigitYear .LE. 99) THEN
+   IF (TwoDigitYear > ISTRT_WIND .and. TwoDigitYear .LE. 99) THEN
       FourDigitYear = ISTRT_CENT*100 + TwoDigitYear
 
    ELSE IF (TwoDigitYear < ISTRT_WIND) THEN !CMGS Add 1 to the century (4/10/2024)
@@ -2469,7 +2469,7 @@ SUBROUTINE LONG_DATE(EightDigit,TenDigit,TwoDigit,OutputTwoDigit)
 !      a two digit value derived from the user input four digit year (or set to 00 is the
 !      user input a two digit year in the INP file
 
-   IF (TwoDigit .NE. ISTRT_WIND .AND. TwoDigit .LE. 99) THEN
+   IF (TwoDigit .NE. ISTRT_WIND .and. TwoDigit .LE. 99) THEN
       OutputTwoDigit = ISTRT_CENT*100 + TwoDigit
       TenDigit = ISTRT_CENT*100000000 + EightDigit
    END IF
@@ -2507,7 +2507,7 @@ SUBROUTINE LONG_DATE_Opt2(EightDigit,TenDigit,TwoDigit)
 !      a two digit value derived from the user input four digit year (or set to 00 is the
 !      user input a two digit year in the INP file
 
-   IF (TwoDigit .NE. ISTRT_WIND .AND. TwoDigit .LE. 99) THEN
+   IF (TwoDigit .NE. ISTRT_WIND .and. TwoDigit .LE. 99) THEN
       TenDigit = ISTRT_CENT*100000000 + EightDigit
    END IF
 

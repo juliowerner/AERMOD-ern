@@ -110,8 +110,8 @@ SUBROUTINE AREAIN
             RETURN
          END IF
       END IF
-      IF ((ua .ge. ucrit .AND. ub .lt. ucrit) .OR.&
-      &(ua .lt. ucrit .AND. ub .ge. ucrit)) THEN
+      IF ((ua .ge. ucrit .and. ub .lt. ucrit) .or.&
+      &(ua .lt. ucrit .and. ub .ge. ucrit)) THEN
          kside = kside+1
          IF (kside .LE. NVMAX+1) THEN
             uvert(kside) = ucrit
@@ -197,7 +197,7 @@ SUBROUTINE AREAIN
          ub = uvert(ks+1)
          dval  = 0.0D0
          IF (DABS(ua-ub) .lt. 0.01D0) QGO = .FALSE.
-         IF (QGO .AND. FASTAREA) THEN
+         IF (QGO .and. FASTAREA) THEN
             call pside_tox(ua,ub,dval)
          ELSE IF (QGO) THEN
             call pside(ua,ub,dval)
@@ -294,15 +294,15 @@ SUBROUTINE PLUMEF(XARG,POUT)
    XDIST = XARG
 
 !     Determine Deposition Correction Factors
-   IF (NPD .EQ. 0 .AND. .NOT.ARDPLETE .AND. (LDGAS .OR. LWGAS)) THEN
+   IF (NPD .EQ. 0 .and. .NOT.ARDPLETE .and. (LDGAS .or. LWGAS)) THEN
       CALL PDEPG (XARG)
    ELSE IF (.NOT.ARDPLETE) THEN
       DQCORG = 1.0D0
       WQCORG = 1.0D0
    END IF
-   IF (.NOT.ARDPLETE .AND. (LDPART .OR. LWPART)) THEN
+   IF (.NOT.ARDPLETE .and. (LDPART .or. LWPART)) THEN
       CALL PDEP (XARG)
-   ELSE IF (.NOT.ARDPLETE .AND. NPD .GT. 0) THEN
+   ELSE IF (.NOT.ARDPLETE .and. NPD .GT. 0) THEN
 !        Set DQCOR(NPD) and WQCOR(NPD) arrays to 1.0
       DQCOR = 1.0D0
       WQCOR = 1.0D0
@@ -315,7 +315,7 @@ SUBROUTINE PLUMEF(XARG,POUT)
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                              ---   CALL PDF
-   IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
       CALL PDF
    ENDIF
 
@@ -336,7 +336,7 @@ SUBROUTINE PLUMEF(XARG,POUT)
    CALL IBLVAL (XARG)
 
 !     Call PDF & HEFF again for final CBL plume heights
-   IF (UNSTAB .AND. (HS.LT.ZI) ) THEN
+   IF (UNSTAB .and. (HS.LT.ZI) ) THEN
       CALL PDF
 !**  Added for Aircraft Plume Rise; UNC-IE
       IF (AFTSRC(ISRC) .EQ. 'Y') THEN
@@ -375,7 +375,7 @@ SUBROUTINE PLUMEF(XARG,POUT)
 
       ADJ = DQCORG * WQCORG
 
-      IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+      IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !           Calculate height of the "effective reflecting surface"
 !**  Added for Aircraft Plume Rise; UNC-IE
          IF (AFTSRC(ISRC) .EQ. 'Y') THEN
@@ -413,7 +413,7 @@ SUBROUTINE PLUMEF(XARG,POUT)
 !           depletion
          ADJ = PHI(J) * DQCOR(J) * WQCOR(J)
 
-         IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+         IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !              Calculate height of the "effective reflecting surface"
 !              Calculate Settled Plume Height(s), HESETL
             HESETL = MAX( 0.0D0, HE - HV )
@@ -794,7 +794,7 @@ SUBROUTINE PWIDTH(XARG,V1,VN,WIDTH)
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                              ---   CALL PDF
-   IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
       CALL PDF
    ENDIF
 
@@ -904,7 +904,7 @@ SUBROUTINE ZBRENT(IFD,X1,X2,VN1,VN2,TOL,OUTVAL)
             outval = b1
             RETURN
          END IF
-         IF (DABS(e1).ge.tol1 .AND. DABS(fa).gt.DABS(fb)) THEN
+         IF (DABS(e1).ge.tol1 .and. DABS(fa).gt.DABS(fb)) THEN
             s1 = fb/fa
             IF (a1 .EQ. c1) THEN
                p1 = 2.0D0*xm*s1
@@ -1022,7 +1022,7 @@ SUBROUTINE PSIDE2(DVAL)
 !*****
       IF (u1 .ne. u2) THEN
          DO j = 1, nsegs
-            IF (u1.ge.uasegs(j) .AND. u2 .le. ubsegs(j)) THEN
+            IF (u1.ge.uasegs(j) .and. u2 .le. ubsegs(j)) THEN
                ufac = ufac + usign(j)
             END IF
          END DO
@@ -1045,7 +1045,7 @@ SUBROUTINE PSIDE2(DVAL)
       DO iseg = 2, nsegs
          Ltest1 = useg(iseg,1) .EQ. useg(iseg-1,2)
          Ltest2 = usegf(iseg)*usegf(iseg-1) .gt. 0
-         IF (Ltest1 .AND. Ltest2) THEN
+         IF (Ltest1 .and. Ltest2) THEN
             usegf(iseg-1) = 0
             useg(iseg,1) = useg(iseg-1,1)
          END IF
@@ -1145,8 +1145,8 @@ SUBROUTINE HPSORT(NVAR,UVAR,IDIM)
    i = ilmid
    j = ilmid+ilmid
 
-   DO WHILE (j. le. ir)
-      IF (j. lt. ir) THEN
+   DO WHILE (j.LE. ir)
+      IF (j.LT. ir) THEN
          IF (uvar(j).lt.uvar(j+1) ) j = j+1
       END IF
       IF (ru.lt.uvar(j)) THEN
@@ -1513,16 +1513,16 @@ SUBROUTINE PITEFF
 !*    First determine proper 'x-dim' and 'y-dim' for effective area,
 !*    taking into account angle of orientation and relation to actual pit.
 
-   IF (XINIT .LE. YINIT .AND. (IUPWND.EQ.1 .OR. IUPWND.EQ.3)) THEN
+   IF (XINIT .LE. YINIT .and. (IUPWND.EQ.1 .or. IUPWND.EQ.3)) THEN
       XEFF = EFFWID
       YEFF = EFFLEN
-   ELSE IF (XINIT.LE.YINIT .AND. (IUPWND.EQ.2 .OR. IUPWND.EQ.4)) THEN
+   ELSE IF (XINIT.LE.YINIT .and. (IUPWND.EQ.2 .or. IUPWND.EQ.4)) THEN
       XEFF = EFFLEN
       YEFF = EFFWID
-   ELSE IF (XINIT.GT.YINIT .AND. (IUPWND.EQ.1 .OR. IUPWND.EQ.3)) THEN
+   ELSE IF (XINIT.GT.YINIT .and. (IUPWND.EQ.1 .or. IUPWND.EQ.3)) THEN
       XEFF = EFFLEN
       YEFF = EFFWID
-   ELSE IF (XINIT.GT.YINIT .AND. (IUPWND.EQ.2 .OR. IUPWND.EQ.4)) THEN
+   ELSE IF (XINIT.GT.YINIT .and. (IUPWND.EQ.2 .or. IUPWND.EQ.4)) THEN
       XEFF = EFFWID
       YEFF = EFFLEN
    END IF
@@ -1764,7 +1764,7 @@ subroutine qatr3(xl,xu,eps,epst,ndim,imin,y,ier,i,aux)
    aux(1) = 0.5D0 * (P1+P2)
    h = xu - xl
 
-   if(h .EQ. 0.0D0 .OR. aux(1) .EQ. 0.0D0) then
+   if(h .EQ. 0.0D0 .or. aux(1) .EQ. 0.0D0) then
       ier=0
       y  = 0.0D0
       return
@@ -2182,7 +2182,7 @@ SUBROUTINE PSIDE2_TOX(DVAL)
 !*****
       IF (u1 .ne. u2) THEN
          DO j = 1, nsegs
-            IF (u1.ge.uasegs(j) .AND. u2 .le. ubsegs(j)) THEN
+            IF (u1.ge.uasegs(j) .and. u2 .le. ubsegs(j)) THEN
                ufac = ufac + usign(j)
             END IF
          END DO
@@ -2205,7 +2205,7 @@ SUBROUTINE PSIDE2_TOX(DVAL)
       DO iseg = 2, nsegs
          Ltest1 = useg(iseg,1) .EQ. useg(iseg-1,2)
          Ltest2 = usegf(iseg)*usegf(iseg-1) .gt. 0
-         IF (Ltest1 .AND. Ltest2) THEN
+         IF (Ltest1 .and. Ltest2) THEN
             usegf(iseg-1) = 0
             useg(iseg,1) = useg(iseg-1,1)
          END IF

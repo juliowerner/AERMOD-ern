@@ -159,7 +159,7 @@ SUBROUTINE TGINIT ()
 
       REFLVL = -99.0D0
       LVL    =  1
-      DO WHILE( REFLVL .LT. 0.0D0 .AND.  LVL .LE. NTGLVL )
+      DO WHILE( REFLVL .LT. 0.0D0 .and.  LVL .LE. NTGLVL )
 
          IF( PFLTGZ(LVL) .GT. SFCZ0 )THEN
             REFLVL = PFLTGZ(LVL)
@@ -174,7 +174,7 @@ SUBROUTINE TGINIT ()
 ! ---    Make initial calculation of THSTAR based on observed
 !        temperature profile, if available, or with "standard"
 !        approach
-      IF( REFLVL .GT. 0.0D0 .AND. REFLVL .LE. 100.0D0 )THEN
+      IF( REFLVL .GT. 0.0D0 .and. REFLVL .LE. 100.0D0 )THEN
          THSTAR = PFLTG(LVL) * VONKAR * PFLTGZ(LVL) /&
          &( 1.0D0 + 5.0D0 * PFLTGZ(LVL) / OBULEN )
 
@@ -188,7 +188,7 @@ SUBROUTINE TGINIT ()
 ! ---    Make adjustments to THSTAR calculations if ADJ_U* option is used or
 !        if no observed temperature profile is available (i.e., REFLVL < 0.0)
 !
-      IF( L_AdjUstar .AND. L_BULKRN .AND. REFLVL .LT. 0.0D0 )THEN
+      IF( L_AdjUstar .and. L_BULKRN .and. REFLVL .LT. 0.0D0 )THEN
 ! ---       Use Luhar/Raynor approach (2009, BLM v132) for ADJ_U* w/ BULKRN,
 !           unless observed temperature profile is available
 
@@ -205,8 +205,8 @@ SUBROUTINE TGINIT ()
 
          THSTAR = THSTARN
 
-      ELSEIF( L_AdjUstar .AND. .NOT. L_BULKRN&
-      &.AND. REFLVL .LT. 0.0D0 )THEN
+      ELSEIF( L_AdjUstar .and. .NOT. L_BULKRN&
+      &.and. REFLVL .LT. 0.0D0 )THEN
 ! ---       Use constant THSTAR = 0.08 per Venkatram paper (2011, BLM v138),
 !           unless observed temperature profile is available
          THSTAR = 0.08D0
@@ -325,7 +325,7 @@ SUBROUTINE GRDPTG ()
 
       IF( STABLE )THEN
 !
-         DO WHILE( GRIDTG(GINDEX).LT.-90.0D0 .AND. PINDEX.LE.NTGLVL )
+         DO WHILE( GRIDTG(GINDEX).LT.-90.0D0 .and. PINDEX.LE.NTGLVL )
 !
             IF( PFLTG(PINDEX) .GE. -50.0D0 )THEN
 !
@@ -405,7 +405,7 @@ SUBROUTINE GRDPTG ()
 !           processing
 !           ---------------------------------------------------------
 !
-            IF( (GRIDTG(GINDEX) .LT. -50.0D0)  .AND.&
+            IF( (GRIDTG(GINDEX) .LT. -50.0D0)  .and.&
             &(PINDEX .LT. NTGLVL) )THEN
                PINDEX = PINDEX + 1
             ENDIF
@@ -434,7 +434,7 @@ SUBROUTINE GRDPTG ()
 !        ------------------------------------------------------------
 !
    DO NDX = 1,MXGLVL
-      IF( STABLE .OR. (UNSTAB .AND. GRIDHT(NDX).GT.ZI) )THEN
+      IF( STABLE .or. (UNSTAB .and. GRIDHT(NDX).GT.ZI) )THEN
          GRIDTG(NDX) = MAX( SPTGMN, GRIDTG(NDX) )
       ENDIF
    END DO

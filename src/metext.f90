@@ -188,7 +188,7 @@ SUBROUTINE METEXT
 ! --- Set 'DUMMY' variable = 'SURFFILE' for error handling
    DUMMY = 'SURFFILE'
 
-   IF (IMONTH .EQ. 12 .AND. IDAY .EQ. 31 .AND. IHOUR .EQ. 24) THEN
+   IF (IMONTH .EQ. 12 .and. IDAY .EQ. 31 .and. IHOUR .EQ. 24) THEN
 !        End of year has been reached - check for presence of header
 !        record at beginning of next year for multi-year data files.
       READ(MFUNIT,'(A256)',ERR=998,END=1000,IOSTAT=IOERRN) BUFFER
@@ -289,7 +289,7 @@ SUBROUTINE METEXT
 !---- READ surface scaling meteorology data based on free format
 !
 
-   IF( LDPART .OR. LWPART .OR. LDGAS .OR. LWGAS .OR. GRSM )THEN
+   IF( LDPART .or. LWPART .or. LDGAS .or. LWGAS .or. GRSM )THEN
 !        Check for deposition variables on first data record
 !        CERC 11/30/20 Calculation of QSW also needed for GRSM
       IF (ILINE .EQ. 1) THEN
@@ -305,30 +305,30 @@ SUBROUTINE METEXT
 !           avoid getting outdated met version warning
 !           JAT 1/14/21 ISSUE D077 ADD PROG-OS and PROG-Mod to
 !           ACCOMODATE NEW AERMET USING GENERIC PROG MET
-         IF( INDEX(BUFFER,'NAD') .GT. 0 .OR.&
-         &INDEX(BUFFER,'ADJ') .GT. 0 .OR.&
-         &INDEX(BUFFER,'MIFF-Mod') .GT. 0 .OR.&
-         &INDEX(BUFFER,'MMIF-OS') .GT. 0 .OR.&
-         &INDEX(BUFFER,'PROG-Mod') .GT. 0 .OR.&  !JAT D077
+         IF( INDEX(BUFFER,'NAD') .GT. 0 .or.&
+         &INDEX(BUFFER,'ADJ') .GT. 0 .or.&
+         &INDEX(BUFFER,'MIFF-Mod') .GT. 0 .or.&
+         &INDEX(BUFFER,'MMIF-OS') .GT. 0 .or.&
+         &INDEX(BUFFER,'PROG-Mod') .GT. 0 .or.&  !JAT D077
          &INDEX(BUFFER,'PROG-OS') .GT. 0 )THEN !JAT D077
             L_NAD_ADJ_Flags = .TRUE.
          ENDIF
          DO I = 1, LEN_TRIM(BUFFER)
-            IF (.NOT.INFLD .AND. BUFFER(I:I).NE.' ' .AND.&
+            IF (.NOT.INFLD .and. BUFFER(I:I).NE.' ' .and.&
             &BUFFER(I:I).NE.',') THEN
 !                 Set Mark of in a Field
                INFLD = .TRUE.
 !                 Increment the Field Counter
                NFLD = NFLD + 1
-            ELSE IF (INFLD .AND. (BUFFER(I:I).EQ.' ' .OR.&
+            ELSE IF (INFLD .and. (BUFFER(I:I).EQ.' ' .or.&
             &BUFFER(I:I).EQ.',')) THEN
 !                 Location is the End of a Field
 !                 Set Mark of Not In a field
                INFLD = .FALSE.
             END IF
          END DO
-         IF (NFLD .LT. 25 .AND. (LDPART .OR. LWPART .OR.&
-         &LDGAS .OR. LWGAS .OR.&
+         IF (NFLD .LT. 25 .and. (LDPART .or. LWPART .or.&
+         &LDGAS .or. LWGAS .or.&
          &GRSM) ) THEN
 !              Met record does not have enough fields,
 !              deposition variables may be missing
@@ -350,11 +350,11 @@ SUBROUTINE METEXT
 !           avoid getting outdated met version warning
 !           JAT 1/14/21 ISSUE D077 ADD PROG-OS and PROG-Mod to
 !           ACCOMODATE NEW AERMET USING GENERIC PROG MET
-         IF( INDEX(BUFFER,'NAD') .GT. 0 .OR.&
-         &INDEX(BUFFER,'ADJ') .GT. 0 .OR.&
-         &INDEX(BUFFER,'MIFF-Mod') .GT. 0 .OR.&
-         &INDEX(BUFFER,'MMIF-OS') .GT. 0 .OR.&
-         &INDEX(BUFFER,'PROG-Mod') .GT. 0 .OR.& !JAT D077
+         IF( INDEX(BUFFER,'NAD') .GT. 0 .or.&
+         &INDEX(BUFFER,'ADJ') .GT. 0 .or.&
+         &INDEX(BUFFER,'MIFF-Mod') .GT. 0 .or.&
+         &INDEX(BUFFER,'MMIF-OS') .GT. 0 .or.&
+         &INDEX(BUFFER,'PROG-Mod') .GT. 0 .or.& !JAT D077
          &INDEX(BUFFER,'PROG-OS') .GT. 0)THEN !JAT D077
             L_NAD_ADJ_Flags = .TRUE.
          ELSE
@@ -376,9 +376,9 @@ SUBROUTINE METEXT
 
 !        Calculate solar irradiance, QSW, from Heat Flux, Bowen ratio,
 !        albedo and cloud cover, for use in gas deposition algorithm.
-      IF (OBULEN.GT.0.0D0 .OR. OBULEN.LT.-99990.0D0 .OR.&
-      &TA.LT.0.0D0 .OR.&
-      &ALBEDO.EQ.1.0D0 .OR. BOWEN.EQ.0.0D0) THEN
+      IF (OBULEN.GT.0.0D0 .or. OBULEN.LT.-99990.0D0 .or.&
+      &TA.LT.0.0D0 .or.&
+      &ALBEDO.EQ.1.0D0 .or. BOWEN.EQ.0.0D0) THEN
 !           Hour is stable or missing or inappropriate surface chars.
          QSW = 0.0D0
       ELSE
@@ -389,8 +389,8 @@ SUBROUTINE METEXT
       END IF
 !
 !        Set variables for dry deposition
-      IF (LDPART .OR. LDGAS) THEN
-         IF (Ta.LT.0.0D0 .OR. PRATE.LT.0.0D0) THEN
+      IF (LDPART .or. LDGAS) THEN
+         IF (Ta.LT.0.0D0 .or. PRATE.LT.0.0D0) THEN
             Wnew = Wold
          ELSE
 ! ...          Compute saturation vapor pressure based on CMAQ formula
@@ -421,22 +421,22 @@ SUBROUTINE METEXT
 !           avoid getting outdated met version warning
 !           JAT 1/14/21 ISSUE D077 ADD PROG-OS and PROG-Mod to
 !           ACCOMODATE NEW AERMET USING GENERIC PROG MET
-         IF( INDEX(BUFFER,'NAD') .GT. 0 .OR.&
-         &INDEX(BUFFER,'ADJ') .GT. 0 .OR.&
-         &INDEX(BUFFER,'MIFF-Mod') .GT. 0 .OR.&
-         &INDEX(BUFFER,'MMIF-OS') .GT. 0 .OR.&
-         &INDEX(BUFFER,'PROG-Mod') .GT. 0 .OR.& !JAT D077
+         IF( INDEX(BUFFER,'NAD') .GT. 0 .or.&
+         &INDEX(BUFFER,'ADJ') .GT. 0 .or.&
+         &INDEX(BUFFER,'MIFF-Mod') .GT. 0 .or.&
+         &INDEX(BUFFER,'MMIF-OS') .GT. 0 .or.&
+         &INDEX(BUFFER,'PROG-Mod') .GT. 0 .or.& !JAT D077
          &INDEX(BUFFER,'PROG-OS') .GT. 0)THEN !JAT D077
             L_NAD_ADJ_Flags = .TRUE.
          ENDIF
          DO I = 1, LEN_TRIM(BUFFER)
-            IF (.NOT.INFLD .AND. BUFFER(I:I).NE.' ' .AND.&
+            IF (.NOT.INFLD .and. BUFFER(I:I).NE.' ' .and.&
             &BUFFER(I:I).NE.',') THEN
 !                 Set Mark of in a Field
                INFLD = .TRUE.
 !                 Increment the Field Counter
                NFLD = NFLD + 1
-            ELSE IF (INFLD .AND. (BUFFER(I:I).EQ.' ' .OR.&
+            ELSE IF (INFLD .and. (BUFFER(I:I).EQ.' ' .or.&
             &BUFFER(I:I).EQ.',')) THEN
 !                 Location is the End of a Field
 !                 Set Mark of Not In a field
@@ -464,11 +464,11 @@ SUBROUTINE METEXT
 !           avoid getting outdated met version warning
 !           JAT 1/14/21 ISSUE D077 ADD PROG-OS and PROG-Mod to
 !           ACCOMODATE NEW AERMET USING GENERIC PROG MET
-         IF( INDEX(BUFFER,'NAD') .GT. 0 .OR.&
-         &INDEX(BUFFER,'ADJ') .GT. 0 .OR.&
-         &INDEX(BUFFER,'MIFF-Mod') .GT. 0 .OR.&
-         &INDEX(BUFFER,'MMIF-OS') .GT. 0 .OR.&
-         &INDEX(BUFFER,'PROG-Mod') .GT. 0 .OR.& !JAT D077
+         IF( INDEX(BUFFER,'NAD') .GT. 0 .or.&
+         &INDEX(BUFFER,'ADJ') .GT. 0 .or.&
+         &INDEX(BUFFER,'MIFF-Mod') .GT. 0 .or.&
+         &INDEX(BUFFER,'MMIF-OS') .GT. 0 .or.&
+         &INDEX(BUFFER,'PROG-Mod') .GT. 0 .or.& !JAT D077
          &INDEX(BUFFER,'PROG-OS') .GT. 0)THEN !JAT D077
             L_NAD_ADJ_Flags = .TRUE.
          ELSE
@@ -489,7 +489,7 @@ SUBROUTINE METEXT
 ! ** Get next hours mixing heights in needed
 ! ** Read next hour to get next mixing height for unstable conditions
       IF (HBPLUME) THEN
-         IF (OBULEN .LT. 0.0D0 .AND. OBULEN .GT. -9.9D4) THEN
+         IF (OBULEN .LT. 0.0D0 .and. OBULEN .GT. -9.9D4) THEN
             READ( MFUNIT, *, END=1006, ERR=99, IOSTAT=IOERRN ) IYEAR,&
             &IMONTH, IDAY, IJDAY, IHOUR, SFCHF, USTAR, WSTAR,&
             &VPTGZI, ZICONVN, ZIMECHN, OBULEN, SFCZ0, BOWEN, ALBEDO,&
@@ -528,8 +528,8 @@ SUBROUTINE METEXT
 !     version date (i.e., L_OldMetVer=.F.), but the wind data
 !     source/adj flags are missing (i.e., L_NAD_ADJ_Flags = .FALSE.)
 !     issue warning message, but only issue warning once.
-   IF( .NOT. L_OldMetVer .AND. .NOT. SCREEN .AND.&
-   &IMETMSG.EQ.0 .AND. .NOT. L_NAD_ADJ_Flags )THEN
+   IF( .NOT. L_OldMetVer .and. .NOT. SCREEN .and.&
+   &IMETMSG.EQ.0 .and. .NOT. L_NAD_ADJ_Flags )THEN
 ! ---    Set L_OldMetVer = .T.
       L_OldMetVer = .TRUE.
       CALL ERRHDL(PATH,MODNAM,'W','394','No NAD/ADJ')
@@ -572,8 +572,8 @@ SUBROUTINE METEXT
       CALL PFLCNV (LEVEL)
 
 ! ---    Check for observed turbulence parameters in PROFFILE file
-      IF( (PFLSA(LEVEL).GT.0.0D0 .AND. PFLSA(LEVEL).LT.99.0D0) .OR.&
-      &(PFLSW(LEVEL).GT.0.0D0 .AND. PFLSW(LEVEL).LT.99.0D0) )THEN
+      IF( (PFLSA(LEVEL).GT.0.0D0 .and. PFLSA(LEVEL).LT.99.0D0) .or.&
+      &(PFLSW(LEVEL).GT.0.0D0 .and. PFLSW(LEVEL).LT.99.0D0) )THEN
          L_TurbData = .TRUE.
       ENDIF
 
@@ -603,12 +603,12 @@ SUBROUTINE METEXT
       END IF
 
 ! ---    Check for observed turbulence parameters in PROFFILE file
-      IF( PFLSA(LEVEL).GT.0.0D0 .AND. PFLSA(LEVEL).LT.99.0D0 )THEN
+      IF( PFLSA(LEVEL).GT.0.0D0 .and. PFLSA(LEVEL).LT.99.0D0 )THEN
          L_TurbData = .TRUE.
          L_Got_SigA = .TRUE.
       ENDIF
 
-      IF( PFLSW(LEVEL).GT.0.0D0 .AND. PFLSW(LEVEL).LT.99.0D0 )THEN
+      IF( PFLSW(LEVEL).GT.0.0D0 .and. PFLSW(LEVEL).LT.99.0D0 )THEN
          L_TurbData = .TRUE.
          L_Got_SigW = .TRUE.
       ENDIF
@@ -619,8 +619,8 @@ SUBROUTINE METEXT
 ! --- and adjusted U*, IF both turbulence and
 ! --- adjusted u* present, error !JAT 10/24/16
 !!! --- We should always include turbulence data in AERMOD header
-   IF( DFAULT .AND. L_TurbData .AND. L_AdjUstar )THEN
-      IF( L_Got_SigA .AND. L_Got_SigW )THEN
+   IF( DFAULT .and. L_TurbData .and. L_AdjUstar )THEN
+      IF( L_Got_SigA .and. L_Got_SigW )THEN
          DUMMY = 'SigA & SigW'
       ELSEIF( L_Got_SigA)THEN
          DUMMY = 'SigA'
@@ -632,7 +632,7 @@ SUBROUTINE METEXT
    ENDIF
 ! --- Always include turbulence data in AERMOD header      ! RWB
    IF( L_TurbData )THEN
-      IF( L_Got_SigA .AND. L_Got_SigW )THEN
+      IF( L_Got_SigA .and. L_Got_SigW )THEN
          DUMMY = 'SigA & SigW'
       ELSEIF( L_Got_SigA )THEN
          DUMMY = 'SigA'
@@ -640,7 +640,7 @@ SUBROUTINE METEXT
          DUMMY = 'SigW'
       ENDIF
 ! ---    Issue error message if TurbData is used with ADJ_U*
-      IF( L_AdjUstar .AND. DFAULT )THEN
+      IF( L_AdjUstar .and. DFAULT )THEN
          CALL ERRHDL(PATH,MODNAM,'E','401',DUMMY)
          RUNERR = .TRUE.
       ENDIF
@@ -668,14 +668,14 @@ SUBROUTINE METEXT
 
    IF (ILINE .EQ. 1) THEN
 ! ---    First hour of met data file; check for IHOUR .ne. 01 with short-term averages
-      IF (IHOUR .GT. 1 .AND. (PM25AVE .OR. NO2AVE .OR. SO2AVE)) THEN
+      IF (IHOUR .GT. 1 .and. (PM25AVE .or. NO2AVE .or. SO2AVE)) THEN
          IF (L_MAXDCONT) THEN
 !              Write Error Message: MAXDCONT option requires data file to begin with hour 1
             WRITE(DUMMY,'(''First Hr= '',I2.2)') IHOUR
             CALL ERRHDL(PATH,MODNAM,'E','491',DUMMY)
 !              Assign RUNERR logical to .T.
             RUNERR = .TRUE.
-         ELSE IF (NO2AVE .OR. SO2AVE) THEN
+         ELSE IF (NO2AVE .or. SO2AVE) THEN
 !              Write Warning Message: 1hr NO2 & SO2 modeling should begin with hour 1
             WRITE(DUMMY,'(''First Hr= '',I2.2)') IHOUR
             CALL ERRHDL(PATH,MODNAM,'W','488',DUMMY)
@@ -683,8 +683,8 @@ SUBROUTINE METEXT
 !              Write Warning Message: Short-term averages for first calendar day may not be valid
             CALL ERRHDL(PATH,MODNAM,'W','488','for 1st Day')
          END IF
-      ELSE IF (IHOUR .GT. 1 .AND. (NUMAVE.GT.1 .OR.&
-      &(NUMAVE.EQ.1 .AND.&
+      ELSE IF (IHOUR .GT. 1 .and. (NUMAVE.GT.1 .or.&
+      &(NUMAVE.EQ.1 .and.&
       &KAVE(1).NE.1)) ) THEN
 !           Write Warning Message: Short-term averages for first calendar day may not be valid
          CALL ERRHDL(PATH,MODNAM,'W','488','for 1st Day')
@@ -695,7 +695,7 @@ SUBROUTINE METEXT
 !        ME SURFDATA should both be 4-digits (a warning message will be issued if
 !        ME SURFDATA input is not 4-digits)
 
-      IF (IYR .NE. ISYEAR .AND. IMSTAT(7).EQ.0) THEN
+      IF (IYR .NE. ISYEAR .and. IMSTAT(7).EQ.0) THEN
 ! ---       Issue warning message that year specified on SURFDATA does not match first year
 !           of data file; if DAYRANGE keyword not used (IMSTAT(7)=0), adjust ISYEAR to match
 !           data file (IYR))
@@ -703,7 +703,7 @@ SUBROUTINE METEXT
          CALL ERRHDL(PATH,MODNAM,'W','492',DUMMY)
          ISYEAR = IYR
 
-      ELSE IF (IYR .NE. ISYEAR .AND. IMSTAT(7).GT.0) THEN
+      ELSE IF (IYR .NE. ISYEAR .and. IMSTAT(7).GT.0) THEN
 ! ---       Issue ERROR message that year specified on SURFDATA does not match first year
 !           of data file when DAYRANGE keyword is being used (IMSTAT(7)>0).
          WRITE(DUMMY,'(''StartYR '',I4)') IYR
@@ -714,8 +714,8 @@ SUBROUTINE METEXT
 
       END IF
 
-      IF (PM25AVE .OR. NO2AVE .OR. SO2AVE .OR.&
-      &ANNUAL .OR. MULTYR) THEN
+      IF (PM25AVE .or. NO2AVE .or. SO2AVE .or.&
+      &ANNUAL .or. MULTYR) THEN
 ! ---       If PM-2.5 averaging, NO2 1-hour averaging, ANNUAL average, or MULTYEAR,
 !           then need to set the variables for the "end-of-year" check if the STARTEND
 !           keyword is not used
@@ -732,7 +732,7 @@ SUBROUTINE METEXT
             CALL CENT_DATE(IYEAR,ISYR)      !Convert ISYR to four digits
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C              Convert ISYR to Four Digits
-!               IF (ISYR .GE. ISTRT_WIND .AND. ISYR .LE. 99) THEN
+!               IF (ISYR .GE. ISTRT_WIND .and. ISYR .LE. 99) THEN
 !                  ISYR = ISTRT_CENT*100 + ISYR
 !               ELSE IF (ISYR .LT. ISTRT_WIND) THEN
 !                  ISYR = (ISTRT_CENT+1)*100 + ISYR
@@ -763,28 +763,28 @@ SUBROUTINE METEXT
 
 ! ---    Check for potential conflicts between "start dates" and
 !        first date of met data file
-      IF (.NOT.MULTYR .AND. IMSTAT(6) .EQ. 1 .AND.&
+      IF (.NOT.MULTYR .and. IMSTAT(6) .EQ. 1 .and.&
       &FULLDATE .GT. ISDATE) THEN
 ! ---       Write Error Message:  Met data file starts later than
 !           user-specified start date (ISDATE)
          WRITE(DUMMY,'(I10.10)') FULLDATE
          CALL ERRHDL(PATH,MODNAM,'E','483',DUMMY)
          RUNERR = .TRUE.
-      ELSE IF (.NOT.MULTYR .AND. RSTINP .AND.&
+      ELSE IF (.NOT.MULTYR .and. RSTINP .and.&
       &FULLDATE .GT. ISDATE) THEN
 ! ---       Write Error Message:  Met data file starts later than
 !           start date (ISDATE) for Re-started model run
          WRITE(DUMMY,'(I10.10)') ISDATE-(ISDATE/100000000)*100000000
          CALL ERRHDL(PATH,MODNAM,'E','484',DUMMY)
          RUNERR = .TRUE.
-      ELSE IF (MULTYR .AND. RSTINP .AND.&
+      ELSE IF (MULTYR .and. RSTINP .and.&
       &FULLDATE .GT. ISDATE) THEN
 ! ---       Write Warning Message:  Met data file starts later than
 !           start date (ISDATE) for restarted MULTYEAR run, indicating
 !           gap between years of met data
          WRITE(DUMMY,'(I10.10)') ISDATE-(ISDATE/100000000)*100000000
          CALL ERRHDL(PATH,MODNAM,'W','485',DUMMY)
-      ELSE IF (MULTYR .AND. RSTINP .AND. IMSTAT(6).EQ.0 .AND.&
+      ELSE IF (MULTYR .and. RSTINP .and. IMSTAT(6).EQ.0 .and.&
       &FULLDATE .LT. ISDATE) THEN
 ! ---       Write Error Message:  Met data file starts earlier than
 !           start date (ISDATE) for restarted MULTYEAR run, without the
@@ -799,7 +799,7 @@ SUBROUTINE METEXT
 
 ! --- Increment index for hour-of-year and year to save met data for
 !     MAXDCONT option
-   IF (FULLDATE .GE. ISDATE .AND. L_MAXDCONT) THEN
+   IF (FULLDATE .GE. ISDATE .and. L_MAXDCONT) THEN
       IHR_NDX = IHR_NDX + 1
       IYR_NDX = NUMYRS + 1
 
@@ -814,7 +814,7 @@ SUBROUTINE METEXT
       END IF
 
 ! ---    Store hourly met data to arrays for MAXDCONT option
-      IF (.NOT.RSTINP .AND. L_MAXDCONT) THEN
+      IF (.NOT.RSTINP .and. L_MAXDCONT) THEN
          ASFCHF(IHR_NDX,IYR_NDX)  =  SFCHF
          AUREF(IHR_NDX,IYR_NDX)   =  UREF
          AUREFHT(IHR_NDX,IYR_NDX) =  UREFHT
@@ -835,7 +835,7 @@ SUBROUTINE METEXT
             AZIMECHN(IHR_NDX,IYR_NDX) = ZIMECHN
          ENDIF
 ! End HBP Insert
-         IF (LDGAS .OR. LDPART .OR. LWPART .OR. LWGAS .OR.&
+         IF (LDGAS .or. LDPART .or. LWPART .or. LWGAS .or.&
          &GRSM)THEN
             ABOWEN(IHR_NDX,IYR_NDX)  =  BOWEN
             AALBEDO(IHR_NDX,IYR_NDX) =  ALBEDO
@@ -881,7 +881,7 @@ SUBROUTINE METEXT
          IF (NSEC .GT. 0) THEN
             AGRIDRHO(IHR_NDX,1:MXGLVL,IYR_NDX) = GRIDRHO(1:MXGLVL)
          END IF
-         IF (PVMRM .OR. GRSM) THEN
+         IF (PVMRM .or. GRSM) THEN
             AGRIDEPS(IHR_NDX,1:MXGLVL,IYR_NDX) = GRIDEPS(1:MXGLVL)
          END IF
          IF (NURB .GT. 0) THEN
@@ -992,16 +992,16 @@ SUBROUTINE SET_METDATA
    MODNAM = 'SET_METDATA'
 
 !---- Set lower limit of 1.0 meter for mixing heights
-   IF (ZICONV.GE.0.0D0 .AND. ZICONV.LT.1.0D0) ZICONV = 1.0D0
-   IF (ZIMECH.GE.0.0D0 .AND. ZIMECH.LT.1.0D0) ZIMECH = 1.0D0
+   IF (ZICONV.GE.0.0D0 .and. ZICONV.LT.1.0D0) ZICONV = 1.0D0
+   IF (ZIMECH.GE.0.0D0 .and. ZIMECH.LT.1.0D0) ZIMECH = 1.0D0
 
 !     Set the date variables for this hour
    CALL SET_DATES
 
-   IF (MONTH .AND. IHOUR .EQ. 24) THEN
+   IF (MONTH .and. IHOUR .EQ. 24) THEN
 !        Check for the End of the Month
-      IF (IMONTH .EQ. 1 .OR. (MOD(IYR,4) .NE. 0) .OR.&
-      &(MOD(IYR,100) .EQ. 0 .AND. MOD(IYR,400) .NE. 0)) THEN
+      IF (IMONTH .EQ. 1 .or. (MOD(IYR,4) .NE. 0) .or.&
+      &(MOD(IYR,100) .EQ. 0 .and. MOD(IYR,400) .NE. 0)) THEN
 !           Not a Leap Year OR Month = January
          IF (JDAY .EQ. NDAY(IMONTH)) THEN
             ENDMON = .TRUE.
@@ -1021,15 +1021,15 @@ SUBROUTINE SET_METDATA
    IF (ZICONV .GT. 4000.D0) ZICONV = 4000.D0
    IF (ZIMECH .GT. 4000.D0) ZIMECH = 4000.D0
 !     Select appropriate mixing height from convective and mechanical values
-   IF (.NOT.MSGHR .AND. .NOT.CLMHR .AND. OBULEN.LT.0.0D0) THEN
+   IF (.NOT.MSGHR .and. .NOT.CLMHR .and. OBULEN.LT.0.0D0) THEN
       ZI = MAX ( ZICONV, ZIMECH )
-   ELSE IF (.NOT.MSGHR .AND. .NOT.CLMHR) THEN
+   ELSE IF (.NOT.MSGHR .and. .NOT.CLMHR) THEN
       ZI = ZIMECH
    ELSE
       ZI = -999.0D0
    END IF
 !---- Set lower limit of 1.0 meter for mixing height
-   IF (ZI.GE.0.0D0 .AND. ZI.LT.1.0D0) ZI = 1.0D0
+   IF (ZI.GE.0.0D0 .and. ZI.LT.1.0D0) ZI = 1.0D0
 
 ! --- Assign ZI to ZIRUR for URBAN option
    IF (URBAN) ZIRUR = ZI
@@ -1068,9 +1068,9 @@ SUBROUTINE SET_METDATA
 !     indicates that this call is during the MAXDCONT "post-processing"
 !     stage since the gridded profiles and other data have been retrieved
 !     from arrays.
-   IF( .NOT. RUNERR .AND. .NOT.L_SkipMessages )THEN
+   IF( .NOT. RUNERR .and. .NOT.L_SkipMessages )THEN
 !
-      IF( .NOT. CLMHR  .AND.  .NOT. MSGHR )THEN
+      IF( .NOT. CLMHR  .and.  .NOT. MSGHR )THEN
 !           Set the stability logical variables
          IF( OBULEN .GT. 0.0D0 )THEN
             UNSTAB = .FALSE.
@@ -1081,9 +1081,9 @@ SUBROUTINE SET_METDATA
          ENDIF
 
 
-         IF (FULLDATE.GE.ISDATE .AND.&
-         &( (L_LeapYear .AND. IPROCL(JDAY).EQ.1) .OR.&
-         &(.NOT.L_LeapYear .AND. IPROC( JDAY).EQ.1)) ) THEN
+         IF (FULLDATE.GE.ISDATE .and.&
+         &( (L_LeapYear .and. IPROCL(JDAY).EQ.1) .or.&
+         &(.NOT.L_LeapYear .and. IPROC( JDAY).EQ.1)) ) THEN
 !
 !              Initialize the gridded profile arrays
             GRIDSV = -99.0D0
@@ -1104,7 +1104,7 @@ SUBROUTINE SET_METDATA
             END IF
 
 !              Compute gridded profile of epsilon for PVMRM or GRSM option
-            IF (PVMRM .OR. GRSM) THEN
+            IF (PVMRM .or. GRSM) THEN
                GRIDEPS = -99.0D0
             END IF
 
@@ -1154,7 +1154,7 @@ SUBROUTINE SET_METDATA
             SUMSW = 0.0D0
 
             DO I = 1, NPLVLS
-               IF (PFLHT(I).GE.ZI .AND. PFLSW(I).GE.0.0D0) THEN
+               IF (PFLHT(I).GE.ZI .and. PFLSW(I).GE.0.0D0) THEN
                   NUMSW = NUMSW + 1
                   SUMSW = SUMSW + PFLSW(I)
                END IF
@@ -1187,7 +1187,7 @@ SUBROUTINE SET_METDATA
             CALL ZIAVER (MXGLVL,GRIDHT,GRIDWS,ZI,NDX4ZI,UAVG,UATZI)
 
 !              Compute gridded profile of epsilon for PVMRM/GRSM option
-            IF (PVMRM .OR. GRSM) THEN
+            IF (PVMRM .or. GRSM) THEN
                CALL GRDEPS
             END IF
 
@@ -1201,11 +1201,11 @@ SUBROUTINE SET_METDATA
 ! JAT D070 WRITE MESSAGE THAT SIGMA-THETA OR SIGMA-W CHANGED DO NOT DO
 ! FOR NOTURB, NOSA, AND NOSW (UNDERSTOOD ALL HOURS ARE RESET)
          WRITE(DUMMY,'(I10.10)') FULLDATE
-         IF (RESET_SA .AND. (TURBOPTS(2) .OR. TURBOPTS(3) .OR.&
-         &TURBOPTS(6) .OR. TURBOPTS(8)))&
+         IF (RESET_SA .and. (TURBOPTS(2) .or. TURBOPTS(3) .or.&
+         &TURBOPTS(6) .or. TURBOPTS(8)))&
          &CALL ERRHDL(PATH,MODNAM,'I','445',DUMMY)
-         IF (RESET_SW .AND. (TURBOPTS(2) .OR. TURBOPTS(3) .OR.&
-         &TURBOPTS(7) .OR. TURBOPTS(9)))&
+         IF (RESET_SW .and. (TURBOPTS(2) .or. TURBOPTS(3) .or.&
+         &TURBOPTS(7) .or. TURBOPTS(9)))&
          &CALL ERRHDL(PATH,MODNAM,'I','446',DUMMY)
       ENDIF
 
@@ -1214,7 +1214,7 @@ SUBROUTINE SET_METDATA
 ! --- Assign sector ID for direction-varying background O3 and NOx
 !     based on flow vector from surface file, FVREF;
 !     first check for valid wind direction
-   IF (WDREF .LE. 0.0D0 .OR. WDREF .GT. 360.0D0) THEN
+   IF (WDREF .LE. 0.0D0 .or. WDREF .GT. 360.0D0) THEN
 ! ---    Hour is calm or missing; set IO3SECT = 0, INOXSECT = 0
       IO3SECT = 0
       INOXSECT = 0
@@ -1225,12 +1225,12 @@ SUBROUTINE SET_METDATA
          FVREF = FVREF - 360.0D0
       END IF
       IF (L_O3Sector) THEN
-         IF (FVREF .LT. O3SECT(1) .OR.&
+         IF (FVREF .LT. O3SECT(1) .or.&
          &FVREF .GE. O3SECT(NUMO3Sects) ) THEN
             IO3SECT = NUMO3Sects
          ELSE
             DO I = 1, NUMO3Sects-1
-               IF (FVREF .GE. O3SECT(I) .AND.&
+               IF (FVREF .GE. O3SECT(I) .and.&
                &FVREF .LT. O3SECT(I+1)) THEN
                   IO3SECT = I
                   EXIT
@@ -1242,12 +1242,12 @@ SUBROUTINE SET_METDATA
       END IF
 !        CERC 11/30/20
       IF (L_NOxSector) THEN
-         IF (FVREF .LT. NOxSECT(1) .OR.&
+         IF (FVREF .LT. NOxSECT(1) .or.&
          &FVREF .GE. NOxSECT(NUMNOxSects) ) THEN
             INOxSECT = NUMNOxSects
          ELSE
             DO I = 1, NUMNOxSects-1
-               IF (FVREF .GE. NOXSECT(I) .AND.&
+               IF (FVREF .GE. NOXSECT(I) .and.&
                &FVREF .LT. NOXSECT(I+1)) THEN
                   INOXSECT = I
                   EXIT
@@ -1262,7 +1262,7 @@ SUBROUTINE SET_METDATA
 ! --- Assign sector ID for direction-varying background
 !     based on flow vector from surface file, FVREF;
 !     first check for valid wind direction
-   IF (WDREF .LE. 0.0D0 .OR. WDREF .GT. 360.0D0) THEN
+   IF (WDREF .LE. 0.0D0 .or. WDREF .GT. 360.0D0) THEN
 ! ---    Hour is calm or missing; set IBGSECT = 0
       IBGSECT = 0
    ELSE
@@ -1272,12 +1272,12 @@ SUBROUTINE SET_METDATA
          FVREF = FVREF - 360.0D0
       END IF
       IF (L_BGSector) THEN
-         IF (FVREF .LT. BGSECT(1) .OR.&
+         IF (FVREF .LT. BGSECT(1) .or.&
          &FVREF .GE. BGSECT(NUMBGSects) ) THEN
             IBGSECT = NUMBGSects
          ELSE
             DO I = 1, NUMBGSects-1
-               IF (FVREF .GE. BGSECT(I) .AND.&
+               IF (FVREF .GE. BGSECT(I) .and.&
                &FVREF .LT. BGSECT(I+1)) THEN
                   IBGSECT = I
                   EXIT
@@ -1304,7 +1304,7 @@ SUBROUTINE SET_METDATA
       IUCAT = 6
    END IF
 
-   IF (FASTAREA .OR. L_BLSOURCE) THEN
+   IF (FASTAREA .or. L_BLSOURCE) THEN
 !        Set Stability Category based on Golder (1972) for use with
 !        FASTAREA Area Source Optimizations (formerly the TOXICS option)
       CALL LTOPG( KST )
@@ -1313,7 +1313,7 @@ SUBROUTINE SET_METDATA
       KST = 4
    END IF
 
-   IF (MSGHR .AND. .NOT. L_SkipMessages) THEN
+   IF (MSGHR .and. .NOT. L_SkipMessages) THEN
       IF (.NOT. MSGPRO) THEN
 !           Set Flag for Runtime Met. Error to Prevent Further Calculations
          RUNERR = .TRUE.
@@ -1376,7 +1376,7 @@ SUBROUTINE SET_DATES
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C        Determine The Current Julian Day and Calculate Current Gregorian Date
 !C        First Convert Year to 4-Digit Value
-!         IF (IYEAR .GE. ISTRT_WIND .AND. IYEAR .LE. 99) THEN
+!         IF (IYEAR .GE. ISTRT_WIND .and. IYEAR .LE. 99) THEN
 !            IYR = ISTRT_CENT*100 + IYEAR
 !         ELSE IF (IYEAR .LT. ISTRT_WIND) THEN
 !            IYR = (ISTRT_CENT+1)*100 + IYEAR
@@ -1387,8 +1387,8 @@ SUBROUTINE SET_DATES
 !         END IF
 
 ! ---    Assign L_LeapYear variable
-      IF ((MOD(IYR,4) .NE. 0) .OR.&
-      &(MOD(IYR,100) .EQ. 0 .AND. MOD(IYR,400) .NE. 0)) THEN
+      IF ((MOD(IYR,4) .NE. 0) .or.&
+      &(MOD(IYR,100) .EQ. 0 .and. MOD(IYR,400) .NE. 0)) THEN
 !           Not a Leap Year
          L_LeapYear = .FALSE.
       ELSE
@@ -1441,7 +1441,7 @@ SUBROUTINE SET_DATES
       IY = IYR - IA
       IM = IMONTH + 12*IA - 2
       ID = MOD( (IDAY + IY + IY/4 - IY/100 + IY/400 + (31*IM)/12), 7)
-      IF (ID .GE. 1 .AND. ID .LE. 5) THEN
+      IF (ID .GE. 1 .and. ID .LE. 5) THEN
 !           This is a weekday
          IDAY_OF_WEEK = 1
       ELSE IF (ID .EQ. 6) THEN
@@ -1499,7 +1499,7 @@ SUBROUTINE METCHK
    CLMHR  = .FALSE.
    MSGHR  = .FALSE.
 
-   IF (.NOT.NOCHKD .AND. .NOT.EVONLY) THEN
+   IF (.NOT.NOCHKD .and. .NOT.EVONLY) THEN
 !----    Check date for record out of sequence on the surface
 !        scaling file - NOCHKD=.TRUE. means no date check   ---   CALL CHKDAT
       CALL CHKDAT
@@ -1576,7 +1576,7 @@ SUBROUTINE CHKDAT
       IF (KURDAT .LE. IPDATE) THEN
 ! ---       Previous date is .LE. current date; check for date crossing
 !           century mark.
-         IF (KURDAT.NE.10101 .OR. IPDATE.NE.99123124) THEN
+         IF (KURDAT.NE.10101 .or. IPDATE.NE.99123124) THEN
 ! ---          Record Out of Sequence; current date is same or earlier
 !              than previous date
             WRITE(DUMMY,'(I8.8)') KURDAT
@@ -1584,7 +1584,7 @@ SUBROUTINE CHKDAT
 ! ---             Write Error Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
                RUNERR = .TRUE.
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
@@ -1603,7 +1603,7 @@ SUBROUTINE CHKDAT
 ! ---             Write Error Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
                RUNERR = .TRUE.
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
@@ -1612,7 +1612,7 @@ SUBROUTINE CHKDAT
 ! ---             Write Error Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
                RUNERR = .TRUE.
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
@@ -1624,19 +1624,19 @@ SUBROUTINE CHKDAT
 ! ---             Write Error Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
                RUNERR = .TRUE.
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
          END IF
-      ELSE IF (IHOUR.EQ.1 .AND. IPHOUR.EQ.24) THEN
+      ELSE IF (IHOUR.EQ.1 .and. IPHOUR.EQ.24) THEN
 ! ---       Current hour is 01 and previous hour is 24; look for
 !           gaps between days
-         IF (JDAY.GT.1 .AND. JDAY-JDAY_PREV.EQ.1 .AND.&
+         IF (JDAY.GT.1 .and. JDAY-JDAY_PREV.EQ.1 .and.&
          &IYR.EQ.IPYEAR) THEN
 ! ---          No gap between days within same year; continue processing
             CONTINUE
-         ELSE IF (JDAY.GT.1 .AND. JDAY-JDAY_PREV.GT.1 .AND.&
+         ELSE IF (JDAY.GT.1 .and. JDAY-JDAY_PREV.GT.1 .and.&
          &IYR.EQ.IPYEAR) THEN
 ! ---          Record Out of Sequence; gap of full day(s); issue message
 !              with date of gap and second message with # of days in gap
@@ -1645,7 +1645,7 @@ SUBROUTINE CHKDAT
 ! ---             Write Error Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
                RUNERR = .TRUE.
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
@@ -1653,11 +1653,11 @@ SUBROUTINE CHKDAT
             IF (.NOT. L_WARNCHKD) THEN
 ! ---             Write Error Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
-         ELSE IF (JDAY.GT.1 .AND. JDAY-JDAY_PREV.GT.1 .AND.&
+         ELSE IF (JDAY.GT.1 .and. JDAY-JDAY_PREV.GT.1 .and.&
          &IYR.GT.IPYEAR) THEN
 ! ---          Record Out of Sequence; gap between years; issue message
 !              with date of gap and second message with # of days in gap
@@ -1666,7 +1666,7 @@ SUBROUTINE CHKDAT
 ! ---             Write Error Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
                RUNERR = .TRUE.
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
@@ -1675,11 +1675,11 @@ SUBROUTINE CHKDAT
             IF (.NOT. L_WARNCHKD) THEN
 ! ---             Write Error Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
-         ELSE IF (JDAY.GT.1 .AND. JDAY_PREV.GE.JDAY .AND.&
+         ELSE IF (JDAY.GT.1 .and. JDAY_PREV.GE.JDAY .and.&
          &IYR.GT.IPYEAR) THEN
 ! ---          Record Out of Sequence; gap between years; issue message
 !              with date of gap and second message with # of days in gap
@@ -1688,7 +1688,7 @@ SUBROUTINE CHKDAT
 ! ---             Write Error Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
                RUNERR = .TRUE.
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
@@ -1697,15 +1697,15 @@ SUBROUTINE CHKDAT
             IF (.NOT. L_WARNCHKD) THEN
 ! ---             Write Error Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
-         ELSE IF (JDAY.EQ.1 .AND. JDAY_PREV.GE.1 .AND.&
+         ELSE IF (JDAY.EQ.1 .and. JDAY_PREV.GE.1 .and.&
          &(IYR-IPYEAR.EQ.1) )THEN
 ! ---          Check for gap at end of previous year, accounting for leap years
-            IF(  (MOD(IPYEAR,4) .NE. 0) .OR.&
-            &(MOD(IPYEAR,100) .EQ. 0 .AND.&
+            IF(  (MOD(IPYEAR,4) .NE. 0) .or.&
+            &(MOD(IPYEAR,100) .EQ. 0 .and.&
             &MOD(IPYEAR,400) .NE. 0) )THEN
 ! ---             Previous year is not a leap year, check for previous JDAY < 365
                IF (JDAY_PREV.LT.365 ) THEN
@@ -1718,7 +1718,7 @@ SUBROUTINE CHKDAT
 ! ---                   Write Error Message - Record out of sequence
                      CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
                      RUNERR = .TRUE.
-                  ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+                  ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---                   Write Warning Message - Record out of sequence
                      CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
                   END IF
@@ -1726,7 +1726,7 @@ SUBROUTINE CHKDAT
                   IF (.NOT. L_WARNCHKD) THEN
 ! ---                   Write Error Message - Record out of sequence
                      CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
-                  ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+                  ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---                   Write Warning Message - Record out of sequence
                      CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
                   END IF
@@ -1742,7 +1742,7 @@ SUBROUTINE CHKDAT
 ! ---                Write Error Message - Record out of sequence
                   CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
                   RUNERR = .TRUE.
-               ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+               ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---                Write Warning Message - Record out of sequence
                   CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
                END IF
@@ -1750,21 +1750,21 @@ SUBROUTINE CHKDAT
                IF (.NOT. L_WARNCHKD) THEN
 ! ---                Write Error Message - Record out of sequence
                   CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
-               ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+               ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---                Write Warning Message - Record out of sequence
                   CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
                END IF
             END IF
-         ELSE IF (IHOUR.EQ.1 .AND. JDAY.EQ.1 .AND.&
-         &JDAY_PREV.GE.1 .AND.&
+         ELSE IF (IHOUR.EQ.1 .and. JDAY.EQ.1 .and.&
+         &JDAY_PREV.GE.1 .and.&
          &(IYR-IPYEAR).GT.1) THEN
 ! ---          Record Out of Sequence; gap of at least 1 complete year.
 !              First check for additional gaps at the end of the previous
 !              year, which would be an error (unless WARNCHKD is specified).
 !
 ! ---          Check for gap at end of previous year, accounting for leap years
-            IF(  (MOD(IPYEAR,4) .NE. 0) .OR.&
-            &(MOD(IPYEAR,100) .EQ. 0 .AND.&
+            IF(  (MOD(IPYEAR,4) .NE. 0) .or.&
+            &(MOD(IPYEAR,100) .EQ. 0 .and.&
             &MOD(IPYEAR,400) .NE. 0) )THEN
 ! ---             Previous year is not a leap year, check for previous JDAY < 365
                IF (JDAY_PREV.LT.365 ) THEN
@@ -1777,7 +1777,7 @@ SUBROUTINE CHKDAT
 ! ---                   Write Error Message - Record out of sequence
                      CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
                      RUNERR = .TRUE.
-                  ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+                  ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---                   Write Warning Message - Record out of sequence
                      CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
                   END IF
@@ -1785,7 +1785,7 @@ SUBROUTINE CHKDAT
                   IF (.NOT. L_WARNCHKD) THEN
 ! ---                   Write Error Message - Record out of sequence
                      CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
-                  ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+                  ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---                   Write Warning Message - Record out of sequence
                      CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
                   END IF
@@ -1801,7 +1801,7 @@ SUBROUTINE CHKDAT
 ! ---                Write Error Message - Record out of sequence
                   CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
                   RUNERR = .TRUE.
-               ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+               ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---                Write Warning Message - Record out of sequence
                   CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
                END IF
@@ -1809,7 +1809,7 @@ SUBROUTINE CHKDAT
                IF (.NOT. L_WARNCHKD) THEN
 ! ---                Write Error Message - Record out of sequence
                   CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
-               ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+               ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---                Write Warning Message - Record out of sequence
                   CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
                END IF
@@ -1822,7 +1822,7 @@ SUBROUTINE CHKDAT
             IF (.NOT. L_WARNCHKD) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
@@ -1830,13 +1830,13 @@ SUBROUTINE CHKDAT
             IF (.NOT. L_WARNCHKD) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
          END IF
 
-      ELSE IF (IHOUR.EQ.1 .AND. IPHOUR.NE.24) THEN
+      ELSE IF (IHOUR.EQ.1 .and. IPHOUR.NE.24) THEN
 ! ---       Record Out of Sequence - gap between days; issue first
 !           message with date of data gap, with a second message
 !           with # hours/days in gap
@@ -1845,11 +1845,11 @@ SUBROUTINE CHKDAT
 ! ---          Write Error Message - Record out of sequence
             CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
             RUNERR = .TRUE.
-         ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+         ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---          Write Warning Message - Record out of sequence
             CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
          END IF
-         IF (JDAY.GT.1 .AND. JDAY-JDAY_PREV.GT.1 .AND.&
+         IF (JDAY.GT.1 .and. JDAY-JDAY_PREV.GT.1 .and.&
          &IYR.EQ.IPYEAR) THEN
 ! ---          Gap of at least 1 day; issue message with # of hours
 !              and # of days.
@@ -1858,11 +1858,11 @@ SUBROUTINE CHKDAT
             IF (.NOT. L_WARNCHKD) THEN
 ! ---             Write Error Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
-         ELSE IF (JDAY.EQ.1 .AND. JDAY_PREV.GE.1 .AND.&
+         ELSE IF (JDAY.EQ.1 .and. JDAY_PREV.GE.1 .and.&
          &(IYR-IPYEAR.EQ.1) )THEN
 ! ---          Record Out of Sequence; gap of full day(s); issue message
 !              with date of gap and second message with # of days in gap
@@ -1871,7 +1871,7 @@ SUBROUTINE CHKDAT
 ! ---             Write Error Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
                RUNERR = .TRUE.
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
@@ -1879,7 +1879,7 @@ SUBROUTINE CHKDAT
             IF (.NOT. L_WARNCHKD) THEN
 ! ---             Write Error Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'E','450',DUMMY)
-            ELSE IF (L_WARNCHKD .AND. .NOT.L_SkipMessages) THEN
+            ELSE IF (L_WARNCHKD .and. .NOT.L_SkipMessages) THEN
 ! ---             Write Warning Message - Record out of sequence
                CALL ERRHDL(PATH,MODNAM,'W','450',DUMMY)
             END IF
@@ -2003,15 +2003,15 @@ SUBROUTINE CHKMSG
 !---- Check Data for Missing Data Indicators
 !
 !     Wind speed (meters/second)
-   IF( UREF .GE. 90.0D0 .OR. UREF .LT. 0.0D0 )THEN
+   IF( UREF .GE. 90.0D0 .or. UREF .LT. 0.0D0 )THEN
       MSGHR = .TRUE.
 !
 !     Wind direction (degrees from north)
-   ELSE IF( (WDREF .GT. 900.0D0)  .OR.  (WDREF .LE. -9.0D0) )THEN
+   ELSE IF( (WDREF .GT. 900.0D0)  .or.  (WDREF .LE. -9.0D0) )THEN
       MSGHR = .TRUE.
 !
 !     Ambient temperature (kelvins)
-   ELSE IF( (TA .GT. 900.0D0)  .OR.  (TA .LE. 0.0D0) )THEN
+   ELSE IF( (TA .GT. 900.0D0)  .or.  (TA .LE. 0.0D0) )THEN
       MSGHR = .TRUE.
 !
 !     Monin-Obukhov length (meters)
@@ -2019,21 +2019,21 @@ SUBROUTINE CHKMSG
       MSGHR = .TRUE.
 
 !     Convective Mixing height (meters)
-   ELSE IF( OBULEN .LT. 0.0D0 .AND.&
-   &((ZICONV .GT. 90000.0D0)  .OR.  (ZICONV .LT. 0.0D0)) )THEN
+   ELSE IF( OBULEN .LT. 0.0D0 .and.&
+   &((ZICONV .GT. 90000.0D0)  .or.  (ZICONV .LT. 0.0D0)) )THEN
       MSGHR = .TRUE.
 !
 !     Mechanical Mixing height (meters)
-   ELSE IF( (ZIMECH .GT. 90000.0D0)  .OR.  (ZIMECH .LT. 0.0D0) )THEN
+   ELSE IF( (ZIMECH .GT. 90000.0D0)  .or.  (ZIMECH .LT. 0.0D0) )THEN
       MSGHR = .TRUE.
 !
 !     Surface friction velocity (meters/second)
-   ELSE IF( USTAR  .LT.  0.0D0 .OR. USTAR .GE. 9.0D0 )THEN
+   ELSE IF( USTAR  .LT.  0.0D0 .or. USTAR .GE. 9.0D0 )THEN
       MSGHR = .TRUE.
 
 !     Convective velocity scale (meters/second)
-   ELSE IF( WSTAR .LT. 0.0D0 .AND.&
-   &(OBULEN .LT. 0.0D0 .AND. OBULEN .GT. -99990.0D0) )THEN
+   ELSE IF( WSTAR .LT. 0.0D0 .and.&
+   &(OBULEN .LT. 0.0D0 .and. OBULEN .GT. -99990.0D0) )THEN
       MSGHR = .TRUE.
 !
    END IF
@@ -2109,15 +2109,15 @@ SUBROUTINE METQA
    END DO
 
    IF( .NOT. L_SkipMessages )THEN
-      IF( (WDREF.LT.  0.0D0 .AND. WDREF.GT.-9.0D0)  .OR.&
-      &(WDREF.GT.360.0D0 .AND. WDREF.LT.900.0D0) )THEN
+      IF( (WDREF.LT.  0.0D0 .and. WDREF.GT.-9.0D0)  .or.&
+      &(WDREF.GT.360.0D0 .and. WDREF.LT.900.0D0) )THEN
 !           WRITE Warning Message: Invalid Wind Dir'n
          WRITE(DUMMY,'(I8.8)') KURDAT
          CALL ERRHDL(PATH,MODNAM,'W','410',DUMMY)
       END IF
 
 !----    Wind speed range:
-      IF( UREF.LT.0.0D0 .AND. UREF.GT.-9.0D0)THEN
+      IF( UREF.LT.0.0D0 .and. UREF.GT.-9.0D0)THEN
 !           WRITE Warning Message: Invalid Wind Speed;
 !           This case is already flagged as missing hour,
 !           but not with standard missing data code
@@ -2125,7 +2125,7 @@ SUBROUTINE METQA
          CALL ERRHDL(PATH,MODNAM,'W','420',DUMMY)
       END IF
 !
-      IF( UREF .GT. 30.0D0 .AND. UREF .LT. 90.0D0)THEN
+      IF( UREF .GT. 30.0D0 .and. UREF .LT. 90.0D0)THEN
 !           WRITE Warning Message: Wind Speed Over 30m/s
          WRITE(DUMMY,'(I8.8)') KURDAT
          CALL ERRHDL(PATH,MODNAM,'W','420',DUMMY)
@@ -2142,7 +2142,7 @@ SUBROUTINE METQA
          WRITE ( DUMMY, '(I8.8)' ) KURDAT
          CALL ERRHDL(PATH,MODNAM,'W','475',DUMMY)
 
-      ELSE IF( UREFHT .LT. 0.001D0 .AND.  .NOT.CLMHR .AND.&
+      ELSE IF( UREFHT .LT. 0.001D0 .and.  .NOT.CLMHR .and.&
       &.NOT.MSGHR)THEN
 !
 !           -----------------------------------------------
@@ -2160,8 +2160,8 @@ SUBROUTINE METQA
       ENDIF
 
 !----    Ambient temperature:
-      IF( (TA .LT. 220.0D0 .AND. TA .GT. 0.0D0)  .OR.&
-      &(TA .GT. 330.0D0 .AND. TA .LT. 900.0D0) )THEN
+      IF( (TA .LT. 220.0D0 .and. TA .GT. 0.0D0)  .or.&
+      &(TA .GT. 330.0D0 .and. TA .LT. 900.0D0) )THEN
 !           WRITE Warning Message: Ambient Temperature May be Out-of-Range
          WRITE(DUMMY,'(I8.8)') KURDAT
          CALL ERRHDL(PATH,MODNAM,'W','430',DUMMY)
@@ -2210,8 +2210,8 @@ SUBROUTINE METQA
    END IF
 
 !---- Vertical potential temperature gradient above ZI (K/m)
-   IF( ZICONV .GT. 0.0D0 .AND. OBULEN .LT. 0.0D0 .AND.&
-   &OBULEN .GT. -99990.0D0 .AND. VPTGZI .LT. 0.005D0 )THEN
+   IF( ZICONV .GT. 0.0D0 .and. OBULEN .LT. 0.0D0 .and.&
+   &OBULEN .GT. -99990.0D0 .and. VPTGZI .LT. 0.005D0 )THEN
 !        WRITE Warning Message: VPTGZI less than or equal to 0.005 K/m
       IF( .NOT. L_SkipMessages )THEN
          WRITE(DUMMY,'(I8.8)') KURDAT
@@ -2219,8 +2219,8 @@ SUBROUTINE METQA
       END IF
 !        Adjust value to 0.005
       VPTGZI = 0.005D0
-   ELSE IF( ZICONV .GT. 0.0D0 .AND. OBULEN .LT. 0.0D0 .AND.&
-   &OBULEN .GT. -99990.0D0 .AND. VPTGZI .GT. 0.10D0 )THEN
+   ELSE IF( ZICONV .GT. 0.0D0 .and. OBULEN .LT. 0.0D0 .and.&
+   &OBULEN .GT. -99990.0D0 .and. VPTGZI .GT. 0.10D0 )THEN
 !        WRITE Warning Message: VPTGZI is greater than 0.10 K/m
       IF( .NOT. L_SkipMessages )THEN
          WRITE(DUMMY,'(I8.8)') KURDAT
@@ -2230,7 +2230,7 @@ SUBROUTINE METQA
 
 !---- Surface roughness length (m):
    IF (SFCZ0 .LT. 0.0001D0) THEN
-      IF (.NOT.MSGHR .AND. .NOT.CLMHR) THEN
+      IF (.NOT.MSGHR .and. .NOT.CLMHR) THEN
 !           WRITE Warning Message:  Surface roughness length out-of-range
          IF( .NOT. L_SkipMessages )THEN
             WRITE(DUMMY,'(I8.8)') KURDAT
@@ -2242,7 +2242,7 @@ SUBROUTINE METQA
    END IF
 
 !---- Check for precipitation rate out of range
-   IF (PRATE .LT. 0.0D0 .OR. PRATE .GT. 900.0D0) THEN
+   IF (PRATE .LT. 0.0D0 .or. PRATE .GT. 900.0D0) THEN
 !        Assume precipitation is missing, set to 0.0
       PRATE = 0.0D0
    ELSE
@@ -2308,7 +2308,7 @@ SUBROUTINE METDAT(IOUNT)
    WRITE(IOUNT,9020) IDSURF, IDUAIR, SFNAME, UANAME,&
    &ISYEAR, IUYEAR
    WRITE(IOUNT,9024)
-   IF (LDPART .OR. LDGAS .OR. LWPART .OR. LWGAS .OR. GRSM) THEN
+   IF (LDPART .or. LDGAS .or. LWPART .or. LWGAS .or. GRSM) THEN
       WRITE(IOUNT,99025)
    ELSE
       WRITE(IOUNT,9025)
@@ -2325,7 +2325,7 @@ SUBROUTINE METDAT(IOUNT)
 !        JDAY read in METEXT.
       IF( I .EQ. 1 )THEN
 
-         IF( LDPART .OR. LWPART .OR. LDGAS .OR. LWGAS .OR.&
+         IF( LDPART .or. LWPART .or. LDGAS .or. LWGAS .or.&
          &GRSM)THEN
             WRITE(IOUNT,99026) IYEAR, IMONTH, IDAY, IHOUR,&
             &SFCHF, USTAR, WSTAR, VPTGZI, ZICONV, ZIMECH, OBULEN,&
@@ -2341,7 +2341,7 @@ SUBROUTINE METDAT(IOUNT)
          IF (IYEAR .GE. 100) THEN
             IYEAR = IYEAR - 100 * (IYEAR/100)
          END IF
-         IF( LDPART .OR. LWPART .OR. LDGAS .OR. LWGAS .OR.&
+         IF( LDPART .or. LWPART .or. LDGAS .or. LWGAS .or.&
          &GRSM)THEN
             WRITE(IOUNT,99026) IYEAR, IMONTH, IDAY, IHOUR,&
             &SFCHF, USTAR, WSTAR, VPTGZI, ZICONV, ZIMECH, OBULEN,&
@@ -2355,7 +2355,7 @@ SUBROUTINE METDAT(IOUNT)
 
       END IF
 
-      IF( LDPART .OR. LWPART .OR. LDGAS .OR. LWGAS .OR. GRSM )THEN
+      IF( LDPART .or. LWPART .or. LDGAS .or. LWGAS .or. GRSM )THEN
 !           Read record from ASCII scalar parameter file using FREE format
 !           with deposition variables
          READ( MFUNIT, *, END=999, ERR=99, IOSTAT=IOERRN) IYEAR,&
@@ -2385,7 +2385,7 @@ SUBROUTINE METDAT(IOUNT)
    REWIND MFUNIT
    READ( MFUNIT, '(I2)' )  IDUM
 !
-   IF( LDPART .OR. LWPART .OR. LDGAS .OR. LWGAS .OR. GRSM )THEN
+   IF( LDPART .or. LWPART .or. LDGAS .or. LWGAS .or. GRSM )THEN
 !        Read record from ASCII scalar parameter file using FREE format
 !        with deposition variables
       READ( MFUNIT, *, END=999, ERR=99, IOSTAT=IOERRN) IYEAR,&
@@ -2651,18 +2651,18 @@ SUBROUTINE PFLCNV( LEVEL )
 !     RESET PFLSA AND/OR PFLSW BASED ON TURBULENCE OPTIONS
    WRITE(DUMMY,'(I10.10)') FULLDATE
 
-   IF (PFLSA(LEVEL) .LT. 99.0D0 .AND. (TURBOPTS(1) .OR.&
-   &(TURBOPTS(2) .AND. STABLE) .OR. (TURBOPTS(3) .AND. UNSTAB)&
-   &.OR. TURBOPTS(4) .OR. (TURBOPTS(6) .AND. STABLE) .OR.&
-   &(TURBOPTS(8) .AND. UNSTAB))) THEN
+   IF (PFLSA(LEVEL) .LT. 99.0D0 .and. (TURBOPTS(1) .or.&
+   &(TURBOPTS(2) .and. STABLE) .or. (TURBOPTS(3) .and. UNSTAB)&
+   &.or. TURBOPTS(4) .or. (TURBOPTS(6) .and. STABLE) .or.&
+   &(TURBOPTS(8) .and. UNSTAB))) THEN
       PFLSA(LEVEL)=99.0D0
       IF (.NOT. RESET_SA) RESET_SA=.TRUE.
 
    ENDIF
-   IF (PFLSW(LEVEL) .LT. 99.0D0 .AND. (TURBOPTS(1) .OR.&
-   &(TURBOPTS(2) .AND. STABLE) .OR. (TURBOPTS(3) .AND. UNSTAB)&
-   &.OR. TURBOPTS(5) .OR. (TURBOPTS(7) .AND. STABLE) .OR.&
-   &(TURBOPTS(9) .AND. UNSTAB))) THEN
+   IF (PFLSW(LEVEL) .LT. 99.0D0 .and. (TURBOPTS(1) .or.&
+   &(TURBOPTS(2) .and. STABLE) .or. (TURBOPTS(3) .and. UNSTAB)&
+   &.or. TURBOPTS(5) .or. (TURBOPTS(7) .and. STABLE) .or.&
+   &(TURBOPTS(9) .and. UNSTAB))) THEN
       PFLSW(LEVEL)=99.0D0
       IF (.NOT. RESET_SW) RESET_SW=.TRUE.
 
@@ -2670,31 +2670,31 @@ SUBROUTINE PFLCNV( LEVEL )
 
 !     Change the missing value indicator for wind speed to -99.0
 
-   IF( PFLWS(LEVEL)  .LT. 0.0D0  .OR.&
+   IF( PFLWS(LEVEL)  .LT. 0.0D0  .or.&
    &PFLWS(LEVEL)  .GT. 90.0D0 )THEN
       PFLWS(LEVEL) =  -99.0D0
    ENDIF
 
 !     Change the wind direction from 0.0 to 360.0 if wind speed is nonzero
 
-   IF(( PFLWS(LEVEL) .GT. 0.0D0 .AND. PFLWS(LEVEL) .LE. 90.0D0 ).AND.&
+   IF(( PFLWS(LEVEL) .GT. 0.0D0 .and. PFLWS(LEVEL) .LE. 90.0D0 ).and.&
    &PFLWD(LEVEL) .EQ. 0.0D0 )THEN
       PFLWD(LEVEL) = 360.0D0
    ENDIF
 
-   IF( PFLWD(LEVEL) .GT. 900.0D0 .OR. PFLWD(LEVEL) .LT. 0.0D0 )THEN
+   IF( PFLWD(LEVEL) .GT. 900.0D0 .or. PFLWD(LEVEL) .LT. 0.0D0 )THEN
       PFLWD(LEVEL) = -999.0D0
    ENDIF
 
-   IF( PFLWS(LEVEL) .EQ. 0.0D0  .AND.&
+   IF( PFLWS(LEVEL) .EQ. 0.0D0  .and.&
    &PFLWD(LEVEL) .EQ. 0.0D0 )THEN
       PFLWS(LEVEL) = -99.0D0
       PFLWD(LEVEL) = -999.0D0
    ENDIF
 
 !     Compute sigmaV from nonmissing wind speed and sigmaTHETA
-   IF( PFLWS(LEVEL) .GT. 0.0D0  .AND.&
-   &PFLSA(LEVEL) .GE. 0.0D0  .AND.&
+   IF( PFLWS(LEVEL) .GT. 0.0D0  .and.&
+   &PFLSA(LEVEL) .GE. 0.0D0  .and.&
    &PFLSA(LEVEL) .LT. 99.0D0 )THEN
       SIGRAD = PFLSA(LEVEL) * DTORAD
       EPSIL = DSIN(SIGRAD) * ( 1.0D0 - GSIGV * SIGRAD )           ! GSIGV = 0.073864D0 (in MODULES.f)
@@ -2709,27 +2709,27 @@ SUBROUTINE PFLCNV( LEVEL )
    ENDIF
 
 ! --- Check for sigmaW data
-   IF( PFLSW(LEVEL) .GT. 0.0D0 .AND.&
+   IF( PFLSW(LEVEL) .GT. 0.0D0 .and.&
    &PFLSW(LEVEL) .LT. 90.0D0 )THEN
       L_Got_SigW = .TRUE.
       N_Got_SigW = N_Got_SigW + 1
    ENDIF
 
 ! --- Check for turbulence data with ADJ_U
-   IF( L_AdjUstar .AND. DFAULT )THEN
+   IF( L_AdjUstar .and. DFAULT )THEN
 ! ---    Issue FATAL error if observed turbulence data are
 !        used with L_AdjUstar with RegDFAULT option
-      IF( L_Got_SigA .AND. L_Got_SigW )THEN
-         IF( N_Got_SigA .EQ. 1 .AND. N_Got_SigW .EQ. 1) THEN
+      IF( L_Got_SigA .and. L_Got_SigW )THEN
+         IF( N_Got_SigA .EQ. 1 .and. N_Got_SigW .EQ. 1) THEN
             CALL ERRHDL(PATH,MODNAM,'E','401','SigA & SigW')
             FATAL = .TRUE.
          ENDIF
-      ELSEIF( L_Got_SigA .AND. .NOT.L_Got_SigW )THEN
+      ELSEIF( L_Got_SigA .and. .NOT.L_Got_SigW )THEN
          IF( N_Got_SigA .EQ. 1 ) THEN
             CALL ERRHDL(PATH,MODNAM,'E','401','SigA Data')
             FATAL = .TRUE.
          ENDIF
-      ELSEIF( .NOT.L_Got_SigA .AND. L_Got_SigW )THEN
+      ELSEIF( .NOT.L_Got_SigA .and. L_Got_SigW )THEN
          IF( N_Got_SigW .EQ. 1 ) THEN
             CALL ERRHDL(PATH,MODNAM,'E','401','SigW Data')
             FATAL = .TRUE.
@@ -2738,15 +2738,15 @@ SUBROUTINE PFLCNV( LEVEL )
    ELSEIF( L_AdjUstar )THEN
 ! ---    Issue Warning error if observed turbulence data are used
 !        with L_AdjUstar and Non-DFAULT; limit to one warning
-      IF( L_Got_SigA .AND. L_Got_SigW )THEN
-         IF( N_Got_SigA .EQ. 1 .AND. N_Got_SigW .EQ. 1) THEN
+      IF( L_Got_SigA .and. L_Got_SigW )THEN
+         IF( N_Got_SigA .EQ. 1 .and. N_Got_SigW .EQ. 1) THEN
             CALL ERRHDL(PATH,MODNAM,'W','401','SigA & SigW')
 ! ---          Assign character string regarding use of turbulence
 !              data on MODOPS string
             MODOPS(1)  = 'NonDFAULT'
             MODOPS(26) = 'SigA&SigW'
          ENDIF
-      ELSEIF( L_Got_SigA .AND. .NOT.L_Got_SigW )THEN
+      ELSEIF( L_Got_SigA .and. .NOT.L_Got_SigW )THEN
          IF( N_Got_SigA .EQ. 1 ) THEN
             CALL ERRHDL(PATH,MODNAM,'W','401','SigA Data')
 ! ---          Assign character string regarding use of turbulence
@@ -2754,7 +2754,7 @@ SUBROUTINE PFLCNV( LEVEL )
             MODOPS(1)  = 'NonDFAULT'
             MODOPS(26) = 'SigA Data'
          ENDIF
-      ELSEIF( .NOT.L_Got_SigA .AND. L_Got_SigW )THEN
+      ELSEIF( .NOT.L_Got_SigA .and. L_Got_SigW )THEN
          IF( N_Got_SigW .EQ. 1 ) THEN
             CALL ERRHDL(PATH,MODNAM,'W','401','SigW Data')
 ! ---          Assign character string regarding use of turbulence
@@ -2773,21 +2773,21 @@ SUBROUTINE PFLCNV( LEVEL )
    ELSE
 ! ---    ADJ_U* is NOT being used, however include use of turbulence,
 ! ---    SigA and/or SigW in the MODOPS array even with without ADJ_U*
-      IF( L_Got_SigA .AND. L_Got_SigW )THEN
-         IF( N_Got_SigA .EQ. 1 .AND. N_Got_SigW .EQ. 1) THEN
+      IF( L_Got_SigA .and. L_Got_SigW )THEN
+         IF( N_Got_SigA .EQ. 1 .and. N_Got_SigW .EQ. 1) THEN
             CALL ERRHDL(PATH,MODNAM,'W','403','SigA & SigW')
 ! ---          Assign character string regarding use of turbulence
 !              data on MODOPS string
             MODOPS(26) = 'SigA&SigW'
          ENDIF
-      ELSEIF( L_Got_SigA .AND. .NOT.L_Got_SigW )THEN
+      ELSEIF( L_Got_SigA .and. .NOT.L_Got_SigW )THEN
          IF( N_Got_SigA .EQ. 1 ) THEN
             CALL ERRHDL(PATH,MODNAM,'W','403','SigA Data')
 ! ---          Assign character string regarding use of turbulence
 !              data on MODOPS string
             MODOPS(26) = 'SigA Data'
          ENDIF
-      ELSEIF( .NOT.L_Got_SigA .AND. L_Got_SigW )THEN
+      ELSEIF( .NOT.L_Got_SigA .and. L_Got_SigW )THEN
          IF( N_Got_SigW .EQ. 1 ) THEN
             CALL ERRHDL(PATH,MODNAM,'W','403','SigW Data')
 ! ---          Assign character string regarding use of turbulence
@@ -2800,7 +2800,7 @@ SUBROUTINE PFLCNV( LEVEL )
 !         IF SIGMA-A IS INCLUDED, THE CALCULATION
 !         HAS ALREADY BEEN DONE OUTSIDE THIS IF/ELSE
 ! ---    Make calculation                                            ! 20190709- Poss. duplicate code - Review block below
-!         IF( PFLSA(LEVEL) .GT. 0.0D0  .AND.
+!         IF( PFLSA(LEVEL) .GT. 0.0D0  .and.
 !     &       PFLSA(LEVEL) .LT. 99.0D0 )THEN   !! May need to reconsider upper bound for SigA
 !            SIGRAD = PFLSA(LEVEL) * DTORAD
 !            EPSIL = DSIN(SIGRAD) * ( 1.0D0 - GSIGV * SIGRAD )        ! GSIGV = 0.073864D0 (in MODULES.f)
@@ -2814,7 +2814,7 @@ SUBROUTINE PFLCNV( LEVEL )
 
 !     Convert temperature from degrees Celsius to kelvins
 
-   IF( PFLTA(LEVEL)  .GT. -90.0D0  .AND.&
+   IF( PFLTA(LEVEL)  .GT. -90.0D0  .and.&
    &PFLTA(LEVEL)  .LT.  90.0D0 )THEN
       PFLTA(LEVEL) = PFLTA(LEVEL) + DCTODK
 
@@ -2825,7 +2825,7 @@ SUBROUTINE PFLCNV( LEVEL )
 
 !     Change the missing value indicator for sigmaW to -99.0
 
-   IF( PFLSW(LEVEL)  .LT. 0.0D0  .OR.&
+   IF( PFLSW(LEVEL)  .LT. 0.0D0  .or.&
    &PFLSW(LEVEL)  .GT. 90.0D0 )THEN
       PFLSW(LEVEL) =  -99.0D0
    ELSE
@@ -3200,7 +3200,7 @@ SUBROUTINE GRDURBAN
 !     Loop Through Urban Areas
    DO IURB = 1, NUMURB
 
-      IF (.NOT.STABLE .AND. .NOT.L_MorningTrans(IURB)) CYCLE
+      IF (.NOT.STABLE .and. .NOT.L_MorningTrans(IURB)) CYCLE
 
       ZDCRS  =  AT1PT2 * ZIURB(IURB)
 
@@ -3212,7 +3212,7 @@ SUBROUTINE GRDURBAN
          IF( GRIDHT(I)  .LE.  ZIURB(IURB) )THEN
             SVURB = DSQRT( SV2 )
 
-         ELSEIF( GRIDHT(I) .GT. ZIURB(IURB) .AND.&
+         ELSEIF( GRIDHT(I) .GT. ZIURB(IURB) .and.&
          &GRIDHT(I) .LE. ZDCRS )THEN
 !              COMPUTE sigmaV at 1.2*ZI
             SV2DCR = MIN( SV2, 0.25D0 )
@@ -3233,7 +3233,7 @@ SUBROUTINE GRDURBAN
             &URBWSTR(IURB)**2
             SWURB  = DSQRT( SW2 )
 
-         ELSEIF( GRIDHT(I).GT.0.1D0*ZIURB(IURB) .AND.&
+         ELSEIF( GRIDHT(I).GT.0.1D0*ZIURB(IURB) .and.&
          &GRIDHT(I).LE.ZIURB(IURB) )THEN
             SWURB = DSQRT( 0.35D0 * URBWSTR(IURB)**2 )
 
@@ -3343,7 +3343,7 @@ SUBROUTINE GRDPTURB
 !---- Loop Through Urban Areas
    DO IURB = 1, NUMURB
 
-      IF (.NOT.STABLE .AND. .NOT.L_MorningTrans(IURB)) CYCLE
+      IF (.NOT.STABLE .and. .NOT.L_MorningTrans(IURB)) CYCLE
 
 !----    Compute the potential temperature at the grid level below
 !        the temperature reference height
@@ -3452,7 +3452,7 @@ SUBROUTINE METDEB
       NDIST = IDNINT(X)
    ENDIF
 
-   IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
       WRITE (DBMUNT, 6131) IREC, NDIST, UEFF, SVEFF, SWEFF
    ELSE IF(PPF .GE. 1.0D0) THEN
       WRITE (DBMUNT, 6132) IREC, NDIST, UEFF3, SVEFF3, SWEFF3

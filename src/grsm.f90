@@ -111,7 +111,7 @@ SUBROUTINE GRSM_CALC
 
 ! --- Initialise concs by converting from ug m-3 to ppb.  Don't want to alter input bgd concs
    NO2CONC_BG = BGCONC_IN*NO2_PPB     !This is NO2 bgd
-   IF(NOXMISS.OR.L_CalcNOxFromNO2)THEN
+   IF(NOXMISS.or.L_CalcNOxFromNO2)THEN
       !No NOx bgd
    ELSE
       NOXCONC_BG = NOXBGCONC*NO2_PPB  !This is NOx bgd (NOx as NO2).
@@ -261,7 +261,7 @@ SUBROUTINE GRSM_CALC
                   &SIGYSIGZ_E_X(ISRC)/(SIGYSIGZ_I_X(ISRC))
 
                   !Calculate the entrained concentration
-                  IF(GRP_BACK(IGRP_USE).AND..NOT.L_NIGHTHOUR)THEN
+                  IF(GRP_BACK(IGRP_USE).and..NOT.L_NIGHTHOUR)THEN
                      PLUMEBKGNO2(ISRC)= (1.0D0-&
                      &SIGYSIGZ_I_0/SIGYSIGZ_I_X(ISRC))*NO2CONC_BG
                      PLUMEBKGNO(ISRC) = (1.0D0-&
@@ -275,7 +275,7 @@ SUBROUTINE GRSM_CALC
                   &SIGYSIGZ_I_X(ISRC))*O3CONC_BG
                ELSE
                   !Upwind fully entrains background
-                  IF(GRP_BACK(IGRP_USE).AND..NOT.L_NIGHTHOUR)THEN
+                  IF(GRP_BACK(IGRP_USE).and..NOT.L_NIGHTHOUR)THEN
                      PLUMEBKGNO2(ISRC)= NO2CONC_BG
                      PLUMEBKGNO(ISRC) = NOCONC_BG
                   ELSE
@@ -296,7 +296,7 @@ SUBROUTINE GRSM_CALC
 
             END DO
 
-            IF(GRP_BACK(IGRP_USE).AND..NOT.L_NIGHTHOUR)THEN
+            IF(GRP_BACK(IGRP_USE).and..NOT.L_NIGHTHOUR)THEN
                MINBKGNO2 = NO2CONC_BG
                MINBKGNO  = NOCONC_BG
             ELSE
@@ -316,7 +316,7 @@ SUBROUTINE GRSM_CALC
             END DO
 
             !Put this set of background values into equilibrium
-            IF(GRP_BACK(IGRP_USE).AND..NOT.L_NIGHTHOUR)THEN
+            IF(GRP_BACK(IGRP_USE).and..NOT.L_NIGHTHOUR)THEN
                CALL QuadraticEquil(MINBKGNO2,MINBKGNO,MINBKGO3)
             ENDIF
 
@@ -348,7 +348,7 @@ SUBROUTINE GRSM_CALC
             ENSCONCNO2  = 0.0
 
             DO ISRC = 1, NUMSRC
-               IF (INSTCONCNOX==0.OR.NOXPERSOURCE(ISRC)==0) THEN
+               IF (INSTCONCNOX==0.or.NOXPERSOURCE(ISRC)==0) THEN
                   CONCSOURCENO2 = 0.0
                   CONCSOURCENO  = 0.0
                ELSE
@@ -375,7 +375,7 @@ SUBROUTINE GRSM_CALC
                ENSCONCNO  = ENSCONCNO  + CONCSOURCENO
             END DO
 
-            IF(GRP_BACK(IGRP_USE).AND..NOT.L_NIGHTHOUR)THEN
+            IF(GRP_BACK(IGRP_USE).and..NOT.L_NIGHTHOUR)THEN
                ENSCONCNO2 = ENSCONCNO2 + NO2CONC_BG
                ENSCONCNO  = ENSCONCNO  + NOCONC_BG
             END IF
@@ -590,7 +590,7 @@ SUBROUTINE GETBGDEQUIL
    MODNAM = 'GETBGDEQUIL'
 ! --- Check for day or night
    IF (.NOT.L_NIGHTHOUR) THEN
-      IF(L_CalcNOxFromNO2.OR.NOXMISS)THEN
+      IF(L_CalcNOxFromNO2.or.NOXMISS)THEN
 ! ---     Calculate NOx bgd from NO2
 ! ---     Solve equilibrium eqns for NOx
          IF(O3CONC_BG/=0.0D0)THEN
@@ -608,7 +608,7 @@ SUBROUTINE GETBGDEQUIL
          CALL QuadraticEquil(NO2CONC_BG,NOCONC_BG,O3CONC_BG)
       END IF
    ELSE ! Nighttime
-      IF(L_CalcNOxFromNO2.OR.NOXMISS)THEN
+      IF(L_CalcNOxFromNO2.or.NOXMISS)THEN
          !NOx is missing but don't need it
          NOXCONC_BG=-999.0D0
          NOCONC_BG=0.0D0
@@ -827,7 +827,7 @@ SUBROUTINE DoGRSMChem
 
       !Check for concentrations less than the minimum value and negative gradients
       DO i=1,nPolsGRSM
-         IF (CONCTEMP(i).LT.MinimumConc .AND. dCdt(I).LT.0.D0)THEN
+         IF (CONCTEMP(i).LT.MinimumConc .and. dCdt(I).LT.0.D0)THEN
             CONCTEMP(I) = 0.D0
             dCdt(I) = 0.D0
          ENDIF
@@ -1105,7 +1105,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
             EXIT
          END IF
       END DO
-      IF (STABLE .OR. L_MorningTrans(IURB)) THEN
+      IF (STABLE .or. L_MorningTrans(IURB)) THEN
          URBSTAB = .TRUE.
          ZI = MAX( ZIURB(IURB), ZIMECH )
          GRIDSV = GRDSVU(1:MXGLVL,IURB)
@@ -1124,7 +1124,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
          OBULEN = RUROBULEN
          USTAR  = RURUSTR
       END IF
-   ELSE IF (URBAN .AND. URBSRC(ISRC) .EQ. 'N') THEN
+   ELSE IF (URBAN .and. URBSRC(ISRC) .EQ. 'N') THEN
       URBSTAB = .FALSE.
       ZI = ZIRUR
       GRIDSV = GRDSVR
@@ -1143,9 +1143,9 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 !     Calculate the initial meteorological variables     ---   CALL METINI
    CALL METINI
 
-   IF ((SRCTYP(ISRC) .EQ. 'VOLUME' .AND. AFTSRC(ISRC) .EQ. 'N').OR.&  ! Added for Aircraft; UNC-IE
-   &SRCTYP(ISRC) .EQ. 'LINE' .OR.&
-   &(SRCTYP(ISRC)(1:4) .EQ. 'AREA' .AND. AFTSRC(ISRC) .EQ. 'N').OR.&! Added for Aircraft; UNC-IE
+   IF ((SRCTYP(ISRC) .EQ. 'VOLUME' .and. AFTSRC(ISRC) .EQ. 'N').or.&  ! Added for Aircraft; UNC-IE
+   &SRCTYP(ISRC) .EQ. 'LINE' .or.&
+   &(SRCTYP(ISRC)(1:4) .EQ. 'AREA' .and. AFTSRC(ISRC) .EQ. 'N').or.&! Added for Aircraft; UNC-IE
    &SRCTYP(ISRC) .EQ. 'OPENPIT') THEN
       FB  = 0.0D0
       FM  = 0.0D0
@@ -1170,8 +1170,8 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
       END IF
 
 !**  Added for Aircraft Plume Rise; UNC-IE
-   ELSE IF ((SRCTYP(ISRC) .EQ. 'VOLUME' .OR.&
-   &SRCTYP(ISRC) (1:4) .EQ. 'AREA') .AND.&
+   ELSE IF ((SRCTYP(ISRC) .EQ. 'VOLUME' .or.&
+   &SRCTYP(ISRC) (1:4) .EQ. 'AREA') .and.&
    &(AFTSRC(ISRC) .EQ. 'Y')) THEN
 !        Calculate Buoyancy Fluxes                          ---   CALL AFLUXES
       CALL AFLUXES
@@ -1190,7 +1190,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 !        Calculate the plume penetration factor             ---   CALL PENFCT
       CALL PENFCT
 
-      IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+      IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !           Use iterative approach to stable plume rise calculations
          KITER = 0
 150      ZPLM = HSP + 0.5D0 * DHFAER
@@ -1282,7 +1282,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
       XFINAL = XMAX
       DHCRIT = DHFAER
       XMIXED = ZI * UAVG / SWAVG
-      IF (UNSTAB .AND. HS.LT.ZI) THEN
+      IF (UNSTAB .and. HS.LT.ZI) THEN
 !           Check for XMIXED smaller than 1.25*XFINAL
          IF (XMIXED .LT. 1.25D0*XFINAL) THEN
             XFINAL = 0.8D0 * XMIXED
@@ -1333,7 +1333,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 !        Calculate the plume penetration factor             ---   CALL PENFCT
       CALL PENFCT
 
-      IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+      IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
 !           Use iterative approach to stable plume rise calculations
          KITER = 0
 50       ZPLM = HSP + 0.5D0 * DHFAER
@@ -1415,7 +1415,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
       XFINAL = XMAX
       DHCRIT = DHFAER
       XMIXED = ZI * UAVG / SWAVG
-      IF (UNSTAB .AND. HS.LT.ZI) THEN
+      IF (UNSTAB .and. HS.LT.ZI) THEN
 !           Check for XMIXED smaller than 1.25*XFINAL
          IF (XMIXED .LT. 1.25D0*XFINAL) THEN
             XFINAL = 0.8D0 * XMIXED
@@ -1433,8 +1433,8 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 !       Calculate the plume rise                  ---   CALL DELTAH
       CALL DELTAH ( XARG )
 !**  Added for Aircraft Plume Rise; UNC-IE
-   ELSE IF ((SRCTYP(ISRC) .EQ. 'VOLUME' .OR.&
-   &SRCTYP(ISRC)(1:4) .EQ. 'AREA') .AND.&
+   ELSE IF ((SRCTYP(ISRC) .EQ. 'VOLUME' .or.&
+   &SRCTYP(ISRC)(1:4) .EQ. 'AREA') .and.&
    &(AFTSRC(ISRC) .EQ. 'Y')) THEN
 !       Calculate the plume rise                  ---   CALL ADELTAH
       CALL ADELTAH ( XARG )
@@ -1450,7 +1450,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 !     If the atmosphere is unstable and the stack
 !     top is below the mixing height, calculate
 !     the CBL PDF coefficients                     ---   CALL PDF
-   IF( UNSTAB  .AND.  (HS .LT. ZI) ) THEN
+   IF( UNSTAB  .and.  (HS .LT. ZI) ) THEN
       CALL PDF
    END IF
 
@@ -1462,7 +1462,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
    CALL IBLVAL ( XARG )
 
 !     Call PDF & HEFF again for final CBL plume heights
-   IF (UNSTAB .AND. (HS.LT.ZI) ) THEN
+   IF (UNSTAB .and. (HS.LT.ZI) ) THEN
       CALL PDF
       CALL HEFF ( XARG )
    END IF
@@ -1494,7 +1494,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
       !Unknown source type
       CALL ERRHDL(PATH,MODNAM,'E','614','')
    END SELECT
-   IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
       SIGZ_NoTurb = SZ
    ELSE
       SIGZ_NoTurb = 0.5D0*(SZD1+SZD2)
@@ -1519,7 +1519,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
       !Unknown source type
       CALL ERRHDL(PATH,MODNAM,'E','614','')
    END SELECT
-   IF( STABLE  .OR.  (UNSTAB .AND. (HS .GE. ZI) ) )THEN
+   IF( STABLE  .or.  (UNSTAB .and. (HS .GE. ZI) ) )THEN
       SIGZ = SZ
    ELSE
       SIGZ = 0.5D0*(SZD1+SZD2)
@@ -1554,7 +1554,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
 
 
    !Calculate dispersion time for Gaussian part of plume
-   IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+   IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
       UCHM=UEFF
    ELSE
       UCHM=UEFFD
@@ -1605,7 +1605,7 @@ SUBROUTINE PLUMESIZES(XARG,SIGYSIGZ_I,SIGYSIGZ_E)
    ENDIF
 
    !Get fraction of random kinetic energy
-   IF (STABLE .OR. (UNSTAB.AND.(HS.GE.ZI))) THEN
+   IF (STABLE .or. (UNSTAB.and.(HS.GE.ZI))) THEN
       CALL MEANDR(UEFF, SVEFF, FRAN)
    ELSE
       CALL MEANDR(UEFFD, SVEFFD, FRAN)

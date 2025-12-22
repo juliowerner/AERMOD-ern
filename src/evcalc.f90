@@ -76,19 +76,19 @@ SUBROUTINE EVCALC
    SOURCE_LOOP: DO ISRC = 1, NUMSRC
 ! ---    Proceed with calcs if ISRC is included in IGRP, or if NO2
 !        options are being used since these require full CHI array
-      IF (IGROUP(ISRC,IGRP) .EQ. 1 .OR. ARM2 .OR.&
-      &OLM .OR. PVMRM .OR. GRSM) THEN
+      IF (IGROUP(ISRC,IGRP) .EQ. 1 .or. ARM2 .or.&
+      &OLM .or. PVMRM .or. GRSM) THEN
          IF (SRCTYP(ISRC)(1:5) .EQ. 'POINT') THEN
 !              Calculate Point Source Values                        ---   CALL PCALC
             CALL PCALC
          ELSE IF (SRCTYP(ISRC) .EQ. 'VOLUME') THEN
 !              Calculate Volume Source Values                       ---   CALL VCALC
             CALL VCALC
-         ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .OR.&
+         ELSE IF (SRCTYP(ISRC)(1:4) .EQ. 'AREA' .or.&
          &SRCTYP(ISRC) .EQ. 'LINE') THEN
 !              Calculate AREA/AREAPOLY/AREACIRC/LINE Source Values  ---   CALL ACALC
             CALL ACALC
-         ELSE IF ((SRCTYP(ISRC) .EQ. 'RLINE') .OR.&
+         ELSE IF ((SRCTYP(ISRC) .EQ. 'RLINE') .or.&
          &(SRCTYP(ISRC) .EQ. 'RLINEXT')) THEN
 !              Calculate RLINE Source Values                        ---   CALL RLCALC
             CALL RLCALC
@@ -98,7 +98,7 @@ SUBROUTINE EVCALC
             CALL OCALC
 !              D097 WSP 3/29/2023 removed the lmitor of BLPROCESSED being FALSE following RLINE example
 !            ELSE IF (SRCTYP(ISRC) .EQ. 'BUOYLINE') THEN
-         ELSE IF (SRCTYP(ISRC) .EQ. 'BUOYLINE' .AND.&
+         ELSE IF (SRCTYP(ISRC) .EQ. 'BUOYLINE' .and.&
          &(.NOT. BLPROCESSED)) THEN
 !              Calculate Bouyant Line Source Values                 ---   CALL BL_CALC
 !              BLPROCESSED lets AERMOD know that all lines associated with
@@ -147,8 +147,8 @@ SUBROUTINE EVCALC
    END DO SOURCE_LOOP
 !     End Source LOOP
 
-   IF (L_BACKGRND .AND. .NOT.ARM2 .AND.&
-   &.NOT.OLM .AND. .NOT.PVMRM .AND. .NOT.GRSM) THEN
+   IF (L_BACKGRND .and. .NOT.ARM2 .and.&
+   &.NOT.OLM .and. .NOT.PVMRM .and. .NOT.GRSM) THEN
 ! ---    User-specified background concentrations are included;
 !        add to modeled concentrations by source group unless
 !        NO2 options are specified (which are handled separately)
@@ -317,7 +317,7 @@ SUBROUTINE EVLOOP
    FULL_YYMMDD = (FULLDATE/100) * 100
    IEDATE_YYMMDD = (IEDATE/100) * 100
 
-   DAY_LOOP: DO WHILE (FULL_YYMMDD .LT. IEDATE_YYMMDD .AND. .NOT.EOF)
+   DAY_LOOP: DO WHILE (FULL_YYMMDD .LT. IEDATE_YYMMDD .and. .NOT.EOF)
 !        Retrieve Hourly Meteorology Data for Current Day   ---   CALL MEREAD
       CALL MEREAD
 
@@ -353,7 +353,7 @@ SUBROUTINE EVLOOP
          EXIT DAY_LOOP
       ENDIF
 
-      IF (PVMRM .OR. OLM .OR. GRSM) THEN
+      IF (PVMRM .or. OLM .or. GRSM) THEN
 !-----      Extract Ozone Data for current day; L_FIRSTCALL used
 !           to initialize array of O3 values used to apply minimum
 !           O3 for stable hours
@@ -441,7 +441,7 @@ SUBROUTINE EVLOOP
 !                 Retrieve Hourly Data for Current Event ---   CALL EV_METEXT
                CALL EV_METEXT
 !                 Retrieve Hourly Ozone Value
-               IF (PVMRM .OR. OLM .OR. GRSM) THEN
+               IF (PVMRM .or. OLM .or. GRSM) THEN
                   IF (.NOT. O3MISS) THEN
                      O3CONC = EV_O3CONC(IHOUR)
                   ELSE
@@ -468,12 +468,12 @@ SUBROUTINE EVLOOP
 !*                   End Source Loop
                END IF
 !*----
-               IF (CLMHR .AND. CLMPRO) THEN
+               IF (CLMHR .and. CLMPRO) THEN
 !                    Check for Calm Hr & Processing and
 !                    Increment Counters
                   EV_NUMHRS = EV_NUMHRS + 1
                   EV_NUMCLM = EV_NUMCLM + 1
-               ELSE IF (MSGHR .AND. MSGPRO) THEN
+               ELSE IF (MSGHR .and. MSGPRO) THEN
 !                    Check for Missing Hour & Processing and
 !                    Increment Counters
                   EV_NUMHRS = EV_NUMHRS + 1
@@ -493,14 +493,14 @@ SUBROUTINE EVLOOP
                   CALL EVCALC
                END IF
 
-               IF (.NOT.CLMHR .AND. .NOT.MSGHR) THEN
+               IF (.NOT.CLMHR .and. .NOT.MSGHR) THEN
 ! ---                Non-calm, non-missing hour; apply NO2 options as appropriate
 
-                  IF (PVMRM .AND. .NOT.PSDCREDIT) THEN
+                  IF (PVMRM .and. .NOT.PSDCREDIT) THEN
 ! ---                   Process Hourly Values for PVMRM Option
                      CALL PVMRM_CALC('ALLSRCS')
 
-                  ELSE IF (PVMRM .AND. PSDCREDIT) THEN
+                  ELSE IF (PVMRM .and. PSDCREDIT) THEN
 ! ---                   Process Hourly Values for PVMRM Option and PSD credits
 ! ---                   Need to process two separate sets of sources - the
 !                       increment consumption sources ('NAAQSRC') and the
@@ -687,7 +687,7 @@ SUBROUTINE MEREAD
 !     based on MEREAD_Date
    IDATCHK = MEREAD_Date - INT(MEREAD_Date/1000000)*1000000
 
-   IF ((IMONTH.EQ.12 .AND. IDAY.EQ.31 .AND. IHOUR.EQ.24) .OR.&
+   IF ((IMONTH.EQ.12 .and. IDAY.EQ.31 .and. IHOUR.EQ.24) .or.&
    &IDATCHK .EQ. 123124) THEN
 !        End of year has been reached - check for presence of header
 !        record at beginning of next year for multi-year data files.
@@ -773,7 +773,7 @@ SUBROUTINE MEREAD
 !
 !---- READ surface scaling meteorology data based on format
 !
-      IF( LDPART .OR. LWPART .OR. LDGAS .OR. LWGAS .OR. GRSM )THEN
+      IF( LDPART .or. LWPART .or. LDGAS .or. LWGAS .or. GRSM )THEN
 !        Read record from ASCII scalar parameter file using FREE format
 !        with deposition variables
 !
@@ -786,7 +786,7 @@ SUBROUTINE MEREAD
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C        Determine The Current Julian Day and Calculate Current Gregorian Date
 !C        First Convert Year to 4-Digit Value
-!         IF (IYEAR .GE. ISTRT_WIND .AND. IYEAR .LE. 99) THEN
+!         IF (IYEAR .GE. ISTRT_WIND .and. IYEAR .LE. 99) THEN
 !            IYR = ISTRT_CENT*100 + IYEAR
 !         ELSE IF (IYEAR .LT. ISTRT_WIND) THEN
 !            IYR = (ISTRT_CENT+1)*100 + IYEAR
@@ -827,9 +827,9 @@ SUBROUTINE MEREAD
 !        Calculate solar irradiance, QSW, from Heat Flux, Bowen ratio,
 !        albedo and cloud cover, for use in gas deposition algorithm.
 !        Include check for ABOWEN < 0 for non-standard inputs.
-         IF (AOBULEN(IHR,1).GT.0.0D0 .OR. AOBULEN(IHR,1).LT.-99990.0D0&
-         &.OR. ATA(IHR,1).LT.0.0D0 .OR.&
-         &AALBEDO(IHR,1).EQ.1.0D0 .OR. ABOWEN(IHR,1).LE.0.0D0) THEN
+         IF (AOBULEN(IHR,1).GT.0.0D0 .or. AOBULEN(IHR,1).LT.-99990.0D0&
+         &.or. ATA(IHR,1).LT.0.0D0 .or.&
+         &AALBEDO(IHR,1).EQ.1.0D0 .or. ABOWEN(IHR,1).LE.0.0D0) THEN
 !           Hour is stable or missing or inappropriate surface chars.
             AQSW(IHR,1) = 0.0D0
          ELSE
@@ -853,8 +853,8 @@ SUBROUTINE MEREAD
          END IF
 
 !        Set variables for dry deposition
-         IF (LDPART .OR. LDGAS) THEN
-            IF (ATA(IHR,1).LT.0.0D0 .OR. APRATE(IHR,1).LT.0.0D0) THEN
+         IF (LDPART .or. LDGAS) THEN
+            IF (ATA(IHR,1).LT.0.0D0 .or. APRATE(IHR,1).LT.0.0D0) THEN
                AWNEW(IHR,1) = AWOLD(IHR,1)
             ELSE
 ! ...          Compute saturation vapor pressure based on CMAQ formula
@@ -878,7 +878,7 @@ SUBROUTINE MEREAD
 ! ---    Calculate the MMDDHH variable to check for end of the year
 !        based on MEREAD_Date
          IDATCHK = MEREAD_Date - INT(MEREAD_Date/1000000)*1000000
-         IF ((IMONTH.EQ.12 .AND. IDAY.EQ.31 .AND. IHOUR.EQ.24) .OR.&
+         IF ((IMONTH.EQ.12 .and. IDAY.EQ.31 .and. IHOUR.EQ.24) .or.&
          &IDATCHK .EQ. 123124) THEN
 !           End of year has been reached - check for presence of header
 !           record at beginning of next year for multi-year data files.
@@ -968,7 +968,7 @@ SUBROUTINE MEREAD
 ! ---  D001 remove original calculation of 4-Digit year Wood 9/15/22
 !C        Determine The Current Julian Day and Calculate Current Gregorian Date
 !C        First Convert Year to 4-Digit Value
-!         IF (IYEAR .GE. ISTRT_WIND .AND. IYEAR .LE. 99) THEN
+!         IF (IYEAR .GE. ISTRT_WIND .and. IYEAR .LE. 99) THEN
 !            IYR = ISTRT_CENT*100 + IYEAR
 !         ELSE IF (IYEAR .LT. ISTRT_WIND) THEN
 !            IYR = (ISTRT_CENT+1)*100 + IYEAR
@@ -1025,7 +1025,7 @@ SUBROUTINE MEREAD
 
 ! --- Assign Sector IDs by hour for sector-varying BACKGRND if needed
       IF (L_Backgrnd) THEN
-         IF (AWDREF(IHR,1) .LE. 0.0D0 .OR.&
+         IF (AWDREF(IHR,1) .LE. 0.0D0 .or.&
          &AWDREF(IHR,1) .GT. 360.0D0) THEN
 ! ---       Hour is calm or missing; set ABGSECT = 0
             ABGSECT(IHR) = 0
@@ -1037,12 +1037,12 @@ SUBROUTINE MEREAD
                FVREF = FVREF - 360.0D0
             END IF
             IF (L_BGSector) THEN
-               IF (FVREF .LT. BGSECT(1) .OR.&
+               IF (FVREF .LT. BGSECT(1) .or.&
                &FVREF .GE. BGSECT(NUMBGSects) ) THEN
                   ABGSECT(IHR) = NUMBGSects
                ELSE
                   DO I = 1, NUMBGSects-1
-                     IF (FVREF .GE. BGSECT(I) .AND.&
+                     IF (FVREF .GE. BGSECT(I) .and.&
                      &FVREF .LT. BGSECT(I+1)) THEN
                         ABGSECT(IHR) = I
                         EXIT
@@ -1057,7 +1057,7 @@ SUBROUTINE MEREAD
 
 ! --- Assign Sector IDs by hour for direction-varying background O3 if needed
       IF (L_O3SECTOR) THEN
-         IF (AWDREF(IHR,1) .LE. 0.0D0 .OR.&
+         IF (AWDREF(IHR,1) .LE. 0.0D0 .or.&
          &AWDREF(IHR,1) .GT. 360.0D0) THEN
 ! ---       Hour is calm or missing; set AO3SECT = 0
             AO3SECT(IHR) = 0
@@ -1069,12 +1069,12 @@ SUBROUTINE MEREAD
                FVREF = FVREF - 360.0D0
             END IF
             IF (L_O3Sector) THEN
-               IF (FVREF .LT. O3SECT(1) .OR.&
+               IF (FVREF .LT. O3SECT(1) .or.&
                &FVREF .GE. O3SECT(NUMO3Sects) ) THEN
                   AO3SECT(IHR) = NUMO3Sects
                ELSE
                   DO I = 1, NUMO3Sects-1
-                     IF (FVREF .GE. O3SECT(I) .AND.&
+                     IF (FVREF .GE. O3SECT(I) .and.&
                      &FVREF .LT. O3SECT(I+1)) THEN
                         AO3SECT(IHR) = I
                         EXIT
@@ -1092,7 +1092,7 @@ SUBROUTINE MEREAD
 
 ! --- CERC 11/30/20 Assign Sector IDs by hour for direction-varying background NOX if needed
       IF (L_NOXSECTOR) THEN
-         IF (AWDREF(IHR,1) .LE. 0.0D0 .OR.&
+         IF (AWDREF(IHR,1) .LE. 0.0D0 .or.&
          &AWDREF(IHR,1) .GT. 360.0D0) THEN
 ! ---       Hour is calm or missing; set ANOXSECT = 0
             ANOXSECT(IHR) = 0
@@ -1103,12 +1103,12 @@ SUBROUTINE MEREAD
             IF (FVREF .GT. 360.0D0) THEN
                FVREF = FVREF - 360.0D0
             END IF
-            IF (FVREF .LT. NOXSECT(1) .OR.&
+            IF (FVREF .LT. NOXSECT(1) .or.&
             &FVREF .GE. NOXSECT(NUMNOxSects) ) THEN
                ANOXSECT(IHR) = NUMNOxSects
             ELSE
                DO I = 1, NUMNOxSects-1
-                  IF (FVREF .GE. NOXSECT(I) .AND.&
+                  IF (FVREF .GE. NOXSECT(I) .and.&
                   &FVREF .LT. NOXSECT(I+1)) THEN
                      ANOXSECT(IHR) = I
                      EXIT
@@ -1440,7 +1440,7 @@ SUBROUTINE EV_HRQREAD(L_FIRSTCALL)
             END IF
 !MGS           END - Check for aircraft source type
 
-            IF (.NOT.EOF .AND. IHR .EQ. NHR) THEN
+            IF (.NOT.EOF .and. IHR .EQ. NHR) THEN
 !*                Check for Date and Time Consistency with Met Data;
 !*                If Failed, Issue Fatal Error
                IF (FULLDATE .NE. FULLHRQ) THEN
@@ -1462,7 +1462,7 @@ SUBROUTINE EV_HRQREAD(L_FIRSTCALL)
             IF (SRCTYP(IS)(1:5) .EQ. 'POINT') THEN
                EV_HRTS(IS,IHR) = HRTS
                EV_HRVS(IS,IHR) = HRVS
-            ELSE IF (SRCTYP(IS) .EQ. 'VOLUME' .AND.&
+            ELSE IF (SRCTYP(IS) .EQ. 'VOLUME' .and.&
             &L_HRLYSIG(IS)) THEN
                EV_HRHS(IS,IHR) = HRHS
                EV_HRSY(IS,IHR) = HRSY
@@ -1480,8 +1480,8 @@ SUBROUTINE EV_HRQREAD(L_FIRSTCALL)
                END IF
 !**  End Aircraft Plume Rise insert; April 2023 !D151 - MGS 6/6/23
 
-            ELSE IF ((SRCTYP(IS)(1:4) .EQ. 'AREA' .OR.&
-            &SRCTYP(IS) .EQ. 'LINE') .AND.&
+            ELSE IF ((SRCTYP(IS)(1:4) .EQ. 'AREA' .or.&
+            &SRCTYP(IS) .EQ. 'LINE') .and.&
             &L_HRLYSIG(IS)) THEN
                EV_HRHS(IS,IHR) = HRHS
                EV_HRSZ(IS,IHR) = HRSZ
@@ -1621,7 +1621,7 @@ SUBROUTINE O3READ
 !C ---                Determine 4-digit year
 !                     IF (IO3YR .LE. 99) THEN
 !                        IO3YR2 = IO3YR
-!                        IF (IO3YR2 .GE. ISTRT_WIND .AND.
+!                        IF (IO3YR2 .GE. ISTRT_WIND .and.
 !     &                                       IO3YR2 .LE. 99) THEN
 !                           IO3YR  = ISTRT_CENT*100 + IO3YR2
 !                        ELSE IF (IO3YR2 .LT. ISTRT_WIND) THEN
@@ -1633,7 +1633,7 @@ SUBROUTINE O3READ
                   FULLO3HR(I) = IO3YR*1000000 + IO3MN*10000 +&
                   &IO3DY*100 + IO3HR
 
-                  IF (EV_O3CONC(IO3HR) .GE. 0.0D0 .AND.&
+                  IF (EV_O3CONC(IO3HR) .GE. 0.0D0 .and.&
                   &EV_O3CONC(IO3HR) .LT. 900.0D0) THEN
 ! ---                   Valid hourly value; convert to ug/m3 if needed
 
@@ -1650,7 +1650,7 @@ SUBROUTINE O3READ
                            O3MAX24 = MIN ( 78.40D0,&
                            &MAXVAL(O3_Max24hr(:,AO3SECT(IO3HR))))
 !                           Adjust minimum O3 value based on OBULEN
-                           IF (AOBULEN(IO3HR,1).GT.0.0D0 .AND.&
+                           IF (AOBULEN(IO3HR,1).GT.0.0D0 .and.&
                            &AOBULEN(IO3HR,1).LE.50.0D0) THEN
                               O3MIN = O3MAX24
                            ELSE IF (AOBULEN(IO3HR,1) .GT. 250.0D0) THEN
@@ -1668,7 +1668,7 @@ SUBROUTINE O3READ
                         EV_O3CONC(IO3HR) = MAX(EV_O3CONC(IO3HR),&
                         &O3MIN)
                      END IF !End CRCO D074 Add check for NOMIN03
-                  ELSE IF (L_O3VALUES(IO3SECT) .OR.&
+                  ELSE IF (L_O3VALUES(IO3SECT) .or.&
                   &L_O3VAL(IO3SECT)) THEN
 ! ---                   Hourly O3 values is missing; assign O3VALS value;
 !                       these have already been converted to ug/m3
@@ -1713,7 +1713,7 @@ SUBROUTINE O3READ
 !C                    year for comparison with FULLDATE based on met data file
 !                     IF (IO3YR .LE. 99) THEN
 !                        IO3YR2 = IO3YR
-!                        IF (IO3YR2 .GE. ISTRT_WIND .AND.
+!                        IF (IO3YR2 .GE. ISTRT_WIND .and.
 !     &                                       IO3YR2 .LE. 99) THEN
 !                           IO3YR  = ISTRT_CENT*100 + IO3YR2
 !                        ELSE IF (IO3YR2 .LT. ISTRT_WIND) THEN
@@ -1725,7 +1725,7 @@ SUBROUTINE O3READ
                   FULLO3HR(I) = IO3YR*1000000 + IO3MN*10000 +&
                   &IO3DY*100 + IO3HR
 
-                  IF (EV_O3TEMP(IO3HR) .GE. 0.0D0 .AND.&
+                  IF (EV_O3TEMP(IO3HR) .GE. 0.0D0 .and.&
                   &EV_O3TEMP(IO3HR) .LT. 900.0D0) THEN
 ! ---                   Valid hourly value; convert to ug/m3 if needed
                      IF (O3FILUNITS .EQ. 'PPB') THEN
@@ -1736,7 +1736,7 @@ SUBROUTINE O3READ
 ! ---                   Save this hour's O3CONC to array of previous
 !                       24 values for this sector
                      O3_Max24hr(IO3HR,I) = EV_O3TEMP(IO3HR)
-                  ELSE IF (L_O3VALUES(I) .OR.&
+                  ELSE IF (L_O3VALUES(I) .or.&
                   &L_O3VAL(I)) THEN
 ! ---                   Hourly O3 value is missing; assign O3SUB value;
 !                       these have already been converted to ug/m3
@@ -1920,7 +1920,7 @@ SUBROUTINE NOXREAD
 !C ---                Determine 4-digit year
 !                     IF (INOXYR .LE. 99) THEN
 !                        INOXYR2 = INOXYR
-!                        IF (INOXYR2 .GE. ISTRT_WIND .AND.
+!                        IF (INOXYR2 .GE. ISTRT_WIND .and.
 !     &                                       INOXYR2 .LE. 99) THEN
 !                           INOXYR  = ISTRT_CENT*100 + INOXYR2
 !                        ELSE IF (INOXYR2 .LT. ISTRT_WIND) THEN
@@ -1945,7 +1945,7 @@ SUBROUTINE NOXREAD
                      !Ensure non-negative
                      EV_NOXCONC(INOXHR)=MAX(EV_NOXCONC(INOXHR),&
                      &NOXMIN)
-                  ELSE IF (L_NOX_VALS(INOXSECT) .OR.&
+                  ELSE IF (L_NOX_VALS(INOXSECT) .or.&
                   &L_NOXVALUE(INOXSECT)) THEN
 ! ---                   Hourly NOx values is missing; assign NOX_VALS value;
 !                       these have already been converted to ug/m3
@@ -1987,7 +1987,7 @@ SUBROUTINE NOXREAD
 !C                    year for comparison with FULLDATE based on met data file
 !                     IF (INOXYR .LE. 99) THEN
 !                        INOXYR2 = INOXYR
-!                        IF (INOXYR2 .GE. ISTRT_WIND .AND.
+!                        IF (INOXYR2 .GE. ISTRT_WIND .and.
 !     &                                       INOXYR2 .LE. 99) THEN
 !                           INOXYR  = ISTRT_CENT*100 + INOXYR2
 !                        ELSE IF (INOXYR2 .LT. ISTRT_WIND) THEN
@@ -2007,7 +2007,7 @@ SUBROUTINE NOXREAD
                      ELSE IF (NOXFILUNITS .EQ. 'PPM') then
                         EV_NOXTEMP(INOXHR)=EV_NOXTEMP(INOXHR)/NO2_PPM
                      END IF
-                  ELSE IF (L_NOX_VALS(I) .OR.&
+                  ELSE IF (L_NOX_VALS(I) .or.&
                   &L_NOXVALUE(I)) THEN
 ! ---                   Hourly NOx value is missing; assign NOXSUB value;
 !                       these have already been converted to ug/m3
@@ -2203,7 +2203,7 @@ SUBROUTINE BGREAD
 !C                 year for comparison with FULLDATE based on met data file
 !                  IF (IBGYR .LE. 99) THEN
 !                     IBGYR2 = IBGYR
-!                     IF (IBGYR2 .GE. ISTRT_WIND .AND.
+!                     IF (IBGYR2 .GE. ISTRT_WIND .and.
 !     &                                          IBGYR2 .LE. 99) THEN
 !                        IBGYR  = ISTRT_CENT*100 + IBGYR2
 !                     ELSE IF (IBGYR2 .LT. ISTRT_WIND) THEN
@@ -2235,7 +2235,7 @@ SUBROUTINE BGREAD
 !C                 year for comparison with FULLDATE based on met data file
 !                  IF (IBGYR .LE. 99) THEN
 !                     IBGYR2 = IBGYR
-!                     IF (IBGYR2 .GE. ISTRT_WIND .AND.
+!                     IF (IBGYR2 .GE. ISTRT_WIND .and.
 !     &                                          IBGYR2 .LE. 99) THEN
 !                        IBGYR  = ISTRT_CENT*100 + IBGYR2
 !                     ELSE IF (IBGYR2 .LT. ISTRT_WIND) THEN
